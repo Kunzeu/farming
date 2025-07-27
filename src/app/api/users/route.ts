@@ -75,13 +75,44 @@ export async function GET(request: NextRequest) {
     }
   } catch (error) {
     console.error('Error fetching users:', error);
-    return NextResponse.json({ error: 'Error fetching users' }, { status: 500 });
+    return NextResponse.json({ 
+      error: 'Error fetching users', 
+      details: error instanceof Error ? error.message : String(error),
+      code: error instanceof Error && 'code' in error ? error.code : 'UNKNOWN'
+    }, { status: 500 });
   }
 }
 
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
+    
+    // Validar que email y username sean únicos
+    const checkQuery = `
+      SELECT email, username FROM users 
+      WHERE email = $1 OR username = $2
+    `;
+    
+    const checkResult = await pool.query(checkQuery, [body.email, body.username]);
+    
+    if (checkResult.rows.length > 0) {
+      const existingUser = checkResult.rows[0];
+      let errorMessage = '';
+      
+      if (existingUser.email === body.email && existingUser.username === body.username) {
+        errorMessage = 'El email y username ya están en uso';
+      } else if (existingUser.email === body.email) {
+        errorMessage = 'El email ya está registrado';
+      } else if (existingUser.username === body.username) {
+        errorMessage = 'El username ya está en uso';
+      }
+      
+      return NextResponse.json({ 
+        error: errorMessage,
+        field: existingUser.email === body.email ? 'email' : 'username'
+      }, { status: 409 }); // 409 Conflict
+    }
+    
     const id = crypto.randomUUID();
     
     const query = `

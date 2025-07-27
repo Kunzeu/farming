@@ -31,7 +31,11 @@ export async function GET() {
     return NextResponse.json(farms);
   } catch (error) {
     console.error('Error fetching farms:', error);
-    return NextResponse.json({ error: 'Error fetching farms' }, { status: 500 });
+    return NextResponse.json({ 
+      error: 'Error fetching farms', 
+      details: error instanceof Error ? error.message : String(error),
+      code: error instanceof Error && 'code' in error ? error.code : 'UNKNOWN'
+    }, { status: 500 });
   }
 }
 
@@ -74,6 +78,10 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(farm);
   } catch (error) {
     console.error('Error creating farm:', error);
-    return NextResponse.json({ error: 'Error creating farm' }, { status: 500 });
+    return NextResponse.json({ 
+      error: 'Error creating farm', 
+      details: error instanceof Error ? error.message : String(error),
+      code: error instanceof Error && 'code' in error ? error.code : 'UNKNOWN'
+    }, { status: 500 });
   }
 } 

@@ -192,7 +192,6 @@ export default function Home() {
             {[
               { title: 'Trading Post', description: 'Precios en tiempo real', icon: TrendingUp, href: '/trading-post' },
               { title: 'Rutas de Farming', description: 'Guías de farming', icon: Map, href: '/farming-routes' },
-              { title: 'Crafting', description: 'Calculadora de crafting', icon: Clock, href: '/crafting' },
               { title: 'Builds', description: 'Builds meta', icon: Sword, href: '/builds' },
             ].map((action, index) => (
               <motion.a

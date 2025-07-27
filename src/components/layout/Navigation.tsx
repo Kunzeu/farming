@@ -8,7 +8,6 @@ import {
   Home, 
   TrendingUp, 
   Map, 
-  Calculator, 
   Clock,
   Menu, 
   X,
@@ -29,7 +28,6 @@ const Navigation = () => {
     { href: '/trading-post', label: 'Trading Post', icon: TrendingUp },
     { href: '/farming-routes', label: 'Farms', icon: Map },
     { href: '/daily-routine', label: 'Rutina Diaria', icon: Clock },
-    { href: '/crafting', label: 'Crafting', icon: Calculator },
   ];
 
   const handleLogout = () => {
@@ -100,7 +98,6 @@ const Navigation = () => {
                     >
                       <div className="px-4 py-3 border-b border-gray-700">
                         <p className="text-white font-semibold">{user?.username}</p>
-                        <p className="text-gray-400 text-sm">{user?.email}</p>
                       </div>
                       
                       <div className="py-1">
@@ -131,10 +128,10 @@ const Navigation = () => {
                           <span>Configuración</span>
                         </Link>
 
-                        {user?.isAdmin && (
+                        {(user?.role === 'admin' || user?.isAdmin) && (
                           <Link
                             href="/admin"
-                            className="flex items-center space-x-3 px-4 py-2 text-gray-300 hover:text-white hover:bg-gray-700 transition-colors"
+                            className="flex items-center space-x-3 px-4 py-2 text-purple-300 hover:text-purple-200 hover:bg-gray-700 transition-colors"
                             onClick={() => setIsUserMenuOpen(false)}
                           >
                             <Shield className="w-4 h-4" />

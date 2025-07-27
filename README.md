@@ -1,6 +1,6 @@
 # GW2 Farming Hub 🎮
 
-Una aplicación web moderna para información de Guild Wars 2, inspirada en [fast.farming-community.eu](https://fast.farming-community.eu/). Proporciona herramientas para farming, precios del Trading Post, guías de crafting, eventos mundiales y builds meta.
+Una aplicación web moderna para información de Guild Wars 2, inspirada en [fast.farming-community.eu](https://fast.farming-community.eu/). Proporciona herramientas para farming, precios del Trading Post, eventos mundiales y builds meta.
 
 ## ✨ Características
 
@@ -22,11 +22,6 @@ Una aplicación web moderna para información de Guild Wars 2, inspirada en [fas
 - **Estimaciones de Oro**: Ganancias esperadas por hora
 - **Filtros por Dificultad**: Fácil, medio y difícil
 
-### ⚒️ Calculadora de Crafting
-- **Análisis de Costos**: Cálculo detallado de materiales y precios
-- **Margen de Ganancia**: Análisis de rentabilidad en tiempo real
-- **Cantidad Personalizable**: Ajuste de cantidades para optimizar
-- **Información de Recetas**: Detalles completos de ingredientes
 
 ### 📅 Eventos Mundiales
 - **Horarios en Tiempo Real**: Información actualizada de eventos
@@ -82,7 +77,7 @@ gw2-farming-hub/
 │   │   ├── page.tsx           # Dashboard principal
 │   │   ├── trading-post/      # Página del Trading Post
 │   │   ├── farming-routes/    # Rutas de farming
-│   │   ├── crafting/          # Calculadora de crafting
+
 │   │   ├── events/            # Eventos mundiales
 │   │   └── builds/            # Builds meta
 │   ├── components/            # Componentes reutilizables
@@ -99,14 +94,14 @@ gw2-farming-hub/
 ### Guild Wars 2 API
 - **Items**: Información detallada de items
 - **Precios**: Datos del Trading Post en tiempo real
-- **Recetas**: Información de crafting
+
 - **Eventos**: Estados de eventos mundiales
 - **Builds**: Información de builds del juego
 
 ### Endpoints Principales
 - `https://api.guildwars2.com/v2/items` - Información de items
 - `https://api.guildwars2.com/v2/commerce/prices` - Precios del Trading Post
-- `https://api.guildwars2.com/v2/recipes` - Recetas de crafting
+
 - `https://api.guildwars2.com/v2/events` - Eventos mundiales
 
 ## 🎨 Características de Diseño

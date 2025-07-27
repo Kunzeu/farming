@@ -29,6 +29,15 @@ export interface User {
   createdAt: Date;
   updatedAt: Date;
   isActive: boolean;
+  preferences?: {
+    theme?: 'dark' | 'light' | 'auto';
+    language?: 'es' | 'en';
+    notifications?: {
+      priceAlerts: boolean;
+      eventReminders: boolean;
+      buildUpdates: boolean;
+    };
+  };
 }
 
 class DatabaseClientService {
@@ -129,7 +138,12 @@ class DatabaseClientService {
     });
     
     if (!response.ok) {
-      throw new Error('Failed to create user');
+      const errorData = await response.json();
+      if (response.status === 409) {
+        // Error de conflicto - email o username duplicado
+        throw new Error(errorData.error || 'Email o username ya existe');
+      }
+      throw new Error(errorData.error || 'Failed to create user');
     }
     
     const data = await response.json();

@@ -188,14 +188,22 @@ function AuthProviderInternal({ children }: { children: ReactNode }) {
       
       const isFirstUser = existingUsers.length === 0;
       
-      const mockUser: User = {
-        id: Date.now().toString(),
-        username: credentials.username,
+      // Primero crear en base de datos para validar duplicados
+      const { getDbService } = await import('@/lib/database-switch');
+      const dbService = await getDbService();
+      
+      const createdUser = await dbService.createUser({
         email: credentials.email,
-        password: credentials.password, // Guardar contraseña para la base de datos
-        role: isFirstUser ? 'admin' : 'user', // Primer usuario = admin, resto = user
-        isActive: true, // Usuario activo por defecto
-        joinDate: new Date().toISOString(),
+        username: credentials.username,
+        password: credentials.password,
+        role: isFirstUser ? 'admin' : 'user',
+        isActive: true
+      });
+
+      // Solo si la creación fue exitosa, proceder con el login
+      const mockUser: User = {
+        ...createdUser,
+        joinDate: createdUser.createdAt?.toISOString() || new Date().toISOString(),
         lastLogin: new Date().toISOString(),
         preferences: {
           theme: 'dark',
@@ -206,31 +214,24 @@ function AuthProviderInternal({ children }: { children: ReactNode }) {
             buildUpdates: false
           }
         },
-        isAdmin: false
+        isAdmin: createdUser.role === 'admin'
       };
 
       const mockToken = 'mock_jwt_token_' + Date.now();
 
-      // Guardar en localStorage para la sesión actual
+      // Guardar en localStorage solo después de éxito en BD
       localStorage.setItem('gw2_token', mockToken);
       localStorage.setItem('gw2_user', JSON.stringify(mockUser));
-
-      // También guardar en base de datos para persistencia
-      const { getDbService } = await import('@/lib/database-switch');
-      const dbService = await getDbService();
-      await dbService.createUser({
-        email: mockUser.email,
-        username: mockUser.username,
-        password: mockUser.password!,
-        role: mockUser.role!,
-        isActive: mockUser.isActive!
-      });
 
       dispatch({
         type: 'AUTH_SUCCESS',
         payload: { user: mockUser, token: mockToken },
       });
     } catch (error) {
+      // Limpiar localStorage en caso de error
+      localStorage.removeItem('gw2_token');
+      localStorage.removeItem('gw2_user');
+      
       dispatch({
         type: 'AUTH_FAILURE',
         payload: error instanceof Error ? error.message : 'Error de registro',

@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import Navigation from '@/components/layout/Navigation';
 import { Timer, Star, Clock, CheckCircle, Circle } from 'lucide-react';
-import { dbService, FarmItem } from '@/lib/database';
+import { useDatabase, FarmItem } from '@/hooks/useDatabase';
 import ExpansionIcon from '@/components/ui/ExpansionIcon';
 
 interface TimerEvent {
@@ -17,6 +17,7 @@ interface TimerEvent {
 }
 
 export default function DailyRoutine() {
+  const { dbService } = useDatabase();
   const [selectedFarms, setSelectedFarms] = useState<FarmItem[]>([]);
 
   const [timers, setTimers] = useState<TimerEvent[]>([
@@ -90,6 +91,7 @@ export default function DailyRoutine() {
   // Cargar farms desde la base de datos
   useEffect(() => {
     const loadFarms = async () => {
+      if (!dbService) return;
       try {
         const farms = await dbService.getAllFarms();
         setSelectedFarms(farms);
@@ -99,7 +101,7 @@ export default function DailyRoutine() {
       }
     };
     loadFarms();
-  }, []);
+  }, [dbService]);
 
   // Inicializar timers solo una vez
   useEffect(() => {

@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import Navigation from '@/components/layout/Navigation';
-import ProtectedRoute from '@/components/auth/ProtectedRoute';
+import AdminRoute from '@/components/auth/AdminRoute';
 import { Plus, Edit, Trash2, Save, X, Map, Clock, DollarSign, Shield, Users } from 'lucide-react';
 import { useDatabase, FarmItem, User } from '@/hooks/useDatabase';
 import ExpansionIcon from '@/components/ui/ExpansionIcon';
@@ -27,6 +27,8 @@ export default function AdminPanel() {
     selected: false,
     type: 'farm'
   });
+
+
 
   // Estados para gestión de usuarios
   const [users, setUsers] = useState<User[]>([]);
@@ -99,6 +101,7 @@ export default function AdminPanel() {
         selected: false,
         type: 'farm'
       });
+
       setIsCreating(false);
       setError(null);
       await loadFarms();
@@ -129,6 +132,33 @@ export default function AdminPanel() {
     }
   };
 
+  // Actualizar farm
+  const handleUpdateFarm = async () => {
+    if (!editingFarm) return;
+    
+    if (!editingFarm.name.trim() || !editingFarm.description.trim() || !editingFarm.estimatedTime.trim() || !editingFarm.estimatedGold.trim()) {
+      setError('Todos los campos son requeridos');
+      return;
+    }
+
+    try {
+      await dbService.updateFarm(editingFarm.id, {
+        name: editingFarm.name,
+        description: editingFarm.description,
+        estimatedTime: editingFarm.estimatedTime,
+        estimatedGold: editingFarm.estimatedGold,
+        expansion: editingFarm.expansion,
+        type: editingFarm.type
+      });
+      setEditingFarm(null);
+      setError(null);
+      await loadFarms();
+    } catch (err) {
+      console.error('Error updating farm:', err);
+      setError('Error al actualizar el farm');
+    }
+  };
+
   // Eliminar farm
   const handleDeleteFarm = async (id: string) => {
     if (confirm('¿Estás seguro de que quieres eliminar este farm?')) {
@@ -149,6 +179,13 @@ export default function AdminPanel() {
       return;
     }
 
+    // Validación de email
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(newUser.email)) {
+      setError('El formato del email no es válido');
+      return;
+    }
+
     try {
       await dbService.createUser(newUser);
       setNewUser({
@@ -163,7 +200,8 @@ export default function AdminPanel() {
       await loadUsers();
     } catch (err) {
       console.error('Error creating user:', err);
-      setError('Error al crear el usuario');
+      const errorMessage = err instanceof Error ? err.message : 'Error al crear el usuario';
+      setError(errorMessage);
     }
   };
 
@@ -335,6 +373,116 @@ export default function AdminPanel() {
               </button>
               <button
                 onClick={() => setIsCreating(false)}
+                className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-lg transition-colors"
+              >
+                <X className="w-4 h-4" />
+                Cancelar
+              </button>
+            </div>
+          </motion.div>
+        </motion.div>
+      )}
+
+      {/* Modal de Editar Farm */}
+      {editingFarm && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
+        >
+          <motion.div
+            initial={{ scale: 0.9, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            className="bg-gray-800 rounded-lg p-6 w-full max-w-md"
+          >
+            <h3 className="text-xl font-bold text-white mb-4">Editar Farm</h3>
+            
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-2">
+                  Nombre
+                </label>
+                <input
+                  type="text"
+                  value={editingFarm.name}
+                  onChange={(e) => setEditingFarm({...editingFarm, name: e.target.value})}
+                  className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-purple-500"
+                  placeholder="Nombre del farm"
+                />
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-2">
+                  Descripción
+                </label>
+                <textarea
+                  value={editingFarm.description}
+                  onChange={(e) => setEditingFarm({...editingFarm, description: e.target.value})}
+                  className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-purple-500"
+                  rows={3}
+                  placeholder="Descripción del farm"
+                />
+              </div>
+              
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-300 mb-2">
+                    Tiempo Estimado
+                  </label>
+                  <input
+                    type="text"
+                    value={editingFarm.estimatedTime}
+                    onChange={(e) => setEditingFarm({...editingFarm, estimatedTime: e.target.value})}
+                    className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-purple-500"
+                    placeholder="30 min"
+                  />
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium text-gray-300 mb-2">
+                    Oro Estimado
+                  </label>
+                  <input
+                    type="text"
+                    value={editingFarm.estimatedGold}
+                    onChange={(e) => setEditingFarm({...editingFarm, estimatedGold: e.target.value})}
+                    className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-purple-500"
+                    placeholder="8g/h"
+                  />
+                </div>
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-2">
+                  Expansión Requerida
+                </label>
+                <select
+                  value={editingFarm.expansion}
+                  onChange={(e) => setEditingFarm({...editingFarm, expansion: e.target.value as 'core' | 'hot' | 'pof' | 'eod' | 'soto' | 'jw'})}
+                  className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-purple-500"
+                >
+                  <option value="core">Core Game</option>
+                  <option value="hot">Heart of Thorns</option>
+                  <option value="pof">Path of Fire</option>
+                  <option value="eod">End of Dragons</option>
+                  <option value="soto">Secrets of the Obscure</option>
+                  <option value="jw">Janthir Wilds</option>
+                </select>
+              </div>
+
+
+            </div>
+            
+            <div className="flex gap-3 mt-6">
+              <button
+                onClick={handleUpdateFarm}
+                className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors"
+              >
+                <Save className="w-4 h-4" />
+                Guardar
+              </button>
+              <button
+                onClick={() => setEditingFarm(null)}
                 className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-lg transition-colors"
               >
                 <X className="w-4 h-4" />
@@ -818,7 +966,7 @@ export default function AdminPanel() {
   );
 
   return (
-    <ProtectedRoute>
+    <AdminRoute>
       <div className="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900 to-gray-900">
         <Navigation />
         <div className="container mx-auto px-4 py-8">
@@ -887,6 +1035,6 @@ export default function AdminPanel() {
           </motion.div>
         </div>
       </div>
-    </ProtectedRoute>
+          </AdminRoute>
   );
 } 

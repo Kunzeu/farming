@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import Navigation from '@/components/layout/Navigation';
 import ProtectedRoute from '@/components/auth/ProtectedRoute';
@@ -12,8 +12,7 @@ import {
   Settings, 
   Heart, 
   Bell,
-  Palette,
-  Globe,
+
   Save,
   Edit
 } from 'lucide-react';
@@ -22,19 +21,100 @@ export default function ProfilePage() {
   const { user } = useAuth();
   const [isEditing, setIsEditing] = useState(false);
   const [preferences, setPreferences] = useState({
-    theme: user?.preferences?.theme || 'dark',
-    language: user?.preferences?.language || 'es',
     notifications: {
-      priceAlerts: user?.preferences?.notifications?.priceAlerts ?? true,
-      eventReminders: user?.preferences?.notifications?.eventReminders ?? true,
-      buildUpdates: user?.preferences?.notifications?.buildUpdates ?? false,
+      priceAlerts: true,
+      eventReminders: true,
+      buildUpdates: false,
     }
   });
 
-  const handleSave = () => {
-    // Aquí se guardarían las preferencias en el backend
-    setIsEditing(false);
-    // Mostrar notificación de éxito
+  const [passwordData, setPasswordData] = useState({
+    currentPassword: '',
+    newPassword: '',
+    confirmPassword: ''
+  });
+
+  // Cargar preferencias cuando el usuario se carga
+  useEffect(() => {
+    if (user?.preferences) {
+      setPreferences({
+        notifications: {
+          priceAlerts: user.preferences.notifications?.priceAlerts ?? true,
+          eventReminders: user.preferences.notifications?.eventReminders ?? true,
+          buildUpdates: user.preferences.notifications?.buildUpdates ?? false,
+        }
+      });
+    }
+  }, [user?.preferences]);
+
+
+
+  const handleSave = async () => {
+    try {
+      const { getDbService } = await import('@/lib/database-switch');
+      const dbService = await getDbService();
+      
+      if (user?.id) {
+        const updates: { preferences?: typeof preferences; password?: string } = {};
+        
+        // Guardar preferencias
+        updates.preferences = preferences;
+        
+        // Validar y cambiar contraseña si se proporcionaron datos
+        if (passwordData.currentPassword || passwordData.newPassword || passwordData.confirmPassword) {
+          if (!passwordData.currentPassword) {
+            alert('Debes ingresar tu contraseña actual');
+            return;
+          }
+          
+          if (!passwordData.newPassword) {
+            alert('Debes ingresar una nueva contraseña');
+            return;
+          }
+          
+          if (passwordData.newPassword !== passwordData.confirmPassword) {
+            alert('Las contraseñas no coinciden');
+            return;
+          }
+          
+          if (passwordData.newPassword.length < 6) {
+            alert('La nueva contraseña debe tener al menos 6 caracteres');
+            return;
+          }
+          
+          // Verificar contraseña actual
+          if (user.password !== passwordData.currentPassword) {
+            alert('La contraseña actual es incorrecta');
+            return;
+          }
+          
+          updates.password = passwordData.newPassword;
+        }
+        
+        await dbService.updateUser(user.id, updates);
+        
+        // Actualizar localStorage
+        const updatedUser = { 
+          ...user, 
+          preferences,
+          ...(updates.password && { password: updates.password })
+        };
+        localStorage.setItem('gw2_user', JSON.stringify(updatedUser));
+        
+        // Limpiar campos de contraseña
+        setPasswordData({
+          currentPassword: '',
+          newPassword: '',
+          confirmPassword: ''
+        });
+        
+        setIsEditing(false);
+        alert('Configuraciones guardadas exitosamente');
+      }
+    } catch (error) {
+      console.error('Error saving preferences:', error);
+      alert('Error al guardar configuraciones');
+    }
   };
 
   return (
@@ -86,16 +166,6 @@ export default function ProfilePage() {
                   <div className="flex items-center gap-3">
                     <Calendar className="w-5 h-5 text-gray-400" />
                     <div>
-                      <p className="text-gray-400 text-sm">Miembro desde</p>
-                      <p className="text-white">
-                        {user?.createdAt ? new Date(user.createdAt).toLocaleDateString('es-ES') : 'N/A'}
-                      </p>
-                    </div>
-                  </div>
-
-                  <div className="flex items-center gap-3">
-                    <Calendar className="w-5 h-5 text-gray-400" />
-                    <div>
                       <p className="text-gray-400 text-sm">Último acceso</p>
                       <p className="text-white">
                         {user?.lastLogin ? new Date(user.lastLogin).toLocaleDateString('es-ES') : 'N/A'}
@@ -126,39 +196,51 @@ export default function ProfilePage() {
                 </div>
 
                 <div className="space-y-6">
-                  {/* Tema */}
-                  <div>
-                    <label className="flex items-center gap-2 text-white font-medium mb-3">
-                      <Palette className="w-5 h-5" />
-                      Tema
-                    </label>
-                    <select
-                      value={preferences.theme}
-                      onChange={(e) => setPreferences({...preferences, theme: e.target.value as 'dark' | 'light' | 'auto'})}
-                      disabled={!isEditing}
-                      className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-purple-500 disabled:opacity-50"
-                    >
-                      <option value="dark">Oscuro</option>
-                      <option value="light">Claro</option>
-                      <option value="auto">Automático</option>
-                    </select>
-                  </div>
+                  {/* Cambio de contraseña */}
+                  <div className="space-y-4">
+                    <h4 className="text-white font-medium">Cambiar Contraseña</h4>
+                    
+                    <div>
+                      <label className="block text-gray-300 text-sm mb-2">
+                        Contraseña actual
+                      </label>
+                      <input
+                        type="password"
+                        value={passwordData.currentPassword}
+                        onChange={(e) => setPasswordData({...passwordData, currentPassword: e.target.value})}
+                        disabled={!isEditing}
+                        placeholder="Ingresa tu contraseña actual"
+                        className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 disabled:opacity-50"
+                      />
+                    </div>
 
-                  {/* Idioma */}
-                  <div>
-                    <label className="flex items-center gap-2 text-white font-medium mb-3">
-                      <Globe className="w-5 h-5" />
-                      Idioma
-                    </label>
-                    <select
-                      value={preferences.language}
-                      onChange={(e) => setPreferences({...preferences, language: e.target.value as 'es' | 'en'})}
-                      disabled={!isEditing}
-                      className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-purple-500 disabled:opacity-50"
-                    >
-                      <option value="es">Español</option>
-                      <option value="en">English</option>
-                    </select>
+                    <div>
+                      <label className="block text-gray-300 text-sm mb-2">
+                        Nueva contraseña
+                      </label>
+                      <input
+                        type="password"
+                        value={passwordData.newPassword}
+                        onChange={(e) => setPasswordData({...passwordData, newPassword: e.target.value})}
+                        disabled={!isEditing}
+                        placeholder="Ingresa tu nueva contraseña"
+                        className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 disabled:opacity-50"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-gray-300 text-sm mb-2">
+                        Confirmar nueva contraseña
+                      </label>
+                      <input
+                        type="password"
+                        value={passwordData.confirmPassword}
+                        onChange={(e) => setPasswordData({...passwordData, confirmPassword: e.target.value})}
+                        disabled={!isEditing}
+                        placeholder="Confirma tu nueva contraseña"
+                        className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 disabled:opacity-50"
+                      />
+                    </div>
                   </div>
 
                   {/* Notificaciones */}
