@@ -7,7 +7,6 @@ import ItemCard from '@/components/ui/ItemCard';
 import { 
   TrendingUp, 
   Map, 
-  Clock, 
   Coins, 
   Sword,
   Search
