@@ -21,6 +21,7 @@ export interface UserPreferences {
     eventReminders: boolean;
     buildUpdates: boolean;
   };
+  favoriteItems?: string[];
 }
 
 export interface AuthState {
