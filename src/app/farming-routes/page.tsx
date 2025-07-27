@@ -1,13 +1,14 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import Navigation from '@/components/layout/Navigation';
 import { Search, Map, Clock, Coins, RefreshCw, TrendingUp, Star } from 'lucide-react';
-import { dbService, FarmItem } from '@/lib/database';
+import { useDatabase, FarmItem } from '@/hooks/useDatabase';
 import ExpansionIcon from '@/components/ui/ExpansionIcon';
 
 export default function FarmingRoutes() {
+  const { dbService } = useDatabase();
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedExpansion, setSelectedExpansion] = useState('all');
   const [farmingRoutes, setFarmingRoutes] = useState<FarmItem[]>([]);
@@ -15,7 +16,8 @@ export default function FarmingRoutes() {
   const [error, setError] = useState<string | null>(null);
 
   // Cargar rutas desde la base de datos
-  const loadRoutes = async () => {
+  const loadRoutes = useCallback(async () => {
+    if (!dbService) return;
     try {
       setIsLoading(true);
       setError(null);
@@ -29,11 +31,11 @@ export default function FarmingRoutes() {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [dbService]);
 
   useEffect(() => {
     loadRoutes();
-  }, []);
+  }, [loadRoutes]);
 
   // Filtrar rutas
   const filteredRoutes = farmingRoutes.filter(route => {

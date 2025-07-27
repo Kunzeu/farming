@@ -1,16 +1,17 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import Navigation from '@/components/layout/Navigation';
 import ProtectedRoute from '@/components/auth/ProtectedRoute';
 import { Plus, Edit, Trash2, Save, X, Map, Clock, DollarSign, Shield, Users } from 'lucide-react';
-import { dbService, FarmItem, User } from '@/lib/database';
+import { useDatabase, FarmItem, User } from '@/hooks/useDatabase';
 import ExpansionIcon from '@/components/ui/ExpansionIcon';
 
 type AdminSection = 'farms' | 'users';
 
 export default function AdminPanel() {
+  const { dbService } = useDatabase();
   const [activeSection, setActiveSection] = useState<AdminSection>('farms');
   const [farms, setFarms] = useState<FarmItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -41,7 +42,8 @@ export default function AdminPanel() {
   });
 
   // Cargar farms desde la base de datos
-  const loadFarms = async () => {
+  const loadFarms = useCallback(async () => {
+    if (!dbService) return;
     try {
       setIsLoading(true);
       setError(null);
@@ -53,10 +55,11 @@ export default function AdminPanel() {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [dbService]);
 
   // Cargar usuarios
-  const loadUsers = async () => {
+  const loadUsers = useCallback(async () => {
+    if (!dbService) return;
     try {
       setIsLoadingUsers(true);
       const usersData = await dbService.getAllUsers();
@@ -67,7 +70,7 @@ export default function AdminPanel() {
     } finally {
       setIsLoadingUsers(false);
     }
-  };
+  }, [dbService]);
 
   useEffect(() => {
     if (activeSection === 'farms') {
@@ -75,7 +78,7 @@ export default function AdminPanel() {
     } else if (activeSection === 'users') {
       loadUsers();
     }
-  }, [activeSection]);
+  }, [activeSection, loadFarms, loadUsers]);
 
   // Crear nuevo farm
   const handleCreateFarm = async () => {

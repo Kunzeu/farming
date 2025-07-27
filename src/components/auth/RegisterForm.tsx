@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useAuth } from '@/contexts/AuthContext';
 import { RegisterCredentials } from '@/types/auth';
@@ -18,6 +18,7 @@ import {
 export default function RegisterForm() {
   const { register, isLoading, error, clearError } = useAuth();
   const [showPassword, setShowPassword] = useState(false);
+  const [isFirstUser, setIsFirstUser] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [formData, setFormData] = useState<RegisterCredentials>({
     username: '',
@@ -116,6 +117,22 @@ export default function RegisterForm() {
     }
   };
 
+  // Verificar si será el primer usuario
+  useEffect(() => {
+    const checkFirstUser = async () => {
+      try {
+        const { getDbService } = await import('@/lib/database-switch');
+        const dbService = await getDbService();
+        const users = await dbService.getAllUsers();
+        setIsFirstUser(users.length === 0);
+      } catch (error) {
+        console.error('Error checking first user:', error);
+      }
+    };
+
+    checkFirstUser();
+  }, []);
+
   const isFormValid = () => {
     return Object.values(validation).every(field => field.isValid);
   };
@@ -134,6 +151,18 @@ export default function RegisterForm() {
           <p className="text-gray-400">
             Únete a la comunidad de GW2 Farming Hub
           </p>
+          
+          {/* Indicador de primer usuario */}
+          {isFirstUser && (
+            <div className="mt-4 bg-yellow-900/20 border border-yellow-700 rounded-lg p-3">
+              <p className="text-yellow-300 text-sm font-medium">
+                🎉 ¡Serás el primer administrador!
+              </p>
+              <p className="text-yellow-400 text-xs mt-1">
+                El primer usuario registrado obtiene permisos de administrador
+              </p>
+            </div>
+          )}
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-6">

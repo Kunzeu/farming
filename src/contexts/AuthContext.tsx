@@ -110,8 +110,9 @@ function AuthProviderInternal({ children }: { children: ReactNode }) {
     dispatch({ type: 'AUTH_START' });
 
     try {
-      // Autenticar con la base de datos IndexedDB
-      const { dbService } = await import('@/lib/database');
+      // Autenticar con la base de datos
+      const { getDbService } = await import('@/lib/database-switch');
+      const dbService = await getDbService();
       
       // Buscar usuario por email
       const dbUser = await dbService.getUserByEmail(credentials.email);
@@ -180,12 +181,19 @@ function AuthProviderInternal({ children }: { children: ReactNode }) {
         throw new Error('La contraseña debe tener al menos 6 caracteres');
       }
 
+      // Verificar si es el primer usuario para hacerlo admin
+      const { getDbService: getDbServiceForCheck } = await import('@/lib/database-switch');
+      const dbServiceForCheck = await getDbServiceForCheck();
+      const existingUsers = await dbServiceForCheck.getAllUsers();
+      
+      const isFirstUser = existingUsers.length === 0;
+      
       const mockUser: User = {
         id: Date.now().toString(),
         username: credentials.username,
         email: credentials.email,
         password: credentials.password, // Guardar contraseña para la base de datos
-        role: 'user', // Rol por defecto
+        role: isFirstUser ? 'admin' : 'user', // Primer usuario = admin, resto = user
         isActive: true, // Usuario activo por defecto
         joinDate: new Date().toISOString(),
         lastLogin: new Date().toISOString(),
@@ -207,8 +215,9 @@ function AuthProviderInternal({ children }: { children: ReactNode }) {
       localStorage.setItem('gw2_token', mockToken);
       localStorage.setItem('gw2_user', JSON.stringify(mockUser));
 
-      // También guardar en IndexedDB para persistencia
-      const { dbService } = await import('@/lib/database');
+      // También guardar en base de datos para persistencia
+      const { getDbService } = await import('@/lib/database-switch');
+      const dbService = await getDbService();
       await dbService.createUser({
         email: mockUser.email,
         username: mockUser.username,

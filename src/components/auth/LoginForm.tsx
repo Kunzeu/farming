@@ -110,13 +110,7 @@ export default function LoginForm() {
             </motion.div>
           )}
 
-          {/* Demo Credentials */}
-          <div className="bg-blue-900/20 border border-blue-700 rounded-lg p-3">
-            <p className="text-blue-300 text-xs font-medium mb-1">Credenciales de Demo:</p>
-            <p className="text-blue-400 text-xs">
-              Email: demo@example.com | Password: password
-            </p>
-          </div>
+
 
           {/* Submit Button */}
           <button
