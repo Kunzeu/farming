@@ -9,10 +9,8 @@ import {
   Map, 
   Clock, 
   Coins, 
-  Users, 
   Sword,
-  Search,
-  Filter
+  Search
 } from 'lucide-react';
 import { 
   getPopularFarmingItems, 

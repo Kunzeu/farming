@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { motion } from 'framer-motion';
 import Navigation from '@/components/layout/Navigation';
 import ItemCard from '@/components/ui/ItemCard';
@@ -10,7 +10,6 @@ import {
   TrendingUp, 
   DollarSign,
   Clock,
-  Filter,
   Plus,
   Minus
 } from 'lucide-react';
@@ -18,8 +17,7 @@ import {
   getRecipe, 
   getItem, 
   getItemPrice, 
-  formatPrice,
-  calculateProfitMargin 
+  formatPrice 
 } from '@/lib/gw2-api';
 import { GW2Recipe, GW2Item, GW2Price } from '@/types/gw2';
 

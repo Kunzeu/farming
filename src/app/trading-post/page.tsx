@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { motion } from 'framer-motion';
 import Navigation from '@/components/layout/Navigation';
 import ItemCard from '@/components/ui/ItemCard';
@@ -8,7 +8,6 @@ import {
   Search, 
   TrendingUp, 
   TrendingDown, 
-  Filter,
   ArrowUpDown,
   DollarSign
 } from 'lucide-react';

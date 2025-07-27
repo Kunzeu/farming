@@ -1,6 +1,7 @@
 'use client';
 
 import { motion } from 'framer-motion';
+import Image from 'next/image';
 import { GW2Item, GW2Price } from '@/types/gw2';
 import { formatPrice } from '@/lib/gw2-api';
 
@@ -67,9 +68,11 @@ const ItemCard = ({ item, price, showPrice = true, onClick }: ItemCardProps) => 
       {/* Item icon placeholder */}
       <div className="w-16 h-16 bg-gray-700 rounded-lg mb-3 flex items-center justify-center">
         {item.icon ? (
-          <img 
+          <Image 
             src={item.icon} 
             alt={item.name}
+            width={48}
+            height={48}
             className="w-12 h-12 object-contain"
           />
         ) : (

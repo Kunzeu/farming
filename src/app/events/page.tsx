@@ -4,7 +4,6 @@ import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import Navigation from '@/components/layout/Navigation';
 import { 
-  Calendar, 
   Clock, 
   MapPin, 
   Users, 

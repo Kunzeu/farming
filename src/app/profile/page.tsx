@@ -134,7 +134,7 @@ export default function ProfilePage() {
                     </label>
                     <select
                       value={preferences.theme}
-                      onChange={(e) => setPreferences({...preferences, theme: e.target.value as any})}
+                      onChange={(e) => setPreferences({...preferences, theme: e.target.value as 'dark' | 'light' | 'auto'})}
                       disabled={!isEditing}
                       className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-purple-500 disabled:opacity-50"
                     >
@@ -152,7 +152,7 @@ export default function ProfilePage() {
                     </label>
                     <select
                       value={preferences.language}
-                      onChange={(e) => setPreferences({...preferences, language: e.target.value as any})}
+                      onChange={(e) => setPreferences({...preferences, language: e.target.value as 'es' | 'en'})}
                       disabled={!isEditing}
                       className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-purple-500 disabled:opacity-50"
                     >
