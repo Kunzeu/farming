@@ -22,6 +22,7 @@ export interface UserPreferences {
     buildUpdates: boolean;
   };
   favoriteItems?: string[];
+  favoriteRoutes?: string[];
 }
 
 export interface AuthState {
