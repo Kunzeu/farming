@@ -13,6 +13,16 @@ export async function GET(request: NextRequest) {
   const username = searchParams.get('username');
 
   try {
+    // Debug: verificar que DATABASE_URL esté configurada
+    if (!process.env.DATABASE_URL) {
+      console.error('❌ DATABASE_URL no está configurada');
+      return NextResponse.json({ 
+        error: 'Database configuration missing',
+        details: 'DATABASE_URL environment variable not set'
+      }, { status: 500 });
+    }
+    
+    console.log('✅ DATABASE_URL configurada, conectando...');
     if (email) {
       // Buscar por email
       const query = `
