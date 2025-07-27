@@ -203,7 +203,7 @@ export default function Crafting() {
                   <h2 className="text-2xl font-bold text-white mb-4">Resultado</h2>
                   <ItemCard
                     item={recipeItem}
-                    price={recipePrice}
+                    price={recipePrice || undefined}
                     showPrice={true}
                   />
                 </div>
@@ -217,7 +217,7 @@ export default function Crafting() {
                         <div className="flex-1">
                           <ItemCard
                             item={ingredient.item}
-                            price={ingredient.price}
+                            price={ingredient.price || undefined}
                             showPrice={true}
                           />
                         </div>
