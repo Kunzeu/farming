@@ -3,11 +3,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { Pool } from 'pg';
 
 const pool = new Pool({
-  user: 'postgres',
-  host: 'localhost',
-  database: 'gw2_farming_hub',
-  password: 'Kunsexy35',
-  port: 5433,
+  connectionString: process.env.DATABASE_URL || 'postgresql://postgres:Kunsexy35@localhost:5433/gw2_farming_hub',
+  ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false,
 });
 
 export async function GET(request: NextRequest) {
