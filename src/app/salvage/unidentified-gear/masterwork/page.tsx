@@ -33,7 +33,7 @@ const baseMaterials: Omit<Material, 'sellPrice' | 'processedPrice'>[] = [
   { id: 19725, name: "Madera T6", icon: "", dropRate: 0.02806, category: 'fine' },
   { id: 19729, name: "Cuero T5", icon: "", dropRate: 0.27492, category: 'common' },
   { id: 19732, name: "Cuero T6", icon: "", dropRate: 0.0173, category: 'fine' },
-  { id: 19700, name: "Mithril", icon: "", dropRate: 0.45640, category: 'common' },
+  { id: 19700, name: "Mithril", icon: "", dropRate: 0.4564, category: 'common' },
   { id: 19701, name: "Orica​lco", icon: "", dropRate: 0.03854, category: 'fine' },
   { id: 89140, name: "Mota", icon: "", dropRate: 0.98114, category: 'common' },
   { id: 89182, name: "Dolor", icon: "", dropRate: 0.00378, category: 'rare' },
@@ -86,12 +86,24 @@ export default function UnidentifiedGearMasterworkPage() {
         const itemData = itemsData.find((item: { id: number }) => item.id === baseMaterial.id);
         const priceData = pricesData.find((price: { id: number }) => price.id === baseMaterial.id);
         
+        // Aplicar diferentes porcentajes según el ID del material
+        const materialId = baseMaterial.id;
+        let feePercentage = 0.85; // Por defecto 85% para materiales comunes/finos
+        
+        // IDs que deben calcularse al 90% (materiales raros/exóticos)
+        // 89182: Dolor, 89141: Mejora, 89098: Control, 89103: Brillantez
+        // 89258: Potencia, 89216: Habilidad, 19721: Ectos
+        const highValueIds = [89182, 89141, 89098, 89103, 89258, 89216, 19721];
+        if (highValueIds.includes(materialId)) {
+          feePercentage = 0.90;
+        }
+        
         return {
           ...baseMaterial,
           name: itemData?.name || baseMaterial.name,
           icon: itemData?.icon || '',
           sellPrice: priceData?.sells?.unit_price || 0,
-          processedPrice: Math.round((priceData?.sells?.unit_price || 0) * 0.85), // Precio después de fees TP
+          processedPrice: Math.round((priceData?.sells?.unit_price || 0) * feePercentage), // Precio después de fees TP
         };
       });
       
@@ -117,7 +129,7 @@ export default function UnidentifiedGearMasterworkPage() {
   useEffect(() => {
     if (materials.length > 0) {
       const newResults: SalvageResult[] = materials.map(material => {
-        const expectedQuantity = Math.round(material.dropRate * quantity);
+        const expectedQuantity = material.dropRate * quantity; // Sin redondear
         const totalValue = expectedQuantity * material.processedPrice;
         
         return {
@@ -151,9 +163,10 @@ export default function UnidentifiedGearMasterworkPage() {
   const totalProfit = totalMaterialsValue - totalCost - totalKitCost;
 
   const formatCurrency = (copper: number) => {
-    const gold = Math.floor(copper / 10000);
-    const silver = Math.floor((copper % 10000) / 100);
-    const copperRemainder = copper % 100;
+    const roundedCopper = Math.round(copper);
+    const gold = Math.floor(roundedCopper / 10000);
+    const silver = Math.floor((roundedCopper % 10000) / 100);
+    const copperRemainder = roundedCopper % 100;
     
     if (gold > 0) {
       return `${gold}g ${silver}s ${copperRemainder}c`;
@@ -442,7 +455,7 @@ export default function UnidentifiedGearMasterworkPage() {
                       </span>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300 font-medium">
-                      {result.quantity}
+                      {Math.round(result.quantity)}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-semibold text-blue-400">
                       {formatCurrency(result.totalValue)}

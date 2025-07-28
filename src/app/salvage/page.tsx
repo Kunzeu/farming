@@ -123,7 +123,7 @@ export default function SalvagePage() {
             Guía completa sobre salvaging en Guild Wars 2. Aprende técnicas, calcula rentabilidad y maximiza tus ganancias.
           </p>
         </div>
-
+        
         {/* Información General simplificada */}
         <div className="bg-slate-800/50 rounded-xl p-8 mb-12 border border-slate-700/50">
           <div className="text-center mb-8">
@@ -149,15 +149,15 @@ export default function SalvagePage() {
               <AlertTriangle className="h-8 w-8 text-orange-400 mx-auto mb-3" />
               <h3 className="text-white font-semibold mb-2">Drop Rates</h3>
               <p className="text-gray-400 text-sm">Conoce las tasas de drop de materiales</p>
-            </div>
+        </div>
             <div className="text-center">
               <BookOpen className="h-8 w-8 text-blue-400 mx-auto mb-3" />
               <h3 className="text-white font-semibold mb-2">Valor vs Materiales</h3>
               <p className="text-gray-400 text-sm">Compara el valor del item completo</p>
-            </div>
+      </div>
           </div>
         </div>
-
+        
         {/* Secciones principales */}
         <div className="mb-12">
           <h2 className="text-2xl font-bold text-white mb-8 text-center">Secciones de Salvaging</h2>
@@ -198,7 +198,7 @@ export default function SalvagePage() {
             })}
           </div>
         </div>
-
+        
         {/* Detalles de la sección seleccionada */}
         {selectedSection && (
           <motion.div
@@ -242,9 +242,9 @@ export default function SalvagePage() {
                             <span>{detail}</span>
                           </div>
                         ))}
-                      </div>
-                    </div>
-                    
+          </div>
+        </div>
+        
                     <div>
                       <h4 className="text-lg font-semibold text-white mb-4">Consejos</h4>
                       <div className="space-y-3">
@@ -254,10 +254,10 @@ export default function SalvagePage() {
                             <span className="text-sm">{tip}</span>
                           </div>
                         ))}
-                      </div>
-                    </div>
-                  </div>
-                  
+          </div>
+        </div>
+      </div>
+
                   <div className="mt-8 pt-6 border-t border-slate-600/50">
                     <div className="flex gap-4 justify-center">
                       {selectedSectionData.id === 'unidentified-gear' ? (
@@ -324,8 +324,8 @@ export default function SalvagePage() {
               </div>
             </div>
           </div>
-        </div>
       </div>
+    </div>
     </>
   );
 }

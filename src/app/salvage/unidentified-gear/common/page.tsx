@@ -110,7 +110,7 @@ export default function UnidentifiedGearCommonPage() {
   useEffect(() => {
     if (materials.length > 0) {
       const newResults: SalvageResult[] = materials.map(material => {
-        const expectedQuantity = Math.round(material.dropRate * quantity);
+        const expectedQuantity = material.dropRate * quantity; // Sin redondear
         const totalValue = expectedQuantity * material.processedPrice;
         
         return {
@@ -144,9 +144,10 @@ export default function UnidentifiedGearCommonPage() {
   const totalProfit = totalMaterialsValue - totalCost - totalKitCost;
 
   const formatCurrency = (copper: number) => {
-    const gold = Math.floor(copper / 10000);
-    const silver = Math.floor((copper % 10000) / 100);
-    const copperRemainder = copper % 100;
+    const roundedCopper = Math.round(copper);
+    const gold = Math.floor(roundedCopper / 10000);
+    const silver = Math.floor((roundedCopper % 10000) / 100);
+    const copperRemainder = roundedCopper % 100;
     
     if (gold > 0) {
       return `${gold}g ${silver}s ${copperRemainder}c`;
@@ -435,7 +436,7 @@ export default function UnidentifiedGearCommonPage() {
                       </span>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300 font-medium">
-                      {result.quantity}
+                      {Math.round(result.quantity)}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-semibold text-blue-400">
                       {formatCurrency(result.totalValue)}
