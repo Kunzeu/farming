@@ -1,6 +1,6 @@
 # GW2 Farming Hub 🎮
 
-Una aplicación web moderna para información de Guild Wars 2, inspirada en [fast.farming-community.eu](https://fast.farming-community.eu/). Proporciona herramientas para farming, precios del Trading Post, eventos mundiales y builds meta.
+Una aplicación web moderna para información de Guild Wars 2
 
 ## ✨ Características
 
