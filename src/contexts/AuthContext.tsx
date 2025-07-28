@@ -113,7 +113,7 @@ function AuthProviderInternal({ children }: { children: ReactNode }) {
       // Autenticar con la base de datos
       const { getDbService } = await import('@/lib/database-switch');
       const dbService = await getDbService();
-      
+
       // Buscar usuario por email
       const dbUser = await dbService.getUserByEmail(credentials.email);
       

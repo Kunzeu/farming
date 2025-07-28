@@ -15,7 +15,8 @@ import {
   LogOut,
   Settings,
   Heart,
-  Shield
+  Shield,
+  Package
 } from 'lucide-react';
 
 const Navigation = () => {
@@ -28,6 +29,7 @@ const Navigation = () => {
     { href: '/trading-post', label: 'Trading Post', icon: TrendingUp },
     { href: '/farming-routes', label: 'Farms', icon: Map },
     { href: '/daily-routine', label: 'Rutina Diaria', icon: Clock },
+    { href: '/salvage', label: 'Salvage Calculator', icon: Package },
   ];
 
   const handleLogout = () => {
