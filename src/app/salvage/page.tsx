@@ -1,353 +1,331 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState } from 'react';
 import { motion } from 'framer-motion';
-import Image from 'next/image';
-import { Package, TrendingUp, TrendingDown, Calculator } from 'lucide-react';
+import { Package, TrendingUp, TrendingDown, Calculator, ChevronDown, Settings, Zap, Shield, Info, BookOpen, Target, Coins, AlertTriangle, ChevronRight, Star, FileText, Wrench } from 'lucide-react';
 import Navigation from '@/components/layout/Navigation';
+import Link from 'next/link';
 
-interface Material {
-  id: number;
-  name: string;
-  icon: string;
-  dropRate: number;
-  sellPrice: number;
-  processedPrice: number;
-  category: 'common' | 'fine' | 'masterwork' | 'rare' | 'exotic';
-}
-
-interface SalvageResult {
-  material: Material;
-  quantity: number;
-  totalValue: number;
-}
-
-// Datos base de materiales con sus drop rates y IDs de GW2 API
-// Basado en: https://wiki.guildwars2.com/wiki/Piece_of_Unidentified_Gear/Salvage_Rate
-// Salvage after identifying with Runecrafter's Salvage-o-Matic
-const baseMaterials: Omit<Material, 'sellPrice' | 'processedPrice'>[] = [
-  { id: 19748, name: "Seda", icon: "", dropRate: 0.34174, category: 'common' },
-  { id: 19745, name: "Gasa", icon: "", dropRate: 0.01866, category: 'fine' },
-  { id: 19722, name: "Madera T5", icon: "", dropRate: 0.36104, category: 'common' },
-  { id: 19725, name: "Madera T6", icon: "", dropRate: 0.02806, category: 'fine' },
-  { id: 19729, name: "Cuero T5", icon: "", dropRate: 0.27492, category: 'common' },
-  { id: 19732, name: "Cuero T6", icon: "", dropRate: 0.0173, category: 'fine' },
-  { id: 19700, name: "Mithril", icon: "", dropRate: 0.45640, category: 'common' },
-  { id: 19701, name: "Orica​lco", icon: "", dropRate: 0.03854, category: 'fine' },
-  { id: 89140, name: "Mota", icon: "", dropRate: 0.98114, category: 'common' },
-  { id: 89182, name: "Dolor", icon: "", dropRate: 0.00378, category: 'rare' },
-  { id: 89141, name: "Mejora", icon: "", dropRate: 0.00464, category: 'rare' },
-  { id: 89098, name: "Control", icon: "", dropRate: 0.00192, category: 'rare' },
-  { id: 89103, name: "Brillantez", icon: "", dropRate: 0.00438, category: 'rare' },
-  { id: 89258, name: "Potencia", icon: "", dropRate: 0.00224, category: 'rare' },
-  { id: 89216, name: "Habilidad", icon: "", dropRate: 0.0027, category: 'rare' },
-  { id: 19721, name: "Ectos", icon: "", dropRate: 0.030708, category: 'exotic' }
-];
+type SalvageSection = 'salvageables' | 'luck-calculator' | 'research-notes' | 'unidentified-gear';
 
 export default function SalvagePage() {
-  const [quantity, setQuantity] = useState(250);
-  const [materials, setMaterials] = useState<Material[]>([]);
-  const [results, setResults] = useState<SalvageResult[]>([]);
-  const [loading, setLoading] = useState(true);
-  const kitCost = 30; // Runecrafter's Salvage-o-Matic cost per use (fixed)
-  const [unidentifiedGearPrice, setUnidentifiedGearPrice] = useState<number | null>(null); // No default price
+  const [selectedSection, setSelectedSection] = useState<SalvageSection | null>(null);
 
-  // Función para obtener precios desde GW2 API
-  const fetchPrices = useCallback(async () => {
-    try {
-      setLoading(true);
-      const itemIds = baseMaterials.map(m => m.id).join(',');
-      
-      // Obtener información básica de items
-      const itemsResponse = await fetch(`https://api.guildwars2.com/v2/items?ids=${itemIds}`);
-      const itemsData = await itemsResponse.json();
-      
-      // Obtener precios del Trading Post para materiales
-      const pricesResponse = await fetch(`https://api.guildwars2.com/v2/commerce/prices?ids=${itemIds}`);
-      const pricesData = await pricesResponse.json();
-      
-      // Obtener precio del Unidentified Gear (ID: 84731)
-      const unidGearResponse = await fetch('https://api.guildwars2.com/v2/commerce/prices/84731');
-      const unidGearData = await unidGearResponse.json();
-      
-             // Usar precio de compra (buys) para calcular costo real
-       if (unidGearData.buys && unidGearData.buys.unit_price) {
-         setUnidentifiedGearPrice(unidGearData.buys.unit_price);
-       } else {
-         console.warn('No se pudo obtener el precio de Unidentified Gear');
-       }
-      
-             // Combinar datos
-       const materialsWithPrices: Material[] = baseMaterials.map(baseMaterial => {
-         const itemData = itemsData.find((item: { id: number }) => item.id === baseMaterial.id);
-         const priceData = pricesData.find((price: { id: number }) => price.id === baseMaterial.id);
-        
-        return {
-          ...baseMaterial,
-          name: itemData?.name || baseMaterial.name,
-          icon: itemData?.icon || '',
-          sellPrice: priceData?.sells?.unit_price || 0,
-          processedPrice: Math.round((priceData?.sells?.unit_price || 0) * 0.85), // Precio después de fees TP
-        };
-      });
-      
-      setMaterials(materialsWithPrices);
-    } catch (error) {
-      console.error('Error fetching prices:', error);
-      // Fallback con precios por defecto
-      const fallbackMaterials: Material[] = baseMaterials.map(base => ({
-        ...base,
-        sellPrice: 0,
-        processedPrice: 0
-      }));
-      setMaterials(fallbackMaterials);
-    } finally {
-      setLoading(false);
+  // Configuración de secciones de Salvaging
+  const salvageSections = [
+    {
+      id: 'salvageables' as SalvageSection,
+      name: 'Salvageables',
+      description: 'Items que se pueden desmontar',
+      icon: Package,
+      color: 'blue',
+      content: {
+        title: '¿Qué se puede salvar?',
+        description: 'Descubre qué tipos de items son rentables para desmontar y obtener materiales.',
+        details: [
+          'Equipamiento de diferentes rarezas',
+          'Armas y armaduras',
+          'Accesorios y joyas',
+          'Items de crafting',
+          'Materiales de eventos'
+        ],
+        tips: [
+          'Investiga el valor del item completo vs materiales',
+          'Usa el kit apropiado para cada tipo',
+          'Monitorea los precios del Trading Post',
+          'Considera el mercado de crafting'
+        ]
+      }
+    },
+    {
+      id: 'luck-calculator' as SalvageSection,
+      name: 'Salvaging Costs per 1000 Luck',
+      description: 'Calculadora de costos por suerte',
+      icon: Star,
+      color: 'yellow',
+      content: {
+        title: 'Calculadora de Luck',
+        description: 'Calcula los costos de salvaging en relación a la suerte obtenida.',
+        details: [
+          'Costo por 1000 puntos de suerte',
+          'Eficiencia de diferentes kits',
+          'Comparación de rentabilidad',
+          'Optimización de recursos'
+        ],
+        tips: [
+          'Usa kits apropiados para maximizar luck',
+          'Considera el valor de los materiales obtenidos',
+          'Balancea costos vs beneficios',
+          'Monitorea los precios del mercado'
+        ]
+      }
+    },
+    {
+      id: 'research-notes' as SalvageSection,
+      name: 'Salvaging Costs per Research Note',
+      description: 'Costos por notas de investigación',
+      icon: FileText,
+      color: 'green',
+      content: {
+        title: 'Research Notes Calculator',
+        description: 'Calcula los costos de salvaging para obtener Research Notes.',
+        details: [
+          'Costo por Research Note',
+          'Items que dan Research Notes',
+          'Eficiencia de salvaging',
+          'Comparación con compra directa'
+        ],
+        tips: [
+          'Identifica items que dan Research Notes',
+          'Calcula el costo por nota',
+          'Compara con precios del Trading Post',
+          'Optimiza tu estrategia de crafting'
+        ]
+      }
+    },
+    {
+      id: 'unidentified-gear' as SalvageSection,
+      name: 'Unidentified Gear',
+      description: 'Calculadoras específicas de Unidentified Gear',
+      icon: Wrench,
+      color: 'purple',
+      content: {
+        title: 'Unidentified Gear Calculators',
+        description: 'Calculadoras específicas para cada tipo de Unidentified Gear.',
+        details: [
+          'Masterwork Unidentified Gear',
+          'Rare Unidentified Gear', 
+          'Exotic Unidentified Gear',
+          'Drop rates específicos',
+          'Rentabilidad por tipo'
+        ],
+        tips: [
+          'Identifica el gear antes de salvarlo',
+          'Usa Runecrafter\'s Salvage-o-Matic para Masterwork',
+          'Considera el precio de compra vs venta',
+          'Monitorea los precios en tiempo real'
+        ]
+      }
     }
-  }, []);
-
-  // Calcular resultados cuando cambien materiales o cantidad
-  useEffect(() => {
-    if (materials.length > 0) {
-      const newResults: SalvageResult[] = materials.map(material => {
-        const expectedQuantity = Math.round(material.dropRate * quantity);
-        const totalValue = expectedQuantity * material.processedPrice;
-        
-        return {
-          material,
-          quantity: expectedQuantity,
-          totalValue
-        };
-      });
-      
-      setResults(newResults);
-    }
-  }, [materials, quantity]);
-
-  // Cargar precios al montar el componente
-  useEffect(() => {
-    fetchPrices();
-  }, [fetchPrices]);
-
-  // Cálculos de resumen
-  const totalMaterialsValue = results.reduce((sum, result) => sum + result.totalValue, 0);
-  const totalKitCost = quantity * kitCost;
-  const totalCost = unidentifiedGearPrice ? quantity * unidentifiedGearPrice : 0; // Costo real del Trading Post
-  const totalProfit = totalMaterialsValue - totalCost - totalKitCost;
-
-  const formatCurrency = (copper: number) => {
-    const gold = Math.floor(copper / 10000);
-    const silver = Math.floor((copper % 10000) / 100);
-    const copperRemainder = copper % 100;
-    
-    if (gold > 0) {
-      return `${gold}g ${silver}s ${copperRemainder}c`;
-    } else if (silver > 0) {
-      return `${silver}s ${copperRemainder}c`;
-    } else {
-      return `${copperRemainder}c`;
-    }
-  };
-
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto mb-4"></div>
-          <p className="text-gray-400">Cargando precios desde GW2 API...</p>
-        </div>
-      </div>
-    );
-  }
+  ];
 
   return (
     <>
       <Navigation />
-      <div className="max-w-7xl mx-auto p-6">
-      {/* Header */}
-      <div className="mb-8">
-        <div className="flex items-center gap-3 mb-4">
-          <Package className="h-8 w-8 text-blue-400" />
-          <h1 className="text-3xl font-bold text-white drop-shadow-lg">Calculadora de Salvage</h1>
-        </div>
-        <p className="text-gray-300 text-lg">
-          Calcula las ganancias esperadas al desmontar <strong className="text-green-400">Piece of Unidentified Gear (Masterwork)</strong> identificados primero
-        </p>
-      </div>
-
-      {/* Controles */}
-      <div className="bg-slate-800 rounded-lg shadow-md p-6 mb-6 border border-slate-700">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-300 mb-2">
-              Cantidad de Unidentified Gear
-            </label>
-            <input
-              type="number"
-              value={quantity}
-              onChange={(e) => setQuantity(Number(e.target.value))}
-              className="w-full px-3 py-2 border border-slate-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-white bg-slate-700 font-medium"
-              min="1"
-              max="10000"
-            />
+      <div className="max-w-6xl mx-auto p-8">
+        {/* Header simplificado */}
+        <div className="mb-12 text-center">
+          <div className="flex items-center justify-center gap-3 mb-6">
+            <Package className="h-10 w-10 text-blue-400" />
+            <h1 className="text-4xl font-bold text-white">Salvaging</h1>
           </div>
-          <div className="flex items-end">
-            <button
-              onClick={fetchPrices}
-              className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
-            >
-              Actualizar Precios
-            </button>
-          </div>
-        </div>
-        
-        <div className="mt-4 p-3 bg-slate-700 rounded-md border border-slate-600">
-          <div className="flex items-center gap-3">
-            <Image
-              src="https://render.guildwars2.com/file/68A875CAEC167AE97D3B9248A1014999D40CAEF5/2075500.png"
-              alt="Runecrafter's Salvage-o-Matic"
-              width={24}
-              height={24}
-              className="w-6 h-6"
-            />
-            <p className="text-sm text-gray-300">Runecrafter&apos;s Salvage-o-Matic (30 cobre por uso)
-            </p>
-          </div>
-        </div>
-      </div>
-
-      {/* Resumen financiero */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-        <div className="bg-blue-900/30 rounded-lg p-4 border border-blue-700">
-          <div className="flex items-center gap-2 text-blue-300 mb-2">
-            <Calculator className="h-5 w-5" />
-            <span className="font-semibold">Valor Total Materiales</span>
-          </div>
-          <p className="text-2xl font-bold text-blue-200">{formatCurrency(totalMaterialsValue)}</p>
-        </div>
-        
-        <div className="bg-red-900/30 rounded-lg p-4 border border-red-700">
-          <div className="flex items-center gap-2 text-red-300 mb-2">
-            <Package className="h-5 w-5" />
-            <span className="font-semibold">Costo {quantity} Unid. Gear</span>
-          </div>
-          {unidentifiedGearPrice ? (
-            <>
-              <p className="text-2xl font-bold text-red-200">{formatCurrency(totalCost)}</p>
-              <p className="text-xs text-red-400 mt-1">
-                {formatCurrency(unidentifiedGearPrice || 0)} cada uno (TP)
-              </p>
-            </>
-          ) : (
-            <p className="text-lg text-red-300">Cargando precio...</p>
-          )}
-        </div>
-        
-        <div className="bg-orange-900/30 rounded-lg p-4 border border-orange-700">
-          <div className="flex items-center gap-2 text-orange-300 mb-2">
-            <Package className="h-5 w-5" />
-            <span className="font-semibold">Costo Kit</span>
-          </div>
-          <p className="text-2xl font-bold text-orange-200">{formatCurrency(totalKitCost)}</p>
-        </div>
-        
-        <div className={`rounded-lg p-4 border ${totalProfit >= 0 ? 'bg-green-900/30 border-green-700' : 'bg-red-900/30 border-red-700'}`}>
-          <div className={`flex items-center gap-2 mb-2 ${totalProfit >= 0 ? 'text-green-300' : 'text-red-300'}`}>
-            {totalProfit >= 0 ? <TrendingUp className="h-5 w-5" /> : <TrendingDown className="h-5 w-5" />}
-            <span className="font-semibold">Ganancia Total</span>
-          </div>
-          <p className={`text-2xl font-bold ${totalProfit >= 0 ? 'text-green-200' : 'text-red-200'}`}>
-            {formatCurrency(Math.abs(totalProfit))}
+          <p className="text-gray-300 text-lg max-w-2xl mx-auto">
+            Guía completa sobre salvaging en Guild Wars 2. Aprende técnicas, calcula rentabilidad y maximiza tus ganancias.
           </p>
         </div>
-      </div>
 
-      {/* Tabla de materiales */}
-      <div className="bg-slate-800 rounded-lg shadow-md overflow-hidden border border-slate-700">
-        <div className="overflow-x-auto">
-          <table className="w-full">
-            <thead className="bg-slate-700">
-              <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
-                  Material
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
-                  Drop Rate
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
-                  Precio Venta
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
-                  Precio Procesado
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
-                  Cantidad ({quantity})
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
-                  Valor Total
-                </th>
-              </tr>
-            </thead>
-            <tbody className="bg-slate-800 divide-y divide-slate-700">
-              {results.map((result, index) => (
-                <motion.tr
-                  key={result.material.id}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: index * 0.05 }}
-                  className="hover:bg-slate-700"
+        {/* Información General simplificada */}
+        <div className="bg-slate-800/50 rounded-xl p-8 mb-12 border border-slate-700/50">
+          <div className="text-center mb-8">
+            <h2 className="text-2xl font-semibold text-white mb-4">¿Qué es el Salvaging?</h2>
+            <p className="text-gray-300 text-lg max-w-3xl mx-auto">
+              El <strong className="text-blue-400">salvaging</strong> es el proceso de desmontar equipamiento para obtener materiales. 
+              Es una de las formas más rentables de obtener oro en Guild Wars 2, especialmente con ciertos tipos de items.
+            </p>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+            <div className="text-center">
+              <Target className="h-8 w-8 text-green-400 mx-auto mb-3" />
+              <h3 className="text-white font-semibold mb-2">Tipo de Kit</h3>
+              <p className="text-gray-400 text-sm">Usa el kit apropiado para cada tipo de item</p>
+            </div>
+            <div className="text-center">
+              <Coins className="h-8 w-8 text-yellow-400 mx-auto mb-3" />
+              <h3 className="text-white font-semibold mb-2">Precios TP</h3>
+              <p className="text-gray-400 text-sm">Monitorea los precios del Trading Post</p>
+            </div>
+            <div className="text-center">
+              <AlertTriangle className="h-8 w-8 text-orange-400 mx-auto mb-3" />
+              <h3 className="text-white font-semibold mb-2">Drop Rates</h3>
+              <p className="text-gray-400 text-sm">Conoce las tasas de drop de materiales</p>
+            </div>
+            <div className="text-center">
+              <BookOpen className="h-8 w-8 text-blue-400 mx-auto mb-3" />
+              <h3 className="text-white font-semibold mb-2">Valor vs Materiales</h3>
+              <p className="text-gray-400 text-sm">Compara el valor del item completo</p>
+            </div>
+          </div>
+        </div>
+
+        {/* Secciones principales */}
+        <div className="mb-12">
+          <h2 className="text-2xl font-bold text-white mb-8 text-center">Secciones de Salvaging</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {salvageSections.map((section) => {
+              const IconComponent = section.icon;
+              const colorClasses = {
+                blue: 'border-blue-500/30 bg-blue-500/5 hover:bg-blue-500/10',
+                yellow: 'border-yellow-500/30 bg-yellow-500/5 hover:bg-yellow-500/10',
+                green: 'border-green-500/30 bg-green-500/5 hover:bg-green-500/10',
+                purple: 'border-purple-500/30 bg-purple-500/5 hover:bg-purple-500/10'
+              };
+              
+              return (
+                <motion.div
+                  key={section.id}
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  className={`border rounded-xl p-6 cursor-pointer transition-all duration-200 hover:shadow-lg ${
+                    colorClasses[section.color as keyof typeof colorClasses]
+                  } ${selectedSection === section.id ? 'ring-2 ring-blue-400' : ''}`}
+                  onClick={() => setSelectedSection(section.id)}
                 >
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="flex items-center">
-                      {result.material.icon && (
-                        <Image 
-                          src={result.material.icon} 
-                          alt={result.material.name}
-                          width={32}
-                          height={32}
-                          className="h-8 w-8 mr-3"
-                        />
-                      )}
-                      <span className="text-sm font-medium text-gray-200">
-                        {result.material.name}
-                      </span>
+                  <div className="text-center">
+                    <div className={`w-16 h-16 rounded-full border-2 border-${section.color}-400/30 bg-${section.color}-400/10 flex items-center justify-center mx-auto mb-4`}>
+                      <IconComponent className={`h-8 w-8 text-${section.color}-400`} />
                     </div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
-                    {(result.material.dropRate * 100).toFixed(3)}%
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
-                    {formatCurrency(result.material.sellPrice)}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm">
-                    <span className="text-green-400 font-medium">
-                      {formatCurrency(result.material.processedPrice)}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300 font-medium">
-                    {result.quantity}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-semibold text-blue-400">
-                    {formatCurrency(result.totalValue)}
-                  </td>
-                </motion.tr>
-              ))}
-            </tbody>
-          </table>
+                    <h3 className="text-lg font-semibold text-white mb-2">{section.name}</h3>
+                    <p className="text-sm text-gray-400 mb-4">{section.description}</p>
+                    
+                    <button className="w-full px-4 py-2 bg-slate-700/50 text-white rounded-lg hover:bg-slate-600/50 transition-colors flex items-center justify-center gap-2">
+                      <span>Explorar</span>
+                      <ChevronRight className="h-4 w-4" />
+                    </button>
+                  </div>
+                </motion.div>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Detalles de la sección seleccionada */}
+        {selectedSection && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="bg-slate-800/50 rounded-xl p-8 mb-8 border border-slate-700/50"
+          >
+            {(() => {
+              const selectedSectionData = salvageSections.find(s => s.id === selectedSection);
+              if (!selectedSectionData) return null;
+              
+              const IconComponent = selectedSectionData.icon;
+              
+              return (
+                <div>
+                  <div className="flex items-center justify-between mb-8">
+                    <div className="flex items-center gap-4">
+                      <div className={`w-16 h-16 rounded-full border-2 border-${selectedSectionData.color}-400/30 bg-${selectedSectionData.color}-400/10 flex items-center justify-center`}>
+                        <IconComponent className={`h-8 w-8 text-${selectedSectionData.color}-400`} />
+                      </div>
+                      <div>
+                        <h3 className="text-2xl font-semibold text-white">{selectedSectionData.content.title}</h3>
+                        <p className="text-gray-400">{selectedSectionData.content.description}</p>
+                      </div>
+                    </div>
+                    <button
+                      onClick={() => setSelectedSection(null)}
+                      className="text-gray-400 hover:text-white transition-colors text-2xl"
+                    >
+                      ×
+                    </button>
+                  </div>
+                  
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    <div>
+                      <h4 className="text-lg font-semibold text-white mb-4">Características</h4>
+                      <div className="space-y-3">
+                        {selectedSectionData.content.details.map((detail, index) => (
+                          <div key={index} className="flex items-center gap-3 text-gray-300">
+                            <div className="w-2 h-2 bg-green-400 rounded-full flex-shrink-0"></div>
+                            <span>{detail}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                    
+                    <div>
+                      <h4 className="text-lg font-semibold text-white mb-4">Consejos</h4>
+                      <div className="space-y-3">
+                        {selectedSectionData.content.tips.map((tip, index) => (
+                          <div key={index} className="flex items-start gap-3 text-gray-300">
+                            <div className="w-2 h-2 bg-blue-400 rounded-full mt-2 flex-shrink-0"></div>
+                            <span className="text-sm">{tip}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className="mt-8 pt-6 border-t border-slate-600/50">
+                    <div className="flex gap-4 justify-center">
+                      {selectedSectionData.id === 'unidentified-gear' ? (
+                        <div className="flex gap-3">
+                          <Link href="/salvage/unidentified-gear/common">
+                            <button className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+                              Common
+                            </button>
+                          </Link>
+                          <Link href="/salvage/unidentified-gear/masterwork">
+                            <button className="px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors">
+                              Masterwork
+                            </button>
+                          </Link>
+                          <Link href="/salvage/unidentified-gear/rare">
+                            <button className="px-6 py-3 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700 transition-colors">
+                              Rare
+                            </button>
+                          </Link>
+                        </div>
+                      ) : (
+                        <Link href={`/salvage/${selectedSectionData.id}`}>
+                          <button className="px-8 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+                            Abrir {selectedSectionData.name}
+                          </button>
+                        </Link>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              );
+            })()}
+          </motion.div>
+        )}
+
+        {/* Información Adicional simplificada */}
+        <div className="bg-slate-800/50 rounded-xl p-8 border border-slate-700/50">
+          <h2 className="text-xl font-semibold text-white mb-6 text-center">Información Adicional</h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div className="text-center">
+              <h3 className="text-lg font-semibold text-white mb-4">Salvage Kits</h3>
+              <div className="space-y-2 text-sm text-gray-300">
+                <p><strong>Basic:</strong> Para items básicos</p>
+                <p><strong>Master's:</strong> Mejor chance de ectos</p>
+                <p><strong>Runecrafter's:</strong> Para unidentified gear</p>
+                <p><strong>Black Lion:</strong> Máxima eficiencia</p>
+              </div>
+            </div>
+            <div className="text-center">
+              <h3 className="text-lg font-semibold text-white mb-4">Estrategias</h3>
+              <div className="space-y-2 text-sm text-gray-300">
+                <p>Investiga precios antes de salvarlo</p>
+                <p>Considera el valor del item completo</p>
+                <p>Usa el kit apropiado para cada tipo</p>
+                <p>Monitorea los precios del Trading Post</p>
+              </div>
+            </div>
+            <div className="text-center">
+              <h3 className="text-lg font-semibold text-white mb-4">Recursos</h3>
+              <div className="space-y-2 text-sm text-gray-300">
+                <p><a href="https://wiki.guildwars2.com/wiki/Salvage_kit" target="_blank" className="text-blue-400 hover:text-blue-300">GW2 Wiki - Salvage Kits</a></p>
+                <p><a href="https://api.guildwars2.com/v2/commerce/prices" target="_blank" className="text-blue-400 hover:text-blue-300">API de Precios GW2</a></p>
+                <p><a href="https://gw2efficiency.com/" target="_blank" className="text-blue-400 hover:text-blue-300">GW2 Efficiency</a></p>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
-
-      {/* Nota informativa */}
-      <div className="mt-6 bg-blue-900/20 border border-blue-700 rounded-lg p-4">
-        <p className="text-sm text-blue-200">
-                    <strong>Nota:</strong> Los precios se obtienen en tiempo real desde la <a href="https://api.guildwars2.com/v2/commerce/prices" target="_blank" className="text-blue-300 hover:text-blue-100 underline">API de GW2</a>. 
-          El &quot;Precio Procesado&quot; incluye las comisiones del Trading Post (15% de descuento sobre el precio de venta).
-          El costo de Unidentified Gear usa el precio de compra actual del Trading Post.
-          Los drop rates están basados en datos oficiales de la <a href="https://wiki.guildwars2.com/wiki/Piece_of_Unidentified_Gear/Salvage_Rate" target="_blank" className="text-blue-300 hover:text-blue-100 underline">GW2 Wiki</a>{' '}
-          para <strong>Piece of Unidentified Gear</strong> salvado con <strong>Runecrafter&apos;s Salvage-o-Matic</strong>.
-        </p>
-      </div>
-    </div>
     </>
   );
 }

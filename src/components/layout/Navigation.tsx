@@ -15,7 +15,8 @@ import { useAuth } from '@/contexts/AuthContext';
   Settings,
   Heart,
   Shield,
-  Package
+  Package,
+  ChevronDown
 } from 'lucide-react';
 
 const Navigation = () => {
@@ -27,7 +28,7 @@ const Navigation = () => {
       { href: '/', label: 'Inicio', icon: Home },
       { href: '/farming-routes', label: 'Farms', icon: Map },
     { href: '/daily-routine', label: 'Rutina Diaria', icon: Clock },
-    { href: '/salvage', label: 'Salvage Calculator', icon: Package },
+    { href: '/salvage', label: 'Salvaging', icon: Package },
   ];
 
   const handleLogout = () => {
@@ -86,6 +87,7 @@ const Navigation = () => {
                       <User className="w-4 h-4 text-white" />
                     </div>
                     <span className="hidden sm:block font-medium">{user?.username}</span>
+                    <ChevronDown className={`w-4 h-4 text-gray-400 transition-transform duration-200 ${isUserMenuOpen ? 'rotate-180' : ''}`} />
                   </button>
 
                   {/* User Dropdown */}
