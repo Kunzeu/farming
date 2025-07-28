@@ -22,6 +22,28 @@ interface SalvageResult {
   totalValue: number;
 }
 
+// Datos base de materiales con sus drop rates y IDs de GW2 API
+// Basado en: https://wiki.guildwars2.com/wiki/Piece_of_Unidentified_Gear/Salvage_Rate
+// Salvage after identifying with Runecrafter's Salvage-o-Matic
+const baseMaterials: Omit<Material, 'sellPrice' | 'processedPrice'>[] = [
+  { id: 19748, name: "Seda", icon: "", dropRate: 0.34174, category: 'common' },
+  { id: 19745, name: "Gasa", icon: "", dropRate: 0.01866, category: 'fine' },
+  { id: 19722, name: "Madera T5", icon: "", dropRate: 0.36104, category: 'common' },
+  { id: 19725, name: "Madera T6", icon: "", dropRate: 0.02806, category: 'fine' },
+  { id: 19729, name: "Cuero T5", icon: "", dropRate: 0.27492, category: 'common' },
+  { id: 19732, name: "Cuero T6", icon: "", dropRate: 0.0173, category: 'fine' },
+  { id: 19700, name: "Mithril", icon: "", dropRate: 0.45640, category: 'common' },
+  { id: 19701, name: "Orica​lco", icon: "", dropRate: 0.03854, category: 'fine' },
+  { id: 89140, name: "Mota", icon: "", dropRate: 0.98114, category: 'common' },
+  { id: 89182, name: "Dolor", icon: "", dropRate: 0.00378, category: 'rare' },
+  { id: 89141, name: "Mejora", icon: "", dropRate: 0.00464, category: 'rare' },
+  { id: 89098, name: "Control", icon: "", dropRate: 0.00192, category: 'rare' },
+  { id: 89103, name: "Brillantez", icon: "", dropRate: 0.00438, category: 'rare' },
+  { id: 89258, name: "Potencia", icon: "", dropRate: 0.00224, category: 'rare' },
+  { id: 89216, name: "Habilidad", icon: "", dropRate: 0.0027, category: 'rare' },
+  { id: 19721, name: "Ectos", icon: "", dropRate: 0.030708, category: 'exotic' }
+];
+
 export default function SalvagePage() {
   const [quantity, setQuantity] = useState(250);
   const [materials, setMaterials] = useState<Material[]>([]);
@@ -29,28 +51,6 @@ export default function SalvagePage() {
   const [loading, setLoading] = useState(true);
   const kitCost = 30; // Runecrafter's Salvage-o-Matic cost per use (fixed)
   const [unidentifiedGearPrice, setUnidentifiedGearPrice] = useState<number | null>(null); // No default price
-
-  // Datos base de materiales con sus drop rates y IDs de GW2 API
-  // Basado en: https://wiki.guildwars2.com/wiki/Piece_of_Unidentified_Gear/Salvage_Rate
-  // Salvage after identifying with Runecrafter's Salvage-o-Matic
-  const baseMaterials: Omit<Material, 'sellPrice' | 'processedPrice'>[] = [
-    { id: 19748, name: "Seda", icon: "", dropRate: 0.34174, category: 'common' },
-    { id: 19745, name: "Gasa", icon: "", dropRate: 0.01866, category: 'fine' },
-    { id: 19722, name: "Madera T5", icon: "", dropRate: 0.36104, category: 'common' },
-    { id: 19725, name: "Madera T6", icon: "", dropRate: 0.02806, category: 'fine' },
-    { id: 19729, name: "Cuero T5", icon: "", dropRate: 0.27492, category: 'common' },
-    { id: 19732, name: "Cuero T6", icon: "", dropRate: 0.0173, category: 'fine' },
-    { id: 19700, name: "Mithril", icon: "", dropRate: 0.45640, category: 'common' },
-    { id: 19701, name: "Orica​lco", icon: "", dropRate: 0.03854, category: 'fine' },
-    { id: 89140, name: "Mota", icon: "", dropRate: 0.98114, category: 'common' },
-    { id: 89182, name: "Dolor", icon: "", dropRate: 0.00378, category: 'rare' },
-    { id: 89141, name: "Mejora", icon: "", dropRate: 0.00464, category: 'rare' },
-    { id: 89098, name: "Control", icon: "", dropRate: 0.00192, category: 'rare' },
-    { id: 89103, name: "Brillantez", icon: "", dropRate: 0.00438, category: 'rare' },
-    { id: 89258, name: "Potencia", icon: "", dropRate: 0.00224, category: 'rare' },
-    { id: 89216, name: "Habilidad", icon: "", dropRate: 0.0027, category: 'rare' },
-    { id: 19721, name: "Ectos", icon: "", dropRate: 0.030708, category: 'exotic' }
-  ];
 
   // Función para obtener precios desde GW2 API
   const fetchPrices = useCallback(async () => {
@@ -104,7 +104,7 @@ export default function SalvagePage() {
     } finally {
       setLoading(false);
     }
-  }, [baseMaterials]);
+  }, []);
 
   // Calcular resultados cuando cambien materiales o cantidad
   useEffect(() => {
