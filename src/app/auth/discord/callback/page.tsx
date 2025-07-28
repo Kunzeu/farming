@@ -1,11 +1,11 @@
 'use client';
 
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
 import { Loader2, CheckCircle, XCircle } from 'lucide-react';
 
-export default function DiscordCallbackPage() {
+function DiscordCallbackContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { loginWithDiscord } = useAuth();
@@ -90,5 +90,27 @@ export default function DiscordCallbackPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function DiscordCallbackPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen flex items-center justify-center bg-gray-900">
+        <div className="bg-gray-800 rounded-lg p-8 border border-gray-700 max-w-md w-full mx-4">
+          <div className="text-center">
+            <Loader2 className="w-12 h-12 text-blue-500 animate-spin mx-auto mb-4" />
+            <h2 className="text-xl font-semibold text-white mb-2">
+              Cargando...
+            </h2>
+            <p className="text-gray-400">
+              Preparando autenticación
+            </p>
+          </div>
+        </div>
+      </div>
+    }>
+      <DiscordCallbackContent />
+    </Suspense>
   );
 } 
