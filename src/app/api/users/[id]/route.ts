@@ -44,8 +44,9 @@ pool.query('SELECT NOW()', (err) => {
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
+  const { id } = await params;
   try {
     const query = `
       SELECT id, email, username, password, role, is_active as "isActive",
@@ -54,7 +55,7 @@ export async function GET(
       WHERE id = $1
     `;
     
-    const result = await pool.query(query, [params.id]);
+    const result = await pool.query(query, [id]);
     
     if (result.rows.length === 0) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 });
@@ -75,8 +76,9 @@ export async function GET(
 
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
+  const { id } = await params;
   try {
     const body = await request.json();
     console.log('Updating user with data:', body);
@@ -132,7 +134,7 @@ export async function PUT(
     updateFields.push(`updated_at = NOW()`);
     
     // Agregar el ID al final para la condición WHERE
-    values.push(params.id);
+    values.push(id);
     
     const query = `
       UPDATE users 
@@ -169,11 +171,12 @@ export async function PUT(
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
+  const { id } = await params;
   try {
     const query = 'DELETE FROM users WHERE id = $1 RETURNING *';
-    const result = await pool.query(query, [params.id]);
+    const result = await pool.query(query, [id]);
     
     if (result.rows.length === 0) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 });
