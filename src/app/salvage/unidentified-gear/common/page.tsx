@@ -46,7 +46,7 @@ export default function UnidentifiedGearCommonPage() {
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
 
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const kitCost = 10; // Basic Salvage Kit cost per use
+  const kitCost = 3; // Copper-Fed Salvage-o-Matic cost per use
   const [unidentifiedGearPrice, setUnidentifiedGearPrice] = useState<number | null>(null);
 
   // Función para obtener precios desde GW2 API
@@ -272,13 +272,13 @@ export default function UnidentifiedGearCommonPage() {
           <div className="flex items-center gap-4 mb-4">
             <Image
               src="https://render.guildwars2.com/file/68A875CAEC167AE97D3B9248A1014999D40CAEF5/2075500.png"
-              alt="Basic Salvage Kit"
+              alt="Copper-Fed Salvage-o-Matic"
               width={48}
               height={48}
               className="w-12 h-12"
             />
             <div>
-              <h2 className="text-xl font-semibold text-white">Basic Salvage Kit</h2>
+              <h2 className="text-xl font-semibold text-white">Copper-Fed Salvage-o-Matic</h2>
               <p className="text-gray-400">Kit recomendado para Common Unidentified Gear</p>
             </div>
           </div>
@@ -286,7 +286,7 @@ export default function UnidentifiedGearCommonPage() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
             <div className="bg-slate-700 rounded-lg p-3">
               <div className="text-gray-400">Costo por uso</div>
-              <div className="text-white font-semibold">10 cobre</div>
+              <div className="text-white font-semibold">3 cobre</div>
             </div>
             <div className="bg-slate-700 rounded-lg p-3">
               <div className="text-gray-400">Drop rates</div>
@@ -456,7 +456,7 @@ export default function UnidentifiedGearCommonPage() {
               <strong>Nota:</strong> Los precios se obtienen en tiempo real desde la <a href="https://api.guildwars2.com/v2/commerce/prices" target="_blank" className="text-green-300 hover:text-green-100 underline">API de GW2</a>. 
               El &quot;Precio Procesado&quot; incluye las comisiones del Trading Post (15% de descuento sobre el precio de venta).
               El costo de Common Unidentified Gear usa el precio de compra actual del Trading Post.
-              Los drop rates son estimados basados en datos de la comunidad para <strong>Piece of Common Unidentified Gear</strong> salvado con <strong>Basic Salvage Kit</strong>.
+              Los drop rates son estimados basados en datos de la comunidad para <strong>Piece of Common Unidentified Gear</strong> salvado con <strong>Copper-Fed Salvage-o-Matic</strong>.
             </div>
           </div>
         </div>

@@ -52,7 +52,7 @@ export default function UnidentifiedGearRarePage() {
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
 
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const kitCost = 30; // Master's Salvage Kit cost per use
+  const kitCost = 60; // Silver-Fed Salvage-o-Matic cost per use
   const [unidentifiedGearPrice, setUnidentifiedGearPrice] = useState<number | null>(null);
 
   // Función para obtener precios desde GW2 API
@@ -278,13 +278,13 @@ export default function UnidentifiedGearRarePage() {
           <div className="flex items-center gap-4 mb-4">
             <Image
               src="https://render.guildwars2.com/file/68A875CAEC167AE97D3B9248A1014999D40CAEF5/2075500.png"
-              alt="Master&apos;s Salvage Kit"
+              alt="Silver-Fed Salvage-o-Matic"
               width={48}
               height={48}
               className="w-12 h-12"
             />
             <div>
-              <h2 className="text-xl font-semibold text-white">Master&apos;s Salvage Kit</h2>
+              <h2 className="text-xl font-semibold text-white">Silver-Fed Salvage-o-Matic</h2>
               <p className="text-gray-400">Kit recomendado para Rare Unidentified Gear</p>
             </div>
           </div>
@@ -292,7 +292,7 @@ export default function UnidentifiedGearRarePage() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
             <div className="bg-slate-700 rounded-lg p-3">
               <div className="text-gray-400">Costo por uso</div>
-              <div className="text-white font-semibold">3 plata</div>
+              <div className="text-white font-semibold">6 plata</div>
             </div>
             <div className="bg-slate-700 rounded-lg p-3">
               <div className="text-gray-400">Drop rates</div>
@@ -462,7 +462,7 @@ export default function UnidentifiedGearRarePage() {
               <strong>Nota:</strong> Los precios se obtienen en tiempo real desde la <a href="https://api.guildwars2.com/v2/commerce/prices" target="_blank" className="text-purple-300 hover:text-purple-100 underline">API de GW2</a>. 
               El &quot;Precio Procesado&quot; incluye las comisiones del Trading Post (15% de descuento sobre el precio de venta).
               El costo de Rare Unidentified Gear usa el precio de compra actual del Trading Post.
-              Los drop rates son estimados basados en datos de la comunidad para <strong>Piece of Rare Unidentified Gear</strong> salvado con <strong>Master&apos;s Salvage Kit</strong>.
+              Los drop rates son estimados basados en datos de la comunidad para <strong>Piece of Rare Unidentified Gear</strong> salvado con <strong>Silver-Fed Salvage-o-Matic</strong>.
               <strong>Ectos</strong> son el principal objetivo de este tipo de salvage.
             </div>
           </div>

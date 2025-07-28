@@ -342,7 +342,7 @@ export default function FarmingRoutes() {
               <Clock className="w-8 h-8 text-blue-400 mb-4" />
               <h3 className="text-white font-semibold mb-2">Timing</h3>
               <p className="text-gray-400 text-sm">
-                Los precios varían según la hora del día. Vende en momentos de alta demanda.
+                Planifica tus sesiones de farming según los eventos y metas diarias del juego.
               </p>
             </div>
             

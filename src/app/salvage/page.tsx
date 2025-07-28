@@ -300,9 +300,9 @@ export default function SalvagePage() {
             <div className="text-center">
               <h3 className="text-lg font-semibold text-white mb-4">Salvage Kits</h3>
               <div className="space-y-2 text-sm text-gray-300">
-                <p><strong>Basic:</strong> Para items básicos</p>
-                <p><strong>Master&apos;s:</strong> Mejor chance de ectos</p>
-                <p><strong>Runecrafter&apos;s:</strong> Para unidentified gear</p>
+                <p><strong>Copper-Fed:</strong> Para Common Unidentified Gear</p>
+                <p><strong>Runecrafter&rsquo;s:</strong> Para Masterwork Gear</p>
+                <p><strong>Silver-Fed:</strong> Para Rare Unidentified Gear</p>
                 <p><strong>Black Lion:</strong> Máxima eficiencia</p>
               </div>
             </div>
@@ -319,8 +319,6 @@ export default function SalvagePage() {
               <h3 className="text-lg font-semibold text-white mb-4">Recursos</h3>
               <div className="space-y-2 text-sm text-gray-300">
                 <p><a href="https://wiki.guildwars2.com/wiki/Salvage_kit" target="_blank" className="text-blue-400 hover:text-blue-300">GW2 Wiki - Salvage Kits</a></p>
-                <p><a href="https://api.guildwars2.com/v2/commerce/prices" target="_blank" className="text-blue-400 hover:text-blue-300">API de Precios GW2</a></p>
-                <p><a href="https://gw2efficiency.com/" target="_blank" className="text-blue-400 hover:text-blue-300">GW2 Efficiency</a></p>
               </div>
             </div>
           </div>
