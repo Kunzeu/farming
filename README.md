@@ -138,16 +138,13 @@ Este proyecto está bajo la Licencia MIT. Ver el archivo `LICENSE` para más det
 ## 🙏 Agradecimientos
 
 - **ArenaNet**: Por proporcionar la API oficial de Guild Wars 2
-- **fast.farming-community.eu**: Por la inspiración del diseño
 - **Comunidad GW2**: Por el feedback y sugerencias
 - **Next.js Team**: Por el framework increíble
 - **Tailwind CSS**: Por el sistema de diseño
 
 ## 📞 Contacto
 
-- **GitHub**: [@tu-usuario](https://github.com/tu-usuario)
-- **Discord**: Tu servidor de Discord
-- **Email**: tu-email@ejemplo.com
+- **GitHub**: [@Kunzeu](https://github.com/kunzeu)
 
 ---
 
