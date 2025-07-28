@@ -302,7 +302,7 @@ export default function AdminPanel() {
   const [users, setUsers] = useState<User[]>([]);
   const [isLoadingUsers, setIsLoadingUsers] = useState(false);
   const [isCreatingUser, setIsCreatingUser] = useState(false);
-  const [editingUser, setEditingUser] = useState<User | null>(null);
+  // const [editingUser, setEditingUser] = useState<User | null>(null);
   const [newUser, setNewUser] = useState({
     email: '',
     username: '',
@@ -923,7 +923,7 @@ export default function AdminPanel() {
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                     <div className="flex gap-2">
                       <button
-                        onClick={() => setEditingUser(user)}
+                        onClick={() => {/* setEditingUser(user) */}}
                         className="text-blue-400 hover:text-blue-300"
                       >
                         <Edit className="w-4 h-4" />

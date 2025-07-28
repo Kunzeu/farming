@@ -25,7 +25,7 @@ interface SalvageResult {
 
 // Datos base de materiales con sus drop rates y IDs de GW2 API
 // Basado en: https://wiki.guildwars2.com/wiki/Piece_of_Unidentified_Gear/Salvage_Rate
-// Salvage after identifying with Runecrafter's Salvage-o-Matic
+// Salvage after identifying with Runecrafter&apos;s Salvage-o-Matic
 const baseMaterials: Omit<Material, 'sellPrice' | 'processedPrice'>[] = [
   { id: 19748, name: "Seda", icon: "", dropRate: 0.34174, category: 'common' },
   { id: 19745, name: "Gasa", icon: "", dropRate: 0.01866, category: 'fine' },
@@ -51,7 +51,7 @@ export default function UnidentifiedGearMasterworkPage() {
   const [results, setResults] = useState<SalvageResult[]>([]);
   const [loading, setLoading] = useState(true);
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
-  const [nextUpdate, setNextUpdate] = useState<Date | null>(null);
+
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const kitCost = 30; // Runecrafter's Salvage-o-Matic cost per use (fixed)
   const [unidentifiedGearPrice, setUnidentifiedGearPrice] = useState<number | null>(null);
@@ -98,7 +98,7 @@ export default function UnidentifiedGearMasterworkPage() {
       setMaterials(materialsWithPrices);
       const now = new Date();
       setLastUpdated(now);
-      setNextUpdate(new Date(now.getTime() + 120000)); // 2 minutos después
+              // setNextUpdate(new Date(now.getTime() + 120000)); // 2 minutos después
     } catch (error) {
       console.error('Error fetching prices:', error);
       // Fallback con precios por defecto
@@ -278,13 +278,13 @@ export default function UnidentifiedGearMasterworkPage() {
           <div className="flex items-center gap-4 mb-4">
             <Image
               src="https://render.guildwars2.com/file/68A875CAEC167AE97D3B9248A1014999D40CAEF5/2075500.png"
-              alt="Runecrafter's Salvage-o-Matic"
+              alt="Runecrafter&apos;s Salvage-o-Matic"
               width={48}
               height={48}
               className="w-12 h-12"
             />
             <div>
-              <h2 className="text-xl font-semibold text-white">Runecrafter's Salvage-o-Matic</h2>
+              <h2 className="text-xl font-semibold text-white">Runecrafter&apos;s Salvage-o-Matic</h2>
               <p className="text-gray-400">Kit recomendado para Unidentified Gear Masterwork</p>
             </div>
           </div>

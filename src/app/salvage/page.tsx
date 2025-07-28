@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Package, TrendingUp, TrendingDown, Calculator, ChevronDown, Settings, Zap, Shield, Info, BookOpen, Target, Coins, AlertTriangle, ChevronRight, Star, FileText, Wrench } from 'lucide-react';
+import { Package, BookOpen, Target, Coins, AlertTriangle, ChevronRight, Star, FileText, Wrench } from 'lucide-react';
 import Navigation from '@/components/layout/Navigation';
 import Link from 'next/link';
 
@@ -301,8 +301,8 @@ export default function SalvagePage() {
               <h3 className="text-lg font-semibold text-white mb-4">Salvage Kits</h3>
               <div className="space-y-2 text-sm text-gray-300">
                 <p><strong>Basic:</strong> Para items básicos</p>
-                <p><strong>Master's:</strong> Mejor chance de ectos</p>
-                <p><strong>Runecrafter's:</strong> Para unidentified gear</p>
+                <p><strong>Master&apos;s:</strong> Mejor chance de ectos</p>
+                <p><strong>Runecrafter&apos;s:</strong> Para unidentified gear</p>
                 <p><strong>Black Lion:</strong> Máxima eficiencia</p>
               </div>
             </div>

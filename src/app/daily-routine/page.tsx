@@ -21,7 +21,7 @@ export default function DailyRoutine() {
   const { dbService } = useDatabase();
   const [farms, setFarms] = useState<FarmItem[]>([]);
   const [selectedFarms, setSelectedFarms] = useState<Set<string>>(new Set());
-  const [isLoading, setIsLoading] = useState(true);
+  // const [isLoading, setIsLoading] = useState(true);
 
   // Función para formatear oro correctamente
   const formatGoldDisplay = (goldValue: string | undefined): string => {

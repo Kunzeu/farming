@@ -50,7 +50,7 @@ export default function UnidentifiedGearRarePage() {
   const [results, setResults] = useState<SalvageResult[]>([]);
   const [loading, setLoading] = useState(true);
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
-  const [nextUpdate, setNextUpdate] = useState<Date | null>(null);
+
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const kitCost = 30; // Master's Salvage Kit cost per use
   const [unidentifiedGearPrice, setUnidentifiedGearPrice] = useState<number | null>(null);
@@ -97,7 +97,7 @@ export default function UnidentifiedGearRarePage() {
       setMaterials(materialsWithPrices);
       const now = new Date();
       setLastUpdated(now);
-      setNextUpdate(new Date(now.getTime() + 120000)); // 2 minutos después
+              // setNextUpdate(new Date(now.getTime() + 120000)); // 2 minutos después
     } catch (error) {
       console.error('Error fetching prices:', error);
       // Fallback con precios por defecto
@@ -277,13 +277,13 @@ export default function UnidentifiedGearRarePage() {
           <div className="flex items-center gap-4 mb-4">
             <Image
               src="https://render.guildwars2.com/file/68A875CAEC167AE97D3B9248A1014999D40CAEF5/2075500.png"
-              alt="Master's Salvage Kit"
+              alt="Master&apos;s Salvage Kit"
               width={48}
               height={48}
               className="w-12 h-12"
             />
             <div>
-              <h2 className="text-xl font-semibold text-white">Master's Salvage Kit</h2>
+              <h2 className="text-xl font-semibold text-white">Master&apos;s Salvage Kit</h2>
               <p className="text-gray-400">Kit recomendado para Rare Unidentified Gear</p>
             </div>
           </div>

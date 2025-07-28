@@ -44,7 +44,7 @@ export default function UnidentifiedGearCommonPage() {
   const [results, setResults] = useState<SalvageResult[]>([]);
   const [loading, setLoading] = useState(true);
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
-  const [nextUpdate, setNextUpdate] = useState<Date | null>(null);
+
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const kitCost = 10; // Basic Salvage Kit cost per use
   const [unidentifiedGearPrice, setUnidentifiedGearPrice] = useState<number | null>(null);
@@ -91,7 +91,7 @@ export default function UnidentifiedGearCommonPage() {
       setMaterials(materialsWithPrices);
       const now = new Date();
       setLastUpdated(now);
-      setNextUpdate(new Date(now.getTime() + 120000)); // 2 minutos después
+      // setNextUpdate(new Date(now.getTime() + 120000)); // 2 minutos después
     } catch (error) {
       console.error('Error fetching prices:', error);
       // Fallback con precios por defecto
