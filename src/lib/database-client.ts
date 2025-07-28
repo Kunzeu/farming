@@ -25,11 +25,12 @@ export interface User {
   id: string;
   email: string;
   username: string;
-  password: string;
+  password?: string; // Opcional para usuarios de Discord
   role: 'user' | 'admin' | 'moderator';
   createdAt: Date;
   updatedAt: Date;
   isActive: boolean;
+  discordId?: string; // ID de Discord para autenticación OAuth
   preferences?: {
     theme?: 'dark' | 'light' | 'auto';
     language?: 'es' | 'en';
@@ -209,6 +210,23 @@ class DatabaseClientService {
 
   async getUserByUsername(username: string): Promise<User | null> {
     const response = await fetch(`/api/users?username=${encodeURIComponent(username)}`);
+    if (!response.ok) {
+      if (response.status === 404) {
+        return null;
+      }
+      throw new Error('Failed to fetch user');
+    }
+    
+    const data = await response.json();
+    return {
+      ...data,
+      createdAt: new Date(data.createdAt),
+      updatedAt: new Date(data.updatedAt)
+    };
+  }
+
+  async getUserByDiscordId(discordId: string): Promise<User | null> {
+    const response = await fetch(`/api/users?discordId=${encodeURIComponent(discordId)}`);
     if (!response.ok) {
       if (response.status === 404) {
         return null;

@@ -24,16 +24,17 @@ export interface User {
   id: string;
   email: string;
   username: string;
-  password: string; // Agregar campo de contraseña
+  password?: string; // Opcional para usuarios de Discord
   role: 'user' | 'admin' | 'moderator';
   createdAt: Date;
   updatedAt: Date;
   isActive: boolean;
+  discordId?: string; // ID de Discord para autenticación OAuth
 }
 
 class DatabaseService {
   private dbName = 'gw2FarmingHubDB';
-  private version = 2;
+  private version = 3; // Incrementar versión para agregar discordId
   private db: IDBDatabase | null = null;
 
   async init(): Promise<void> {
@@ -62,6 +63,7 @@ class DatabaseService {
           usersStore.createIndex('email', 'email', { unique: true });
           usersStore.createIndex('username', 'username', { unique: true });
           usersStore.createIndex('role', 'role', { unique: false });
+          usersStore.createIndex('discordId', 'discordId', { unique: true });
         }
       };
     });
@@ -266,6 +268,30 @@ class DatabaseService {
       const store = transaction.objectStore('users');
       const index = store.index('username');
       const request = index.get(username);
+
+      request.onerror = () => reject(request.error);
+      request.onsuccess = () => {
+        const user = request.result;
+        if (user) {
+          resolve({
+            ...user,
+            createdAt: new Date(user.createdAt),
+            updatedAt: new Date(user.updatedAt)
+          });
+        } else {
+          resolve(null);
+        }
+      };
+    });
+  }
+
+  async getUserByDiscordId(discordId: string): Promise<User | null> {
+    await this.init();
+    return new Promise((resolve, reject) => {
+      const transaction = this.db!.transaction(['users'], 'readonly');
+      const store = transaction.objectStore('users');
+      const index = store.index('discordId');
+      const request = index.get(discordId);
 
       request.onerror = () => reject(request.error);
       request.onsuccess = () => {

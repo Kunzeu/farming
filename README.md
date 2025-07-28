@@ -1,6 +1,6 @@
 # GW2 Farming Hub 🎮
 
-Una aplicación web moderna para información de Guild Wars 2, inspirada en [fast.farming-community.eu](https://fast.farming-community.eu/). Proporciona herramientas para farming, precios del Trading Post, eventos mundiales y builds meta.
+Una aplicación web moderna para información de Guild Wars 2, inspirada en [fast.farming-community.eu](https://fast.farming-community.eu/). Proporciona herramientas para farming, precios del Trading Post, eventos mundiales, builds meta y **calculadoras de salvaging**.
 
 ## ✨ Características
 
@@ -11,7 +11,7 @@ Una aplicación web moderna para información de Guild Wars 2, inspirada en [fas
 - **Acciones Rápidas**: Enlaces directos a todas las secciones
 
 ### 💰 Trading Post
-- **Precios en Tiempo Real**: Información actualizada del mercado
+- **Precios en Tiempo Real**: Información actualizada del mercado desde la API oficial de GW2
 - **Búsqueda Avanzada**: Filtros por nombre, precio y margen de ganancia
 - **Ordenamiento**: Múltiples criterios de ordenamiento
 - **Estadísticas del Mercado**: Análisis de precios y tendencias
@@ -22,6 +22,15 @@ Una aplicación web moderna para información de Guild Wars 2, inspirada en [fas
 - **Estimaciones de Oro**: Ganancias esperadas por hora
 - **Filtros por Dificultad**: Fácil, medio y difícil
 
+### 🔧 Calculadoras de Salvaging
+- **Unidentified Gear**: Calculadoras específicas para Common, Masterwork y Rare
+- **Precios en Tiempo Real**: Actualización automática cada 2 minutos desde GW2 API
+- **Kits Optimizados**: 
+  - **Copper-Fed Salvage-o-Matic** para Common Unidentified Gear
+  - **Runecrafter's Salvage-o-Matic** para Masterwork Unidentified Gear
+  - **Silver-Fed Salvage-o-Matic** para Rare Unidentified Gear
+- **Drop Rates**: Tasas de drop estimadas basadas en datos de la comunidad
+- **Análisis de Rentabilidad**: Cálculo automático de ganancias/pérdidas
 
 ### 📅 Eventos Mundiales
 - **Horarios en Tiempo Real**: Información actualizada de eventos
@@ -44,6 +53,7 @@ Una aplicación web moderna para información de Guild Wars 2, inspirada en [fas
 - **APIs**: Guild Wars 2 API oficial
 - **Estado**: React Hooks
 - **Responsive**: Diseño mobile-first
+- **Deployment**: Vercel
 
 ## 🚀 Instalación
 
@@ -77,12 +87,19 @@ gw2-farming-hub/
 │   │   ├── page.tsx           # Dashboard principal
 │   │   ├── trading-post/      # Página del Trading Post
 │   │   ├── farming-routes/    # Rutas de farming
-
+│   │   ├── salvage/           # Calculadoras de salvaging
+│   │   │   └── unidentified-gear/
+│   │   │       ├── common/    # Common Unidentified Gear
+│   │   │       ├── masterwork/ # Masterwork Unidentified Gear
+│   │   │       └── rare/      # Rare Unidentified Gear
 │   │   ├── events/            # Eventos mundiales
 │   │   └── builds/            # Builds meta
 │   ├── components/            # Componentes reutilizables
 │   │   ├── layout/           # Componentes de layout
+│   │   ├── auth/             # Componentes de autenticación
 │   │   └── ui/               # Componentes de UI
+│   ├── contexts/             # Contextos de React
+│   ├── hooks/                # Custom hooks
 │   ├── lib/                  # Utilidades y APIs
 │   └── types/                # Tipos TypeScript
 ├── public/                   # Archivos estáticos
@@ -94,14 +111,12 @@ gw2-farming-hub/
 ### Guild Wars 2 API
 - **Items**: Información detallada de items
 - **Precios**: Datos del Trading Post en tiempo real
-
 - **Eventos**: Estados de eventos mundiales
 - **Builds**: Información de builds del juego
 
 ### Endpoints Principales
 - `https://api.guildwars2.com/v2/items` - Información de items
 - `https://api.guildwars2.com/v2/commerce/prices` - Precios del Trading Post
-
 - `https://api.guildwars2.com/v2/events` - Eventos mundiales
 
 ## 🎨 Características de Diseño
@@ -111,6 +126,7 @@ gw2-farming-hub/
 - **Animaciones**: Transiciones suaves con Framer Motion
 - **Accesibilidad**: Diseño accesible y fácil de usar
 - **Performance**: Carga rápida y optimizada
+- **UX Moderna**: Navegación intuitiva y feedback visual
 
 ## 🔮 Próximas Características
 
@@ -122,6 +138,8 @@ gw2-farming-hub/
 - [ ] **API Backend**: Servidor propio para datos adicionales
 - [ ] **Integración con Discord**: Bot para notificaciones
 - [ ] **Análisis Avanzado**: Gráficos de precios y tendencias
+- [ ] **Más Calculadoras**: Salvaging para otros tipos de items
+- [ ] **Historial de Precios**: Gráficos de evolución temporal
 
 ## 🤝 Contribuir
 
@@ -138,16 +156,14 @@ Este proyecto está bajo la Licencia MIT. Ver el archivo `LICENSE` para más det
 ## 🙏 Agradecimientos
 
 - **ArenaNet**: Por proporcionar la API oficial de Guild Wars 2
-- **fast.farming-community.eu**: Por la inspiración del diseño
 - **Comunidad GW2**: Por el feedback y sugerencias
 - **Next.js Team**: Por el framework increíble
 - **Tailwind CSS**: Por el sistema de diseño
+- **GW2 Wiki**: Por los datos de drop rates y información del juego
 
 ## 📞 Contacto
 
-- **GitHub**: [@tu-usuario](https://github.com/tu-usuario)
-- **Discord**: Tu servidor de Discord
-- **Email**: tu-email@ejemplo.com
+- **GitHub**: [@Kunzeu](https://github.com/kunzeu)
 
 ---
 

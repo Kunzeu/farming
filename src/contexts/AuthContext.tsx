@@ -1,6 +1,6 @@
 'use client';
 
-import { createContext, useContext, useReducer, useEffect, ReactNode } from 'react';
+import { createContext, useContext, useReducer, useEffect, ReactNode, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { AuthState, User, LoginCredentials, RegisterCredentials } from '@/types/auth';
 
@@ -68,6 +68,7 @@ function authReducer(state: AuthState, action: AuthAction): AuthState {
 interface AuthContextType extends AuthState {
   login: (credentials: LoginCredentials) => Promise<void>;
   register: (credentials: RegisterCredentials) => Promise<void>;
+  loginWithDiscord: (code: string) => Promise<void>;
   logout: () => void;
   clearError: () => void;
 }
@@ -106,7 +107,7 @@ function AuthProviderInternal({ children }: { children: ReactNode }) {
   }, []);
 
   // Función de login
-  const login = async (credentials: LoginCredentials) => {
+  const login = useCallback(async (credentials: LoginCredentials) => {
     dispatch({ type: 'AUTH_START' });
 
     try {
@@ -162,10 +163,10 @@ function AuthProviderInternal({ children }: { children: ReactNode }) {
         payload: error instanceof Error ? error.message : 'Error de autenticación',
       });
     }
-  };
+  }, []);
 
   // Función de registro
-  const register = async (credentials: RegisterCredentials) => {
+  const register = useCallback(async (credentials: RegisterCredentials) => {
     dispatch({ type: 'AUTH_START' });
 
     try {
@@ -237,27 +238,131 @@ function AuthProviderInternal({ children }: { children: ReactNode }) {
         payload: error instanceof Error ? error.message : 'Error de registro',
       });
     }
-  };
+  }, []);
 
   // Función de logout
-  const logout = () => {
+  const logout = useCallback(() => {
     localStorage.removeItem('gw2_token');
     localStorage.removeItem('gw2_user');
     dispatch({ type: 'AUTH_LOGOUT' });
     
     // Redirigir a la página principal
     router.push('/');
-  };
+  }, [router]);
+
+  // Función de login con Discord
+  const loginWithDiscord = useCallback(async (code: string) => {
+    dispatch({ type: 'AUTH_START' });
+
+    try {
+      // Intercambiar el código por un token de acceso
+      const tokenResponse = await fetch('/api/auth/discord/token', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ code }),
+      });
+
+      if (!tokenResponse.ok) {
+        throw new Error('Error al obtener token de Discord');
+      }
+
+      const { access_token } = await tokenResponse.json();
+
+      // Obtener información del usuario de Discord
+      const userResponse = await fetch('https://discord.com/api/users/@me', {
+        headers: {
+          Authorization: `Bearer ${access_token}`,
+        },
+      });
+
+      if (!userResponse.ok) {
+        throw new Error('Error al obtener información del usuario');
+      }
+
+      const discordUser = await userResponse.json();
+      console.log('Discord user data:', discordUser);
+
+      // Buscar o crear usuario en la base de datos
+      const { getDbService } = await import('@/lib/database-switch');
+      const dbService = await getDbService();
+
+      // Buscar usuario existente por Discord ID
+      let dbUser = await dbService.getUserByDiscordId(discordUser.id);
+      console.log('Existing user found:', dbUser);
+
+      if (!dbUser) {
+        console.log('Creating new user with Discord ID:', discordUser.id);
+        // Crear nuevo usuario
+        const createdUser = await dbService.createUser({
+          email: discordUser.email,
+          username: discordUser.username,
+          discordId: discordUser.id,
+          role: 'user',
+          isActive: true,
+        });
+        
+        console.log('User created successfully:', createdUser);
+        // Usar el usuario recién creado
+        dbUser = createdUser;
+      }
+
+      if (!dbUser) {
+        throw new Error('Error al crear/obtener usuario de Discord');
+      }
+
+      // Crear objeto de usuario para el contexto
+      const user: User = {
+        id: dbUser.id,
+        username: dbUser.username,
+        email: dbUser.email,
+        role: dbUser.role,
+        isActive: dbUser.isActive,
+        joinDate: dbUser.createdAt?.toISOString() || new Date().toISOString(),
+        lastLogin: new Date().toISOString(),
+        isAdmin: dbUser.role === 'admin',
+        discordId: discordUser.id,
+        preferences: {
+          theme: 'dark',
+          language: 'es',
+          notifications: {
+            priceAlerts: true,
+            eventReminders: true,
+            buildUpdates: false
+          }
+        }
+      };
+
+      const token = 'discord_jwt_token_' + Date.now();
+
+      // Guardar en localStorage
+      localStorage.setItem('gw2_token', token);
+      localStorage.setItem('gw2_user', JSON.stringify(user));
+
+      dispatch({
+        type: 'AUTH_SUCCESS',
+        payload: { user, token }
+      });
+
+    } catch (error) {
+      dispatch({
+        type: 'AUTH_FAILURE',
+        payload: error instanceof Error ? error.message : 'Error de autenticación con Discord',
+      });
+    }
+  }, []);
 
   // Función para limpiar errores
-  const clearError = () => {
+  const clearError = useCallback(() => {
     dispatch({ type: 'CLEAR_ERROR' });
-  };
+  }, []);
 
   const value: AuthContextType = {
     ...state,
     login,
     register,
+    loginWithDiscord,
     logout,
     clearError,
   };
@@ -293,6 +398,7 @@ export function useAuth() {
         ...initialState,
         login: async () => {},
         register: async () => {},
+        loginWithDiscord: async () => {},
         logout: () => {},
         clearError: () => {},
       };

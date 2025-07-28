@@ -302,7 +302,7 @@ export default function AdminPanel() {
   const [users, setUsers] = useState<User[]>([]);
   const [isLoadingUsers, setIsLoadingUsers] = useState(false);
   const [isCreatingUser, setIsCreatingUser] = useState(false);
-  // const [editingUser, setEditingUser] = useState<User | null>(null);
+  const [editingUser, setEditingUser] = useState<User | null>(null);
   const [newUser, setNewUser] = useState({
     email: '',
     username: '',
@@ -369,6 +369,27 @@ export default function AdminPanel() {
         console.error('Error deleting user:', err);
         showError('Error', 'No se pudo eliminar el usuario. Intenta nuevamente.');
       }
+    }
+  };
+
+  // Actualizar usuario
+  const handleUpdateUser = async () => {
+    if (!editingUser) return;
+    
+    try {
+      await dbService.updateUser(editingUser.id, {
+        email: editingUser.email,
+        username: editingUser.username,
+        role: editingUser.role,
+        isActive: editingUser.isActive
+      });
+      
+      await loadUsers();
+      setEditingUser(null);
+      showSuccess('Éxito', 'Usuario actualizado correctamente.');
+    } catch (err) {
+      console.error('Error updating user:', err);
+      showError('Error', 'No se pudo actualizar el usuario. Intenta nuevamente.');
     }
   };
 
@@ -866,6 +887,91 @@ export default function AdminPanel() {
         </motion.div>
       )}
 
+      {/* Edit User Modal */}
+      {editingUser && (
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="bg-gray-800 rounded-lg p-6 border border-gray-700"
+        >
+          <h3 className="text-xl font-bold text-white mb-4">Editar Usuario</h3>
+          
+          <div className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-300 mb-2">
+                Email
+              </label>
+              <input
+                type="email"
+                value={editingUser.email}
+                onChange={(e) => setEditingUser({...editingUser, email: e.target.value})}
+                className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-purple-500"
+                placeholder="usuario@ejemplo.com"
+              />
+            </div>
+            
+            <div>
+              <label className="block text-sm font-medium text-gray-300 mb-2">
+                Username
+              </label>
+              <input
+                type="text"
+                value={editingUser.username}
+                onChange={(e) => setEditingUser({...editingUser, username: e.target.value})}
+                className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-purple-500"
+                placeholder="nombreusuario"
+              />
+            </div>
+            
+            <div>
+              <label className="block text-sm font-medium text-gray-300 mb-2">
+                Rol
+              </label>
+              <select
+                value={editingUser.role}
+                onChange={(e) => setEditingUser({...editingUser, role: e.target.value as 'user' | 'admin' | 'moderator'})}
+                className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-purple-500"
+              >
+                <option value="user">Usuario</option>
+                <option value="moderator">Moderador</option>
+                <option value="admin">Administrador</option>
+              </select>
+            </div>
+            
+            <div>
+              <label className="block text-sm font-medium text-gray-300 mb-2">
+                Estado
+              </label>
+              <select
+                value={editingUser.isActive ? 'active' : 'inactive'}
+                onChange={(e) => setEditingUser({...editingUser, isActive: e.target.value === 'active'})}
+                className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-purple-500"
+              >
+                <option value="active">Activo</option>
+                <option value="inactive">Inactivo</option>
+              </select>
+            </div>
+            
+            <div className="flex gap-3 mt-6">
+              <button
+                onClick={handleUpdateUser}
+                className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors"
+              >
+                <Save className="w-4 h-4" />
+                Actualizar
+              </button>
+              <button
+                onClick={() => setEditingUser(null)}
+                className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-lg transition-colors"
+              >
+                <X className="w-4 h-4" />
+                Cancelar
+              </button>
+            </div>
+          </div>
+        </motion.div>
+      )}
+
       {/* Users List */}
       {isLoadingUsers ? (
         <div className="text-center text-gray-400">Cargando usuarios...</div>
@@ -923,7 +1029,7 @@ export default function AdminPanel() {
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                     <div className="flex gap-2">
                       <button
-                        onClick={() => {/* setEditingUser(user) */}}
+                        onClick={() => setEditingUser(user)}
                         className="text-blue-400 hover:text-blue-300"
                       >
                         <Edit className="w-4 h-4" />
