@@ -214,7 +214,7 @@ export default function UnidentifiedGearMasterworkPage() {
             />
             <div>
               <h1 className="text-3xl font-bold text-white drop-shadow-lg">Unidentified Gear - Masterwork</h1>
-              <p className="text-gray-400">Calculadora específica para Piece of Unidentified Gear (Masterwork)</p>
+              <p className="text-gray-400">Calcula cuánto oro ganas al abrir y reciclar Piece of Unidentified Gear Masterwork</p>
             </div>
           </div>
           
@@ -476,7 +476,7 @@ export default function UnidentifiedGearMasterworkPage() {
               El &quot;Precio Procesado&quot; incluye las comisiones del Trading Post (15% de descuento sobre el precio de venta).
               El costo de Unidentified Gear usa el precio de compra actual del Trading Post.
               Los drop rates están basados en datos oficiales de la <a href="https://wiki.guildwars2.com/wiki/Piece_of_Unidentified_Gear/Salvage_Rate" target="_blank" className="text-blue-300 hover:text-blue-100 underline">GW2 Wiki</a>{' '}
-              para <strong>Piece of Unidentified Gear (Masterwork)</strong> salvado con <strong>Runecrafter&apos;s Salvage-o-Matic</strong>.
+              para <strong>Piece of Unidentified Gear (Masterwork)</strong> abierto y luego reciclado con <strong>Runecrafter&apos;s Salvage-o-Matic</strong>.
             </div>
           </div>
         </div>

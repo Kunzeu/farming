@@ -195,7 +195,7 @@ export default function UnidentifiedGearCommonPage() {
             />
             <div>
               <h1 className="text-3xl font-bold text-white drop-shadow-lg">Unidentified Gear - Common</h1>
-              <p className="text-gray-400">Calculadora específica para Piece of Common Unidentified Gear</p>
+              <p className="text-gray-400">Calcula cuánto oro ganas al abrir y reciclar Piece of Common Unidentified Gear</p>
             </div>
           </div>
           
@@ -456,7 +456,7 @@ export default function UnidentifiedGearCommonPage() {
               <strong>Nota:</strong> Los precios se obtienen en tiempo real desde la <a href="https://api.guildwars2.com/v2/commerce/prices" target="_blank" className="text-green-300 hover:text-green-100 underline">API de GW2</a>. 
               El &quot;Precio Procesado&quot; incluye las comisiones del Trading Post (15% de descuento sobre el precio de venta).
               El costo de Common Unidentified Gear usa el precio de compra actual del Trading Post.
-              Los drop rates son estimados basados en datos de la comunidad para <strong>Piece of Common Unidentified Gear</strong> salvado con <strong>Copper-Fed Salvage-o-Matic</strong>.
+              Los drop rates son estimados basados en datos de la comunidad para <strong>Piece of Common Unidentified Gear</strong> abierto y luego reciclado con <strong>Copper-Fed Salvage-o-Matic</strong>.
             </div>
           </div>
         </div>

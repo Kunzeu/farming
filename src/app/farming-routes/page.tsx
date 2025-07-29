@@ -11,7 +11,7 @@ import ExpansionIcon from '@/components/ui/ExpansionIcon';
 export default function FarmingRoutes() {
   const { dbService } = useDatabase();
   const [searchQuery, setSearchQuery] = useState('');
-  const [selectedExpansion, setSelectedExpansion] = useState('all');
+  const [selectedExpansions, setSelectedExpansions] = useState<string[]>([]);
   const [farmingRoutes, setFarmingRoutes] = useState<FarmItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -67,10 +67,33 @@ export default function FarmingRoutes() {
   const filteredRoutes = farmingRoutes.filter(route => {
     const matchesSearch = route.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
                          route.description.toLowerCase().includes(searchQuery.toLowerCase());
-    const expansions = Array.isArray(route.expansion) ? route.expansion : [route.expansion];
-    const matchesExpansion = selectedExpansion === 'all' || expansions.includes(selectedExpansion as 'core' | 'hot' | 'pof' | 'eod' | 'soto' | 'jw');
-    return matchesSearch && matchesExpansion;
+    
+    // Si no hay expansiones seleccionadas, mostrar todas
+    if (selectedExpansions.length === 0) {
+      return matchesSearch;
+    }
+    
+    // Obtener las expansiones de la ruta
+    const routeExpansions = Array.isArray(route.expansion) ? route.expansion : [route.expansion];
+    
+    // Verificar que la ruta requiera TODAS las expansiones seleccionadas
+    const matchesExpansions = selectedExpansions.every(selectedExp => 
+      routeExpansions.includes(selectedExp as 'core' | 'hot' | 'pof' | 'eod' | 'soto' | 'jw')
+    );
+    
+    return matchesSearch && matchesExpansions;
   });
+
+  // Función para manejar la selección de expansiones
+  const handleExpansionToggle = (expansion: string) => {
+    setSelectedExpansions(prev => {
+      if (prev.includes(expansion)) {
+        return prev.filter(exp => exp !== expansion);
+      } else {
+        return [...prev, expansion];
+      }
+    });
+  };
 
   if (isLoading) {
     return (
@@ -138,21 +161,32 @@ export default function FarmingRoutes() {
               />
             </div>
 
-            {/* Difficulty Filter */}
-            <div className="flex gap-2">
-              {['all', 'core', 'hot', 'pof', 'eod', 'soto', 'jw'].map((expansion) => (
+            {/* Expansion Filter - Multiple Selection */}
+            <div className="flex flex-wrap gap-2 justify-center">
+              {['core', 'hot', 'pof', 'eod', 'soto', 'jw'].map((expansion) => (
                 <button
                   key={expansion}
-                  onClick={() => setSelectedExpansion(expansion)}
-                  className={`px-4 py-2 rounded-lg transition-colors duration-200 ${
-                    selectedExpansion === expansion
+                  onClick={() => handleExpansionToggle(expansion)}
+                  className={`px-4 py-2 rounded-lg transition-colors duration-200 flex items-center gap-2 ${
+                    selectedExpansions.includes(expansion)
                       ? 'bg-blue-600 text-white'
                       : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
                   }`}
                 >
-                  {expansion === 'all' ? 'Todas' : expansion.toUpperCase()}
+                  <ExpansionIcon expansion={expansion} size="sm" variant="compact" />
+                  {expansion.toUpperCase()}
                 </button>
               ))}
+              
+              {/* Clear Selection Button */}
+              {selectedExpansions.length > 0 && (
+                <button
+                  onClick={() => setSelectedExpansions([])}
+                  className="px-4 py-2 bg-gray-600 hover:bg-gray-500 text-white rounded-lg transition-colors duration-200"
+                >
+                  Limpiar
+                </button>
+              )}
             </div>
 
             {/* Reload Button */}

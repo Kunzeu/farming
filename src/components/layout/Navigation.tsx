@@ -16,7 +16,8 @@ import { useAuth } from '@/contexts/AuthContext';
   Heart,
   Shield,
   Package,
-  ChevronDown
+  ChevronDown,
+  BookOpen
 } from 'lucide-react';
 
 const Navigation = () => {
@@ -29,6 +30,7 @@ const Navigation = () => {
       { href: '/farming-routes', label: 'Farms', icon: Map },
     { href: '/daily-routine', label: 'Rutina Diaria', icon: Clock },
     { href: '/salvage', label: 'Salvaging', icon: Package },
+    { href: '/crafting', label: 'Crafting', icon: BookOpen },
   ];
 
   const handleLogout = () => {

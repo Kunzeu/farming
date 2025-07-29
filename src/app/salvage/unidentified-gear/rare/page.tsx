@@ -201,7 +201,7 @@ export default function UnidentifiedGearRarePage() {
             />
             <div>
               <h1 className="text-3xl font-bold text-white drop-shadow-lg">Unidentified Gear - Rare</h1>
-              <p className="text-gray-400">Calculadora específica para Piece of Rare Unidentified Gear</p>
+              <p className="text-gray-400">Calcula cuánto oro ganas al abrir y reciclar Piece of Rare Unidentified Gear</p>
             </div>
           </div>
           
@@ -462,7 +462,7 @@ export default function UnidentifiedGearRarePage() {
               <strong>Nota:</strong> Los precios se obtienen en tiempo real desde la <a href="https://api.guildwars2.com/v2/commerce/prices" target="_blank" className="text-purple-300 hover:text-purple-100 underline">API de GW2</a>. 
               El &quot;Precio Procesado&quot; incluye las comisiones del Trading Post (15% de descuento sobre el precio de venta).
               El costo de Rare Unidentified Gear usa el precio de compra actual del Trading Post.
-              Los drop rates son estimados basados en datos de la comunidad para <strong>Piece of Rare Unidentified Gear</strong> salvado con <strong>Silver-Fed Salvage-o-Matic</strong>.
+              Los drop rates son estimados basados en datos de la comunidad para <strong>Piece of Rare Unidentified Gear</strong> abierto y luego reciclado con <strong>Silver-Fed Salvage-o-Matic</strong>.
               <strong>Ectos</strong> son el principal objetivo de este tipo de salvage.
             </div>
           </div>

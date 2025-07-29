@@ -11,6 +11,25 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Verificar que las variables de entorno estén definidas
+    const clientId = process.env.DISCORD_CLIENT_ID;
+    const clientSecret = process.env.DISCORD_CLIENT_SECRET;
+    const redirectUri = process.env.DISCORD_REDIRECT_URI;
+
+    console.log('Discord OAuth variables:', {
+      clientId: clientId ? 'defined' : 'undefined',
+      clientSecret: clientSecret ? 'defined' : 'undefined',
+      redirectUri: redirectUri ? 'defined' : 'undefined'
+    });
+
+    if (!clientId || !clientSecret || !redirectUri) {
+      console.error('Missing Discord OAuth environment variables');
+      return NextResponse.json(
+        { error: 'Configuración de Discord OAuth incompleta' },
+        { status: 500 }
+      );
+    }
+
     // Intercambiar el código por un token de acceso
     const tokenResponse = await fetch('https://discord.com/api/oauth2/token', {
       method: 'POST',
@@ -18,11 +37,11 @@ export async function POST(request: NextRequest) {
         'Content-Type': 'application/x-www-form-urlencoded',
       },
       body: new URLSearchParams({
-        client_id: process.env.DISCORD_CLIENT_ID!,
-        client_secret: process.env.DISCORD_CLIENT_SECRET!,
+        client_id: clientId,
+        client_secret: clientSecret,
         grant_type: 'authorization_code',
         code: code,
-        redirect_uri: process.env.DISCORD_REDIRECT_URI!,
+        redirect_uri: redirectUri,
       }),
     });
 

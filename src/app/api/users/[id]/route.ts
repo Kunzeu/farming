@@ -159,7 +159,7 @@ export async function PUT(
       createdAt: new Date(row.createdAt),
       updatedAt: new Date(row.updatedAt)
     };
-    
+
     console.log('User updated successfully:', user);
     return NextResponse.json(user);
     
@@ -181,7 +181,7 @@ export async function DELETE(
     if (result.rows.length === 0) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 });
     }
-    
+
     return NextResponse.json({ message: 'User deleted successfully' });
     
   } catch (error) {
