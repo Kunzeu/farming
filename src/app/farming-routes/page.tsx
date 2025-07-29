@@ -163,7 +163,7 @@ export default function FarmingRoutes() {
 
             {/* Expansion Filter - Multiple Selection */}
             <div className="flex flex-wrap gap-2 justify-center">
-              {['core', 'hot', 'pof', 'eod', 'soto', 'jw'].map((expansion) => (
+              {(['core', 'hot', 'pof', 'eod', 'soto', 'jw'] as const).map((expansion) => (
                 <button
                   key={expansion}
                   onClick={() => handleExpansionToggle(expansion)}
@@ -223,7 +223,7 @@ export default function FarmingRoutes() {
                   </div>
                                             <div className="flex gap-1">
                             {(Array.isArray(route.expansion) ? route.expansion : [route.expansion]).map((exp) => (
-                              <ExpansionIcon key={exp} expansion={exp} size="md" variant="compact" />
+                              <ExpansionIcon key={exp} expansion={exp as 'core' | 'hot' | 'pof' | 'eod' | 'soto' | 'jw'} size="md" variant="compact" />
                             ))}
                           </div>
                 </div>
