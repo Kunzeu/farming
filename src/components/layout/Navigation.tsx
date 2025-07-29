@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { useAuth } from '@/contexts/AuthContext';
@@ -17,20 +17,41 @@ import { useAuth } from '@/contexts/AuthContext';
   Shield,
   Package,
   ChevronDown,
-  BookOpen
+  BookOpen,
+  Calendar
 } from 'lucide-react';
 
 const Navigation = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
+  const [isToolsMenuOpen, setIsToolsMenuOpen] = useState(false);
   const { user, isAuthenticated, logout } = useAuth();
+  const toolsMenuRef = useRef<HTMLDivElement>(null);
+
+  // Cerrar menús cuando se hace clic fuera
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (toolsMenuRef.current && !toolsMenuRef.current.contains(event.target as Node)) {
+        setIsToolsMenuOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
 
       const navItems = [
       { href: '/', label: 'Inicio', icon: Home },
       { href: '/farming-routes', label: 'Farms', icon: Map },
     { href: '/daily-routine', label: 'Rutina Diaria', icon: Clock },
+  ];
+
+  const toolsItems = [
     { href: '/salvage', label: 'Salvaging', icon: Package },
     { href: '/crafting', label: 'Crafting', icon: BookOpen },
+    { href: '/festivals', label: 'Festivales', icon: Calendar },
   ];
 
   const handleLogout = () => {
@@ -75,6 +96,42 @@ const Navigation = () => {
                   <span className="font-medium">{item.label}</span>
                 </Link>
               ))}
+              
+              {/* Tools Dropdown */}
+              <div className="relative" ref={toolsMenuRef}>
+                <button
+                  onClick={() => setIsToolsMenuOpen(!isToolsMenuOpen)}
+                  className="flex items-center space-x-2 text-gray-300 hover:text-white transition-all duration-200 px-3 py-2 rounded-lg hover:bg-gray-800/50 hover:shadow-md"
+                >
+                  <Shield className="w-4 h-4" />
+                  <span className="font-medium">Calculadoras</span>
+                  <ChevronDown className={`w-4 h-4 text-gray-400 transition-transform duration-200 ${isToolsMenuOpen ? 'rotate-180' : ''}`} />
+                </button>
+
+                {/* Tools Dropdown Menu */}
+                {isToolsMenuOpen && (
+                  <motion.div
+                    initial={{ opacity: 0, y: -10, scale: 0.95 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, y: -10, scale: 0.95 }}
+                    className="absolute left-0 mt-2 w-48 bg-gray-800 rounded-lg shadow-xl border border-gray-700 py-2 z-50"
+                  >
+                    {toolsItems.map((item) => (
+                      <Link
+                        key={item.href}
+                        href={item.href}
+                        className="flex items-center space-x-3 px-4 py-2 text-gray-300 hover:text-white hover:bg-gray-700 transition-colors"
+                        onClick={() => setIsToolsMenuOpen(false)}
+                      >
+                        <item.icon className="w-4 h-4" />
+                        <span>{item.label}</span>
+                      </Link>
+                    ))}
+                  </motion.div>
+                )}
+              </div>
+
+
             </div>
 
             {/* User Menu / Auth Buttons */}
@@ -204,6 +261,26 @@ const Navigation = () => {
                   <span className="font-medium">{item.label}</span>
                 </Link>
               ))}
+              
+              {/* Tools Section */}
+              <div className="border-t border-gray-700 my-2 pt-2">
+                <div className="px-3 py-2 text-xs font-semibold text-gray-400 uppercase tracking-wider">
+                  Calculadoras
+                </div>
+                {toolsItems.map((item) => (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className="flex items-center space-x-3 px-3 py-3 text-gray-300 hover:text-white hover:bg-gray-700 rounded-md transition-colors duration-200"
+                  >
+                    <item.icon className="w-5 h-5" />
+                    <span className="font-medium">{item.label}</span>
+                  </Link>
+                ))}
+              </div>
+
+
               
               {!isAuthenticated && (
                 <>

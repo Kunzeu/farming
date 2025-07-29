@@ -14,14 +14,6 @@ import {
   AlertCircle,
   BarChart3,
   Zap,
-  Hammer,
-  Wrench,
-  Scissors,
-  Palette,
-  Beaker,
-  Shield,
-  Sword,
-  Gem,
   Loader2
 } from 'lucide-react';
 
@@ -53,6 +45,7 @@ const CraftingPage = () => {
   const [conversionData, setConversionData] = useState<ConversionItem[]>([]);
   const [isLoadingConversions, setIsLoadingConversions] = useState(false);
 
+
   // Materiales T6 de la imagen con sus IDs de GW2
   const t6Materials = useMemo(() => [
     { id: 24295, name: 'Vial of Powerful Blood', t5Id: 24294 },
@@ -67,6 +60,7 @@ const CraftingPage = () => {
   // Materiales para conversión T5 a T6
   const conversionMaterials = useMemo(() => ({
     ectoplasm: 19721, // Glob of Ectoplasm (al 90%/1.85)
+    crystallineDust: 24277, // Pile of Crystalline Dust
   }), []);
 
   const allConversionItemIds = useMemo(() => [
@@ -97,15 +91,25 @@ const CraftingPage = () => {
         return acc;
       }, {} as Record<number, Gw2Item>);
 
-      // Obtener precio del Ectoplasm al 90%/1.85
+      // Obtener precios para comparación
       const ectoplasmPrice = pricesMap[conversionMaterials.ectoplasm]?.sells?.unit_price || 0;
-      const ectoplasmPrice90 = Math.round(ectoplasmPrice * 0.90 / 1.85); // 90% del precio / 1.85
+      const crystallineDustBuyPrice = pricesMap[conversionMaterials.crystallineDust]?.buys?.unit_price || 0;
+      const crystallineDustSellPrice = pricesMap[conversionMaterials.crystallineDust]?.sells?.unit_price || 0;
+      
+      // Calcular los 4 valores para comparación
+      const valor1 = Math.round(crystallineDustSellPrice * 0.90); // Precio Sell al 90%
+      const valor2 = crystallineDustBuyPrice; // Precio Buy
+      const valor3 = Math.round(ectoplasmPrice * 0.90); // Ecto al precio de derecha al 90%
+      const valor4 = Math.round(ectoplasmPrice * 0.90 / 1.85); // Ecto al 90%/1.85
+      
+      // Encontrar el menor valor
+      const menorValor = Math.min(valor1, valor2, valor3, valor4);
 
       const calculatedConversions: ConversionItem[] = t6Materials.map(t6 => {
         const t5BuyPrice = pricesMap[t6.t5Id]?.buys?.unit_price || 0; // Precio de compra del T5
         const t6SellPrice = pricesMap[t6.id]?.sells?.unit_price || 0;
 
-        const ectoplasmCost = ectoplasmPrice90 * 200; // Ectoplasm al 90%/1.85 * 200
+        const ectoplasmCost = menorValor * 200; // Usar el menor valor encontrado * 200
         const t5Cost = t5BuyPrice * 2000; 
         const costeConv20 = ectoplasmCost + t5Cost;
 
@@ -137,7 +141,7 @@ const CraftingPage = () => {
     } finally {
       setIsLoadingConversions(false);
     }
-  }, [allConversionItemIds, conversionMaterials.ectoplasm, t6Materials]);
+  }, [allConversionItemIds, conversionMaterials.ectoplasm, conversionMaterials.crystallineDust, t6Materials]);
 
   useEffect(() => {
     if (selectedSection === 'conversions') {
@@ -170,80 +174,7 @@ const CraftingPage = () => {
     return 'bg-red-600';                    // Pérdida
   };
 
-  const craftingProfessions = [
-    {
-      id: 'weaponsmith',
-      name: 'Weaponsmith',
-      icon: Sword,
-      color: 'from-red-500 to-orange-600',
-      description: 'Crea armas de metal y algunos objetos especiales',
-      specialties: ['Espadas', 'Hachas', 'Martillos', 'Lanzas'],
-      level: '0-500'
-    },
-    {
-      id: 'armorsmith',
-      name: 'Armorsmith',
-      icon: Shield,
-      color: 'from-blue-500 to-cyan-600',
-      description: 'Crea armadura pesada y objetos de metal',
-      specialties: ['Armadura pesada', 'Objetos de metal', 'Herramientas'],
-      level: '0-500'
-    },
-    {
-      id: 'leatherworker',
-      name: 'Leatherworker',
-      icon: Package,
-      color: 'from-brown-500 to-yellow-600',
-      description: 'Crea armadura media y objetos de cuero',
-      specialties: ['Armadura media', 'Objetos de cuero', 'Bolsas'],
-      level: '0-500'
-    },
-    {
-      id: 'tailor',
-      name: 'Tailor',
-      icon: Scissors,
-      color: 'from-purple-500 to-pink-600',
-      description: 'Crea armadura ligera y objetos de tela',
-      specialties: ['Armadura ligera', 'Tela', 'Bolsas'],
-      level: '0-500'
-    },
-    {
-      id: 'jeweler',
-      name: 'Jeweler',
-      icon: Gem,
-      color: 'from-yellow-500 to-amber-600',
-      description: 'Crea joyas y objetos de cristal',
-      specialties: ['Anillos', 'Pendientes', 'Amuletos', 'Cristales'],
-      level: '0-500'
-    },
-    {
-      id: 'cook',
-      name: 'Cook',
-      icon: Beaker,
-      color: 'from-green-500 to-emerald-600',
-      description: 'Crea comida y bebidas para buffs',
-      specialties: ['Comida', 'Bebidas', 'Buffos temporales'],
-      level: '0-400'
-    },
-    {
-      id: 'artificer',
-      name: 'Artificer',
-      icon: Palette,
-      color: 'from-indigo-500 to-purple-600',
-      description: 'Crea objetos mágicos y algunos objetos especiales',
-      specialties: ['Objetos mágicos', 'Cristales', 'Pociones'],
-      level: '0-500'
-    },
-    {
-      id: 'huntsman',
-      name: 'Huntsman',
-      icon: Wrench,
-      color: 'from-teal-500 to-blue-600',
-      description: 'Crea armas de madera y algunos objetos especiales',
-      specialties: ['Arcos', 'Rifles', 'Pistolas', 'Objetos de madera'],
-      level: '0-500'
-    }
-  ];
+
 
   const materialTiers = [
     {
@@ -345,7 +276,6 @@ const CraftingPage = () => {
           >
             {[
               { id: 'overview', label: 'Vista General', icon: Info },
-              { id: 'professions', label: 'Profesiones', icon: Hammer },
               { id: 'materials', label: 'Materiales', icon: Package },
               { id: 'strategies', label: 'Estrategias', icon: TrendingUp },
               { id: 'conversions', label: 'Conversiones', icon: RefreshCw }
@@ -407,43 +337,7 @@ const CraftingPage = () => {
               </div>
             )}
 
-            {/* Professions Section */}
-            {selectedSection === 'professions' && (
-              <div className="space-y-8">
-                <div className="bg-gray-800/50 backdrop-blur-sm border border-gray-700 rounded-lg p-6">
-                  <h2 className="text-2xl font-bold text-white mb-6 flex items-center">
-                    <Hammer className="w-6 h-6 mr-3 text-orange-400" />
-                    Profesiones de Crafting
-                  </h2>
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {craftingProfessions.map((profession) => (
-                      <div key={profession.id} className="bg-gray-700/50 rounded-lg p-4 border border-gray-600">
-                        <div className="flex items-center gap-3 mb-3">
-                          <div className={`w-10 h-10 bg-gradient-to-br ${profession.color} rounded-lg flex items-center justify-center`}>
-                            <profession.icon className="w-5 h-5 text-white" />
-                          </div>
-                          <div>
-                            <h3 className="text-white font-semibold">{profession.name}</h3>
-                            <p className="text-gray-400 text-xs">{profession.level}</p>
-                          </div>
-                        </div>
-                        <p className="text-gray-300 text-sm mb-3">{profession.description}</p>
-                        <div>
-                          <h4 className="text-gray-400 text-xs font-semibold mb-1">Especialidades:</h4>
-                          <div className="flex flex-wrap gap-1">
-                            {profession.specialties.map((specialty, idx) => (
-                              <span key={idx} className="px-2 py-1 bg-gray-600 rounded text-xs text-gray-300">
-                                {specialty}
-                              </span>
-                            ))}
-                          </div>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            )}
+
 
             {/* Materials Section */}
             {selectedSection === 'materials' && (
@@ -571,6 +465,8 @@ const CraftingPage = () => {
                   </p>
                   
 
+                  
+
                   {isLoadingConversions ? (
                     <div className="flex justify-center items-center h-48">
                       <Loader2 className="animate-spin text-blue-400" size={48} />
@@ -635,17 +531,8 @@ const CraftingPage = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.6 }}
-            className="mt-12 text-center"
-          >
-            <div className="bg-gradient-to-r from-purple-600 to-pink-600 rounded-lg p-6">
-              <h3 className="text-xl font-bold text-white mb-2">¿Listo para empezar?</h3>
-              <p className="text-purple-100 mb-4">
-                Usa nuestras calculadoras para encontrar las mejores oportunidades de crafting
-              </p>
-              <button className="px-6 py-3 bg-white text-purple-600 rounded-lg font-semibold hover:bg-gray-100 transition-colors">
-                Ir a Calculadoras
-              </button>
-            </div>
+            className="mt-12 text-center">
+
           </motion.div>
         </div>
       </div>

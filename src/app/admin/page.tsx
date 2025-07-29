@@ -1096,6 +1096,7 @@ export default function AdminPanel() {
                 <Users className="w-5 h-5" />
                 Usuarios
               </button>
+              
             </div>
           </motion.div>
 
@@ -1108,6 +1109,7 @@ export default function AdminPanel() {
           >
             {activeSection === 'farms' && renderFarmsManager()}
             {activeSection === 'users' && renderUsersManager()}
+            
           </motion.div>
         </div>
       </div>
