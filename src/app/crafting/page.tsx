@@ -97,10 +97,10 @@ const CraftingPage = () => {
       const crystallineDustSellPrice = pricesMap[conversionMaterials.crystallineDust]?.sells?.unit_price || 0;
       
       // Calcular los 4 valores para comparación
-      const valor1 = Math.round(crystallineDustSellPrice * 0.90); // Precio Sell al 90%
+              const valor1 = Math.ceil(crystallineDustSellPrice * 0.90); // Precio Sell al 90%
       const valor2 = crystallineDustBuyPrice; // Precio Buy
-      const valor3 = Math.round(ectoplasmPrice * 0.90); // Ecto al precio de derecha al 90%
-      const valor4 = Math.round(ectoplasmPrice * 0.90 / 1.85); // Ecto al 90%/1.85
+              const valor3 = Math.ceil(ectoplasmPrice * 0.90); // Ecto al precio de derecha al 90%
+        const valor4 = Math.ceil(ectoplasmPrice * 0.90 / 1.85); // Ecto al 90%/1.85
       
       // Encontrar el menor valor
       const menorValor = Math.min(valor1, valor2, valor3, valor4);
@@ -127,8 +127,8 @@ const CraftingPage = () => {
           id: t6.id,
           name: itemInfo?.name || t6.name,
           icon: itemInfo?.icon || '',
-          precio90: Math.round(t6SellPrice * 0.90),
-          precio85: Math.round(t6SellPrice * 0.85),
+          precio90: Math.ceil(t6SellPrice * 0.90),
+          precio85: Math.ceil(t6SellPrice * 0.85),
           costeConv20: Math.round(costeConv20),
           profit90: Math.round(profit90),
           profit85: Math.round(profit85),

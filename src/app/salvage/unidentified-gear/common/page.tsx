@@ -84,7 +84,7 @@ export default function UnidentifiedGearCommonPage() {
           name: itemData?.name || baseMaterial.name,
           icon: itemData?.icon || '',
           sellPrice: priceData?.sells?.unit_price || 0,
-          processedPrice: Math.round((priceData?.sells?.unit_price || 0) * 0.85), // Precio después de fees TP
+          processedPrice: Math.ceil((priceData?.sells?.unit_price || 0) * 0.85), // Precio después de fees TP
         };
       });
       
