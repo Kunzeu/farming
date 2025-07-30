@@ -1,87 +1,52 @@
 'use client';
 
-import { useState } from 'react';
+
 import { motion } from 'framer-motion';
-import { Package, BookOpen, Target, Coins, AlertTriangle, ChevronRight, Star, FileText, Wrench } from 'lucide-react';
+import { Package, ChevronRight, Star, FileText, Wrench } from 'lucide-react';
 import Navigation from '@/components/layout/Navigation';
 import Link from 'next/link';
 
 type SalvageSection = 'salvageables' | 'luck-calculator' | 'research-notes' | 'unidentified-gear';
 
 export default function SalvagePage() {
-  const [selectedSection, setSelectedSection] = useState<SalvageSection | null>(null);
 
   // Configuración de secciones de Salvaging
   const salvageSections = [
     {
       id: 'salvageables' as SalvageSection,
-      name: 'Salvageables',
-      description: 'Items que se pueden desmontar',
+      name: 'Reciclables',
+      description: 'Items que se pueden reciclar',
       icon: Package,
       color: 'blue',
-      content: {
-        title: '¿Qué se puede reciclar?',
-        description: 'Descubre qué tipos de items son rentables para desmontar y obtener materiales.',
-        details: [
-          'Equipamiento de diferentes rarezas',
-          'Armas y armaduras',
-          'Accesorios y joyas',
-          'Items de crafting',
-          'Materiales de eventos'
-        ],
-        tips: [
-          'Investiga el valor del item completo vs materiales',
-          'Usa el kit apropiado para cada tipo',
-          'Monitorea los precios del Trading Post',
-          'Considera el mercado de crafting'
-        ]
-      }
+      bgGradient: 'from-blue-500/20 to-blue-600/20',
+      borderColor: 'border-blue-500/30',
+      textColor: 'text-blue-400',
+      features: ['Equipamiento de diferentes rarezas', 'Armas y armaduras', 'Accesorios y joyas'],
+      href: '/salvage/salvageables'
     },
     {
       id: 'luck-calculator' as SalvageSection,
-      name: 'Salvaging Costs per 1000 Luck',
+      name: 'Luck Calculator',
       description: 'Calculadora de costos por suerte',
       icon: Star,
       color: 'yellow',
-      content: {
-        title: 'Calculadora de Luck',
-        description: 'Calcula los costos de salvaging en relación a la suerte obtenida.',
-        details: [
-          'Costo por 1000 puntos de suerte',
-          'Eficiencia de diferentes kits',
-          'Comparación de rentabilidad',
-          'Optimización de recursos'
-        ],
-        tips: [
-          'Usa kits apropiados para maximizar luck',
-          'Considera el valor de los materiales obtenidos',
-          'Balancea costos vs beneficios',
-          'Monitorea los precios del mercado'
-        ]
-      }
+      bgGradient: 'from-yellow-500/20 to-yellow-600/20',
+      borderColor: 'border-yellow-500/30',
+      textColor: 'text-yellow-400',
+      features: ['Costo por 1000 puntos de suerte', 'Eficiencia de diferentes kits', 'Comparación de rentabilidad'],
+      href: '/salvage/luck-calculator'
     },
     {
       id: 'research-notes' as SalvageSection,
-      name: 'Salvaging Costs per Research Note',
+      name: 'Research Notes',
       description: 'Costos por notas de investigación',
       icon: FileText,
       color: 'green',
-      content: {
-        title: 'Research Notes Calculator',
-        description: 'Calcula los costos de salvaging para obtener Research Notes.',
-        details: [
-          'Costo por Research Note',
-          'Items que dan Research Notes',
-          'Eficiencia de salvaging',
-          'Comparación con compra directa'
-        ],
-        tips: [
-          'Identifica items que dan Research Notes',
-          'Calcula el costo por nota',
-          'Compara con precios del Trading Post',
-          'Optimiza tu estrategia de crafting'
-        ]
-      }
+      bgGradient: 'from-green-500/20 to-green-600/20',
+      borderColor: 'border-green-500/30',
+      textColor: 'text-green-400',
+      features: ['Costo por Research Note', 'Items que dan Research Notes', 'Eficiencia de salvaging'],
+      href: '/salvage/research-notes'
     },
     {
       id: 'unidentified-gear' as SalvageSection,
@@ -89,241 +54,162 @@ export default function SalvagePage() {
       description: 'Calculadoras específicas de Unidentified Gear',
       icon: Wrench,
       color: 'purple',
-      content: {
-        title: 'Unidentified Gear Calculators',
-        description: 'Calculadoras específicas para cada tipo de Unidentified Gear.',
-        details: [
-          'Masterwork Unidentified Gear',
-          'Rare Unidentified Gear', 
-          'Exotic Unidentified Gear',
-          'Drop rates específicos',
-          'Rentabilidad por tipo'
-        ],
-        tips: [
-          'Identifica el gear antes de salvarlo',
-          'Usa Runecrafter\'s Salvage-o-Matic para Masterwork',
-          'Considera el precio de compra vs venta',
-          'Monitorea los precios en tiempo real'
-        ]
-      }
+      bgGradient: 'from-purple-500/20 to-purple-600/20',
+      borderColor: 'border-purple-500/30',
+      textColor: 'text-purple-400',
+      features: ['Common, Masterwork, Rare', 'Drop rates específicos', 'Rentabilidad por tipo'],
+      href: '/salvage/unidentified-gear'
     }
   ];
 
   return (
     <>
       <Navigation />
-      <div className="max-w-6xl mx-auto p-8">
-        {/* Header simplificado */}
-        <div className="mb-12 text-center">
-          <div className="flex items-center justify-center gap-3 mb-6">
-            <Package className="h-10 w-10 text-blue-400" />
-            <h1 className="text-4xl font-bold text-white">Salvaging</h1>
-          </div>
-          <p className="text-gray-300 text-lg max-w-2xl mx-auto">
-            Guía completa sobre salvaging en Guild Wars 2. Aprende técnicas, calcula rentabilidad y maximiza tus ganancias.
-          </p>
-        </div>
-        
-        {/* Información General simplificada */}
-        <div className="bg-slate-800/50 rounded-xl p-8 mb-12 border border-slate-700/50">
-          <div className="text-center mb-8">
-            <h2 className="text-2xl font-semibold text-white mb-4">¿Qué es el Salvaging?</h2>
-            <p className="text-gray-300 text-lg max-w-3xl mx-auto">
-              El <strong className="text-blue-400">salvaging</strong> es el proceso de reciclar equipamiento para obtener materiales. 
-              Es una de las formas más rentables de obtener oro en Guild Wars 2, especialmente con ciertos tipos de items.
+      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
+        <div className="max-w-7xl mx-auto p-6 sm:p-8">
+          {/* Hero Section */}
+          <div className="text-center mb-12">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="flex items-center justify-center gap-4 mb-6"
+            >
+              <div className="w-20 h-20 bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl shadow-lg flex items-center justify-center">
+                <Package className="h-10 w-10 text-white" />
+              </div>
+              <h1 className="text-5xl font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
+                Salvaging
+              </h1>
+            </motion.div>
+            <p className="text-xl text-gray-300 max-w-3xl mx-auto leading-relaxed">
+              Guía completa sobre salvaging en Guild Wars 2. Aprende técnicas, calcula rentabilidad y maximiza tus ganancias.
             </p>
           </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-            <div className="text-center">
-              <Target className="h-8 w-8 text-green-400 mx-auto mb-3" />
-              <h3 className="text-white font-semibold mb-2">Tipo de Kit</h3>
-              <p className="text-gray-400 text-sm">Usa el kit apropiado para cada tipo de item</p>
-            </div>
-            <div className="text-center">
-              <Coins className="h-8 w-8 text-yellow-400 mx-auto mb-3" />
-              <h3 className="text-white font-semibold mb-2">Precios TP</h3>
-              <p className="text-gray-400 text-sm">Monitorea los precios del Trading Post</p>
-            </div>
-            <div className="text-center">
-              <AlertTriangle className="h-8 w-8 text-orange-400 mx-auto mb-3" />
-              <h3 className="text-white font-semibold mb-2">Drop Rates</h3>
-              <p className="text-gray-400 text-sm">Conoce las tasas de drop de materiales</p>
-        </div>
-            <div className="text-center">
-              <BookOpen className="h-8 w-8 text-blue-400 mx-auto mb-3" />
-              <h3 className="text-white font-semibold mb-2">Valor vs Materiales</h3>
-              <p className="text-gray-400 text-sm">Compara el valor del item completo</p>
-      </div>
-          </div>
-        </div>
-        
-        {/* Secciones principales */}
-        <div className="mb-12">
-          <h2 className="text-2xl font-bold text-white mb-8 text-center">Secciones de Salvaging</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {salvageSections.map((section) => {
-              const IconComponent = section.icon;
-              const colorClasses = {
-                blue: 'border-blue-500/30 bg-blue-500/5 hover:bg-blue-500/10',
-                yellow: 'border-yellow-500/30 bg-yellow-500/5 hover:bg-yellow-500/10',
-                green: 'border-green-500/30 bg-green-500/5 hover:bg-green-500/10',
-                purple: 'border-purple-500/30 bg-purple-500/5 hover:bg-purple-500/10'
-              };
-              
-              return (
-                <motion.div
-                  key={section.id}
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                  className={`border rounded-xl p-6 cursor-pointer transition-all duration-200 hover:shadow-lg ${
-                    colorClasses[section.color as keyof typeof colorClasses]
-                  } ${selectedSection === section.id ? 'ring-2 ring-blue-400' : ''}`}
-                  onClick={() => setSelectedSection(section.id)}
-                >
-                  <div className="text-center">
-                    <div className={`w-16 h-16 rounded-full border-2 border-${section.color}-400/30 bg-${section.color}-400/10 flex items-center justify-center mx-auto mb-4`}>
-                      <IconComponent className={`h-8 w-8 text-${section.color}-400`} />
-                    </div>
-                    <h3 className="text-lg font-semibold text-white mb-2">{section.name}</h3>
-                    <p className="text-sm text-gray-400 mb-4">{section.description}</p>
-                    
-                    <button className="w-full px-4 py-2 bg-slate-700/50 text-white rounded-lg hover:bg-slate-600/50 transition-colors flex items-center justify-center gap-2">
-                      <span>Explorar</span>
-                      <ChevronRight className="h-4 w-4" />
-                    </button>
-                  </div>
-                </motion.div>
-              );
-            })}
-          </div>
-        </div>
-        
-        {/* Detalles de la sección seleccionada */}
-        {selectedSection && (
+
+
+
+          {/* Información General */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="bg-slate-800/50 rounded-xl p-8 mb-8 border border-slate-700/50"
+            transition={{ delay: 0.5 }}
+            className="bg-gradient-to-r from-slate-800/50 to-slate-700/50 backdrop-blur-sm rounded-2xl p-8 mb-12 border border-slate-600/50"
           >
-            {(() => {
-              const selectedSectionData = salvageSections.find(s => s.id === selectedSection);
-              if (!selectedSectionData) return null;
-              
-              const IconComponent = selectedSectionData.icon;
-              
-              return (
-                <div>
-                  <div className="flex items-center justify-between mb-8">
-                    <div className="flex items-center gap-4">
-                      <div className={`w-16 h-16 rounded-full border-2 border-${selectedSectionData.color}-400/30 bg-${selectedSectionData.color}-400/10 flex items-center justify-center`}>
-                        <IconComponent className={`h-8 w-8 text-${selectedSectionData.color}-400`} />
-                      </div>
-                      <div>
-                        <h3 className="text-2xl font-semibold text-white">{selectedSectionData.content.title}</h3>
-                        <p className="text-gray-400">{selectedSectionData.content.description}</p>
-                      </div>
-                    </div>
-                    <button
-                      onClick={() => setSelectedSection(null)}
-                      className="text-gray-400 hover:text-white transition-colors text-2xl"
-                    >
-                      ×
-                    </button>
-                  </div>
-                  
-                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                    <div>
-                      <h4 className="text-lg font-semibold text-white mb-4">Características</h4>
-                      <div className="space-y-3">
-                        {selectedSectionData.content.details.map((detail, index) => (
-                          <div key={index} className="flex items-center gap-3 text-gray-300">
-                            <div className="w-2 h-2 bg-green-400 rounded-full flex-shrink-0"></div>
-                            <span>{detail}</span>
-                          </div>
-                        ))}
-          </div>
-        </div>
-        
-                    <div>
-                      <h4 className="text-lg font-semibold text-white mb-4">Consejos</h4>
-                      <div className="space-y-3">
-                        {selectedSectionData.content.tips.map((tip, index) => (
-                          <div key={index} className="flex items-start gap-3 text-gray-300">
-                            <div className="w-2 h-2 bg-blue-400 rounded-full mt-2 flex-shrink-0"></div>
-                            <span className="text-sm">{tip}</span>
-                          </div>
-                        ))}
-          </div>
-        </div>
-      </div>
-
-                  <div className="mt-8 pt-6 border-t border-slate-600/50">
-                    <div className="flex gap-4 justify-center">
-                      {selectedSectionData.id === 'unidentified-gear' ? (
-                        <div className="flex gap-3">
-                          <Link href="/salvage/unidentified-gear/common">
-                            <button className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
-                              Common
-                            </button>
-                          </Link>
-                          <Link href="/salvage/unidentified-gear/masterwork">
-                            <button className="px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors">
-                              Masterwork
-                            </button>
-                          </Link>
-                          <Link href="/salvage/unidentified-gear/rare">
-                            <button className="px-6 py-3 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700 transition-colors">
-                              Rare
-                            </button>
-                          </Link>
-                        </div>
-                      ) : (
-                        <Link href={`/salvage/${selectedSectionData.id}`}>
-                          <button className="px-8 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
-                            Abrir {selectedSectionData.name}
-                          </button>
-                        </Link>
-                      )}
-                    </div>
-                  </div>
-                </div>
-              );
-            })()}
+            <div className="text-center mb-6">
+              <h2 className="text-2xl font-semibold text-white mb-3">¿Qué es el Salvaging?</h2>
+              <p className="text-gray-300 text-lg max-w-3xl mx-auto">
+                El <strong className="text-blue-400">salvaging</strong> es el proceso de reciclar equipamiento para obtener materiales. Es una de las formas más rentables de obtener oro en Guild Wars 2, especialmente con ciertos tipos de items.</p>
+            </div>
           </motion.div>
-        )}
 
-        {/* Información Adicional simplificada */}
-        <div className="bg-slate-800/50 rounded-xl p-8 border border-slate-700/50">
-          <h2 className="text-xl font-semibold text-white mb-6 text-center">Información Adicional</h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div className="text-center">
-              <h3 className="text-lg font-semibold text-white mb-4">Salvage Kits</h3>
-              <div className="space-y-2 text-sm text-gray-300">
-                <p><strong>Copper-Fed:</strong> Para Common Unidentified Gear</p>
-                <p><strong>Runecrafter&rsquo;s:</strong> Para Masterwork Gear</p>
-                <p><strong>Silver-Fed:</strong> Para Rare Unidentified Gear</p>
-                <p><strong>Black Lion:</strong> Máxima eficiencia</p>
-              </div>
-            </div>
-            <div className="text-center">
-              <h3 className="text-lg font-semibold text-white mb-4">Estrategias</h3>
-              <div className="space-y-2 text-sm text-gray-300">
-                <p>Investiga precios antes de salvarlo</p>
-                <p>Considera el valor del item completo</p>
-                <p>Usa el kit apropiado para cada tipo</p>
-                <p>Monitorea los precios del Trading Post</p>
-              </div>
-            </div>
-            <div className="text-center">
-              <h3 className="text-lg font-semibold text-white mb-4">Recursos</h3>
-              <div className="space-y-2 text-sm text-gray-300">
-                <p><a href="https://wiki.guildwars2.com/wiki/Salvage_kit" target="_blank" className="text-blue-400 hover:text-blue-300">GW2 Wiki - Salvage Kits</a></p>
-              </div>
+          {/* Secciones principales */}
+          <div className="mb-12">
+            <h2 className="text-3xl font-bold text-white mb-8 text-center">Secciones de Reciclaje</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              {salvageSections.map((section, index) => {
+                const IconComponent = section.icon;
+                return (
+                  <motion.div
+                    key={section.id}
+                    initial={{ opacity: 0, y: 30 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: index * 0.1 }}
+                  >
+                    <Link href={section.href}>
+                      <div className={`group relative overflow-hidden rounded-2xl p-6 bg-gradient-to-br ${section.bgGradient} border ${section.borderColor} hover:scale-105 transition-all duration-300 cursor-pointer h-full`}>
+                        {/* Background Pattern */}
+                        <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                        
+                        {/* Content */}
+                        <div className="relative z-10">
+                          {/* Icon */}
+                          <div className={`w-14 h-14 bg-gradient-to-br from-${section.color}-500/30 to-${section.color}-600/30 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300`}>
+                            <IconComponent className={`h-7 w-7 ${section.textColor}`} />
+                          </div>
+
+                          {/* Title */}
+                          <h3 className="text-lg font-bold text-white mb-2">{section.name}</h3>
+                          <p className="text-sm text-gray-300 mb-4">{section.description}</p>
+
+                          {/* Features */}
+                          <div className="space-y-1 mb-4">
+                            {section.features.slice(0, 2).map((feature, idx) => (
+                              <div key={idx} className="flex items-center gap-2">
+                                <div className={`w-1.5 h-1.5 rounded-full bg-${section.color}-400`}></div>
+                                <span className="text-xs text-gray-300">{feature}</span>
+                              </div>
+                            ))}
+                          </div>
+
+                          {/* Button */}
+                          <div className="flex items-center justify-between">
+                            <span className="text-white font-medium text-sm">Explorar</span>
+                            <ChevronRight className={`h-4 w-4 ${section.textColor} group-hover:translate-x-1 transition-transform duration-300`} />
+                          </div>
+                        </div>
+                      </div>
+                    </Link>
+                  </motion.div>
+                );
+              })}
             </div>
           </div>
+
+          {/* Tips Section */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.6 }}
+            className="bg-gradient-to-r from-slate-800/50 to-slate-700/50 backdrop-blur-sm rounded-2xl p-8 border border-slate-600/50"
+          >
+            <h2 className="text-2xl font-bold text-white mb-6 text-center">Consejos Pro</h2>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+              <div>
+                <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
+                  <div className="w-2 h-2 bg-blue-400 rounded-full"></div>
+                  Salvage Kits
+                </h3>
+                <div className="space-y-3 text-gray-300">
+                  <p><strong className="text-blue-400">Copper-Fed:</strong> Para Common Gear</p>
+                  <p><strong className="text-green-400">Runecrafter&apos;s:</strong> Para Masterwork</p>
+                  <p><strong className="text-yellow-400">Silver-Fed:</strong> Para Rare Gear</p>
+                  <p><strong className="text-purple-400">Black Lion:</strong> Máxima eficiencia</p>
+                </div>
+              </div>
+              <div>
+                <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
+                  <div className="w-2 h-2 bg-green-400 rounded-full"></div>
+                  Estrategias
+                </h3>
+                <div className="space-y-3 text-gray-300">
+                  <p className="flex items-start gap-2">
+                    <span className="text-green-400">•</span>
+                    Investiga precios antes de salvarlo
+                  </p>
+                  <p className="flex items-start gap-2">
+                    <span className="text-green-400">•</span>
+                    Considera el valor del item completo
+                  </p>
+                  <p className="flex items-start gap-2">
+                    <span className="text-green-400">•</span>
+                    Usa el kit apropiado para cada tipo
+                  </p>
+                </div>
+              </div>
+              <div>
+                <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
+                  <div className="w-2 h-2 bg-purple-400 rounded-full"></div>
+                  Recursos
+                </h3>
+                <div className="space-y-3 text-gray-300">
+                  <p><a href="https://wiki.guildwars2.com/wiki/Salvage_kit" target="_blank" className="text-purple-400 hover:text-purple-300">GW2 Wiki - Salvage Kits</a></p>
+                  <p><a href="https://wiki.guildwars2.com/wiki/Salvage" target="_blank" className="text-purple-400 hover:text-purple-300">GW2 Wiki - Salvaging</a></p>
+                </div>
+              </div>
+            </div>
+          </motion.div>
+        </div>
       </div>
-    </div>
     </>
   );
 }
