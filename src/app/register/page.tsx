@@ -28,7 +28,7 @@ export default function RegisterPage() {
   if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-500"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
       </div>
     );
   }
@@ -55,7 +55,7 @@ export default function RegisterPage() {
       </div>
 
       {/* Right Side - Benefits */}
-      <div className="hidden lg:flex flex-1 bg-gradient-to-br from-green-900 to-blue-900 p-8">
+      <div className="hidden lg:flex flex-1 bg-gradient-to-br from-slate-900 to-slate-800 p-8">
         <div className="max-w-md mx-auto flex flex-col justify-center">
           <motion.div
             initial={{ opacity: 0, x: 20 }}
@@ -66,7 +66,7 @@ export default function RegisterPage() {
             <h1 className="text-4xl font-bold text-white mb-4">
               Únete a la Comunidad
             </h1>
-            <p className="text-xl text-green-200">
+            <p className="text-xl text-blue-200">
               Accede a todas las funcionalidades premium
             </p>
           </motion.div>
@@ -79,13 +79,13 @@ export default function RegisterPage() {
           >
             <div className="flex items-start gap-4">
               <div className="flex-shrink-0">
-                <Gift className="w-8 h-8 text-green-400" />
+                <Gift className="w-8 h-8 text-blue-400" />
               </div>
               <div>
                 <h3 className="text-white font-semibold mb-2">
                   Acceso Gratuito
                 </h3>
-                <p className="text-green-200 text-sm">
+                <p className="text-blue-200 text-sm">
                   Todas las funcionalidades están disponibles sin costo alguno.
                 </p>
               </div>
@@ -99,7 +99,7 @@ export default function RegisterPage() {
                 <h3 className="text-white font-semibold mb-2">
                   Datos en Tiempo Real
                 </h3>
-                <p className="text-green-200 text-sm">
+                <p className="text-blue-200 text-sm">
                   Información actualizada constantemente desde la API oficial de GW2.
                 </p>
               </div>
@@ -113,7 +113,7 @@ export default function RegisterPage() {
                 <h3 className="text-white font-semibold mb-2">
                   Personalización
                 </h3>
-                <p className="text-green-200 text-sm">
+                <p className="text-blue-200 text-sm">
                   Guarda tus items favoritos y rutas preferidas para acceso rápido.
                 </p>
               </div>
@@ -127,7 +127,7 @@ export default function RegisterPage() {
                 <h3 className="text-white font-semibold mb-2">
                   Comunidad Activa
                 </h3>
-                <p className="text-green-200 text-sm">
+                <p className="text-blue-200 text-sm">
                   Conecta con otros jugadores y comparte tus estrategias de farming.
                 </p>
               </div>
@@ -143,25 +143,25 @@ export default function RegisterPage() {
             <h3 className="text-white font-semibold mb-2 text-center">
               ¿Por qué registrarse?
             </h3>
-            <ul className="text-green-200 text-sm space-y-2">
+            <ul className="text-blue-200 text-sm space-y-2">
               <li className="flex items-center gap-2">
-                <span className="w-2 h-2 bg-green-400 rounded-full"></span>
+                <span className="w-2 h-2 bg-blue-400 rounded-full"></span>
                 Acceso a todas las funcionalidades
               </li>
               <li className="flex items-center gap-2">
-                <span className="w-2 h-2 bg-green-400 rounded-full"></span>
+                <span className="w-2 h-2 bg-blue-400 rounded-full"></span>
                 Guardar items y rutas favoritas
               </li>
               <li className="flex items-center gap-2">
-                <span className="w-2 h-2 bg-green-400 rounded-full"></span>
+                <span className="w-2 h-2 bg-blue-400 rounded-full"></span>
                 Notificaciones personalizadas
               </li>
               <li className="flex items-center gap-2">
-                <span className="w-2 h-2 bg-green-400 rounded-full"></span>
+                <span className="w-2 h-2 bg-blue-400 rounded-full"></span>
                 Historial de búsquedas
               </li>
               <li className="flex items-center gap-2">
-                <span className="w-2 h-2 bg-green-400 rounded-full"></span>
+                <span className="w-2 h-2 bg-blue-400 rounded-full"></span>
                 Participar en la comunidad
               </li>
             </ul>

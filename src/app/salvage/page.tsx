@@ -20,7 +20,7 @@ export default function SalvagePage() {
       icon: Package,
       color: 'blue',
       content: {
-        title: '¿Qué se puede salvar?',
+        title: '¿Qué se puede reciclar?',
         description: 'Descubre qué tipos de items son rentables para desmontar y obtener materiales.',
         details: [
           'Equipamiento de diferentes rarezas',
@@ -129,7 +129,7 @@ export default function SalvagePage() {
           <div className="text-center mb-8">
             <h2 className="text-2xl font-semibold text-white mb-4">¿Qué es el Salvaging?</h2>
             <p className="text-gray-300 text-lg max-w-3xl mx-auto">
-              El <strong className="text-blue-400">salvaging</strong> es el proceso de desmontar equipamiento para obtener materiales. 
+              El <strong className="text-blue-400">salvaging</strong> es el proceso de reciclar equipamiento para obtener materiales. 
               Es una de las formas más rentables de obtener oro en Guild Wars 2, especialmente con ciertos tipos de items.
             </p>
           </div>

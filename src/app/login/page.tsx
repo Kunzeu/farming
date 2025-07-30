@@ -55,7 +55,7 @@ export default function LoginPage() {
       </div>
 
       {/* Right Side - Features */}
-      <div className="hidden lg:flex flex-1 bg-gradient-to-br from-purple-900 to-blue-900 p-8">
+      <div className="hidden lg:flex flex-1 bg-gradient-to-br from-slate-900 to-slate-800 p-8">
         <div className="max-w-md mx-auto flex flex-col justify-center">
           <motion.div
             initial={{ opacity: 0, x: 20 }}
@@ -66,7 +66,7 @@ export default function LoginPage() {
             <h1 className="text-4xl font-bold text-white mb-4">
               GW2 Farming Hub
             </h1>
-            <p className="text-xl text-purple-200">
+            <p className="text-xl text-blue-200">
               Tu centro de información para Guild Wars 2
             </p>
           </motion.div>
@@ -79,13 +79,13 @@ export default function LoginPage() {
           >
             <div className="flex items-start gap-4">
               <div className="flex-shrink-0">
-                <TrendingUp className="w-8 h-8 text-purple-400" />
+                <TrendingUp className="w-8 h-8 text-blue-400" />
               </div>
               <div>
                 <h3 className="text-white font-semibold mb-2">
                   Precios en Tiempo Real
                 </h3>
-                <p className="text-purple-200 text-sm">
+                <p className="text-blue-200 text-sm">
                   Accede a precios actualizados del Trading Post y análisis de mercado.
                 </p>
               </div>
@@ -99,7 +99,7 @@ export default function LoginPage() {
                 <h3 className="text-white font-semibold mb-2">
                   Rutas Optimizadas
                 </h3>
-                <p className="text-purple-200 text-sm">
+                <p className="text-blue-200 text-sm">
                   Descubre las mejores rutas de farming para maximizar tus ganancias.
                 </p>
               </div>
@@ -113,7 +113,7 @@ export default function LoginPage() {
                 <h3 className="text-white font-semibold mb-2">
                   Comunidad Activa
                 </h3>
-                <p className="text-purple-200 text-sm">
+                <p className="text-blue-200 text-sm">
                   Conecta con otros jugadores y comparte estrategias de farming.
                 </p>
               </div>
@@ -127,7 +127,7 @@ export default function LoginPage() {
                 <h3 className="text-white font-semibold mb-2">
                   Builds Meta
                 </h3>
-                <p className="text-purple-200 text-sm">
+                <p className="text-blue-200 text-sm">
                   Accede a las mejores builds para todas las profesiones.
                 </p>
               </div>
@@ -140,7 +140,7 @@ export default function LoginPage() {
             transition={{ delay: 0.6 }}
             className="mt-12 text-center"
           >
-            <p className="text-purple-300 text-sm">
+            <p className="text-blue-300 text-sm">
               Únete a miles de jugadores que ya confían en GW2 Farming Hub
             </p>
           </motion.div>

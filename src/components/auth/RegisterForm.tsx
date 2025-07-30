@@ -188,7 +188,7 @@ export default function RegisterForm() {
                 value={formData.username}
                 onChange={handleChange}
                 required
-                className={`w-full pl-10 pr-10 py-3 bg-gray-700 border rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent ${
+                className={`w-full pl-10 pr-10 py-3 bg-gray-700 border rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
                   validation.username.isValid 
                     ? 'border-green-600' 
                     : formData.username 
@@ -220,7 +220,7 @@ export default function RegisterForm() {
                 value={formData.email}
                 onChange={handleChange}
                 required
-                className={`w-full pl-10 pr-10 py-3 bg-gray-700 border rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent ${
+                className={`w-full pl-10 pr-10 py-3 bg-gray-700 border rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
                   validation.email.isValid 
                     ? 'border-green-600' 
                     : formData.email 
@@ -252,7 +252,7 @@ export default function RegisterForm() {
                 value={formData.password}
                 onChange={handleChange}
                 required
-                className={`w-full pl-10 pr-12 py-3 bg-gray-700 border rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent ${
+                className={`w-full pl-10 pr-12 py-3 bg-gray-700 border rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
                   validation.password.isValid 
                     ? 'border-green-600' 
                     : formData.password 
@@ -288,7 +288,7 @@ export default function RegisterForm() {
                 value={formData.confirmPassword}
                 onChange={handleChange}
                 required
-                className={`w-full pl-10 pr-12 py-3 bg-gray-700 border rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent ${
+                className={`w-full pl-10 pr-12 py-3 bg-gray-700 border rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
                   validation.confirmPassword.isValid 
                     ? 'border-green-600' 
                     : formData.confirmPassword 
@@ -326,7 +326,7 @@ export default function RegisterForm() {
           <button
             type="submit"
             disabled={isLoading || !isFormValid()}
-            className="w-full py-3 px-4 bg-purple-600 hover:bg-purple-700 disabled:bg-gray-600 disabled:cursor-not-allowed text-white rounded-lg font-medium transition-colors duration-200 flex items-center justify-center gap-2"
+            className="w-full py-3 px-4 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-600 disabled:cursor-not-allowed text-white rounded-lg font-medium transition-colors duration-200 flex items-center justify-center gap-2"
           >
             {isLoading ? (
               <>
@@ -365,7 +365,7 @@ export default function RegisterForm() {
         <div className="mt-6 text-center">
           <p className="text-gray-400 text-sm">
             ¿Ya tienes cuenta?{' '}
-            <a href="/login" className="text-purple-400 hover:text-purple-300 font-medium">
+            <a href="/login" className="text-blue-400 hover:text-blue-300 font-medium">
               Inicia sesión aquí
             </a>
           </p>
