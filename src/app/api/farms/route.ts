@@ -10,12 +10,15 @@ const pool = new Pool({
 export async function GET() {
   try {
     const query = `
-      SELECT id, name, description, estimated_time as "estimatedTime", 
-             estimated_gold as "estimatedGold", estimated_spirit as "estimatedSpirit",
-             expansion, selected, map, requirements, tags, waypoints, type, 
-             created_at as "createdAt", updated_at as "updatedAt"
-      FROM farm_items 
-      ORDER BY created_at DESC
+      SELECT f.id, f.name, f.description, f.estimated_time as "estimatedTime", 
+             f.estimated_gold as "estimatedGold", f.estimated_spirit as "estimatedSpirit",
+             f.expansion, f.selected, f.map, f.requirements, f.tags, f.waypoints, f.type, 
+             f.status, f.created_by as "createdBy", f.created_at as "createdAt", f.updated_at as "updatedAt",
+             f.is_important as "isImportant",
+             u.username as "createdByUsername"
+      FROM farm_items f
+      LEFT JOIN users u ON f.created_by = u.id
+      ORDER BY f.created_at DESC
     `;
     
     const result = await pool.query(query);
@@ -48,13 +51,18 @@ export async function POST(request: NextRequest) {
     
     const query = `
       INSERT INTO farm_items (id, name, description, estimated_time, estimated_gold, 
-                             estimated_spirit, expansion, selected, map, requirements, tags, waypoints, type)
-      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)
+                             estimated_spirit, expansion, selected, map, requirements, tags, waypoints, type,
+                             status, created_by, is_important)
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16)
       RETURNING id, name, description, estimated_time as "estimatedTime", 
                 estimated_gold as "estimatedGold", estimated_spirit as "estimatedSpirit",
                 expansion, selected, map, requirements, tags, waypoints, type, 
-                created_at as "createdAt", updated_at as "updatedAt"
+                status, created_by as "createdBy", created_at as "createdAt", updated_at as "updatedAt",
+                is_important as "isImportant"
     `;
+    
+    // Determinar el status basado en el rol del usuario
+    const status = body.createdByRole === 'admin' ? 'approved' : 'pending';
     
     const values = [
       id, body.name, body.description, body.estimatedTime, body.estimatedGold,
@@ -62,14 +70,20 @@ export async function POST(request: NextRequest) {
       JSON.stringify(body.requirements || []),
       JSON.stringify(body.tags || []),
       JSON.stringify(body.waypoints || []),
-      body.type
+      body.type, status, body.createdBy, body.isImportant || false
     ];
     
     const result = await pool.query(query, values);
     const row = result.rows[0];
     
+    // Obtener el username del creador
+    const userQuery = 'SELECT username FROM users WHERE id = $1';
+    const userResult = await pool.query(userQuery, [row.createdBy]);
+    const createdByUsername = userResult.rows[0]?.username || null;
+    
     const farm = {
       ...row,
+      createdByUsername,
       requirements: row.requirements || [],
       tags: row.tags || [],
       waypoints: row.waypoints || [],

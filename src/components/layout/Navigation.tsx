@@ -32,6 +32,7 @@ const Navigation = () => {
   const { user, isAuthenticated, logout } = useAuth();
   const toolsMenuRef = useRef<HTMLDivElement>(null);
   const mobileMenuRef = useRef<HTMLDivElement>(null);
+  const userMenuRef = useRef<HTMLDivElement>(null);
 
   // Cerrar menús cuando se hace clic fuera
   useEffect(() => {
@@ -43,6 +44,11 @@ const Navigation = () => {
         setIsToolsMenuOpen(false);
       }
       
+      // Cerrar menú de usuario
+      if (userMenuRef.current && !userMenuRef.current.contains(target)) {
+        setIsUserMenuOpen(false);
+      }
+      
       // Cerrar menús móviles
       if (isMobileMenuOpen) {
         const mobileMenuElement = document.querySelector('[data-mobile-menu]');
@@ -52,12 +58,12 @@ const Navigation = () => {
           const isClickInsideMenu = mobileMenuElement.contains(target);
           const isClickInsideButton = mobileButton.contains(target);
           
-                     if (!isClickInsideMenu && !isClickInsideButton) {
-             setIsMobileMenuOpen(false);
-             setIsUserMenuOpen(false);
-             setIsMobileToolsOpen(false);
-             setIsMobileUserOpen(false);
-           }
+          if (!isClickInsideMenu && !isClickInsideButton) {
+            setIsMobileMenuOpen(false);
+            setIsUserMenuOpen(false);
+            setIsMobileToolsOpen(false);
+            setIsMobileUserOpen(false);
+          }
         }
       }
     };
@@ -66,7 +72,7 @@ const Navigation = () => {
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
-  }, [isMobileMenuOpen]);
+  }, [isMobileMenuOpen, isUserMenuOpen]);
 
       const navItems = [
       { href: '/', label: 'Inicio', icon: Home },
@@ -163,7 +169,7 @@ const Navigation = () => {
                          {/* User Menu / Auth Buttons */}
              <div className="flex items-center space-x-4">
                {isAuthenticated ? (
-                 <div className="relative hidden lg:block">
+                 <div className="relative hidden lg:block" ref={userMenuRef}>
                    <button
                      onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
                      className="flex items-center space-x-3 text-gray-300 hover:text-white transition-all duration-200 px-4 py-2 rounded-lg hover:bg-gray-800/50 hover:shadow-md"
@@ -223,6 +229,16 @@ const Navigation = () => {
                            >
                              <Shield className="w-4 h-4" />
                              <span>Panel Administrativo</span>
+                           </Link>
+                         )}
+                         {(user?.role === 'moderator') && (
+                           <Link
+                             href="/moderator"
+                             className="flex items-center space-x-3 px-4 py-2 text-blue-300 hover:text-blue-200 hover:bg-gray-700 transition-colors"
+                             onClick={() => setIsUserMenuOpen(false)}
+                           >
+                             <Shield className="w-4 h-4" />
+                             <span>Panel de Moderación</span>
                            </Link>
                          )}
                        </div>
@@ -377,6 +393,16 @@ const Navigation = () => {
                                      >
                                        <Crown className="w-5 h-5" />
                                        <span className="font-medium">Panel Administrativo</span>
+                                     </Link>
+                                   )}
+                                   {(user?.role === 'moderator') && (
+                                     <Link
+                                       href="/moderator"
+                                       onClick={() => setIsMobileMenuOpen(false)}
+                                       className="flex items-center space-x-3 px-3 py-3 text-blue-300 hover:text-blue-200 hover:bg-gray-700 rounded-md transition-colors duration-200"
+                                     >
+                                       <Shield className="w-5 h-5" />
+                                       <span className="font-medium">Panel de Moderación</span>
                                      </Link>
                                    )}
                                    

@@ -5,12 +5,12 @@ import { motion } from 'framer-motion';
 import Image from 'next/image';
 import Navigation from '@/components/layout/Navigation';
 import AdminRoute from '@/components/auth/AdminRoute';
-import { Plus, Edit, Trash2, Save, X, Map, Clock, Users } from 'lucide-react';
-import { useDatabase, FarmItem, User } from '@/hooks/useDatabase';
+import { Plus, Edit, Trash2, Save, X, Map, Clock, Users, CheckCircle, Calendar, User as UserIcon } from 'lucide-react';
+import { useDatabase, FarmItem, User as UserType } from '@/hooks/useDatabase';
 import ExpansionIcon from '@/components/ui/ExpansionIcon';
 import Modal from '@/components/ui/Modal';
 
-type AdminSection = 'farms' | 'users';
+type AdminSection = 'farms' | 'users' | 'pending-farms';
 
 export default function AdminPanel() {
   const { dbService } = useDatabase();
@@ -176,7 +176,8 @@ export default function AdminPanel() {
     estimatedSpirit: '',
     expansion: ['core'],
     selected: false,
-    type: 'farm'
+    type: 'farm',
+    isImportant: false
   });
 
   // Cargar farms
@@ -220,7 +221,8 @@ export default function AdminPanel() {
         estimatedSpirit: '',
         expansion: ['core'],
         selected: false,
-        type: 'farm'
+        type: 'farm',
+        isImportant: false
       });
 
       setIsCreating(false);
@@ -267,7 +269,8 @@ export default function AdminPanel() {
         estimatedGold: editingFarm.estimatedGold,
         estimatedSpirit: editingFarm.estimatedSpirit,
         expansion: editingFarm.expansion,
-        type: editingFarm.type
+        type: editingFarm.type,
+        isImportant: editingFarm.isImportant
       });
       
       const farmName = editingFarm.name;
@@ -299,10 +302,10 @@ export default function AdminPanel() {
   };
 
   // Estados para usuarios
-  const [users, setUsers] = useState<User[]>([]);
+  const [users, setUsers] = useState<UserType[]>([]);
   const [isLoadingUsers, setIsLoadingUsers] = useState(false);
   const [isCreatingUser, setIsCreatingUser] = useState(false);
-  const [editingUser, setEditingUser] = useState<User | null>(null);
+  const [editingUser, setEditingUser] = useState<UserType | null>(null);
   const [newUser, setNewUser] = useState({
     email: '',
     username: '',
@@ -310,6 +313,10 @@ export default function AdminPanel() {
     role: 'user' as 'user' | 'admin',
     isActive: true
   });
+
+  // Estados para farms pendientes
+  const [pendingFarms, setPendingFarms] = useState<FarmItem[]>([]);
+  const [isLoadingPendingFarms, setIsLoadingPendingFarms] = useState(false);
 
   // Cargar usuarios
   const loadUsers = useCallback(async () => {
@@ -393,13 +400,61 @@ export default function AdminPanel() {
     }
   };
 
+  // Cargar farms pendientes
+  const loadPendingFarms = useCallback(async () => {
+    if (!dbService) return;
+    try {
+      setIsLoadingPendingFarms(true);
+      const allFarms = await dbService.getAllFarms();
+      const pending = allFarms.filter((farm: FarmItem) => farm.status === 'pending');
+      setPendingFarms(pending);
+    } catch (err) {
+      console.error('Error loading pending farms:', err);
+    } finally {
+      setIsLoadingPendingFarms(false);
+    }
+  }, [dbService]);
+
+  // Aprobar farm
+  const handleApproveFarm = async (farmId: string) => {
+    try {
+      await dbService.updateFarm(farmId, { status: 'approved' });
+      await loadPendingFarms();
+      showSuccess('¡Aprobado!', 'Farm aprobado correctamente');
+    } catch (err) {
+      console.error('Error approving farm:', err);
+      showError('Error', 'No se pudo aprobar el farm. Intenta nuevamente.');
+    }
+  };
+
+  // Rechazar farm
+  const handleRejectFarm = async (farmId: string) => {
+    try {
+      await dbService.updateFarm(farmId, { status: 'rejected' });
+      await loadPendingFarms();
+      showSuccess('¡Rechazado!', 'Farm rechazado correctamente');
+    } catch (err) {
+      console.error('Error rejecting farm:', err);
+      showError('Error', 'No se pudo rechazar el farm. Intenta nuevamente.');
+    }
+  };
+
   useEffect(() => {
     if (activeSection === 'farms') {
       loadFarms();
-    } else {
+    } else if (activeSection === 'users') {
       loadUsers();
+    } else if (activeSection === 'pending-farms') {
+      loadPendingFarms();
     }
-  }, [activeSection, loadFarms, loadUsers]);
+  }, [activeSection, loadFarms, loadUsers, loadPendingFarms]);
+
+  // Cargar farms pendientes al inicio para mostrar el contador
+  useEffect(() => {
+    if (dbService) {
+      loadPendingFarms();
+    }
+  }, [dbService, loadPendingFarms]);
 
   const renderFarmsManager = () => (
     <div className="space-y-6">
@@ -535,6 +590,20 @@ export default function AdminPanel() {
                 ))}
               </div>
               <p className="text-xs text-gray-400 mt-1">Selecciona todas las expansiones requeridas</p>
+            </div>
+
+            {/* Farm Importante */}
+            <div>
+              <label className="flex items-center gap-2 p-2 bg-gray-700 rounded-lg border border-gray-600 hover:border-purple-500 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={newFarm.isImportant}
+                  onChange={(e) => setNewFarm({...newFarm, isImportant: e.target.checked})}
+                  className="w-4 h-4 text-purple-600 bg-gray-700 border-gray-600 rounded focus:ring-purple-500"
+                />
+                <span className="text-white text-sm">Marcar como farm importante <span className="text-red-500">*</span></span>
+              </label>
+              <p className="text-xs text-gray-400 mt-1">Los farms importantes se marcan con un asterisco rojo</p>
             </div>
 
             {/* Nota explicativa */}
@@ -683,6 +752,20 @@ export default function AdminPanel() {
               </div>
               <p className="text-xs text-gray-400 mt-1">Selecciona todas las expansiones requeridas</p>
             </div>
+
+            {/* Farm Importante */}
+            <div>
+              <label className="flex items-center gap-2 p-2 bg-gray-700 rounded-lg border border-gray-600 hover:border-purple-500 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={editingFarm.isImportant}
+                  onChange={(e) => setEditingFarm({...editingFarm, isImportant: e.target.checked})}
+                  className="w-4 h-4 text-purple-600 bg-gray-700 border-gray-600 rounded focus:ring-purple-500"
+                />
+                <span className="text-white text-sm">Marcar como farm importante <span className="text-red-500">*</span></span>
+              </label>
+              <p className="text-xs text-gray-400 mt-1">Los farms importantes se marcan con un asterisco rojo</p>
+            </div>
             
             <div className="flex gap-3 mt-6">
               <button
@@ -716,9 +799,26 @@ export default function AdminPanel() {
               animate={{ opacity: 1, y: 0 }}
               className="bg-gray-800 rounded-lg p-4 border border-gray-700"
             >
+              {/* Información del creador */}
+              <div className="mb-3 pb-3 border-b border-gray-700">
+                <div className="flex items-center justify-between text-xs text-gray-400">
+                  <div className="flex items-center gap-1">
+                    <UserIcon className="w-3 h-3" />
+                    <span>Creado por: {farm.createdByUsername || 'Usuario desconocido'}</span>
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <Calendar className="w-3 h-3" />
+                    <span>{new Date(farm.createdAt).toLocaleDateString('es-ES')}</span>
+                  </div>
+                </div>
+              </div>
+
               <div className="flex items-start justify-between mb-3">
                 <div className="flex-1">
-                  <h3 className="text-lg font-semibold text-white mb-1">{farm.name}</h3>
+                  <h3 className="text-lg font-semibold text-white mb-1">
+                    {farm.name}
+                    {farm.isImportant && <span className="text-red-500 ml-1">*</span>}
+                  </h3>
                   <p className="text-gray-400 text-sm">{farm.description}</p>
                 </div>
                 <div className="flex gap-1">
@@ -781,6 +881,124 @@ export default function AdminPanel() {
                 >
                   <Trash2 className="w-4 h-4" />
                   Eliminar
+                </button>
+              </div>
+            </motion.div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+
+  const renderPendingFarmsManager = () => (
+    <div className="space-y-6">
+      {/* Header */}
+      <div className="flex justify-between items-center">
+        <h2 className="text-2xl font-bold text-white">Farms Pendientes de Aprobación</h2>
+        <div className="text-sm text-gray-400">
+          {pendingFarms.length} farm{pendingFarms.length !== 1 ? 's' : ''} pendiente{pendingFarms.length !== 1 ? 's' : ''}
+        </div>
+      </div>
+
+      {/* Farms Pendientes List */}
+      {isLoadingPendingFarms ? (
+        <div className="text-center text-gray-400">Cargando farms pendientes...</div>
+      ) : pendingFarms.length === 0 ? (
+        <div className="text-center text-gray-400 py-8">
+          <div className="text-6xl mb-4">📋</div>
+          <p className="text-lg">No hay farms pendientes de aprobación</p>
+          <p className="text-sm text-gray-500">Los moderadores pueden enviar farms que aparecerán aquí</p>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {pendingFarms.map((farm) => (
+            <motion.div
+              key={farm.id}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="bg-gray-800 rounded-lg p-4 border border-yellow-600/50 relative"
+            >
+              {/* Badge de estado */}
+              <div className="absolute top-2 right-2">
+                <span className="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-yellow-100 text-yellow-800">
+                  Pendiente
+                </span>
+              </div>
+
+              {/* Información del creador */}
+              <div className="mb-3 pb-3 border-b border-gray-700">
+                <div className="flex items-center justify-between text-xs text-gray-400">
+                  <div className="flex items-center gap-1">
+                    <UserIcon className="w-3 h-3" />
+                    <span>Creado por: {farm.createdByUsername || 'Usuario desconocido'}</span>
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <Calendar className="w-3 h-3" />
+                    <span>{new Date(farm.createdAt).toLocaleDateString('es-ES')}</span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="mb-3">
+                <div className="flex items-center gap-2 mb-1">
+                  <h3 className="text-lg font-semibold text-white">
+                    {farm.name}
+                    {farm.isImportant && <span className="text-red-500 ml-1">*</span>}
+                  </h3>
+                  <div className="flex gap-1">
+                    {(Array.isArray(farm.expansion) ? farm.expansion : [farm.expansion]).map((exp) => (
+                      <ExpansionIcon key={exp} expansion={exp} size="sm" variant="compact" />
+                    ))}
+                  </div>
+                </div>
+                <p className="text-gray-400 text-sm">{farm.description}</p>
+              </div>
+              
+              <div className="flex items-center gap-4 text-sm mb-4">
+                <div className="flex items-center gap-1">
+                  <Clock className="w-4 h-4 text-blue-400" />
+                  <span className="text-blue-400">{farm.estimatedTime}</span>
+                </div>
+                {farm.estimatedGold && farm.estimatedGold.trim() && (
+                  <div className="flex items-center gap-1">
+                    <Image 
+                      src="/images/expansions/Gold.png" 
+                      alt="Gold"
+                      width={16}
+                      height={16}
+                      className="w-4 h-4"
+                    />
+                    <span className="text-yellow-400">{farm.estimatedGold}</span>
+                  </div>
+                )}
+                {farm.estimatedSpirit && farm.estimatedSpirit.trim() && (
+                  <div className="flex items-center gap-1">
+                    <Image 
+                      src="/images/expansions/Spirit_Shard.png" 
+                      alt="Spirit Shard"
+                      width={16}
+                      height={16}
+                      className="w-4 h-4"
+                    />
+                    <span className="text-purple-400">{farm.estimatedSpirit}</span>
+                  </div>
+                )}
+              </div>
+              
+              <div className="flex gap-2">
+                <button
+                  onClick={() => handleApproveFarm(farm.id)}
+                  className="flex-1 flex items-center justify-center gap-2 px-3 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors"
+                >
+                  <Save className="w-4 h-4" />
+                  Aprobar
+                </button>
+                <button
+                  onClick={() => handleRejectFarm(farm.id)}
+                  className="flex-1 flex items-center justify-center gap-2 px-3 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors"
+                >
+                  <X className="w-4 h-4" />
+                  Rechazar
                 </button>
               </div>
             </motion.div>
@@ -1073,7 +1291,7 @@ export default function AdminPanel() {
             animate={{ opacity: 1, y: 0 }}
             className="flex justify-center mb-8"
           >
-            <div className="bg-slate-800 p-1 rounded-lg border border-slate-700">
+            <div className="bg-slate-800 p-1 rounded-lg border border-slate-700 flex">
               <button
                 onClick={() => setActiveSection('farms')}
                 className={`flex items-center gap-2 px-6 py-3 rounded-lg transition-colors ${
@@ -1096,7 +1314,22 @@ export default function AdminPanel() {
                 <Users className="w-5 h-5" />
                 Usuarios
               </button>
-              
+              <button
+                onClick={() => setActiveSection('pending-farms')}
+                className={`flex items-center gap-2 px-6 py-3 rounded-lg transition-colors ${
+                  activeSection === 'pending-farms'
+                    ? 'bg-blue-600 text-white'
+                    : 'text-gray-400 hover:text-white'
+                }`}
+              >
+                <CheckCircle className="w-5 h-5" />
+                Pendientes
+                {pendingFarms.length > 0 && (
+                  <span className="inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-white bg-red-600 rounded-full">
+                    {pendingFarms.length}
+                  </span>
+                )}
+              </button>
             </div>
           </motion.div>
 
@@ -1109,7 +1342,7 @@ export default function AdminPanel() {
           >
             {activeSection === 'farms' && renderFarmsManager()}
             {activeSection === 'users' && renderUsersManager()}
-            
+            {activeSection === 'pending-farms' && renderPendingFarmsManager()}
           </motion.div>
         </div>
       </div>

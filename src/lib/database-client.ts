@@ -19,6 +19,12 @@ export interface FarmItem {
     description: string;
   }>;
   type: 'farm' | 'route';
+  status: 'pending' | 'approved' | 'rejected';
+  createdBy: string; // ID del usuario que creó el farm
+  createdByUsername?: string; // Username del creador (para mostrar)
+  isImportant?: boolean; // Indica si el farm es importante
+  lastEditedBy?: string; // ID del moderador que editó el farm
+  lastEditedAt?: string; // Fecha de la última edición por moderador
 }
 
 export interface User {
@@ -63,7 +69,7 @@ class DatabaseClientService {
     }));
   }
 
-  async createFarm(farm: Omit<FarmItem, 'id' | 'createdAt' | 'updatedAt'>): Promise<FarmItem> {
+  async createFarm(farm: Omit<FarmItem, 'id' | 'createdAt' | 'updatedAt'> & { createdByRole: string }): Promise<FarmItem> {
     const response = await fetch('/api/farms', {
       method: 'POST',
       headers: {
@@ -73,7 +79,9 @@ class DatabaseClientService {
     });
     
     if (!response.ok) {
-      throw new Error('Failed to create farm');
+      const errorData = await response.json().catch(() => ({}));
+      console.error('Error creating farm:', errorData);
+      throw new Error(`Failed to create farm: ${errorData.details || errorData.error || 'Unknown error'}`);
     }
     
     const data = await response.json();
@@ -85,7 +93,9 @@ class DatabaseClientService {
   }
 
   async updateFarm(id: string, updates: Partial<FarmItem>): Promise<FarmItem> {
-    // console.log('Enviando actualización de farm:', { id, updates });
+    console.log('🔄 DatabaseClientService.updateFarm - Iniciando...');
+    console.log('🆔 ID:', id);
+    console.log('📝 Updates:', updates);
     
     const response = await fetch(`/api/farms/${id}`, {
       method: 'PUT',
@@ -95,13 +105,18 @@ class DatabaseClientService {
       body: JSON.stringify(updates),
     });
     
+    console.log('📡 Response status:', response.status);
+    console.log('📡 Response ok:', response.ok);
+    
     if (!response.ok) {
       const errorData = await response.text();
-      // console.error('Error response:', response.status, errorData);
+      console.error('❌ Error response:', response.status, errorData);
       throw new Error(`Failed to update farm: ${response.status} - ${errorData}`);
     }
     
     const data = await response.json();
+    console.log('✅ Response data:', data);
+    
     return {
       ...data,
       createdAt: new Date(data.createdAt),

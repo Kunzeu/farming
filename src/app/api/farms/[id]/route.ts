@@ -14,8 +14,9 @@ export async function PUT(
     const body = await request.json();
     const { id } = await params;
     
-    // console.log('PUT /api/farms/[id] - ID:', id);
-    // console.log('PUT /api/farms/[id] - Body:', body);
+    console.log('🔄 PUT /api/farms/[id] - Iniciando actualización...');
+    console.log('🆔 ID:', id);
+    console.log('📝 Body:', body);
     
     // Construir la query dinámicamente solo con los campos que se envían
     const updateFields = [];
@@ -94,6 +95,31 @@ export async function PUT(
       paramIndex++;
     }
     
+    if (body.status !== undefined) {
+      updateFields.push(`status = $${paramIndex}`);
+      values.push(body.status);
+      paramIndex++;
+    }
+    
+    if (body.isImportant !== undefined) {
+      updateFields.push(`is_important = $${paramIndex}`);
+      values.push(body.isImportant);
+      paramIndex++;
+    }
+    
+    // Campos de edición por moderadores (comentados hasta que se ejecute la migración)
+    // if (body.lastEditedBy !== undefined) {
+    //   updateFields.push(`last_edited_by = $${paramIndex}`);
+    //   values.push(body.lastEditedBy);
+    //   paramIndex++;
+    // }
+    
+    // if (body.lastEditedAt !== undefined) {
+    //   updateFields.push(`last_edited_at = $${paramIndex}`);
+    //   values.push(body.lastEditedAt);
+    //   paramIndex++;
+    // }
+    
     // Agregar updated_at automáticamente
     updateFields.push(`updated_at = NOW()`);
     
@@ -107,21 +133,32 @@ export async function PUT(
       RETURNING id, name, description, estimated_time as "estimatedTime", 
                 estimated_gold as "estimatedGold", estimated_spirit as "estimatedSpirit",
                 expansion, selected, map, requirements, tags, waypoints, type, 
-                created_at as "createdAt", updated_at as "updatedAt"
+                status, created_by as "createdBy", created_at as "createdAt", updated_at as "updatedAt",
+                is_important as "isImportant"
     `;
     
-    // console.log('Query:', query);
-    // console.log('Values:', values);
+    console.log('🔍 Query:', query);
+    console.log('📊 Values:', values);
     
     const result = await pool.query(query, values);
     
+    console.log('📋 Query result rows:', result.rows.length);
+    
     if (result.rows.length === 0) {
+      console.log('❌ Farm no encontrado');
       return NextResponse.json({ error: 'Farm no encontrado' }, { status: 404 });
     }
     
     const row = result.rows[0];
+    
+    // Obtener el username del creador
+    const userQuery = 'SELECT username FROM users WHERE id = $1';
+    const userResult = await pool.query(userQuery, [row.createdBy]);
+    const createdByUsername = userResult.rows[0]?.username || null;
+    
     const farm = {
       ...row,
+      createdByUsername,
       expansion: typeof row.expansion === 'string' ? JSON.parse(row.expansion) : row.expansion,
       requirements: row.requirements || [],
       tags: row.tags || [],
@@ -130,6 +167,7 @@ export async function PUT(
       updatedAt: new Date(row.updatedAt)
     };
 
+    console.log('✅ Farm actualizado exitosamente:', farm);
     return NextResponse.json(farm);
   } catch (error) {
     console.error('Error updating farm:', error);

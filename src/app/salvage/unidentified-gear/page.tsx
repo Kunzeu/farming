@@ -18,7 +18,7 @@ export default function UnidentifiedGearPage() {
       borderColor: 'border-blue-500/30',
       textColor: 'text-blue-400',
       href: '/salvage/unidentified-gear/common',
-      features: ['Materiales básicos', 'Bajo costo', 'Alta disponibilidad']
+      features: ['Materiales básicos', 'Bajo costo']
     },
     {
       id: 'masterwork',
@@ -31,7 +31,7 @@ export default function UnidentifiedGearPage() {
       borderColor: 'border-green-500/30',
       textColor: 'text-green-400',
       href: '/salvage/unidentified-gear/masterwork',
-      features: ['Materiales maestros', 'Runecrafter&apos;s Kit', 'Alta rentabilidad']
+      features: ['Materiales maestros', 'Runecrafter&apos;s Kit']
     },
     {
       id: 'rare',
@@ -44,7 +44,7 @@ export default function UnidentifiedGearPage() {
       borderColor: 'border-yellow-500/30',
       textColor: 'text-yellow-400',
       href: '/salvage/unidentified-gear/rare',
-      features: ['Ectos frecuentes', 'Materiales raros', 'Máximo valor']
+      features: ['Ectos frecuentes', 'Materiales raros']
     }
   ];
 

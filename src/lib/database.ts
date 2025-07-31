@@ -18,6 +18,9 @@ export interface FarmItem {
     description: string;
   }>;
   type: 'farm' | 'route';
+  status: 'pending' | 'approved' | 'rejected';
+  createdBy: string; // ID del usuario que creó el farm
+  createdByUsername?: string; // Username del creador (para mostrar)
 }
 
 export interface User {
