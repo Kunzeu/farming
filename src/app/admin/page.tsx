@@ -1265,8 +1265,7 @@ export default function AdminPanel() {
               <select
                 value={editingUser.isActive ? 'active' : 'inactive'}
                 onChange={(e) => setEditingUser({...editingUser, isActive: e.target.value === 'active'})}
-                className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-purple-500"
-              >
+                className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-purple-500">
                 <option value="active">Activo</option>
                 <option value="inactive">Inactivo</option>
               </select>

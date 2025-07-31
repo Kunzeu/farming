@@ -309,7 +309,7 @@ export default function UnidentifiedGearMasterworkPage() {
             </div>
                           <div className="bg-slate-700 rounded-lg p-3">
                 <div className="text-gray-400">Drop rates</div>
-                <div className="text-white font-semibold">Oficiales GW2 Wiki</div>
+                <div className="text-white font-semibold">Estimados</div>
               </div>
             <div className="bg-slate-700 rounded-lg p-3">
               <div className="text-gray-400">Rentabilidad</div>
@@ -402,7 +402,7 @@ export default function UnidentifiedGearMasterworkPage() {
                     Material
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
-                    Drop Rate
+                    Mat por Unidad
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
                     Precio Venta
@@ -419,14 +419,51 @@ export default function UnidentifiedGearMasterworkPage() {
                 </tr>
               </thead>
               <tbody className="bg-slate-800 divide-y divide-slate-700">
-                {results.map((result, index) => (
-                  <motion.tr
-                    key={result.material.id}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: index * 0.05 }}
-                    className="hover:bg-slate-700"
-                  >
+                {results.map((result, index) => {
+                  // Determinar el color de fondo basado en el material
+                  const getRowBackgroundColor = (materialName: string) => {
+                    switch (materialName) {
+                      case 'Seda':
+                      case 'Gasa':
+                        return 'bg-blue-100/10'; // Azul claro/gris
+                      case 'Madera T5':
+                      case 'Madera T6':
+                        return 'bg-orange-100/10'; // Naranja claro/melocotón
+                      case 'Cuero T5':
+                      case 'Cuero T6':
+                        return 'bg-yellow-100/10'; // Amarillo claro
+                      case 'Mithril':
+                      case 'Orica​lco':
+                        return 'bg-gray-100/10'; // Gris claro
+                      case 'Mota':
+                        return 'bg-green-100/10'; // Verde claro
+                      case 'Dolor':
+                        return 'bg-red-100/20'; // Rojo
+                      case 'Mejora':
+                        return 'bg-yellow-100/20'; // Amarillo
+                      case 'Control':
+                        return 'bg-amber-100/20'; // Marrón
+                      case 'Brillantez':
+                        return 'bg-cyan-100/20'; // Cian/azul claro
+                      case 'Potencia':
+                        return 'bg-pink-100/20'; // Rosa
+                      case 'Habilidad':
+                        return 'bg-green-100/20'; // Verde
+                      case 'Ectos':
+                        return 'bg-purple-100/20'; // Púrpura
+                      default:
+                        return 'hover:bg-slate-700';
+                    }
+                  };
+
+                  return (
+                    <motion.tr
+                      key={result.material.id}
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: index * 0.05 }}
+                      className={`${getRowBackgroundColor(result.material.name)} hover:bg-slate-700`}
+                    >
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="flex items-center">
                         {result.material.icon && (
@@ -444,7 +481,7 @@ export default function UnidentifiedGearMasterworkPage() {
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
-                      {(result.material.dropRate * 100).toFixed(3)}%
+                      {result.material.dropRate.toFixed(5)}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
                       {formatCurrency(result.material.sellPrice)}
@@ -457,29 +494,29 @@ export default function UnidentifiedGearMasterworkPage() {
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300 font-medium">
                       {Math.round(result.quantity)}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-semibold text-blue-400">
-                      {formatCurrency(result.totalValue)}
-                    </td>
+                                         <td className="px-6 py-4 whitespace-nowrap text-sm font-semibold text-blue-400">
+                       {formatCurrency(result.totalValue)}
+                     </td>
                   </motion.tr>
-                ))}
+                  );
+                })}
               </tbody>
             </table>
           </div>
         </div>
 
-        {/* Nota informativa */}
-        <div className="mt-6 bg-blue-900/20 border border-blue-700 rounded-lg p-4">
-          <div className="flex items-start gap-3">
-            <Info className="h-5 w-5 text-blue-400 mt-0.5" />
-            <div className="text-sm text-blue-200">
-              <strong>Nota:</strong> Los precios se obtienen en tiempo real desde la <a href="https://api.guildwars2.com/v2/commerce/prices" target="_blank" className="text-blue-300 hover:text-blue-100 underline">API de GW2</a>. 
-              El &quot;Precio Procesado&quot; incluye las comisiones del Trading Post (15% de descuento sobre el precio de venta).
-              El costo de Unidentified Gear usa el precio de compra actual del Trading Post.
-              Los drop rates están basados en datos oficiales de la <a href="https://wiki.guildwars2.com/wiki/Piece_of_Unidentified_Gear/Salvage_Rate" target="_blank" className="text-blue-300 hover:text-blue-100 underline">GW2 Wiki</a>{' '}
-              para <strong>Piece of Unidentified Gear (Masterwork)</strong> abierto y luego reciclado con <strong>Runecrafter&apos;s Salvage-o-Matic</strong>.
-            </div>
-          </div>
-        </div>
+                 {/* Nota informativa */}
+         <div className="mt-6 bg-green-900/20 border border-green-700 rounded-lg p-4">
+           <div className="flex items-start gap-3">
+             <Info className="h-5 w-5 text-green-400 mt-0.5" />
+             <div className="text-sm text-green-200">
+               <strong>Nota:</strong> Los precios se obtienen en tiempo real desde la <a href="https://api.guildwars2.com/v2/commerce/prices" target="_blank" className="text-green-300 hover:text-green-100 underline">API de GW2</a>. 
+               El &quot;Precio Procesado&quot; incluye las comisiones del Trading Post (15% de descuento sobre el precio de venta). 
+               El costo de Unidentified Gear usa el precio de compra actual del Trading Post. 
+               Los drop rates están basados en datos oficiales de la GW2 Wiki para <strong>Piece of Unidentified Gear (Masterwork)</strong> abierto y luego reciclado con <strong>Runecrafter&apos;s Salvage-o-Matic</strong>.
+             </div>
+           </div>
+         </div>
         
         {/* Link a Wiki */}
         <div className="mt-4 text-center">

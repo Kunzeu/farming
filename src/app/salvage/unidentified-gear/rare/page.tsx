@@ -24,24 +24,24 @@ interface SalvageResult {
 }
 
 // Datos base de materiales para Rare Unidentified Gear
-// Basado en datos de GW2 Wiki para Rare Unidentified Gear
+// Basado en datos actualizados de la tabla proporcionada
 const baseMaterials: Omit<Material, 'sellPrice' | 'processedPrice'>[] = [
-  { id: 19748, name: "Seda", icon: "", dropRate: 0.30, category: 'common' },
-  { id: 19745, name: "Gasa", icon: "", dropRate: 0.025, category: 'fine' },
-  { id: 19722, name: "Madera T5", icon: "", dropRate: 0.32, category: 'common' },
-  { id: 19725, name: "Madera T6", icon: "", dropRate: 0.035, category: 'fine' },
-  { id: 19729, name: "Cuero T5", icon: "", dropRate: 0.26, category: 'common' },
-  { id: 19732, name: "Cuero T6", icon: "", dropRate: 0.020, category: 'fine' },
-  { id: 19700, name: "Mithril", icon: "", dropRate: 0.40, category: 'common' },
-  { id: 19701, name: "Orica​lco", icon: "", dropRate: 0.045, category: 'fine' },
-  { id: 89140, name: "Mota", icon: "", dropRate: 0.95, category: 'common' },
-  { id: 89182, name: "Dolor", icon: "", dropRate: 0.005, category: 'rare' },
-  { id: 89141, name: "Mejora", icon: "", dropRate: 0.006, category: 'rare' },
-  { id: 89098, name: "Control", icon: "", dropRate: 0.003, category: 'rare' },
-  { id: 89103, name: "Brillantez", icon: "", dropRate: 0.006, category: 'rare' },
-  { id: 89258, name: "Potencia", icon: "", dropRate: 0.003, category: 'rare' },
-  { id: 89216, name: "Habilidad", icon: "", dropRate: 0.004, category: 'rare' },
-  { id: 19721, name: "Ectos", icon: "", dropRate: 0.25, category: 'exotic' }
+  { id: 19748, name: "Seda", icon: "", dropRate: 0.3201, category: 'common' },
+  { id: 19745, name: "Gasa", icon: "", dropRate: 0.016075, category: 'fine' },
+  { id: 19722, name: "Madera T5", icon: "", dropRate: 0.392925, category: 'common' },
+  { id: 19725, name: "Madera T6", icon: "", dropRate: 0.030075, category: 'fine' },
+  { id: 19729, name: "Cuero T5", icon: "", dropRate: 0.2546, category: 'common' },
+  { id: 19732, name: "Cuero T6", icon: "", dropRate: 0.013925, category: 'fine' },
+  { id: 19700, name: "Mithril", icon: "", dropRate: 0.464475, category: 'common' },
+  { id: 19701, name: "Orica​lco", icon: "", dropRate: 0.0402, category: 'fine' },
+  { id: 89140, name: "Mota", icon: "", dropRate: 1.39165, category: 'common' },
+  { id: 89182, name: "Pain", icon: "", dropRate: 0.0031, category: 'rare' },
+  { id: 89141, name: "Mejora", icon: "", dropRate: 0.0064, category: 'rare' },
+  { id: 89098, name: "Control", icon: "", dropRate: 0.0038, category: 'rare' },
+  { id: 89103, name: "Brillantez", icon: "", dropRate: 0.005675, category: 'rare' },
+  { id: 89258, name: "Potencia", icon: "", dropRate: 0.002675, category: 'rare' },
+  { id: 89216, name: "Habilidad", icon: "", dropRate: 0.00335, category: 'rare' },
+  { id: 19721, name: "Ectos", icon: "", dropRate: 0.88675, category: 'exotic' }
 ];
 
 export default function UnidentifiedGearRarePage() {
@@ -80,19 +80,31 @@ export default function UnidentifiedGearRarePage() {
     
       }
       
-      // Combinar datos
-      const materialsWithPrices: Material[] = baseMaterials.map(baseMaterial => {
-        const itemData = itemsData.find((item: { id: number }) => item.id === baseMaterial.id);
-        const priceData = pricesData.find((price: { id: number }) => price.id === baseMaterial.id);
-        
-        return {
-          ...baseMaterial,
-          name: itemData?.name || baseMaterial.name,
-          icon: itemData?.icon || '',
-          sellPrice: priceData?.sells?.unit_price || 0,
-          processedPrice: Math.ceil((priceData?.sells?.unit_price || 0) * 0.85), // Precio después de fees TP
-        };
-      });
+             // Función para determinar la tasa de procesamiento basada en el ID del material
+       const getProcessingRate = (materialId: number) => {
+         const materialsAt90 = [89182, 89141, 89098, 89103, 89258, 89216, 19721];
+         if (materialsAt90.includes(materialId)) {
+           return 0.90; // 90%
+         } else {
+           return 0.85; // 85% por defecto
+         }
+       };
+
+       // Combinar datos
+       const materialsWithPrices: Material[] = baseMaterials.map(baseMaterial => {
+         const itemData = itemsData.find((item: { id: number }) => item.id === baseMaterial.id);
+         const priceData = pricesData.find((price: { id: number }) => price.id === baseMaterial.id);
+         
+         const processingRate = getProcessingRate(baseMaterial.id);
+         
+         return {
+           ...baseMaterial,
+           name: itemData?.name || baseMaterial.name,
+           icon: itemData?.icon || '',
+           sellPrice: priceData?.sells?.unit_price || 0,
+           processedPrice: Math.ceil((priceData?.sells?.unit_price || 0) * processingRate), // Precio después de fees TP
+         };
+       });
       
       setMaterials(materialsWithPrices);
       const now = new Date();
@@ -277,7 +289,7 @@ export default function UnidentifiedGearRarePage() {
         <div className="bg-slate-800 rounded-lg shadow-md p-6 mb-6 border border-slate-700">
           <div className="flex items-center gap-4 mb-4">
             <Image
-              src="https://render.guildwars2.com/file/68A875CAEC167AE97D3B9248A1014999D40CAEF5/2075500.png"
+              src="https://render.guildwars2.com/file/53BE1B65A817091427E30319C2B2B3777C27A319/855379.png"
               alt="Silver-Fed Salvage-o-Matic"
               width={48}
               height={48}
@@ -292,7 +304,7 @@ export default function UnidentifiedGearRarePage() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
             <div className="bg-slate-700 rounded-lg p-3">
               <div className="text-gray-400">Costo por uso</div>
-              <div className="text-white font-semibold">6 plata</div>
+              <div className="text-white font-semibold">60 cobre</div>
             </div>
             <div className="bg-slate-700 rounded-lg p-3">
               <div className="text-gray-400">Drop rates</div>
@@ -322,13 +334,13 @@ export default function UnidentifiedGearRarePage() {
               />
             </div>
             <div className="flex items-end">
-              <button
-                onClick={fetchPrices}
-                className="px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 transition-colors flex items-center gap-2"
-              >
-                <RefreshCw className="h-4 w-4" />
-                Actualizar Precios
-              </button>
+                             <button
+                 onClick={fetchPrices}
+                 className="px-4 py-2 bg-yellow-600 text-white rounded-md hover:bg-yellow-700 transition-colors flex items-center gap-2"
+               >
+                 <RefreshCw className="h-4 w-4" />
+                 Actualizar Precios
+               </button>
             </div>
           </div>
         </div>
@@ -389,7 +401,7 @@ export default function UnidentifiedGearRarePage() {
                     Material
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
-                    Drop Rate
+                    Mat por Unidad
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
                     Precio Venta
@@ -406,14 +418,51 @@ export default function UnidentifiedGearRarePage() {
                 </tr>
               </thead>
               <tbody className="bg-slate-800 divide-y divide-slate-700">
-                {results.map((result, index) => (
-                  <motion.tr
-                    key={result.material.id}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: index * 0.05 }}
-                    className="hover:bg-slate-700"
-                  >
+                {results.map((result, index) => {
+                  // Determinar el color de fondo basado en el material
+                  const getRowBackgroundColor = (materialName: string) => {
+                    switch (materialName) {
+                      case 'Seda':
+                      case 'Gasa':
+                        return 'bg-blue-100/10'; // Azul claro/gris
+                      case 'Madera T5':
+                      case 'Madera T6':
+                        return 'bg-orange-100/10'; // Naranja claro/melocotón
+                      case 'Cuero T5':
+                      case 'Cuero T6':
+                        return 'bg-yellow-100/10'; // Amarillo claro
+                      case 'Mithril':
+                      case 'Orica​lco':
+                        return 'bg-gray-100/10'; // Gris claro
+                      case 'Mota':
+                        return 'bg-green-100/10'; // Verde claro
+                      case 'Pain':
+                        return 'bg-red-100/20'; // Rojo
+                      case 'Mejora':
+                        return 'bg-yellow-100/20'; // Amarillo
+                      case 'Control':
+                        return 'bg-amber-100/20'; // Marrón
+                      case 'Brillantez':
+                        return 'bg-cyan-100/20'; // Cian/azul claro
+                      case 'Potencia':
+                        return 'bg-pink-100/20'; // Rosa
+                      case 'Habilidad':
+                        return 'bg-green-100/20'; // Verde
+                      case 'Ectos':
+                        return 'bg-purple-100/20'; // Púrpura
+                      default:
+                        return 'hover:bg-slate-700';
+                    }
+                  };
+
+                  return (
+                    <motion.tr
+                      key={result.material.id}
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: index * 0.05 }}
+                      className={`${getRowBackgroundColor(result.material.name)} hover:bg-slate-700`}
+                    >
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="flex items-center">
                         {result.material.icon && (
@@ -431,7 +480,7 @@ export default function UnidentifiedGearRarePage() {
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
-                      {(result.material.dropRate * 100).toFixed(3)}%
+                      {result.material.dropRate.toFixed(5)}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
                       {formatCurrency(result.material.sellPrice)}
@@ -448,25 +497,25 @@ export default function UnidentifiedGearRarePage() {
                       {formatCurrency(result.totalValue)}
                     </td>
                   </motion.tr>
-                ))}
+                  );
+                })}
               </tbody>
             </table>
           </div>
         </div>
 
-        {/* Nota informativa */}
-        <div className="mt-6 bg-purple-900/20 border border-purple-700 rounded-lg p-4">
-          <div className="flex items-start gap-3">
-            <Info className="h-5 w-5 text-purple-400 mt-0.5" />
-            <div className="text-sm text-purple-200">
-              <strong>Nota:</strong> Los precios se obtienen en tiempo real desde la <a href="https://api.guildwars2.com/v2/commerce/prices" target="_blank" className="text-purple-300 hover:text-purple-100 underline">API de GW2</a>. 
-              El &quot;Precio Procesado&quot; incluye las comisiones del Trading Post (15% de descuento sobre el precio de venta).
-              El costo de Rare Unidentified Gear usa el precio de compra actual del Trading Post.
-              Los drop rates son estimados basados en datos de la comunidad para <strong>Piece of Rare Unidentified Gear</strong> abierto y luego reciclado con <strong>Silver-Fed Salvage-o-Matic</strong>.
-              <strong>Ectos</strong> son el principal objetivo de este tipo de salvage.
-            </div>
-          </div>
-        </div>
+                 {/* Nota informativa */}
+         <div className="mt-6 bg-yellow-900/20 border border-yellow-700 rounded-lg p-4">
+           <div className="flex items-start gap-3">
+             <Info className="h-5 w-5 text-yellow-400 mt-0.5" />
+             <div className="text-sm text-yellow-200">
+               <strong>Nota:</strong> Los precios se obtienen en tiempo real desde la <a href="https://api.guildwars2.com/v2/commerce/prices" target="_blank" className="text-yellow-300 hover:text-yellow-100 underline">API de GW2</a>. 
+               El &quot;Precio Procesado&quot; incluye las comisiones del Trading Post (15% de descuento sobre el precio de venta). 
+               El costo de Unidentified Gear usa el precio de compra actual del Trading Post. 
+               Los drop rates están basados en datos oficiales de la GW2 Wiki para <strong>Piece of Unidentified Gear (Rare)</strong> abierto y luego reciclado con <strong>Silver-Fed Salvage-o-Matic</strong>.
+             </div>
+           </div>
+         </div>
         
         {/* Link a Wiki */}
         <div className="mt-4 text-center">
