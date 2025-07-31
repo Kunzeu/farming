@@ -173,18 +173,77 @@ export async function DELETE(
   { params }: { params: Promise<{ id: string }> }
 ) {
   const { id } = await params;
+  
+  // Iniciar transacción
+  const client = await pool.connect();
+  
   try {
-    const query = 'DELETE FROM users WHERE id = $1 RETURNING *';
-    const result = await pool.query(query, [id]);
+    await client.query('BEGIN');
     
-    if (result.rows.length === 0) {
+    // Primero, obtener información del usuario para determinar su rol
+    const userQuery = 'SELECT username, role FROM users WHERE id = $1';
+    const userResult = await client.query(userQuery, [id]);
+    
+    if (userResult.rows.length === 0) {
+      await client.query('ROLLBACK');
       return NextResponse.json({ error: 'User not found' }, { status: 404 });
     }
-
-    return NextResponse.json({ message: 'User deleted successfully' });
+    
+    const username = userResult.rows[0].username;
+    const userRole = userResult.rows[0].role;
+    console.log(`Iniciando eliminación del usuario: ${username} (ID: ${id}, Rol: ${userRole})`);
+    
+    // Contar farms asociados para logging
+    const countQuery = 'SELECT COUNT(*) FROM farm_items WHERE created_by = $1';
+    const countResult = await client.query(countQuery, [id]);
+    const farmCount = parseInt(countResult.rows[0].count);
+    console.log(`Farms asociados encontrados: ${farmCount}`);
+    
+    let farmsPreserved = 0;
+    
+    // Solo moderadores y admins pueden tener farms, así que siempre preservar
+    if (farmCount > 0) {
+      // Preservar farms estableciendo created_by a NULL
+      const preserveFarmsQuery = 'UPDATE farm_items SET created_by = NULL WHERE created_by = $1';
+      const farmsResult = await client.query(preserveFarmsQuery, [id]);
+      farmsPreserved = farmsResult.rowCount || 0;
+      console.log(`Farms preservados para ${userRole}: ${farmsPreserved}`);
+    }
+    
+    // Ahora eliminar el usuario
+    const deleteUserQuery = 'DELETE FROM users WHERE id = $1 RETURNING *';
+    const userDeleteResult = await client.query(deleteUserQuery, [id]);
+    
+    if (userDeleteResult.rows.length === 0) {
+      await client.query('ROLLBACK');
+      return NextResponse.json({ error: 'User not found' }, { status: 404 });
+    }
+    
+    // Confirmar transacción
+    await client.query('COMMIT');
+    
+    console.log(`${userRole} ${username} eliminado exitosamente. ${farmsPreserved} farms preservados.`);
+    
+    return NextResponse.json({ 
+      message: 'User deleted successfully',
+      farmsDeleted: 0, // Siempre 0 ya que preservamos todos los farms
+      farmsPreserved: farmsPreserved,
+      userRole: userRole
+    });
     
   } catch (error) {
+    // Revertir transacción en caso de error
+    await client.query('ROLLBACK');
     console.error('Error deleting user:', error);
-    return NextResponse.json({ error: 'Error deleting user' }, { status: 500 });
+    
+    // Proporcionar mensaje de error más específico
+    let errorMessage = 'Error interno del servidor al eliminar usuario';
+    if (error instanceof Error) {
+      errorMessage = error.message;
+    }
+    
+    return NextResponse.json({ error: errorMessage }, { status: 500 });
+  } finally {
+    client.release();
   }
 } 

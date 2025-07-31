@@ -5,11 +5,10 @@ import { motion } from 'framer-motion';
 import Image from 'next/image';
 import Navigation from '@/components/layout/Navigation';
 import AdminRoute from '@/components/auth/AdminRoute';
-import { Plus, Edit, Trash2, Save, X, Map, Clock, Users, CheckCircle, Calendar, User as UserIcon } from 'lucide-react';
+import { Plus, Edit, Trash2, Save, X, Map, Clock, Users, CheckCircle, Calendar, User as UserIcon, ArrowDown, AlertCircle } from 'lucide-react';
 import { useDatabase, FarmItem, User as UserType } from '@/hooks/useDatabase';
 import { useAuth } from '@/contexts/AuthContext';
 import ExpansionIcon from '@/components/ui/ExpansionIcon';
-import Modal from '@/components/ui/Modal';
 
 type AdminSection = 'farms' | 'users' | 'pending-farms';
 
@@ -18,8 +17,14 @@ export default function AdminPanel() {
   const { user } = useAuth();
   const [activeSection, setActiveSection] = useState<AdminSection>('farms');
   const [farms, setFarms] = useState<FarmItem[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
   const [isCreating, setIsCreating] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
+  const [isCreatingUser, setIsCreatingUser] = useState(false);
+  const [isEditingUser, setIsEditingUser] = useState(false);
+  const [isLoadingPendingFarms, setIsLoadingPendingFarms] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [userToDelete, setUserToDelete] = useState<any>(null);
   const [editingFarm, setEditingFarm] = useState<FarmItem | null>(null);
   
   // Modal state
@@ -320,7 +325,6 @@ export default function AdminPanel() {
   // Estados para usuarios
   const [users, setUsers] = useState<UserType[]>([]);
   const [isLoadingUsers, setIsLoadingUsers] = useState(false);
-  const [isCreatingUser, setIsCreatingUser] = useState(false);
   const [editingUser, setEditingUser] = useState<UserType | null>(null);
   const [userSearchQuery, setUserSearchQuery] = useState('');
   const [newUser, setNewUser] = useState({
@@ -333,7 +337,6 @@ export default function AdminPanel() {
 
   // Estados para farms pendientes
   const [pendingFarms, setPendingFarms] = useState<FarmItem[]>([]);
-  const [isLoadingPendingFarms, setIsLoadingPendingFarms] = useState(false);
 
   // Cargar usuarios
   const loadUsers = useCallback(async () => {
@@ -385,13 +388,51 @@ export default function AdminPanel() {
 
   // Eliminar usuario
   const handleDeleteUser = async (id: string) => {
-    if (confirm('¿Estás seguro de que quieres eliminar este usuario?')) {
+    const userToDelete = users.find(user => user.id === id);
+    if (userToDelete) {
+      setUserToDelete(userToDelete);
+      setShowDeleteModal(true);
+    }
+  };
+
+  // Confirmar eliminación de usuario
+  const confirmDeleteUser = async () => {
+    if (!userToDelete) return;
+    
+    try {
+      const result = await dbService.deleteUser(userToDelete.id);
+      await loadUsers();
+      
+      let successMessage = `El usuario "${userToDelete.username}" ha sido eliminado correctamente.`;
+      if (result.farmsPreserved > 0) {
+        successMessage += ` ${result.farmsPreserved} farms han sido preservados.`;
+      } else {
+        successMessage += ' No había farms asociados.';
+      }
+      
+      showSuccess('Usuario eliminado', successMessage);
+    } catch (err) {
+      console.error('Error deleting user:', err);
+      showError('Error al eliminar usuario', err instanceof Error ? err.message : 'Error desconocido');
+    } finally {
+      setShowDeleteModal(false);
+      setUserToDelete(null);
+    }
+  };
+
+  // Cambiar rol de moderador a usuario
+  const handleDowngradeUser = async (id: string) => {
+    const userToDowngrade = users.find(user => user.id === id);
+    const userName = userToDowngrade ? userToDowngrade.username : 'este usuario';
+
+    if (confirm(`¿Estás seguro de que quieres cambiar el rol de "${userName}" de moderador a usuario? Los farms creados por este usuario se mantendrán.`)) {
       try {
-        await dbService.deleteUser(id);
+        await dbService.updateUser(id, { role: 'user' });
         await loadUsers();
+        showSuccess('Rol actualizado', `El usuario "${userName}" ahora tiene rol de usuario. Los farms se mantienen.`);
       } catch (err) {
-        console.error('Error deleting user:', err);
-        showError('Error', 'No se pudo eliminar el usuario. Intenta nuevamente.');
+        console.error('Error downgrading user:', err);
+        showError('Error al cambiar rol', err instanceof Error ? err.message : 'Error desconocido');
       }
     }
   };
@@ -465,11 +506,9 @@ export default function AdminPanel() {
   // Función para limpiar farms rechazados existentes (one-time cleanup)
   const handleCleanupRejectedFarms = async () => {
     try {
-
+      setIsLoading(true);
       const allFarms = await dbService.getAllFarms();
       const rejectedFarms = allFarms.filter((farm: FarmItem) => farm.status === 'rejected');
-      
-
       
       if (rejectedFarms.length === 0) {
         showSuccess('Limpieza completada', 'No hay farms rechazados para eliminar');
@@ -478,11 +517,9 @@ export default function AdminPanel() {
       
       // Eliminar cada farm rechazado
       for (const farm of rejectedFarms) {
-
         await dbService.deleteFarm(farm.id);
       }
       
-
       showSuccess('Limpieza completada', `${rejectedFarms.length} farm(s) rechazado(s) eliminado(s) correctamente`);
       
       // Recargar datos
@@ -491,6 +528,8 @@ export default function AdminPanel() {
     } catch (err) {
       console.error('❌ Error durante la limpieza:', err);
       showError('Error', 'No se pudo completar la limpieza de farms rechazados');
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -1326,12 +1365,23 @@ export default function AdminPanel() {
                       <button
                         onClick={() => setEditingUser(user)}
                         className="text-blue-400 hover:text-blue-300"
+                        title="Editar usuario"
                       >
                         <Edit className="w-4 h-4" />
                       </button>
+                      {user.role === 'moderator' && (
+                        <button
+                          onClick={() => handleDowngradeUser(user.id)}
+                          className="text-yellow-400 hover:text-yellow-300"
+                          title="Cambiar rol a usuario"
+                        >
+                          <ArrowDown className="w-4 h-4" />
+                        </button>
+                      )}
                       <button
                         onClick={() => handleDeleteUser(user.id)}
                         className="text-red-400 hover:text-red-300"
+                        title="Eliminar usuario"
                       >
                         <Trash2 className="w-4 h-4" />
                       </button>
@@ -1427,13 +1477,97 @@ export default function AdminPanel() {
       </div>
 
       {/* Modal de notificaciones */}
-      <Modal
-        isOpen={modal.isOpen}
-        onClose={closeModal}
-        type={modal.type}
-        title={modal.title}
-        message={modal.message}
-      />
+      {modal.isOpen && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+          <div className="bg-gray-800 rounded-lg shadow-xl max-w-md w-full border border-gray-700">
+            {/* Header */}
+            <div className="flex items-center justify-between p-6 border-b border-gray-700">
+              <div className="flex items-center gap-3">
+                {modal.type === 'success' ? (
+                  <CheckCircle className="w-6 h-6 text-green-400" />
+                ) : (
+                  <AlertCircle className="w-6 h-6 text-red-400" />
+                )}
+                <h3 className="text-lg font-semibold text-white">
+                  {modal.title}
+                </h3>
+              </div>
+              <button
+                onClick={closeModal}
+                className="text-gray-400 hover:text-white transition-colors"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            
+            {/* Content */}
+            <div className="p-6">
+              <p className="text-gray-300">
+                {modal.message}
+              </p>
+            </div>
+            
+            {/* Footer */}
+            <div className="flex justify-end gap-3 p-6 border-t border-gray-700">
+              <button
+                onClick={closeModal}
+                className="px-4 py-2 rounded-lg font-medium transition-colors bg-gray-600 hover:bg-gray-700 text-white"
+              >
+                Aceptar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+      
+      {/* Modal de confirmación de eliminación de usuario */}
+      {showDeleteModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+          <div className="bg-gray-800 rounded-lg shadow-xl max-w-md w-full border border-gray-700">
+            {/* Header */}
+            <div className="flex items-center justify-between p-6 border-b border-gray-700">
+              <div className="flex items-center gap-3">
+                <AlertCircle className="w-6 h-6 text-red-400" />
+                <h3 className="text-lg font-semibold text-red-400">
+                  Confirmar Eliminación
+                </h3>
+              </div>
+              <button
+                onClick={() => setShowDeleteModal(false)}
+                className="text-gray-400 hover:text-white transition-colors"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            
+            {/* Content */}
+            <div className="p-6">
+              <p className="text-gray-300">
+                ¿Estás seguro de que quieres eliminar al usuario <span className="font-semibold text-white">"{userToDelete?.username}"</span>?
+              </p>
+              <p className="text-gray-400 text-sm mt-2">
+                Los farms creados por este usuario se preservarán. Esta acción no se puede deshacer.
+              </p>
+            </div>
+            
+            {/* Footer */}
+            <div className="flex justify-end gap-3 p-6 border-t border-gray-700">
+              <button
+                onClick={() => setShowDeleteModal(false)}
+                className="px-4 py-2 rounded-lg font-medium transition-colors bg-gray-600 hover:bg-gray-700 text-white"
+              >
+                Cancelar
+              </button>
+              <button
+                onClick={confirmDeleteUser}
+                className="px-4 py-2 rounded-lg font-medium transition-colors bg-red-600 hover:bg-red-700 text-white"
+              >
+                Eliminar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
       
     </AdminRoute>
   );

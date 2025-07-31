@@ -70,6 +70,22 @@ export async function POST(request: NextRequest) {
       }, { status: 400 });
     }
 
+    // Validar que createdByRole esté presente y sea válido
+    if (!body.createdByRole) {
+      return NextResponse.json({ 
+        error: 'Validation error', 
+        details: 'createdByRole is required'
+      }, { status: 400 });
+    }
+
+    // Validar que solo moderadores y admins puedan crear farms
+    if (body.createdByRole === 'user') {
+      return NextResponse.json({ 
+        error: 'Permission denied', 
+        details: 'Regular users cannot create farms. Only moderators and admins can create farms.'
+      }, { status: 403 });
+    }
+
     const id = crypto.randomUUID();
     
     const query = `

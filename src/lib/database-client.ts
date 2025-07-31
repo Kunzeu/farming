@@ -197,7 +197,7 @@ class DatabaseClientService {
     };
   }
 
-  async deleteUser(id: string): Promise<void> {
+  async deleteUser(id: string): Promise<{ farmsDeleted: number; farmsPreserved: number; userRole: string }> {
     const response = await fetch(`/api/users/${id}`, {
       method: 'DELETE',
     });
@@ -205,6 +205,13 @@ class DatabaseClientService {
     if (!response.ok) {
       throw new Error('Failed to delete user');
     }
+    
+    const data = await response.json();
+    return {
+      farmsDeleted: data.farmsDeleted || 0,
+      farmsPreserved: data.farmsPreserved || 0,
+      userRole: data.userRole || 'unknown'
+    };
   }
 
   async getUserByEmail(email: string): Promise<User | null> {
