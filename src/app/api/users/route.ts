@@ -37,9 +37,9 @@ const pool = new Pool({
 // Verificar conexión
 pool.query('SELECT NOW()', (err) => {
   if (err) {
-    console.error('Database connection error:', err);
+    
   } else {
-    console.log('Database connected successfully');
+    
   }
 });
 
@@ -144,8 +144,7 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    console.log('Creating user with data:', body);
-    console.log('Discord ID being sent:', body.discordId);
+    
     
     // Validar que email, username y discordId sean únicos
     const checkQuery = `
@@ -187,7 +186,7 @@ export async function POST(request: NextRequest) {
     `;
     
     const values = [id, body.email, body.username, body.password, body.role, body.isActive, body.discordId];
-    console.log('Executing query with values:', values);
+    
     const result = await pool.query(query, values);
     const row = result.rows[0];
     
@@ -197,7 +196,7 @@ export async function POST(request: NextRequest) {
       updatedAt: new Date(row.updatedAt)
     };
 
-    console.log('User created successfully:', user);
+    
     return NextResponse.json(user);
   } catch (error) {
     console.error('Error creating user:', error);

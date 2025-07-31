@@ -16,11 +16,8 @@ export async function POST(request: NextRequest) {
     const clientSecret = process.env.DISCORD_CLIENT_SECRET;
     const redirectUri = process.env.DISCORD_REDIRECT_URI;
 
-    console.log('Discord OAuth variables:', {
-      clientId: clientId ? 'defined' : 'undefined',
-      clientSecret: clientSecret ? 'defined' : 'undefined',
-      redirectUri: redirectUri ? 'defined' : 'undefined'
-    });
+
+
 
     if (!clientId || !clientSecret || !redirectUri) {
       console.error('Missing Discord OAuth environment variables');

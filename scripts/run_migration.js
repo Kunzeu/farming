@@ -10,7 +10,7 @@ const pool = new Pool({
 
 async function runMigration() {
   try {
-    console.log('🔄 Ejecutando migración para agregar campos de edición por moderadores...');
+    
     
     // Leer el archivo SQL
     const migrationPath = path.join(__dirname, '..', 'add_farm_editing_fields.sql');
@@ -19,8 +19,7 @@ async function runMigration() {
     // Ejecutar la migración
     const result = await pool.query(migrationSQL);
     
-    console.log('✅ Migración ejecutada exitosamente');
-    console.log('📋 Resultados de verificación:');
+
     console.table(result.rows);
     
   } catch (error) {

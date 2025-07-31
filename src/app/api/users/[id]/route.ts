@@ -36,9 +36,9 @@ const pool = new Pool({
 // Verificar conexión
 pool.query('SELECT NOW()', (err) => {
   if (err) {
-    console.error('Database connection error:', err);
+    
   } else {
-    console.log('Database connected successfully');
+    
   }
 });
 
@@ -81,7 +81,7 @@ export async function PUT(
   const { id } = await params;
   try {
     const body = await request.json();
-    console.log('Updating user with data:', body);
+    
     
     // Validar que el rol sea válido
     const validRoles = ['user', 'admin', 'moderator'];
@@ -144,8 +144,7 @@ export async function PUT(
                 created_at as "createdAt", updated_at as "updatedAt", discord_id as "discordId"
     `;
     
-    console.log('Executing update query:', query);
-    console.log('With values:', values);
+    
     
     const result = await pool.query(query, values);
     
@@ -160,7 +159,7 @@ export async function PUT(
       updatedAt: new Date(row.updatedAt)
     };
 
-    console.log('User updated successfully:', user);
+    
     return NextResponse.json(user);
     
   } catch (error) {

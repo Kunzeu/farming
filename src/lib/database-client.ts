@@ -51,7 +51,7 @@ export interface User {
 class DatabaseClientService {
   async init(): Promise<void> {
     // No need to initialize anything for HTTP client
-    console.log('✅ Database client ready');
+
   }
 
   // Farm methods
@@ -93,9 +93,7 @@ class DatabaseClientService {
   }
 
   async updateFarm(id: string, updates: Partial<FarmItem>): Promise<FarmItem> {
-    console.log('🔄 DatabaseClientService.updateFarm - Iniciando...');
-    console.log('🆔 ID:', id);
-    console.log('📝 Updates:', updates);
+    
     
     const response = await fetch(`/api/farms/${id}`, {
       method: 'PUT',
@@ -105,17 +103,16 @@ class DatabaseClientService {
       body: JSON.stringify(updates),
     });
     
-    console.log('📡 Response status:', response.status);
-    console.log('📡 Response ok:', response.ok);
+    
     
     if (!response.ok) {
       const errorData = await response.text();
-      console.error('❌ Error response:', response.status, errorData);
+      
       throw new Error(`Failed to update farm: ${response.status} - ${errorData}`);
     }
     
     const data = await response.json();
-    console.log('✅ Response data:', data);
+    
     
     return {
       ...data,
@@ -125,22 +122,21 @@ class DatabaseClientService {
   }
 
   async deleteFarm(id: string): Promise<void> {
-    console.log('🗑️ DatabaseClientService.deleteFarm - Iniciando...');
-    console.log('🆔 ID a eliminar:', id);
+    
     
     const response = await fetch(`/api/farms/${id}`, {
       method: 'DELETE',
     });
     
-    console.log('📡 Response status:', response.status);
+    
     
     if (!response.ok) {
       const errorText = await response.text();
-      console.error('❌ Error response:', errorText);
+      
       throw new Error(`Failed to delete farm: ${response.status} ${errorText}`);
     }
     
-    console.log('✅ Farm eliminado exitosamente');
+    
   }
 
   // User methods

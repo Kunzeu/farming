@@ -177,7 +177,7 @@ export default function DailyRoutine() {
       const seconds = parseInt(parts[2]) || 0;
       const totalMinutes = hours * 60 + minutes + Math.round(seconds / 60);
       
-      // console.log(`⏰ Parsing time "${timeStr}":`, { parts, hours, minutes, seconds, totalMinutes });
+  
       
       return totalMinutes;
     }
@@ -202,13 +202,6 @@ export default function DailyRoutine() {
   
   // Debug: ver farms seleccionados
   const selectedFarmsData = Array.from(selectedFarms).map(id => farms.find(farm => farm.id === id)).filter(Boolean) as FarmItem[];
-  console.log('🎯 FARMS SELECCIONADOS:', selectedFarmsData.map(farm => ({
-    name: farm.name,
-    time: farm.estimatedTime,
-    gold: farm.estimatedGold,
-    spirit: farm.estimatedSpirit,
-    spiritType: typeof farm.estimatedSpirit
-  })));
   const totalEstimatedTime = selectedFarmsData
     .reduce((total, farm) => {
       const timeInMinutes = parseTimeToMinutes(farm.estimatedTime);
@@ -266,14 +259,7 @@ export default function DailyRoutine() {
   };
 
   // Debug: totales finales
-  console.log('📊 TOTALES FINALES:', {
-    farms: selectedFarmsCount,
-    timeMinutes: totalEstimatedTime,
-    timeFormatted: formatMinutesToReadable(totalEstimatedTime),
-    spiritShards: Math.round(totalSpiritShards),
-    goldCopper: Math.round(totalEstimatedGold),
-    goldFormatted: formatGoldTotal(Math.round(totalEstimatedGold))
-  });
+
 
   return (
     <div className="min-h-screen">

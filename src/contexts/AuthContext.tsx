@@ -282,7 +282,7 @@ function AuthProviderInternal({ children }: { children: ReactNode }) {
       }
 
       const discordUser = await userResponse.json();
-      console.log('Discord user data:', discordUser);
+  
 
       // Buscar o crear usuario en la base de datos
       const { getDbService } = await import('@/lib/database-switch');
@@ -290,10 +290,10 @@ function AuthProviderInternal({ children }: { children: ReactNode }) {
 
       // Buscar usuario existente por Discord ID
       let dbUser = await dbService.getUserByDiscordId(discordUser.id);
-      console.log('Existing user found:', dbUser);
+      
 
       if (!dbUser) {
-        console.log('Creating new user with Discord ID:', discordUser.id);
+        
         // Crear nuevo usuario
         const createdUser = await dbService.createUser({
           email: discordUser.email,
@@ -303,7 +303,7 @@ function AuthProviderInternal({ children }: { children: ReactNode }) {
           isActive: true,
         });
         
-        console.log('User created successfully:', createdUser);
+        
         // Usar el usuario recién creado
         dbUser = createdUser;
       }

@@ -77,7 +77,7 @@ export default function UnidentifiedGearRarePage() {
       if (unidGearData.buys && unidGearData.buys.unit_price) {
         setUnidentifiedGearPrice(unidGearData.buys.unit_price);
       } else {
-        console.warn('No se pudo obtener el precio de Rare Unidentified Gear');
+    
       }
       
       // Combinar datos

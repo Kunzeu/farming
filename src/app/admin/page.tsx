@@ -215,7 +215,7 @@ export default function AdminPanel() {
     }
 
     try {
-      console.log('Creating farm with data:', newFarm);
+
       await dbService.createFarm(newFarm);
       
       // Limpiar formulario
@@ -260,7 +260,7 @@ export default function AdminPanel() {
     }
 
     try {
-      // console.log('Actualizando farm con datos:', {
+
       //   name: editingFarm.name,
       //   description: editingFarm.description,
       //   estimatedTime: editingFarm.estimatedTime,
@@ -417,16 +417,9 @@ export default function AdminPanel() {
       const allFarms = await dbService.getAllFarms();
       const pendingFarms = allFarms.filter((farm: FarmItem) => farm.status === 'pending');
       
-      console.log('📊 Total de farms cargados en admin:', allFarms.length);
-      console.log('⏳ Farms pendientes:', pendingFarms.length);
+
       
-      // Verificar si hay farms rechazados (temporal para debugging)
-      const rejectedFarms = allFarms.filter((farm: FarmItem) => farm.status === 'rejected');
-      console.log('❌ Farms rechazados encontrados en admin:', rejectedFarms.length);
-      if (rejectedFarms.length > 0) {
-        console.log('📋 Farms rechazados en admin:', rejectedFarms.map((f: FarmItem) => ({ id: f.id, name: f.name, createdBy: f.createdBy })));
-      }
-      
+
       setPendingFarms(pendingFarms);
     } catch (error) {
       console.error('Error loading pending farms:', error);
@@ -450,11 +443,9 @@ export default function AdminPanel() {
   // Rechazar farm (eliminar completamente)
   const handleRejectFarm = async (farmId: string) => {
     try {
-      console.log('🗑️ Iniciando eliminación del farm:', farmId);
+
       await dbService.deleteFarm(farmId);
-      console.log('✅ Farm eliminado de la base de datos');
       await loadPendingFarms();
-      console.log('✅ Lista de farms pendientes actualizada');
       showSuccess('¡Eliminado!', 'Farm rechazado y eliminado correctamente');
     } catch (err) {
       console.error('❌ Error rejecting farm:', err);
@@ -465,11 +456,11 @@ export default function AdminPanel() {
   // Función para limpiar farms rechazados existentes (one-time cleanup)
   const handleCleanupRejectedFarms = async () => {
     try {
-      console.log('🧹 Iniciando limpieza de farms rechazados...');
+
       const allFarms = await dbService.getAllFarms();
       const rejectedFarms = allFarms.filter((farm: FarmItem) => farm.status === 'rejected');
       
-      console.log(`📋 Encontrados ${rejectedFarms.length} farms rechazados para eliminar`);
+
       
       if (rejectedFarms.length === 0) {
         showSuccess('Limpieza completada', 'No hay farms rechazados para eliminar');
@@ -478,11 +469,11 @@ export default function AdminPanel() {
       
       // Eliminar cada farm rechazado
       for (const farm of rejectedFarms) {
-        console.log(`🗑️ Eliminando farm rechazado: ${farm.id} - ${farm.name}`);
+
         await dbService.deleteFarm(farm.id);
       }
       
-      console.log('✅ Limpieza de farms rechazados completada');
+
       showSuccess('Limpieza completada', `${rejectedFarms.length} farm(s) rechazado(s) eliminado(s) correctamente`);
       
       // Recargar datos
@@ -922,7 +913,7 @@ export default function AdminPanel() {
                       ...farm,
                       expansion: Array.isArray(farm.expansion) ? farm.expansion : [farm.expansion]
                     };
-                    // console.log('Editando farm:', farmToEdit);
+              
                     setEditingFarm(farmToEdit);
                   }}
                   className="flex-1 flex items-center justify-center gap-2 px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors"

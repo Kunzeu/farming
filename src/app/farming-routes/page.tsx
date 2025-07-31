@@ -52,8 +52,7 @@ export default function FarmingRoutes() {
       const allRoutes = await dbService.getAllFarms();
       const approvedRoutes = allRoutes.filter((route: FarmItem) => route.status === 'approved');
       setFarmingRoutes(approvedRoutes);
-    } catch (err) {
-      console.error('Error loading routes:', err);
+    } catch {
       setError('Error al cargar las rutas desde la base de datos');
     } finally {
       setIsLoading(false);

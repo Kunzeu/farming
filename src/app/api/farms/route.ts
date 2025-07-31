@@ -46,7 +46,7 @@ export async function GET() {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    console.log('POST /api/farms - Received body:', body);
+
     const id = crypto.randomUUID();
     
     const query = `

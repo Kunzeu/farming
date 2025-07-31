@@ -145,29 +145,19 @@ export default function ModeratorPanel() {
     
     try {
       setIsLoading(true);
-      console.log('🔄 Cargando datos del moderador...');
+
       
       // Cargar farms del moderador
       const allFarms = await dbService.getAllFarms();
-      console.log('📊 Total de farms cargados:', allFarms.length);
-      console.log('📋 Farms con sus estados:', allFarms.map((f: FarmItem) => ({ id: f.id, name: f.name, status: f.status, createdBy: f.createdBy })));
+      
       
       const myFarms = allFarms.filter((farm: FarmItem) => farm.createdBy === user?.id && farm.status !== 'rejected');
-      console.log('👤 Mis farms (filtrados por createdBy y sin rechazados):', myFarms.length);
-      console.log('📋 Mis farms:', myFarms.map((f: FarmItem) => ({ id: f.id, name: f.name, status: f.status })));
+      
       
       const pending = allFarms.filter((farm: FarmItem) => farm.status === 'pending');
       const published = allFarms.filter((farm: FarmItem) => farm.status === 'approved');
       
-      console.log('⏳ Farms pendientes:', pending.length);
-      console.log('✅ Farms publicados:', published.length);
       
-      // Verificar si hay farms rechazados (temporal para debugging)
-      const rejectedFarms = allFarms.filter((farm: FarmItem) => farm.status === 'rejected');
-      console.log('❌ Farms rechazados encontrados:', rejectedFarms.length);
-      if (rejectedFarms.length > 0) {
-        console.log('📋 Farms rechazados:', rejectedFarms.map((f: FarmItem) => ({ id: f.id, name: f.name, createdBy: f.createdBy })));
-      }
       
       setFarms(myFarms);
       setPendingFarms(pending);
@@ -187,23 +177,21 @@ export default function ModeratorPanel() {
 
   // Actualizar farm
   const handleUpdateFarm = async () => {
-    console.log('🔄 Iniciando actualización de farm...');
-    console.log('📝 editingFarm:', editingFarm);
-    console.log('👤 user:', user);
+    
     
     if (!editingFarm) {
-      console.log('❌ No hay farm en edición');
+
       return;
     }
     
     if (!editingFarm.name.trim() || !editingFarm.description.trim() || !editingFarm.estimatedTime.trim()) {
-      console.log('❌ Validación fallida: campos requeridos vacíos');
+
       showError('Error de validación', 'Nombre, descripción y tiempo son campos requeridos');
       return;
     }
 
     if (!editingFarm.estimatedGold.trim() && !editingFarm.estimatedSpirit?.trim()) {
-      console.log('❌ Validación fallida: no hay oro ni spirit shards');
+
       showError('Error de validación', 'Debe especificar al menos oro estimado o spirit shards');
       return;
     }
@@ -211,10 +199,7 @@ export default function ModeratorPanel() {
     try {
       // Determinar si es edición limitada (farm aprobado que no es del moderador)
       const isLimitedEdit = editingFarm.status === 'approved' && editingFarm.createdBy !== user?.id;
-      console.log('🔍 Es edición limitada:', isLimitedEdit);
-      console.log('📊 Estado del farm:', editingFarm.status);
-      console.log('👤 Creador del farm:', editingFarm.createdBy);
-      console.log('👤 Usuario actual:', user?.id);
+
       
       const updateData = isLimitedEdit ? {
         // Solo campos editables para farms publicados
@@ -236,12 +221,11 @@ export default function ModeratorPanel() {
         type: editingFarm.type
       };
 
-      console.log('📤 Datos a enviar:', updateData);
-      console.log('🆔 ID del farm:', editingFarm.id);
+
 
       await dbService.updateFarm(editingFarm.id, updateData);
       
-      console.log('✅ Farm actualizado exitosamente');
+
       await loadData();
       setEditingFarm(null);
       showSuccess('Éxito', 'Farm actualizado correctamente.');
@@ -264,7 +248,7 @@ export default function ModeratorPanel() {
     }
 
     try {
-      console.log('Creating farm with data:', newFarm);
+
       await dbService.createFarm({
         ...newFarm,
         createdBy: user?.id || '',

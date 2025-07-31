@@ -71,7 +71,7 @@ export default function UnidentifiedGearCommonPage() {
       if (unidGearData.buys && unidGearData.buys.unit_price) {
         setUnidentifiedGearPrice(unidGearData.buys.unit_price);
       } else {
-        console.warn('No se pudo obtener el precio de Common Unidentified Gear');
+    
       }
       
       // Combinar datos

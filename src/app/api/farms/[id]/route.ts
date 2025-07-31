@@ -14,9 +14,7 @@ export async function PUT(
     const body = await request.json();
     const { id } = await params;
     
-    console.log('🔄 PUT /api/farms/[id] - Iniciando actualización...');
-    console.log('🆔 ID:', id);
-    console.log('📝 Body:', body);
+
     
     // Construir la query dinámicamente solo con los campos que se envían
     const updateFields = [];
@@ -137,15 +135,11 @@ export async function PUT(
                 is_important as "isImportant"
     `;
     
-    console.log('🔍 Query:', query);
-    console.log('📊 Values:', values);
+    
     
     const result = await pool.query(query, values);
     
-    console.log('📋 Query result rows:', result.rows.length);
-    
     if (result.rows.length === 0) {
-      console.log('❌ Farm no encontrado');
       return NextResponse.json({ error: 'Farm no encontrado' }, { status: 404 });
     }
     
@@ -167,7 +161,7 @@ export async function PUT(
       updatedAt: new Date(row.updatedAt)
     };
 
-    console.log('✅ Farm actualizado exitosamente:', farm);
+
     return NextResponse.json(farm);
   } catch (error) {
     console.error('Error updating farm:', error);
@@ -186,23 +180,18 @@ export async function DELETE(
   try {
     const { id } = await params;
     
-    console.log('🗑️ DELETE /api/farms/[id] - Iniciando eliminación...');
-    console.log('🆔 ID a eliminar:', id);
+
     
     const query = 'DELETE FROM farm_items WHERE id = $1 RETURNING id';
-    console.log('🔍 Query:', query);
-    console.log('📊 Values:', [id]);
+
     
     const result = await pool.query(query, [id]);
     
-    console.log('📋 Query result rows:', result.rows.length);
-    
     if (result.rows.length === 0) {
-      console.log('❌ Farm no encontrado en la base de datos');
       return NextResponse.json({ error: 'Farm no encontrado' }, { status: 404 });
     }
 
-    console.log('✅ Farm eliminado exitosamente de la base de datos');
+
     return NextResponse.json({ message: 'Farm eliminado exitosamente' });
   } catch (error) {
     console.error('❌ Error deleting farm:', error);

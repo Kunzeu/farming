@@ -78,7 +78,7 @@ export default function UnidentifiedGearMasterworkPage() {
       if (unidGearData.buys && unidGearData.buys.unit_price) {
         setUnidentifiedGearPrice(unidGearData.buys.unit_price);
       } else {
-        console.warn('No se pudo obtener el precio de Unidentified Gear');
+    
       }
       
       // Combinar datos
