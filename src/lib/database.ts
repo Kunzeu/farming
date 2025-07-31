@@ -17,7 +17,6 @@ export interface FarmItem {
     coordinates: [number, number];
     description: string;
   }>;
-  type: 'farm' | 'route';
   status: 'pending' | 'approved' | 'rejected';
   createdBy: string; // ID del usuario que creó el farm
   createdByUsername?: string; // Username del creador (para mostrar)

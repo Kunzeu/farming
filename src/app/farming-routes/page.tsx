@@ -274,62 +274,9 @@ export default function FarmingRoutes() {
                    )}
                 </div>
 
-              {/* Map */}
-              {route.map && (
-                <div className="mb-4">
-                  <div className="flex items-center gap-2">
-                    <Map className="w-5 h-5 text-green-400" />
-                    <div>
-                      <p className="text-gray-400 text-xs">Mapa</p>
-                      <p className="text-green-400 font-semibold">{route.map}</p>
-                    </div>
-                  </div>
-                </div>
-              )}
 
-              {/* Requirements */}
-              {route.requirements && route.requirements.length > 0 && (
-                <div className="mb-4">
-                  <p className="text-gray-400 text-xs mb-2">Requisitos:</p>
-                  <div className="flex flex-wrap gap-2">
-                    {route.requirements.map((req, idx) => (
-                      <span key={idx} className="px-2 py-1 bg-gray-700 rounded text-xs text-gray-300">
-                        {req}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              )}
 
-              {/* Tags */}
-              {route.tags && route.tags.length > 0 && (
-                <div className="mb-4">
-                  <p className="text-gray-400 text-xs mb-2">Tags:</p>
-                  <div className="flex flex-wrap gap-2">
-                    {route.tags.map((tag, idx) => (
-                      <span key={idx} className="px-2 py-1 bg-blue-900/30 rounded text-xs text-blue-300">
-                        {tag}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              )}
 
-              {/* Waypoints */}
-              {route.waypoints && route.waypoints.length > 0 && (
-                <div>
-                  <p className="text-gray-400 text-xs mb-2">Waypoints:</p>
-                  <div className="space-y-1">
-                    {route.waypoints.map((wp, idx) => (
-                      <div key={idx} className="flex items-center gap-2 text-sm">
-                        <span className="text-blue-400 font-mono">{wp.name}</span>
-                        <span className="text-gray-500">-</span>
-                        <span className="text-gray-300">{wp.description}</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
             </motion.div>
           ))}
         </motion.div>

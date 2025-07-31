@@ -176,13 +176,21 @@ export default function AdminPanel() {
     estimatedTime: '',
     estimatedGold: '',
     estimatedSpirit: '',
-    expansion: ['core'],
+    expansion: [],
     selected: false,
-    type: 'farm',
-    isImportant: false,
     status: 'approved',
-    createdBy: user?.id || ''
+    createdBy: ''
   });
+
+  // Actualizar createdBy cuando el usuario esté disponible
+  useEffect(() => {
+    if (user?.id) {
+      setNewFarm(prev => ({
+        ...prev,
+        createdBy: user.id
+      }));
+    }
+  }, [user?.id]);
 
   // Cargar farms
   const loadFarms = useCallback(async () => {
@@ -216,22 +224,23 @@ export default function AdminPanel() {
 
     try {
 
-      await dbService.createFarm(newFarm);
+      await dbService.createFarm({
+        ...newFarm,
+        createdByRole: 'admin'
+      });
       
       // Limpiar formulario
-      setNewFarm({
+      setNewFarm(prev => ({
         name: '',
         description: '',
         estimatedTime: '',
         estimatedGold: '',
         estimatedSpirit: '',
-        expansion: ['core'],
+        expansion: [],
         selected: false,
-        type: 'farm',
-        isImportant: false,
         status: 'approved',
-        createdBy: user?.id || ''
-      });
+        createdBy: user?.id || prev.createdBy
+      }));
 
       setIsCreating(false);
       await loadFarms();
@@ -276,9 +285,8 @@ export default function AdminPanel() {
         estimatedTime: editingFarm.estimatedTime,
         estimatedGold: editingFarm.estimatedGold,
         estimatedSpirit: editingFarm.estimatedSpirit,
-        expansion: editingFarm.expansion,
-        type: editingFarm.type,
-        isImportant: editingFarm.isImportant
+        expansion: editingFarm.expansion
+
       });
       
       const farmName = editingFarm.name;
@@ -314,11 +322,12 @@ export default function AdminPanel() {
   const [isLoadingUsers, setIsLoadingUsers] = useState(false);
   const [isCreatingUser, setIsCreatingUser] = useState(false);
   const [editingUser, setEditingUser] = useState<UserType | null>(null);
+  const [userSearchQuery, setUserSearchQuery] = useState('');
   const [newUser, setNewUser] = useState({
     email: '',
     username: '',
     password: '',
-    role: 'user' as 'user' | 'admin',
+    role: 'user' as 'user' | 'admin' | 'moderator',
     isActive: true
   });
 
@@ -361,7 +370,7 @@ export default function AdminPanel() {
         email: '',
         username: '',
         password: '',
-        role: 'user',
+        role: 'user' as 'user' | 'admin' | 'moderator',
         isActive: true
       });
       setIsCreatingUser(false);
@@ -638,19 +647,7 @@ export default function AdminPanel() {
               <p className="text-xs text-gray-400 mt-1">Selecciona todas las expansiones requeridas</p>
             </div>
 
-            {/* Farm Importante */}
-            <div>
-              <label className="flex items-center gap-2 p-2 bg-gray-700 rounded-lg border border-gray-600 hover:border-purple-500 cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={newFarm.isImportant}
-                  onChange={(e) => setNewFarm({...newFarm, isImportant: e.target.checked})}
-                  className="w-4 h-4 text-purple-600 bg-gray-700 border-gray-600 rounded focus:ring-purple-500"
-                />
-                <span className="text-white text-sm">Marcar como farm importante <span className="text-red-500">*</span></span>
-              </label>
-              <p className="text-xs text-gray-400 mt-1">Los farms importantes se marcan con un asterisco rojo</p>
-            </div>
+
 
             {/* Nota explicativa */}
             <div className="bg-blue-900/30 border border-blue-500/30 rounded-lg p-3 mt-4">
@@ -799,19 +796,7 @@ export default function AdminPanel() {
               <p className="text-xs text-gray-400 mt-1">Selecciona todas las expansiones requeridas</p>
             </div>
 
-            {/* Farm Importante */}
-            <div>
-              <label className="flex items-center gap-2 p-2 bg-gray-700 rounded-lg border border-gray-600 hover:border-purple-500 cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={editingFarm.isImportant}
-                  onChange={(e) => setEditingFarm({...editingFarm, isImportant: e.target.checked})}
-                  className="w-4 h-4 text-purple-600 bg-gray-700 border-gray-600 rounded focus:ring-purple-500"
-                />
-                <span className="text-white text-sm">Marcar como farm importante <span className="text-red-500">*</span></span>
-              </label>
-              <p className="text-xs text-gray-400 mt-1">Los farms importantes se marcan con un asterisco rojo</p>
-            </div>
+
             
             <div className="flex gap-3 mt-6">
               <button
@@ -863,7 +848,6 @@ export default function AdminPanel() {
                 <div className="flex-1">
                   <h3 className="text-lg font-semibold text-white mb-1">
                     {farm.name}
-                    {farm.isImportant && <span className="text-red-500 ml-1">*</span>}
                   </h3>
                   <p className="text-gray-400 text-sm">{farm.description}</p>
                 </div>
@@ -999,7 +983,6 @@ export default function AdminPanel() {
                 <div className="flex items-center gap-2 mb-1">
                   <h3 className="text-lg font-semibold text-white">
                     {farm.name}
-                    {farm.isImportant && <span className="text-red-500 ml-1">*</span>}
                   </h3>
                   <div className="flex gap-1">
                     {(Array.isArray(farm.expansion) ? farm.expansion : [farm.expansion]).map((exp) => (
@@ -1064,18 +1047,43 @@ export default function AdminPanel() {
     </div>
   );
 
-  const renderUsersManager = () => (
+  const renderUsersManager = () => {
+    // Filtrar usuarios basado en la búsqueda
+    const filteredUsers = users.filter(user => {
+      const searchLower = userSearchQuery.toLowerCase();
+      return (
+        user.username.toLowerCase().includes(searchLower) ||
+        user.email.toLowerCase().includes(searchLower)
+      );
+    });
+
+    return (
     <div className="space-y-6">
-      {/* Create User Button */}
-      <div className="flex justify-between items-center">
+      {/* Header con búsqueda y botón crear */}
+      <div className="flex flex-col md:flex-row gap-4 justify-between items-start md:items-center">
         <h2 className="text-2xl font-bold text-white">Gestión de Usuarios</h2>
-        <button
-          onClick={() => setIsCreatingUser(true)}
-          className="flex items-center gap-2 px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors"
-        >
-          <Plus className="w-4 h-4" />
-          Nuevo Usuario
-        </button>
+        
+        <div className="flex flex-col sm:flex-row gap-4 w-full md:w-auto">
+          {/* Buscador */}
+          <div className="relative flex-1 sm:flex-none">
+            <input
+              type="text"
+              placeholder="Buscar por username o email..."
+              value={userSearchQuery}
+              onChange={(e) => setUserSearchQuery(e.target.value)}
+              className="w-full sm:w-80 pl-10 pr-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+            />
+            <UserIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+          </div>
+          
+          <button
+            onClick={() => setIsCreatingUser(true)}
+            className="flex items-center gap-2 px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors"
+          >
+            <Plus className="w-4 h-4" />
+            Nuevo Usuario
+          </button>
+        </div>
       </div>
 
       {/* Create User Modal */}
@@ -1133,10 +1141,11 @@ export default function AdminPanel() {
               </label>
               <select
                 value={newUser.role}
-                onChange={(e) => setNewUser({...newUser, role: e.target.value as 'user' | 'admin'})}
+                onChange={(e) => setNewUser({...newUser, role: e.target.value as 'user' | 'admin' | 'moderator'})}
                 className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-purple-500"
               >
                 <option value="user">Usuario</option>
+                <option value="moderator">Moderador</option>
                 <option value="admin">Administrador</option>
               </select>
             </div>
@@ -1250,7 +1259,17 @@ export default function AdminPanel() {
       {isLoadingUsers ? (
         <div className="text-center text-gray-400">Cargando usuarios...</div>
       ) : (
-        <div className="bg-gray-800 rounded-lg border border-gray-700 overflow-hidden">
+        <>
+          {/* Contador de resultados */}
+          <div className="text-sm text-gray-400 mb-4">
+            {userSearchQuery ? (
+              <span>Mostrando {filteredUsers.length} de {users.length} usuarios</span>
+            ) : (
+              <span>Total de usuarios: {users.length}</span>
+            )}
+          </div>
+          
+          <div className="bg-gray-800 rounded-lg border border-gray-700 overflow-hidden">
           <table className="w-full">
             <thead className="bg-gray-700">
               <tr>
@@ -1272,7 +1291,7 @@ export default function AdminPanel() {
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-700">
-              {users.map((user) => (
+              {filteredUsers.map((user) => (
                 <tr key={user.id} className="hover:bg-gray-700">
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="flex items-center">
@@ -1286,9 +1305,11 @@ export default function AdminPanel() {
                     <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
                       user.role === 'admin' 
                         ? 'bg-purple-100 text-purple-800' 
+                        : user.role === 'moderator'
+                        ? 'bg-orange-100 text-orange-800'
                         : 'bg-blue-100 text-blue-800'
                     }`}>
-                      {user.role === 'admin' ? 'Administrador' : 'Usuario'}
+                      {user.role === 'admin' ? 'Administrador' : user.role === 'moderator' ? 'Moderador' : 'Usuario'}
                     </span>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
@@ -1321,9 +1342,11 @@ export default function AdminPanel() {
             </tbody>
           </table>
         </div>
+        </>
       )}
     </div>
   );
+  };
 
   return (
     <AdminRoute>

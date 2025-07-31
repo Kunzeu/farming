@@ -63,35 +63,7 @@ export async function PUT(
       paramIndex++;
     }
     
-    if (body.map !== undefined) {
-      updateFields.push(`map = $${paramIndex}`);
-      values.push(body.map);
-      paramIndex++;
-    }
-    
-    if (body.requirements !== undefined) {
-      updateFields.push(`requirements = $${paramIndex}`);
-      values.push(JSON.stringify(body.requirements));
-      paramIndex++;
-    }
-    
-    if (body.tags !== undefined) {
-      updateFields.push(`tags = $${paramIndex}`);
-      values.push(JSON.stringify(body.tags));
-      paramIndex++;
-    }
-    
-    if (body.waypoints !== undefined) {
-      updateFields.push(`waypoints = $${paramIndex}`);
-      values.push(JSON.stringify(body.waypoints));
-      paramIndex++;
-    }
-    
-    if (body.type !== undefined) {
-      updateFields.push(`type = $${paramIndex}`);
-      values.push(body.type);
-      paramIndex++;
-    }
+
     
     if (body.status !== undefined) {
       updateFields.push(`status = $${paramIndex}`);
@@ -99,11 +71,7 @@ export async function PUT(
       paramIndex++;
     }
     
-    if (body.isImportant !== undefined) {
-      updateFields.push(`is_important = $${paramIndex}`);
-      values.push(body.isImportant);
-      paramIndex++;
-    }
+
     
     // Campos de edición por moderadores (comentados hasta que se ejecute la migración)
     // if (body.lastEditedBy !== undefined) {
@@ -130,9 +98,8 @@ export async function PUT(
       WHERE id = $${paramIndex}
       RETURNING id, name, description, estimated_time as "estimatedTime", 
                 estimated_gold as "estimatedGold", estimated_spirit as "estimatedSpirit",
-                expansion, selected, map, requirements, tags, waypoints, type, 
-                status, created_by as "createdBy", created_at as "createdAt", updated_at as "updatedAt",
-                is_important as "isImportant"
+                expansion, selected, status, created_by as "createdBy", 
+                created_at as "createdAt", updated_at as "updatedAt"
     `;
     
     
@@ -154,9 +121,6 @@ export async function PUT(
       ...row,
       createdByUsername,
       expansion: typeof row.expansion === 'string' ? JSON.parse(row.expansion) : row.expansion,
-      requirements: row.requirements || [],
-      tags: row.tags || [],
-      waypoints: row.waypoints || [],
       createdAt: new Date(row.createdAt),
       updatedAt: new Date(row.updatedAt)
     };

@@ -10,21 +10,9 @@ export interface FarmItem {
   selected: boolean;
   createdAt: Date;
   updatedAt: Date;
-  map?: string;
-  requirements?: string[];
-  tags?: string[];
-  waypoints?: Array<{
-    name: string;
-    coordinates: [number, number];
-    description: string;
-  }>;
-  type: 'farm' | 'route';
   status: 'pending' | 'approved' | 'rejected';
   createdBy: string; // ID del usuario que creó el farm
   createdByUsername?: string; // Username del creador (para mostrar)
-  isImportant?: boolean; // Indica si el farm es importante
-  lastEditedBy?: string; // ID del moderador que editó el farm
-  lastEditedAt?: string; // Fecha de la última edición por moderador
 }
 
 export interface User {
@@ -79,9 +67,17 @@ class DatabaseClientService {
     });
     
     if (!response.ok) {
-      const errorData = await response.json().catch(() => ({}));
-      console.error('Error creating farm:', errorData);
-      throw new Error(`Failed to create farm: ${errorData.details || errorData.error || 'Unknown error'}`);
+      let errorMessage = 'Unknown error';
+      try {
+        const errorData = await response.json();
+        errorMessage = errorData.details || errorData.error || `HTTP ${response.status}: ${response.statusText}`;
+      } catch {
+        // Si no se puede parsear como JSON, usar el texto de la respuesta
+        const errorText = await response.text();
+        errorMessage = errorText || `HTTP ${response.status}: ${response.statusText}`;
+      }
+      console.error('Error creating farm:', errorMessage);
+      throw new Error(`Failed to create farm: ${errorMessage}`);
     }
     
     const data = await response.json();

@@ -30,16 +30,21 @@ export default function ModeratorPanel() {
     estimatedTime: '',
     estimatedGold: '',
     estimatedSpirit: '',
-    expansion: ['core'],
+    expansion: [],
     selected: false,
-    type: 'farm',
     status: 'pending',
-    createdBy: '',
-    map: '',
-    requirements: [],
-    tags: [],
-    waypoints: []
+    createdBy: ''
   });
+
+  // Actualizar createdBy cuando el usuario esté disponible
+  useEffect(() => {
+    if (user?.id) {
+      setNewFarm(prev => ({
+        ...prev,
+        createdBy: user.id
+      }));
+    }
+  }, [user?.id]);
   
   // Modal state
   const [modal, setModal] = useState<{
@@ -217,8 +222,7 @@ export default function ModeratorPanel() {
         estimatedTime: editingFarm.estimatedTime,
         estimatedGold: editingFarm.estimatedGold,
         estimatedSpirit: editingFarm.estimatedSpirit,
-        expansion: editingFarm.expansion,
-        type: editingFarm.type
+        expansion: editingFarm.expansion
       };
 
 
@@ -256,22 +260,17 @@ export default function ModeratorPanel() {
       });
       
       // Reset form
-      setNewFarm({
+      setNewFarm(prev => ({
         name: '',
         description: '',
         estimatedTime: '',
         estimatedGold: '',
         estimatedSpirit: '',
-        expansion: ['core'],
+        expansion: [],
         selected: false,
-        type: 'farm',
         status: 'pending',
-        createdBy: '',
-        map: '',
-        requirements: [],
-        tags: [],
-        waypoints: []
-      });
+        createdBy: user?.id || prev.createdBy
+      }));
       setIsCreating(false);
       await loadData();
       

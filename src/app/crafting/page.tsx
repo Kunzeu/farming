@@ -49,7 +49,7 @@ const CraftingPage = () => {
   // Materiales T6 de la imagen con sus IDs de GW2
   const t6Materials = useMemo(() => [
     { id: 24295, name: 'Vial of Powerful Blood', t5Id: 24294 },
-    { id: 24358, name: 'Ancient Bone', t5Id: 24356 },
+    { id: 24358, name: 'Ancient Bone', t5Id: 24341 },
     { id: 24351, name: 'Vicious Claw', t5Id: 24350 },
     { id: 24357, name: 'Vicious Fang', t5Id: 24356 },
     { id: 24289, name: 'Armored Scale', t5Id: 24288 },
@@ -96,6 +96,8 @@ const CraftingPage = () => {
       const crystallineDustBuyPrice = pricesMap[conversionMaterials.crystallineDust]?.buys?.unit_price || 0;
       const crystallineDustSellPrice = pricesMap[conversionMaterials.crystallineDust]?.sells?.unit_price || 0;
       
+
+      
       // Calcular los 4 valores para comparación
               const valor1 = Math.ceil(crystallineDustSellPrice * 0.90); // Precio Sell al 90%
       const valor2 = crystallineDustBuyPrice; // Precio Buy
@@ -104,8 +106,10 @@ const CraftingPage = () => {
       
       // Encontrar el menor valor
       const menorValor = Math.min(valor1, valor2, valor3, valor4);
+      
 
-      const calculatedConversions: ConversionItem[] = t6Materials.map(t6 => {
+
+              const calculatedConversions: ConversionItem[] = t6Materials.map(t6 => {
         const t5BuyPrice = pricesMap[t6.t5Id]?.buys?.unit_price || 0; // Precio de compra del T5
         const t6SellPrice = pricesMap[t6.id]?.sells?.unit_price || 0;
 
@@ -167,10 +171,8 @@ const CraftingPage = () => {
 
   // Función para color de ganancia
   const getProfitColor = (profit: number) => {
-    if (profit > 11000) return 'bg-green-600'; // > 1.1 Gold
-    if (profit > 7000) return 'bg-green-500';  // > 0.7 Gold
-    if (profit > 3500) return 'bg-yellow-500'; // > 0.35 Gold
-    if (profit > 0) return 'bg-orange-500';   // > 0 Gold
+    if (profit > 6000) return 'bg-green-500';  // > 0.7 Gold
+    if (profit > 0) return 'bg-yellow-500';   // > 0 Gold
     return 'bg-red-600';                    // Pérdida
   };
 

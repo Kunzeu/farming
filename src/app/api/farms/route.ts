@@ -12,9 +12,8 @@ export async function GET() {
     const query = `
       SELECT f.id, f.name, f.description, f.estimated_time as "estimatedTime", 
              f.estimated_gold as "estimatedGold", f.estimated_spirit as "estimatedSpirit",
-             f.expansion, f.selected, f.map, f.requirements, f.tags, f.waypoints, f.type, 
-             f.status, f.created_by as "createdBy", f.created_at as "createdAt", f.updated_at as "updatedAt",
-             f.is_important as "isImportant",
+             f.expansion, f.selected, f.status, f.created_by as "createdBy", 
+             f.created_at as "createdAt", f.updated_at as "updatedAt",
              u.username as "createdByUsername"
       FROM farm_items f
       LEFT JOIN users u ON f.created_by = u.id
@@ -25,9 +24,6 @@ export async function GET() {
     const farms = result.rows.map(row => ({
       ...row,
       expansion: typeof row.expansion === 'string' ? JSON.parse(row.expansion) : row.expansion,
-      requirements: row.requirements || [],
-      tags: row.tags || [],
-      waypoints: row.waypoints || [],
       createdAt: new Date(row.createdAt),
       updatedAt: new Date(row.updatedAt)
     }));
@@ -46,19 +42,44 @@ export async function GET() {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
+    
+    // Debug: Log the received data
+    console.log('Received farm data:', JSON.stringify(body, null, 2));
+
+    // Validar campos requeridos
+    if (!body.name || !body.description || !body.estimatedTime) {
+      return NextResponse.json({ 
+        error: 'Validation error', 
+        details: 'Name, description, and estimatedTime are required fields'
+      }, { status: 400 });
+    }
+
+    // Validar que al menos uno de estimatedGold o estimatedSpirit esté presente
+    if (!body.estimatedGold && !body.estimatedSpirit) {
+      return NextResponse.json({ 
+        error: 'Validation error', 
+        details: 'At least one of estimatedGold or estimatedSpirit must be provided'
+      }, { status: 400 });
+    }
+
+    // Validar que createdBy esté presente
+    if (!body.createdBy) {
+      return NextResponse.json({ 
+        error: 'Validation error', 
+        details: 'createdBy is required'
+      }, { status: 400 });
+    }
 
     const id = crypto.randomUUID();
     
     const query = `
       INSERT INTO farm_items (id, name, description, estimated_time, estimated_gold, 
-                             estimated_spirit, expansion, selected, map, requirements, tags, waypoints, type,
-                             status, created_by, is_important)
-      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16)
+                             estimated_spirit, expansion, selected, status, created_by)
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
       RETURNING id, name, description, estimated_time as "estimatedTime", 
                 estimated_gold as "estimatedGold", estimated_spirit as "estimatedSpirit",
-                expansion, selected, map, requirements, tags, waypoints, type, 
-                status, created_by as "createdBy", created_at as "createdAt", updated_at as "updatedAt",
-                is_important as "isImportant"
+                expansion, selected, status, created_by as "createdBy", 
+                created_at as "createdAt", updated_at as "updatedAt"
     `;
     
     // Determinar el status basado en el rol del usuario
@@ -66,11 +87,7 @@ export async function POST(request: NextRequest) {
     
     const values = [
       id, body.name, body.description, body.estimatedTime, body.estimatedGold,
-      body.estimatedSpirit, JSON.stringify(body.expansion), body.selected, body.map, 
-      JSON.stringify(body.requirements || []),
-      JSON.stringify(body.tags || []),
-      JSON.stringify(body.waypoints || []),
-      body.type, status, body.createdBy, body.isImportant || false
+      body.estimatedSpirit, JSON.stringify(body.expansion), body.selected, status, body.createdBy
     ];
     
     const result = await pool.query(query, values);
@@ -84,9 +101,6 @@ export async function POST(request: NextRequest) {
     const farm = {
       ...row,
       createdByUsername,
-      requirements: row.requirements || [],
-      tags: row.tags || [],
-      waypoints: row.waypoints || [],
       createdAt: new Date(row.createdAt),
       updatedAt: new Date(row.updatedAt)
     };
@@ -94,10 +108,31 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(farm);
   } catch (error) {
     console.error('Error creating farm:', error);
+    
+    // Proporcionar información más detallada del error
+    let errorDetails = 'Unknown error';
+    let errorCode = 'UNKNOWN';
+    
+    if (error instanceof Error) {
+      errorDetails = error.message;
+      if ('code' in error) {
+        errorCode = String(error.code);
+      }
+    } else {
+      errorDetails = String(error);
+    }
+    
+    // Log adicional para debugging
+    console.error('Error details:', {
+      message: errorDetails,
+      code: errorCode,
+      stack: error instanceof Error ? error.stack : undefined
+    });
+    
     return NextResponse.json({ 
       error: 'Error creating farm', 
-      details: error instanceof Error ? error.message : String(error),
-      code: error instanceof Error && 'code' in error ? error.code : 'UNKNOWN'
+      details: errorDetails,
+      code: errorCode
     }, { status: 500 });
   }
 } 
