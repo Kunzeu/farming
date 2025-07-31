@@ -7,6 +7,7 @@ import Navigation from '@/components/layout/Navigation';
 import AdminRoute from '@/components/auth/AdminRoute';
 import { Plus, Edit, Trash2, Save, X, Map, Clock, Users, CheckCircle, Calendar, User as UserIcon } from 'lucide-react';
 import { useDatabase, FarmItem, User as UserType } from '@/hooks/useDatabase';
+import { useAuth } from '@/contexts/AuthContext';
 import ExpansionIcon from '@/components/ui/ExpansionIcon';
 import Modal from '@/components/ui/Modal';
 
@@ -14,6 +15,7 @@ type AdminSection = 'farms' | 'users' | 'pending-farms';
 
 export default function AdminPanel() {
   const { dbService } = useDatabase();
+  const { user } = useAuth();
   const [activeSection, setActiveSection] = useState<AdminSection>('farms');
   const [farms, setFarms] = useState<FarmItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -177,7 +179,9 @@ export default function AdminPanel() {
     expansion: ['core'],
     selected: false,
     type: 'farm',
-    isImportant: false
+    isImportant: false,
+    status: 'approved',
+    createdBy: user?.id || ''
   });
 
   // Cargar farms
@@ -185,8 +189,10 @@ export default function AdminPanel() {
     if (!dbService) return;
     try {
       setIsLoading(true);
-      const farmsData = await dbService.getAllFarms();
-      setFarms(farmsData);
+      const allFarms = await dbService.getAllFarms();
+      // Solo mostrar farms aprobados en la sección "Farms"
+      const approvedFarms = allFarms.filter((farm: FarmItem) => farm.status === 'approved');
+      setFarms(approvedFarms);
     } catch (err) {
       console.error('Error loading farms:', err);
     } finally {
@@ -222,7 +228,9 @@ export default function AdminPanel() {
         expansion: ['core'],
         selected: false,
         type: 'farm',
-        isImportant: false
+        isImportant: false,
+        status: 'approved',
+        createdBy: user?.id || ''
       });
 
       setIsCreating(false);
@@ -403,13 +411,25 @@ export default function AdminPanel() {
   // Cargar farms pendientes
   const loadPendingFarms = useCallback(async () => {
     if (!dbService) return;
+    
     try {
       setIsLoadingPendingFarms(true);
       const allFarms = await dbService.getAllFarms();
-      const pending = allFarms.filter((farm: FarmItem) => farm.status === 'pending');
-      setPendingFarms(pending);
-    } catch (err) {
-      console.error('Error loading pending farms:', err);
+      const pendingFarms = allFarms.filter((farm: FarmItem) => farm.status === 'pending');
+      
+      console.log('📊 Total de farms cargados en admin:', allFarms.length);
+      console.log('⏳ Farms pendientes:', pendingFarms.length);
+      
+      // Verificar si hay farms rechazados (temporal para debugging)
+      const rejectedFarms = allFarms.filter((farm: FarmItem) => farm.status === 'rejected');
+      console.log('❌ Farms rechazados encontrados en admin:', rejectedFarms.length);
+      if (rejectedFarms.length > 0) {
+        console.log('📋 Farms rechazados en admin:', rejectedFarms.map((f: FarmItem) => ({ id: f.id, name: f.name, createdBy: f.createdBy })));
+      }
+      
+      setPendingFarms(pendingFarms);
+    } catch (error) {
+      console.error('Error loading pending farms:', error);
     } finally {
       setIsLoadingPendingFarms(false);
     }
@@ -427,15 +447,50 @@ export default function AdminPanel() {
     }
   };
 
-  // Rechazar farm
+  // Rechazar farm (eliminar completamente)
   const handleRejectFarm = async (farmId: string) => {
     try {
-      await dbService.updateFarm(farmId, { status: 'rejected' });
+      console.log('🗑️ Iniciando eliminación del farm:', farmId);
+      await dbService.deleteFarm(farmId);
+      console.log('✅ Farm eliminado de la base de datos');
       await loadPendingFarms();
-      showSuccess('¡Rechazado!', 'Farm rechazado correctamente');
+      console.log('✅ Lista de farms pendientes actualizada');
+      showSuccess('¡Eliminado!', 'Farm rechazado y eliminado correctamente');
     } catch (err) {
-      console.error('Error rejecting farm:', err);
+      console.error('❌ Error rejecting farm:', err);
       showError('Error', 'No se pudo rechazar el farm. Intenta nuevamente.');
+    }
+  };
+
+  // Función para limpiar farms rechazados existentes (one-time cleanup)
+  const handleCleanupRejectedFarms = async () => {
+    try {
+      console.log('🧹 Iniciando limpieza de farms rechazados...');
+      const allFarms = await dbService.getAllFarms();
+      const rejectedFarms = allFarms.filter((farm: FarmItem) => farm.status === 'rejected');
+      
+      console.log(`📋 Encontrados ${rejectedFarms.length} farms rechazados para eliminar`);
+      
+      if (rejectedFarms.length === 0) {
+        showSuccess('Limpieza completada', 'No hay farms rechazados para eliminar');
+        return;
+      }
+      
+      // Eliminar cada farm rechazado
+      for (const farm of rejectedFarms) {
+        console.log(`🗑️ Eliminando farm rechazado: ${farm.id} - ${farm.name}`);
+        await dbService.deleteFarm(farm.id);
+      }
+      
+      console.log('✅ Limpieza de farms rechazados completada');
+      showSuccess('Limpieza completada', `${rejectedFarms.length} farm(s) rechazado(s) eliminado(s) correctamente`);
+      
+      // Recargar datos
+      await loadPendingFarms();
+      
+    } catch (err) {
+      console.error('❌ Error durante la limpieza:', err);
+      showError('Error', 'No se pudo completar la limpieza de farms rechazados');
     }
   };
 
@@ -895,8 +950,18 @@ export default function AdminPanel() {
       {/* Header */}
       <div className="flex justify-between items-center">
         <h2 className="text-2xl font-bold text-white">Farms Pendientes de Aprobación</h2>
-        <div className="text-sm text-gray-400">
-          {pendingFarms.length} farm{pendingFarms.length !== 1 ? 's' : ''} pendiente{pendingFarms.length !== 1 ? 's' : ''}
+        <div className="flex items-center gap-4">
+          <div className="text-sm text-gray-400">
+            {pendingFarms.length} farm{pendingFarms.length !== 1 ? 's' : ''} pendiente{pendingFarms.length !== 1 ? 's' : ''}
+          </div>
+          <button
+            onClick={handleCleanupRejectedFarms}
+            className="flex items-center gap-2 px-3 py-1 bg-orange-600 hover:bg-orange-700 text-white rounded-lg transition-colors text-sm"
+            title="Eliminar farms rechazados existentes"
+          >
+            <Trash2 className="w-4 h-4" />
+            Limpiar Rechazados
+          </button>
         </div>
       </div>
 
@@ -998,7 +1063,7 @@ export default function AdminPanel() {
                   className="flex-1 flex items-center justify-center gap-2 px-3 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors"
                 >
                   <X className="w-4 h-4" />
-                  Rechazar
+                  Eliminar
                 </button>
               </div>
             </motion.div>

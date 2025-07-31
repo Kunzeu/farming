@@ -125,13 +125,22 @@ class DatabaseClientService {
   }
 
   async deleteFarm(id: string): Promise<void> {
+    console.log('🗑️ DatabaseClientService.deleteFarm - Iniciando...');
+    console.log('🆔 ID a eliminar:', id);
+    
     const response = await fetch(`/api/farms/${id}`, {
       method: 'DELETE',
     });
     
+    console.log('📡 Response status:', response.status);
+    
     if (!response.ok) {
-      throw new Error('Failed to delete farm');
+      const errorText = await response.text();
+      console.error('❌ Error response:', errorText);
+      throw new Error(`Failed to delete farm: ${response.status} ${errorText}`);
     }
+    
+    console.log('✅ Farm eliminado exitosamente');
   }
 
   // User methods

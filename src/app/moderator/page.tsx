@@ -145,19 +145,36 @@ export default function ModeratorPanel() {
     
     try {
       setIsLoading(true);
+      console.log('🔄 Cargando datos del moderador...');
       
       // Cargar farms del moderador
       const allFarms = await dbService.getAllFarms();
-      const myFarms = allFarms.filter((farm: FarmItem) => farm.createdBy === user?.id);
+      console.log('📊 Total de farms cargados:', allFarms.length);
+      console.log('📋 Farms con sus estados:', allFarms.map((f: FarmItem) => ({ id: f.id, name: f.name, status: f.status, createdBy: f.createdBy })));
+      
+      const myFarms = allFarms.filter((farm: FarmItem) => farm.createdBy === user?.id && farm.status !== 'rejected');
+      console.log('👤 Mis farms (filtrados por createdBy y sin rechazados):', myFarms.length);
+      console.log('📋 Mis farms:', myFarms.map((f: FarmItem) => ({ id: f.id, name: f.name, status: f.status })));
+      
       const pending = allFarms.filter((farm: FarmItem) => farm.status === 'pending');
       const published = allFarms.filter((farm: FarmItem) => farm.status === 'approved');
+      
+      console.log('⏳ Farms pendientes:', pending.length);
+      console.log('✅ Farms publicados:', published.length);
+      
+      // Verificar si hay farms rechazados (temporal para debugging)
+      const rejectedFarms = allFarms.filter((farm: FarmItem) => farm.status === 'rejected');
+      console.log('❌ Farms rechazados encontrados:', rejectedFarms.length);
+      if (rejectedFarms.length > 0) {
+        console.log('📋 Farms rechazados:', rejectedFarms.map((f: FarmItem) => ({ id: f.id, name: f.name, createdBy: f.createdBy })));
+      }
       
       setFarms(myFarms);
       setPendingFarms(pending);
       setPublishedFarms(published);
       
     } catch (error) {
-      console.error('Error loading data:', error);
+      console.error('❌ Error loading data:', error);
       showError('Error', 'No se pudieron cargar los datos');
     } finally {
       setIsLoading(false);
