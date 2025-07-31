@@ -19,12 +19,10 @@ export default function AdminPanel() {
   const [farms, setFarms] = useState<FarmItem[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isCreating, setIsCreating] = useState(false);
-  const [isEditing, setIsEditing] = useState(false);
   const [isCreatingUser, setIsCreatingUser] = useState(false);
-  const [isEditingUser, setIsEditingUser] = useState(false);
   const [isLoadingPendingFarms, setIsLoadingPendingFarms] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
-  const [userToDelete, setUserToDelete] = useState<any>(null);
+  const [userToDelete, setUserToDelete] = useState<UserType | null>(null);
   const [editingFarm, setEditingFarm] = useState<FarmItem | null>(null);
   
   // Modal state
@@ -1543,7 +1541,7 @@ export default function AdminPanel() {
             {/* Content */}
             <div className="p-6">
               <p className="text-gray-300">
-                ¿Estás seguro de que quieres eliminar al usuario <span className="font-semibold text-white">"{userToDelete?.username}"</span>?
+                ¿Estás seguro de que quieres eliminar al usuario <span className="font-semibold text-white">&quot;{userToDelete?.username}&quot;</span>?
               </p>
               <p className="text-gray-400 text-sm mt-2">
                 Los farms creados por este usuario se preservarán. Esta acción no se puede deshacer.
