@@ -192,20 +192,14 @@ const HalloweenPage = () => {
   const fetchHalloweenData = useCallback(async () => {
     setIsLoading(true);
     try {
-      // Obtener precios de la API de GW2
-      const pricesResponse = await fetch(`https://api.guildwars2.com/v2/commerce/prices?ids=${allItemIds.join(',')}`);
-      const prices = await pricesResponse.json();
-      
-      // Obtener detalles de los items
-      const itemsResponse = await fetch(`https://api.guildwars2.com/v2/items?ids=${allItemIds.join(',')}`);
-      const items = await itemsResponse.json();
-
+      // Función simplificada - solo maneja el estado de carga
+      // Los datos se obtienen en fetchCalculatorData
     } catch (error) {
       console.error('Error fetching Halloween data:', error);
     } finally {
       setIsLoading(false);
     }
-  }, [allItemIds]);
+  }, []);
 
   useEffect(() => {
     if (selectedSection === 'calculators') {
