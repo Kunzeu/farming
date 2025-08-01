@@ -78,7 +78,7 @@ interface AuthContextType extends AuthState {
   loginWithDiscord: (code: string) => Promise<void>;
   logout: () => void;
   clearError: () => void;
-
+  hasPermission: (role: 'admin' | 'moderator' | 'user') => boolean;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -366,11 +366,25 @@ function AuthProviderInternal({ children }: { children: ReactNode }) {
     dispatch({ type: 'CLEAR_ERROR' });
   }, []);
 
-
-
-
-
-
+  // Función para verificar permisos
+  const hasPermission = useCallback((role: 'admin' | 'moderator' | 'user'): boolean => {
+    if (!state.user) return false;
+    
+    // Admin tiene todos los permisos
+    if (state.user.role === 'admin') return true;
+    
+    // Moderator tiene permisos de moderator y user
+    if (state.user.role === 'moderator') {
+      return role === 'moderator' || role === 'user';
+    }
+    
+    // User solo tiene permisos de user
+    if (state.user.role === 'user') {
+      return role === 'user';
+    }
+    
+    return false;
+  }, [state.user]);
 
   const value: AuthContextType = {
     ...state,
@@ -379,6 +393,7 @@ function AuthProviderInternal({ children }: { children: ReactNode }) {
     loginWithDiscord,
     logout,
     clearError,
+    hasPermission,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
@@ -415,6 +430,7 @@ export function useAuth() {
         loginWithDiscord: async () => {},
         logout: () => {},
         clearError: () => {},
+        hasPermission: () => false,
       };
     }
     throw new Error('useAuth debe ser usado dentro de un AuthProvider');
