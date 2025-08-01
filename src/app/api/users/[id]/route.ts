@@ -201,7 +201,7 @@ export async function DELETE(
     
     let farmsPreserved = 0;
     
-    // Solo moderadores y admins pueden tener farms, así que siempre preservar
+    // Solo admins y moderadores pueden tener farms, así que siempre preservar
     if (farmCount > 0) {
       // Preservar farms estableciendo created_by a NULL
       const preserveFarmsQuery = 'UPDATE farm_items SET created_by = NULL WHERE created_by = $1';
@@ -226,7 +226,7 @@ export async function DELETE(
     
     return NextResponse.json({ 
       message: 'User deleted successfully',
-      farmsDeleted: 0, // Siempre 0 ya que preservamos todos los farms
+      farmsDeleted: 0, // Siempre 0 ya que solo preservamos farms
       farmsPreserved: farmsPreserved,
       userRole: userRole
     });

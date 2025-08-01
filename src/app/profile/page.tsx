@@ -29,7 +29,6 @@ export default function ProfilePage() {
   });
 
   const [passwordData, setPasswordData] = useState({
-    currentPassword: '',
     newPassword: '',
     confirmPassword: ''
   });
@@ -61,12 +60,7 @@ export default function ProfilePage() {
         updates.preferences = preferences;
         
         // Validar y cambiar contraseña si se proporcionaron datos
-        if (passwordData.currentPassword || passwordData.newPassword || passwordData.confirmPassword) {
-          if (!passwordData.currentPassword) {
-            alert('Debes ingresar tu contraseña actual');
-            return;
-          }
-          
+        if (passwordData.newPassword || passwordData.confirmPassword) {
           if (!passwordData.newPassword) {
             alert('Debes ingresar una nueva contraseña');
             return;
@@ -79,12 +73,6 @@ export default function ProfilePage() {
           
           if (passwordData.newPassword.length < 6) {
             alert('La nueva contraseña debe tener al menos 6 caracteres');
-            return;
-          }
-          
-          // Verificar contraseña actual
-          if (user.password !== passwordData.currentPassword) {
-            alert('La contraseña actual es incorrecta');
             return;
           }
           
@@ -103,7 +91,6 @@ export default function ProfilePage() {
         
         // Limpiar campos de contraseña
         setPasswordData({
-          currentPassword: '',
           newPassword: '',
           confirmPassword: ''
         });
@@ -202,41 +189,27 @@ export default function ProfilePage() {
                     
                     <div>
                       <label className="block text-gray-300 text-sm mb-2">
-                        Contraseña actual
-                      </label>
-                      <input
-                        type="password"
-                        value={passwordData.currentPassword}
-                        onChange={(e) => setPasswordData({...passwordData, currentPassword: e.target.value})}
-                        disabled={!isEditing}
-                        placeholder="Ingresa tu contraseña actual"
-                        className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 disabled:opacity-50"
-                      />
-                    </div>
-
-                  <div>
-                      <label className="block text-gray-300 text-sm mb-2">
                         Nueva contraseña
-                    </label>
+                      </label>
                       <input
                         type="password"
                         value={passwordData.newPassword}
                         onChange={(e) => setPasswordData({...passwordData, newPassword: e.target.value})}
-                      disabled={!isEditing}
+                        disabled={!isEditing}
                         placeholder="Ingresa tu nueva contraseña"
                         className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 disabled:opacity-50"
                       />
-                  </div>
+                    </div>
 
-                  <div>
+                    <div>
                       <label className="block text-gray-300 text-sm mb-2">
                         Confirmar nueva contraseña
-                    </label>
+                      </label>
                       <input
                         type="password"
                         value={passwordData.confirmPassword}
                         onChange={(e) => setPasswordData({...passwordData, confirmPassword: e.target.value})}
-                      disabled={!isEditing}
+                        disabled={!isEditing}
                         placeholder="Confirma tu nueva contraseña"
                         className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 disabled:opacity-50"
                       />

@@ -264,6 +264,20 @@ class DatabaseClientService {
       updatedAt: new Date(data.updatedAt)
     };
   }
+
+  async invalidateUserSession(userId: string, reason: string): Promise<void> {
+    const response = await fetch(`/api/users/${userId}/invalidate-session`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ reason }),
+    });
+    
+    if (!response.ok) {
+      throw new Error('Failed to invalidate user session');
+    }
+  }
 }
 
 export const dbClientService = new DatabaseClientService(); 

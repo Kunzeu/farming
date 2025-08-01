@@ -213,6 +213,8 @@ export default function AdminPanel() {
 
   // Crear nuevo farm
   const handleCreateFarm = async () => {
+    if (!dbService) return;
+    
     // Validar campos requeridos
     if (!newFarm.name.trim() || !newFarm.description.trim() || !newFarm.estimatedTime.trim()) {
       showError('Error de validación', 'Nombre, descripción y tiempo son campos requeridos');
@@ -257,7 +259,7 @@ export default function AdminPanel() {
 
   // Actualizar farm
   const handleUpdateFarm = async () => {
-    if (!editingFarm) return;
+    if (!editingFarm || !dbService) return;
     
     // Validar campos requeridos
     if (!editingFarm.name.trim() || !editingFarm.description.trim() || !editingFarm.estimatedTime.trim()) {
@@ -305,6 +307,8 @@ export default function AdminPanel() {
 
   // Eliminar farm
   const handleDeleteFarm = async (id: string) => {
+    if (!dbService) return;
+    
     const farm = farms.find(f => f.id === id);
     const farmName = farm?.name || 'Farm';
     
@@ -352,6 +356,8 @@ export default function AdminPanel() {
 
   // Crear usuario
   const handleCreateUser = async () => {
+    if (!dbService) return;
+    
     if (!newUser.email.trim() || !newUser.username.trim() || !newUser.password.trim()) {
       showError('Error de validación', 'Email, username y contraseña son requeridos');
       return;
@@ -395,7 +401,7 @@ export default function AdminPanel() {
 
   // Confirmar eliminación de usuario
   const confirmDeleteUser = async () => {
-    if (!userToDelete) return;
+    if (!userToDelete || !dbService) return;
     
     try {
       const result = await dbService.deleteUser(userToDelete.id);
@@ -407,6 +413,9 @@ export default function AdminPanel() {
       } else {
         successMessage += ' No había farms asociados.';
       }
+      
+      // Nota: No es necesario invalidar la sesión aquí porque el usuario ya no existe en la BD
+      // La próxima vez que el usuario intente acceder, la verificación de autenticación fallará
       
       showSuccess('Usuario eliminado', successMessage);
     } catch (err) {
@@ -420,14 +429,25 @@ export default function AdminPanel() {
 
   // Cambiar rol de moderador a usuario
   const handleDowngradeUser = async (id: string) => {
+    if (!dbService) return;
+    
     const userToDowngrade = users.find(user => user.id === id);
     const userName = userToDowngrade ? userToDowngrade.username : 'este usuario';
 
-    if (confirm(`¿Estás seguro de que quieres cambiar el rol de "${userName}" de moderador a usuario? Los farms creados por este usuario se mantendrán.`)) {
+    if (confirm(`¿Estás seguro de que quieres cambiar el rol de "${userName}" de moderador a usuario? Los farms creados por este usuario se mantendrán. La sesión del usuario será invalidada.`)) {
       try {
         await dbService.updateUser(id, { role: 'user' });
+        
+        // Invalidar sesión del usuario
+        try {
+          await dbService.invalidateUserSession(id, 'Rol cambiado de moderador a usuario');
+          showSuccess('Rol actualizado', `El usuario "${userName}" ahora tiene rol de usuario. Los farms se mantienen. La sesión del usuario ha sido invalidada.`);
+        } catch (invalidateError) {
+          console.warn('No se pudo invalidar la sesión del usuario:', invalidateError);
+          showSuccess('Rol actualizado', `El usuario "${userName}" ahora tiene rol de usuario. Los farms se mantienen. Nota: La sesión del usuario no pudo ser invalidada automáticamente.`);
+        }
+        
         await loadUsers();
-        showSuccess('Rol actualizado', `El usuario "${userName}" ahora tiene rol de usuario. Los farms se mantienen.`);
       } catch (err) {
         console.error('Error downgrading user:', err);
         showError('Error al cambiar rol', err instanceof Error ? err.message : 'Error desconocido');
@@ -437,9 +457,14 @@ export default function AdminPanel() {
 
   // Actualizar usuario
   const handleUpdateUser = async () => {
-    if (!editingUser) return;
+    if (!editingUser || !dbService) return;
     
     try {
+      // Obtener el usuario actual para comparar cambios
+      const currentUser = users.find(user => user.id === editingUser.id);
+      const roleChanged = currentUser && currentUser.role !== editingUser.role;
+      const isActiveChanged = currentUser && currentUser.isActive !== editingUser.isActive;
+      
       await dbService.updateUser(editingUser.id, {
         email: editingUser.email,
         username: editingUser.username,
@@ -447,9 +472,27 @@ export default function AdminPanel() {
         isActive: editingUser.isActive
       });
       
+      // Invalidar sesión si el rol cambió o si el usuario fue desactivado
+      if (roleChanged || isActiveChanged) {
+        try {
+          const reason = roleChanged 
+            ? `Rol cambiado de ${currentUser?.role} a ${editingUser.role}`
+            : isActiveChanged && !editingUser.isActive 
+              ? 'Usuario desactivado'
+              : 'Usuario actualizado';
+          
+          await dbService.invalidateUserSession(editingUser.id, reason);
+          showSuccess('Éxito', `Usuario actualizado correctamente. La sesión del usuario ha sido invalidada debido a cambios en ${roleChanged ? 'rol' : 'estado'}.`);
+        } catch (invalidateError) {
+          console.warn('No se pudo invalidar la sesión del usuario:', invalidateError);
+          showSuccess('Éxito', 'Usuario actualizado correctamente. Nota: La sesión del usuario no pudo ser invalidada automáticamente.');
+        }
+      } else {
+        showSuccess('Éxito', 'Usuario actualizado correctamente.');
+      }
+      
       await loadUsers();
       setEditingUser(null);
-      showSuccess('Éxito', 'Usuario actualizado correctamente.');
     } catch (err) {
       console.error('Error updating user:', err);
       showError('Error', 'No se pudo actualizar el usuario. Intenta nuevamente.');
@@ -478,6 +521,8 @@ export default function AdminPanel() {
 
   // Aprobar farm
   const handleApproveFarm = async (farmId: string) => {
+    if (!dbService) return;
+    
     try {
       await dbService.updateFarm(farmId, { status: 'approved' });
       await loadPendingFarms();
@@ -490,6 +535,8 @@ export default function AdminPanel() {
 
   // Rechazar farm (eliminar completamente)
   const handleRejectFarm = async (farmId: string) => {
+    if (!dbService) return;
+    
     try {
 
       await dbService.deleteFarm(farmId);
@@ -503,6 +550,8 @@ export default function AdminPanel() {
 
   // Función para limpiar farms rechazados existentes (one-time cleanup)
   const handleCleanupRejectedFarms = async () => {
+    if (!dbService) return;
+    
     try {
       setIsLoading(true);
       const allFarms = await dbService.getAllFarms();
@@ -1543,7 +1592,7 @@ export default function AdminPanel() {
                 ¿Estás seguro de que quieres eliminar al usuario <span className="font-semibold text-white">&quot;{userToDelete?.username}&quot;</span>?
               </p>
               <p className="text-gray-400 text-sm mt-2">
-                Los farms creados por este usuario se preservarán. Esta acción no se puede deshacer.
+                Los farms creados por este usuario permanecerán disponibles pero sin información del autor. Esta acción no se puede deshacer.
               </p>
             </div>
             

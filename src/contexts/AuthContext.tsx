@@ -11,6 +11,7 @@ const initialState: AuthState = {
   isAuthenticated: false,
   isLoading: true,
   error: null,
+  invalidationMessage: null,
 };
 
 // Tipos de acciones
@@ -19,6 +20,7 @@ type AuthAction =
   | { type: 'AUTH_SUCCESS'; payload: { user: User; token: string } }
   | { type: 'AUTH_FAILURE'; payload: string }
   | { type: 'AUTH_LOGOUT' }
+  | { type: 'AUTH_INVALIDATE'; payload: { userId: string; reason: string } }
   | { type: 'CLEAR_ERROR' };
 
 // Reducer
@@ -38,6 +40,7 @@ function authReducer(state: AuthState, action: AuthAction): AuthState {
         isAuthenticated: true,
         isLoading: false,
         error: null,
+        invalidationMessage: null,
       };
     case 'AUTH_FAILURE':
       return {
@@ -53,11 +56,23 @@ function authReducer(state: AuthState, action: AuthAction): AuthState {
         isAuthenticated: false,
         isLoading: false,
         error: null,
+        invalidationMessage: null,
+      };
+    case 'AUTH_INVALIDATE':
+      return {
+        ...state,
+        user: null,
+        token: null,
+        isAuthenticated: false,
+        isLoading: false,
+        error: null,
+        invalidationMessage: `Tu sesión ha sido invalidada: ${action.payload.reason}`,
       };
     case 'CLEAR_ERROR':
       return {
         ...state,
         error: null,
+        invalidationMessage: null,
       };
     default:
       return state;
@@ -71,6 +86,9 @@ interface AuthContextType extends AuthState {
   loginWithDiscord: (code: string) => Promise<void>;
   logout: () => void;
   clearError: () => void;
+  clearInvalidationMessage: () => void;
+  invalidateSession: (userId: string, reason: string) => void;
+  invalidateOtherUserSession: (userId: string, reason: string) => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -358,6 +376,40 @@ function AuthProviderInternal({ children }: { children: ReactNode }) {
     dispatch({ type: 'CLEAR_ERROR' });
   }, []);
 
+  // Función para limpiar mensaje de invalidación
+  const clearInvalidationMessage = useCallback(() => {
+    dispatch({ type: 'CLEAR_ERROR' });
+  }, []);
+
+  // Función para invalidar sesión
+  const invalidateSession = useCallback((userId: string, reason: string) => {
+    // Solo invalidar si es la sesión del usuario actual
+    if (state.user && state.user.id === userId) {
+      // Limpiar localStorage
+      localStorage.removeItem('gw2_token');
+      localStorage.removeItem('gw2_user');
+      
+      // Dispatch de la acción
+      dispatch({ type: 'AUTH_INVALIDATE', payload: { userId, reason } });
+      
+      // Redirigir a la página principal
+      router.push('/');
+    }
+  }, [router, state.user]);
+
+  // Función para invalidar sesión de otro usuario (para administradores)
+  const invalidateOtherUserSession = useCallback(async (userId: string, reason: string) => {
+    try {
+      const { getDbService } = await import('@/lib/database-switch');
+      const dbService = await getDbService();
+      
+      await dbService.invalidateUserSession(userId, reason);
+    } catch (error) {
+      console.error('Error invalidating other user session:', error);
+      throw error;
+    }
+  }, []);
+
   const value: AuthContextType = {
     ...state,
     login,
@@ -365,6 +417,9 @@ function AuthProviderInternal({ children }: { children: ReactNode }) {
     loginWithDiscord,
     logout,
     clearError,
+    clearInvalidationMessage,
+    invalidateSession,
+    invalidateOtherUserSession,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
@@ -401,6 +456,9 @@ export function useAuth() {
         loginWithDiscord: async () => {},
         logout: () => {},
         clearError: () => {},
+        clearInvalidationMessage: () => {},
+        invalidateSession: () => {},
+        invalidateOtherUserSession: async () => {},
       };
     }
     throw new Error('useAuth debe ser usado dentro de un AuthProvider');
