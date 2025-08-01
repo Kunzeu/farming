@@ -5,7 +5,8 @@ import { motion } from 'framer-motion';
 import Image from 'next/image';
 import Navigation from '@/components/layout/Navigation';
 import AdminRoute from '@/components/auth/AdminRoute';
-import { Plus, Edit, Trash2, Save, X, Map, Clock, Users, CheckCircle, Calendar, User as UserIcon, ArrowDown, AlertCircle } from 'lucide-react';
+import { Plus, Edit, Trash2, Save, X, Map, Clock, Users, CheckCircle, Calendar, User as UserIcon, AlertCircle } from 'lucide-react';
+import { validateEmailFormat } from '@/utils/emailValidation';
 import { useDatabase, FarmItem, User as UserType } from '@/hooks/useDatabase';
 import { useAuth } from '@/contexts/AuthContext';
 import ExpansionIcon from '@/components/ui/ExpansionIcon';
@@ -364,9 +365,9 @@ export default function AdminPanel() {
     }
 
     // Validación de email
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(newUser.email)) {
-      showError('Error de validación', 'El formato del email no es válido');
+    const emailValidation = validateEmailFormat(newUser.email);
+    if (!emailValidation.isValid) {
+      showError('Error de validación', emailValidation.message);
       return;
     }
 
@@ -428,32 +429,7 @@ export default function AdminPanel() {
   };
 
   // Cambiar rol de moderador a usuario
-  const handleDowngradeUser = async (id: string) => {
-    if (!dbService) return;
-    
-    const userToDowngrade = users.find(user => user.id === id);
-    const userName = userToDowngrade ? userToDowngrade.username : 'este usuario';
 
-    if (confirm(`¿Estás seguro de que quieres cambiar el rol de "${userName}" de moderador a usuario? Los farms creados por este usuario se mantendrán. La sesión del usuario será invalidada.`)) {
-      try {
-        await dbService.updateUser(id, { role: 'user' });
-        
-        // Invalidar sesión del usuario
-        try {
-          await dbService.invalidateUserSession(id, 'Rol cambiado de moderador a usuario');
-          showSuccess('Rol actualizado', `El usuario "${userName}" ahora tiene rol de usuario. Los farms se mantienen. La sesión del usuario ha sido invalidada.`);
-        } catch (invalidateError) {
-          console.warn('No se pudo invalidar la sesión del usuario:', invalidateError);
-          showSuccess('Rol actualizado', `El usuario "${userName}" ahora tiene rol de usuario. Los farms se mantienen. Nota: La sesión del usuario no pudo ser invalidada automáticamente.`);
-        }
-        
-        await loadUsers();
-      } catch (err) {
-        console.error('Error downgrading user:', err);
-        showError('Error al cambiar rol', err instanceof Error ? err.message : 'Error desconocido');
-      }
-    }
-  };
 
   // Actualizar usuario
   const handleUpdateUser = async () => {
@@ -1204,8 +1180,7 @@ export default function AdminPanel() {
                 value={newUser.username}
                 onChange={(e) => setNewUser({...newUser, username: e.target.value})}
                 className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-purple-500"
-                placeholder="nombreusuario"
-              />
+                placeholder="nombre usuario"/>
             </div>
             
             <div>
@@ -1288,8 +1263,7 @@ export default function AdminPanel() {
                 value={editingUser.username}
                 onChange={(e) => setEditingUser({...editingUser, username: e.target.value})}
                 className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-purple-500"
-                placeholder="nombreusuario"
-              />
+                placeholder="nombre usuario"/>
             </div>
             
             <div>
@@ -1415,15 +1389,6 @@ export default function AdminPanel() {
                       >
                         <Edit className="w-4 h-4" />
                       </button>
-                      {user.role === 'moderator' && (
-                        <button
-                          onClick={() => handleDowngradeUser(user.id)}
-                          className="text-yellow-400 hover:text-yellow-300"
-                          title="Cambiar rol a usuario"
-                        >
-                          <ArrowDown className="w-4 h-4" />
-                        </button>
-                      )}
                       <button
                         onClick={() => handleDeleteUser(user.id)}
                         className="text-red-400 hover:text-red-300"

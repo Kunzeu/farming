@@ -10,8 +10,11 @@ import {
   Eye, 
   EyeOff, 
   Loader2,
-  AlertCircle
+  AlertCircle,
+  CheckCircle,
+  XCircle
 } from 'lucide-react';
+import { validateEmailForLogin } from '@/utils/emailValidation';
 
 export default function LoginForm() {
   const { login, isLoading, error, clearError } = useAuth();
@@ -20,18 +23,35 @@ export default function LoginForm() {
     email: '',
     password: '',
   });
+  const [validation, setValidation] = useState({
+    email: { isValid: false, message: '' },
+  });
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     clearError();
-    await login(formData);
+
+    // Validar email
+    const emailValidation = validateEmailForLogin(formData.email);
+    setValidation({ email: emailValidation });
+
+    if (emailValidation.isValid) {
+      await login(formData);
+    }
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
     setFormData({
       ...formData,
-      [e.target.name]: e.target.value,
+      [name]: value,
     });
+
+    // Validar email en tiempo real
+    if (name === 'email') {
+      const emailValidation = validateEmailForLogin(value);
+      setValidation({ email: emailValidation });
+    }
   };
 
   const handleDiscordLogin = () => {
@@ -73,10 +93,25 @@ export default function LoginForm() {
                 value={formData.email}
                 onChange={handleChange}
                 required
-                className="w-full pl-10 pr-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className={`w-full pl-10 pr-4 py-3 bg-gray-700 border rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                  validation.email.isValid
+                    ? 'border-green-500'
+                    : formData.email
+                    ? 'border-red-500'
+                    : 'border-gray-600'
+                }`}
                 placeholder="tu@email.com"
               />
+              {validation.email.isValid && (
+                <CheckCircle className="absolute right-3 top-1/2 transform -translate-y-1/2 text-green-400 w-5 h-5" />
+              )}
+              {formData.email && !validation.email.isValid && (
+                <XCircle className="absolute right-3 top-1/2 transform -translate-y-1/2 text-red-400 w-5 h-5" />
+              )}
             </div>
+            {formData.email && !validation.email.isValid && (
+              <p className="text-red-400 text-xs mt-1">{validation.email.message}</p>
+            )}
           </div>
 
           {/* Password */}

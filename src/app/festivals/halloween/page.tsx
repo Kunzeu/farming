@@ -5,7 +5,6 @@ import { motion } from 'framer-motion';
 import Navigation from '@/components/layout/Navigation';
 import { 
   RefreshCw,
-  Coins,
   Package,
   TrendingUp,
   Info,
@@ -13,7 +12,8 @@ import {
   Plus,
   List,
   Search,
-  X
+  X,
+  ArrowLeft
 } from 'lucide-react';
 
 interface Gw2Price {
@@ -128,7 +128,6 @@ const candyCornItems = [
 
 const HalloweenPage = () => {
   const [selectedSection, setSelectedSection] = useState<string>('overview');
-  const [candyCornData, setCandyCornData] = useState<{ id: number; name: string; sellPrice: number; buyPrice: number; profit: number; sellVolume: number; buyVolume: number }[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [calculatorItems, setCalculatorItems] = useState<CalculatorItem[]>([]);
   const [isLoadingCalculator, setIsLoadingCalculator] = useState(false);
@@ -201,44 +200,6 @@ const HalloweenPage = () => {
       const itemsResponse = await fetch(`https://api.guildwars2.com/v2/items?ids=${allItemIds.join(',')}`);
       const items = await itemsResponse.json();
 
-      // Crear mapas
-      const pricesMap = prices.reduce((acc: Record<number, Gw2Price>, price: Gw2Price) => {
-        acc[price.id] = price;
-        return acc;
-      }, {} as Record<number, Gw2Price>);
-
-      const itemsMap = items.reduce((acc: Record<number, Gw2Item>, item: Gw2Item) => {
-        acc[item.id] = item;
-        return acc;
-      }, {} as Record<number, Gw2Item>);
-
-      // Calcular datos de Candy Corn - Solo items importantes con volumen de venta
-      const calculatedCandyCornData = candyCornItems.map(item => {
-        const itemInfo = itemsMap[item.id];
-        const price = pricesMap[item.id];
-        const sellPrice = price?.sells?.unit_price || 0;
-        const buyPrice = price?.buys?.unit_price || 0;
-        const sellVolume = price?.sells?.quantity || 0;
-        const buyVolume = price?.buys?.quantity || 0;
-        const profit = sellPrice - buyPrice;
-        
-        return {
-          id: item.id,
-          name: itemInfo?.name || item.name,
-          icon: itemInfo?.icon || '',
-          sellPrice: sellPrice,
-          buyPrice: buyPrice,
-          profit: profit,
-          sellVolume: sellVolume,
-          buyVolume: buyVolume
-        };
-      }).filter(item => 
-        // Solo mostrar items con al menos 5 ventas por día y ganancia positiva
-        item.sellVolume >= 5 && item.profit > 0
-      ).sort((a, b) => b.profit - a.profit); // Ordenar por ganancia descendente
-
-      setCandyCornData(calculatedCandyCornData);
-
     } catch (error) {
       console.error('Error fetching Halloween data:', error);
     } finally {
@@ -259,14 +220,6 @@ const HalloweenPage = () => {
     const copperRemaining = copper % 100;
     
     return `${gold.toString().padStart(2, '0')}G ${silver.toString().padStart(2, '0')}S ${copperRemaining.toString().padStart(2, '0')}C`;
-  };
-
-  const getProfitColor = (profit: number) => {
-    if (profit > 5000) return 'bg-green-600';
-    if (profit > 2000) return 'bg-green-500';
-    if (profit > 500) return 'bg-yellow-500';
-    if (profit > 0) return 'bg-orange-500';
-    return 'bg-red-600';
   };
 
   const updateItemQuantity = (id: number, quantity: number) => {
@@ -323,6 +276,17 @@ const HalloweenPage = () => {
             animate={{ opacity: 1, y: 0 }}
             className="text-center mb-8"
           >
+            {/* Botón Volver */}
+            <div className="flex justify-start mb-4">
+              <a
+                href="/festivals"
+                className="flex items-center gap-2 px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg transition-colors duration-200"
+              >
+                <ArrowLeft className="w-4 h-4" />
+                Volver a Festivales
+              </a>
+            </div>
+            
             <h1 className="text-4xl font-bold text-white mb-4 flex items-center justify-center">
               <span className="text-3xl mr-3">🎃</span>
               Festival de Halloween
@@ -529,43 +493,7 @@ const HalloweenPage = () => {
 
 
 
-                  {/* Candy Corn Analysis */}
-                  <div>
-                    <h3 className="text-xl font-bold text-white mb-4 flex items-center">
-                      <Coins className="w-5 h-5 mr-2 text-yellow-400" />
-                      Items Importantes - Análisis de Trading
-                    </h3>
-                    <p className="text-gray-400 text-sm mb-4">
-                      Solo se muestran items con al menos 5 ventas por día y ganancia positiva
-                    </p>
-                    
-                    <div className="overflow-x-auto">
-                      <table className="w-full text-sm">
-                        <thead>
-                          <tr className="border-b border-gray-600">
-                            <th className="text-left py-2 text-gray-300">Item</th>
-                            <th className="text-center py-2 text-gray-300">Precio Venta</th>
-                            <th className="text-center py-2 text-gray-300">Precio Compra</th>
-                            <th className="text-center py-2 text-gray-300">Ganancia</th>
-                            <th className="text-center py-2 text-gray-300">Volumen Venta</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {candyCornData.map((item) => (
-                            <tr key={item.id} className="border-b border-gray-700">
-                              <td className="py-2 text-white">{item.name}</td>
-                              <td className="py-2 text-center text-gray-300">{formatGoldSilverCopper(item.sellPrice)}</td>
-                              <td className="py-2 text-center text-gray-300">{formatGoldSilverCopper(item.buyPrice)}</td>
-                              <td className={`py-2 text-center font-semibold ${getProfitColor(item.profit)}`}>
-                                {formatGoldSilverCopper(item.profit)}
-                              </td>
-                              <td className="py-2 text-center text-gray-300">{item.sellVolume.toLocaleString()}</td>
-                            </tr>
-                          ))}
-                        </tbody>
-                      </table>
-                    </div>
-                  </div>
+
                 </div>
               </div>
             )}

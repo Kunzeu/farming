@@ -14,6 +14,7 @@ import {
   AlertCircle,
   CheckCircle
 } from 'lucide-react';
+import { validateEmailFormat, validateEmailUnique } from '@/utils/emailValidation';
 
 export default function RegisterForm() {
   const { register, isLoading, error, clearError } = useAuth();
@@ -46,11 +47,7 @@ export default function RegisterForm() {
         return { isValid: true, message: '' };
 
       case 'email':
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        if (!emailRegex.test(value)) {
-          return { isValid: false, message: 'Ingresa un email válido' };
-        }
-        return { isValid: true, message: '' };
+        return validateEmailFormat(value);
 
       case 'password':
         if (value.length < 6) {
@@ -103,15 +100,21 @@ export default function RegisterForm() {
     const passwordValidation = validateField('password', formData.password);
     const confirmPasswordValidation = validateField('confirmPassword', formData.confirmPassword);
 
+    // Validación adicional de email único
+    let finalEmailValidation = emailValidation;
+    if (emailValidation.isValid) {
+      finalEmailValidation = await validateEmailUnique(formData.email);
+    }
+
     setValidation({
       username: usernameValidation,
-      email: emailValidation,
+      email: finalEmailValidation,
       password: passwordValidation,
       confirmPassword: confirmPasswordValidation,
     });
 
     // Verificar si todos los campos son válidos
-    if (usernameValidation.isValid && emailValidation.isValid && 
+    if (usernameValidation.isValid && finalEmailValidation.isValid && 
         passwordValidation.isValid && confirmPasswordValidation.isValid) {
       await register(formData);
     }

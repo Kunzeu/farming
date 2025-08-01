@@ -11,40 +11,40 @@ export default function UnidentifiedGearPage() {
       id: 'common',
       name: 'Common',
       fullName: 'Common Unidentified Gear',
-      description: 'Equipamiento común sin identificar',
+      description: 'Equipamiento común con materiales básicos',
       icon: Package,
       color: 'blue',
       bgGradient: 'from-blue-500/20 to-blue-600/20',
       borderColor: 'border-blue-500/30',
       textColor: 'text-blue-400',
       href: '/salvage/unidentified-gear/common',
-      features: ['Materiales básicos', 'Bajo costo']
+      features: ['Materiales básicos', 'Bajo costo de entrada', 'Copper-Fed Kit recomendado']
     },
     {
       id: 'masterwork',
       name: 'Masterwork',
       fullName: 'Masterwork Unidentified Gear',
-      description: 'Equipamiento maestro sin identificar',
+      description: 'Equipamiento maestro con materiales intermedios',
       icon: Star,
       color: 'green',
       bgGradient: 'from-green-500/20 to-green-600/20',
       borderColor: 'border-green-500/30',
       textColor: 'text-green-400',
       href: '/salvage/unidentified-gear/masterwork',
-      features: ['Materiales maestros', 'Runecrafter&apos;s Kit']
+      features: ['Materiales maestros', 'Runas y sigilos', 'Runecrafter\'s Kit recomendado']
     },
     {
       id: 'rare',
       name: 'Rare',
       fullName: 'Rare Unidentified Gear',
-      description: 'Equipamiento raro sin identificar',
+      description: 'Equipamiento raro con ectos y materiales valiosos',
       icon: Crown,
       color: 'yellow',
       bgGradient: 'from-yellow-500/20 to-yellow-600/20',
       borderColor: 'border-yellow-500/30',
       textColor: 'text-yellow-400',
       href: '/salvage/unidentified-gear/rare',
-      features: ['Ectos frecuentes', 'Materiales raros']
+      features: ['Ectos frecuentes', 'Materiales raros', 'Silver-Fed Kit recomendado']
     }
   ];
 
@@ -127,49 +127,49 @@ export default function UnidentifiedGearPage() {
             </div>
           </div>
 
-          {/* Tips Section */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.4 }}
-            className="bg-gradient-to-r from-slate-800/50 to-slate-700/50 backdrop-blur-sm rounded-2xl p-8 border border-slate-600/50"
-          >
-            <h2 className="text-2xl font-bold text-white mb-6 text-center">Consejos Pro</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-              <div>
-                <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
-                  <div className="w-2 h-2 bg-purple-400 rounded-full"></div>
-                  Estrategias Avanzadas
-                </h3>
-                <div className="space-y-3 text-gray-300">
-                  <p className="flex items-start gap-2">
-                    <span className="text-purple-400">•</span>
-                    Identifica el gear antes de salvarlo para mejor control
-                  </p>
-                  <p className="flex items-start gap-2">
-                    <span className="text-purple-400">•</span>
-                    Usa Runecrafter&apos;s Salvage-o-Matic para Masterwork
-                  </p>
-                  <p className="flex items-start gap-2">
-                    <span className="text-purple-400">•</span>
-                    Monitorea los precios del Trading Post en tiempo real
-                  </p>
-                </div>
-              </div>
-              <div>
-                <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
-                  <div className="w-2 h-2 bg-blue-400 rounded-full"></div>
-                  Kits Recomendados
-                </h3>
-                <div className="space-y-3 text-gray-300">
-                  <p><strong className="text-blue-400">Copper-Fed:</strong> Para Common Gear</p>
-                  <p><strong className="text-green-400">Runecrafter&apos;s:</strong> Para Masterwork Gear</p>
-                  <p><strong className="text-yellow-400">Silver-Fed:</strong> Para Rare Gear</p>
-                  <p><strong className="text-purple-400">Black Lion:</strong> Máxima eficiencia</p>
-                </div>
-              </div>
-            </div>
-          </motion.div>
+                     {/* Tips Section */}
+           <motion.div
+             initial={{ opacity: 0, y: 20 }}
+             animate={{ opacity: 1, y: 0 }}
+             transition={{ delay: 0.4 }}
+             className="bg-gradient-to-r from-slate-800/50 to-slate-700/50 backdrop-blur-sm rounded-2xl p-8 border border-slate-600/50"
+           >
+             <h2 className="text-2xl font-bold text-white mb-6 text-center">Consejos Pro</h2>
+             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+               <div>
+                 <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
+                   <div className="w-2 h-2 bg-purple-400 rounded-full"></div>
+                   Estrategias de Mercado
+                 </h3>
+                 <div className="space-y-3 text-gray-300">
+                   <p className="flex items-start gap-2">
+                     <span className="text-purple-400">•</span>
+                     Monitorea los precios del Trading Post en tiempo real
+                   </p>
+                   <p className="flex items-start gap-2">
+                     <span className="text-purple-400">•</span>
+                     Compra unidentified gear en lotes grandes para mejores precios
+                   </p>
+                 </div>
+               </div>
+               <div>
+                 <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
+                   <div className="w-2 h-2 bg-blue-400 rounded-full"></div>
+                   Optimización de Proceso
+                 </h3>
+                 <div className="space-y-3 text-gray-300">
+                   <p className="flex items-start gap-2">
+                     <span className="text-blue-400">•</span>
+                     Identifica el unidentified gear antes de reciclarlo
+                   </p>
+                   <p className="flex items-start gap-2">
+                     <span className="text-blue-400">•</span>
+                     Tener un inventario de 280 slots para facilitar el proceso
+                   </p>
+                 </div>
+               </div>
+             </div>
+           </motion.div>
         </div>
       </div>
     </>

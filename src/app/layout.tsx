@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { AuthProvider } from "@/contexts/AuthContext";
-import SessionInvalidationNotice from "@/components/SessionInvalidationNotice";
+import RoleChecker from "@/components/RoleChecker";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -20,8 +20,8 @@ export default function RootLayout({
     <html lang="es">
       <body className={inter.className}>
         <AuthProvider>
-          <div className="min-h-screen bg-gradient-to-br from-slate-900 to-slate-800">
-            <SessionInvalidationNotice />
+                               <div className="min-h-screen bg-gradient-to-br from-slate-900 to-slate-800">
+            <RoleChecker />
             {children}
           </div>
         </AuthProvider>

@@ -265,6 +265,23 @@ class DatabaseClientService {
     };
   }
 
+  async getUserById(id: string): Promise<User | null> {
+    const response = await fetch(`/api/users/${id}`);
+    if (!response.ok) {
+      if (response.status === 404) {
+        return null;
+      }
+      throw new Error('Failed to fetch user by ID');
+    }
+    
+    const data = await response.json();
+    return {
+      ...data,
+      createdAt: new Date(data.createdAt),
+      updatedAt: new Date(data.updatedAt)
+    };
+  }
+
   async invalidateUserSession(userId: string, reason: string): Promise<void> {
     const response = await fetch(`/api/users/${userId}/invalidate-session`, {
       method: 'POST',
