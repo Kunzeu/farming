@@ -29,82 +29,63 @@ interface Gw2Item {
   icon: string;
 }
 
-interface CalculatorItem {
+// Nueva interfaz para la calculadora de cajas
+interface BoxCalculatorItem {
   id: number;
   name: string;
-  quantity: number;
-  price100: number;
-  price85: number;
-  total100: number;
-  total85: number;
+  icon: string;
+  numPerBox: number; // Cantidad fija por caja (solo cambiable por administradores)
+  pricePerUnit: number;
+  pricePerBox: number;
+  myMaterials: number;
+  resultingBoxes: number;
 }
 
-// Items del Festival de los Cuatro Vientos
-const fourWindsItems = [
-  { id: 19725, name: 'Festival Token', icon: '' },
-  { id: 19726, name: 'Festival Token', icon: '' },
-  { id: 19727, name: 'Festival Token', icon: '' },
-  { id: 19728, name: 'Festival Token', icon: '' },
-  { id: 19729, name: 'Festival Token', icon: '' },
-  { id: 19730, name: 'Festival Token', icon: '' },
-  { id: 19731, name: 'Festival Token', icon: '' },
-  { id: 19732, name: 'Festival Token', icon: '' },
-  { id: 19733, name: 'Festival Token', icon: '' },
-  { id: 19734, name: 'Festival Token', icon: '' },
-  { id: 19735, name: 'Festival Token', icon: '' },
-  { id: 19736, name: 'Festival Token', icon: '' },
-  { id: 19737, name: 'Festival Token', icon: '' },
-  { id: 19738, name: 'Festival Token', icon: '' },
-  { id: 19739, name: 'Festival Token', icon: '' },
-  { id: 19740, name: 'Festival Token', icon: '' },
-  { id: 19741, name: 'Festival Token', icon: '' },
-  { id: 19742, name: 'Festival Token', icon: '' },
-  { id: 19743, name: 'Festival Token', icon: '' },
-  { id: 19744, name: 'Festival Token', icon: '' },
-  { id: 19745, name: 'Festival Token', icon: '' },
-  { id: 19746, name: 'Festival Token', icon: '' },
-  { id: 19747, name: 'Festival Token', icon: '' },
-  { id: 19748, name: 'Festival Token', icon: '' },
-  { id: 19749, name: 'Festival Token', icon: '' },
-  { id: 19750, name: 'Festival Token', icon: '' },
-  { id: 19751, name: 'Festival Token', icon: '' },
-  { id: 19752, name: 'Festival Token', icon: '' },
-  { id: 19753, name: 'Festival Token', icon: '' },
-  { id: 19754, name: 'Festival Token', icon: '' },
-  { id: 19755, name: 'Festival Token', icon: '' },
-  { id: 19756, name: 'Festival Token', icon: '' },
-  { id: 19757, name: 'Festival Token', icon: '' },
-  { id: 19758, name: 'Festival Token', icon: '' },
-  { id: 19759, name: 'Festival Token', icon: '' },
-  { id: 19760, name: 'Festival Token', icon: '' },
-  { id: 19761, name: 'Festival Token', icon: '' },
-  { id: 19762, name: 'Festival Token', icon: '' },
-  { id: 19763, name: 'Festival Token', icon: '' },
-  { id: 19764, name: 'Festival Token', icon: '' },
-  { id: 19765, name: 'Festival Token', icon: '' },
-  { id: 19766, name: 'Festival Token', icon: '' },
-  { id: 19767, name: 'Festival Token', icon: '' },
-  { id: 19768, name: 'Festival Token', icon: '' },
-  { id: 19769, name: 'Festival Token', icon: '' },
-  { id: 19770, name: 'Festival Token', icon: '' },
-  { id: 19771, name: 'Festival Token', icon: '' },
-  { id: 19772, name: 'Festival Token', icon: '' },
-  { id: 19773, name: 'Festival Token', icon: '' },
-  { id: 19774, name: 'Festival Token', icon: '' },
-  { id: 19775, name: 'Festival Token', icon: '' },
-  { id: 19776, name: 'Festival Token', icon: '' },
-  { id: 19777, name: 'Festival Token', icon: '' },
-  { id: 19778, name: 'Festival Token', icon: '' },
+// Datos fijos para la calculadora de cajas (solo modificables por administradores)
+const boxCalculatorData: BoxCalculatorItem[] = [
+  { id: 19718, name: 'Jute Scrap', icon: '', numPerBox: 34, pricePerUnit: 22, pricePerBox: 748, myMaterials: 0, resultingBoxes: 0 },
+  { id: 19745, name: 'Gossamer Scrap', icon: '', numPerBox: 11, pricePerUnit: 280, pricePerBox: 3080, myMaterials: 0, resultingBoxes: 0 },
+  { id: 19721, name: 'Glob of Ectoplasm', icon: '', numPerBox: 0.29, pricePerUnit: 2500, pricePerBox: 725, myMaterials: 0, resultingBoxes: 0 },
+  { id: 19729, name: 'Thick Leather Section', icon: '', numPerBox: 24, pricePerUnit: 150, pricePerBox: 3600, myMaterials: 0, resultingBoxes: 0 },
+  { id: 19700, name: 'Mithril Ore', icon: '', numPerBox: 16, pricePerUnit: 200, pricePerBox: 3200, myMaterials: 0, resultingBoxes: 0 },
+  { id: 19728, name: 'Thin Leather Section', icon: '', numPerBox: 40, pricePerUnit: 25, pricePerBox: 1000, myMaterials: 0, resultingBoxes: 0 },
+  { id: 19722, name: 'Elder Wood Log', icon: '', numPerBox: 22, pricePerUnit: 150, pricePerBox: 3300, myMaterials: 0, resultingBoxes: 0 },
+  { id: 44941, name: 'Watchwork Sprocket', icon: '', numPerBox: 8, pricePerUnit: 500, pricePerBox: 4000, myMaterials: 0, resultingBoxes: 0 },
+  { id: 19719, name: 'Rawhide Leather Section', icon: '', numPerBox: 84, pricePerUnit: 8, pricePerBox: 672, myMaterials: 0, resultingBoxes: 0 },
+  { id: 19702, name: 'Platinum Ore', icon: '', numPerBox: 6, pricePerUnit: 120, pricePerBox: 720, myMaterials: 0, resultingBoxes: 0 },
+  { id: 19739, name: 'Wool Scrap', icon: '', numPerBox: 14, pricePerUnit: 45, pricePerBox: 630, myMaterials: 0, resultingBoxes: 0 },
+  { id: 19699, name: 'Iron Ore', icon: '', numPerBox: 10, pricePerUnit: 35, pricePerBox: 350, myMaterials: 0, resultingBoxes: 0 },
+  { id: 19741, name: 'Cotton Scrap', icon: '', numPerBox: 54, pricePerUnit: 12, pricePerBox: 648, myMaterials: 0, resultingBoxes: 0 },
+  { id: 19701, name: 'Orichalcum Ore', icon: '', numPerBox: 8, pricePerUnit: 380, pricePerBox: 3040, myMaterials: 0, resultingBoxes: 0 },
+  { id: 19743, name: 'Linen Scrap', icon: '', numPerBox: 16, pricePerUnit: 85, pricePerBox: 1360, myMaterials: 0, resultingBoxes: 0 },
+  { id: 19732, name: 'Hardened Leather Section', icon: '', numPerBox: 3, pricePerUnit: 280, pricePerBox: 840, myMaterials: 0, resultingBoxes: 0 },
+  { id: 19731, name: 'Rugged Leather Section', icon: '', numPerBox: 6, pricePerUnit: 85, pricePerBox: 510, myMaterials: 0, resultingBoxes: 0 },
+  { id: 19725, name: 'Ancient Wood Log', icon: '', numPerBox: 6, pricePerUnit: 280, pricePerBox: 1680, myMaterials: 0, resultingBoxes: 0 },
+  { id: 19697, name: 'Copper Ore', icon: '', numPerBox: 31, pricePerUnit: 18, pricePerBox: 558, myMaterials: 0, resultingBoxes: 0 },
+  { id: 24277, name: 'Pile of Crystalline Dust', icon: '', numPerBox: 0.5, pricePerUnit: 1823, pricePerBox: 911, myMaterials: 0, resultingBoxes: 0 },
+  { id: 19703, name: 'Silver Ore', icon: '', numPerBox: 66, pricePerUnit: 90, pricePerBox: 5940, myMaterials: 0, resultingBoxes: 0 },
+  { id: 19730, name: 'Coarse Leather Section', icon: '', numPerBox: 23, pricePerUnit: 45, pricePerBox: 1035, myMaterials: 0, resultingBoxes: 0 },
+  { id: 19748, name: 'Silk Scrap', icon: '', numPerBox: 51, pricePerUnit: 150, pricePerBox: 7650, myMaterials: 0, resultingBoxes: 0 },
+  { id: 19724, name: 'Hard Wood Log', icon: '', numPerBox: 11, pricePerUnit: 85, pricePerBox: 935, myMaterials: 0, resultingBoxes: 0 },
+  { id: 19698, name: 'Gold Ore', icon: '', numPerBox: 23, pricePerUnit: 180, pricePerBox: 4140, myMaterials: 0, resultingBoxes: 0 },
+  { id: 19723, name: 'Green Wood Log', icon: '', numPerBox: 71, pricePerUnit: 15, pricePerBox: 1065, myMaterials: 0, resultingBoxes: 0 },
+  { id: 19713, name: 'Soft Wood Log', icon: '', numPerBox: 34, pricePerUnit: 25, pricePerBox: 850, myMaterials: 0, resultingBoxes: 0 },
+  { id: 19714, name: 'Seasoned Wood Log', icon: '', numPerBox: 13, pricePerUnit: 45, pricePerBox: 585, myMaterials: 0, resultingBoxes: 0 },
+  { id: 19733, name: 'Research Notes', icon: '', numPerBox: 10, pricePerUnit: 1500, pricePerBox: 15000, myMaterials: 0, resultingBoxes: 0 },
 ];
 
 const FourWindsPage = () => {
   const [selectedSection, setSelectedSection] = useState<string>('overview');
-  const [selectedItems, setSelectedItems] = useState<CalculatorItem[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [showItemModal, setShowItemModal] = useState(false);
-  const [availableItems, setAvailableItems] = useState<CalculatorItem[]>([]);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [modalSelectedItems, setModalSelectedItems] = useState<Set<number>>(new Set());
+  
+  // Estados para la calculadora de cajas
+  const [boxCalculatorItems, setBoxCalculatorItems] = useState<BoxCalculatorItem[]>(boxCalculatorData);
+  const [showBoxCalculator, setShowBoxCalculator] = useState(false);
+  const [boxCalculatorLoading, setBoxCalculatorLoading] = useState(true);
+  
+  // Estados para selección de items en la calculadora de cajas
+  const [showItemSelectionModal, setShowItemSelectionModal] = useState(false);
+  const [selectedBoxItems, setSelectedBoxItems] = useState<Set<number>>(new Set(boxCalculatorData.map(item => item.id)));
+  const [searchBoxTerm, setSearchBoxTerm] = useState('');
 
   // Función para formatear moneda GW2
   const formatGoldSilverCopper = (copper: number) => {
@@ -115,117 +96,127 @@ const FourWindsPage = () => {
     return `${gold.toString().padStart(2, '0')}G ${silver.toString().padStart(2, '0')}S ${copperRemaining.toString().padStart(2, '0')}C`;
   };
 
-
-
-  // Función para actualizar cantidad de item
-  const updateItemQuantity = (id: number, quantity: number) => {
-    setSelectedItems(prev => 
-      prev.map(item => 
-        item.id === id ? { ...item, quantity, total100: item.price100 * quantity, total85: item.price85 * quantity } : item
-      )
-    );
-  };
-
-  // Función para agregar items seleccionados del modal
-  const addSelectedItems = () => {
-    const itemsToAdd = availableItems.filter(item => modalSelectedItems.has(item.id));
-    setSelectedItems(prev => {
-      const existingIds = new Set(prev.map(item => item.id));
-      const newItems = itemsToAdd.filter(item => !existingIds.has(item.id));
-      return [...prev, ...newItems];
-    });
-    setModalSelectedItems(new Set());
-    setShowItemModal(false);
-  };
-
-  // Función para agregar todos los items
-  const addAllItems = () => {
-    setSelectedItems(availableItems);
-  };
-
-  // Items filtrados para el modal
-  const filteredAvailableItems = useMemo(() => 
-    availableItems.filter(item =>
-      item.name.toLowerCase().includes(searchTerm.toLowerCase())
-    ), [availableItems, searchTerm]
-  );
-
-  // Función para remover item
-  const removeItem = (id: number) => {
-    setSelectedItems(prev => prev.filter(item => item.id !== id));
-  };
-
-  // Función para remover todos los items
-  const removeAllItems = () => {
-    setSelectedItems([]);
-  };
-
-  // Función para obtener precios de la API
-  const fetchPrices = useCallback(async () => {
+  // Función para obtener iconos y precios de la API de GW2
+  const fetchBoxCalculatorData = useCallback(async () => {
     try {
-      setLoading(true);
-      const itemIds = fourWindsItems.map(item => item.id).join(',');
+      setBoxCalculatorLoading(true);
+      const itemIds = boxCalculatorData.map(item => item.id).join(',');
       
-      const [pricesResponse, itemsResponse] = await Promise.all([
-        fetch(`https://api.guildwars2.com/v2/commerce/prices?ids=${itemIds}`),
-        fetch(`https://api.guildwars2.com/v2/items?ids=${itemIds}`)
+      const [itemsResponse, pricesResponse] = await Promise.all([
+        fetch(`https://api.guildwars2.com/v2/items?ids=${itemIds}`),
+        fetch(`https://api.guildwars2.com/v2/commerce/prices?ids=${itemIds}`)
       ]);
 
-      if (pricesResponse.ok && itemsResponse.ok) {
-        const pricesData: Gw2Price[] = await pricesResponse.json();
+      if (itemsResponse.ok && pricesResponse.ok) {
         const itemsData: Gw2Item[] = await itemsResponse.json();
-
-        const pricesMap: Record<number, Gw2Price> = {};
+        const pricesData: Gw2Price[] = await pricesResponse.json();
+        
         const itemsMap: Record<number, Gw2Item> = {};
-
-        pricesData.forEach(price => {
-          pricesMap[price.id] = price;
-        });
+        const pricesMap: Record<number, Gw2Price> = {};
 
         itemsData.forEach(item => {
           itemsMap[item.id] = item;
         });
 
-        // Crear datos de calculadora para availableItems
-        const calculatorData: CalculatorItem[] = fourWindsItems
-          .filter(item => itemsMap[item.id] && pricesMap[item.id])
-          .map(item => ({
-            id: item.id,
-            name: itemsMap[item.id].name,
-            quantity: 0,
-            price100: pricesMap[item.id].sells.unit_price,
-            price85: Math.floor(pricesMap[item.id].sells.unit_price * 0.85),
-            total100: 0,
-            total85: 0
-          }));
+        pricesData.forEach(price => {
+          pricesMap[price.id] = price;
+        });
 
-        setAvailableItems(calculatorData);
+                 // Actualizar los items con los iconos y precios de la API
+         const updatedItems = boxCalculatorData.map(item => {
+           const currentPrice = pricesMap[item.id]?.buys?.unit_price || item.pricePerUnit;
+           const pricePerBox = Math.round(currentPrice * item.numPerBox);
+           
+           // Mantener los valores actuales de myMaterials y resultingBoxes
+           const existingItem = boxCalculatorItems.find(existing => existing.id === item.id);
+           
+           return {
+             ...item,
+             icon: itemsMap[item.id]?.icon || '',
+             pricePerUnit: currentPrice,
+             pricePerBox: pricePerBox,
+             myMaterials: existingItem?.myMaterials || item.myMaterials,
+             resultingBoxes: existingItem?.resultingBoxes || item.resultingBoxes
+           };
+         });
+
+        setBoxCalculatorItems(updatedItems);
       }
     } catch (error) {
-      console.error('Error fetching data:', error);
+      console.error('Error fetching box calculator data:', error);
     } finally {
-      setLoading(false);
+      setBoxCalculatorLoading(false);
     }
   }, []);
 
-  // Cargar datos al montar el componente
-  useEffect(() => {
-    fetchPrices();
-  }, [fetchPrices]);
+  // Función para aplicar selección de items en la calculadora de cajas
+  const applyItemSelection = () => {
+    setSelectedBoxItems(new Set(Array.from(selectedBoxItems)));
+    setShowItemSelectionModal(false);
+  };
 
+  // Función para seleccionar todos los items
+  const selectAllBoxItems = () => {
+    setSelectedBoxItems(new Set(boxCalculatorData.map(item => item.id)));
+  };
 
+  // Función para deseleccionar todos los items
+  const deselectAllBoxItems = () => {
+    setSelectedBoxItems(new Set());
+  };
+
+  // Items filtrados para el modal de selección
+  const filteredBoxItems = useMemo(() => 
+    boxCalculatorData.filter(item =>
+      item.name.toLowerCase().includes(searchBoxTerm.toLowerCase())
+    ), [searchBoxTerm]
+  );
+
+  // Función para actualizar cantidad de materiales en la calculadora de cajas
+  const updateBoxCalculatorMaterials = (id: number, materials: number) => {
+    setBoxCalculatorItems(prev => 
+      prev.map(item => {
+        if (item.id === id) {
+          const resultingBoxes = Math.floor(materials / item.numPerBox);
+          return { ...item, myMaterials: materials, resultingBoxes };
+        }
+        return item;
+      })
+    );
+  };
+
+  // Función para calcular totales de la calculadora de cajas
+  const calculateBoxCalculatorTotals = () => {
+    const totalMaterials = boxCalculatorItems.reduce((sum, item) => sum + item.myMaterials, 0);
+    const totalBoxes = boxCalculatorItems.reduce((sum, item) => sum + item.resultingBoxes, 0);
+    return { totalMaterials, totalBoxes };
+  };
+
+         // Cargar datos al montar el componente
+     useEffect(() => {
+       fetchBoxCalculatorData(); // Cargar iconos y precios de la calculadora de cajas
+     }, [fetchBoxCalculatorData]);
+
+   // Actualizar datos automáticamente cada 5 minutos
+   useEffect(() => {
+     const interval = setInterval(() => {
+       fetchBoxCalculatorData();
+     }, 5 * 60 * 1000); // 5 minutos
+
+     return () => clearInterval(interval);
+   }, [fetchBoxCalculatorData]);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-green-900 to-blue-900">
       <Navigation />
       
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+             <div className="max-w-[95%] mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
-                 <motion.div 
-           initial={{ opacity: 0, y: 20 }}
-           animate={{ opacity: 1, y: 0 }}
-           className="text-center mb-8"
-         >
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="text-center mb-8"
+        >
           {/* Botón Volver */}
           <div className="flex justify-start mb-4">
             <a
@@ -241,9 +232,9 @@ const FourWindsPage = () => {
             <Wind className="w-12 h-12 text-cyan-400 mr-3" />
             <h1 className="text-4xl font-bold text-white">Festival de los Cuatro Vientos</h1>
           </div>
-                     <p className="text-xl text-gray-300">
-             Calculadoras y análisis para maximizar tus ganancias durante el Festival de los Cuatro Vientos
-           </p>
+          <p className="text-xl text-gray-300">
+            Calculadoras y análisis para maximizar tus ganancias durante el Festival de los Cuatro Vientos
+          </p>
         </motion.div>
 
         {/* Navigation Tabs */}
@@ -320,122 +311,166 @@ const FourWindsPage = () => {
             </div>
           )}
 
-          {/* Calculators Section */}
-          {selectedSection === 'calculators' && (
-            <div className="space-y-8">
-              <div className="bg-gray-800/50 backdrop-blur-sm border border-gray-700 rounded-lg p-6">
-                <div className="flex justify-between items-center mb-6">
-                  <div className="flex items-center">
-                    <Calculator className="w-6 h-6 mr-3 text-cyan-400" />
-                    <h2 className="text-2xl font-bold text-white">
-                      Calculadora Personalizada de Four Winds
-                    </h2>
-                  </div>
-                  <button
-                    onClick={fetchPrices}
-                    disabled={loading}
-                    className="flex items-center gap-2 px-4 py-2 bg-cyan-600 hover:bg-cyan-700 disabled:bg-gray-600 text-white rounded-lg transition-colors duration-200"
-                  >
-                    <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
-                    {loading ? 'Actualizando...' : 'Refrescar Datos'}
-                  </button>
-                </div>
-
-                {/* Custom Calculator */}
-                <div className="mb-8">
-                  <h3 className="text-xl font-bold text-white mb-4 flex items-center">
-                    <Package className="w-5 h-5 mr-2 text-cyan-400" />
-                    Calculadora de Materiales
-                  </h3>
-                  
-                  {/* Action Buttons */}
-                  <div className="flex gap-3 mb-6">
-                    <button
-                      onClick={() => setShowItemModal(true)}
-                      className="flex items-center gap-2 px-4 py-2 bg-cyan-600 hover:bg-cyan-700 text-white rounded-lg transition-colors duration-200"
-                    >
-                      <Plus className="w-4 h-4" />
-                      Agregar Items
-                    </button>
-                    <button
-                      onClick={addAllItems}
-                      className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors duration-200"
-                    >
-                      <List className="w-4 h-4" />
-                      Agregar Todo
-                    </button>
-                    {selectedItems.length > 0 && (
-                      <button
-                        onClick={removeAllItems}
-                        className="flex items-center gap-2 px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors duration-200"
-                      >
-                        <X className="w-4 h-4" />
-                        Eliminar Todo
-                      </button>
-                    )}
-                  </div>
-                  
-                  {/* Calculator Table */}
-                  {!loading && selectedItems.length > 0 && (
-                    <div className="overflow-x-auto">
-                      <table className="w-full text-sm">
-                        <thead>
-                          <tr className="border-b border-gray-600">
-                                                         <th className="text-left py-2 text-gray-300">Nombre</th>
-                             <th className="text-center py-2 text-gray-300">Número</th>
-                             <th className="text-center py-2 text-gray-300">Price 100%</th>
-                             <th className="text-center py-2 text-gray-300">Price 85%</th>
-                             <th className="text-center py-2 text-gray-300">Total 100%</th>
-                             <th className="text-center py-2 text-gray-300">Total 85%</th>
-                            <th className="text-center py-2 text-gray-300">Acción</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {selectedItems.map((item) => (
-                            <tr key={item.id} className="border-b border-gray-700">
-                              <td className="py-2 text-white">{item.name}</td>
-                              <td className="py-2 text-center">
-                                                                 <input
-                                   type="number"
-                                   min="0"
-                                   value={item.quantity}
-                                   onChange={(e) => updateItemQuantity(item.id, parseInt(e.target.value) || 0)}
-                                   className="w-16 px-2 py-1 bg-gray-700 border border-gray-600 rounded text-white text-center"
-                                 />
-                              </td>
-                              <td className="py-2 text-center text-gray-300">{formatGoldSilverCopper(item.price100)}</td>
-                              <td className="py-2 text-center text-gray-300">{formatGoldSilverCopper(item.price85)}</td>
-                                                             <td className="py-2 text-center text-green-400 font-semibold">{formatGoldSilverCopper(item.total100)}</td>
-                               <td className="py-2 text-center text-yellow-400 font-semibold">{formatGoldSilverCopper(item.total85)}</td>
-                              <td className="py-2 text-center">
-                                <button
-                                  onClick={() => removeItem(item.id)}
-                                  className="text-red-400 hover:text-red-300 transition-colors"
-                                >
-                                  <X className="w-4 h-4" />
-                                </button>
-                              </td>
-                            </tr>
-                          ))}
-                        </tbody>
-                        <tfoot className="border-t border-cyan-500">
-                          <tr>
-                            <td colSpan={4} className="py-2 text-right text-gray-300 font-semibold">Total:</td>
-                                                         <td className="py-2 text-center text-green-400 font-semibold">
-                               {formatGoldSilverCopper(selectedItems.reduce((sum, item) => sum + item.total100, 0))}
-                             </td>
-                             <td className="py-2 text-center text-yellow-400 font-semibold">
-                               {formatGoldSilverCopper(selectedItems.reduce((sum, item) => sum + item.total85, 0))}
-                             </td>
-                            <td></td>
-                          </tr>
-                        </tfoot>
-                      </table>
+                                 {/* Calculators Section */}
+            {selectedSection === 'calculators' && (
+              <div className="space-y-8">
+                {/* Calculadora de Cajas */}
+               <div className="bg-gray-800/50 backdrop-blur-sm border border-gray-700 rounded-lg p-6">
+                                   <div className="flex justify-between items-center mb-6">
+                    <div className="flex items-center">
+                      <Calculator className="w-6 h-6 mr-3 text-cyan-400" />
+                                               <h2 className="text-2xl font-bold text-white">
+                           Calculadora de Cajas
+                         </h2>
                     </div>
-                  )}
+                                         <div className="flex gap-3">
+                      <button
+                        onClick={() => setShowBoxCalculator(!showBoxCalculator)}
+                        className="flex items-center gap-2 px-4 py-2 bg-cyan-600 hover:bg-cyan-700 text-white rounded-lg transition-colors duration-200"
+                      >
+                        {showBoxCalculator ? 'Ocultar' : 'Mostrar'} Calculadora
+                      </button>
+                    </div>
+                  </div>
 
+                                 {showBoxCalculator && (
+                   <div className="flex flex-col xl:flex-row gap-4">
+                                         {/* Tabla de Precios y Datos - IZQUIERDA */}
+                     <div className="flex-1 min-w-0">
+                                                                      <div className="flex justify-between items-center mb-4">
+                          <h3 className="text-xl font-bold text-white flex items-center">
+                            <Package className="w-6 h-6 mr-3 text-cyan-400" />
+                            Precios y Datos
+                            {boxCalculatorLoading && (
+                              <RefreshCw className="w-5 h-5 ml-3 animate-spin text-cyan-400" />
+                            )}
+                          </h3>
+                          <div className="flex gap-2">
+                            <button
+                              onClick={() => setShowItemSelectionModal(true)}
+                              className="flex items-center gap-2 px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded text-sm transition-colors duration-200"
+                            >
+                              <Plus className="w-4 h-4" />
+                              Seleccionar Items
+                            </button>
+                            <button
+                              onClick={fetchBoxCalculatorData}
+                              disabled={boxCalculatorLoading}
+                              className="flex items-center gap-2 px-3 py-1.5 bg-cyan-600 hover:bg-cyan-700 disabled:bg-gray-600 text-white rounded text-sm transition-colors duration-200"
+                            >
+                              <RefreshCw className={`w-4 h-4 ${boxCalculatorLoading ? 'animate-spin' : ''}`} />
+                              Actualizar
+                            </button>
+                          </div>
+                        </div>
+                      <div className="overflow-x-auto bg-gray-800/30 rounded-lg border border-gray-700">
+                        <table className="w-full text-sm min-w-[800px]">
+                          <thead>
+                            <tr className="border-b border-gray-600 bg-gray-700/50">
+                              <th className="text-left py-3 px-4 text-gray-200 font-semibold text-xs uppercase tracking-wider">Material</th>
+                              <th className="text-center py-3 px-2 text-gray-200 font-semibold text-xs uppercase tracking-wider">Num/Caja</th>
+                              <th className="text-center py-3 px-2 text-gray-200 font-semibold text-xs uppercase tracking-wider">Precio/u</th>
+                              <th className="text-center py-3 px-2 text-gray-200 font-semibold text-xs uppercase tracking-wider">Precio/Caja</th>
+                              <th className="text-center py-3 px-2 text-gray-200 font-semibold text-xs uppercase tracking-wider">250 Cajas</th>
+                              <th className="text-center py-3 px-2 text-gray-200 font-semibold text-xs uppercase tracking-wider">2500 Cajas</th>
+                              <th className="text-center py-3 px-2 text-gray-200 font-semibold text-xs uppercase tracking-wider">25000 Cajas</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {boxCalculatorItems.filter(item => selectedBoxItems.has(item.id)).map((item, index) => (
+                              <tr key={item.id} className={`border-b border-gray-700 hover:bg-gray-700/20 transition-colors group ${index % 2 === 0 ? 'bg-gray-800/20' : 'bg-gray-800/10'}`}>
+                                <td className="py-2 px-4 text-white text-sm">
+                                  <div className="flex items-center">
+                                    {item.icon ? (
+                                      <img 
+                                        src={item.icon} 
+                                        alt={item.name} 
+                                        className="w-8 h-8 mr-3 rounded border border-gray-600"
+                                        onError={(e) => {
+                                          e.currentTarget.style.display = 'none';
+                                        }}
+                                      />
+                                    ) : null}
+                                    <span className="font-medium">{item.name}</span>
+                                  </div>
+                                </td>
+                                                                 <td className="py-2 px-2 text-center text-gray-300 font-mono text-sm">
+                                   <span>{item.numPerBox}</span>
+                                 </td>
+                                <td className="py-2 px-2 text-center text-gray-300 whitespace-nowrap font-mono text-sm">{formatGoldSilverCopper(item.pricePerUnit)}</td>
+                                <td className="py-2 px-2 text-center text-gray-300 whitespace-nowrap font-mono text-sm">{formatGoldSilverCopper(item.pricePerBox)}</td>
+                                <td className="py-2 px-2 text-center text-gray-300 whitespace-nowrap font-mono text-sm">{formatGoldSilverCopper(item.pricePerBox * 250)}</td>
+                                <td className="py-2 px-2 text-center text-gray-300 whitespace-nowrap font-mono text-sm">{formatGoldSilverCopper(item.pricePerBox * 2500)}</td>
+                                <td className="py-2 px-2 text-center text-gray-300 whitespace-nowrap font-mono text-sm">{formatGoldSilverCopper(item.pricePerBox * 25000)}</td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
 
-                </div>
+                                         {/* Calculadora de Cajas - DERECHA */}
+                     <div className="flex-1 min-w-0">
+                                              <h3 className="text-xl font-bold text-white mb-4 flex items-center">
+                         <Calculator className="w-6 h-6 mr-3 text-cyan-400" />
+                         Calculadora de Cajas
+                       </h3>
+                      <div className="overflow-x-auto bg-gray-800/30 rounded-lg border border-gray-700">
+                        <table className="w-full text-sm min-w-[500px]">
+                          <thead>
+                            <tr className="border-b border-gray-600 bg-gray-700/50">
+                              <th className="text-left py-3 px-4 text-gray-200 font-semibold text-xs uppercase tracking-wider">Material</th>
+                              <th className="text-center py-3 px-4 text-gray-200 font-semibold text-xs uppercase tracking-wider">Mats Mios</th>
+                              <th className="text-center py-3 px-4 text-gray-200 font-semibold text-xs uppercase tracking-wider">Cajas Resultantes</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                                                         {boxCalculatorItems.filter(item => selectedBoxItems.has(item.id)).map((item, index) => (
+                               <tr key={item.id} className={`border-b border-gray-700 hover:bg-gray-700/20 transition-colors group ${index % 2 === 0 ? 'bg-gray-800/20' : 'bg-gray-800/10'}`}>
+                                 <td className="py-1 px-4 text-white text-sm">
+                                   <div className="flex items-center">
+                                     {item.icon ? (
+                                       <img 
+                                         src={item.icon} 
+                                         alt={item.name} 
+                                         className="w-8 h-8 mr-3 rounded border border-gray-600"
+                                         onError={(e) => {
+                                           e.currentTarget.style.display = 'none';
+                                         }}
+                                       />
+                                     ) : null}
+                                     <span className="font-medium">{item.name}</span>
+                                   </div>
+                                 </td>
+                                 <td className="py-1 px-4 text-center">
+                                                                     <input
+                                     type="number"
+                                     min="0"
+                                     value={item.myMaterials}
+                                     onChange={(e) => updateBoxCalculatorMaterials(item.id, parseInt(e.target.value) || 0)}
+                                     className="w-20 px-2 py-1 bg-gray-700 border border-gray-600 rounded text-white text-center text-sm font-mono focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
+                                   />
+                                </td>
+                                                                 <td className="py-1 px-4 text-center text-cyan-400 font-semibold font-mono text-base">{item.resultingBoxes}</td>
+                              </tr>
+                            ))}
+                          </tbody>
+                          <tfoot className="border-t-2 border-cyan-500">
+                            <tr className="bg-gray-700/50">
+                                                             <td className="py-2 px-4 text-right text-gray-200 font-bold text-base">TOTAL:</td>
+                               <td className="py-2 px-4 text-center text-white font-bold text-base font-mono">
+                                 {calculateBoxCalculatorTotals().totalMaterials.toLocaleString()}
+                               </td>
+                               <td className="py-2 px-4 text-center text-cyan-400 font-bold text-base font-mono">
+                                 {calculateBoxCalculatorTotals().totalBoxes.toLocaleString()}
+                               </td>
+                            </tr>
+                          </tfoot>
+                        </table>
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
           )}
@@ -521,101 +556,132 @@ const FourWindsPage = () => {
               </div>
             </div>
           )}
-        </motion.div>
+                 </motion.div>
 
-      </div>
+       </div>
 
-      {/* Item Selection Modal */}
-      {showItemModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-gray-800 rounded-lg max-w-4xl w-full max-h-[80vh] overflow-hidden">
-            <div className="flex justify-between items-center p-6 border-b border-gray-700">
-              <h3 className="text-xl font-bold text-white">Seleccionar Items</h3>
-              <button
-                onClick={() => setShowItemModal(false)}
-                className="text-gray-400 hover:text-white transition-colors"
-              >
-                <X className="w-6 h-6" />
-              </button>
-            </div>
-            
-            <div className="p-6">
-              {/* Search Bar */}
-              <div className="mb-4">
-                <div className="relative">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-                  <input
-                    type="text"
-                    placeholder="Buscar items..."
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    className="w-full pl-10 pr-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400"
-                  />
-                </div>
+               {/* Item Selection Modal for Box Calculator */}
+        {showItemSelectionModal && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+            <div className="bg-gray-800 rounded-lg max-w-4xl w-full max-h-[80vh] overflow-hidden">
+              <div className="flex justify-between items-center p-6 border-b border-gray-700">
+                <h3 className="text-xl font-bold text-white">Seleccionar Items para Mostrar</h3>
+                <button
+                  onClick={() => setShowItemSelectionModal(false)}
+                  className="text-gray-400 hover:text-white transition-colors"
+                >
+                  <X className="w-6 h-6" />
+                </button>
               </div>
+              
+              <div className="p-6">
+                {/* Search Bar */}
+                <div className="mb-4">
+                  <div className="relative">
+                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+                    <input
+                      type="text"
+                      placeholder="Buscar items..."
+                      value={searchBoxTerm}
+                      onChange={(e) => setSearchBoxTerm(e.target.value)}
+                      className="w-full pl-10 pr-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400"
+                    />
+                  </div>
+                </div>
 
-              {/* Items Grid */}
-              <div className="max-h-96 overflow-y-auto">
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
-                  {filteredAvailableItems.map((item) => (
-                    <label
-                      key={item.id}
-                      className={`flex items-center p-3 rounded-lg border cursor-pointer transition-colors ${
-                        modalSelectedItems.has(item.id)
-                          ? 'bg-cyan-600 border-cyan-500'
-                          : 'bg-gray-700 border-gray-600 hover:bg-gray-600'
-                      }`}
+                {/* Action Buttons */}
+                <div className="flex gap-3 mb-4">
+                  <button
+                    onClick={selectAllBoxItems}
+                    className="px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded text-sm transition-colors"
+                  >
+                    Seleccionar Todo
+                  </button>
+                  <button
+                    onClick={deselectAllBoxItems}
+                    className="px-3 py-1 bg-red-600 hover:bg-red-700 text-white rounded text-sm transition-colors"
+                  >
+                    Deseleccionar Todo
+                  </button>
+                </div>
+
+                {/* Items Grid */}
+                <div className="max-h-96 overflow-y-auto">
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
+                    {filteredBoxItems.map((item) => (
+                      <label
+                        key={item.id}
+                        className={`flex items-center p-3 rounded-lg border cursor-pointer transition-colors ${
+                          selectedBoxItems.has(item.id)
+                            ? 'bg-cyan-600 border-cyan-500'
+                            : 'bg-gray-700 border-gray-600 hover:bg-gray-600'
+                        }`}
+                      >
+                        <input
+                          type="checkbox"
+                          checked={selectedBoxItems.has(item.id)}
+                          onChange={(e) => {
+                            const newSelected = new Set(selectedBoxItems);
+                            if (e.target.checked) {
+                              newSelected.add(item.id);
+                            } else {
+                              newSelected.delete(item.id);
+                            }
+                            setSelectedBoxItems(newSelected);
+                          }}
+                          className="mr-3"
+                        />
+                        <div className="flex-1">
+                          <div className="flex items-center">
+                            {item.icon ? (
+                              <img 
+                                src={item.icon} 
+                                alt={item.name} 
+                                className="w-4 h-4 mr-2 rounded border border-gray-600"
+                                onError={(e) => {
+                                  e.currentTarget.style.display = 'none';
+                                }}
+                              />
+                            ) : null}
+                            <div className="text-white font-medium text-sm">{item.name}</div>
+                          </div>
+                          <div className="text-gray-400 text-xs">Num/Caja: {item.numPerBox}</div>
+                        </div>
+                      </label>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Action Buttons */}
+                <div className="flex justify-between items-center mt-6 pt-4 border-t border-gray-700">
+                  <div className="text-gray-400 text-sm">
+                    {selectedBoxItems.size} items seleccionados
+                  </div>
+                  <div className="flex gap-3">
+                    <button
+                      onClick={() => setShowItemSelectionModal(false)}
+                      className="px-4 py-2 bg-gray-600 hover:bg-gray-500 text-white rounded-lg transition-colors"
                     >
-                      <input
-                        type="checkbox"
-                        checked={modalSelectedItems.has(item.id)}
-                        onChange={(e) => {
-                          const newSelected = new Set(modalSelectedItems);
-                          if (e.target.checked) {
-                            newSelected.add(item.id);
-                          } else {
-                            newSelected.delete(item.id);
-                          }
-                          setModalSelectedItems(newSelected);
-                        }}
-                        className="mr-3"
-                      />
-                      <div className="flex-1">
-                        <div className="text-white font-medium text-sm">{item.name}</div>
-                        <div className="text-gray-400 text-xs">{formatGoldSilverCopper(item.price100)}</div>
-                      </div>
-                    </label>
-                  ))}
-                </div>
-              </div>
-
-              {/* Action Buttons */}
-              <div className="flex justify-between items-center mt-6 pt-4 border-t border-gray-700">
-                <div className="text-gray-400 text-sm">
-                  {modalSelectedItems.size} items seleccionados
-                </div>
-                <div className="flex gap-3">
-                  <button
-                    onClick={() => setShowItemModal(false)}
-                    className="px-4 py-2 bg-gray-600 hover:bg-gray-500 text-white rounded-lg transition-colors"
-                  >
-                    Cancelar
-                  </button>
-                  <button
-                    onClick={addSelectedItems}
-                    disabled={modalSelectedItems.size === 0}
-                    className="px-4 py-2 bg-cyan-600 hover:bg-cyan-700 disabled:bg-gray-600 text-white rounded-lg transition-colors"
-                  >
-                    Agregar Seleccionados ({modalSelectedItems.size})
-                  </button>
+                      Cancelar
+                    </button>
+                    <button
+                      onClick={applyItemSelection}
+                      disabled={selectedBoxItems.size === 0}
+                      className="px-4 py-2 bg-cyan-600 hover:bg-cyan-700 disabled:bg-gray-600 text-white rounded-lg transition-colors"
+                    >
+                      Aplicar Selección ({selectedBoxItems.size})
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
-        </div>
-      )}
-    </div>
-  );
-};
+                 )}
 
-export default FourWindsPage; 
+        
+
+      </div>
+    );
+  };
+
+ export default FourWindsPage; 

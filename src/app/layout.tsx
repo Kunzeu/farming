@@ -20,7 +20,7 @@ export default function RootLayout({
     <html lang="es">
       <body className={inter.className}>
         <AuthProvider>
-                               <div className="min-h-screen bg-gradient-to-br from-slate-900 to-slate-800">
+          <div className="min-h-screen bg-gradient-to-br from-slate-900 to-slate-800">
             <RoleChecker />
             {children}
           </div>

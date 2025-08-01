@@ -138,6 +138,8 @@ export default function RegisterForm() {
         setIsFirstUser(users.length === 0);
       } catch (error) {
         console.error('Error checking first user:', error);
+        // Si hay error, asumir que no es el primer usuario
+        setIsFirstUser(false);
       }
     };
 
