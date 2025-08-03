@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import { motion } from 'framer-motion';
+import Image from 'next/image';
 import Navigation from '@/components/layout/Navigation';
 import { 
   RefreshCw,
@@ -10,7 +11,6 @@ import {
   Info,
   Calculator,
   Plus,
-  List,
   Search,
   X,
   Wind,
@@ -74,18 +74,46 @@ const boxCalculatorData: BoxCalculatorItem[] = [
   { id: 19733, name: 'Research Notes', icon: '', numPerBox: 10, pricePerUnit: 1500, pricePerBox: 15000, myMaterials: 0, resultingBoxes: 0 },
 ];
 
+// Clave para localStorage
+const FOUR_WINDS_CALCULATOR_KEY = 'four_winds_calculator_data';
+
 const FourWindsPage = () => {
   const [selectedSection, setSelectedSection] = useState<string>('overview');
   
   // Estados para la calculadora de cajas
-  const [boxCalculatorItems, setBoxCalculatorItems] = useState<BoxCalculatorItem[]>(boxCalculatorData);
-  const [showBoxCalculator, setShowBoxCalculator] = useState(false);
-  const [boxCalculatorLoading, setBoxCalculatorLoading] = useState(true);
+     const [boxCalculatorItems, setBoxCalculatorItems] = useState<BoxCalculatorItem[]>(() => {
+     // Cargar datos guardados del localStorage al inicializar
+     if (typeof window !== 'undefined') {
+       const savedData = localStorage.getItem(FOUR_WINDS_CALCULATOR_KEY);
+       if (savedData) {
+         try {
+           const parsedData = JSON.parse(savedData);
+           // Combinar datos guardados con datos base
+           return boxCalculatorData.map(baseItem => {
+             const savedItem = parsedData.find((item: BoxCalculatorItem) => item.id === baseItem.id);
+             return savedItem ? { ...baseItem, ...savedItem } : baseItem;
+           });
+         } catch (error) {
+           console.error('Error loading saved calculator data:', error);
+         }
+       }
+     }
+     return boxCalculatorData;
+   });
+   
+   const [boxCalculatorLoading, setBoxCalculatorLoading] = useState(true);
   
   // Estados para selección de items en la calculadora de cajas
   const [showItemSelectionModal, setShowItemSelectionModal] = useState(false);
   const [selectedBoxItems, setSelectedBoxItems] = useState<Set<number>>(new Set(boxCalculatorData.map(item => item.id)));
   const [searchBoxTerm, setSearchBoxTerm] = useState('');
+
+  // Función para guardar datos en localStorage
+  const saveCalculatorData = useCallback((data: BoxCalculatorItem[]) => {
+    if (typeof window !== 'undefined') {
+      localStorage.setItem(FOUR_WINDS_CALCULATOR_KEY, JSON.stringify(data));
+    }
+  }, []);
 
   // Función para formatear moneda GW2
   const formatGoldSilverCopper = (copper: number) => {
@@ -122,32 +150,36 @@ const FourWindsPage = () => {
           pricesMap[price.id] = price;
         });
 
-                 // Actualizar los items con los iconos y precios de la API
-         const updatedItems = boxCalculatorData.map(item => {
-           const currentPrice = pricesMap[item.id]?.buys?.unit_price || item.pricePerUnit;
-           const pricePerBox = Math.round(currentPrice * item.numPerBox);
-           
-           // Mantener los valores actuales de myMaterials y resultingBoxes
-           const existingItem = boxCalculatorItems.find(existing => existing.id === item.id);
-           
-           return {
-             ...item,
-             icon: itemsMap[item.id]?.icon || '',
-             pricePerUnit: currentPrice,
-             pricePerBox: pricePerBox,
-             myMaterials: existingItem?.myMaterials || item.myMaterials,
-             resultingBoxes: existingItem?.resultingBoxes || item.resultingBoxes
-           };
-         });
+        // Actualizar los items con los iconos y precios de la API
+        setBoxCalculatorItems(prevItems => {
+          const updatedItems = boxCalculatorData.map(item => {
+            const currentPrice = pricesMap[item.id]?.buys?.unit_price || item.pricePerUnit;
+            const pricePerBox = Math.round(currentPrice * item.numPerBox);
+            
+            // Mantener los valores actuales de myMaterials y resultingBoxes
+            const existingItem = prevItems.find(existing => existing.id === item.id);
+            
+            return {
+              ...item,
+              icon: itemsMap[item.id]?.icon || '',
+              pricePerUnit: currentPrice,
+              pricePerBox: pricePerBox,
+              myMaterials: existingItem?.myMaterials || item.myMaterials,
+              resultingBoxes: existingItem?.resultingBoxes || item.resultingBoxes
+            };
+          });
 
-        setBoxCalculatorItems(updatedItems);
+          // Guardar en localStorage
+          saveCalculatorData(updatedItems);
+          return updatedItems;
+        });
       }
     } catch (error) {
       console.error('Error fetching box calculator data:', error);
     } finally {
       setBoxCalculatorLoading(false);
     }
-  }, []);
+  }, [saveCalculatorData]);
 
   // Función para aplicar selección de items en la calculadora de cajas
   const applyItemSelection = () => {
@@ -174,15 +206,19 @@ const FourWindsPage = () => {
 
   // Función para actualizar cantidad de materiales en la calculadora de cajas
   const updateBoxCalculatorMaterials = (id: number, materials: number) => {
-    setBoxCalculatorItems(prev => 
-      prev.map(item => {
+    setBoxCalculatorItems(prev => {
+      const updatedItems = prev.map(item => {
         if (item.id === id) {
           const resultingBoxes = Math.floor(materials / item.numPerBox);
           return { ...item, myMaterials: materials, resultingBoxes };
         }
         return item;
-      })
-    );
+      });
+      
+      // Guardar en localStorage
+      saveCalculatorData(updatedItems);
+      return updatedItems;
+    });
   };
 
   // Función para calcular totales de la calculadora de cajas
@@ -191,6 +227,8 @@ const FourWindsPage = () => {
     const totalBoxes = boxCalculatorItems.reduce((sum, item) => sum + item.resultingBoxes, 0);
     return { totalMaterials, totalBoxes };
   };
+
+
 
          // Cargar datos al montar el componente
      useEffect(() => {
@@ -316,24 +354,16 @@ const FourWindsPage = () => {
               <div className="space-y-8">
                 {/* Calculadora de Cajas */}
                <div className="bg-gray-800/50 backdrop-blur-sm border border-gray-700 rounded-lg p-6">
-                                   <div className="flex justify-between items-center mb-6">
-                    <div className="flex items-center">
-                      <Calculator className="w-6 h-6 mr-3 text-cyan-400" />
-                                               <h2 className="text-2xl font-bold text-white">
-                           Calculadora de Cajas
-                         </h2>
-                    </div>
-                                         <div className="flex gap-3">
-                      <button
-                        onClick={() => setShowBoxCalculator(!showBoxCalculator)}
-                        className="flex items-center gap-2 px-4 py-2 bg-cyan-600 hover:bg-cyan-700 text-white rounded-lg transition-colors duration-200"
-                      >
-                        {showBoxCalculator ? 'Ocultar' : 'Mostrar'} Calculadora
-                      </button>
-                    </div>
-                  </div>
+                                                                       <div className="mb-6">
+                     <div className="flex items-center">
+                       <Calculator className="w-6 h-6 mr-3 text-cyan-400" />
+                                                <h2 className="text-2xl font-bold text-white">
+                            Calculadora de Cajas
+                          </h2>
+                     </div>
+                   </div>
 
-                                 {showBoxCalculator && (
+                                  
                    <div className="flex flex-col xl:flex-row gap-4">
                                          {/* Tabla de Precios y Datos - IZQUIERDA */}
                      <div className="flex-1 min-w-0">
@@ -344,6 +374,9 @@ const FourWindsPage = () => {
                             {boxCalculatorLoading && (
                               <RefreshCw className="w-5 h-5 ml-3 animate-spin text-cyan-400" />
                             )}
+                            <span className="ml-2 text-sm text-green-400 font-normal">
+                              (Datos guardados automáticamente)
+                            </span>
                           </h3>
                           <div className="flex gap-2">
                             <button
@@ -361,6 +394,7 @@ const FourWindsPage = () => {
                               <RefreshCw className={`w-4 h-4 ${boxCalculatorLoading ? 'animate-spin' : ''}`} />
                               Actualizar
                             </button>
+
                           </div>
                         </div>
                       <div className="overflow-x-auto bg-gray-800/30 rounded-lg border border-gray-700">
@@ -382,10 +416,12 @@ const FourWindsPage = () => {
                                 <td className="py-2 px-4 text-white text-sm">
                                   <div className="flex items-center">
                                     {item.icon ? (
-                                      <img 
+                                      <Image 
                                         src={item.icon} 
                                         alt={item.name} 
-                                        className="w-8 h-8 mr-3 rounded border border-gray-600"
+                                        width={32}
+                                        height={32}
+                                        className="mr-3 rounded border border-gray-600"
                                         onError={(e) => {
                                           e.currentTarget.style.display = 'none';
                                         }}
@@ -429,16 +465,18 @@ const FourWindsPage = () => {
                                <tr key={item.id} className={`border-b border-gray-700 hover:bg-gray-700/20 transition-colors group ${index % 2 === 0 ? 'bg-gray-800/20' : 'bg-gray-800/10'}`}>
                                  <td className="py-1 px-4 text-white text-sm">
                                    <div className="flex items-center">
-                                     {item.icon ? (
-                                       <img 
-                                         src={item.icon} 
-                                         alt={item.name} 
-                                         className="w-8 h-8 mr-3 rounded border border-gray-600"
-                                         onError={(e) => {
-                                           e.currentTarget.style.display = 'none';
-                                         }}
-                                       />
-                                     ) : null}
+                                                                           {item.icon ? (
+                                        <Image 
+                                          src={item.icon} 
+                                          alt={item.name} 
+                                          width={32}
+                                          height={32}
+                                          className="mr-3 rounded border border-gray-600"
+                                          onError={(e) => {
+                                            e.currentTarget.style.display = 'none';
+                                          }}
+                                        />
+                                      ) : null}
                                      <span className="font-medium">{item.name}</span>
                                    </div>
                                  </td>
@@ -448,7 +486,8 @@ const FourWindsPage = () => {
                                      min="0"
                                      value={item.myMaterials}
                                      onChange={(e) => updateBoxCalculatorMaterials(item.id, parseInt(e.target.value) || 0)}
-                                     className="w-20 px-2 py-1 bg-gray-700 border border-gray-600 rounded text-white text-center text-sm font-mono focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
+                                     className="w-24 px-2 py-1 bg-gray-700 border border-gray-600 rounded text-white text-center text-sm font-mono focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
+                                     placeholder="0"
                                    />
                                 </td>
                                                                  <td className="py-1 px-4 text-center text-cyan-400 font-semibold font-mono text-base">{item.resultingBoxes}</td>
@@ -468,11 +507,10 @@ const FourWindsPage = () => {
                           </tfoot>
                         </table>
                       </div>
-                    </div>
-                  </div>
-                )}
-              </div>
-            </div>
+                                         </div>
+                   </div>
+               </div>
+             </div>
           )}
 
           {/* Strategies Section */}
@@ -633,16 +671,18 @@ const FourWindsPage = () => {
                         />
                         <div className="flex-1">
                           <div className="flex items-center">
-                            {item.icon ? (
-                              <img 
-                                src={item.icon} 
-                                alt={item.name} 
-                                className="w-4 h-4 mr-2 rounded border border-gray-600"
-                                onError={(e) => {
-                                  e.currentTarget.style.display = 'none';
-                                }}
-                              />
-                            ) : null}
+                                                         {item.icon ? (
+                               <Image 
+                                 src={item.icon} 
+                                 alt={item.name} 
+                                 width={16}
+                                 height={16}
+                                 className="mr-2 rounded border border-gray-600"
+                                 onError={(e) => {
+                                   e.currentTarget.style.display = 'none';
+                                 }}
+                               />
+                             ) : null}
                             <div className="text-white font-medium text-sm">{item.name}</div>
                           </div>
                           <div className="text-gray-400 text-xs">Num/Caja: {item.numPerBox}</div>

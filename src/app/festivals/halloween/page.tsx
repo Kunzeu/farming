@@ -126,16 +126,38 @@ const candyCornItems = [
   { id: 89007, name: '', icon: '' }
 ];
 
+// Clave para localStorage
+const HALLOWEEN_CALCULATOR_KEY = 'halloween_calculator_data';
+
 const HalloweenPage = () => {
   const [selectedSection, setSelectedSection] = useState<string>('overview');
   const [isLoading, setIsLoading] = useState(false);
-  const [calculatorItems, setCalculatorItems] = useState<CalculatorItem[]>([]);
+  const [calculatorItems, setCalculatorItems] = useState<CalculatorItem[]>(() => {
+    // Cargar datos guardados del localStorage al inicializar
+    if (typeof window !== 'undefined') {
+      const savedData = localStorage.getItem(HALLOWEEN_CALCULATOR_KEY);
+      if (savedData) {
+        try {
+          return JSON.parse(savedData);
+        } catch (error) {
+          console.error('Error loading saved calculator data:', error);
+        }
+      }
+    }
+    return [];
+  });
   const [isLoadingCalculator, setIsLoadingCalculator] = useState(false);
   const [showItemModal, setShowItemModal] = useState(false);
   const [availableItems, setAvailableItems] = useState<CalculatorItem[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedItems, setSelectedItems] = useState<Set<number>>(new Set());
 
+  // Función para guardar datos en localStorage
+  const saveCalculatorData = useCallback((data: CalculatorItem[]) => {
+    if (typeof window !== 'undefined') {
+      localStorage.setItem(HALLOWEEN_CALCULATOR_KEY, JSON.stringify(data));
+    }
+  }, []);
 
   const allItemIds = useMemo(() => [
     ...candyCornItems.map(item => item.id)
@@ -180,14 +202,33 @@ const HalloweenPage = () => {
         };
       });
 
-      setCalculatorItems([]); // Empezar con tabla vacía
       setAvailableItems(calculatorData); // Guardar todos los items disponibles
+      
+      // Preservar los items existentes en la calculadora
+      setCalculatorItems(prevItems => {
+        const updatedItems = prevItems.map(existingItem => {
+          const newItem = calculatorData.find(item => item.id === existingItem.id);
+          if (newItem) {
+            return {
+              ...newItem,
+              quantity: existingItem.quantity,
+              total100: existingItem.quantity * newItem.price100,
+              total85: Math.ceil(existingItem.quantity * newItem.price100 * 0.85)
+            };
+          }
+          return existingItem;
+        });
+        
+        // Guardar en localStorage
+        saveCalculatorData(updatedItems);
+        return updatedItems;
+      });
     } catch (error) {
       console.error('Error fetching calculator data:', error);
     } finally {
       setIsLoadingCalculator(false);
     }
-  }, [allItemIds]);
+  }, [allItemIds, saveCalculatorData]);
 
   const fetchHalloweenData = useCallback(async () => {
     setIsLoading(true);
@@ -217,17 +258,23 @@ const HalloweenPage = () => {
   };
 
   const updateItemQuantity = (id: number, quantity: number) => {
-    setCalculatorItems(prev => prev.map(item => {
-      if (item.id === id) {
-        return {
-          ...item,
-          quantity,
-          total100: item.price100 * quantity,
-          total85: Math.ceil(item.price100 * quantity * 0.85)
-        };
-      }
-      return item;
-    }));
+    setCalculatorItems(prev => {
+      const updatedItems = prev.map(item => {
+        if (item.id === id) {
+          return {
+            ...item,
+            quantity,
+            total100: item.price100 * quantity,
+            total85: Math.ceil(item.price100 * quantity * 0.85)
+          };
+        }
+        return item;
+      });
+      
+      // Guardar en localStorage
+      saveCalculatorData(updatedItems);
+      return updatedItems;
+    });
   };
 
   const addSelectedItems = () => {
@@ -235,7 +282,11 @@ const HalloweenPage = () => {
     setCalculatorItems(prev => {
       const existingIds = new Set(prev.map(item => item.id));
       const newItems = itemsToAdd.filter(item => !existingIds.has(item.id));
-      return [...prev, ...newItems];
+      const updatedItems = [...prev, ...newItems];
+      
+      // Guardar en localStorage
+      saveCalculatorData(updatedItems);
+      return updatedItems;
     });
     setSelectedItems(new Set());
     setShowItemModal(false);
@@ -243,14 +294,20 @@ const HalloweenPage = () => {
 
   const addAllItems = () => {
     setCalculatorItems(availableItems);
+    saveCalculatorData(availableItems);
   };
 
   const removeItem = (id: number) => {
-    setCalculatorItems(prev => prev.filter(item => item.id !== id));
+    setCalculatorItems(prev => {
+      const updatedItems = prev.filter(item => item.id !== id);
+      saveCalculatorData(updatedItems);
+      return updatedItems;
+    });
   };
 
   const removeAllItems = () => {
     setCalculatorItems([]);
+    saveCalculatorData([]);
   };
 
   const filteredAvailableItems = availableItems.filter(item =>
@@ -393,6 +450,9 @@ const HalloweenPage = () => {
                     <h3 className="text-xl font-bold text-white mb-4 flex items-center">
                       <Package className="w-5 h-5 mr-2 text-orange-400" />
                       Calculadora de Materiales
+                      <span className="ml-2 text-sm text-green-400 font-normal">
+                        (Datos guardados automáticamente)
+                      </span>
                     </h3>
                     
                     {/* Action Buttons */}
