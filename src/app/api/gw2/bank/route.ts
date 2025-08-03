@@ -27,7 +27,7 @@ export async function GET(request: NextRequest) {
     const bankData = await response.json();
 
     // Get item details for non-null items
-    const itemIds = bankData.filter((item: any) => item !== null).map((item: any) => item.id);
+    const itemIds = bankData.filter((item: unknown) => item !== null).map((item: { id: number }) => item.id);
     
     if (itemIds.length > 0) {
       const itemsResponse = await fetch(`${GW2_API_BASE}/items?ids=${itemIds.join(',')}`);
@@ -35,10 +35,10 @@ export async function GET(request: NextRequest) {
         const itemsData = await itemsResponse.json();
         
         // Merge item details with bank data
-        const enrichedBankData = bankData.map((bankItem: any, index: number) => {
+        const enrichedBankData = bankData.map((bankItem: unknown, index: number) => {
           if (bankItem === null) return null;
           
-          const itemDetails = itemsData.find((item: any) => item.id === bankItem.id);
+          const itemDetails = itemsData.find((item: { id: number }) => item.id === (bankItem as { id: number }).id);
           return {
             ...bankItem,
             name: itemDetails?.name || `Item ${bankItem.id}`,

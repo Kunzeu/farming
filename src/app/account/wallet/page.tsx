@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { ArrowLeft, Shield } from 'lucide-react';
 import Link from 'next/link';
@@ -26,9 +26,9 @@ const WalletPage = () => {
   const [isLoading, setIsLoading] = useState(true);
 
   // Important currency IDs (ordered with Spirit Shards after Coin)
-  const importantCurrencyIds = [
+  const importantCurrencyIds = useMemo(() => [
     1, 23, 2, 3, 4, 7, 15, 19, 20, 22, 24, 26, 28, 29, 30, 32, 33, 45, 50, 59, 61, 62, 63, 66, 68, 69, 70, 72, 73, 75, 76, 77, 78, 79, 80
-  ];
+  ], []);
 
   useEffect(() => {
     const fetchWalletData = async () => {

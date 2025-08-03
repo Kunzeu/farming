@@ -6,7 +6,7 @@ import { ArrowLeft, Settings, Key, Save, CheckCircle, AlertCircle } from 'lucide
 import Link from 'next/link';
 
 const SettingsPage = () => {
-  const { user, isAuthenticated } = useAuth();
+  const { isAuthenticated } = useAuth();
   const [apiKey, setApiKey] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [isValid, setIsValid] = useState<boolean | null>(null);
@@ -26,7 +26,7 @@ const SettingsPage = () => {
     try {
       const response = await fetch(`/api/gw2/validate?api_key=${encodeURIComponent(key)}`);
       return response.ok;
-    } catch (error) {
+    } catch {
       return false;
     }
   };
@@ -45,7 +45,7 @@ const SettingsPage = () => {
       } else {
         setMessage('API key inválida. Verifica que tenga los permisos correctos.');
       }
-    } catch (error) {
+    } catch {
       setIsValid(false);
       setMessage('Error al validar la API key');
     } finally {
@@ -71,7 +71,7 @@ const SettingsPage = () => {
       } else {
         setMessage('API key inválida ✗');
       }
-    } catch (error) {
+    } catch {
       setIsValid(false);
       setMessage('Error al validar la API key');
     } finally {

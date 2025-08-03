@@ -56,7 +56,7 @@ const SearchPage = () => {
       const timeoutId = setTimeout(handleSearch, 500);
       return () => clearTimeout(timeoutId);
     }
-  }, [searchTerm, searchScope]);
+  }, [searchTerm, searchScope, handleSearch]);
 
   if (!isAuthenticated) {
     return (

@@ -27,7 +27,7 @@ export async function GET(request: NextRequest) {
     const materialsData = await response.json();
 
     // Get material details
-    const materialIds = materialsData.map((material: any) => material.id);
+    const materialIds = materialsData.map((material: { id: number }) => material.id);
     
     if (materialIds.length > 0) {
       const materialsResponse = await fetch(`${GW2_API_BASE}/materials?ids=${materialIds.join(',')}`);
@@ -35,8 +35,8 @@ export async function GET(request: NextRequest) {
         const materialsDetails = await materialsResponse.json();
         
         // Merge material details with storage data
-        const enrichedMaterialsData = materialsData.map((storageMaterial: any) => {
-          const materialDetails = materialsDetails.find((material: any) => material.id === storageMaterial.id);
+        const enrichedMaterialsData = materialsData.map((storageMaterial: { id: number }) => {
+          const materialDetails = materialsDetails.find((material: { id: number }) => material.id === storageMaterial.id);
           return {
             ...storageMaterial,
             name: materialDetails?.name || `Material ${storageMaterial.id}`,

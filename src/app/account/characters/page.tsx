@@ -12,7 +12,7 @@ interface Character {
   race: string;
   specialization?: string;
   world: number;
-  equipment?: any[];
+  equipment?: unknown[];
 }
 
 const CharactersPage = () => {
