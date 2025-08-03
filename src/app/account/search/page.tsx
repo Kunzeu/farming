@@ -77,10 +77,10 @@ const SearchPage = () => {
         <div className="mb-8">
           <Link href="/account" className="inline-flex items-center text-blue-400 hover:text-blue-300 mb-4">
             <ArrowLeft className="w-4 h-4 mr-2" />
-            Volver a Mi Cuenta
+            Back to My Account
           </Link>
-          <h1 className="text-3xl font-bold mb-2">Buscador</h1>
-          <p className="text-gray-400">Buscar items en tu cuenta</p>
+                      <h1 className="text-3xl font-bold mb-2">Search</h1>
+                      <p className="text-gray-400">Search items in your account</p>
         </div>
 
         {/* Search Controls */}
@@ -91,7 +91,7 @@ const SearchPage = () => {
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
                 <input
                   type="text"
-                  placeholder="Buscar items..."
+                  placeholder="Search items..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   className="w-full pl-10 pr-4 py-3 bg-gray-800 border border-gray-700 rounded-lg focus:outline-none focus:border-blue-500"

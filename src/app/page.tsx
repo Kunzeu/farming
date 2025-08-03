@@ -21,10 +21,10 @@ export default function HomePage() {
               GW2 Farming Hub
           </h1>
             <p className="text-xl text-gray-300 mb-8">
-              Tu plataforma para optimizar el farming en Guild Wars 2
+              Your platform to optimize farming in Guild Wars 2
             </p>
             <p className="text-lg text-gray-400 mb-12 max-w-2xl mx-auto">
-              Herramientas simples y efectivas para maximizar tus ganancias y organizar tu tiempo de juego.
+              Simple and effective tools to maximize your profits and organize your playtime.
           </p>
         </motion.div>
 
@@ -38,13 +38,13 @@ export default function HomePage() {
               href="/farming-routes"
               className="px-8 py-4 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition-colors duration-200"
             >
-              Ver Rutas
+              View Routes
             </Link>
             <Link
               href="/daily-routine"
               className="px-8 py-4 border-2 border-blue-600 text-blue-400 font-semibold rounded-lg hover:bg-blue-600 hover:text-white transition-colors duration-200"
             >
-              Crear Rutina
+              Create Routine
             </Link>
         </motion.div>
             </div>
@@ -58,16 +58,14 @@ export default function HomePage() {
           transition={{ duration: 0.6, delay: 0.4 }}
         >
           <h2 className="text-3xl font-bold text-white mb-6">
-            ¿Qué es GW2 Farming Hub?
+            What is GW2 Farming Hub?
           </h2>
           <div className="bg-slate-800 rounded-lg p-8 border border-slate-700">
             <p className="text-lg text-gray-300 leading-relaxed mb-6">
-              Somos una plataforma creada por jugadores de Guild Wars 2 para ayudar 
-              a la comunidad a ser más eficiente en sus actividades de farming.
+              We are a platform created by Guild Wars 2 players to help the community be more efficient in their farming activities.
             </p>
             <p className="text-lg text-gray-300 leading-relaxed">
-              Nuestro objetivo es proporcionar herramientas simples y útiles que te 
-              permitan aprovechar mejor tu tiempo en el juego y maximizar tus ganancias.
+              Our goal is to provide simple and useful tools that let you make the most of your time in-game and maximize your profits.
             </p>
           </div>
         </motion.div>

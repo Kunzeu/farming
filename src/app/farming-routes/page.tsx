@@ -7,6 +7,7 @@ import Navigation from '@/components/layout/Navigation';
 import { Search, Map, Clock, RefreshCw, TrendingUp, Star } from 'lucide-react';
 import { useDatabase, FarmItem } from '@/hooks/useDatabase';
 import ExpansionIcon from '@/components/ui/ExpansionIcon';
+import GlossaryLink from '@/components/ui/GlossaryLink';
 
 export default function FarmingRoutes() {
   const { dbService } = useDatabase();
@@ -103,7 +104,7 @@ export default function FarmingRoutes() {
           <div className="flex items-center justify-center h-64">
             <div className="text-center">
               <RefreshCw className="w-8 h-8 text-blue-400 animate-spin mx-auto mb-4" />
-              <p className="text-white">Cargando rutas desde la base de datos...</p>
+                              <p className="text-white">Loading routes from database...</p>
             </div>
           </div>
         </div>
@@ -154,7 +155,7 @@ export default function FarmingRoutes() {
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
               <input
                 type="text"
-                placeholder="Buscar rutas..."
+                placeholder="Search routes..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="pl-10 pr-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
@@ -291,10 +292,10 @@ export default function FarmingRoutes() {
             <div className="bg-gray-800 rounded-lg p-8">
               <Map className="w-16 h-16 text-gray-400 mx-auto mb-4" />
               <h3 className="text-xl font-semibold text-white mb-2">
-                No hay farms disponibles
+                No farms available
               </h3>
               <p className="text-gray-400 mb-4">
-                No hay farms creados.
+                No farms created.
               </p>
             </div>
           </motion.div>
@@ -334,6 +335,13 @@ export default function FarmingRoutes() {
                 Diferentes tipos de contenido para todos los gustos
               </p>
             </div>
+          </div>
+          
+          {/* Glossary Link */}
+          <div className="text-center mt-8">
+            <GlossaryLink>
+              Learn more farming concepts in the Glossary
+            </GlossaryLink>
           </div>
         </motion.div>
       </main>

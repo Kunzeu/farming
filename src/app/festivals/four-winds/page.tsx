@@ -262,7 +262,7 @@ const FourWindsPage = () => {
               className="flex items-center gap-2 px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg transition-colors duration-200"
             >
               <ArrowLeft className="w-4 h-4" />
-              Volver a Festivales
+              Back to Festivals
             </a>
           </div>
           
@@ -271,7 +271,7 @@ const FourWindsPage = () => {
             <h1 className="text-4xl font-bold text-white">Festival de los Cuatro Vientos</h1>
           </div>
           <p className="text-xl text-gray-300">
-            Calculadoras y análisis para maximizar tus ganancias durante el Festival de los Cuatro Vientos
+                          Calculators and analysis to maximize your profits during the Four Winds Festival
           </p>
         </motion.div>
 
@@ -283,9 +283,9 @@ const FourWindsPage = () => {
           className="flex flex-wrap justify-center gap-2 mb-8"
         >
           {[
-            { id: 'overview', label: 'Vista General', icon: Info },
-            { id: 'calculators', label: 'Calculadoras', icon: Calculator },
-            { id: 'strategies', label: 'Estrategias', icon: TrendingUp }
+                            { id: 'overview', label: 'Overview', icon: Info },
+            { id: 'calculators', label: 'Calculators', icon: Calculator },
+                            { id: 'strategies', label: 'Strategies', icon: TrendingUp }
           ].map((tab) => (
             <button
               key={tab.id}
@@ -358,7 +358,7 @@ const FourWindsPage = () => {
                      <div className="flex items-center">
                        <Calculator className="w-6 h-6 mr-3 text-cyan-400" />
                                                 <h2 className="text-2xl font-bold text-white">
-                            Calculadora de Cajas
+                            Box Calculator
                           </h2>
                      </div>
                    </div>
@@ -370,12 +370,12 @@ const FourWindsPage = () => {
                                                                       <div className="flex justify-between items-center mb-4">
                           <h3 className="text-xl font-bold text-white flex items-center">
                             <Package className="w-6 h-6 mr-3 text-cyan-400" />
-                            Precios y Datos
+                            Prices and Data
                             {boxCalculatorLoading && (
                               <RefreshCw className="w-5 h-5 ml-3 animate-spin text-cyan-400" />
                             )}
                             <span className="ml-2 text-sm text-green-400 font-normal">
-                              (Datos guardados automáticamente)
+                              (Data saved automatically)
                             </span>
                           </h3>
                           <div className="flex gap-2">
@@ -384,7 +384,7 @@ const FourWindsPage = () => {
                               className="flex items-center gap-2 px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded text-sm transition-colors duration-200"
                             >
                               <Plus className="w-4 h-4" />
-                              Seleccionar Items
+                              Select Items
                             </button>
                             <button
                               onClick={fetchBoxCalculatorData}
@@ -392,7 +392,7 @@ const FourWindsPage = () => {
                               className="flex items-center gap-2 px-3 py-1.5 bg-cyan-600 hover:bg-cyan-700 disabled:bg-gray-600 text-white rounded text-sm transition-colors duration-200"
                             >
                               <RefreshCw className={`w-4 h-4 ${boxCalculatorLoading ? 'animate-spin' : ''}`} />
-                              Actualizar
+                              Update
                             </button>
 
                           </div>
@@ -402,12 +402,12 @@ const FourWindsPage = () => {
                           <thead>
                             <tr className="border-b border-gray-600 bg-gray-700/50">
                               <th className="text-left py-3 px-4 text-gray-200 font-semibold text-xs uppercase tracking-wider">Material</th>
-                              <th className="text-center py-3 px-2 text-gray-200 font-semibold text-xs uppercase tracking-wider">Num/Caja</th>
-                              <th className="text-center py-3 px-2 text-gray-200 font-semibold text-xs uppercase tracking-wider">Precio/u</th>
-                              <th className="text-center py-3 px-2 text-gray-200 font-semibold text-xs uppercase tracking-wider">Precio/Caja</th>
-                              <th className="text-center py-3 px-2 text-gray-200 font-semibold text-xs uppercase tracking-wider">250 Cajas</th>
-                              <th className="text-center py-3 px-2 text-gray-200 font-semibold text-xs uppercase tracking-wider">2500 Cajas</th>
-                              <th className="text-center py-3 px-2 text-gray-200 font-semibold text-xs uppercase tracking-wider">25000 Cajas</th>
+                              <th className="text-center py-3 px-2 text-gray-200 font-semibold text-xs uppercase tracking-wider">Num/Box</th>
+                              <th className="text-center py-3 px-2 text-gray-200 font-semibold text-xs uppercase tracking-wider">Price/u</th>
+                              <th className="text-center py-3 px-2 text-gray-200 font-semibold text-xs uppercase tracking-wider">Price/Box</th>
+                              <th className="text-center py-3 px-2 text-gray-200 font-semibold text-xs uppercase tracking-wider">250 Boxes</th>
+                              <th className="text-center py-3 px-2 text-gray-200 font-semibold text-xs uppercase tracking-wider">2500 Boxes</th>
+                              <th className="text-center py-3 px-2 text-gray-200 font-semibold text-xs uppercase tracking-wider">25000 Boxes</th>
                             </tr>
                           </thead>
                           <tbody>
@@ -519,7 +519,7 @@ const FourWindsPage = () => {
               <div className="bg-gray-800/50 backdrop-blur-sm border border-gray-700 rounded-lg p-6">
                 <h2 className="text-2xl font-bold text-white mb-6 flex items-center">
                   <TrendingUp className="w-6 h-6 mr-3 text-cyan-400" />
-                  Estrategias de Farming
+                  Farming Strategies
                 </h2>
                 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -619,7 +619,7 @@ const FourWindsPage = () => {
                     <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
                     <input
                       type="text"
-                      placeholder="Buscar items..."
+                      placeholder="Search items..."
                       value={searchBoxTerm}
                       onChange={(e) => setSearchBoxTerm(e.target.value)}
                       className="w-full pl-10 pr-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400"

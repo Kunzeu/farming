@@ -62,17 +62,17 @@ export default function ProfilePage() {
         // Validar y cambiar contraseña si se proporcionaron datos
         if (passwordData.newPassword || passwordData.confirmPassword) {
           if (!passwordData.newPassword) {
-            alert('Debes ingresar una nueva contraseña');
+            alert('You must enter a new password');
             return;
           }
           
           if (passwordData.newPassword !== passwordData.confirmPassword) {
-            alert('Las contraseñas no coinciden');
+            alert('Passwords do not match');
             return;
           }
           
           if (passwordData.newPassword.length < 6) {
-            alert('La nueva contraseña debe tener al menos 6 caracteres');
+            alert('New password must be at least 6 characters long');
             return;
           }
           
@@ -153,7 +153,7 @@ export default function ProfilePage() {
                   <div className="flex items-center gap-3">
                     <Calendar className="w-5 h-5 text-gray-400" />
                     <div>
-                      <p className="text-gray-400 text-sm">Último acceso</p>
+                      <p className="text-gray-400 text-sm">Last access</p>
                       <p className="text-white">
                         {user?.lastLogin ? new Date(user.lastLogin).toLocaleDateString('es-ES') : 'N/A'}
                       </p>
@@ -185,32 +185,32 @@ export default function ProfilePage() {
                 <div className="space-y-6">
                   {/* Cambio de contraseña */}
                   <div className="space-y-4">
-                    <h4 className="text-white font-medium">Cambiar Contraseña</h4>
+                    <h4 className="text-white font-medium">Change Password</h4>
                     
                     <div>
                       <label className="block text-gray-300 text-sm mb-2">
-                        Nueva contraseña
+                        New password
                       </label>
                       <input
                         type="password"
                         value={passwordData.newPassword}
                         onChange={(e) => setPasswordData({...passwordData, newPassword: e.target.value})}
                         disabled={!isEditing}
-                        placeholder="Ingresa tu nueva contraseña"
+                        placeholder="Enter your new password"
                         className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 disabled:opacity-50"
                       />
                     </div>
 
                     <div>
                       <label className="block text-gray-300 text-sm mb-2">
-                        Confirmar nueva contraseña
+                        Confirm new password
                       </label>
                       <input
                         type="password"
                         value={passwordData.confirmPassword}
                         onChange={(e) => setPasswordData({...passwordData, confirmPassword: e.target.value})}
                         disabled={!isEditing}
-                        placeholder="Confirma tu nueva contraseña"
+                        placeholder="Confirm your new password"
                         className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 disabled:opacity-50"
                       />
                     </div>
@@ -220,7 +220,7 @@ export default function ProfilePage() {
                   <div>
                     <label className="flex items-center gap-2 text-white font-medium mb-3">
                       <Bell className="w-5 h-5" />
-                      Notificaciones
+                      Notifications
                     </label>
                     <div className="space-y-3">
                       <label className="flex items-center gap-3">
@@ -237,7 +237,7 @@ export default function ProfilePage() {
                           disabled={!isEditing}
                           className="w-4 h-4 text-purple-600 bg-gray-700 border-gray-600 rounded focus:ring-purple-500 disabled:opacity-50"
                         />
-                        <span className="text-gray-300">Alertas de precios</span>
+                        <span className="text-gray-300">Price alerts</span>
                       </label>
                       
                       <label className="flex items-center gap-3">
@@ -254,7 +254,7 @@ export default function ProfilePage() {
                           disabled={!isEditing}
                           className="w-4 h-4 text-purple-600 bg-gray-700 border-gray-600 rounded focus:ring-purple-500 disabled:opacity-50"
                         />
-                        <span className="text-gray-300">Recordatorios de eventos</span>
+                        <span className="text-gray-300">Event reminders</span>
                       </label>
                       
                       <label className="flex items-center gap-3">
@@ -271,7 +271,7 @@ export default function ProfilePage() {
                           disabled={!isEditing}
                           className="w-4 h-4 text-purple-600 bg-gray-700 border-gray-600 rounded focus:ring-purple-500 disabled:opacity-50"
                         />
-                        <span className="text-gray-300">Actualizaciones de builds</span>
+                        <span className="text-gray-300">Build updates</span>
                       </label>
                     </div>
                   </div>

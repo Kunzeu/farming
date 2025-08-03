@@ -16,8 +16,8 @@ import { festivalDates, getFestivalStatus } from '@/lib/festival-dates';
 const festivals = [
   {
     id: 'lunar',
-    name: 'Festival de Año Nuevo Lunar',
-    description: 'La celebración del año nuevo en el calendario Canthan',
+    name: 'Lunar New Year Festival',
+    description: 'The celebration of the new year in the Canthan calendar',
     icon: '🏮',
     color: 'from-red-500 to-yellow-600',
     status: getFestivalStatus(festivalDates.lunar.startDate, festivalDates.lunar.endDate),
@@ -30,14 +30,14 @@ const festivals = [
       'Fireworks'
     ],
     estimatedGoldPerHour: 18,
-    difficulty: 'Fácil',
-    timeRequired: '2-3 horas',
+    difficulty: 'Easy',
+    timeRequired: '2-3 hours',
     path: '/festivals/lunar'
   },
   {
     id: 'sab',
     name: 'Super Adventure Festival',
-    description: 'La aventura pixelada en el mundo de Super Adventure Box',
+    description: 'The pixelated adventure in the Super Adventure Box world',
     icon: '🎮',
     color: 'from-yellow-500 to-green-600',
     status: getFestivalStatus(festivalDates.sab.startDate, festivalDates.sab.endDate),
@@ -50,14 +50,14 @@ const festivals = [
       'Holographic Weapons'
     ],
     estimatedGoldPerHour: 14,
-    difficulty: 'Medio',
-    timeRequired: '3-4 horas',
+    difficulty: 'Medium',
+    timeRequired: '3-4 hours',
     path: '/festivals/sab'
   },
   {
     id: 'dragon-bash',
     name: 'Dragon Bash',
-    description: 'Festival de verano celebrando la resistencia contra los Elder Dragons',
+    description: 'Summer festival celebrating resistance against the Elder Dragons',
     icon: '🐉',
     color: 'from-purple-500 to-pink-600',
     status: getFestivalStatus(festivalDates['dragon-bash'].startDate, festivalDates['dragon-bash'].endDate),
@@ -70,14 +70,14 @@ const festivals = [
       'Dragon-themed Rewards'
     ],
     estimatedGoldPerHour: 12,
-    difficulty: 'Fácil',
-    timeRequired: '2-3 horas',
+    difficulty: 'Easy',
+    timeRequired: '2-3 hours',
     path: '/festivals/dragon-bash'
   },
   {
     id: 'four-winds',
-    name: 'Festival de los Cuatro Vientos',
-    description: 'Festival de verano con carreras de monturas y aventuras',
+    name: 'Festival of the Four Winds',
+    description: 'Summer festival with mount races and adventures',
     icon: '🪂',
     color: 'from-green-500 to-blue-600',
     status: getFestivalStatus(festivalDates['four-winds'].startDate, festivalDates['four-winds'].endDate),
@@ -90,14 +90,14 @@ const festivals = [
       'Scavenger Hunts'
     ],
     estimatedGoldPerHour: 10,
-    difficulty: 'Medio',
-    timeRequired: '3-4 horas',
+    difficulty: 'Medium',
+    timeRequired: '3-4 hours',
     path: '/festivals/four-winds'
   },
   {
     id: 'halloween',
     name: 'Festival de Halloween',
-    description: 'El terrorífico festival de Mad King Thorn',
+    description: 'The terrifying festival of Mad King Thorn',
     icon: '🎃',
     color: 'from-orange-500 to-red-600',
     status: getFestivalStatus(festivalDates.halloween.startDate, festivalDates.halloween.endDate),
@@ -110,14 +110,14 @@ const festivals = [
       'Clock Tower Puzzle'
     ],
     estimatedGoldPerHour: 15,
-    difficulty: 'Fácil',
-    timeRequired: '2-3 horas',
+    difficulty: 'Easy',
+    timeRequired: '2-3 hours',
     path: '/festivals/halloween'
   },
   {
     id: 'wintersday',
     name: 'Wintersday',
-    description: 'Festival de invierno celebrando el año nuevo en el calendario Mouvelian',
+    description: 'Winter festival celebrating the new year in the Mouvelian calendar',
     icon: '❄️',
     color: 'from-blue-500 to-cyan-600',
     status: getFestivalStatus(festivalDates.wintersday.startDate, festivalDates.wintersday.endDate),
@@ -130,8 +130,8 @@ const festivals = [
       'Toypocalypse'
     ],
     estimatedGoldPerHour: 20,
-    difficulty: 'Fácil',
-    timeRequired: '2-3 horas',
+    difficulty: 'Easy',
+    timeRequired: '2-3 hours',
     path: '/festivals/wintersday'
   }
 ];
@@ -152,13 +152,13 @@ const getStatusColor = (status: string) => {
 const getStatusLabel = (status: string) => {
   switch (status) {
     case 'active':
-      return 'Activo';
+      return 'Active';
     case 'upcoming':
-      return 'Próximo';
+      return 'Upcoming';
     case 'ended':
-      return 'Finalizado';
+      return 'Ended';
     default:
-      return 'Desconocido';
+      return 'Unknown';
   }
 };
 
@@ -176,14 +176,14 @@ export default function FestivalsPage() {
           >
             <h1 className="text-4xl font-bold text-white mb-4 flex items-center justify-center">
               <Calendar className="w-8 h-8 mr-3 text-purple-400" />
-              Festivales de Guild Wars 2
+              Guild Wars 2 Festivals
             </h1>
             <p className="text-xl text-gray-300 max-w-3xl mx-auto">
-              Calculadoras y guías específicas para maximizar tus ganancias durante los festivales anuales
+              Specific calculators and guides to maximize your profits during annual festivals
             </p>
           </motion.div>
 
-          {/* Festivales Grid */}
+                      {/* Festivals Grid */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -245,14 +245,14 @@ export default function FestivalsPage() {
             transition={{ delay: 0.6 }}
             className="mt-12 space-y-8"
           >
-            {/* ¿Qué son los Festivales? */}
+            {/* What are Festivals? */}
             <div className="bg-gray-800/30 backdrop-blur-sm border border-gray-700 rounded-lg p-6">
               <h2 className="text-2xl font-bold text-white mb-4 flex items-center">
                 <Info className="w-6 h-6 mr-3 text-blue-400" />
-                ¿Qué son los Festivales?
+                What are Festivals?
               </h2>
               <p className="text-gray-300 mb-6 leading-relaxed">
-                Los festivales en Guild Wars 2 son celebraciones estacionales que ocurren durante todo el año. 
+                Festivals in Guild Wars 2 are seasonal celebrations that occur throughout the year. 
                 Cada festival tiene su propia temática, actividades únicas y recompensas especiales. 
                 Estos eventos suelen durar aproximadamente 3 semanas y ofrecen oportunidades únicas para 
                 farming y obtención de items exclusivos.
@@ -284,7 +284,7 @@ export default function FestivalsPage() {
             <div className="bg-gray-800/30 backdrop-blur-sm border border-gray-700 rounded-lg p-6">
               <h2 className="text-2xl font-bold text-white mb-4 flex items-center">
                 <TrendingUp className="w-6 h-6 mr-3 text-green-400" />
-                Estrategias de Farming en Festivales
+                Festival Farming Strategies
               </h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-4">
@@ -343,14 +343,14 @@ export default function FestivalsPage() {
               </div>
             </div>
 
-            {/* Cómo Sacar Oro en Festivales */}
+            {/* How to Earn Gold in Festivals */}
             <div className="bg-gray-800/30 backdrop-blur-sm border border-gray-700 rounded-lg p-6">
               <h2 className="text-2xl font-bold text-white mb-4 flex items-center">
                 <Coins className="w-6 h-6 mr-3 text-yellow-400" />
-                ¿Cómo Sacar Oro en Festivales?
+                How to Earn Gold in Festivals?
               </h2>
               <p className="text-gray-300 mb-6 leading-relaxed">
-                Los festivales son una de las mejores oportunidades para generar oro en Guild Wars 2. 
+                Festivals are one of the best opportunities to generate gold in Guild Wars 2. 
                 Cada festival tiene métodos específicos de farming que pueden generar entre 10-20g por hora 
                 dependiendo de tu eficiencia y el festival en cuestión.
               </p>

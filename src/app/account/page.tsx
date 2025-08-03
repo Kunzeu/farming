@@ -13,6 +13,7 @@ import {
 } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
+import Navigation from '@/components/layout/Navigation';
 
 interface SearchResult {
   id: number;
@@ -92,7 +93,7 @@ const AccountPage = () => {
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto mb-4"></div>
-          <p className="text-gray-400">Cargando cuenta...</p>
+                          <p className="text-gray-400">Loading account...</p>
         </div>
       </div>
     );
@@ -156,6 +157,7 @@ const AccountPage = () => {
 
   return (
     <div className="min-h-screen bg-gray-900 text-white">
+      <Navigation />
       <div className="container mx-auto px-4 py-8">
         <div className="mb-8">
           <h1 className="text-3xl font-bold mb-2">Mi Cuenta</h1>
@@ -169,7 +171,7 @@ const AccountPage = () => {
           <div className="bg-gray-800 rounded-lg p-6 border border-gray-700">
             <h2 className="text-xl font-semibold mb-4 flex items-center">
               <Search className="w-5 h-5 mr-2 text-blue-500" />
-              Buscar Items
+                              Search Items
             </h2>
             
             <div className="flex flex-col md:flex-row gap-4 mb-4">
@@ -178,7 +180,7 @@ const AccountPage = () => {
                   <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
                   <input
                     type="text"
-                    placeholder="Buscar items en tu cuenta..."
+                    placeholder="Search items in your account..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                     className="w-full pl-10 pr-4 py-3 bg-gray-700 border border-gray-600 rounded-lg focus:outline-none focus:border-blue-500 text-white"

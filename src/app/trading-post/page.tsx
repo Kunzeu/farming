@@ -97,9 +97,9 @@ export default function TradingPost() {
           <h1 className="text-4xl font-bold text-white mb-4">
             Trading Post
           </h1>
-          <p className="text-xl text-gray-300">
-            Precios en tiempo real del mercado de Guild Wars 2
-          </p>
+                     <p className="text-xl text-gray-300">
+             Real-time market prices for Guild Wars 2
+           </p>
         </motion.div>
 
         {/* Search Section */}
@@ -115,7 +115,7 @@ export default function TradingPost() {
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
                 <input
                   type="text"
-                  placeholder="Buscar items por nombre..."
+                                     placeholder="Search items by name..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
@@ -132,7 +132,7 @@ export default function TradingPost() {
                 ) : (
                   <Search className="w-5 h-5" />
                 )}
-                Buscar
+                                 Search
               </button>
             </div>
           </div>
@@ -156,7 +156,7 @@ export default function TradingPost() {
                 }`}
               >
                 <ArrowUpDown className="w-4 h-4" />
-                Nombre
+                                 Name
                 {sortBy === 'name' && (
                   <span className="text-xs">
                     {sortOrder === 'asc' ? '↑' : '↓'}
@@ -173,7 +173,7 @@ export default function TradingPost() {
                 }`}
               >
                 <DollarSign className="w-4 h-4" />
-                Precio
+                                 Price
                 {sortBy === 'price' && (
                   <span className="text-xs">
                     {sortOrder === 'asc' ? '↑' : '↓'}
@@ -190,7 +190,7 @@ export default function TradingPost() {
                 }`}
               >
                 <TrendingUp className="w-4 h-4" />
-                Margen
+                                 Margin
                 {sortBy === 'profit' && (
                   <span className="text-xs">
                     {sortOrder === 'asc' ? '↑' : '↓'}
@@ -230,12 +230,12 @@ export default function TradingPost() {
             </div>
           ) : searchQuery && !loading ? (
             <div className="text-center py-12">
-              <p className="text-gray-400 text-lg">No se encontraron items que coincidan con tu búsqueda.</p>
+              <p className="text-gray-400 text-lg">No items found matching your search.</p>
             </div>
           ) : (
             <div className="text-center py-12">
               <TrendingUp className="w-16 h-16 text-gray-600 mx-auto mb-4" />
-              <p className="text-gray-400 text-lg">Busca items para ver sus precios en el Trading Post.</p>
+              <p className="text-gray-400 text-lg">Search for items to see their Trading Post prices.</p>
             </div>
           )}
         </motion.div>
@@ -249,13 +249,13 @@ export default function TradingPost() {
             className="mt-12"
           >
             <h2 className="text-2xl font-bold text-white mb-6 text-center">
-              Estadísticas del Mercado
+              Market Statistics
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <div className="bg-gray-800 rounded-lg p-6 border border-gray-700">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-gray-400 text-sm">Precio Promedio</p>
+                    <p className="text-gray-400 text-sm">Average Price</p>
                     <p className="text-2xl font-bold text-yellow-400">
                       {formatPrice(
                         prices.reduce((sum, price) => sum + price.sells.unit_price, 0) / prices.length
@@ -269,7 +269,7 @@ export default function TradingPost() {
               <div className="bg-gray-800 rounded-lg p-6 border border-gray-700">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-gray-400 text-sm">Margen Promedio</p>
+                    <p className="text-gray-400 text-sm">Average Margin</p>
                     <p className="text-2xl font-bold text-green-400">
                       {calculateProfitMargin(
                         prices.reduce((sum, price) => sum + price.buys.unit_price, 0) / prices.length,
@@ -284,7 +284,7 @@ export default function TradingPost() {
               <div className="bg-gray-800 rounded-lg p-6 border border-gray-700">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-gray-400 text-sm">Items Encontrados</p>
+                    <p className="text-gray-400 text-sm">Items Found</p>
                     <p className="text-2xl font-bold text-blue-400">
                       {items.length}
                     </p>

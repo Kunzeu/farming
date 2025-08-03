@@ -2,9 +2,10 @@
 
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
-import { ArrowLeft, Package, Search } from 'lucide-react';
+import { ArrowLeft, Package, Search, Database } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
+import Navigation from '@/components/layout/Navigation';
 
 interface BankItem {
   id: number;
@@ -333,9 +334,9 @@ const BankPage = () => {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
-          <h2 className="text-2xl font-bold text-white mb-2">Acceso Requerido</h2>
+          <h2 className="text-2xl font-bold text-white mb-2">Access Required</h2>
           <Link href="/login" className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg">
-            Ir al Login
+            Go to Login
           </Link>
         </div>
       </div>
@@ -344,14 +345,15 @@ const BankPage = () => {
 
   return (
     <div className="min-h-screen bg-gray-900 text-white">
+      <Navigation />
       <div className="container mx-auto px-4 py-8">
         <div className="mb-8">
           <Link href="/account" className="inline-flex items-center text-blue-400 hover:text-blue-300 mb-4">
             <ArrowLeft className="w-4 h-4 mr-2" />
-            Volver a Mi Cuenta
+            Back to My Account
           </Link>
-          <h1 className="text-3xl font-bold mb-2">Banco</h1>
-          <p className="text-gray-400">Tu inventario del banco</p>
+          <h1 className="text-3xl font-bold mb-2">Bank</h1>
+          <p className="text-gray-400">Your bank inventory</p>
         </div>
 
                  {/* Search and Refresh */}
@@ -360,7 +362,7 @@ const BankPage = () => {
              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
              <input
                type="text"
-               placeholder="Buscar en el banco..."
+               placeholder="Search bank..."
                value={searchTerm}
                onChange={(e) => setSearchTerm(e.target.value)}
                className="w-full pl-10 pr-4 py-3 bg-gray-800 border border-gray-700 rounded-lg focus:outline-none focus:border-blue-500"
@@ -384,14 +386,14 @@ const BankPage = () => {
              }}
              className="px-4 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors"
            >
-             🔄 Recargar
+             🔄 Refresh
            </button>
          </div>
 
                  {isLoading ? (
            <div className="text-center py-12">
              <div className="animate-spin rounded-full h-15 w-15 border-b-2 border-blue-500 mx-auto mb-4"></div>
-             <p className="text-gray-400">Cargando banco...</p>
+             <p className="text-gray-400">Loading bank...</p>
            </div>
          ) : (
            <div className="space-y-6">
@@ -494,7 +496,7 @@ const BankPage = () => {
                              <div className="flex items-center justify-between mb-4">
                  <h2 className="text-xl font-semibold flex items-center">
                    <Package className="w-5 h-5 mr-2 text-blue-500" />
-                   Pestaña del banco 1
+                   Bank Tab 1
                  </h2>
                  <div className="text-sm text-gray-400">
                    {filteredItems.length} items • 30 slots
@@ -508,14 +510,14 @@ const BankPage = () => {
                    return (
                      <div 
                        key={slotIndex} 
-                                               className={`
-                          aspect-square rounded border-2 flex items-center justify-center p-0.6 relative
+                                                                                               className={`
+                           w-16 h-24 rounded border-2 flex flex-col items-center justify-center p-0.6 relative
                           ${item 
                             ? `${getRarityBorderColor(item.rarity)} bg-gray-700 hover:bg-gray-600 transition-colors cursor-pointer group` 
                             : 'border-dashed border-gray-600 bg-gray-800'
                           }
                         `}
-                                               title={item ? `${item.name} (Slot ${slotIndex + 1})` : `Slot ${slotIndex + 1} vacío`}
+                                               title={item ? `${item.name} (Slot ${slotIndex + 1})` : `Slot ${slotIndex + 1} empty`}
                         onMouseEnter={(e) => item && handleItemHover(item, e)}
                         onMouseLeave={handleItemLeave}
                       >
@@ -526,15 +528,15 @@ const BankPage = () => {
                                <Image 
                                  src={item.icon} 
                                  alt={item.name}
-                                 width={36}
-                                 height={36}
-                                 className="w-full h-full object-contain"
+                                                                   width={72}
+                                  height={72}
+                                  className="w-18 h-18 object-contain mb-1"
                                />
                              )}
                              
                              {/* Quantity in center (large white number) */}
                              {item.count > 1 && (
-                               <span className="text-lg text-white font-bold absolute inset-0 flex items-center justify-center drop-shadow-lg">
+                                                               <span className="text-xl text-white font-bold absolute inset-0 flex items-center justify-center drop-shadow-lg">
                                  {item.count}
                                </span>
                              )}
@@ -547,7 +549,7 @@ const BankPage = () => {
                              )}
                              
                                                            {/* Price display at bottom (black background) */}
-                              <div className="absolute bottom-0 left-0 right-0 bg-black text-white text-xs py-1 flex items-center justify-center">
+                                                             <div className="absolute bottom-0 left-0 right-0 bg-black text-white text-sm py-1 flex items-center justify-center">
                                <span className="font-bold">
                                  {(() => {
                                    // Get price from cache or calculate
@@ -584,11 +586,11 @@ const BankPage = () => {
                                     if (totalPrice > 0) {
                                       const { gold, silver } = formatGold(totalPrice);
                                         if (gold > 0) {
-                                        return <Image src="/images/expansions/Gold.png" alt="Gold" width={10} height={10} className="ml-1" />;
-                                      } else if (silver > 0) {
-                                        return <Image src="/images/expansions/Silver.png" alt="Silver" width={10} height={10} className="ml-1" />;
-                                      } else {
-                                        return <Image src="/images/expansions/Copper.png" alt="Copper" width={10} height={10} className="ml-1" />;
+                                                                                 return <Image src="/images/expansions/Gold.png" alt="Gold" width={12} height={12} className="ml-1" />;
+                                       } else if (silver > 0) {
+                                         return <Image src="/images/expansions/Silver.png" alt="Silver" width={12} height={12} className="ml-1" />;
+                                       } else {
+                                         return <Image src="/images/expansions/Copper.png" alt="Copper" width={12} height={12} className="ml-1" />;
                                       }
                                     }
                                   }
@@ -609,9 +611,9 @@ const BankPage = () => {
 
         {!isLoading && filteredItems.length === 0 && (
           <div className="text-center py-12">
-            <Package className="w-16 h-16 text-gray-600 mx-auto mb-4" />
-            <h3 className="text-xl font-semibold text-gray-300 mb-2">Banco vacío</h3>
-            <p className="text-gray-400">No hay items en tu banco</p>
+            <Database className="w-16 h-16 text-gray-600 mx-auto mb-4" />
+            <h3 className="text-xl font-semibold text-gray-300 mb-2">No items</h3>
+            <p className="text-gray-400">There are no items in your bank</p>
           </div>
                  )}
 
@@ -664,12 +666,12 @@ const BankPage = () => {
                                    {/* Prices */}
                                      {(selectedItem.price || selectedItem.details.vendor_value) && (
                      <div className="space-y-2">
-                       <h4 className="text-sm font-semibold text-gray-200">Precios</h4>
+                       <h4 className="text-sm font-semibold text-gray-200">Prices</h4>
                       
                       {/* Vendor Price - Always show if available */}
                       {selectedItem.details.vendor_value && (
                                                  <div className="flex justify-between items-center">
-                           <span className="text-gray-400 text-xs">Precio del vendedor:</span>
+                           <span className="text-gray-400 text-xs">Vendor Price:</span>
                            <div className="flex items-center space-x-1">
                             {(() => {
                               const { gold, silver, copper } = formatGold(selectedItem.details.vendor_value!);
@@ -687,7 +689,7 @@ const BankPage = () => {
                                                          <span className="text-gray-400 text-xs ml-2">
                                ({(() => {
                                  const { gold, silver, copper } = formatGold(selectedItem.details.vendor_value! * selectedItem.item.count);
-                                 return `${gold}g ${silver}s ${copper}c por ${selectedItem.item.count}`;
+                                 return `${gold}g ${silver}s ${copper}c per ${selectedItem.item.count}`;
                                })()})
                              </span>
                           </div>
@@ -700,7 +702,7 @@ const BankPage = () => {
                                                      {/* Buy Price - Only show if exists */}
                            {selectedItem.price.buys && selectedItem.price.buys.unit_price > 0 && (
                              <div className="flex justify-between items-center">
-                               <span className="text-gray-400 text-xs">Precio de compra:</span>
+                               <span className="text-gray-400 text-xs">Buy Price:</span>
                               <div className="flex items-center space-x-1">
                                 {(() => {
                                   const { gold, silver, copper } = formatGold(selectedItem.price.buys.unit_price);
@@ -718,7 +720,7 @@ const BankPage = () => {
                                                                  <span className="text-gray-400 text-xs ml-2">
                                    ({(() => {
                                      const { gold, silver, copper } = formatGold(selectedItem.price.buys.unit_price * selectedItem.item.count);
-                                     return `${gold}g ${silver}s ${copper}c por ${selectedItem.item.count}`;
+                                     return `${gold}g ${silver}s ${copper}c per ${selectedItem.item.count}`;
                                    })()})
                                  </span>
                               </div>
@@ -728,7 +730,7 @@ const BankPage = () => {
                                                      {/* Sell Price - Only show if exists */}
                            {selectedItem.price.sells && selectedItem.price.sells.unit_price > 0 && (
                              <div className="flex justify-between items-center">
-                               <span className="text-gray-400 text-xs">Precio de venta:</span>
+                               <span className="text-gray-400 text-xs">Sell Price:</span>
                               <div className="flex items-center space-x-1">
                                 {(() => {
                                   const { gold, silver, copper } = formatGold(selectedItem.price.sells.unit_price);
@@ -746,7 +748,7 @@ const BankPage = () => {
                                                                  <span className="text-gray-400 text-xs ml-2">
                                    ({(() => {
                                      const { gold, silver, copper } = formatGold(selectedItem.price.sells.unit_price * selectedItem.item.count);
-                                     return `${gold}g ${silver}s ${copper}c por ${selectedItem.item.count}`;
+                                     return `${gold}g ${silver}s ${copper}c per ${selectedItem.item.count}`;
                                    })()})
                                  </span>
                               </div>

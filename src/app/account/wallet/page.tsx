@@ -5,6 +5,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { ArrowLeft, Shield } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
+import Navigation from '@/components/layout/Navigation';
 
 interface WalletItem {
   id: number;
@@ -85,9 +86,9 @@ const WalletPage = () => {
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
           <Shield className="w-16 h-16 text-blue-500 mx-auto mb-4" />
-          <h2 className="text-2xl font-bold text-white mb-2">Acceso Requerido</h2>
+          <h2 className="text-2xl font-bold text-white mb-2">Access Required</h2>
           <Link href="/login" className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg">
-            Ir al Login
+            Go to Login
           </Link>
         </div>
       </div>
@@ -96,20 +97,21 @@ const WalletPage = () => {
 
   return (
     <div className="min-h-screen bg-gray-900 text-white">
+      <Navigation />
       <div className="container mx-auto px-4 py-8">
         <div className="mb-8">
           <Link href="/account" className="inline-flex items-center text-blue-400 hover:text-blue-300 mb-4">
             <ArrowLeft className="w-4 h-4 mr-2" />
-            Volver a Mi Cuenta
+            Back to My Account
           </Link>
-          <h1 className="text-3xl font-bold mb-2">Billetera</h1>
-          <p className="text-gray-400">Tus monedas y recursos</p>
+          <h1 className="text-3xl font-bold mb-2">Wallet</h1>
+          <p className="text-gray-400">Your coins and resources</p>
         </div>
 
         {isLoading ? (
           <div className="text-center py-12">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto mb-4"></div>
-            <p className="text-gray-400">Cargando billetera...</p>
+            <p className="text-gray-400">Loading wallet...</p>
           </div>
                  ) : (
                        <div className="space-y-4">

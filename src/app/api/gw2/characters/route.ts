@@ -14,19 +14,81 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    const response = await fetch(`${GW2_API_BASE}/characters?access_token=${apiKey}`, {
+    // Primero obtenemos la lista de nombres de personajes
+    const charactersResponse = await fetch(`${GW2_API_BASE}/characters?access_token=${apiKey}`, {
       headers: {
         'Accept': 'application/json',
       },
     });
 
-    if (!response.ok) {
-      throw new Error(`GW2 API error: ${response.status} ${response.statusText}`);
+    if (!charactersResponse.ok) {
+      throw new Error(`GW2 API error: ${charactersResponse.status} ${charactersResponse.statusText}`);
     }
 
-    const charactersData = await response.json();
+    const characterNames = await charactersResponse.json();
 
-    return NextResponse.json(charactersData);
+    // Luego obtenemos la información detallada de cada personaje
+    const charactersData = await Promise.all(
+      characterNames.map(async (characterName: string) => {
+        try {
+          const characterResponse = await fetch(
+            `${GW2_API_BASE}/characters/${encodeURIComponent(characterName)}?access_token=${apiKey}`,
+            {
+              headers: {
+                'Accept': 'application/json',
+              },
+            }
+          );
+
+          if (characterResponse.ok) {
+            const characterData = await characterResponse.json();
+            
+            // También obtenemos el inventario del personaje
+            try {
+              const inventoryResponse = await fetch(
+                `${GW2_API_BASE}/characters/${encodeURIComponent(characterName)}/inventory?access_token=${apiKey}`,
+                {
+                  headers: {
+                    'Accept': 'application/json',
+                  },
+                }
+              );
+
+              if (inventoryResponse.ok) {
+                const inventoryData = await inventoryResponse.json();
+                return {
+                  ...characterData,
+                  inventory: inventoryData
+                };
+              } else {
+                console.error(`Error fetching inventory for ${characterName}:`, inventoryResponse.status);
+                return {
+                  ...characterData,
+                  inventory: null
+                };
+              }
+            } catch (inventoryError) {
+              console.error(`Error fetching inventory for ${characterName}:`, inventoryError);
+              return {
+                ...characterData,
+                inventory: null
+              };
+            }
+          } else {
+            console.error(`Error fetching character ${characterName}:`, characterResponse.status);
+            return null;
+          }
+        } catch (error) {
+          console.error(`Error fetching character ${characterName}:`, error);
+          return null;
+        }
+      })
+    );
+
+    // Filtramos los personajes que se pudieron cargar correctamente
+    const validCharacters = charactersData.filter(character => character !== null);
+
+    return NextResponse.json(validCharacters);
   } catch (error) {
     console.error('Error fetching characters data:', error);
     return NextResponse.json(

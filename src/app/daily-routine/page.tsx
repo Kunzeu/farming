@@ -51,17 +51,17 @@ export default function DailyRoutine() {
   const [timers, setTimers] = useState<TimerEvent[]>([
     {
       id: '1',
-      name: 'Reset Diario',
+      name: 'Daily Reset',
       time: '19:00',
-      days: ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'],
+      days: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
       nextOccurrence: new Date(),
       timeRemaining: ''
     },
     {
       id: '2',
-      name: 'Reset Semanal',
+      name: 'Weekly Reset',
       time: '02:30',
-      days: ['Lunes'],
+      days: ['Monday'],
       nextOccurrence: new Date(),
       timeRemaining: ''
     }
@@ -91,7 +91,7 @@ export default function DailyRoutine() {
     }
     
     // Buscar el próximo día válido
-    const dayNames = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
+    const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
     while (!days.includes(dayNames[nextDate.getDay()])) {
       nextDate.setDate(nextDate.getDate() + 1);
     }
@@ -103,7 +103,7 @@ export default function DailyRoutine() {
     const now = new Date();
     const diff = targetDate.getTime() - now.getTime();
     
-    if (diff <= 0) return '¡Ahora!';
+    if (diff <= 0) return 'Now!';
     
     const days = Math.floor(diff / (1000 * 60 * 60 * 24));
     const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
@@ -273,10 +273,10 @@ export default function DailyRoutine() {
           className="text-center mb-8"
         >
           <h1 className="text-4xl font-bold text-white mb-4">
-            Rutina Diaria
+            Daily Routine
           </h1>
           <p className="text-xl text-gray-300 mb-4">
-            Selecciona tus farms favoritos y mantén un seguimiento de eventos importantes
+            Select your favorite farms and keep track of important events
           </p>
         </motion.div>
 
@@ -291,7 +291,7 @@ export default function DailyRoutine() {
             <div className="bg-gray-800 rounded-lg p-6 border border-gray-700">
               <div className="flex items-center gap-2 mb-6">
                 <Timer className="w-6 h-6 text-blue-400" />
-                <h2 className="text-xl font-bold text-white">Eventos Importantes</h2>
+                <h2 className="text-xl font-bold text-white">Important Events</h2>
               </div>
 
               <div className="space-y-4">
@@ -323,14 +323,14 @@ export default function DailyRoutine() {
               <div className="flex items-center justify-between mb-6">
                 <div className="flex items-center gap-2">
                   <Star className="w-6 h-6 text-blue-400" />
-                  <h2 className="text-xl font-bold text-white">Selecciona tus Farms</h2>
+                  <h2 className="text-xl font-bold text-white">Select your Farms</h2>
                 </div>
                 <div className="text-right">
                   <div className="text-white font-semibold">
-                    {selectedFarmsCount} seleccionados
+                    {selectedFarmsCount} selected
                   </div>
                   <div className="text-gray-400 text-sm">
-                    Tiempo estimado: {formatMinutesToReadable(totalEstimatedTime)}
+                    Estimated time: {formatMinutesToReadable(totalEstimatedTime)}
                   </div>
                 </div>
               </div>
@@ -434,10 +434,10 @@ export default function DailyRoutine() {
                   <div className="bg-gray-700 rounded-lg p-8">
                     <Clock className="w-16 h-16 text-gray-400 mx-auto mb-4" />
                     <h3 className="text-xl font-semibold text-white mb-2">
-                      No hay farms disponibles
+                      No farms available
                     </h3>
                     <p className="text-gray-400 mb-4">
-                      No hay farms creados.
+                      No farms created.
                     </p>
                   </div>
                 </motion.div>
@@ -450,7 +450,7 @@ export default function DailyRoutine() {
                   animate={{ opacity: 1, y: 0 }}
                   className="mt-6 bg-gradient-to-r from-blue-900/50 to-slate-800/50 rounded-xl p-6 border border-blue-400/40 shadow-2xl backdrop-blur-sm"
                 >
-                  <h3 className="font-bold text-xl mb-4 text-center bg-gradient-to-r from-blue-400 to-slate-400 bg-clip-text text-transparent">Tu Rutina Diaria</h3>
+                  <h3 className="font-bold text-xl mb-4 text-center bg-gradient-to-r from-blue-400 to-slate-400 bg-clip-text text-transparent">Your Daily Routine</h3>
                   <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-5 gap-4 text-center">
                     <div>
                       <div className="text-xl font-bold text-blue-400">{selectedFarmsCount}</div>
@@ -458,7 +458,7 @@ export default function DailyRoutine() {
                     </div>
                     <div>
                       <div className="text-xl font-bold text-blue-400">{formatMinutesToReadable(totalEstimatedTime)}</div>
-                      <div className="text-gray-400 text-sm">Tiempo total</div>
+                      <div className="text-gray-400 text-sm">Total time</div>
                     </div>
                     <div>
                       <div className="flex items-center justify-center gap-2">
@@ -473,7 +473,7 @@ export default function DailyRoutine() {
                           {formatGoldTotal(Math.round(totalEstimatedGold))}
                         </div>
                       </div>
-                      <div className="text-gray-400 text-sm">Oro</div>
+                      <div className="text-gray-400 text-sm">Gold</div>
                     </div>
                     <div>
                       <div className="flex items-center justify-center gap-2">
@@ -494,7 +494,7 @@ export default function DailyRoutine() {
                       <div className="text-xl font-bold text-blue-400">
                         {Math.round((selectedFarmsCount / farms.length) * 100)}%
                       </div>
-                      <div className="text-gray-400 text-sm">Completado</div>
+                      <div className="text-gray-400 text-sm">Completed</div>
                     </div>
                   </div>
                 </motion.div>

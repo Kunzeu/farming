@@ -16,6 +16,7 @@ import {
   Zap,
   Loader2
 } from 'lucide-react';
+import GlossaryLink from '@/components/ui/GlossaryLink';
 
 interface Gw2Price {
   id: number;
@@ -46,7 +47,7 @@ const CraftingPage = () => {
   const [isLoadingConversions, setIsLoadingConversions] = useState(false);
 
 
-  // Materiales T6 de la imagen con sus IDs de GW2
+  // T6 Materials from the image with their GW2 IDs
   const t6Materials = useMemo(() => [
     { id: 24295, name: 'Vial of Powerful Blood', t5Id: 24294 },
     { id: 24358, name: 'Ancient Bone', t5Id: 24341 },
@@ -57,7 +58,7 @@ const CraftingPage = () => {
     { id: 24283, name: 'Powerful Venom Sac', t5Id: 24282 },
   ], []);
 
-  // Materiales para conversión T5 a T6
+  // Materials for T5 to T6 conversion
   const conversionMaterials = useMemo(() => ({
     ectoplasm: 19721, // Glob of Ectoplasm (al 90%/1.85)
     crystallineDust: 24277, // Pile of Crystalline Dust
@@ -72,15 +73,15 @@ const CraftingPage = () => {
   const fetchConversionCalculations = useCallback(async () => {
     setIsLoadingConversions(true);
     try {
-      // Obtener precios de la API de GW2
+      // Get prices from GW2 API
       const pricesResponse = await fetch(`https://api.guildwars2.com/v2/commerce/prices?ids=${allConversionItemIds.join(',')}`);
       const prices = await pricesResponse.json();
       
-      // Obtener detalles de los items (nombres e iconos)
+      // Get item details (names and icons)
       const itemsResponse = await fetch(`https://api.guildwars2.com/v2/items?ids=${allConversionItemIds.join(',')}`);
       const items = await itemsResponse.json();
 
-      // Crear mapa de precios y items
+      // Create price and item maps
       const pricesMap = prices.reduce((acc: Record<number, Gw2Price>, price: Gw2Price) => {
         acc[price.id] = price;
         return acc;
@@ -91,20 +92,20 @@ const CraftingPage = () => {
         return acc;
       }, {} as Record<number, Gw2Item>);
 
-      // Obtener precios para comparación
+      // Get prices for comparison
       const ectoplasmPrice = pricesMap[conversionMaterials.ectoplasm]?.sells?.unit_price || 0;
       const crystallineDustBuyPrice = pricesMap[conversionMaterials.crystallineDust]?.buys?.unit_price || 0;
       const crystallineDustSellPrice = pricesMap[conversionMaterials.crystallineDust]?.sells?.unit_price || 0;
       
 
       
-      // Calcular los 4 valores para comparación
+      // Calculate the 4 values for comparison
               const valor1 = Math.ceil(crystallineDustSellPrice * 0.90); // Precio Sell al 90%
       const valor2 = crystallineDustBuyPrice; // Precio Buy
               const valor3 = Math.ceil(ectoplasmPrice * 0.90); // Ecto al precio de derecha al 90%
         const valor4 = Math.ceil(ectoplasmPrice * 0.90 / 1.85); // Ecto al 90%/1.85
       
-      // Encontrar el menor valor
+      // Find the minimum value
       const menorValor = Math.min(valor1, valor2, valor3, valor4);
       
 
@@ -181,64 +182,64 @@ const CraftingPage = () => {
   const materialTiers = [
     {
       tier: 'T1',
-      name: 'Básico',
-      materials: ['Cobre', 'Madera verde', 'Cuero crudo', 'Lino'],
+      name: 'Basic',
+      materials: ['Copper', 'Green Wood', 'Rawhide Leather', 'Linen'],
       color: 'from-gray-400 to-gray-600'
     },
     {
       tier: 'T2',
-      name: 'Fino',
-      materials: ['Bronce', 'Madera suave', 'Cuero fino', 'Yute'],
+      name: 'Fine',
+      materials: ['Bronze', 'Soft Wood', 'Thin Leather', 'Jute'],
       color: 'from-green-400 to-green-600'
     },
     {
       tier: 'T3',
-      name: 'Maestro',
-      materials: ['Hierro', 'Madera seca', 'Cuero grueso', 'Lana'],
+      name: 'Masterwork',
+      materials: ['Iron', 'Seasoned Wood', 'Coarse Leather', 'Wool'],
       color: 'from-blue-400 to-blue-600'
     },
     {
       tier: 'T4',
-      name: 'Raro',
-      materials: ['Acero', 'Madera madura', 'Cuero duro', 'Algodón'],
+      name: 'Rare',
+      materials: ['Steel', 'Hard Wood', 'Rugged Leather', 'Cotton'],
       color: 'from-purple-400 to-purple-600'
     },
     {
       tier: 'T5',
-      name: 'Exótico',
-      materials: ['Mithril', 'Madera antigua', 'Cuero endurecido', 'Seda'],
+      name: 'Exotic',
+      materials: ['Mithril', 'Ancient Wood', 'Hardened Leather', 'Silk'],
       color: 'from-orange-400 to-orange-600'
     },
     {
       tier: 'T6',
-      name: 'Ascendido',
-      materials: ['Oricalco', 'Madera ancestral', 'Cuero templado', 'Gossamer'],
+      name: 'Ascended',
+      materials: ['Orichalcum', 'Elder Wood', 'Tempered Leather', 'Gossamer'],
       color: 'from-red-400 to-red-600'
     }
   ];
 
   const craftingTips = [
     {
-      title: 'Nivelación Eficiente',
-      description: 'Craftea items que puedas vender para recuperar costos mientras subes de nivel',
+      title: 'Efficient Leveling',
+      description: 'Craft items you can sell to recover costs while leveling up',
       icon: TrendingUp,
       color: 'text-green-400'
     },
     {
-      title: 'Materiales Baratos',
-      description: 'Compra materiales en momentos de baja demanda para ahorrar oro',
+      title: 'Cheap Materials',
+      description: 'Buy materials during low demand periods to save gold',
       icon: Coins,
       color: 'text-yellow-400'
     },
     {
-      title: 'Recetas Rentables',
-      description: 'Enfócate en recetas que tengan buena demanda en el Trading Post',
+      title: 'Profitable Recipes',
+      description: 'Focus on recipes that have good demand on the Trading Post',
       icon: BarChart3,
       color: 'text-blue-400'
     },
     {
-      title: 'Conversiones',
-      description: 'Convierte materiales de tier inferior a superior cuando sea rentable',
+      title: 'Conversions',
+      description: 'Convert lower tier materials to higher tier when profitable',
       icon: Zap,
       color: 'text-purple-400'
     }
@@ -261,11 +262,11 @@ const CraftingPage = () => {
               </div>
             </div>
             <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">
-              Guía de Crafting
+              Crafting Guide
             </h1>
             <p className="text-xl text-gray-300 max-w-3xl mx-auto">
-              Todo lo que necesitas saber sobre crafting en Guild Wars 2. 
-              Desde profesiones hasta estrategias de ganancia.
+              Everything you need to know about crafting in Guild Wars 2. 
+              From professions to profit strategies.
             </p>
           </motion.div>
 
@@ -277,10 +278,10 @@ const CraftingPage = () => {
             className="flex flex-wrap justify-center gap-2 mb-8"
           >
             {[
-              { id: 'overview', label: 'Vista General', icon: Info },
-              { id: 'materials', label: 'Materiales', icon: Package },
-              { id: 'strategies', label: 'Estrategias', icon: TrendingUp },
-              { id: 'conversions', label: 'Conversiones', icon: RefreshCw }
+              { id: 'overview', label: 'Overview', icon: Info },
+              { id: 'materials', label: 'Materials', icon: Package },
+              { id: 'strategies', label: 'Strategies', icon: TrendingUp },
+              { id: 'conversions', label: 'Conversions', icon: RefreshCw }
             ].map((tab) => (
               <button
                 key={tab.id}
@@ -309,29 +310,34 @@ const CraftingPage = () => {
                 <div className="bg-gray-800/50 backdrop-blur-sm border border-gray-700 rounded-lg p-6">
                   <h2 className="text-2xl font-bold text-white mb-4 flex items-center">
                     <Info className="w-6 h-6 mr-3 text-blue-400" />
-                    ¿Qué es el Crafting?
+                    What is Crafting?
                   </h2>
-                  <p className="text-gray-300 mb-4">
-                    El crafting en Guild Wars 2 es una forma de crear objetos, armas, armadura y consumibles. 
-                    Es una excelente manera de ganar oro y obtener items para tu personaje.
-                  </p>
+                                      <p className="text-gray-300 mb-4">
+                      Crafting in Guild Wars 2 is a way to create objects, weapons, armor, and consumables. 
+                      It&apos;s an excellent way to earn gold and obtain items for your character.
+                    </p>
+                  <div className="text-center mb-4">
+                                          <GlossaryLink>
+                        Learn more crafting concepts in the Glossary
+                      </GlossaryLink>
+                  </div>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="bg-gray-700/50 rounded-lg p-4">
-                      <h3 className="text-white font-semibold mb-2">Ventajas del Crafting</h3>
+                      <h3 className="text-white font-semibold mb-2">Crafting Benefits</h3>
                       <ul className="text-gray-300 text-sm space-y-1">
-                        <li>• Crear items para uso personal</li>
-                        <li>• Vender items en el Trading Post</li>
-                        <li>• Completar colecciones y logros</li>
-                        <li>• Obtener experiencia de nivel</li>
+                        <li>• Create items for personal use</li>
+                        <li>• Sell items on the Trading Post</li>
+                        <li>• Complete collections and achievements</li>
+                        <li>• Gain level experience</li>
                       </ul>
                     </div>
                     <div className="bg-gray-700/50 rounded-lg p-4">
-                      <h3 className="text-white font-semibold mb-2">Consejos Básicos</h3>
+                      <h3 className="text-white font-semibold mb-2">Basic Tips</h3>
                       <ul className="text-gray-300 text-sm space-y-1">
-                        <li>• Comienza con una profesión que te guste</li>
-                        <li>• Compra materiales cuando estén baratos</li>
-                        <li>• Verifica precios antes de craftear</li>
-                        <li>• Usa calculadoras de ganancia</li>
+                        <li>• Start with a profession you like</li>
+                        <li>• Buy materials when they&apos;re cheap</li>
+                        <li>• Check prices before crafting</li>
+                        <li>• Use profit calculators</li>
                       </ul>
                     </div>
                   </div>
@@ -347,7 +353,7 @@ const CraftingPage = () => {
                 <div className="bg-gray-800/50 backdrop-blur-sm border border-gray-700 rounded-lg p-6">
                   <h2 className="text-2xl font-bold text-white mb-6 flex items-center">
                     <Package className="w-6 h-6 mr-3 text-green-400" />
-                    Tiers de Materiales
+                    Material Tiers
                   </h2>
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                     {materialTiers.map((tier) => (
@@ -380,7 +386,7 @@ const CraftingPage = () => {
                 <div className="bg-gray-800/50 backdrop-blur-sm border border-gray-700 rounded-lg p-6">
                   <h2 className="text-2xl font-bold text-white mb-6 flex items-center">
                     <TrendingUp className="w-6 h-6 mr-3 text-green-400" />
-                    Estrategias de Ganancia
+                    Profit Strategies
                   </h2>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     {craftingTips.map((tip, index) => (
@@ -401,22 +407,22 @@ const CraftingPage = () => {
                 <div className="bg-gray-800/30 backdrop-blur-sm border border-gray-700 rounded-lg p-6">
                   <h3 className="text-xl font-bold text-white mb-4 flex items-center">
                     <AlertCircle className="w-5 h-5 mr-3 text-yellow-400" />
-                    Consejos Avanzados
+                    Advanced Tips
                   </h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div className="space-y-3">
                       <div className="flex items-start gap-3">
                         <div className="w-2 h-2 bg-yellow-400 rounded-full mt-2 flex-shrink-0"></div>
                         <div>
-                          <h4 className="text-white font-semibold">Análisis de Mercado</h4>
-                          <p className="text-gray-300 text-sm">Monitorea los precios del Trading Post para identificar oportunidades de crafting rentable.</p>
+                          <h4 className="text-white font-semibold">Market Analysis</h4>
+                          <p className="text-gray-300 text-sm">Monitor Trading Post prices to identify profitable crafting opportunities.</p>
                         </div>
                       </div>
                       <div className="flex items-start gap-3">
                         <div className="w-2 h-2 bg-yellow-400 rounded-full mt-2 flex-shrink-0"></div>
                         <div>
-                          <h4 className="text-white font-semibold">Timing de Compra</h4>
-                          <p className="text-gray-300 text-sm">Compra materiales cuando los precios estén bajos, especialmente después de eventos.</p>
+                          <h4 className="text-white font-semibold">Purchase Timing</h4>
+                          <p className="text-gray-300 text-sm">Buy materials when prices are low, especially after events.</p>
                         </div>
                       </div>
                     </div>
@@ -424,15 +430,15 @@ const CraftingPage = () => {
                       <div className="flex items-start gap-3">
                         <div className="w-2 h-2 bg-yellow-400 rounded-full mt-2 flex-shrink-0"></div>
                         <div>
-                          <h4 className="text-white font-semibold">Conversiones Rentables</h4>
-                          <p className="text-gray-300 text-sm">Convierte materiales de tier inferior a superior cuando la diferencia de precio sea favorable.</p>
+                          <h4 className="text-white font-semibold">Profitable Conversions</h4>
+                          <p className="text-gray-300 text-sm">Convert lower tier materials to higher tier when the price difference is favorable.</p>
                         </div>
                       </div>
                       <div className="flex items-start gap-3">
                         <div className="w-2 h-2 bg-yellow-400 rounded-full mt-2 flex-shrink-0"></div>
                         <div>
-                          <h4 className="text-white font-semibold">Especialización</h4>
-                          <p className="text-gray-300 text-sm">Enfócate en una o dos profesiones para maximizar tu eficiencia y ganancias.</p>
+                          <h4 className="text-white font-semibold">Specialization</h4>
+                          <p className="text-gray-300 text-sm">Focus on one or two professions to maximize your efficiency and profits.</p>
                         </div>
                       </div>
                     </div>
@@ -449,7 +455,7 @@ const CraftingPage = () => {
                     <div className="flex items-center">
                       <RefreshCw className="w-6 h-6 mr-3 text-yellow-400" />
                       <h2 className="text-2xl font-bold text-white">
-                        Conversiones de Materiales T6
+                        T6 Material Conversions
                       </h2>
                     </div>
                     <button
@@ -458,12 +464,12 @@ const CraftingPage = () => {
                       className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-600 text-white rounded-lg transition-colors duration-200"
                     >
                       <RefreshCw className={`w-4 h-4 ${isLoadingConversions ? 'animate-spin' : ''}`} />
-                      {isLoadingConversions ? 'Actualizando...' : 'Refrescar Datos'}
+                      {isLoadingConversions ? 'Updating...' : 'Refresh Data'}
                     </button>
                   </div>
                   <p className="text-gray-400 mb-6">
-                    Calcula la rentabilidad de convertir materiales de Tier 5 a Tier 6 a través de la Forja Mística.
-                    Los precios se actualizan en tiempo real desde la API de Guild Wars 2.
+                    Calculate the profitability of converting Tier 5 to Tier 6 materials through the Mystic Forge.
+                    Prices are updated in real-time from the Guild Wars 2 API.
                   </p>
                   
 
@@ -472,7 +478,7 @@ const CraftingPage = () => {
                   {isLoadingConversions ? (
                     <div className="flex justify-center items-center h-48">
                       <Loader2 className="animate-spin text-blue-400" size={48} />
-                      <p className="ml-4 text-white text-lg">Cargando datos de conversiones...</p>
+                      <p className="ml-4 text-white text-lg">Loading conversion data...</p>
                     </div>
                   ) : (
                     <div className="overflow-x-auto">
@@ -480,9 +486,9 @@ const CraftingPage = () => {
                         <thead className="bg-gray-600">
                           <tr>
                             <th className="py-3 px-4 text-left text-sm font-semibold text-gray-200">Material</th>
-                            <th className="py-3 px-4 text-left text-sm font-semibold text-gray-200">Precio 90%</th>
-                            <th className="py-3 px-4 text-left text-sm font-semibold text-gray-200">Precio 85%</th>
-                            <th className="py-3 px-4 text-left text-sm font-semibold text-gray-200">Coste Conv 20</th>
+                            <th className="py-3 px-4 text-left text-sm font-semibold text-gray-200">Price 90%</th>
+                            <th className="py-3 px-4 text-left text-sm font-semibold text-gray-200">Price 85%</th>
+                            <th className="py-3 px-4 text-left text-sm font-semibold text-gray-200">Conv Cost 20</th>
                             <th className="py-3 px-4 text-left text-sm font-semibold text-gray-200">Profit SS 90% T6</th>
                             <th className="py-3 px-4 text-left text-sm font-semibold text-gray-200">Profit SS 85% T6</th>
                           </tr>

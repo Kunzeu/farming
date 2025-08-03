@@ -25,7 +25,7 @@ export default function SessionStatus() {
         console.log('Usuario encontrado:', currentUser);
       }
     } catch (error) {
-      console.error('Error en verificación manual:', error);
+      console.error('Error in manual verification:', error);
     } finally {
       setIsChecking(false);
     }
@@ -39,7 +39,7 @@ export default function SessionStatus() {
     <div className="fixed bottom-4 right-4 bg-gray-900/90 border border-gray-700 rounded-lg p-4 shadow-lg max-w-sm">
       <div className="flex items-center gap-2 mb-3">
         <Shield className="h-4 w-4 text-blue-400" />
-        <h3 className="text-sm font-semibold text-gray-200">Estado de Sesión</h3>
+        <h3 className="text-sm font-semibold text-gray-200">Session Status</h3>
       </div>
       
       <div className="space-y-2 text-xs">
@@ -75,7 +75,7 @@ export default function SessionStatus() {
         
         {lastCheck && (
           <div className="flex justify-between">
-            <span className="text-gray-400">Última verificación:</span>
+            <span className="text-gray-400">Last verification:</span>
             <span className="text-gray-300">
               {lastCheck.toLocaleTimeString()}
             </span>
@@ -93,7 +93,7 @@ export default function SessionStatus() {
       </button>
       
       <div className="mt-2 text-xs text-gray-500">
-        Verificación automática cada 30 segundos
+        Automatic verification every 30 seconds
       </div>
     </div>
   );

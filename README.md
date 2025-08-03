@@ -32,6 +32,13 @@ Una aplicación web moderna para información de Guild Wars 2 **calculadoras de 
 - **Drop Rates**: Tasas de drop estimadas basadas en datos de la comunidad
 - **Análisis de Rentabilidad**: Cálculo automático de ganancias/pérdidas
 
+### 📚 Glosario de Conceptos
+- **Conceptos Centralizados**: Recopilación de todas las explicaciones y términos importantes
+- **Búsqueda y Filtros**: Encuentra rápidamente cualquier concepto por categoría o palabra clave
+- **Categorías Organizadas**: Salvaging, Farming, Trading Post, Crafting, Eventos, Festivales y más
+- **Consejos y Enlaces**: Información adicional con tips prácticos y enlaces a recursos externos
+- **Navegación Intuitiva**: Enlaces directos desde todas las páginas hacia el glosario
+
 ### 📅 Eventos Mundiales
 - **Horarios en Tiempo Real**: Información actualizada de eventos
 - **Filtros por Mapa**: Búsqueda por ubicación específica
@@ -92,12 +99,14 @@ gw2-farming-hub/
 │   │   │       ├── common/    # Common Unidentified Gear
 │   │   │       ├── masterwork/ # Masterwork Unidentified Gear
 │   │   │       └── rare/      # Rare Unidentified Gear
+│   │   ├── glossary/          # Glosario de conceptos
 │   │   ├── events/            # Eventos mundiales
 │   │   └── builds/            # Builds meta
 │   ├── components/            # Componentes reutilizables
 │   │   ├── layout/           # Componentes de layout
 │   │   ├── auth/             # Componentes de autenticación
 │   │   └── ui/               # Componentes de UI
+│   │       ├── GlossaryLink.tsx # Enlace reutilizable al glosario
 │   ├── contexts/             # Contextos de React
 │   ├── hooks/                # Custom hooks
 │   ├── lib/                  # Utilidades y APIs

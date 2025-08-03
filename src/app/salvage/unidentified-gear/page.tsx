@@ -68,7 +68,7 @@ export default function UnidentifiedGearPage() {
               </h1>
             </motion.div>
             <p className="text-xl text-gray-300 max-w-3xl mx-auto leading-relaxed">
-              Calculadoras específicas para maximizar tus ganancias con cada tipo de Unidentified Gear
+              Specific calculators to maximize your profits with each type of Unidentified Gear
             </p>
           </div>
 

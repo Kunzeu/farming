@@ -334,7 +334,7 @@ const HalloweenPage = () => {
                 className="flex items-center gap-2 px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg transition-colors duration-200"
               >
                 <ArrowLeft className="w-4 h-4" />
-                Volver a Festivales
+                Back to Festivals
               </a>
             </div>
             
@@ -343,7 +343,7 @@ const HalloweenPage = () => {
               Festival de Halloween
             </h1>
             <p className="text-xl text-gray-300">
-              Calculadoras y análisis para maximizar tus ganancias durante Halloween
+              Calculators and analysis to maximize your profits during Halloween
             </p>
           </motion.div>
 
@@ -355,9 +355,9 @@ const HalloweenPage = () => {
             className="flex flex-wrap justify-center gap-2 mb-8"
           >
             {[
-              { id: 'overview', label: 'Vista General', icon: Info },
-              { id: 'calculators', label: 'Calculadoras', icon: Calculator },
-              { id: 'strategies', label: 'Estrategias', icon: TrendingUp }
+                              { id: 'overview', label: 'Overview', icon: Info },
+              { id: 'calculators', label: 'Calculators', icon: Calculator },
+                              { id: 'strategies', label: 'Strategies', icon: TrendingUp }
             ].map((tab) => (
               <button
                 key={tab.id}
@@ -384,36 +384,36 @@ const HalloweenPage = () => {
             {selectedSection === 'overview' && (
               <div className="space-y-8">
                 <div className="bg-gray-800/50 backdrop-blur-sm border border-gray-700 rounded-lg p-6">
-                  <h2 className="text-2xl font-bold text-white mb-4 flex items-center">
-                    <Info className="w-6 h-6 mr-3 text-orange-400" />
-                    Festival de Halloween
-                  </h2>
-                  <p className="text-gray-300 mb-6">
-                    El Festival de Halloween en Guild Wars 2 es una de las mejores oportunidades para farming. 
-                    Con actividades como el Mad King&apos;s Labyrinth y las Trick-or-Treat Bags, puedes generar 
-                    cantidades significativas de oro en poco tiempo.
-                  </p>
+                                      <h2 className="text-2xl font-bold text-white mb-4 flex items-center">
+                      <Info className="w-6 h-6 mr-3 text-orange-400" />
+                      Halloween Festival
+                    </h2>
+                    <p className="text-gray-300 mb-6">
+                      The Halloween Festival in Guild Wars 2 is one of the best farming opportunities. 
+                      With activities like the Mad King&apos;s Labyrinth and Trick-or-Treat Bags, you can generate 
+                      significant amounts of gold in a short time.
+                    </p>
                   
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                     <div className="bg-gray-700/50 rounded-lg p-4">
                       <h3 className="text-white font-semibold mb-2">Trick-or-Treat Bags</h3>
                       <p className="text-gray-300 text-sm">
-                        Las bolsas contienen items aleatorios con diferentes tasas de drop. 
-                        El análisis de precios te ayuda a determinar si es rentable abrirlas.
+                        The bags contain random items with different drop rates. 
+                        Price analysis helps you determine if it&apos;s profitable to open them.
                       </p>
                     </div>
                     <div className="bg-gray-700/50 rounded-lg p-4">
                       <h3 className="text-white font-semibold mb-2">Mad King&apos;s Labyrinth</h3>
                       <p className="text-gray-300 text-sm">
-                        El laberinto es la actividad principal. Con una buena ruta y grupo, 
-                        puedes obtener cientos de bolsas por hora.
+                        The labyrinth is the main activity. With a good route and group, 
+                        you can obtain hundreds of bags per hour.
                       </p>
                     </div>
                     <div className="bg-gray-700/50 rounded-lg p-4">
                       <h3 className="text-white font-semibold mb-2">Candy Corn</h3>
                       <p className="text-gray-300 text-sm">
-                        El material principal del festival. Sus precios fluctúan durante 
-                        y después del evento, creando oportunidades de trading.
+                        The main festival material. Its prices fluctuate during 
+                        and after the event, creating trading opportunities.
                       </p>
                     </div>
                   </div>
@@ -429,7 +429,7 @@ const HalloweenPage = () => {
                     <div className="flex items-center">
                       <Calculator className="w-6 h-6 mr-3 text-orange-400" />
                       <h2 className="text-2xl font-bold text-white">
-                        Calculadora Personalizada de Halloween
+                        Custom Halloween Calculator
                       </h2>
                     </div>
                     <button
@@ -441,7 +441,7 @@ const HalloweenPage = () => {
                       className="flex items-center gap-2 px-4 py-2 bg-orange-600 hover:bg-orange-700 disabled:bg-gray-600 text-white rounded-lg transition-colors duration-200"
                     >
                       <RefreshCw className={`w-4 h-4 ${isLoading || isLoadingCalculator ? 'animate-spin' : ''}`} />
-                      {isLoading || isLoadingCalculator ? 'Actualizando...' : 'Refrescar Datos'}
+                      {isLoading || isLoadingCalculator ? 'Updating...' : 'Refresh Data'}
                     </button>
                   </div>
 
@@ -532,7 +532,7 @@ const HalloweenPage = () => {
                     {!isLoadingCalculator && calculatorItems.length === 0 && (
                       <div className="text-center py-12 bg-gray-800/30 rounded-lg border border-gray-700">
                         <Package className="w-12 h-12 text-gray-500 mx-auto mb-4" />
-                        <p className="text-gray-400 mb-2">No hay items en la calculadora</p>
+                        <p className="text-gray-400 mb-2">No items in calculator</p>
                         <p className="text-gray-500 text-sm">Usa los botones de arriba para agregar items</p>
                       </div>
                     )}
@@ -540,7 +540,7 @@ const HalloweenPage = () => {
                     {isLoadingCalculator && (
                       <div className="text-center py-8">
                         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-400 mx-auto"></div>
-                        <p className="text-gray-300 mt-2">Cargando datos de la API...</p>
+                        <p className="text-gray-300 mt-2">Loading API data...</p>
                       </div>
                     )}
                   </div>
@@ -558,7 +558,7 @@ const HalloweenPage = () => {
                 <div className="bg-gray-800/50 backdrop-blur-sm border border-gray-700 rounded-lg p-6">
                   <h2 className="text-2xl font-bold text-white mb-6 flex items-center">
                     <TrendingUp className="w-6 h-6 mr-3 text-orange-400" />
-                    Estrategias de Farming
+                    Farming Strategies
                   </h2>
                   
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -644,7 +644,7 @@ const HalloweenPage = () => {
                   <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
                   <input
                     type="text"
-                    placeholder="Buscar items..."
+                    placeholder="Search items..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                     className="w-full pl-10 pr-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400"

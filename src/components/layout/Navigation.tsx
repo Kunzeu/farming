@@ -75,15 +75,17 @@ const Navigation = () => {
   }, [isMobileMenuOpen, isUserMenuOpen]);
 
       const navItems = [
-      { href: '/', label: 'Inicio', icon: Home },
+      { href: '/', label: 'Home', icon: Home },
       { href: '/farming-routes', label: 'Farms', icon: Map },
-    { href: '/daily-routine', label: 'Rutina Diaria', icon: Clock },
+    { href: '/daily-routine', label: 'Daily Routine', icon: Clock },
+    { href: '/glossary', label: 'Glossary', icon: BookOpen },
+    { href: '/account', label: 'My Account', icon: User },
   ];
 
   const toolsItems = [
     { href: '/salvage', label: 'Salvaging', icon: Package },
     { href: '/crafting', label: 'Crafting', icon: BookOpen },
-    { href: '/festivals', label: 'Festivales', icon: Calendar },
+    { href: '/festivals', label: 'Festivals', icon: Calendar },
   ];
 
   const handleLogout = () => {
@@ -136,7 +138,7 @@ const Navigation = () => {
                   className="flex items-center space-x-2 text-gray-300 hover:text-white transition-all duration-200 px-3 py-2 rounded-lg hover:bg-gray-800/50 hover:shadow-md"
                 >
                   <Shield className="w-4 h-4" />
-                  <span className="font-medium">Calculadoras</span>
+                  <span className="font-medium">Calculators</span>
                   <ChevronDown className={`w-4 h-4 text-gray-400 transition-transform duration-200 ${isToolsMenuOpen ? 'rotate-180' : ''}`} />
                 </button>
 
@@ -200,7 +202,7 @@ const Navigation = () => {
                            onClick={() => setIsUserMenuOpen(false)}
                          >
                            <User className="w-4 h-4" />
-                           <span>Mi Perfil</span>
+                           <span>My Profile</span>
                          </Link>
                          
                          <Link
@@ -209,7 +211,7 @@ const Navigation = () => {
                            onClick={() => setIsUserMenuOpen(false)}
                          >
                            <Heart className="w-4 h-4" />
-                           <span>Favoritos</span>
+                           <span>Favorites</span>
                          </Link>
                          
                          <Link
@@ -218,7 +220,7 @@ const Navigation = () => {
                            onClick={() => setIsUserMenuOpen(false)}
                          >
                            <Settings className="w-4 h-4" />
-                           <span>Configuración</span>
+                           <span>Settings</span>
                          </Link>
 
                          {(user?.role === 'admin' || user?.isAdmin) && (
@@ -228,7 +230,7 @@ const Navigation = () => {
                              onClick={() => setIsUserMenuOpen(false)}
                            >
                              <Shield className="w-4 h-4" />
-                             <span>Panel Administrativo</span>
+                             <span>Admin Panel</span>
                            </Link>
                          )}
                          {(user?.role === 'moderator') && (
@@ -238,7 +240,7 @@ const Navigation = () => {
                              onClick={() => setIsUserMenuOpen(false)}
                            >
                              <Shield className="w-4 h-4" />
-                             <span>Panel de Moderación</span>
+                             <span>Moderation Panel</span>
                            </Link>
                          )}
                        </div>
@@ -249,7 +251,7 @@ const Navigation = () => {
                            className="flex items-center space-x-3 px-4 py-2 text-red-400 hover:text-red-300 hover:bg-gray-700 transition-colors w-full text-left"
                          >
                            <LogOut className="w-4 h-4" />
-                           <span>Cerrar Sesión</span>
+                           <span>Logout</span>
                          </button>
                        </div>
                      </motion.div>
@@ -261,7 +263,7 @@ const Navigation = () => {
                      href="/login"
                      className="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-all duration-200 font-medium shadow-md hover:shadow-lg"
                    >
-                     Iniciar Sesión
+                     Log In
                    </Link>
                  </div>
                )}
@@ -273,7 +275,7 @@ const Navigation = () => {
                       href="/login"
                       className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-all duration-200 font-medium shadow-md hover:shadow-lg text-sm"
                     >
-                      Iniciar Sesión
+                      Log In
                     </Link>
                   </div>
                 )}
@@ -321,7 +323,7 @@ const Navigation = () => {
                            >
                              <div className="flex items-center space-x-2">
                                <Shield className="w-4 h-4" />
-                               <span>Calculadoras</span>
+                               <span>Calculators</span>
                              </div>
                              <ChevronDown className={`w-4 h-4 text-gray-400 transition-transform duration-200 ${isMobileToolsOpen ? 'rotate-180' : ''}`} />
                            </button>
@@ -364,7 +366,7 @@ const Navigation = () => {
                                      className="flex items-center space-x-3 px-3 py-3 text-gray-300 hover:text-white hover:bg-gray-700 rounded-md transition-colors duration-200"
                                    >
                                      <User className="w-5 h-5" />
-                                     <span className="font-medium">Mi Perfil</span>
+                                     <span className="font-medium">My Profile</span>
                                    </Link>
                                    
                                    <Link
@@ -373,7 +375,7 @@ const Navigation = () => {
                                      className="flex items-center space-x-3 px-3 py-3 text-gray-300 hover:text-white hover:bg-gray-700 rounded-md transition-colors duration-200"
                                    >
                                      <Star className="w-5 h-5" />
-                                     <span className="font-medium">Favoritos</span>
+                                     <span className="font-medium">Favorites</span>
                                    </Link>
                                    
                                    <Link
@@ -382,7 +384,7 @@ const Navigation = () => {
                                      className="flex items-center space-x-3 px-3 py-3 text-gray-300 hover:text-white hover:bg-gray-700 rounded-md transition-colors duration-200"
                                    >
                                      <Settings className="w-5 h-5" />
-                                     <span className="font-medium">Configuración</span>
+                                     <span className="font-medium">Settings</span>
                                    </Link>
 
                                    {(user?.role === 'admin' || user?.isAdmin) && (
@@ -392,7 +394,7 @@ const Navigation = () => {
                                        className="flex items-center space-x-3 px-3 py-3 text-purple-300 hover:text-purple-200 hover:bg-gray-700 rounded-md transition-colors duration-200"
                                      >
                                        <Crown className="w-5 h-5" />
-                                       <span className="font-medium">Panel Administrativo</span>
+                                       <span className="font-medium">Admin Panel</span>
                                      </Link>
                                    )}
                                    {(user?.role === 'moderator') && (
@@ -402,7 +404,7 @@ const Navigation = () => {
                                        className="flex items-center space-x-3 px-3 py-3 text-blue-300 hover:text-blue-200 hover:bg-gray-700 rounded-md transition-colors duration-200"
                                      >
                                        <Shield className="w-5 h-5" />
-                                       <span className="font-medium">Panel de Moderación</span>
+                                       <span className="font-medium">Moderation Panel</span>
                                      </Link>
                                    )}
                                    
@@ -414,7 +416,7 @@ const Navigation = () => {
                                      className="flex items-center space-x-3 px-3 py-3 text-red-400 hover:text-red-300 hover:bg-gray-700 rounded-md transition-colors duration-200 w-full text-left"
                                    >
                                      <LogOut className="w-5 h-5" />
-                                     <span className="font-medium">Cerrar Sesión</span>
+                                     <span className="font-medium">Logout</span>
                                    </button>
                                  </div>
                               )}

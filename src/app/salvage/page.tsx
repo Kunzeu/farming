@@ -5,59 +5,60 @@ import { motion } from 'framer-motion';
 import { Package, ChevronRight, Star, FileText, Wrench } from 'lucide-react';
 import Navigation from '@/components/layout/Navigation';
 import Link from 'next/link';
+import GlossaryLink from '@/components/ui/GlossaryLink';
 
 type SalvageSection = 'salvageables' | 'luck-calculator' | 'research-notes' | 'unidentified-gear';
 
 export default function SalvagePage() {
 
-  // Configuración de secciones de Salvaging
+  // Salvage section configuration
   const salvageSections = [
     {
       id: 'salvageables' as SalvageSection,
-      name: 'Reciclables',
-      description: 'Items que se pueden reciclar',
+      name: 'Salvageables',
+      description: 'Items that can be salvaged',
       icon: Package,
       color: 'blue',
       bgGradient: 'from-blue-500/20 to-blue-600/20',
       borderColor: 'border-blue-500/30',
       textColor: 'text-blue-400',
-      features: ['Equipamiento de diferentes rarezas', 'Armas y armaduras', 'Accesorios y joyas'],
+      features: ['Equipment of different rarities', 'Weapons and armor', 'Accessories and trinkets'],
       href: '/salvage/salvageables'
     },
     {
       id: 'luck-calculator' as SalvageSection,
       name: 'Luck Calculator',
-      description: 'Calculadora de costos por suerte',
+      description: 'Luck cost calculator',
       icon: Star,
       color: 'yellow',
       bgGradient: 'from-yellow-500/20 to-yellow-600/20',
       borderColor: 'border-yellow-500/30',
       textColor: 'text-yellow-400',
-      features: ['Costo por 1000 puntos de suerte', 'Eficiencia de diferentes kits', 'Comparación de rentabilidad'],
+      features: ['Cost per 1000 luck', 'Efficiency of different kits', 'Profitability comparison'],
       href: '/salvage/luck-calculator'
     },
     {
       id: 'research-notes' as SalvageSection,
       name: 'Research Notes',
-      description: 'Costos por notas de investigación',
+      description: 'Research Note costs',
       icon: FileText,
       color: 'green',
       bgGradient: 'from-green-500/20 to-green-600/20',
       borderColor: 'border-green-500/30',
       textColor: 'text-green-400',
-      features: ['Costo por Research Note', 'Items que dan Research Notes', 'Eficiencia de salvaging'],
+      features: ['Cost per Research Note', 'Items that give Research Notes', 'Salvaging efficiency'],
       href: '/salvage/research-notes'
     },
     {
       id: 'unidentified-gear' as SalvageSection,
       name: 'Unidentified Gear',
-      description: 'Calculadoras específicas de Unidentified Gear',
+      description: 'Unidentified Gear calculators',
       icon: Wrench,
       color: 'purple',
       bgGradient: 'from-purple-500/20 to-purple-600/20',
       borderColor: 'border-purple-500/30',
       textColor: 'text-purple-400',
-      features: ['Common, Masterwork, Rare', 'Drop rates específicos', 'Rentabilidad por tipo'],
+      features: ['Common, Masterwork, Rare', 'Specific drop rates', 'Profitability by type'],
       href: '/salvage/unidentified-gear'
     }
   ];
@@ -82,7 +83,7 @@ export default function SalvagePage() {
               </h1>
             </motion.div>
             <p className="text-xl text-gray-300 max-w-3xl mx-auto leading-relaxed">
-              Guía completa sobre salvaging en Guild Wars 2. Aprende técnicas, calcula rentabilidad y maximiza tus ganancias.
+              Complete guide to salvaging in Guild Wars 2. Learn techniques, calculate profitability, and maximize your profits.
             </p>
           </div>
 
@@ -96,15 +97,17 @@ export default function SalvagePage() {
             className="bg-gradient-to-r from-slate-800/50 to-slate-700/50 backdrop-blur-sm rounded-2xl p-8 mb-12 border border-slate-600/50"
           >
             <div className="text-center mb-6">
-              <h2 className="text-2xl font-semibold text-white mb-3">¿Qué es el Salvaging?</h2>
-              <p className="text-gray-300 text-lg max-w-3xl mx-auto">
-                El <strong className="text-blue-400">salvaging</strong> es el proceso de reciclar equipamiento para obtener materiales. Es una de las formas más rentables de obtener oro en Guild Wars 2, especialmente con ciertos tipos de items.</p>
+              <h2 className="text-2xl font-semibold text-white mb-3">What is Salvaging?</h2>
+              <p className="text-gray-300 text-lg max-w-3xl mx-auto mb-4">
+                <strong className="text-blue-400">Salvaging</strong> is the process of salvaging equipment to obtain materials. It is one of the most profitable ways to earn gold in Guild Wars 2, especially with certain types of items.
+              </p>
+              <GlossaryLink />
             </div>
           </motion.div>
 
           {/* Secciones principales */}
           <div className="mb-12">
-            <h2 className="text-3xl font-bold text-white mb-8 text-center">Secciones de Reciclaje</h2>
+            <h2 className="text-3xl font-bold text-white mb-8 text-center">Salvage Sections</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
               {salvageSections.map((section, index) => {
                 const IconComponent = section.icon;
@@ -143,7 +146,7 @@ export default function SalvagePage() {
 
                           {/* Button */}
                           <div className="flex items-center justify-between">
-                            <span className="text-white font-medium text-sm">Explorar</span>
+                            <span className="text-white font-medium text-sm">Explore</span>
                             <ChevronRight className={`h-4 w-4 ${section.textColor} group-hover:translate-x-1 transition-transform duration-300`} />
                           </div>
                         </div>
@@ -162,7 +165,7 @@ export default function SalvagePage() {
             transition={{ delay: 0.6 }}
             className="bg-gradient-to-r from-slate-800/50 to-slate-700/50 backdrop-blur-sm rounded-2xl p-8 border border-slate-600/50"
           >
-            <h2 className="text-2xl font-bold text-white mb-6 text-center">Consejos Pro</h2>
+            <h2 className="text-2xl font-bold text-white mb-6 text-center">Pro Tips</h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
               <div>
                 <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
@@ -170,36 +173,36 @@ export default function SalvagePage() {
                   Salvage Kits
                 </h3>
                 <div className="space-y-3 text-gray-300">
-                  <p><strong className="text-blue-400">Copper-Fed:</strong> Para Common Gear</p>
-                  <p><strong className="text-green-400">Runecrafter&apos;s:</strong> Para Masterwork</p>
-                  <p><strong className="text-yellow-400">Silver-Fed:</strong> Para Rare Gear</p>
-                  <p><strong className="text-purple-400">Black Lion:</strong> Máxima eficiencia</p>
+                  <p><strong className="text-blue-400">Copper-Fed:</strong> For Common Gear</p>
+                  <p><strong className="text-green-400">Runecrafter&apos;s:</strong> For Masterwork</p>
+                  <p><strong className="text-yellow-400">Silver-Fed:</strong> For Rare Gear</p>
+                  <p><strong className="text-purple-400">Black Lion:</strong> Maximum efficiency</p>
                 </div>
               </div>
               <div>
                 <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
                   <div className="w-2 h-2 bg-green-400 rounded-full"></div>
-                  Estrategias
+                  Strategies
                 </h3>
                 <div className="space-y-3 text-gray-300">
                   <p className="flex items-start gap-2">
                     <span className="text-green-400">•</span>
-                    Investiga precios antes de salvarlo
+                    Check prices before salvaging
                   </p>
                   <p className="flex items-start gap-2">
                     <span className="text-green-400">•</span>
-                    Considera el valor del item completo
+                    Consider the value of the full item
                   </p>
                   <p className="flex items-start gap-2">
                     <span className="text-green-400">•</span>
-                    Usa el kit apropiado para cada tipo
+                    Use the appropriate kit for each type
                   </p>
                 </div>
               </div>
               <div>
                 <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
                   <div className="w-2 h-2 bg-purple-400 rounded-full"></div>
-                  Recursos
+                  Resources
                 </h3>
                 <div className="space-y-3 text-gray-300">
                   <p><a href="https://wiki.guildwars2.com/wiki/Salvage_kit" target="_blank" className="text-purple-400 hover:text-purple-300">GW2 Wiki - Salvage Kits</a></p>

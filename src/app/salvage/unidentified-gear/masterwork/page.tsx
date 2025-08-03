@@ -182,7 +182,7 @@ export default function UnidentifiedGearMasterworkPage() {
       <div className="flex items-center justify-center min-h-screen">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto mb-4"></div>
-          <p className="text-gray-400">Cargando precios desde GW2 API...</p>
+          <p className="text-gray-400">Loading prices from GW2 API...</p>
         </div>
       </div>
     );
@@ -200,90 +200,102 @@ export default function UnidentifiedGearMasterworkPage() {
               className="flex items-center gap-2 text-gray-400 hover:text-white transition-colors"
             >
               <ArrowLeft className="h-5 w-5" />
-              <span>Volver a Salvaging</span>
+              <span>Back to Salvaging</span>
             </Link>
           </div>
           
-          <div className="flex items-center gap-3 mb-4">
-            <Image
-              src="https://render.guildwars2.com/file/B147379DFC5430E207FCB742804E199EDF727719/1766400.png"
-              alt="Piece of Unidentified Gear (Masterwork)"
-              width={32}
-              height={32}
-              className="w-8 h-8"
-            />
-            <div>
-              <h1 className="text-3xl font-bold text-white drop-shadow-lg">Unidentified Gear - Masterwork</h1>
-              <p className="text-gray-400">Calcula cuánto oro ganas al abrir y reciclar Piece of Unidentified Gear Masterwork</p>
+          {/* Dropdown de navegación - MOVIDO ANTES DEL TÍTULO */}
+          <div className="mb-6 flex justify-center">
+            <div className="relative">
+              <button
+                onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                className="flex items-center gap-2 px-4 py-2 bg-slate-700 text-white rounded-lg hover:bg-slate-600 transition-colors"
+              >
+                <span>Masterwork</span>
+                <ChevronDown className={`h-4 w-4 transition-transform ${isDropdownOpen ? 'rotate-180' : ''}`} />
+              </button>
+              
+              {isDropdownOpen && (
+                <div className="absolute top-full left-0 mt-2 bg-slate-800 border border-slate-600 rounded-lg shadow-lg z-10 min-w-[200px]">
+                  <Link href="/salvage/unidentified-gear/common">
+                    <div className="px-4 py-3 hover:bg-slate-700 transition-colors cursor-pointer border-b border-slate-600">
+                      <div className="flex items-center gap-3">
+                        <Image
+                          src="https://render.guildwars2.com/file/E37A036C10C33E4242E568690CB2EA55AA65B915/1938436.png"
+                          alt="Common"
+                          width={16}
+                          height={16}
+                          className="w-4 h-4"
+                        />
+                        <span className="text-white">Common</span>
+                      </div>
+                    </div>
+                  </Link>
+                  <Link href="/salvage/unidentified-gear/masterwork">
+                    <div className="px-4 py-3 hover:bg-slate-700 transition-colors cursor-pointer border-b border-slate-600 bg-green-600/20">
+                      <div className="flex items-center gap-3">
+                        <Image
+                          src="https://render.guildwars2.com/file/B147379DFC5430E207FCB742804E199EDF727719/1766400.png"
+                          alt="Masterwork"
+                          width={16}
+                          height={16}
+                          className="w-4 h-4"
+                        />
+                        <span className="text-white font-semibold">Masterwork</span>
+                      </div>
+                    </div>
+                  </Link>
+                  <Link href="/salvage/unidentified-gear/rare">
+                    <div className="px-4 py-3 hover:bg-slate-700 transition-colors cursor-pointer">
+                      <div className="flex items-center gap-3">
+                        <Image
+                          src="https://render.guildwars2.com/file/EF63A10BD2317CECCEA63A3B7E6555550B414C4E/1766399.png"
+                          alt="Rare"
+                          width={16}
+                          height={16}
+                          className="w-4 h-4"
+                        />
+                        <span className="text-white">Rare</span>
+                      </div>
+                    </div>
+                  </Link>
+                </div>
+              )}
             </div>
+          </div>
+          
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center gap-3">
+              <Image
+                src="https://render.guildwars2.com/file/B147379DFC5430E207FCB742804E199EDF727719/1766400.png"
+                alt="Piece of Unidentified Gear (Masterwork)"
+                width={32}
+                height={32}
+                className="w-8 h-8"
+              />
+              <div>
+                <h1 className="text-3xl font-bold text-white drop-shadow-lg">Unidentified Gear - Masterwork</h1>
+                <p className="text-gray-400">Calculate how much gold you earn by opening and salvaging Piece of Unidentified Gear Masterwork</p>
+              </div>
+            </div>
+            
+            {/* Botón GW2 Wiki*/}
+            <a 
+              href="https://wiki.guildwars2.com/wiki/Piece_of_Unidentified_Gear" 
+              target="_blank" 
+              className="inline-flex items-center gap-2 px-4 py-2 bg-slate-700 text-white rounded-lg hover:bg-slate-600 transition-colors"
+            >
+              <BookOpen className="h-4 w-4" />
+              View Wiki
+            </a>
           </div>
           
           {lastUpdated && (
             <div className="flex items-center gap-2 text-sm text-gray-400">
               <RefreshCw className="h-4 w-4" />
-              <span>Última actualización: {lastUpdated.toLocaleTimeString()}</span>
+              <span>Last updated: {lastUpdated.toLocaleTimeString()}</span>
             </div>
           )}
-        </div>
-
-        {/* Dropdown de navegación */}
-        <div className="mb-6 flex justify-center">
-          <div className="relative">
-            <button
-              onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-              className="flex items-center gap-2 px-4 py-2 bg-slate-700 text-white rounded-lg hover:bg-slate-600 transition-colors"
-            >
-              <span>Masterwork</span>
-              <ChevronDown className={`h-4 w-4 transition-transform ${isDropdownOpen ? 'rotate-180' : ''}`} />
-            </button>
-            
-            {isDropdownOpen && (
-              <div className="absolute top-full left-0 mt-2 bg-slate-800 border border-slate-600 rounded-lg shadow-lg z-10 min-w-[200px]">
-                <Link href="/salvage/unidentified-gear/common">
-                  <div className="px-4 py-3 hover:bg-slate-700 transition-colors cursor-pointer border-b border-slate-600">
-                    <div className="flex items-center gap-3">
-                      <Image
-                        src="https://render.guildwars2.com/file/E37A036C10C33E4242E568690CB2EA55AA65B915/1938436.png"
-                        alt="Common"
-                        width={16}
-                        height={16}
-                        className="w-4 h-4"
-                      />
-                      <span className="text-white">Common</span>
-                    </div>
-                  </div>
-                </Link>
-                <Link href="/salvage/unidentified-gear/masterwork">
-                  <div className="px-4 py-3 hover:bg-slate-700 transition-colors cursor-pointer border-b border-slate-600 bg-green-600/20">
-                    <div className="flex items-center gap-3">
-                      <Image
-                        src="https://render.guildwars2.com/file/B147379DFC5430E207FCB742804E199EDF727719/1766400.png"
-                        alt="Masterwork"
-                        width={16}
-                        height={16}
-                        className="w-4 h-4"
-                      />
-                      <span className="text-white font-semibold">Masterwork</span>
-                    </div>
-                  </div>
-                </Link>
-                <Link href="/salvage/unidentified-gear/rare">
-                  <div className="px-4 py-3 hover:bg-slate-700 transition-colors cursor-pointer">
-                    <div className="flex items-center gap-3">
-                      <Image
-                        src="https://render.guildwars2.com/file/EF63A10BD2317CECCEA63A3B7E6555550B414C4E/1766399.png"
-                        alt="Rare"
-                        width={16}
-                        height={16}
-                        className="w-4 h-4"
-                      />
-                      <span className="text-white">Rare</span>
-                    </div>
-                  </div>
-                </Link>
-              </div>
-            )}
-          </div>
         </div>
 
         {/* Información del item */}
@@ -298,22 +310,24 @@ export default function UnidentifiedGearMasterworkPage() {
             />
             <div>
               <h2 className="text-xl font-semibold text-white">Runecrafter&apos;s Salvage-o-Matic</h2>
-              <p className="text-gray-400">Kit recomendado para Unidentified Gear Masterwork</p>
+              <p className="text-gray-400">Recommended kit for Unidentified Gear Masterwork</p>
             </div>
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
             <div className="bg-slate-700 rounded-lg p-3">
-              <div className="text-gray-400">Costo por uso</div>
-              <div className="text-white font-semibold">30 cobre</div>
+              <div className="text-gray-400">Cost per use</div>
+              <div className="text-white font-semibold flex items-center gap-1">
+                30 <Image src="/images/expansions/Copper.png" alt="Copper" width={16} height={16} />
+              </div>
             </div>
                           <div className="bg-slate-700 rounded-lg p-3">
                 <div className="text-gray-400">Drop rates</div>
-                <div className="text-white font-semibold">Estimados</div>
+                <div className="text-white font-semibold">Estimated</div>
               </div>
             <div className="bg-slate-700 rounded-lg p-3">
-              <div className="text-gray-400">Rentabilidad</div>
-              <div className="text-green-400 font-semibold">Alta</div>
+              <div className="text-gray-400">Profitability</div>
+              <div className="text-green-400 font-semibold">High</div>
             </div>
           </div>
         </div>
@@ -323,7 +337,7 @@ export default function UnidentifiedGearMasterworkPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-300 mb-2">
-                Cantidad de Unidentified Gear
+                Quantity of Unidentified Gear
               </label>
               <input
                 type="number"
@@ -340,7 +354,7 @@ export default function UnidentifiedGearMasterworkPage() {
                 className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-blue-700 transition-colors flex items-center gap-2"
               >
                 <RefreshCw className="h-4 w-4" />
-                Actualizar Precios
+                Update Prices
               </button>
             </div>
           </div>
@@ -351,7 +365,7 @@ export default function UnidentifiedGearMasterworkPage() {
           <div className="bg-blue-900/30 rounded-lg p-4 border border-blue-700">
             <div className="flex items-center gap-2 text-blue-300 mb-2">
               <Calculator className="h-5 w-5" />
-              <span className="font-semibold">Valor Total Materiales</span>
+              <span className="font-semibold">Total Materials Value</span>
             </div>
             <p className="text-2xl font-bold text-blue-200">{formatCurrency(totalMaterialsValue)}</p>
           </div>
@@ -359,24 +373,24 @@ export default function UnidentifiedGearMasterworkPage() {
           <div className="bg-red-900/30 rounded-lg p-4 border border-red-700">
             <div className="flex items-center gap-2 text-red-300 mb-2">
               <Package className="h-5 w-5" />
-              <span className="font-semibold">Costo {quantity} Unid. Gear</span>
+              <span className="font-semibold">Cost {quantity} Unid. Gear</span>
             </div>
             {unidentifiedGearPrice ? (
               <>
                 <p className="text-2xl font-bold text-red-200">{formatCurrency(totalCost)}</p>
                 <p className="text-xs text-red-400 mt-1">
-                  {formatCurrency(unidentifiedGearPrice || 0)} cada uno (TP)
+                  {formatCurrency(unidentifiedGearPrice || 0)} each (TP)
                 </p>
               </>
             ) : (
-              <p className="text-lg text-red-300">Cargando precio...</p>
+              <p className="text-lg text-red-300">Loading price...</p>
             )}
           </div>
           
           <div className="bg-orange-900/30 rounded-lg p-4 border border-orange-700">
             <div className="flex items-center gap-2 text-orange-300 mb-2">
               <Package className="h-5 w-5" />
-              <span className="font-semibold">Costo Kit</span>
+              <span className="font-semibold">Kit Cost</span>
             </div>
             <p className="text-2xl font-bold text-orange-200">{formatCurrency(totalKitCost)}</p>
           </div>
@@ -384,7 +398,7 @@ export default function UnidentifiedGearMasterworkPage() {
           <div className={`rounded-lg p-4 border ${totalProfit >= 0 ? 'bg-green-900/30 border-green-700' : 'bg-red-900/30 border-red-700'}`}>
             <div className={`flex items-center gap-2 mb-2 ${totalProfit >= 0 ? 'text-green-300' : 'text-red-300'}`}>
               {totalProfit >= 0 ? <TrendingUp className="h-5 w-5" /> : <TrendingDown className="h-5 w-5" />}
-              <span className="font-semibold">Ganancia Total</span>
+              <span className="font-semibold">Total Profit</span>
             </div>
             <p className={`text-2xl font-bold ${totalProfit >= 0 ? 'text-green-200' : 'text-red-200'}`}>
               {formatCurrency(Math.abs(totalProfit))}
@@ -402,19 +416,19 @@ export default function UnidentifiedGearMasterworkPage() {
                     Material
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
-                    Mat por Unidad
+                    Mat per Unit
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
-                    Precio Venta
+                    Sell Price
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
-                    Precio Procesado
+                    Processed Price
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
-                    Cantidad ({quantity})
+                    Quantity ({quantity})
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
-                    Valor Total
+                    Total Value
                   </th>
                 </tr>
               </thead>
@@ -510,25 +524,13 @@ export default function UnidentifiedGearMasterworkPage() {
            <div className="flex items-start gap-3">
              <Info className="h-5 w-5 text-green-400 mt-0.5" />
              <div className="text-sm text-green-200">
-               <strong>Nota:</strong> Los precios se obtienen en tiempo real desde la <a href="https://api.guildwars2.com/v2/commerce/prices" target="_blank" className="text-green-300 hover:text-green-100 underline">API de GW2</a>. 
-               El &quot;Precio Procesado&quot; incluye las comisiones del Trading Post (15% de descuento sobre el precio de venta). 
-               El costo de Unidentified Gear usa el precio de compra actual del Trading Post. 
-               Los drop rates están basados en datos oficiales de la GW2 Wiki para <strong>Piece of Unidentified Gear (Masterwork)</strong> abierto y luego reciclado con <strong>Runecrafter&apos;s Salvage-o-Matic</strong>.
+               <strong>Note:</strong> Prices are obtained in real-time from the <a href="https://api.guildwars2.com/v2/commerce/prices" target="_blank" className="text-green-300 hover:text-green-100 underline">GW2 API</a>. 
+               The &quot;Processed Price&quot; includes Trading Post fees (15% discount on sell price). 
+               The cost of Unidentified Gear uses the current buy price from the Trading Post. 
+               Drop rates are based on official data from the GW2 Wiki for <strong>Piece of Unidentified Gear (Masterwork)</strong> opened and then salvaged with <strong>Runecrafter&apos;s Salvage-o-Matic</strong>.
              </div>
            </div>
          </div>
-        
-        {/* Link a Wiki */}
-        <div className="mt-4 text-center">
-          <a 
-            href="https://wiki.guildwars2.com/wiki/Piece_of_Unidentified_Gear" 
-            target="_blank" 
-            className="inline-flex items-center gap-2 px-4 py-2 bg-slate-700 text-white rounded-lg hover:bg-slate-600 transition-colors"
-          >
-            <BookOpen className="h-4 w-4" />
-            Ver en GW2 Wiki
-          </a>
-        </div>
       </div>
     </>
   );
