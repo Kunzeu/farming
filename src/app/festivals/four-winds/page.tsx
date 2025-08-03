@@ -131,8 +131,8 @@ const FourWindsPage = () => {
       const itemIds = boxCalculatorData.map(item => item.id).join(',');
       
       const [itemsResponse, pricesResponse] = await Promise.all([
-        fetch(`https://api.guildwars2.com/v2/items?ids=${itemIds}`),
-        fetch(`https://api.guildwars2.com/v2/commerce/prices?ids=${itemIds}`)
+        fetch(`https://api.guildwars2.com/v2/items?ids=${itemIds}&lang=en`),
+        fetch(`https://api.guildwars2.com/v2/commerce/prices?ids=${itemIds}&lang=en`)
       ]);
 
       if (itemsResponse.ok && pricesResponse.ok) {
