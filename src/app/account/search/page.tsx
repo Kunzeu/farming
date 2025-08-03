@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { ArrowLeft, Search, Package, Users, Database } from 'lucide-react';
 import Link from 'next/link';
@@ -26,7 +26,7 @@ const SearchPage = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [searchScope, setSearchScope] = useState<'all' | 'bank' | 'characters' | 'storage'>('all');
 
-  const handleSearch = async () => {
+  const handleSearch = useCallback(async () => {
     if (!searchTerm.trim()) return;
 
     setIsLoading(true);
@@ -49,14 +49,14 @@ const SearchPage = () => {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [searchTerm, searchScope]);
 
   useEffect(() => {
     if (searchTerm.trim()) {
       const timeoutId = setTimeout(handleSearch, 500);
       return () => clearTimeout(timeoutId);
     }
-  }, [searchTerm, searchScope, handleSearch]);
+  }, [handleSearch]);
 
   if (!isAuthenticated) {
     return (

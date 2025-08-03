@@ -34,20 +34,21 @@ export async function GET(request: NextRequest) {
       if (itemsResponse.ok) {
         const itemsData = await itemsResponse.json();
         
-        // Merge item details with bank data
-        const enrichedBankData = bankData.map((bankItem: unknown, index: number) => {
-          if (bankItem === null) return null;
-          
-          const itemDetails = itemsData.find((item: { id: number }) => item.id === (bankItem as { id: number }).id);
-          return {
-            ...bankItem,
-            name: itemDetails?.name || `Item ${bankItem.id}`,
-            icon: itemDetails?.icon,
-            rarity: itemDetails?.rarity,
-            type: itemDetails?.type,
-            slot: index
-          };
-        });
+                 // Merge item details with bank data
+         const enrichedBankData = bankData.map((bankItem: unknown, index: number) => {
+           if (bankItem === null) return null;
+           
+           const typedBankItem = bankItem as { id: number };
+           const itemDetails = itemsData.find((item: { id: number }) => item.id === typedBankItem.id);
+           return {
+             ...bankItem,
+             name: itemDetails?.name || `Item ${typedBankItem.id}`,
+             icon: itemDetails?.icon,
+             rarity: itemDetails?.rarity,
+             type: itemDetails?.type,
+             slot: index
+           };
+         });
         
         return NextResponse.json(enrichedBankData);
       }
