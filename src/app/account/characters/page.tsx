@@ -53,7 +53,7 @@ const CharactersPage = () => {
   const [error, setError] = useState<string | null>(null);
   const [hasApiKey, setHasApiKey] = useState<boolean | null>(null);
   const [expandedInventories, setExpandedInventories] = useState<Set<string>>(new Set());
-  const [selectedItem, setSelectedItem] = useState<any>(null);
+  const [selectedItem, setSelectedItem] = useState<{ id: number; name?: string; icon?: string; rarity?: string; count: number; vendor_value?: number; description?: string; level?: number; binding?: string; bound_to?: string } | null>(null);
   const [showModal, setShowModal] = useState(false);
 
   useEffect(() => {
@@ -161,7 +161,7 @@ const CharactersPage = () => {
     setExpandedInventories(newExpanded);
   };
 
-  const handleItemClick = (item: any) => {
+  const handleItemClick = (item: { id: number; name?: string; icon?: string; rarity?: string; count: number; vendor_value?: number; description?: string; level?: number; binding?: string; bound_to?: string } | null) => {
     if (item) {
       setSelectedItem(item);
       setShowModal(true);
@@ -173,36 +173,7 @@ const CharactersPage = () => {
     setSelectedItem(null);
   };
 
-  const renderInventoryItem = (item: any, index: number) => {
-    if (!item) return null;
 
-    return (
-      <div 
-        key={index}
-        className={`
-          w-12 h-12 rounded border-2 flex items-center justify-center relative
-          ${getRarityBorderColor(item.rarity)} bg-gray-700 hover:bg-gray-600 transition-colors cursor-pointer group
-        `}
-        title={item.name || `Item ${item.id}`}
-      >
-        {item.icon && (
-          <Image 
-            src={item.icon} 
-            alt={item.name || `Item ${item.id}`}
-            width={32}
-            height={32}
-            className="w-8 h-8 object-contain"
-          />
-        )}
-
-        {item.count > 1 && (
-          <span className="absolute bottom-0 right-0 bg-black/80 text-white text-xs px-1 rounded">
-            {item.count}
-          </span>
-        )}
-      </div>
-    );
-  };
 
   const renderInventory = (character: Character) => {
     if (!character.inventory?.bags) {
@@ -477,7 +448,7 @@ const CharactersPage = () => {
                       {selectedItem.name || `Item ${selectedItem.id}`}
                     </h3>
                     <p className={`text-sm ${getRarityTextColor(selectedItem.rarity)}`}>
-                      {selectedItem.rarity?.charAt(0).toUpperCase() + selectedItem.rarity?.slice(1) || 'Unknown'}
+                      {selectedItem.rarity ? selectedItem.rarity.charAt(0).toUpperCase() + selectedItem.rarity.slice(1) : 'Unknown'}
                     </p>
                   </div>
                 </div>

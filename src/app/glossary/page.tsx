@@ -7,17 +7,10 @@ import {
   BookOpen, 
   Search, 
   Package, 
-  Coins,
   MapPin,
   Calendar,
-  TrendingUp,
   Star,
   Info,
-  Zap,
-  Clock,
-  Users,
-  Target,
-  BarChart3,
   Wrench,
   FileText
 } from 'lucide-react';
