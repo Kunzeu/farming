@@ -38,7 +38,7 @@ export default function GlossaryPage() {
     {
       id: 'salvaging',
       title: 'Salvaging',
-      description: 'El salvaging es el proceso de reciclar equipamiento para obtener materiales. Es una de las formas más rentables de obtener oro en Guild Wars 2, especialmente con ciertos tipos de items.',
+             description: 'Salvaging is the process of recycling equipment to obtain materials. It is one of the most profitable ways to earn gold in Guild Wars 2, especially with certain types of items.',
       category: 'salvaging',
       icon: <Package className="h-6 w-6" />,
       color: 'blue',
@@ -58,7 +58,7 @@ export default function GlossaryPage() {
     {
       id: 'unidentified-gear',
       title: 'Unidentified Gear',
-      description: 'Equipamiento sin identificar que puede ser salvado para obtener materiales específicos. Existen tres tipos: Common (verde), Masterwork (azul) y Rare (dorado), cada uno con diferentes drop rates y rentabilidad.',
+             description: 'Unidentified equipment that can be salvaged to obtain specific materials. There are three types: Common (green), Masterwork (blue) and Rare (gold), each with different drop rates and profitability.',
       category: 'salvaging',
       icon: <Wrench className="h-6 w-6" />,
       color: 'purple',
@@ -74,7 +74,7 @@ export default function GlossaryPage() {
     {
       id: 'salvage-kits',
       title: 'Salvage Kits',
-      description: 'Herramientas especializadas para reciclar equipamiento. Cada kit tiene diferentes tasas de éxito y costos asociados. Los kits automáticos son más convenientes pero más costosos.',
+             description: 'Specialized tools for recycling equipment. Each kit has different success rates and associated costs. Automatic kits are more convenient but more expensive.',
       category: 'salvaging',
       icon: <Wrench className="h-6 w-6" />,
       color: 'green',
@@ -90,7 +90,7 @@ export default function GlossaryPage() {
     {
       id: 'luck-calculator',
       title: 'Luck Calculator',
-      description: 'Calculadora para determinar el costo por puntos de suerte obtenidos al reciclar items. Ayuda a optimizar qué items reciclar para maximizar la eficiencia de ganancia de suerte.',
+             description: 'Calculator to determine the cost per luck points obtained when salvaging items. Helps optimize which items to salvage to maximize luck gain efficiency.',
       category: 'salvaging',
       icon: <Star className="h-6 w-6" />,
       color: 'yellow',
@@ -101,7 +101,7 @@ export default function GlossaryPage() {
     {
       id: 'research-notes',
       title: 'Research Notes',
-      description: 'Notas de investigación obtenidas al reciclar items específicos. Son necesarias para crafting avanzado y pueden ser una fuente de ingresos significativa.',
+             description: 'Research notes obtained by salvaging specific items. They are necessary for advanced crafting and can be a significant source of income.',
       category: 'salvaging',
       icon: <FileText className="h-6 w-6" />,
       color: 'green',
@@ -113,8 +113,8 @@ export default function GlossaryPage() {
     // FARMING
     {
       id: 'farming-routes',
-      title: 'Rutas de Farming',
-      description: 'Rutas optimizadas para recolectar materiales y obtener oro de manera eficiente. Cada ruta tiene diferentes requisitos, dificultad y ganancias esperadas por hora.',
+             title: 'Farming Routes',
+       description: 'Optimized routes for collecting materials and earning gold efficiently. Each route has different requirements, difficulty and expected earnings per hour.',
       category: 'farming',
       icon: <MapPin className="h-6 w-6" />,
       color: 'green',
@@ -124,15 +124,15 @@ export default function GlossaryPage() {
       tips: [
         'Rutas optimizadas para maximizar el oro por hora',
         'Planifica tus sesiones según eventos y metas diarias',
-        'Diferentes tipos de contenido para todos los gustos'
+                 'Different types of content for all tastes'
       ]
     },
 
     // FESTIVALS
     {
       id: 'festivals',
-      title: 'Festivales',
-      description: 'Eventos temporales que ofrecen contenido único y recompensas especiales. Son excelentes oportunidades para obtener oro y items exclusivos.',
+             title: 'Festivals',
+       description: 'Temporary events that offer unique content and special rewards. They are excellent opportunities to earn gold and exclusive items.',
       category: 'festivals',
       icon: <Calendar className="h-6 w-6" />,
       color: 'purple',
@@ -150,7 +150,7 @@ export default function GlossaryPage() {
   ];
 
   const categories = [
-    { id: 'all', name: 'Todos', icon: <BookOpen className="h-4 w-4" /> },
+         { id: 'all', name: 'All', icon: <BookOpen className="h-4 w-4" /> },
     { id: 'salvaging', name: 'Salvaging', icon: <Package className="h-4 w-4" /> },
     { id: 'farming', name: 'Farming', icon: <MapPin className="h-4 w-4" /> },
     { id: 'festivals', name: 'Festivals', icon: <Calendar className="h-4 w-4" /> }
@@ -292,9 +292,9 @@ export default function GlossaryPage() {
             className="text-center py-12"
           >
             <Info className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-            <p className="text-gray-400 text-lg">
-              No se encontraron conceptos que coincidan con tu búsqueda.
-            </p>
+                         <p className="text-gray-400 text-lg">
+               No concepts found matching your search.
+             </p>
           </motion.div>
         )}
       </main>

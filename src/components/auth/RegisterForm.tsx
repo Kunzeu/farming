@@ -36,6 +36,23 @@ export default function RegisterForm() {
     confirmPassword: { isValid: false, message: '' },
   });
 
+  const validatePassword = (password: string) => {
+    if (password.length < 6) {
+      return { isValid: false, message: 'Password must be at least 6 characters long' };
+    }
+    if (password.length > 50) {
+      return { isValid: false, message: 'Password cannot be longer than 50 characters' };
+    }
+    return { isValid: true, message: '' };
+  };
+
+  const validateConfirmPassword = (confirmPassword: string, password: string) => {
+    if (confirmPassword !== password) {
+      return { isValid: false, message: 'Passwords do not match' };
+    }
+    return { isValid: true, message: '' };
+  };
+
   const validateField = (name: string, value: string) => {
     switch (name) {
       case 'username':

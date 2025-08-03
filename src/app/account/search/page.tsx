@@ -62,9 +62,9 @@ const SearchPage = () => {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
-          <h2 className="text-2xl font-bold text-white mb-2">Acceso Requerido</h2>
+                     <h2 className="text-2xl font-bold text-white mb-2">Access Required</h2>
           <Link href="/login" className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg">
-            Ir al Login
+                         Go to Login
           </Link>
         </div>
       </div>
@@ -108,7 +108,7 @@ const SearchPage = () => {
                     : 'bg-gray-800 border-gray-700 text-gray-300 hover:bg-gray-700'
                 }`}
               >
-                Todo
+                                 All
               </button>
               <button
                 onClick={() => setSearchScope('bank')}
@@ -148,7 +148,7 @@ const SearchPage = () => {
         {isLoading && (
           <div className="text-center py-12">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto mb-4"></div>
-            <p className="text-gray-400">Buscando...</p>
+                         <p className="text-gray-400">Searching...</p>
           </div>
         )}
 
@@ -169,9 +169,9 @@ const SearchPage = () => {
                   <h3 className="text-lg font-semibold">{item.name}</h3>
                 </div>
                 <div className="space-y-2 text-sm text-gray-400">
-                  <p><strong>Cantidad:</strong> {item.count}</p>
-                  <p><strong>Ubicación:</strong> {item.location}</p>
-                  {item.rarity && <p><strong>Rareza:</strong> {item.rarity}</p>}
+                                     <p><strong>Quantity:</strong> {item.count}</p>
+                   <p><strong>Location:</strong> {item.location}</p>
+                   {item.rarity && <p><strong>Rarity:</strong> {item.rarity}</p>}
                 </div>
               </div>
             ))}
@@ -181,8 +181,8 @@ const SearchPage = () => {
         {!isLoading && searchTerm && searchResults.length === 0 && (
           <div className="text-center py-12">
             <Search className="w-16 h-16 text-gray-600 mx-auto mb-4" />
-            <h3 className="text-xl font-semibold text-gray-300 mb-2">No se encontraron resultados</h3>
-            <p className="text-gray-400">Intenta con otros términos de búsqueda</p>
+                         <h3 className="text-xl font-semibold text-gray-300 mb-2">No results found</h3>
+             <p className="text-gray-400">Try with other search terms</p>
           </div>
         )}
       </div>

@@ -70,7 +70,7 @@ const CharactersPage = () => {
         
         const apiKey = checkApiKey();
         if (!apiKey) {
-          setError('No hay API key configurada');
+          setError('No API key configured');
           return;
         }
         
@@ -81,14 +81,14 @@ const CharactersPage = () => {
         } else {
           console.error('Error response:', response.status, response.statusText);
           if (response.status === 401) {
-            setError('API key inválida o sin permisos suficientes');
+            setError('Invalid API key or insufficient permissions');
           } else {
-            setError('Error al cargar los personajes');
+            setError('Error loading characters');
           }
         }
       } catch (error) {
         console.error('Error fetching characters:', error);
-        setError('Error de conexión al cargar los personajes');
+        setError('Connection error loading characters');
       } finally {
         setIsLoading(false);
       }
@@ -180,7 +180,7 @@ const CharactersPage = () => {
       return (
         <div className="text-center py-4 text-gray-400">
           <Package className="w-8 h-8 mx-auto mb-2" />
-          <p>No hay inventario disponible</p>
+                     <p>No inventory available</p>
         </div>
       );
     }
@@ -189,7 +189,7 @@ const CharactersPage = () => {
       return (
         <div className="text-center py-4 text-gray-400">
           <Package className="w-8 h-8 mx-auto mb-2" />
-          <p>Inventario vacío</p>
+                     <p>Empty inventory</p>
         </div>
       );
     }
@@ -201,9 +201,9 @@ const CharactersPage = () => {
                          <div className="flex items-center justify-between mb-3">
                <div className="flex items-center">
                  <Package className="w-4 h-4 text-gray-400 mr-2" />
-                 <h5 className="text-sm font-semibold text-gray-300">
-                   Bolsa {bag.id || bagIndex + 1}
-                 </h5>
+                                    <h5 className="text-sm font-semibold text-gray-300">
+                     Bag {bag.id || bagIndex + 1}
+                   </h5>
                </div>
               <span className="text-xs text-gray-400">
                 {bag.inventory?.filter(item => item !== null).length || 0}/{bag.size || 0} slots
@@ -274,9 +274,9 @@ const CharactersPage = () => {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
-          <h2 className="text-2xl font-bold text-white mb-2">Acceso Requerido</h2>
+                     <h2 className="text-2xl font-bold text-white mb-2">Access Required</h2>
           <Link href="/login" className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg">
-            Ir al Login
+                         Go to Login
           </Link>
         </div>
       </div>
@@ -290,10 +290,10 @@ const CharactersPage = () => {
         <div className="mb-8">
           <Link href="/account" className="inline-flex items-center text-blue-400 hover:text-blue-300 mb-4">
             <ArrowLeft className="w-4 h-4 mr-2" />
-            Volver a Mi Cuenta
+                         Back to My Account
           </Link>
-          <h1 className="text-3xl font-bold mb-2">Personajes</h1>
-          <p className="text-gray-400">Tus personajes y equipamiento</p>
+                     <h1 className="text-3xl font-bold mb-2">Characters</h1>
+           <p className="text-gray-400">Your characters and equipment</p>
         </div>
 
         {/* API Key Warning */}
@@ -302,15 +302,15 @@ const CharactersPage = () => {
             <div className="flex items-center">
               <Key className="w-5 h-5 text-yellow-500 mr-3" />
               <div>
-                <h3 className="text-yellow-400 font-semibold mb-1">API Key Requerida</h3>
-                <p className="text-yellow-300 text-sm mb-3">
-                  Para ver tus personajes, necesitas configurar tu API key de Guild Wars 2.
-                </p>
+                                 <h3 className="text-yellow-400 font-semibold mb-1">API Key Required</h3>
+                 <p className="text-yellow-300 text-sm mb-3">
+                   To view your characters, you need to configure your Guild Wars 2 API key.
+                 </p>
                 <Link 
                   href="/account/settings" 
                   className="inline-flex items-center px-4 py-2 bg-yellow-600 hover:bg-yellow-700 text-white rounded-lg text-sm transition-colors"
                 >
-                  Configurar API Key
+                                     Configure API Key
                 </Link>
               </div>
             </div>
@@ -326,12 +326,12 @@ const CharactersPage = () => {
                 <h3 className="text-red-400 font-semibold mb-1">Error</h3>
                 <p className="text-red-300 text-sm mb-3">{error}</p>
                 {error.includes('API key') && (
-                  <Link 
-                    href="/account/settings" 
-                    className="inline-flex items-center px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg text-sm transition-colors"
-                  >
-                    Revisar Configuración
-                  </Link>
+                                   <Link 
+                   href="/account/settings" 
+                   className="inline-flex items-center px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg text-sm transition-colors"
+                 >
+                   Review Configuration
+                 </Link>
                 )}
               </div>
             </div>
@@ -345,7 +345,7 @@ const CharactersPage = () => {
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
               <input
                 type="text"
-                placeholder="Buscar personajes..."
+                                 placeholder="Search characters..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="w-full pl-10 pr-4 py-3 bg-gray-800 border border-gray-700 rounded-lg focus:outline-none focus:border-blue-500"
@@ -357,7 +357,7 @@ const CharactersPage = () => {
         {isLoading ? (
           <div className="text-center py-12">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto mb-4"></div>
-            <p className="text-gray-400">Cargando personajes...</p>
+                         <p className="text-gray-400">Loading characters...</p>
           </div>
         ) : hasApiKey && !error && (
           <div className="space-y-6">
@@ -379,39 +379,39 @@ const CharactersPage = () => {
                     {expandedInventories.has(character.name) ? (
                       <>
                         <EyeOff className="w-4 h-4" />
-                        Ocultar Inventario
+                                                 Hide Inventory
                       </>
                     ) : (
                       <>
                         <Eye className="w-4 h-4" />
-                        Ver Inventario
+                                                 View Inventory
                       </>
                     )}
                   </button>
                 </div>
                 
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm text-gray-400 mb-4">
-                  <div>
-                    <strong>Nivel:</strong> {character.level}
-                  </div>
-                  <div>
-                    <strong>Raza:</strong> {character.race}
-                  </div>
-                  <div>
-                    <strong>Especialización:</strong> {character.specialization || 'Ninguna'}
-                  </div>
-                  <div>
-                    <strong>Mundo:</strong> {character.world}
-                  </div>
+                                     <div>
+                     <strong>Level:</strong> {character.level}
+                   </div>
+                   <div>
+                     <strong>Race:</strong> {character.race}
+                   </div>
+                   <div>
+                     <strong>Specialization:</strong> {character.specialization || 'None'}
+                   </div>
+                   <div>
+                     <strong>World:</strong> {character.world}
+                   </div>
                 </div>
 
                 {/* Inventario expandible */}
                 {expandedInventories.has(character.name) && (
                   <div className="mt-4 pt-4 border-t border-gray-700">
-                    <h4 className="text-lg font-semibold mb-3 flex items-center">
-                      <Package className="w-5 h-5 mr-2" />
-                      Inventario
-                    </h4>
+                                         <h4 className="text-lg font-semibold mb-3 flex items-center">
+                       <Package className="w-5 h-5 mr-2" />
+                       Inventory
+                     </h4>
                     {renderInventory(character)}
                   </div>
                 )}
@@ -423,8 +423,8 @@ const CharactersPage = () => {
         {!isLoading && hasApiKey && !error && filteredCharacters.length === 0 && (
           <div className="text-center py-12">
             <Users className="w-16 h-16 text-gray-600 mx-auto mb-4" />
-            <h3 className="text-xl font-semibold text-gray-300 mb-2">Sin personajes</h3>
-            <p className="text-gray-400">No se encontraron personajes</p>
+                         <h3 className="text-xl font-semibold text-gray-300 mb-2">No characters</h3>
+             <p className="text-gray-400">No characters found</p>
           </div>
                  )}
 
@@ -463,42 +463,42 @@ const CharactersPage = () => {
               <div className="space-y-3 text-sm">
                 {selectedItem.count > 1 && (
                   <div className="flex justify-between">
-                    <span className="text-gray-400">Cantidad:</span>
+                    <span className="text-gray-400">Quantity:</span>
                     <span className="text-white font-semibold">{selectedItem.count}</span>
                   </div>
                 )}
 
                 {selectedItem.level && (
                   <div className="flex justify-between">
-                    <span className="text-gray-400">Nivel:</span>
+                    <span className="text-gray-400">Level:</span>
                     <span className="text-white">{selectedItem.level}</span>
                   </div>
                 )}
 
                 {selectedItem.vendor_value !== undefined && (
                   <div className="flex justify-between">
-                    <span className="text-gray-400">Valor de Venta:</span>
+                    <span className="text-gray-400">Vendor Value:</span>
                     <span className="text-white font-semibold">{formatGold(selectedItem.vendor_value)}</span>
                   </div>
                 )}
 
                 {selectedItem.description && (
                   <div>
-                    <span className="text-gray-400 block mb-1">Descripción:</span>
+                    <span className="text-gray-400 block mb-1">Description:</span>
                     <p className="text-white text-xs leading-relaxed">{selectedItem.description}</p>
                   </div>
                 )}
 
                 {selectedItem.binding && (
                   <div className="flex justify-between">
-                    <span className="text-gray-400">Vinculación:</span>
+                    <span className="text-gray-400">Binding:</span>
                     <span className="text-orange-400">{selectedItem.binding}</span>
                   </div>
                 )}
 
                 {selectedItem.bound_to && (
                   <div className="flex justify-between">
-                    <span className="text-gray-400">Vinculado a:</span>
+                    <span className="text-gray-400">Bound to:</span>
                     <span className="text-orange-400">{selectedItem.bound_to}</span>
                   </div>
                 )}
