@@ -191,13 +191,13 @@ export default function ModeratorPanel() {
     
     if (!editingFarm.name.trim() || !editingFarm.description.trim() || !editingFarm.estimatedTime.trim()) {
 
-      showError('Error de validación', 'Nombre, descripción y tiempo son campos requeridos');
+      showError('Validation Error', 'Name, description and time are required fields');
       return;
     }
 
     if (!editingFarm.estimatedGold.trim() && !editingFarm.estimatedSpirit?.trim()) {
 
-      showError('Error de validación', 'Debe especificar al menos oro estimado o spirit shards');
+      showError('Validation Error', 'You must specify at least estimated gold or spirit shards');
       return;
     }
 
@@ -232,22 +232,22 @@ export default function ModeratorPanel() {
 
       await loadData();
       setEditingFarm(null);
-      showSuccess('Éxito', 'Farm actualizado correctamente.');
+      showSuccess('Success', 'Farm updated successfully.');
     } catch (err) {
       console.error('❌ Error updating farm:', err);
-      showError('Error', 'No se pudo actualizar el farm. Intenta nuevamente.');
+      showError('Error', 'Could not update the farm. Please try again.');
     }
   };
 
   // Crear farm
   const handleCreateFarm = async () => {
     if (!newFarm.name.trim() || !newFarm.description.trim() || !newFarm.estimatedTime.trim()) {
-      showError('Error de validación', 'Nombre, descripción y tiempo son campos requeridos');
+      showError('Validation Error', 'Name, description and time are required fields');
       return;
     }
 
     if (!newFarm.estimatedGold.trim() && !newFarm.estimatedSpirit?.trim()) {
-      showError('Error de validación', 'Debe especificar al menos oro estimado o spirit shards');
+      showError('Validation Error', 'You must specify at least estimated gold or spirit shards');
       return;
     }
 
@@ -274,10 +274,10 @@ export default function ModeratorPanel() {
       setIsCreating(false);
       await loadData();
       
-      showSuccess('¡Creado!', `Farm "${newFarm.name}" creado y enviado para aprobación`);
+      showSuccess('Created!', `Farm "${newFarm.name}" created and sent for approval`);
     } catch (err) {
       console.error('Error creating farm:', err);
-      showError('Error', 'No se pudo crear el farm. Intenta nuevamente.');
+      showError('Error', 'Could not create the farm. Please try again.');
     }
   };
 

@@ -218,13 +218,13 @@ export default function AdminPanel() {
     
     // Validar campos requeridos
     if (!newFarm.name.trim() || !newFarm.description.trim() || !newFarm.estimatedTime.trim()) {
-      showError('Error de validación', 'Nombre, descripción y tiempo son campos requeridos');
+      showError('Validation Error', 'Name, description and time are required fields');
       return;
     }
 
     // Validar que al menos oro o spirit shards esté presente
     if (!newFarm.estimatedGold.trim() && !newFarm.estimatedSpirit?.trim()) {
-      showError('Error de validación', 'Debe especificar al menos oro estimado o spirit shards');
+      showError('Validation Error', 'You must specify at least estimated gold or spirit shards');
       return;
     }
 
@@ -251,10 +251,10 @@ export default function AdminPanel() {
       setIsCreating(false);
       await loadFarms();
       
-      showSuccess('¡Éxito!', `Farm "${newFarm.name}" creado correctamente`);
+      showSuccess('Success!', `Farm "${newFarm.name}" created successfully`);
     } catch (err) {
       console.error('Error creating farm:', err);
-      showError('Error', 'No se pudo crear el farm. Intenta nuevamente.');
+      showError('Error', 'Could not create the farm. Please try again.');
     }
   };
 
@@ -264,13 +264,13 @@ export default function AdminPanel() {
     
     // Validar campos requeridos
     if (!editingFarm.name.trim() || !editingFarm.description.trim() || !editingFarm.estimatedTime.trim()) {
-      showError('Error de validación', 'Nombre, descripción y tiempo son campos requeridos');
+      showError('Validation Error', 'Name, description and time are required fields');
       return;
     }
 
     // Validar que al menos oro o spirit shards esté presente
     if (!editingFarm.estimatedGold.trim() && !editingFarm.estimatedSpirit?.trim()) {
-      showError('Error de validación', 'Debe especificar al menos oro estimado o spirit shards');
+      showError('Validation Error', 'You must specify at least estimated gold or spirit shards');
       return;
     }
 
@@ -299,10 +299,10 @@ export default function AdminPanel() {
       setEditingFarm(null);
       await loadFarms();
       
-      showSuccess('¡Actualizado!', `Farm "${farmName}" actualizado correctamente`);
+      showSuccess('Updated!', `Farm "${farmName}" updated successfully`);
     } catch (err) {
       console.error('Error updating farm:', err);
-      showError('Error', 'No se pudo actualizar el farm. Intenta nuevamente.');
+      showError('Error', 'Could not update the farm. Please try again.');
     }
   };
 
@@ -360,14 +360,14 @@ export default function AdminPanel() {
     if (!dbService) return;
     
     if (!newUser.email.trim() || !newUser.username.trim() || !newUser.password.trim()) {
-      showError('Error de validación', 'Email, username y contraseña son requeridos');
+      showError('Validation Error', 'Email, username and password are required');
       return;
     }
 
     // Validación de email
     const emailValidation = validateEmailFormat(newUser.email);
     if (!emailValidation.isValid) {
-      showError('Error de validación', emailValidation.message);
+      showError('Validation Error', emailValidation.message);
       return;
     }
 
@@ -383,10 +383,10 @@ export default function AdminPanel() {
       });
       setIsCreatingUser(false);
       await loadUsers();
-      showSuccess('¡Usuario creado!', `Usuario "${userName}" creado correctamente`);
+      showSuccess('User created!', `User "${userName}" created successfully`);
     } catch (err) {
       console.error('Error creating user:', err);
-      const errorMessage = err instanceof Error ? err.message : 'Error al crear el usuario';
+      const errorMessage = err instanceof Error ? err.message : 'Error creating the user';
       showError('Error', errorMessage);
     }
   };
@@ -408,11 +408,11 @@ export default function AdminPanel() {
       const result = await dbService.deleteUser(userToDelete.id);
       await loadUsers();
       
-      let successMessage = `El usuario "${userToDelete.username}" ha sido eliminado correctamente.`;
+      let successMessage = `User "${userToDelete.username}" has been deleted successfully.`;
       if (result.farmsPreserved > 0) {
-        successMessage += ` ${result.farmsPreserved} farms han sido preservados.`;
+        successMessage += ` ${result.farmsPreserved} farms have been preserved.`;
       } else {
-        successMessage += ' No había farms asociados.';
+        successMessage += ' There were no associated farms.';
       }
       
       // Nota: No es necesario invalidar la sesión aquí porque el usuario ya no existe en la BD
@@ -421,7 +421,7 @@ export default function AdminPanel() {
       showSuccess('Usuario eliminado', successMessage);
     } catch (err) {
       console.error('Error deleting user:', err);
-      showError('Error al eliminar usuario', err instanceof Error ? err.message : 'Error desconocido');
+      showError('Error deleting user', err instanceof Error ? err.message : 'Unknown error');
     } finally {
       setShowDeleteModal(false);
       setUserToDelete(null);
@@ -578,13 +578,15 @@ export default function AdminPanel() {
       {/* Create Farm Button */}
       <div className="flex justify-between items-center">
         <h2 className="text-2xl font-bold text-white">Gestión de Farms</h2>
-        <button
-          onClick={() => setIsCreating(true)}
-          className="flex items-center gap-2 px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors"
-        >
-          <Plus className="w-4 h-4" />
-          Nuevo Farm
-        </button>
+        {!isCreating && (
+          <button
+            onClick={() => setIsCreating(true)}
+            className="flex items-center gap-2 px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors"
+          >
+            <Plus className="w-4 h-4" />
+            Nuevo Farm
+          </button>
+        )}
       </div>
 
       {/* Create Farm Modal */}
@@ -1138,13 +1140,15 @@ export default function AdminPanel() {
             <UserIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
           </div>
           
-          <button
-            onClick={() => setIsCreatingUser(true)}
-            className="flex items-center gap-2 px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors"
-          >
-            <Plus className="w-4 h-4" />
-            Nuevo Usuario
-          </button>
+          {!isCreatingUser && (
+            <button
+              onClick={() => setIsCreatingUser(true)}
+              className="flex items-center gap-2 px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors"
+            >
+              <Plus className="w-4 h-4" />
+              Nuevo Usuario
+            </button>
+          )}
         </div>
       </div>
 
@@ -1328,81 +1332,131 @@ export default function AdminPanel() {
             )}
           </div>
           
-          <div className="bg-gray-800 rounded-lg border border-gray-700 overflow-hidden">
-          <table className="w-full">
-            <thead className="bg-gray-700">
-              <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
-                  Usuario
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
-                  Email
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
-                  Rol
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
-                  Estado
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
-                  Acciones
-                </th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-700">
-              {filteredUsers.map((user) => (
-                <tr key={user.id} className="hover:bg-gray-700">
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="flex items-center">
-                      <div className="text-sm font-medium text-white">{user.username}</div>
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm text-gray-300">{user.email}</div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
-                      user.role === 'admin' 
-                        ? 'bg-purple-100 text-purple-800' 
-                        : user.role === 'moderator'
-                        ? 'bg-orange-100 text-orange-800'
-                        : 'bg-blue-100 text-blue-800'
-                    }`}>
-                      {user.role === 'admin' ? 'Administrador' : user.role === 'moderator' ? 'Moderador' : 'Usuario'}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
-                      user.isActive 
-                        ? 'bg-green-100 text-green-800' 
-                        : 'bg-red-100 text-red-800'
-                    }`}>
-                      {user.isActive ? 'Activo' : 'Inactivo'}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                    <div className="flex gap-2">
-                      <button
-                        onClick={() => setEditingUser(user)}
-                        className="text-blue-400 hover:text-blue-300"
-                        title="Editar usuario"
-                      >
-                        <Edit className="w-4 h-4" />
-                      </button>
-                      <button
-                        onClick={() => handleDeleteUser(user.id)}
-                        className="text-red-400 hover:text-red-300"
-                        title="Eliminar usuario"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </button>
-                    </div>
-                  </td>
+          {/* Desktop Table View */}
+          <div className="hidden md:block bg-gray-800 rounded-lg border border-gray-700 overflow-hidden">
+            <table className="w-full">
+              <thead className="bg-gray-700">
+                <tr>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
+                    Usuario
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
+                    Email
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
+                    Rol
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
+                    Estado
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
+                    Acciones
+                  </th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+              </thead>
+              <tbody className="divide-y divide-gray-700">
+                {filteredUsers.map((user) => (
+                  <tr key={user.id} className="hover:bg-gray-700">
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="flex items-center">
+                        <div className="text-sm font-medium text-white">{user.username}</div>
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="text-sm text-gray-300">{user.email}</div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
+                        user.role === 'admin' 
+                          ? 'bg-purple-100 text-purple-800' 
+                          : user.role === 'moderator'
+                          ? 'bg-orange-100 text-orange-800'
+                          : 'bg-blue-100 text-blue-800'
+                      }`}>
+                        {user.role === 'admin' ? 'Administrador' : user.role === 'moderator' ? 'Moderador' : 'Usuario'}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
+                        user.isActive 
+                          ? 'bg-green-100 text-green-800' 
+                          : 'bg-red-100 text-red-800'
+                      }`}>
+                        {user.isActive ? 'Activo' : 'Inactivo'}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                      <div className="flex gap-2">
+                        <button
+                          onClick={() => setEditingUser(user)}
+                          className="text-blue-400 hover:text-blue-300"
+                          title="Editar usuario"
+                        >
+                          <Edit className="w-4 h-4" />
+                        </button>
+                        <button
+                          onClick={() => handleDeleteUser(user.id)}
+                          className="text-red-400 hover:text-red-300"
+                          title="Eliminar usuario"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+
+          {/* Mobile Card View */}
+          <div className="md:hidden space-y-4">
+            {filteredUsers.map((user) => (
+              <div key={user.id} className="bg-gray-800 rounded-lg border border-gray-700 p-4">
+                <div className="flex items-start justify-between mb-3">
+                  <div className="flex-1">
+                    <h3 className="text-lg font-semibold text-white mb-1">{user.username}</h3>
+                    <p className="text-sm text-gray-300">{user.email}</p>
+                  </div>
+                  <div className="flex gap-2">
+                    <button
+                      onClick={() => setEditingUser(user)}
+                      className="text-blue-400 hover:text-blue-300 p-1"
+                      title="Editar usuario"
+                    >
+                      <Edit className="w-4 h-4" />
+                    </button>
+                    <button
+                      onClick={() => handleDeleteUser(user.id)}
+                      className="text-red-400 hover:text-red-300 p-1"
+                      title="Eliminar usuario"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                  </div>
+                </div>
+                
+                <div className="flex flex-wrap gap-2">
+                  <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
+                    user.role === 'admin' 
+                      ? 'bg-purple-100 text-purple-800' 
+                      : user.role === 'moderator'
+                      ? 'bg-orange-100 text-orange-800'
+                      : 'bg-blue-100 text-blue-800'
+                  }`}>
+                    {user.role === 'admin' ? 'Administrador' : user.role === 'moderator' ? 'Moderador' : 'Usuario'}
+                  </span>
+                  <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
+                    user.isActive 
+                      ? 'bg-green-100 text-green-800' 
+                      : 'bg-red-100 text-red-800'
+                  }`}>
+                    {user.isActive ? 'Activo' : 'Inactivo'}
+                  </span>
+                </div>
+              </div>
+            ))}
+          </div>
         </>
       )}
     </div>

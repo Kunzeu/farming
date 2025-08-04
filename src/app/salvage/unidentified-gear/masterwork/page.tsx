@@ -264,6 +264,19 @@ export default function UnidentifiedGearMasterworkPage() {
             </div>
           </div>
           
+          {/* Nota informativa - MOVIDA ARRIBA */}
+          <div className="mb-4 bg-blue-900/20 border border-blue-700 rounded-lg p-4">
+            <div className="flex items-start gap-3">
+              <Info className="h-5 w-5 text-blue-400 mt-0.5 flex-shrink-0" />
+              <div className="text-sm text-blue-200">
+                <strong>Note:</strong> Prices are obtained in real-time from the <a href="https://api.guildwars2.com/v2/commerce/prices" target="_blank" className="text-blue-300 hover:text-blue-100 underline">GW2 API</a>. 
+                The &quot;Processed Price&quot; includes Trading Post fees (15% discount on sell price). 
+                The cost of Unidentified Gear uses the current buy price from the Trading Post. 
+                Drop rates are based on official data from the GW2 Wiki for <strong>Piece of Unidentified Gear (Masterwork)</strong> opened and then salvaged with <strong>Runecrafter&apos;s Salvage-o-Matic</strong>.
+              </div>
+            </div>
+          </div>
+
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-3">
               <Image
@@ -519,18 +532,7 @@ export default function UnidentifiedGearMasterworkPage() {
           </div>
         </div>
 
-                 {/* Nota informativa */}
-         <div className="mt-6 bg-green-900/20 border border-green-700 rounded-lg p-4">
-           <div className="flex items-start gap-3">
-             <Info className="h-5 w-5 text-green-400 mt-0.5" />
-             <div className="text-sm text-green-200">
-               <strong>Note:</strong> Prices are obtained in real-time from the <a href="https://api.guildwars2.com/v2/commerce/prices" target="_blank" className="text-green-300 hover:text-green-100 underline">GW2 API</a>. 
-               The &quot;Processed Price&quot; includes Trading Post fees (15% discount on sell price). 
-               The cost of Unidentified Gear uses the current buy price from the Trading Post. 
-               Drop rates are based on official data from the GW2 Wiki for <strong>Piece of Unidentified Gear (Masterwork)</strong> opened and then salvaged with <strong>Runecrafter&apos;s Salvage-o-Matic</strong>.
-             </div>
-           </div>
-         </div>
+
       </div>
     </>
   );

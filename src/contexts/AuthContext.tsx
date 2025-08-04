@@ -162,13 +162,13 @@ function AuthProviderInternal({ children }: { children: ReactNode }) {
         return;
       }
 
-      // Si no se encuentra el usuario o credenciales incorrectas
-      throw new Error('Credenciales inválidas');
+      // If user not found or invalid credentials
+      throw new Error('Invalid credentials');
 
     } catch (error) {
       dispatch({
         type: 'AUTH_FAILURE',
-        payload: error instanceof Error ? error.message : 'Error de autenticación',
+        payload: error instanceof Error ? error.message : 'Authentication error',
       });
     }
   }, []);
@@ -181,13 +181,13 @@ function AuthProviderInternal({ children }: { children: ReactNode }) {
       // Simulación de API - en producción esto sería una llamada real
       await new Promise(resolve => setTimeout(resolve, 1000));
 
-      // Validación básica
+      // Basic validation
       if (credentials.password !== credentials.confirmPassword) {
-        throw new Error('Las contraseñas no coinciden');
+        throw new Error('Passwords do not match');
       }
 
       if (credentials.password.length < 6) {
-        throw new Error('La contraseña debe tener al menos 6 caracteres');
+        throw new Error('Password must be at least 6 characters long');
       }
 
       // Verificar si es el primer usuario para hacerlo admin
@@ -243,7 +243,7 @@ function AuthProviderInternal({ children }: { children: ReactNode }) {
       
       dispatch({
         type: 'AUTH_FAILURE',
-        payload: error instanceof Error ? error.message : 'Error de registro',
+        payload: error instanceof Error ? error.message : 'Registration error',
       });
     }
   }, []);
@@ -356,7 +356,7 @@ function AuthProviderInternal({ children }: { children: ReactNode }) {
     } catch (error) {
       dispatch({
         type: 'AUTH_FAILURE',
-        payload: error instanceof Error ? error.message : 'Error de autenticación con Discord',
+        payload: error instanceof Error ? error.message : 'Discord authentication error',
       });
     }
   }, []);

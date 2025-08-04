@@ -340,7 +340,7 @@ const HalloweenPage = () => {
             
             <h1 className="text-4xl font-bold text-white mb-4 flex items-center justify-center">
               <span className="text-3xl mr-3">🎃</span>
-              Festival de Halloween
+              Halloween Festival
             </h1>
             <p className="text-xl text-gray-300">
               Calculators and analysis to maximize your profits during Halloween
@@ -449,9 +449,9 @@ const HalloweenPage = () => {
                   <div className="mb-8">
                     <h3 className="text-xl font-bold text-white mb-4 flex items-center">
                       <Package className="w-5 h-5 mr-2 text-orange-400" />
-                      Calculadora de Materiales
+                      Materials Calculator
                       <span className="ml-2 text-sm text-green-400 font-normal">
-                        (Datos guardados automáticamente)
+                        (Data saved automatically)
                       </span>
                     </h3>
                     
@@ -462,14 +462,14 @@ const HalloweenPage = () => {
                         className="flex items-center gap-2 px-4 py-2 bg-orange-600 hover:bg-orange-700 text-white rounded-lg transition-colors duration-200"
                       >
                         <Plus className="w-4 h-4" />
-                        Agregar Items
+                        Add Items
                       </button>
                       <button
                         onClick={addAllItems}
                         className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors duration-200"
                       >
                         <List className="w-4 h-4" />
-                        Agregar Todo
+                        Add All
                       </button>
                       {calculatorItems.length > 0 && (
                         <button
@@ -477,7 +477,7 @@ const HalloweenPage = () => {
                           className="flex items-center gap-2 px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors duration-200"
                         >
                           <X className="w-4 h-4" />
-                          Eliminar Todo
+                          Remove All
                         </button>
                       )}
                     </div>
@@ -488,13 +488,13 @@ const HalloweenPage = () => {
                         <table className="w-full text-sm">
                           <thead>
                             <tr className="border-b border-gray-600">
-                              <th className="text-left py-2 text-gray-300">Nombre</th>
-                              <th className="text-center py-2 text-gray-300">Número</th>
+                              <th className="text-left py-2 text-gray-300">Name</th>
+                              <th className="text-center py-2 text-gray-300">Number</th>
                               <th className="text-center py-2 text-gray-300">Price 100%</th>
                               <th className="text-center py-2 text-gray-300">Price 85%</th>
                               <th className="text-center py-2 text-gray-300">Total 100%</th>
                               <th className="text-center py-2 text-gray-300">Total 85%</th>
-                              <th className="text-center py-2 text-gray-300">Acción</th>
+                              <th className="text-center py-2 text-gray-300">Action</th>
                             </tr>
                           </thead>
                           <tbody>
@@ -533,7 +533,7 @@ const HalloweenPage = () => {
                       <div className="text-center py-12 bg-gray-800/30 rounded-lg border border-gray-700">
                         <Package className="w-12 h-12 text-gray-500 mx-auto mb-4" />
                         <p className="text-gray-400 mb-2">No items in calculator</p>
-                        <p className="text-gray-500 text-sm">Usa los botones de arriba para agregar items</p>
+                        <p className="text-gray-500 text-sm">Use the buttons above to add items</p>
                       </div>
                     )}
 
@@ -568,23 +568,23 @@ const HalloweenPage = () => {
                         <div className="flex items-start gap-3">
                           <div className="w-2 h-2 bg-orange-400 rounded-full mt-2 flex-shrink-0"></div>
                           <div>
-                            <h4 className="text-white font-semibold">Ruta Optimizada</h4>
-                            <p className="text-gray-300 text-sm">Sigue una ruta específica para maximizar las bolsas por hora.</p>
-                          </div>
+                                                      <h4 className="text-white font-semibold">Optimized Route</h4>
+                          <p className="text-gray-300 text-sm">Follow a specific route to maximize bags per hour.</p>
                         </div>
-                        <div className="flex items-start gap-3">
-                          <div className="w-2 h-2 bg-orange-400 rounded-full mt-2 flex-shrink-0"></div>
-                          <div>
-                            <h4 className="text-white font-semibold">Grupo Coordinado</h4>
-                            <p className="text-gray-300 text-sm">Un grupo de 5 personas puede obtener 200+ bolsas por hora.</p>
-                          </div>
+                      </div>
+                      <div className="flex items-start gap-3">
+                        <div className="w-2 h-2 bg-orange-400 rounded-full mt-2 flex-shrink-0"></div>
+                        <div>
+                          <h4 className="text-white font-semibold">Coordinated Group</h4>
+                          <p className="text-gray-300 text-sm">A group of 5 people can obtain 200+ bags per hour.</p>
                         </div>
-                        <div className="flex items-start gap-3">
-                          <div className="w-2 h-2 bg-orange-400 rounded-full mt-2 flex-shrink-0"></div>
-                          <div>
-                            <h4 className="text-white font-semibold">Timing</h4>
-                            <p className="text-gray-300 text-sm">Los mejores momentos son durante las horas pico del servidor.</p>
-                          </div>
+                      </div>
+                      <div className="flex items-start gap-3">
+                        <div className="w-2 h-2 bg-orange-400 rounded-full mt-2 flex-shrink-0"></div>
+                        <div>
+                          <h4 className="text-white font-semibold">Timing</h4>
+                          <p className="text-gray-300 text-sm">The best times are during server peak hours.</p>
+                        </div>
                         </div>
                       </div>
                     </div>
@@ -595,23 +595,23 @@ const HalloweenPage = () => {
                         <div className="flex items-start gap-3">
                           <div className="w-2 h-2 bg-orange-400 rounded-full mt-2 flex-shrink-0"></div>
                           <div>
-                            <h4 className="text-white font-semibold">Compra Anticipada</h4>
-                            <p className="text-gray-300 text-sm">Compra bolsas antes del festival cuando los precios están bajos.</p>
-                          </div>
+                                                      <h4 className="text-white font-semibold">Early Purchase</h4>
+                          <p className="text-gray-300 text-sm">Buy bags before the festival when prices are low.</p>
                         </div>
-                        <div className="flex items-start gap-3">
-                          <div className="w-2 h-2 bg-orange-400 rounded-full mt-2 flex-shrink-0"></div>
-                          <div>
-                            <h4 className="text-white font-semibold">Venta Estratégica</h4>
-                            <p className="text-gray-300 text-sm">Vende items específicos cuando sus precios alcancen picos.</p>
-                          </div>
+                      </div>
+                      <div className="flex items-start gap-3">
+                        <div className="w-2 h-2 bg-orange-400 rounded-full mt-2 flex-shrink-0"></div>
+                        <div>
+                          <h4 className="text-white font-semibold">Strategic Selling</h4>
+                          <p className="text-gray-300 text-sm">Sell specific items when their prices reach peaks.</p>
                         </div>
-                        <div className="flex items-start gap-3">
-                          <div className="w-2 h-2 bg-orange-400 rounded-full mt-2 flex-shrink-0"></div>
-                          <div>
-                            <h4 className="text-white font-semibold">Candy Corn Trading</h4>
-                            <p className="text-gray-300 text-sm">Aprovecha las fluctuaciones de precio del Candy Corn.</p>
-                          </div>
+                      </div>
+                      <div className="flex items-start gap-3">
+                        <div className="w-2 h-2 bg-orange-400 rounded-full mt-2 flex-shrink-0"></div>
+                        <div>
+                          <h4 className="text-white font-semibold">Candy Corn Trading</h4>
+                          <p className="text-gray-300 text-sm">Take advantage of Candy Corn price fluctuations.</p>
+                        </div>
                         </div>
                       </div>
                     </div>
@@ -628,7 +628,7 @@ const HalloweenPage = () => {
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
           <div className="bg-gray-800 rounded-lg max-w-4xl w-full max-h-[80vh] overflow-hidden">
             <div className="flex justify-between items-center p-6 border-b border-gray-700">
-              <h3 className="text-xl font-bold text-white">Seleccionar Items</h3>
+              <h3 className="text-xl font-bold text-white">Select Items</h3>
               <button
                 onClick={() => setShowItemModal(false)}
                 className="text-gray-400 hover:text-white transition-colors"
@@ -690,22 +690,22 @@ const HalloweenPage = () => {
               {/* Action Buttons */}
               <div className="flex justify-between items-center mt-6 pt-4 border-t border-gray-700">
                 <div className="text-gray-400 text-sm">
-                  {selectedItems.size} items seleccionados
+                  {selectedItems.size} items selected
                 </div>
                 <div className="flex gap-3">
                   <button
                     onClick={() => setShowItemModal(false)}
                     className="px-4 py-2 bg-gray-600 hover:bg-gray-500 text-white rounded-lg transition-colors"
                   >
-                    Cancelar
-                  </button>
-                  <button
-                    onClick={addSelectedItems}
-                    disabled={selectedItems.size === 0}
-                    className="px-4 py-2 bg-orange-600 hover:bg-orange-700 disabled:bg-gray-600 text-white rounded-lg transition-colors"
-                  >
-                    Agregar Seleccionados ({selectedItems.size})
-                  </button>
+                                          Cancel
+                    </button>
+                    <button
+                      onClick={addSelectedItems}
+                      disabled={selectedItems.size === 0}
+                      className="px-4 py-2 bg-orange-600 hover:bg-orange-700 disabled:bg-gray-600 text-white rounded-lg transition-colors"
+                    >
+                      Add Selected ({selectedItems.size})
+                    </button>
                 </div>
               </div>
             </div>

@@ -54,7 +54,7 @@ export default function FarmingRoutes() {
       const approvedRoutes = allRoutes.filter((route: FarmItem) => route.status === 'approved');
       setFarmingRoutes(approvedRoutes);
     } catch {
-      setError('Error al cargar las rutas desde la base de datos');
+      setError('Error loading routes from database');
     } finally {
       setIsLoading(false);
     }
@@ -124,10 +124,10 @@ export default function FarmingRoutes() {
           className="text-center mb-8"
         >
           <h1 className="text-4xl font-bold text-white mb-4">
-            Rutas de Farming
+            Farming Routes
           </h1>
           <p className="text-xl text-gray-300">
-            Las mejores rutas para hacer oro en Guild Wars 2
+            The best routes to make gold in Guild Wars 2
           </p>
         </motion.div>
 
@@ -185,7 +185,7 @@ export default function FarmingRoutes() {
                   onClick={() => setSelectedExpansions([])}
                   className="px-4 py-2 bg-gray-600 hover:bg-gray-500 text-white rounded-lg transition-colors duration-200"
                 >
-                  Limpiar
+                  Clear
                 </button>
               )}
             </div>
@@ -196,7 +196,7 @@ export default function FarmingRoutes() {
               className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors"
             >
               <RefreshCw className="w-4 h-4" />
-              Recargar
+              Reload
             </button>
           </div>
         </motion.div>
@@ -235,7 +235,7 @@ export default function FarmingRoutes() {
                   <div className="flex items-center gap-3">
                     <Clock className="w-6 h-6 text-blue-400" />
                     <div>
-                      <p className="text-gray-400 text-sm">Tiempo</p>
+                      <p className="text-gray-400 text-sm">Time</p>
                       <p className="text-blue-400 font-semibold text-lg">{route.estimatedTime}</p>
                     </div>
                   </div>
@@ -251,7 +251,7 @@ export default function FarmingRoutes() {
                     className="w-6 h-6"
                   />
                   <div>
-                    <p className="text-gray-400 text-sm">Oro/Hora</p>
+                    <p className="text-gray-400 text-sm">Gold/Hour</p>
                     <p className="text-yellow-400 font-semibold text-lg">{formatGoldDisplay(route.estimatedGold)}</p>
                   </div>
                 </div>
@@ -309,14 +309,14 @@ export default function FarmingRoutes() {
           className="mt-12"
         >
           <h2 className="text-2xl font-bold text-white mb-6 text-center">
-            Consejos para Farming
+            Farming Tips
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             <div className="bg-gray-800 rounded-lg p-6 border border-gray-700">
               <TrendingUp className="w-8 h-8 text-green-400 mb-4" />
-              <h3 className="text-white font-semibold mb-2">Eficiencia</h3>
+              <h3 className="text-white font-semibold mb-2">Efficiency</h3>
               <p className="text-gray-400 text-sm">
-                Rutas optimizadas para maximizar el oro por hora
+                Optimized routes to maximize gold per hour
               </p>
             </div>
             
@@ -324,15 +324,15 @@ export default function FarmingRoutes() {
               <Clock className="w-8 h-8 text-blue-400 mb-4" />
               <h3 className="text-white font-semibold mb-2">Timing</h3>
               <p className="text-gray-400 text-sm">
-                Planifica tus sesiones de farming según los eventos y metas diarias del juego.
+                Plan your farming sessions according to the game&apos;s events and daily goals.
               </p>
             </div>
             
             <div className="bg-gray-800 rounded-lg p-6 border border-gray-700">
               <Star className="w-8 h-8 text-yellow-400 mb-4" />
-              <h3 className="text-white font-semibold mb-2">Variedad</h3>
+              <h3 className="text-white font-semibold mb-2">Variety</h3>
               <p className="text-gray-400 text-sm">
-                Diferentes tipos de contenido para todos los gustos
+                Different types of content for all tastes
               </p>
             </div>
           </div>

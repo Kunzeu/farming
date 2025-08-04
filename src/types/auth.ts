@@ -11,7 +11,7 @@ export interface User {
   lastLogin?: string; // Para compatibilidad con el contexto actual
   preferences?: UserPreferences; // Para compatibilidad con el contexto actual
   isAdmin?: boolean; // Para compatibilidad con el contexto actual
-  discordId?: string; // ID de Discord para autenticación OAuth
+  discordId?: string; // Discord ID for OAuth authentication
 }
 
 export interface UserPreferences {

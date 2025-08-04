@@ -96,11 +96,11 @@ export default function ProfilePage() {
         });
         
     setIsEditing(false);
-        alert('Configuraciones guardadas exitosamente');
+        alert('Settings saved successfully');
       }
     } catch (error) {
       console.error('Error saving preferences:', error);
-      alert('Error al guardar configuraciones');
+      alert('Error saving settings');
     }
   };
 
@@ -117,10 +117,10 @@ export default function ProfilePage() {
             className="text-center mb-8"
           >
             <h1 className="text-4xl font-bold text-white mb-4">
-              Mi Perfil
+              My Profile
             </h1>
             <p className="text-xl text-gray-300">
-              Gestiona tu cuenta y preferencias
+              Manage your account and preferences
             </p>
           </motion.div>
 
@@ -172,13 +172,13 @@ export default function ProfilePage() {
             >
               <div className="bg-gray-800 rounded-lg p-6 border border-gray-700">
                 <div className="flex items-center justify-between mb-6">
-                  <h3 className="text-xl font-bold text-white">Configuraciones</h3>
+                  <h3 className="text-xl font-bold text-white">Settings</h3>
                   <button
                     onClick={() => setIsEditing(!isEditing)}
                     className="flex items-center gap-2 px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg transition-colors"
                   >
                     <Edit className="w-4 h-4" />
-                    {isEditing ? 'Cancelar' : 'Editar'}
+                    {isEditing ? 'Cancel' : 'Edit'}
                   </button>
                 </div>
 
@@ -285,7 +285,7 @@ export default function ProfilePage() {
                       className="flex items-center gap-2 px-6 py-3 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors"
                     >
                       <Save className="w-4 h-4" />
-                      Guardar Cambios
+                      Save Changes
                     </motion.button>
                   )}
                 </div>
@@ -302,7 +302,7 @@ export default function ProfilePage() {
                   <div className="flex items-center gap-3">
                     <Heart className="w-8 h-8 text-red-400" />
                     <div>
-                      <p className="text-gray-400 text-sm">Items Favoritos</p>
+                      <p className="text-gray-400 text-sm">Favorite Items</p>
                       <p className="text-white font-bold text-xl">
                         {user?.preferences?.favoriteItems?.length || 0}
                       </p>
@@ -314,7 +314,7 @@ export default function ProfilePage() {
                   <div className="flex items-center gap-3">
                     <Settings className="w-8 h-8 text-blue-400" />
                     <div>
-                      <p className="text-gray-400 text-sm">Rutas Guardadas</p>
+                      <p className="text-gray-400 text-sm">Saved Routes</p>
                       <p className="text-white font-bold text-xl">
                         {user?.preferences?.favoriteRoutes?.length || 0}
                       </p>
@@ -326,7 +326,7 @@ export default function ProfilePage() {
                   <div className="flex items-center gap-3">
                     <Bell className="w-8 h-8 text-yellow-400" />
                     <div>
-                      <p className="text-gray-400 text-sm">Notificaciones</p>
+                      <p className="text-gray-400 text-sm">Notifications</p>
                       <p className="text-white font-bold text-xl">
                         {Object.values(preferences.notifications).filter(Boolean).length}
                       </p>

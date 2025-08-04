@@ -6,20 +6,20 @@ const EMAIL_REGEX = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-
 // Validación de formato de email
 export const validateEmailFormat = (email: string): { isValid: boolean; message: string } => {
   if (!email || email.trim() === '') {
-    return { isValid: false, message: 'El email es requerido' };
+    return { isValid: false, message: 'Email is required' };
   }
 
   if (!EMAIL_REGEX.test(email)) {
-    return { isValid: false, message: 'Ingresa un formato de email válido' };
+    return { isValid: false, message: 'Please enter a valid email format' };
   }
 
   // Validaciones adicionales
   if (email.length > 254) {
-    return { isValid: false, message: 'El email es demasiado largo' };
+    return { isValid: false, message: 'Email is too long' };
   }
 
   if (email.includes('..') || email.includes('--')) {
-    return { isValid: false, message: 'El email contiene caracteres inválidos' };
+    return { isValid: false, message: 'Email contains invalid characters' };
   }
 
   return { isValid: true, message: '' };
@@ -34,13 +34,13 @@ export const validateEmailUnique = async (email: string): Promise<{ isValid: boo
     const existingUser = await dbService.getUserByEmail(email);
     
     if (existingUser) {
-      return { isValid: false, message: 'Este email ya está registrado' };
+      return { isValid: false, message: 'This email is already registered' };
     }
     
     return { isValid: true, message: '' };
   } catch (error) {
-    // Si hay error en la consulta, asumimos que es válido para no bloquear el registro
-    console.warn('Error verificando email único:', error);
+    // If there's an error in the query, we assume it's valid to not block registration
+    console.warn('Error checking unique email:', error);
     return { isValid: true, message: '' };
   }
 };

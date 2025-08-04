@@ -268,7 +268,7 @@ const FourWindsPage = () => {
           
           <div className="flex items-center justify-center mb-4">
             <Wind className="w-12 h-12 text-cyan-400 mr-3" />
-            <h1 className="text-4xl font-bold text-white">Festival de los Cuatro Vientos</h1>
+            <h1 className="text-4xl font-bold text-white">Four Winds Festival</h1>
           </div>
           <p className="text-xl text-gray-300">
                           Calculators and analysis to maximize your profits during the Four Winds Festival
@@ -314,34 +314,34 @@ const FourWindsPage = () => {
               <div className="bg-gray-800/50 backdrop-blur-sm border border-gray-700 rounded-lg p-6">
                 <h2 className="text-2xl font-bold text-white mb-4 flex items-center">
                   <Info className="w-6 h-6 mr-3 text-cyan-400" />
-                  Festival de los Cuatro Vientos
+                  Four Winds Festival
                 </h2>
                 <p className="text-gray-300 mb-6">
-                  El Festival de los Cuatro Vientos es un evento anual que celebra la diversidad cultural de Tyria. 
-                  Con actividades como Queen&apos;s Gauntlet y Boss Blitz, ofrece oportunidades únicas para obtener 
-                  recompensas valiosas y materiales exclusivos.
+                  The Four Winds Festival is an annual event that celebrates the cultural diversity of Tyria. 
+                  With activities like Queen&apos;s Gauntlet and Boss Blitz, it offers unique opportunities to obtain 
+                  valuable rewards and exclusive materials.
                 </p>
                 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                   <div className="bg-gray-700/50 rounded-lg p-4">
                     <h3 className="text-white font-semibold mb-2">Queen&apos;s Gauntlet</h3>
                     <p className="text-gray-300 text-sm">
-                      Una serie de desafíos de combate que recompensan con tokens únicos y 
-                      materiales valiosos. Requiere habilidad y estrategia.
+                      A series of combat challenges that reward unique tokens and 
+                      valuable materials. Requires skill and strategy.
                     </p>
                   </div>
                   <div className="bg-gray-700/50 rounded-lg p-4">
                     <h3 className="text-white font-semibold mb-2">Boss Blitz</h3>
                     <p className="text-gray-300 text-sm">
-                      Evento cooperativo donde equipos compiten para derrotar jefes rápidamente. 
-                      Recompensas basadas en velocidad y eficiencia.
+                      Cooperative event where teams compete to defeat bosses quickly. 
+                      Rewards based on speed and efficiency.
                     </p>
                   </div>
                   <div className="bg-gray-700/50 rounded-lg p-4">
                     <h3 className="text-white font-semibold mb-2">Festival Tokens</h3>
                     <p className="text-gray-300 text-sm">
-                      Moneda principal del festival. Se pueden intercambiar por items únicos 
-                      y materiales valiosos en los comerciantes del festival.
+                      Main festival currency. Can be exchanged for unique items 
+                      and valuable materials at festival merchants.
                     </p>
                   </div>
                 </div>
@@ -449,15 +449,15 @@ const FourWindsPage = () => {
                      <div className="flex-1 min-w-0">
                                               <h3 className="text-xl font-bold text-white mb-4 flex items-center">
                          <Calculator className="w-6 h-6 mr-3 text-cyan-400" />
-                         Calculadora de Cajas
+                         Box Calculator
                        </h3>
                       <div className="overflow-x-auto bg-gray-800/30 rounded-lg border border-gray-700">
                         <table className="w-full text-sm min-w-[500px]">
                           <thead>
                             <tr className="border-b border-gray-600 bg-gray-700/50">
                               <th className="text-left py-3 px-4 text-gray-200 font-semibold text-xs uppercase tracking-wider">Material</th>
-                              <th className="text-center py-3 px-4 text-gray-200 font-semibold text-xs uppercase tracking-wider">Mats Mios</th>
-                              <th className="text-center py-3 px-4 text-gray-200 font-semibold text-xs uppercase tracking-wider">Cajas Resultantes</th>
+                              <th className="text-center py-3 px-4 text-gray-200 font-semibold text-xs uppercase tracking-wider">My Materials</th>
+                              <th className="text-center py-3 px-4 text-gray-200 font-semibold text-xs uppercase tracking-wider">Resulting Boxes</th>
                             </tr>
                           </thead>
                           <tbody>
@@ -529,22 +529,22 @@ const FourWindsPage = () => {
                       <div className="flex items-start gap-3">
                         <div className="w-2 h-2 bg-cyan-400 rounded-full mt-2 flex-shrink-0"></div>
                         <div>
-                          <h4 className="text-white font-semibold">Desafíos Progresivos</h4>
-                          <p className="text-gray-300 text-sm">Comienza con los desafíos más fáciles y progresa gradualmente.</p>
+                          <h4 className="text-white font-semibold">Progressive Challenges</h4>
+                          <p className="text-gray-300 text-sm">Start with the easiest challenges and progress gradually.</p>
                         </div>
                       </div>
                       <div className="flex items-start gap-3">
                         <div className="w-2 h-2 bg-cyan-400 rounded-full mt-2 flex-shrink-0"></div>
                         <div>
-                          <h4 className="text-white font-semibold">Builds Optimizadas</h4>
-                          <p className="text-gray-300 text-sm">Usa builds específicas para cada tipo de desafío.</p>
+                          <h4 className="text-white font-semibold">Optimized Builds</h4>
+                          <p className="text-gray-300 text-sm">Use specific builds for each type of challenge.</p>
                         </div>
                       </div>
                       <div className="flex items-start gap-3">
                         <div className="w-2 h-2 bg-cyan-400 rounded-full mt-2 flex-shrink-0"></div>
                         <div>
-                          <h4 className="text-white font-semibold">Recompensas Únicas</h4>
-                          <p className="text-gray-300 text-sm">Los desafíos más difíciles ofrecen tokens y materiales exclusivos.</p>
+                          <h4 className="text-white font-semibold">Unique Rewards</h4>
+                          <p className="text-gray-300 text-sm">The most difficult challenges offer exclusive tokens and materials.</p>
                         </div>
                       </div>
                     </div>
@@ -556,22 +556,22 @@ const FourWindsPage = () => {
                       <div className="flex items-start gap-3">
                         <div className="w-2 h-2 bg-cyan-400 rounded-full mt-2 flex-shrink-0"></div>
                         <div>
-                          <h4 className="text-white font-semibold">Coordinación de Equipo</h4>
-                          <p className="text-gray-300 text-sm">Forma grupos coordinados para maximizar la velocidad de derrota.</p>
+                          <h4 className="text-white font-semibold">Team Coordination</h4>
+                          <p className="text-gray-300 text-sm">Form coordinated groups to maximize defeat speed.</p>
                         </div>
                       </div>
                       <div className="flex items-start gap-3">
                         <div className="w-2 h-2 bg-cyan-400 rounded-full mt-2 flex-shrink-0"></div>
                         <div>
-                          <h4 className="text-white font-semibold">Rutas Eficientes</h4>
-                          <p className="text-gray-300 text-sm">Planifica rutas que minimicen el tiempo de viaje entre jefes.</p>
+                          <h4 className="text-white font-semibold">Efficient Routes</h4>
+                          <p className="text-gray-300 text-sm">Plan routes that minimize travel time between bosses.</p>
                         </div>
                       </div>
                       <div className="flex items-start gap-3">
                         <div className="w-2 h-2 bg-cyan-400 rounded-full mt-2 flex-shrink-0"></div>
                         <div>
-                          <h4 className="text-white font-semibold">Timing Perfecto</h4>
-                          <p className="text-gray-300 text-sm">Los mejores momentos son durante las horas pico del servidor.</p>
+                          <h4 className="text-white font-semibold">Perfect Timing</h4>
+                          <p className="text-gray-300 text-sm">The best times are during server peak hours.</p>
                         </div>
                       </div>
                     </div>
@@ -580,14 +580,14 @@ const FourWindsPage = () => {
 
                 {/* Consejos de Farming */}
                 <div className="mt-8">
-                  <h3 className="text-xl font-bold text-white mb-4">Consejos de Farming</h3>
+                  <h3 className="text-xl font-bold text-white mb-4">Farming Tips</h3>
                   <div className="bg-gray-700/50 rounded-lg p-4">
                     <ul className="text-gray-300 text-sm space-y-2">
-                      <li>• Prioriza Queen&apos;s Gauntlet para recompensas únicas</li>
-                      <li>• Forma grupos para Boss Blitz más rápido</li>
-                      <li>• Acumula Festival Tokens para intercambios masivos</li>
-                      <li>• Monitorea los precios de los materiales exclusivos</li>
-                      <li>• Participa en eventos especiales durante el festival</li>
+                      <li>• Prioritize Queen&apos;s Gauntlet for unique rewards</li>
+                      <li>• Form groups for faster Boss Blitz</li>
+                      <li>• Accumulate Festival Tokens for bulk exchanges</li>
+                      <li>• Monitor prices of exclusive materials</li>
+                      <li>• Participate in special events during the festival</li>
                     </ul>
                   </div>
                 </div>
@@ -603,7 +603,7 @@ const FourWindsPage = () => {
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
             <div className="bg-gray-800 rounded-lg max-w-4xl w-full max-h-[80vh] overflow-hidden">
               <div className="flex justify-between items-center p-6 border-b border-gray-700">
-                <h3 className="text-xl font-bold text-white">Seleccionar Items para Mostrar</h3>
+                <h3 className="text-xl font-bold text-white">Select Items to Display</h3>
                 <button
                   onClick={() => setShowItemSelectionModal(false)}
                   className="text-gray-400 hover:text-white transition-colors"
@@ -633,13 +633,13 @@ const FourWindsPage = () => {
                     onClick={selectAllBoxItems}
                     className="px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded text-sm transition-colors"
                   >
-                    Seleccionar Todo
+                    Select All
                   </button>
                   <button
                     onClick={deselectAllBoxItems}
                     className="px-3 py-1 bg-red-600 hover:bg-red-700 text-white rounded text-sm transition-colors"
                   >
-                    Deseleccionar Todo
+                    Deselect All
                   </button>
                 </div>
 
@@ -685,7 +685,7 @@ const FourWindsPage = () => {
                              ) : null}
                             <div className="text-white font-medium text-sm">{item.name}</div>
                           </div>
-                          <div className="text-gray-400 text-xs">Num/Caja: {item.numPerBox}</div>
+                          <div className="text-gray-400 text-xs">Num/Box: {item.numPerBox}</div>
                         </div>
                       </label>
                     ))}
@@ -695,21 +695,21 @@ const FourWindsPage = () => {
                 {/* Action Buttons */}
                 <div className="flex justify-between items-center mt-6 pt-4 border-t border-gray-700">
                   <div className="text-gray-400 text-sm">
-                    {selectedBoxItems.size} items seleccionados
+                    {selectedBoxItems.size} items selected
                   </div>
                   <div className="flex gap-3">
                     <button
                       onClick={() => setShowItemSelectionModal(false)}
                       className="px-4 py-2 bg-gray-600 hover:bg-gray-500 text-white rounded-lg transition-colors"
                     >
-                      Cancelar
+                      Cancel
                     </button>
                     <button
                       onClick={applyItemSelection}
                       disabled={selectedBoxItems.size === 0}
                       className="px-4 py-2 bg-cyan-600 hover:bg-cyan-700 disabled:bg-gray-600 text-white rounded-lg transition-colors"
                     >
-                      Aplicar Selección ({selectedBoxItems.size})
+                      Apply Selection ({selectedBoxItems.size})
                     </button>
                   </div>
                 </div>
