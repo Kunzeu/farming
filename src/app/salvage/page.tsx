@@ -176,8 +176,7 @@ export default function SalvagePage() {
                   <p><strong className="text-blue-400">Copper-Fed:</strong> For Common Gear</p>
                   <p><strong className="text-green-400">Runecrafter&apos;s:</strong> For Masterwork</p>
                   <p><strong className="text-yellow-400">Silver-Fed:</strong> For Rare Gear</p>
-                  <p><strong className="text-purple-400">Black Lion:</strong> Maximum efficiency</p>
-                </div>
+                  </div>
               </div>
               <div>
                 <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">

@@ -109,7 +109,7 @@ const Navigation = () => {
               </motion.div>
               <div className="hidden sm:block">
                 <div className="flex flex-col">
-                  <span className="text-white font-bold text-xl leading-tight">Farming Hub</span>
+                  <span className="text-white font-black text-xl leading-tight">Farming Hub</span>
                   <span className="text-gray-400 text-xs">Guild Wars 2</span>
                 </div>
               </div>
@@ -127,7 +127,7 @@ const Navigation = () => {
                   className="flex items-center space-x-2 text-gray-300 hover:text-white transition-all duration-200 px-3 py-2 rounded-lg hover:bg-gray-800/50 hover:shadow-md"
                 >
                   <item.icon className="w-4 h-4" />
-                  <span className="font-medium">{item.label}</span>
+                  <span className="font-bold">{item.label}</span>
                 </Link>
               ))}
               
@@ -138,7 +138,7 @@ const Navigation = () => {
                   className="flex items-center space-x-2 text-gray-300 hover:text-white transition-all duration-200 px-3 py-2 rounded-lg hover:bg-gray-800/50 hover:shadow-md"
                 >
                   <Shield className="w-4 h-4" />
-                  <span className="font-medium">Calculators</span>
+                  <span className="font-bold">Calculators</span>
                   <ChevronDown className={`w-4 h-4 text-gray-400 transition-transform duration-200 ${isToolsMenuOpen ? 'rotate-180' : ''}`} />
                 </button>
 
@@ -179,7 +179,7 @@ const Navigation = () => {
                      <div className="w-8 h-8 bg-gradient-to-br from-purple-500 to-blue-500 rounded-full flex items-center justify-center shadow-md">
                        <User className="w-4 h-4 text-white" />
                      </div>
-                     <span className="hidden sm:block font-medium">{user?.username}</span>
+                     <span className="hidden sm:block font-bold">{user?.username}</span>
                      <ChevronDown className={`w-4 h-4 text-gray-400 transition-transform duration-200 ${isUserMenuOpen ? 'rotate-180' : ''}`} />
                    </button>
 
