@@ -23,8 +23,8 @@ interface DashboardCard {
 export default function HomePage() {
   const dashboardCards: DashboardCard[] = [
     {
-      title: "Farming Routes",
-      description: "Discover the best routes to maximize your profits",
+      title: "Farms",
+      description: "Optimized routes for maximum efficiency",
       href: "/farming-routes",
       icon: <Route className="w-8 h-8" />,
       color: "from-blue-500 to-blue-600",
@@ -40,7 +40,7 @@ export default function HomePage() {
     },
     {
       title: "Salvaging",
-      description: "Optimize your salvaging for maximum profit",
+      description: "Calculate profits from salvaging unidentified gear",
       href: "/salvage",
       icon: <Package className="w-8 h-8" />,
       color: "from-orange-500 to-orange-600",
@@ -80,7 +80,7 @@ export default function HomePage() {
               GW2 Farming Hub
             </h1>
             <p className="text-xl text-gray-300 mb-8">
-              Your control center to optimize farming in Guild Wars 2
+              Your ultimate Guild Wars 2 farming companion
             </p>
           </motion.div>
         </div>
@@ -92,8 +92,7 @@ export default function HomePage() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.2 }}
-          className="mb-8"
-        >
+          className="mb-8">
           <h2 className="text-2xl font-bold text-white mb-2 text-center">
             Available Tools
           </h2>
@@ -102,7 +101,7 @@ export default function HomePage() {
           </p>
         </motion.div>
 
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 max-w-6xl mx-auto">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {dashboardCards.map((card) => (
             <motion.div
               key={card.href}
@@ -111,17 +110,19 @@ export default function HomePage() {
               transition={{ duration: 0.6, delay: card.delay }}
             >
               <Link href={card.href}>
-                <div className={`bg-gradient-to-br ${card.color} p-4 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 h-full group`}>
-                  <div className="flex flex-col items-center text-center h-full">
-                    <div className="text-white mb-3 group-hover:scale-110 transition-transform duration-300">
+                <div className={`bg-gradient-to-br ${card.color} p-6 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 cursor-pointer h-full`}>
+                  <div className="flex items-center space-x-4">
+                    <div className="text-white">
                       {card.icon}
                     </div>
-                    <h3 className="text-sm font-semibold text-white mb-2">
-                      {card.title}
-                    </h3>
-                    <p className="text-xs text-white/80 leading-relaxed">
-                      {card.description}
-                    </p>
+                    <div>
+                      <h3 className="text-xl font-bold text-white mb-2">
+                        {card.title}
+                      </h3>
+                      <p className="text-gray-100 text-sm">
+                        {card.description}
+                      </p>
+                    </div>
                   </div>
                 </div>
               </Link>
@@ -129,8 +130,6 @@ export default function HomePage() {
           ))}
         </div>
       </section>
-
-
     </div>
   )
-}
+} 

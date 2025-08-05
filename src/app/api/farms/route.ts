@@ -1,14 +1,58 @@
-// API Route para farms con PostgreSQL
+// API Route para farms con PostgreSQL y RLS
 import { NextRequest, NextResponse } from 'next/server';
 import { Pool } from 'pg';
+import fs from 'fs';
+import path from 'path';
+
+// Cargar variables de entorno desde .env
+function loadEnvFile() {
+  const envPath = path.join(process.cwd(), '.env');
+  if (fs.existsSync(envPath)) {
+    const envContent = fs.readFileSync(envPath, 'utf8');
+    const envVars: Record<string, string> = {};
+    
+    envContent.split('\n').forEach(line => {
+      const [key, ...valueParts] = line.split('=');
+      if (key && valueParts.length > 0) {
+        const value = valueParts.join('=').trim();
+        envVars[key.trim()] = value;
+      }
+    });
+    
+    return envVars;
+  }
+  return {};
+}
+
+const envVars = loadEnvFile();
+const databaseUrl = envVars.DATABASE_URL || process.env.DATABASE_URL;
 
 const pool = new Pool({
-  connectionString: process.env.DATABASE_URL,
-  ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false,
+  connectionString: databaseUrl,
+  ssl: {
+    rejectUnauthorized: false
+  }
 });
 
-export async function GET() {
+// Verificar conexión
+pool.query('SELECT NOW()', (err) => {
+  if (err) {
+    console.error('Database connection error:', err);
+  } else {
+    console.log('Database connected successfully');
+  }
+});
+
+export async function GET(request: NextRequest) {
+  const { searchParams } = new URL(request.url);
+  const userId = searchParams.get('userId'); // Para establecer el usuario actual para RLS
+
   try {
+    // Si se proporciona userId, establecerlo para RLS
+    if (userId) {
+      await pool.query('SELECT set_current_user_id($1)', [userId]);
+    }
+
     const query = `
       SELECT f.id, f.name, f.description, f.estimated_time as "estimatedTime", 
              f.estimated_gold as "estimatedGold", f.estimated_spirit as "estimatedSpirit",
@@ -85,6 +129,9 @@ export async function POST(request: NextRequest) {
         details: 'Regular users cannot create farms. Only moderators and admins can create farms.'
       }, { status: 403 });
     }
+
+    // Establecer el usuario actual para RLS
+    await pool.query('SELECT set_current_user_id($1)', [body.createdBy]);
 
     const id = crypto.randomUUID();
     

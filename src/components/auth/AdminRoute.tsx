@@ -53,8 +53,7 @@ export default function AdminRoute({ children, fallback }: AdminRouteProps) {
           </p>
           <button
             onClick={() => router.push('/login')}
-            className="px-6 py-3 bg-purple-600 hover:bg-purple-700 text-white rounded-lg transition-colors"
-          >
+            className="px-6 py-3 bg-purple-600 hover:bg-purple-700 text-white rounded-lg transition-colors">
             Ir al Login
           </button>
         </motion.div>
@@ -79,8 +78,7 @@ export default function AdminRoute({ children, fallback }: AdminRouteProps) {
           </p>
           <button
             onClick={() => router.push('/')}
-            className="px-6 py-3 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors"
-          >
+            className="px-6 py-3 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors">
             Volver al Inicio
           </button>
         </motion.div>

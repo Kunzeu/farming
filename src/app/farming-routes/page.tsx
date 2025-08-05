@@ -121,8 +121,7 @@ export default function FarmingRoutes() {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="text-center mb-8"
-        >
+          className="text-center mb-8">
           <h1 className="text-4xl font-bold text-white mb-4">
             Farming Routes
           </h1>
@@ -136,8 +135,7 @@ export default function FarmingRoutes() {
           <motion.div
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
-            className="bg-red-900/50 border border-red-500 rounded-lg p-4 mb-6"
-          >
+            className="bg-red-900/50 border border-red-500 rounded-lg p-4 mb-6">
             <p className="text-red-300">{error}</p>
           </motion.div>
         )}
@@ -147,8 +145,7 @@ export default function FarmingRoutes() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
-          className="mb-8"
-        >
+          className="mb-8">
           <div className="flex flex-col md:flex-row gap-4 justify-center items-center">
             {/* Search */}
             <div className="relative">
@@ -183,8 +180,7 @@ export default function FarmingRoutes() {
               {selectedExpansions.length > 0 && (
                 <button
                   onClick={() => setSelectedExpansions([])}
-                  className="px-4 py-2 bg-gray-600 hover:bg-gray-500 text-white rounded-lg transition-colors duration-200"
-                >
+                  className="px-4 py-2 bg-gray-600 hover:bg-gray-500 text-white rounded-lg transition-colors duration-200">
                   Clear
                 </button>
               )}
@@ -193,8 +189,7 @@ export default function FarmingRoutes() {
             {/* Reload Button */}
             <button
               onClick={loadRoutes}
-              className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors"
-            >
+              className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors">
               <RefreshCw className="w-4 h-4" />
               Reload
             </button>
@@ -206,16 +201,14 @@ export default function FarmingRoutes() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3 }}
-          className="grid grid-cols-1 lg:grid-cols-2 gap-6"
-        >
+          className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {filteredRoutes.map((route) => (
             <motion.div
               key={route.id}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.3 }}
-              className="bg-gray-800 rounded-lg shadow-lg overflow-hidden p-6 min-h-[220px] hover:shadow-xl transition-all duration-300"
-            >
+              className="bg-gray-800 rounded-lg shadow-lg overflow-hidden p-6 min-h-[220px] hover:shadow-xl transition-all duration-300">
                 {/* Header */}
                 <div className="flex justify-between items-start mb-6">
                   <div className="flex-1">
@@ -287,8 +280,7 @@ export default function FarmingRoutes() {
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            className="text-center py-12"
-          >
+            className="text-center py-12">
             <div className="bg-gray-800 rounded-lg p-8">
               <Map className="w-16 h-16 text-gray-400 mx-auto mb-4" />
               <h3 className="text-xl font-semibold text-white mb-2">
@@ -306,8 +298,7 @@ export default function FarmingRoutes() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.6 }}
-          className="mt-12"
-        >
+          className="mt-12">
           <h2 className="text-2xl font-bold text-white mb-6 text-center">
             Farming Tips
           </h2>

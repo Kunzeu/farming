@@ -21,8 +21,7 @@ export default function Modal({ isOpen, onClose, type, title, message }: ModalPr
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             className="fixed inset-0 bg-black bg-opacity-50 z-50"
-            onClick={onClose}
-          />
+            onClick={onClose}/>
           
           {/* Modal */}
           <motion.div
@@ -30,8 +29,7 @@ export default function Modal({ isOpen, onClose, type, title, message }: ModalPr
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 20 }}
             className="fixed inset-0 z-50 flex items-center justify-center p-4"
-            onClick={(e) => e.stopPropagation()}
-          >
+            onClick={(e) => e.stopPropagation()}>
             <div className="bg-gray-800 rounded-lg shadow-xl max-w-md w-full border border-gray-700">
               {/* Header */}
               <div className="flex items-center justify-between p-6 border-b border-gray-700">
@@ -49,8 +47,7 @@ export default function Modal({ isOpen, onClose, type, title, message }: ModalPr
                 </div>
                 <button
                   onClick={onClose}
-                  className="text-gray-400 hover:text-white transition-colors"
-                >
+                  className="text-gray-400 hover:text-white transition-colors">
                   <X className="w-5 h-5" />
                 </button>
               </div>
@@ -68,8 +65,7 @@ export default function Modal({ isOpen, onClose, type, title, message }: ModalPr
                     type === 'success'
                       ? 'bg-green-600 hover:bg-green-700 text-white'
                       : 'bg-red-600 hover:bg-red-700 text-white'
-                  }`}
-                >
+                  }`}>
                   Aceptar
                 </button>
               </div>

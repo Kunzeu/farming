@@ -172,8 +172,7 @@ export default function FestivalsPage() {
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="text-center mb-12"
-          >
+            className="text-center mb-12">
             <h1 className="text-4xl font-bold text-white mb-4 flex items-center justify-center">
               <Calendar className="w-8 h-8 mr-3 text-purple-400" />
               Guild Wars 2 Festivals
@@ -188,16 +187,14 @@ export default function FestivalsPage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
-            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
-          >
+            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {festivals.map((festival, index) => (
               <motion.div
                 key={festival.id}
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ delay: 0.3 + index * 0.1 }}
-                className="group"
-              >
+                className="group">
                 <Link href={festival.path}>
                   <div className="bg-gray-800/50 backdrop-blur-sm border border-gray-700 rounded-lg p-6 hover:border-purple-500 transition-all duration-300 hover:transform hover:scale-105 flex flex-col h-full">
                     {/* Header */}
@@ -243,8 +240,7 @@ export default function FestivalsPage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.6 }}
-            className="mt-12 space-y-8"
-          >
+            className="mt-12 space-y-8">
             {/* What are Festivals? */}
             <div className="bg-gray-800/30 backdrop-blur-sm border border-gray-700 rounded-lg p-6">
               <h2 className="text-2xl font-bold text-white mb-4 flex items-center">

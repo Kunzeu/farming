@@ -114,8 +114,7 @@ export default function ProfilePage() {
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="text-center mb-8"
-          >
+            className="text-center mb-8">
             <h1 className="text-4xl font-bold text-white mb-4">
               My Profile
             </h1>
@@ -130,8 +129,7 @@ export default function ProfilePage() {
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.2 }}
-              className="lg:col-span-1"
-            >
+              className="lg:col-span-1">
               <div className="bg-gray-800 rounded-lg p-6 border border-gray-700">
                 <div className="text-center mb-6">
                   <div className="w-24 h-24 bg-purple-600 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -168,15 +166,13 @@ export default function ProfilePage() {
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.3 }}
-              className="lg:col-span-2"
-            >
+              className="lg:col-span-2">
               <div className="bg-gray-800 rounded-lg p-6 border border-gray-700">
                 <div className="flex items-center justify-between mb-6">
                   <h3 className="text-xl font-bold text-white">Settings</h3>
                   <button
                     onClick={() => setIsEditing(!isEditing)}
-                    className="flex items-center gap-2 px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg transition-colors"
-                  >
+                    className="flex items-center gap-2 px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg transition-colors">
                     <Edit className="w-4 h-4" />
                     {isEditing ? 'Cancel' : 'Edit'}
                   </button>
@@ -282,8 +278,7 @@ export default function ProfilePage() {
                       initial={{ opacity: 0, y: 10 }}
                       animate={{ opacity: 1, y: 0 }}
                       onClick={handleSave}
-                      className="flex items-center gap-2 px-6 py-3 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors"
-                    >
+                      className="flex items-center gap-2 px-6 py-3 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors">
                       <Save className="w-4 h-4" />
                       Save Changes
                     </motion.button>
@@ -296,8 +291,7 @@ export default function ProfilePage() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.4 }}
-                className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4"
-              >
+                className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div className="bg-gray-800 rounded-lg p-4 border border-gray-700">
                   <div className="flex items-center gap-3">
                     <Heart className="w-8 h-8 text-red-400" />

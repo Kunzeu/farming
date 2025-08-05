@@ -53,8 +53,7 @@ export default function ModeratorRoute({ children, fallback }: ModeratorRoutePro
           </p>
           <button
             onClick={() => router.push('/login')}
-            className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors"
-          >
+            className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors">
             Ir al Login
           </button>
         </motion.div>
@@ -79,8 +78,7 @@ export default function ModeratorRoute({ children, fallback }: ModeratorRoutePro
           </p>
           <button
             onClick={() => router.push('/')}
-            className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors"
-          >
+            className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors">
             Volver al Inicio
           </button>
         </motion.div>

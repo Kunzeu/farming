@@ -42,8 +42,7 @@ export default function LoginPage() {
       {/* Botón para volver al inicio */}
       <Link
         href="/"
-        className="absolute top-6 left-6 z-10 flex items-center gap-2 px-4 py-2 bg-gray-800/80 hover:bg-gray-700/80 backdrop-blur-sm text-white rounded-lg transition-all duration-200 hover:scale-105"
-      >
+        className="absolute top-6 left-6 z-10 flex items-center gap-2 px-4 py-2 bg-gray-800/80 hover:bg-gray-700/80 backdrop-blur-sm text-white rounded-lg transition-all duration-200 hover:scale-105">
         <ArrowLeft className="w-4 h-4" />
         <span className="hidden sm:inline">Back to Home</span>
         <Home className="w-4 h-4 sm:hidden" />
@@ -61,8 +60,7 @@ export default function LoginPage() {
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.2 }}
-            className="text-center mb-12"
-          >
+            className="text-center mb-12">
             <h1 className="text-4xl font-bold text-white mb-4">
               GW2 Farming Hub
             </h1>
@@ -75,8 +73,7 @@ export default function LoginPage() {
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.4 }}
-            className="space-y-8"
-          >
+            className="space-y-8">
             <div className="flex items-start gap-4">
               <div className="flex-shrink-0">
                 <TrendingUp className="w-8 h-8 text-blue-400" />
@@ -138,8 +135,7 @@ export default function LoginPage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.6 }}
-            className="mt-12 text-center"
-          >
+            className="mt-12 text-center">
             <p className="text-blue-300 text-sm">
               Join thousands of players who already trust GW2 Farming Hub
             </p>

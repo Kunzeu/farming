@@ -86,8 +86,7 @@ export default function SessionStatus() {
       <button
         onClick={handleManualCheck}
         disabled={isChecking}
-        className="mt-3 w-full flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-600 text-white text-xs px-3 py-2 rounded transition-colors"
-      >
+        className="mt-3 w-full flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-600 text-white text-xs px-3 py-2 rounded transition-colors">
         <RefreshCw className={`h-3 w-3 ${isChecking ? 'animate-spin' : ''}`} />
         {isChecking ? 'Verificando...' : 'Verificar Ahora'}
       </button>

@@ -38,8 +38,7 @@ export default function ProtectedRoute({ children, fallback }: ProtectedRoutePro
         <motion.div
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
-          className="text-center"
-        >
+          className="text-center">
           <Shield className="w-16 h-16 text-purple-500 mx-auto mb-4" />
           <h2 className="text-2xl font-bold text-white mb-2">
             Acceso Requerido
@@ -49,8 +48,7 @@ export default function ProtectedRoute({ children, fallback }: ProtectedRoutePro
           </p>
           <button
             onClick={() => router.push('/login')}
-            className="px-6 py-3 bg-purple-600 hover:bg-purple-700 text-white rounded-lg transition-colors"
-          >
+            className="px-6 py-3 bg-purple-600 hover:bg-purple-700 text-white rounded-lg transition-colors">
             Ir al Login
           </button>
         </motion.div>

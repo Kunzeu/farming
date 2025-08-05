@@ -172,8 +172,7 @@ export default function GlossaryPage() {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="text-center mb-8"
-        >
+          className="text-center mb-8">
           <h1 className="text-4xl font-bold text-white mb-4">
             GW2 Glossary
           </h1>
@@ -187,8 +186,7 @@ export default function GlossaryPage() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
-          className="mb-8"
-        >
+          className="mb-8">
           {/* Search Bar */}
           <div className="relative mb-6">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
@@ -225,8 +223,7 @@ export default function GlossaryPage() {
            initial={{ opacity: 0, y: 20 }}
            animate={{ opacity: 1, y: 0 }}
            transition={{ delay: 0.2 }}
-           className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
-         >
+           className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
           {filteredItems.map((item, index) => (
             <motion.div
               key={item.id}
@@ -273,8 +270,7 @@ export default function GlossaryPage() {
                         href={link.url}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="text-sm text-blue-400 hover:text-blue-300 block"
-                      >
+                        className="text-sm text-blue-400 hover:text-blue-300 block">
                         {link.name}
                       </a>
                     ))}
@@ -289,8 +285,7 @@ export default function GlossaryPage() {
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            className="text-center py-12"
-          >
+            className="text-center py-12">
             <Info className="h-12 w-12 text-gray-400 mx-auto mb-4" />
                          <p className="text-gray-400 text-lg">
                No concepts found matching your search.

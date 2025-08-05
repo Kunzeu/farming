@@ -200,8 +200,7 @@ export default function UnidentifiedGearCommonPage() {
           <div className="flex items-center gap-4 mb-4">
             <Link 
               href="/salvage" 
-              className="flex items-center gap-2 text-gray-400 hover:text-white transition-colors"
-            >
+              className="flex items-center gap-2 text-gray-400 hover:text-white transition-colors">
               <ArrowLeft className="h-5 w-5" />
               <span>Back to Salvaging</span>
             </Link>
@@ -212,8 +211,7 @@ export default function UnidentifiedGearCommonPage() {
             <div className="relative">
               <button
                 onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                className="flex items-center gap-2 px-4 py-2 bg-slate-700 text-white rounded-lg hover:bg-slate-600 transition-colors"
-              >
+                className="flex items-center gap-2 px-4 py-2 bg-slate-700 text-white rounded-lg hover:bg-slate-600 transition-colors">
                 <span>Common</span>
                 <ChevronDown className={`h-4 w-4 transition-transform ${isDropdownOpen ? 'rotate-180' : ''}`} />
               </button>
@@ -299,8 +297,7 @@ export default function UnidentifiedGearCommonPage() {
             <a 
               href="https://wiki.guildwars2.com/wiki/Piece_of_Unidentified_Gear" 
               target="_blank" 
-              className="inline-flex items-center gap-2 px-4 py-2 bg-slate-700 text-white rounded-lg hover:bg-slate-600 transition-colors"
-            >
+              className="inline-flex items-center gap-2 px-4 py-2 bg-slate-700 text-white rounded-lg hover:bg-slate-600 transition-colors">
               <BookOpen className="h-4 w-4" />
               View Wiki
             </a>
@@ -367,8 +364,7 @@ export default function UnidentifiedGearCommonPage() {
             <div className="flex items-end">
               <button
                 onClick={fetchPrices}
-                className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-green-700 transition-colors flex items-center gap-2"
-              >
+                               className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-green-700 transition-colors flex items-center gap-2">
                 <RefreshCw className="h-4 w-4" />
                 Update Prices
               </button>

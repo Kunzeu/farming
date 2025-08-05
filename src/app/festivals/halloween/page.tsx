@@ -325,14 +325,12 @@ const HalloweenPage = () => {
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="text-center mb-8"
-          >
+            className="text-center mb-8">
             {/* Botón Volver */}
             <div className="flex justify-start mb-4">
               <a
                 href="/festivals"
-                className="flex items-center gap-2 px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg transition-colors duration-200"
-              >
+                className="flex items-center gap-2 px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg transition-colors duration-200">
                 <ArrowLeft className="w-4 h-4" />
                 Back to Festivals
               </a>
@@ -352,8 +350,7 @@ const HalloweenPage = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
-            className="flex flex-wrap justify-center gap-2 mb-8"
-          >
+            className="flex flex-wrap justify-center gap-2 mb-8">
             {[
                               { id: 'overview', label: 'Overview', icon: Info },
               { id: 'calculators', label: 'Calculators', icon: Calculator },

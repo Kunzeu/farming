@@ -1,4 +1,4 @@
-// API Route para users con PostgreSQL
+// API Route para users con PostgreSQL y RLS
 import { NextRequest, NextResponse } from 'next/server';
 import { Pool } from 'pg';
 import fs from 'fs';
@@ -37,9 +37,9 @@ const pool = new Pool({
 // Verificar conexión
 pool.query('SELECT NOW()', (err) => {
   if (err) {
-    
+    console.error('Database connection error:', err);
   } else {
-    
+    console.log('Database connected successfully');
   }
 });
 
@@ -48,10 +48,11 @@ export async function GET(request: NextRequest) {
   const email = searchParams.get('email');
   const username = searchParams.get('username');
   const discordId = searchParams.get('discordId');
+  const userId = searchParams.get('userId'); // Para obtener perfil específico
 
   try {
     if (email) {
-      // Buscar por email
+      // Buscar por email (para login)
       const query = `
         SELECT id, email, username, password, role, is_active as "isActive",
                created_at as "createdAt", updated_at as "updatedAt", discord_id as "discordId"
@@ -113,10 +114,34 @@ export async function GET(request: NextRequest) {
         updatedAt: new Date(row.updatedAt)
       });
       
-    } else {
-      // Obtener todos los usuarios
+    } else if (userId) {
+      // Obtener perfil específico (usando RLS)
+      await pool.query('SELECT set_current_user_id($1)', [userId]);
+      
       const query = `
-        SELECT id, email, username, password, role, is_active as "isActive",
+        SELECT id, email, username, role, is_active as "isActive",
+               created_at as "createdAt", updated_at as "updatedAt", discord_id as "discordId"
+        FROM users 
+        WHERE id = $1
+      `;
+      
+      const result = await pool.query(query, [userId]);
+      if (result.rows.length === 0) {
+        return NextResponse.json({ error: 'User not found' }, { status: 404 });
+      }
+      
+      const row = result.rows[0];
+      return NextResponse.json({
+        ...row,
+        createdAt: new Date(row.createdAt),
+        updatedAt: new Date(row.updatedAt)
+      });
+      
+    } else {
+      // Obtener todos los usuarios (solo para admins)
+      // Nota: Esto requeriría verificar que el usuario actual es admin
+      const query = `
+        SELECT id, email, username, role, is_active as "isActive",
                created_at as "createdAt", updated_at as "updatedAt", discord_id as "discordId"
         FROM users 
         ORDER BY created_at DESC
@@ -144,7 +169,6 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    
     
     // Validar que email, username y discordId sean únicos
     const checkQuery = `
@@ -196,7 +220,6 @@ export async function POST(request: NextRequest) {
       updatedAt: new Date(row.updatedAt)
     };
 
-    
     return NextResponse.json(user);
   } catch (error) {
     console.error('Error creating user:', error);

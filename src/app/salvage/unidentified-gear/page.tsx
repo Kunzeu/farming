@@ -58,8 +58,7 @@ export default function UnidentifiedGearPage() {
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              className="flex items-center justify-center gap-4 mb-6"
-            >
+              className="flex items-center justify-center gap-4 mb-6">
               <div className="w-20 h-20 bg-gradient-to-br from-purple-500 to-blue-600 rounded-2xl shadow-lg flex items-center justify-center">
                 <Wrench className="h-10 w-10 text-white" />
               </div>
@@ -132,8 +131,7 @@ export default function UnidentifiedGearPage() {
              initial={{ opacity: 0, y: 20 }}
              animate={{ opacity: 1, y: 0 }}
              transition={{ delay: 0.4 }}
-             className="bg-gradient-to-r from-slate-800/50 to-slate-700/50 backdrop-blur-sm rounded-2xl p-8 border border-slate-600/50"
-           >
+             className="bg-gradient-to-r from-slate-800/50 to-slate-700/50 backdrop-blur-sm rounded-2xl p-8 border border-slate-600/50">
              <h2 className="text-2xl font-bold text-white mb-6 text-center">Consejos Pro</h2>
              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                <div>
