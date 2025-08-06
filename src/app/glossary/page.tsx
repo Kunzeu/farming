@@ -38,7 +38,7 @@ export default function GlossaryPage() {
     {
       id: 'salvaging',
       title: 'Salvaging',
-             description: 'Salvaging is the process of recycling equipment to obtain materials. It is one of the most profitable ways to earn gold in Guild Wars 2, especially with certain types of items.',
+      description: 'Salvaging is the process of recycling equipment to obtain materials. It is one of the most profitable ways to earn gold in Guild Wars 2, especially with certain types of items.',
       category: 'salvaging',
       icon: <Package className="h-6 w-6" />,
       color: 'blue',
@@ -46,7 +46,7 @@ export default function GlossaryPage() {
       borderColor: 'border-blue-500/30',
       textColor: 'text-blue-400',
       tips: [
-        'Investiga precios antes de recicarlos',
+        'Investiga precios antes de reciclar',
         'Considera el valor del item completo',
         'Usa el kit apropiado para cada tipo'
       ],
@@ -56,25 +56,9 @@ export default function GlossaryPage() {
       ]
     },
     {
-      id: 'unidentified-gear',
-      title: 'Unidentified Gear',
-             description: 'Unidentified equipment that can be salvaged to obtain specific materials. There are three types: Common (green), Masterwork (blue) and Rare (gold), each with different drop rates and profitability.',
-      category: 'salvaging',
-      icon: <Wrench className="h-6 w-6" />,
-      color: 'purple',
-      bgGradient: 'from-purple-500/20 to-purple-600/20',
-      borderColor: 'border-purple-500/30',
-      textColor: 'text-purple-400',
-      tips: [
-        'Common: Usa Copper-Fed Salvage-o-Matic',
-        'Masterwork: Usa Runecrafter\'s Salvage-o-Matic',
-        'Rare: Usa Silver-Fed Salvage-o-Matic'
-      ]
-    },
-    {
       id: 'salvage-kits',
       title: 'Salvage Kits',
-             description: 'Specialized tools for recycling equipment. Each kit has different success rates and associated costs. Automatic kits are more convenient but more expensive.',
+      description: 'Specialized tools for recycling equipment. Each kit has different success rates and associated costs. Automatic kits are more convenient but more expensive.',
       category: 'salvaging',
       icon: <Wrench className="h-6 w-6" />,
       color: 'green',
@@ -90,7 +74,7 @@ export default function GlossaryPage() {
     {
       id: 'luck-calculator',
       title: 'Luck Calculator',
-             description: 'Calculator to determine the cost per luck points obtained when salvaging items. Helps optimize which items to salvage to maximize luck gain efficiency.',
+      description: 'Calculator to determine the cost per luck points obtained when salvaging items. Helps optimize which items to salvage to maximize luck gain efficiency.',
       category: 'salvaging',
       icon: <Star className="h-6 w-6" />,
       color: 'yellow',
@@ -101,7 +85,7 @@ export default function GlossaryPage() {
     {
       id: 'research-notes',
       title: 'Research Notes',
-             description: 'Research notes obtained by salvaging specific items. They are necessary for advanced crafting and can be a significant source of income.',
+      description: 'Research notes obtained by salvaging specific items. They are necessary for advanced crafting and can be a significant source of income.',
       category: 'salvaging',
       icon: <FileText className="h-6 w-6" />,
       color: 'green',
@@ -113,8 +97,8 @@ export default function GlossaryPage() {
     // FARMING
     {
       id: 'farming-routes',
-             title: 'Farming Routes',
-       description: 'Optimized routes for collecting materials and earning gold efficiently. Each route has different requirements, difficulty and expected earnings per hour.',
+      title: 'Farming Routes',
+      description: 'Optimized routes for collecting materials and earning gold efficiently. Each route has different requirements, difficulty and expected earnings per hour.',
       category: 'farming',
       icon: <MapPin className="h-6 w-6" />,
       color: 'green',
@@ -124,15 +108,15 @@ export default function GlossaryPage() {
       tips: [
         'Rutas optimizadas para maximizar el oro por hora',
         'Planifica tus sesiones según eventos y metas diarias',
-                 'Different types of content for all tastes'
+        'Different types of content for all tastes'
       ]
     },
 
     // FESTIVALS
     {
       id: 'festivals',
-             title: 'Festivals',
-       description: 'Temporary events that offer unique content and special rewards. They are excellent opportunities to earn gold and exclusive items.',
+      title: 'Festivals',
+      description: 'Temporary events that offer unique content and special rewards. They are excellent opportunities to earn gold and exclusive items.',
       category: 'festivals',
       icon: <Calendar className="h-6 w-6" />,
       color: 'purple',
@@ -145,12 +129,10 @@ export default function GlossaryPage() {
         'Participa en actividades únicas del festival'
       ]
     },
-
-
   ];
 
   const categories = [
-         { id: 'all', name: 'All', icon: <BookOpen className="h-4 w-4" /> },
+    { id: 'all', name: 'All', icon: <BookOpen className="h-4 w-4" /> },
     { id: 'salvaging', name: 'Salvaging', icon: <Package className="h-4 w-4" /> },
     { id: 'farming', name: 'Farming', icon: <MapPin className="h-4 w-4" /> },
     { id: 'festivals', name: 'Festivals', icon: <Calendar className="h-4 w-4" /> }
@@ -205,64 +187,72 @@ export default function GlossaryPage() {
               <button
                 key={category.id}
                 onClick={() => setSelectedCategory(category.id)}
-                className={`flex items-center gap-2 px-4 py-2 rounded-lg border transition-colors ${
+                className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition-colors ${
                   selectedCategory === category.id
-                    ? 'bg-blue-600 border-blue-500 text-white'
-                    : 'bg-gray-800 border-gray-700 text-gray-300 hover:bg-gray-700'
+                    ? 'bg-blue-600 text-white'
+                    : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
                 }`}
               >
                 {category.icon}
-                {category.name}
+                <span>{category.name}</span>
               </button>
             ))}
           </div>
         </motion.div>
 
-                 {/* Glossary Items */}
-         <motion.div
-           initial={{ opacity: 0, y: 20 }}
-           animate={{ opacity: 1, y: 0 }}
-           transition={{ delay: 0.2 }}
-           className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        {/* Glossary Items Grid */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2 }}
+          className="grid gap-6 md:grid-cols-2 lg:grid-cols-3"
+        >
           {filteredItems.map((item, index) => (
             <motion.div
               key={item.id}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.1 * index }}
-              className={`bg-gradient-to-br ${item.bgGradient} backdrop-blur-sm rounded-xl p-6 border ${item.borderColor} hover:scale-105 transition-transform duration-200`}
+              className={`bg-gray-800 rounded-lg p-6 border ${item.borderColor} hover:shadow-lg transition-all duration-300`}
             >
-              <div className="flex items-center gap-3 mb-4">
-                <div className={`p-2 rounded-lg bg-white/10 ${item.textColor}`}>
+              {/* Header */}
+              <div className="flex items-center space-x-3 mb-4">
+                <div className={`p-2 rounded-lg bg-gradient-to-br ${item.bgGradient}`}>
                   {item.icon}
                 </div>
-                <h3 className="text-xl font-bold text-white">{item.title}</h3>
+                <h3 className={`text-xl font-semibold ${item.textColor}`}>
+                  {item.title}
+                </h3>
               </div>
-              
+
+              {/* Description */}
               <p className="text-gray-300 mb-4 leading-relaxed">
                 {item.description}
               </p>
 
+              {/* Tips */}
               {item.tips && item.tips.length > 0 && (
                 <div className="mb-4">
-                  <h4 className="text-sm font-semibold text-white mb-2 flex items-center gap-2">
-                    <Info className="h-4 w-4" />
+                  <h4 className="text-sm font-semibold text-gray-400 mb-2 uppercase tracking-wider">
                     Tips
                   </h4>
                   <ul className="space-y-1">
                     {item.tips.map((tip, tipIndex) => (
-                      <li key={tipIndex} className="text-sm text-gray-400 flex items-start gap-2">
+                      <li key={tipIndex} className="text-sm text-gray-300 flex items-start space-x-2">
                         <span className="text-blue-400 mt-1">•</span>
-                        {tip}
+                        <span>{tip}</span>
                       </li>
                     ))}
                   </ul>
                 </div>
               )}
 
+              {/* Related Links */}
               {item.relatedLinks && item.relatedLinks.length > 0 && (
                 <div>
-                  <h4 className="text-sm font-semibold text-white mb-2">Related Links</h4>
+                  <h4 className="text-sm font-semibold text-gray-400 mb-2 uppercase tracking-wider">
+                    Related Links
+                  </h4>
                   <div className="space-y-1">
                     {item.relatedLinks.map((link, linkIndex) => (
                       <a
@@ -270,7 +260,8 @@ export default function GlossaryPage() {
                         href={link.url}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="text-sm text-blue-400 hover:text-blue-300 block">
+                        className="text-sm text-blue-400 hover:text-blue-300 block transition-colors"
+                      >
                         {link.name}
                       </a>
                     ))}
@@ -281,15 +272,20 @@ export default function GlossaryPage() {
           ))}
         </motion.div>
 
+        {/* No Results */}
         {filteredItems.length === 0 && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            className="text-center py-12">
-            <Info className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                         <p className="text-gray-400 text-lg">
-               No concepts found matching your search.
-             </p>
+            className="text-center py-12"
+          >
+            <Info className="h-12 w-12 text-gray-500 mx-auto mb-4" />
+            <h3 className="text-xl font-semibold text-gray-400 mb-2">
+              No results found
+            </h3>
+            <p className="text-gray-500">
+              Try adjusting your search terms or category filter
+            </p>
           </motion.div>
         )}
       </main>
