@@ -163,8 +163,8 @@ export default function RegisterForm() {
           <h2 className="text-2xl font-bold text-white mb-2">
             Create Account
           </h2>
-          <p className="text-gray-400">
-            Join the GW2 Farming Hub community
+          <p className="text-gray-300 text-center">
+            Join the True Farming community
           </p>
           
           {/* Indicador de primer usuario */}

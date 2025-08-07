@@ -61,8 +61,8 @@ export default function LoginPage() {
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.2 }}
             className="text-center mb-12">
-            <h1 className="text-4xl font-bold text-white mb-4">
-              GW2 Farming Hub
+            <h1 className="text-3xl font-bold text-white mb-2">
+              True Farming
             </h1>
             <p className="text-xl text-blue-200">
               Your information hub for Guild Wars 2
@@ -136,8 +136,8 @@ export default function LoginPage() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.6 }}
             className="mt-12 text-center">
-            <p className="text-blue-300 text-sm">
-              Join thousands of players who already trust GW2 Farming Hub
+            <p className="text-gray-300 text-center">
+              Join thousands of players who already trust True Farming
             </p>
           </motion.div>
         </div>

@@ -18,7 +18,8 @@ import {
   ChevronDown,
   BookOpen,
   Calendar,
-  Crown
+  Crown,
+  ShoppingCart
 } from 'lucide-react';
 
 const Navigation = () => {
@@ -84,6 +85,8 @@ const Navigation = () => {
     { href: '/salvage', label: 'Salvaging', icon: Package },
     { href: '/crafting', label: 'Crafting', icon: BookOpen },
     { href: '/festivals', label: 'Festivals', icon: Calendar },
+    // Solo mostrar Buyout Calculator para admins
+    ...(user?.role === 'admin' ? [{ href: '/buyout', label: 'Buyout Calculator', icon: ShoppingCart }] : []),
   ];
 
   const handleLogout = () => {
@@ -106,7 +109,7 @@ const Navigation = () => {
               </motion.div>
               <div className="hidden sm:block">
                 <div className="flex flex-col">
-                  <span className="text-white font-black text-xl leading-tight">Farming Hub</span>
+                  <span className="text-white font-black text-xl leading-tight">True Farming</span>
                   <span className="text-gray-400 text-xs">Guild Wars 2</span>
                 </div>
               </div>
@@ -337,8 +340,6 @@ const Navigation = () => {
                                   <span className="font-medium">Profile</span>
                                 </Link>
                                 
-
-                                
                                 <Link
                                   href="/settings"
                                   onClick={() => setIsMobileMenuOpen(false)}
@@ -392,4 +393,4 @@ const Navigation = () => {
   );
 };
 
-export default Navigation; 
+export default Navigation;

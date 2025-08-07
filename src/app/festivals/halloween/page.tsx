@@ -151,6 +151,9 @@ const HalloweenPage = () => {
   const [availableItems, setAvailableItems] = useState<CalculatorItem[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedItems, setSelectedItems] = useState<Set<number>>(new Set());
+  
+  // Estado para manejar inputs como strings durante la escritura
+  const [inputValues, setInputValues] = useState<Record<number, string>>({});
 
   // Función para guardar datos en localStorage
   const saveCalculatorData = useCallback((data: CalculatorItem[]) => {
@@ -274,6 +277,13 @@ const HalloweenPage = () => {
       // Guardar en localStorage
       saveCalculatorData(updatedItems);
       return updatedItems;
+    });
+    
+    // Limpiar el valor de input temporal cuando se actualiza el estado
+    setInputValues(prev => {
+      const newValues = { ...prev };
+      delete newValues[id];
+      return newValues;
     });
   };
 
@@ -502,8 +512,34 @@ const HalloweenPage = () => {
                                   <input
                                     type="number"
                                     min="0"
-                                    value={item.quantity}
-                                    onChange={(e) => updateItemQuantity(item.id, parseInt(e.target.value) || 0)}
+                                    value={inputValues[item.id] !== undefined ? inputValues[item.id] : item.quantity.toString()}
+                                    onChange={(e) => {
+                                      const value = e.target.value;
+                                      
+                                      // Actualizar el valor temporal del input
+                                      setInputValues(prev => ({
+                                        ...prev,
+                                        [item.id]: value
+                                      }));
+                                      
+                                      // Si el campo está vacío, usar 0
+                                      if (value === '') {
+                                        updateItemQuantity(item.id, 0);
+                                      } else {
+                                        const numValue = parseInt(value);
+                                        // Solo actualizar si es un número válido
+                                        if (!isNaN(numValue)) {
+                                          updateItemQuantity(item.id, numValue);
+                                        }
+                                      }
+                                    }}
+                                    onBlur={(e) => {
+                                      // Al perder el foco, asegurar que el valor sea válido
+                                      const value = e.target.value;
+                                      if (value === '' || isNaN(parseInt(value))) {
+                                        updateItemQuantity(item.id, 0);
+                                      }
+                                    }}
                                     className="w-16 px-2 py-1 bg-gray-700 border border-gray-600 rounded text-white text-center"
                                   />
                                 </td>

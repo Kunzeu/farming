@@ -35,6 +35,20 @@ export interface GW2Price {
   };
 }
 
+export interface GW2Listing {
+  id: number;
+  buys: Array<{
+    listings: number;
+    unit_price: number;
+    quantity: number;
+  }>;
+  sells: Array<{
+    listings: number;
+    unit_price: number;
+    quantity: number;
+  }>;
+}
+
 export interface GW2World {
   id: number;
   name: string;

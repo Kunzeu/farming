@@ -1,4 +1,4 @@
-# GW2 Farming Hub 🎮
+# True Farming 🎮
 
 Una aplicación web moderna para información de Guild Wars 2 **calculadoras de salvaging**.
 

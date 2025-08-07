@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { GW2Item, GW2Price, GW2World, GW2Event, GW2Build, GW2Recipe } from '@/types/gw2';
+import { GW2Item, GW2Price, GW2World, GW2Event, GW2Build, GW2Recipe, GW2Listing } from '@/types/gw2';
 
 const GW2_API_BASE = 'https://api.guildwars2.com/v2';
 
@@ -47,6 +47,17 @@ export async function getItemPrices(ids: number[]): Promise<GW2Price[]> {
     return response.data;
   } catch (error) {
     console.error('Error fetching prices:', error);
+    throw error;
+  }
+}
+
+// Función para obtener listings (órdenes de venta) de un item
+export async function getItemListings(id: number): Promise<GW2Listing> {
+  try {
+    const response = await gw2Api.get<GW2Listing>(`/commerce/listings/${id}`);
+    return response.data;
+  } catch (error) {
+    console.error(`Error fetching listings for item ${id}:`, error);
     throw error;
   }
 }
@@ -118,20 +129,36 @@ export async function getRecipes(ids: number[]): Promise<GW2Recipe[]> {
 // Función para buscar items por nombre
 export async function searchItems(query: string): Promise<GW2Item[]> {
   try {
+    // Si la consulta está vacía, devolver items populares
+    if (!query.trim()) {
+      return await getPopularFarmingItems()
+    }
+
     // Primero obtenemos todos los IDs de items
     const allItemsResponse = await gw2Api.get<number[]>('/items');
     const allItemIds = allItemsResponse.data;
     
-    // Limitamos a los primeros 100 para evitar sobrecarga
-    const limitedIds = allItemIds.slice(0, 100);
+    // Limitamos a los primeros 200 para mejor rendimiento
+    const limitedIds = allItemIds.slice(0, 200);
     
     // Obtenemos los items
     const items = await getItems(limitedIds);
     
-    // Filtramos por nombre
-    return items.filter(item => 
-      item.name.toLowerCase().includes(query.toLowerCase())
+    // Filtramos por nombre (búsqueda case-insensitive)
+    const filteredItems = items.filter(item => 
+      item.name.toLowerCase().includes(query.toLowerCase()) ||
+      (item.description && item.description.toLowerCase().includes(query.toLowerCase()))
     );
+
+    // Ordenamos por relevancia (items que empiezan con la consulta primero)
+    return filteredItems.sort((a, b) => {
+      const aStartsWith = a.name.toLowerCase().startsWith(query.toLowerCase());
+      const bStartsWith = b.name.toLowerCase().startsWith(query.toLowerCase());
+      
+      if (aStartsWith && !bStartsWith) return -1;
+      if (!aStartsWith && bStartsWith) return 1;
+      return a.name.localeCompare(b.name);
+    });
   } catch (error) {
     console.error('Error searching items:', error);
     throw error;
@@ -140,8 +167,9 @@ export async function searchItems(query: string): Promise<GW2Item[]> {
 
 // Función para obtener items populares para farming
 export async function getPopularFarmingItems(): Promise<GW2Item[]> {
-  // IDs de items populares para farming
+  // IDs de items populares para farming y crafting
   const popularItemIds = [
+    // Materiales básicos
     19721, // Orichalcum Ore
     19724, // Ancient Wood Log
     19725, // Elder Wood Log
@@ -162,12 +190,64 @@ export async function getPopularFarmingItems(): Promise<GW2Item[]> {
     19740, // Rich Silver Ore
     19741, // Rich Copper Ore
     19742, // Rich Mithril Ore
+    
+    // Materiales de crafting
+    19723, // Ancient Sapling
+    19722, // Orichalcum Mining Pick
+    19743, // Ancient Sapling
+    19744, // Orichalcum Mining Pick
+    
+    // Items de festival
+    19925, // Candy Corn
+    28433, // Plastic Fangs
+    28435, // Nougat Center
+    28431, // Chattering Skull
+    28432, // Spooky Food
+    
+    // Materiales de expansión
+    19745, // Branded Mass
+    19746, // Ley Line Crystal
+    19747, // Airship Oil
+    19748, // Auric Dust
+    19749, // Chak Egg
+    19750, // Crystalline Ore
+    19751, // Dragonite Ore
+    19752, // Empyreal Fragment
+    19753, // Obsidian Shard
+    19754, // Pile of Bloodstone Dust
+    19755, // Pile of Crystalline Dust
+    19756, // Pile of Incandescent Dust
+    19757, // Pile of Lucent Crystal
+    19758, // Pile of Radiant Dust
+    19759, // Pile of Silky Sand
+    19760, // Pile of Vile Essence
   ];
   
   try {
     return await getItems(popularItemIds);
   } catch (error) {
     console.error('Error fetching popular farming items:', error);
+    throw error;
+  }
+}
+
+// Función para obtener items por categoría
+export async function getItemsByCategory(category: string): Promise<GW2Item[]> {
+  const categoryItemIds: Record<string, number[]> = {
+    'materials': [19721, 19724, 19725, 19726, 19727, 19728, 19729, 19730, 19731, 19732, 19733, 19734, 19735],
+    'ores': [19721, 19730, 19731, 19732, 19733, 19734, 19735, 19736, 19737, 19738, 19739, 19740, 19741, 19742],
+    'wood': [19724, 19725, 19726, 19727, 19728, 19729],
+    'festival': [19925, 28433, 28435, 28431, 28432],
+    'expansion': [19745, 19746, 19747, 19748, 19749, 19750, 19751, 19752, 19753, 19754, 19755, 19756, 19757, 19758, 19759, 19760]
+  };
+
+  const ids = categoryItemIds[category.toLowerCase()] || [];
+  if (ids.length === 0) return [];
+
+  try {
+    return await getItems(ids);
+  } catch (error) {
+    console.error(`Error fetching items for category ${category}:`, error);
     throw error;
   }
 }

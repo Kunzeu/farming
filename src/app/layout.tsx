@@ -7,7 +7,7 @@ import RoleChecker from "@/components/RoleChecker";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "GW2 Farming Hub",
+  title: "True Farming",
   description: "Your platform to optimize farming in Guild Wars 2",
 };
 

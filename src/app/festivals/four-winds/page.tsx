@@ -71,7 +71,7 @@ const boxCalculatorData: BoxCalculatorItem[] = [
   { id: 19723, name: 'Green Wood Log', icon: '', numPerBox: 54, pricePerUnit: 15, pricePerBox: 1065, myMaterials: 0, resultingBoxes: 0 },
   { id: 19726, name: 'Soft Wood Log', icon: '', numPerBox: 30, pricePerUnit: 25, pricePerBox: 850, myMaterials: 0, resultingBoxes: 0 },
   { id: 19727, name: 'Seasoned Wood Log', icon: '', numPerBox: 9, pricePerUnit: 45, pricePerBox: 585, myMaterials: 0, resultingBoxes: 0 },
-  { id: 96052, name: 'Research Notes', icon: '', numPerBox: 0.5, pricePerUnit: 1500, pricePerBox: 15000, myMaterials: 0, resultingBoxes: 0 },
+  { id: 96052, name: 'Research Notes', icon: '', numPerBox: 10, pricePerUnit: 90, pricePerBox: 15000, myMaterials: 0, resultingBoxes: 0 },
 ];
 
 // Clave para localStorage
@@ -100,6 +100,9 @@ const FourWindsPage = () => {
      }
      return boxCalculatorData;
    });
+   
+   // Estado para manejar inputs como strings durante la escritura
+   const [inputValues, setInputValues] = useState<Record<number, string>>({});
    
    const [boxCalculatorLoading, setBoxCalculatorLoading] = useState(true);
   
@@ -218,6 +221,13 @@ const FourWindsPage = () => {
       // Guardar en localStorage
       saveCalculatorData(updatedItems);
       return updatedItems;
+    });
+    
+    // Limpiar el valor de input temporal cuando se actualiza el estado
+    setInputValues(prev => {
+      const newValues = { ...prev };
+      delete newValues[id];
+      return newValues;
     });
   };
 
@@ -484,8 +494,34 @@ const FourWindsPage = () => {
                                                                      <input
                                      type="number"
                                      min="0"
-                                     value={item.myMaterials}
-                                     onChange={(e) => updateBoxCalculatorMaterials(item.id, parseInt(e.target.value) || 0)}
+                                     value={inputValues[item.id] !== undefined ? inputValues[item.id] : item.myMaterials.toString()}
+                                     onChange={(e) => {
+                                       const value = e.target.value;
+                                       
+                                       // Actualizar el valor temporal del input
+                                       setInputValues(prev => ({
+                                         ...prev,
+                                         [item.id]: value
+                                       }));
+                                       
+                                       // Si el campo está vacío, usar 0
+                                       if (value === '') {
+                                         updateBoxCalculatorMaterials(item.id, 0);
+                                       } else {
+                                         const numValue = parseInt(value);
+                                         // Solo actualizar si es un número válido
+                                         if (!isNaN(numValue)) {
+                                           updateBoxCalculatorMaterials(item.id, numValue);
+                                         }
+                                       }
+                                     }}
+                                     onBlur={(e) => {
+                                       // Al perder el foco, asegurar que el valor sea válido
+                                       const value = e.target.value;
+                                       if (value === '' || isNaN(parseInt(value))) {
+                                         updateBoxCalculatorMaterials(item.id, 0);
+                                       }
+                                     }}
                                      className="w-24 px-2 py-1 bg-gray-700 border border-gray-600 rounded text-white text-center text-sm font-mono focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
                                      placeholder="0"
                                    />
