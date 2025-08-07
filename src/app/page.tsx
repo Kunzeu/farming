@@ -107,8 +107,8 @@ export default function HomePage() {
                 className="space-y-4">
         
 
-                {/* Botón Purchase Now */}
-                <div className="pt-4">
+                {/* Botón Purchase Now - OCULTO TEMPORALMENTE */}
+                {/* <div className="pt-4">
                   <motion.a
                     href="http://guildwars2.go2cloud.org/aff_c?offer_id=28&aff_id=757"
                     target="_blank"
@@ -119,7 +119,11 @@ export default function HomePage() {
                   >
                     Purchase Now
                   </motion.a>
-                </div>
+                  
+                  <div className="mt-4 flex justify-center">
+                    <div className="w-24 h-1 bg-gradient-to-r from-transparent via-blue-400 to-transparent rounded-full opacity-60"></div>
+                  </div>
+                </div> */}
               </motion.div>
             </div>
           </div>
