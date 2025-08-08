@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import Image from 'next/image';
+import Link from 'next/link';
 import Navigation from '@/components/layout/Navigation';
 import { Search, Map, Clock, RefreshCw, TrendingUp, Star } from 'lucide-react';
 import { useDatabase, FarmItem } from '@/hooks/useDatabase';
@@ -125,9 +126,24 @@ export default function FarmingRoutes() {
           <h1 className="text-4xl font-bold text-white mb-4">
             Farming Routes
           </h1>
-          <p className="text-xl text-gray-300">
+          <p className="text-xl text-gray-300 mb-6">
             The best routes to make gold in Guild Wars 2
           </p>
+          
+          {/* Daily Routine Button */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3 }}
+            className="flex justify-center">
+            <Link
+              href="/daily-routine"
+              className="inline-flex items-center gap-3 px-6 py-3 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white font-semibold rounded-lg transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105">
+              <Clock className="w-5 h-5" />
+              <span>Daily Routine</span>
+              <Star className="w-4 h-4" />
+            </Link>
+          </motion.div>
         </motion.div>
 
         {/* Error Message */}

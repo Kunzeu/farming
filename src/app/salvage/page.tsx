@@ -59,7 +59,7 @@ export default function SalvagePage() {
       borderColor: 'border-purple-500/30',
       textColor: 'text-purple-400',
       features: ['Common, Masterwork, Rare', 'Specific drop rates', 'Profitability by type'],
-      href: '/salvage/unidentified-gear'
+      href: '/salvage/common'
     }
   ];
 

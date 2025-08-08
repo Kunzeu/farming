@@ -35,26 +35,6 @@ const festivals = [
     path: '/festivals/lunar'
   },
   {
-    id: 'sab',
-    name: 'Super Adventure Festival',
-    description: 'The pixelated adventure in the Super Adventure Box world',
-    icon: '🎮',
-    color: 'from-yellow-500 to-green-600',
-    status: getFestivalStatus(festivalDates.sab.startDate, festivalDates.sab.endDate),
-    startDate: festivalDates.sab.startDateFormatted,
-    endDate: festivalDates.sab.endDateFormatted,
-    features: [
-      'Bauble Bubbles',
-      'SAB Tokens',
-      'World 1 & 2 Challenges',
-      'Holographic Weapons'
-    ],
-    estimatedGoldPerHour: 14,
-    difficulty: 'Medium',
-    timeRequired: '3-4 hours',
-    path: '/festivals/sab'
-  },
-  {
     id: 'dragon-bash',
     name: 'Dragon Bash',
     description: 'Summer festival celebrating resistance against the Elder Dragons',
@@ -224,7 +204,7 @@ export default function FestivalsPage() {
                     <div className="mt-auto">
                       <div className="flex items-center justify-between">
                         <span className="text-purple-400 text-sm font-semibold">
-                          Ver Calculadora
+                          View Calculator
                         </span>
                         <TrendingUp className="w-4 h-4 text-purple-400 group-hover:translate-x-1 transition-transform" />
                       </div>
@@ -240,98 +220,84 @@ export default function FestivalsPage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.6 }}
-            className="mt-12 space-y-8">
+            className="mt-8 space-y-6">
             {/* What are Festivals? */}
-            <div className="bg-gray-800/30 backdrop-blur-sm border border-gray-700 rounded-lg p-6">
+            <div className="bg-gray-800/30 backdrop-blur-sm border border-gray-700 rounded-lg p-5">
               <h2 className="text-2xl font-bold text-white mb-4 flex items-center">
                 <Info className="w-6 h-6 mr-3 text-blue-400" />
                 What are Festivals?
               </h2>
               <p className="text-gray-300 mb-6 leading-relaxed">
                 Festivals in Guild Wars 2 are seasonal celebrations that occur throughout the year. 
-                Cada festival tiene su propia temática, actividades únicas y recompensas especiales. 
-                Estos eventos suelen durar aproximadamente 3 semanas y ofrecen oportunidades únicas para 
-                farming y obtención de items exclusivos.
+                Each festival has its own theme, unique activities, and special rewards. 
+                These events typically last about 3 weeks and offer unique opportunities for 
+                farming and obtaining exclusive items.
               </p>
               
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div className="bg-gray-700/50 rounded-lg p-4">
-                  <h3 className="text-white font-semibold mb-2">Actividades Únicas</h3>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="bg-gray-700/50 rounded-lg p-3">
+                  <h3 className="text-white font-semibold mb-2">Unique Activities</h3>
                   <p className="text-gray-300 text-sm">
-                    Cada festival incluye actividades específicas como puzzles, carreras, combates y eventos especiales.
+                    Each festival includes specific activities such as puzzles, races, combat events, and special events.
                   </p>
                 </div>
-                <div className="bg-gray-700/50 rounded-lg p-4">
-                  <h3 className="text-white font-semibold mb-2">Items Exclusivos</h3>
+                <div className="bg-gray-700/50 rounded-lg p-3">
+                  <h3 className="text-white font-semibold mb-2">Exclusive Items</h3>
                   <p className="text-gray-300 text-sm">
-                    Skins, armas, monturas y otros items que solo están disponibles durante el festival.
+                    Skins, weapons, and other items that are only available during the festival.
                   </p>
                 </div>
-                <div className="bg-gray-700/50 rounded-lg p-4">
-                  <h3 className="text-white font-semibold mb-2">Recompensas Temporales</h3>
+                <div className="bg-gray-700/50 rounded-lg p-3">
+                  <h3 className="text-white font-semibold mb-2">Temporary Rewards</h3>
                   <p className="text-gray-300 text-sm">
-                    Materiales, monedas y otros recursos que pueden venderse por oro en el Trading Post.
+                    Materials, currencies, and other resources that can be sold for gold on the Trading Post.
                   </p>
                 </div>
               </div>
             </div>
 
             {/* Estrategias de Farming */}
-            <div className="bg-gray-800/30 backdrop-blur-sm border border-gray-700 rounded-lg p-6">
+            <div className="bg-gray-800/30 backdrop-blur-sm border border-gray-700 rounded-lg p-5">
               <h2 className="text-2xl font-bold text-white mb-4 flex items-center">
                 <TrendingUp className="w-6 h-6 mr-3 text-green-400" />
                 Festival Farming Strategies
               </h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                 <div className="space-y-4">
-                  <h3 className="text-xl font-bold text-white">Durante el Festival</h3>
+                  <h3 className="text-xl font-bold text-white">During the Festival</h3>
                   <div className="space-y-3">
                     <div className="flex items-start gap-3">
                       <div className="w-2 h-2 bg-green-400 rounded-full mt-2 flex-shrink-0"></div>
                       <div>
-                        <h4 className="text-white font-semibold">Participa en Actividades</h4>
-                        <p className="text-gray-300 text-sm">Completa las actividades diarias para obtener recompensas consistentes.</p>
+                        <h4 className="text-white font-semibold">Participate in Activities</h4>
+                        <p className="text-gray-300 text-sm">Complete daily activities to obtain consistent rewards.</p>
                       </div>
                     </div>
                     <div className="flex items-start gap-3">
                       <div className="w-2 h-2 bg-green-400 rounded-full mt-2 flex-shrink-0"></div>
                       <div>
-                        <h4 className="text-white font-semibold">Farming Intensivo</h4>
-                        <p className="text-gray-300 text-sm">Dedica tiempo a las actividades más rentables del festival.</p>
-                      </div>
-                    </div>
-                    <div className="flex items-start gap-3">
-                      <div className="w-2 h-2 bg-green-400 rounded-full mt-2 flex-shrink-0"></div>
-                      <div>
-                        <h4 className="text-white font-semibold">Compra Anticipada</h4>
-                        <p className="text-gray-300 text-sm">Compra items cuando los precios estén bajos al inicio.</p>
+                        <h4 className="text-white font-semibold">Intensive Farming</h4>
+                        <p className="text-gray-300 text-sm">Dedicate time to the most profitable activities of the festival.</p>
                       </div>
                     </div>
                   </div>
                 </div>
                 
                 <div className="space-y-4">
-                  <h3 className="text-xl font-bold text-white">Después del Festival</h3>
+                  <h3 className="text-xl font-bold text-white">After the Festival</h3>
                   <div className="space-y-3">
                     <div className="flex items-start gap-3">
                       <div className="w-2 h-2 bg-blue-400 rounded-full mt-2 flex-shrink-0"></div>
                       <div>
-                        <h4 className="text-white font-semibold">Venta Estratégica</h4>
-                        <p className="text-gray-300 text-sm">Espera a que los precios suban después del festival.</p>
+                        <h4 className="text-white font-semibold">Strategic Selling</h4>
+                        <p className="text-gray-300 text-sm">Wait for prices to rise after the festival.</p>
                       </div>
                     </div>
                     <div className="flex items-start gap-3">
                       <div className="w-2 h-2 bg-blue-400 rounded-full mt-2 flex-shrink-0"></div>
                       <div>
-                        <h4 className="text-white font-semibold">Almacenamiento</h4>
-                        <p className="text-gray-300 text-sm">Guarda items para venderlos en el próximo festival.</p>
-                      </div>
-                    </div>
-                    <div className="flex items-start gap-3">
-                      <div className="w-2 h-2 bg-blue-400 rounded-full mt-2 flex-shrink-0"></div>
-                      <div>
-                        <h4 className="text-white font-semibold">Análisis de Mercado</h4>
-                        <p className="text-gray-300 text-sm">Monitorea los precios para identificar el mejor momento de venta.</p>
+                        <h4 className="text-white font-semibold">Market Analysis</h4>
+                        <p className="text-gray-300 text-sm">Monitor prices to identify the best selling moment.</p>
                       </div>
                     </div>
                   </div>
@@ -340,67 +306,60 @@ export default function FestivalsPage() {
             </div>
 
             {/* How to Earn Gold in Festivals */}
-            <div className="bg-gray-800/30 backdrop-blur-sm border border-gray-700 rounded-lg p-6">
+            <div className="bg-gray-800/30 backdrop-blur-sm border border-gray-700 rounded-lg p-5">
               <h2 className="text-2xl font-bold text-white mb-4 flex items-center">
                 <Coins className="w-6 h-6 mr-3 text-yellow-400" />
                 How to Earn Gold in Festivals?
               </h2>
               <p className="text-gray-300 mb-6 leading-relaxed">
                 Festivals are one of the best opportunities to generate gold in Guild Wars 2. 
-                Cada festival tiene métodos específicos de farming que pueden generar entre 10-20g por hora 
-                dependiendo de tu eficiencia y el festival en cuestión.
+                Each festival has specific farming methods that can generate between 20-30g per hour 
+                depending on your efficiency and the festival in question.
               </p>
               
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-6">
                 <div className="space-y-4">
-                  <h3 className="text-xl font-bold text-white">Métodos Principales</h3>
+                  <h3 className="text-xl font-bold text-white">Main Methods</h3>
                   <div className="space-y-3">
                     <div className="flex items-start gap-3">
                       <div className="w-2 h-2 bg-yellow-400 rounded-full mt-2 flex-shrink-0"></div>
                       <div>
-                        <h4 className="text-white font-semibold">Farming de Actividades</h4>
-                        <p className="text-gray-300 text-sm">Participa repetidamente en las actividades más rentables del festival.</p>
+                        <h4 className="text-white font-semibold">Activity Farming</h4>
+                        <p className="text-gray-300 text-sm">Repeatedly participate in the most profitable activities of the festival.</p>
                       </div>
                     </div>
                     <div className="flex items-start gap-3">
                       <div className="w-2 h-2 bg-yellow-400 rounded-full mt-2 flex-shrink-0"></div>
                       <div>
-                        <h4 className="text-white font-semibold">Apertura de Contenedores</h4>
-                        <p className="text-gray-300 text-sm">Abre bolsas, sobres y otros contenedores para obtener items valiosos.</p>
+                        <h4 className="text-white font-semibold">Container Opening</h4>
+                        <p className="text-gray-300 text-sm">Open bags, envelopes, and other containers to obtain valuable items.</p>
                       </div>
                     </div>
                     <div className="flex items-start gap-3">
                       <div className="w-2 h-2 bg-yellow-400 rounded-full mt-2 flex-shrink-0"></div>
                       <div>
-                        <h4 className="text-white font-semibold">Venta de Materiales</h4>
-                        <p className="text-gray-300 text-sm">Vende materiales específicos del festival en el Trading Post.</p>
+                        <h4 className="text-white font-semibold">Material Selling</h4>
+                        <p className="text-gray-300 text-sm">Sell festival-specific materials on the Trading Post.</p>
                       </div>
                     </div>
                   </div>
                 </div>
                 
                 <div className="space-y-4">
-                  <h3 className="text-xl font-bold text-white">Estrategias Avanzadas</h3>
+                  <h3 className="text-xl font-bold text-white">Advanced Strategies</h3>
                   <div className="space-y-3">
                     <div className="flex items-start gap-3">
                       <div className="w-2 h-2 bg-green-400 rounded-full mt-2 flex-shrink-0"></div>
                       <div>
-                        <h4 className="text-white font-semibold">Compra y Venta</h4>
-                        <p className="text-gray-300 text-sm">Compra items baratos durante el festival y véndelos después.</p>
+                        <h4 className="text-white font-semibold">Storage</h4>
+                        <p className="text-gray-300 text-sm">Save items to sell them in the next festival.</p>
                       </div>
                     </div>
                     <div className="flex items-start gap-3">
                       <div className="w-2 h-2 bg-green-400 rounded-full mt-2 flex-shrink-0"></div>
                       <div>
-                        <h4 className="text-white font-semibold">Almacenamiento</h4>
-                        <p className="text-gray-300 text-sm">Guarda items para venderlos en el próximo festival.</p>
-                      </div>
-                    </div>
-                    <div className="flex items-start gap-3">
-                      <div className="w-2 h-2 bg-green-400 rounded-full mt-2 flex-shrink-0"></div>
-                      <div>
-                        <h4 className="text-white font-semibold">Múltiples Personajes</h4>
-                        <p className="text-gray-300 text-sm">Usa varios personajes para maximizar las recompensas diarias.</p>
+                        <h4 className="text-white font-semibold">Multiple Characters</h4>
+                        <p className="text-gray-300 text-sm">Use several characters to maximize daily rewards.</p>
                       </div>
                     </div>
                   </div>
@@ -408,35 +367,35 @@ export default function FestivalsPage() {
               </div>
 
               <div className="bg-yellow-900/20 border border-yellow-700 rounded-lg p-4">
-                <h4 className="text-yellow-300 font-semibold mb-2">💡 Consejo Pro</h4>
+                <h4 className="text-yellow-300 font-semibold mb-2">💡 Pro Tip</h4>
                 <p className="text-gray-300 text-sm">
-                  Los festivales más rentables suelen ser Halloween (Trick-or-Treat Bags) y Wintersday (Wintersday Gifts). 
-                  Estos pueden generar 15-20g por hora con farming eficiente. Usa nuestras calculadoras específicas 
-                  para determinar la rentabilidad exacta de cada actividad.
+                  The most profitable festivals are usually Halloween (Trick-or-Treat Bags) and Wintersday (Wintersday Gifts). 
+                  These can generate 30-40g per hour with efficient farming. Use our specific calculators 
+                  to determine the exact profitability of each activity.
                 </p>
               </div>
             </div>
 
             {/* Consejos Generales */}
-            <div className="bg-gray-800/30 backdrop-blur-sm border border-gray-700 rounded-lg p-6">
+            <div className="bg-gray-800/30 backdrop-blur-sm border border-gray-700 rounded-lg p-5">
               <h2 className="text-2xl font-bold text-white mb-4 flex items-center">
                 <Star className="w-6 h-6 mr-3 text-yellow-400" />
-                Consejos Generales
+                General Tips
               </h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                 <div className="space-y-3">
                   <div className="flex items-start gap-3">
                     <div className="w-2 h-2 bg-yellow-400 rounded-full mt-2 flex-shrink-0"></div>
                     <div>
-                      <h4 className="text-white font-semibold">Planificación</h4>
-                      <p className="text-gray-300 text-sm">Investiga los festivales con anticipación y prepara tus personajes.</p>
+                      <h4 className="text-white font-semibold">Planning</h4>
+                      <p className="text-gray-300 text-sm">Research festivals in advance and prepare your characters.</p>
                     </div>
                   </div>
                   <div className="flex items-start gap-3">
                     <div className="w-2 h-2 bg-yellow-400 rounded-full mt-2 flex-shrink-0"></div>
                     <div>
-                      <h4 className="text-white font-semibold">Diversificación</h4>
-                      <p className="text-gray-300 text-sm">No te enfoques solo en una actividad, explora todas las opciones.</p>
+                      <h4 className="text-white font-semibold">Diversification</h4>
+                      <p className="text-gray-300 text-sm">Don&apos;t focus on just one activity, explore all options.</p>
                     </div>
                   </div>
                 </div>
@@ -444,15 +403,15 @@ export default function FestivalsPage() {
                   <div className="flex items-start gap-3">
                     <div className="w-2 h-2 bg-yellow-400 rounded-full mt-2 flex-shrink-0"></div>
                     <div>
-                      <h4 className="text-white font-semibold">Comunidad</h4>
-                      <p className="text-gray-300 text-sm">Únete a grupos organizados para maximizar la eficiencia.</p>
+                      <h4 className="text-white font-semibold">Community</h4>
+                      <p className="text-gray-300 text-sm">Join organized groups to maximize efficiency.</p>
                     </div>
                   </div>
                   <div className="flex items-start gap-3">
                     <div className="w-2 h-2 bg-yellow-400 rounded-full mt-2 flex-shrink-0"></div>
                     <div>
-                      <h4 className="text-white font-semibold">Disfruta</h4>
-                      <p className="text-gray-300 text-sm">Recuerda que los festivales están diseñados para ser divertidos.</p>
+                      <h4 className="text-white font-semibold">Enjoy</h4>
+                      <p className="text-gray-300 text-sm">Remember that festivals are designed to be fun.</p>
                     </div>
                   </div>
                 </div>

@@ -87,7 +87,7 @@ export default function HomePage() {
           </div>
 
           {/* Logo central */}
-          <div className="absolute inset-0 flex items-center justify-center">
+          <div className="absolute inset-0 flex items-center justify-center -mt-16">
             <Image 
               src="/images/backgrounds/gw2_release_logo_latest.webp" 
               alt="Guild Wars 2: Visions of Eternity"
@@ -106,9 +106,8 @@ export default function HomePage() {
                 transition={{ duration: 0.6 }}
                 className="space-y-4">
         
-
-                {/* Botón Purchase Now - OCULTO TEMPORALMENTE */}
-                {/* <div className="pt-4">
+                {/* Botón Purchase Now */}
+                {/*<div className="pt-4">
                   <motion.a
                     href="http://guildwars2.go2cloud.org/aff_c?offer_id=28&aff_id=757"
                     target="_blank"
@@ -127,7 +126,7 @@ export default function HomePage() {
               </motion.div>
             </div>
           </div>
-        </section>
+        </section> 
 
         {/* Sección de herramientas principales */}
         <section className="mb-12">

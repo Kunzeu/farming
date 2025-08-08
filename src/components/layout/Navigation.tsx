@@ -32,6 +32,65 @@ const Navigation = () => {
   const toolsMenuRef = useRef<HTMLDivElement>(null);
   const mobileMenuRef = useRef<HTMLDivElement>(null);
   const userMenuRef = useRef<HTMLDivElement>(null);
+  
+  // Reset timers
+  const [dailyResetTime, setDailyResetTime] = useState<string>('');
+  const [weeklyResetTime, setWeeklyResetTime] = useState<string>('');
+
+  // Calculate reset times
+  useEffect(() => {
+    const calculateDailyReset = () => {
+      const now = new Date();
+      const resetTime = new Date();
+      
+      // 19:00 Colombia = 00:00 UTC del día siguiente
+      resetTime.setUTCHours(0, 0, 0, 0);
+      
+      if (now.getTime() > resetTime.getTime()) {
+        resetTime.setUTCDate(resetTime.getUTCDate() + 1);
+      }
+      
+      const diff = resetTime.getTime() - now.getTime();
+      const hours = Math.floor(diff / (1000 * 60 * 60));
+      const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+      const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+      
+      setDailyResetTime(`${hours}h ${minutes}m ${seconds}s`);
+    };
+
+    const calculateWeeklyReset = () => {
+      const now = new Date();
+      const resetTime = new Date();
+      
+      // 02:30 Colombia del lunes = 07:30 UTC del lunes
+      resetTime.setUTCHours(7, 30, 0, 0);
+      
+      // Find next Monday
+      const daysUntilMonday = (8 - resetTime.getUTCDay()) % 7;
+      resetTime.setUTCDate(resetTime.getUTCDate() + daysUntilMonday);
+      
+      if (now.getTime() > resetTime.getTime()) {
+        resetTime.setUTCDate(resetTime.getUTCDate() + 7);
+      }
+      
+      const diff = resetTime.getTime() - now.getTime();
+      const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+      const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+      
+      setWeeklyResetTime(`${days}d ${hours}h ${minutes}m`);
+    };
+
+    calculateDailyReset();
+    calculateWeeklyReset();
+    
+    const interval = setInterval(() => {
+      calculateDailyReset();
+      calculateWeeklyReset();
+    }, 1000); // Update every second
+    
+    return () => clearInterval(interval);
+  }, []);
 
   // Cerrar menús cuando se hace clic fuera
   useEffect(() => {
@@ -76,7 +135,6 @@ const Navigation = () => {
   const navItems = [
     { href: '/', label: 'Home', icon: Home },
     { href: '/farming-routes', label: 'Farms', icon: Map },
-    { href: '/daily-routine', label: 'Daily Routine', icon: Clock },
     { href: '/glossary', label: 'Glossary', icon: BookOpen },
     { href: '/account', label: 'My Account', icon: User },
   ];
@@ -114,6 +172,18 @@ const Navigation = () => {
                 </div>
               </div>
             </Link>
+          </div>
+
+          {/* Reset Timers - After Logo */}
+          <div className="hidden lg:flex items-center space-x-4">
+            <div className="flex items-center space-x-2 text-blue-300 px-3 py-2 rounded-lg bg-blue-900/20 border border-blue-700/30">
+              <Clock className="w-4 h-4" />
+              <span className="text-sm font-mono font-bold">{dailyResetTime}</span>
+            </div>
+            <div className="flex items-center space-x-2 text-purple-300 px-3 py-2 rounded-lg bg-purple-900/20 border border-purple-700/30">
+              <Calendar className="w-4 h-4" />
+              <span className="text-sm font-mono font-bold">{weeklyResetTime}</span>
+            </div>
           </div>
 
           {/* Navigation Items + User Menu - Esquina Derecha */}

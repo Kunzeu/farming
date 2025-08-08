@@ -13,7 +13,10 @@ import {
   List,
   Search,
   X,
-  ArrowLeft
+  ArrowLeft,
+  ArrowUpDown,
+  ArrowUp,
+  ArrowDown
 } from 'lucide-react';
 
 interface Gw2Price {
@@ -154,6 +157,10 @@ const HalloweenPage = () => {
   
   // Estado para manejar inputs como strings durante la escritura
   const [inputValues, setInputValues] = useState<Record<number, string>>({});
+  
+  // Estados para ordenamiento
+  const [sortField, setSortField] = useState<string>('name');
+  const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
 
   // Función para guardar datos en localStorage
   const saveCalculatorData = useCallback((data: CalculatorItem[]) => {
@@ -319,6 +326,50 @@ const HalloweenPage = () => {
     setCalculatorItems([]);
     saveCalculatorData([]);
   };
+
+  // Función para manejar el ordenamiento
+  const handleSort = (field: string) => {
+    if (sortField === field) {
+      setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
+    } else {
+      setSortField(field);
+      setSortDirection('asc');
+    }
+  };
+
+  // Función para obtener el icono de ordenamiento
+  const getSortIcon = (field: string) => {
+    if (sortField !== field) {
+      return <ArrowUpDown className="w-4 h-4" />;
+    }
+    return sortDirection === 'asc' ? <ArrowUp className="w-4 h-4" /> : <ArrowDown className="w-4 h-4" />;
+  };
+
+  // Función para ordenar los items
+  const sortedCalculatorItems = useMemo(() => {
+    return [...calculatorItems].sort((a, b) => {
+      let aValue: string | number = a[sortField as keyof CalculatorItem] as string | number;
+      let bValue: string | number = b[sortField as keyof CalculatorItem] as string | number;
+      
+      // Para campos numéricos, convertir a número
+      if (['quantity', 'price100', 'price85', 'total100', 'total85'].includes(sortField)) {
+        aValue = Number(aValue);
+        bValue = Number(bValue);
+      }
+      
+      // Para campos de texto, convertir a minúsculas
+      if (typeof aValue === 'string' && typeof bValue === 'string') {
+        aValue = aValue.toLowerCase();
+        bValue = bValue.toLowerCase();
+      }
+      
+      if (sortDirection === 'asc') {
+        return aValue > bValue ? 1 : aValue < bValue ? -1 : 0;
+      } else {
+        return aValue < bValue ? 1 : aValue > bValue ? -1 : 0;
+      }
+    });
+  }, [calculatorItems, sortField, sortDirection]);
 
   const filteredAvailableItems = availableItems.filter(item =>
     item.name.toLowerCase().includes(searchTerm.toLowerCase())
@@ -495,17 +546,65 @@ const HalloweenPage = () => {
                         <table className="w-full text-sm">
                           <thead>
                             <tr className="border-b border-gray-600">
-                              <th className="text-left py-2 text-gray-300">Name</th>
-                              <th className="text-center py-2 text-gray-300">Number</th>
-                              <th className="text-center py-2 text-gray-300">Price 100%</th>
-                              <th className="text-center py-2 text-gray-300">Price 85%</th>
-                              <th className="text-center py-2 text-gray-300">Total 100%</th>
-                              <th className="text-center py-2 text-gray-300">Total 85%</th>
+                              <th 
+                                className="text-left py-2 text-gray-300 cursor-pointer hover:text-white transition-colors"
+                                onClick={() => handleSort('name')}
+                              >
+                                <div className="flex items-center gap-1">
+                                  Name
+                                  {getSortIcon('name')}
+                                </div>
+                              </th>
+                              <th 
+                                className="text-center py-2 text-gray-300 cursor-pointer hover:text-white transition-colors"
+                                onClick={() => handleSort('quantity')}
+                              >
+                                <div className="flex items-center justify-center gap-1">
+                                  Number
+                                  {getSortIcon('quantity')}
+                                </div>
+                              </th>
+                              <th 
+                                className="text-center py-2 text-gray-300 cursor-pointer hover:text-white transition-colors"
+                                onClick={() => handleSort('price100')}
+                              >
+                                <div className="flex items-center justify-center gap-1">
+                                  Price 100%
+                                  {getSortIcon('price100')}
+                                </div>
+                              </th>
+                              <th 
+                                className="text-center py-2 text-gray-300 cursor-pointer hover:text-white transition-colors"
+                                onClick={() => handleSort('price85')}
+                              >
+                                <div className="flex items-center justify-center gap-1">
+                                  Price 85%
+                                  {getSortIcon('price85')}
+                                </div>
+                              </th>
+                              <th 
+                                className="text-center py-2 text-gray-300 cursor-pointer hover:text-white transition-colors"
+                                onClick={() => handleSort('total100')}
+                              >
+                                <div className="flex items-center justify-center gap-1">
+                                  Total 100%
+                                  {getSortIcon('total100')}
+                                </div>
+                              </th>
+                              <th 
+                                className="text-center py-2 text-gray-300 cursor-pointer hover:text-white transition-colors"
+                                onClick={() => handleSort('total85')}
+                              >
+                                <div className="flex items-center justify-center gap-1">
+                                  Total 85%
+                                  {getSortIcon('total85')}
+                                </div>
+                              </th>
                               <th className="text-center py-2 text-gray-300">Action</th>
                             </tr>
                           </thead>
                           <tbody>
-                            {calculatorItems.map((item) => (
+                            {sortedCalculatorItems.map((item) => (
                               <tr key={item.id} className="border-b border-gray-700">
                                 <td className="py-2 text-white">{item.name}</td>
                                 <td className="py-2 text-center">

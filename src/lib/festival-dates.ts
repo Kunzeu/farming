@@ -12,38 +12,32 @@ export const festivalDates: Record<string, FestivalDate> = {
   lunar: {
     startDate: '2025-01-28',
     endDate: '2025-02-18',
-    startDateFormatted: 'Enero',
-    endDateFormatted: 'Febrero'
-  },
-  sab: {
-    startDate: '2025-03-25',
-    endDate: '2025-04-15',
-    startDateFormatted: 'Marzo',
-    endDateFormatted: 'Abril'
+    startDateFormatted: 'January',
+    endDateFormatted: 'February'
   },
   'dragon-bash': {
     startDate: '2025-06-24',
     endDate: '2025-07-15',
-    startDateFormatted: 'Junio',
-    endDateFormatted: 'Julio'
+    startDateFormatted: 'June',
+    endDateFormatted: 'July'
   },
   'four-winds': {
     startDate: '2025-08-05',
     endDate: '2025-08-26',
-    startDateFormatted: 'Agosto',
-    endDateFormatted: 'Agosto'
+    startDateFormatted: 'August',
+    endDateFormatted: 'August'
   },
   halloween: {
     startDate: '2025-10-21',
     endDate: '2025-11-11',
-    startDateFormatted: 'Octubre',
-    endDateFormatted: 'Noviembre'
+    startDateFormatted: 'October',
+    endDateFormatted: 'November'
   },
   wintersday: {
     startDate: '2025-12-16',
     endDate: '2026-01-06',
-    startDateFormatted: 'Diciembre',
-    endDateFormatted: 'Enero'
+    startDateFormatted: 'December',
+    endDateFormatted: 'January'
   }
 };
 

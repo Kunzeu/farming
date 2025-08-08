@@ -46,9 +46,9 @@ export default function GlossaryPage() {
       borderColor: 'border-blue-500/30',
       textColor: 'text-blue-400',
       tips: [
-        'Investiga precios antes de reciclar',
-        'Considera el valor del item completo',
-        'Usa el kit apropiado para cada tipo'
+        'Research prices before salvaging',
+        'Consider the full item value',
+        'Use the appropriate kit for each type'
       ],
       relatedLinks: [
         { name: 'GW2 Wiki - Salvage Kits', url: 'https://wiki.guildwars2.com/wiki/Salvage_kit' },
@@ -66,9 +66,9 @@ export default function GlossaryPage() {
       borderColor: 'border-green-500/30',
       textColor: 'text-green-400',
       tips: [
-        'Copper-Fed: Para items comunes y baratos',
-        'Runecrafter\'s: Para items masterwork con runas',
-        'Silver-Fed: Para items raros y exóticos'
+        'Copper-Fed: For common and cheap items',
+        'Runecrafter\'s: For masterwork items with runes',
+        'Silver-Fed: For rare and exotic items'
       ]
     },
     {
@@ -106,8 +106,8 @@ export default function GlossaryPage() {
       borderColor: 'border-green-500/30',
       textColor: 'text-green-400',
       tips: [
-        'Rutas optimizadas para maximizar el oro por hora',
-        'Planifica tus sesiones según eventos y metas diarias',
+        'Optimized routes to maximize gold per hour',
+        'Plan your sessions according to events and daily goals',
         'Different types of content for all tastes'
       ]
     },
@@ -124,9 +124,8 @@ export default function GlossaryPage() {
       borderColor: 'border-purple-500/30',
       textColor: 'text-purple-400',
       tips: [
-        'Compra items antes del festival cuando los precios están bajos',
-        'Vende items específicos cuando sus precios alcancen picos',
-        'Participa en actividades únicas del festival'
+        'Sell specific items when their prices reach peaks',
+        'Participate in unique festival activities'
       ]
     },
   ];

@@ -14,7 +14,10 @@ import {
   Search,
   X,
   Wind,
-  ArrowLeft
+  ArrowLeft,
+  ArrowUpDown,
+  ArrowUp,
+  ArrowDown
 } from 'lucide-react';
 
 interface Gw2Price {
@@ -110,6 +113,10 @@ const FourWindsPage = () => {
   const [showItemSelectionModal, setShowItemSelectionModal] = useState(false);
   const [selectedBoxItems, setSelectedBoxItems] = useState<Set<number>>(new Set(boxCalculatorData.map(item => item.id)));
   const [searchBoxTerm, setSearchBoxTerm] = useState('');
+  
+  // Estados para ordenamiento
+  const [sortField, setSortField] = useState<string>('name');
+  const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
 
   // Función para guardar datos en localStorage
   const saveCalculatorData = useCallback((data: BoxCalculatorItem[]) => {
@@ -238,9 +245,51 @@ const FourWindsPage = () => {
     return { totalMaterials, totalBoxes };
   };
 
+  // Función para manejar el ordenamiento
+  const handleSort = (field: string) => {
+    if (sortField === field) {
+      setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
+    } else {
+      setSortField(field);
+      setSortDirection('asc');
+    }
+  };
 
+  // Función para obtener el icono de ordenamiento
+  const getSortIcon = (field: string) => {
+    if (sortField !== field) {
+      return <ArrowUpDown className="w-4 h-4" />;
+    }
+    return sortDirection === 'asc' ? <ArrowUp className="w-4 h-4" /> : <ArrowDown className="w-4 h-4" />;
+  };
 
-         // Cargar datos al montar el componente
+  // Función para ordenar los items
+  const sortedBoxCalculatorItems = useMemo(() => {
+    return [...boxCalculatorItems].sort((a, b) => {
+      let aValue: string | number = a[sortField as keyof BoxCalculatorItem] as string | number;
+      let bValue: string | number = b[sortField as keyof BoxCalculatorItem] as string | number;
+      
+      // Para campos numéricos, convertir a número
+      if (['numPerBox', 'pricePerUnit', 'pricePerBox', 'myMaterials', 'resultingBoxes'].includes(sortField)) {
+        aValue = Number(aValue);
+        bValue = Number(bValue);
+      }
+      
+      // Para campos de texto, convertir a minúsculas
+      if (typeof aValue === 'string' && typeof bValue === 'string') {
+        aValue = aValue.toLowerCase();
+        bValue = bValue.toLowerCase();
+      }
+      
+      if (sortDirection === 'asc') {
+        return aValue > bValue ? 1 : aValue < bValue ? -1 : 0;
+      } else {
+        return aValue < bValue ? 1 : aValue > bValue ? -1 : 0;
+      }
+    });
+  }, [boxCalculatorItems, sortField, sortDirection]);
+
+  // Cargar datos al montar el componente
      useEffect(() => {
        fetchBoxCalculatorData(); // Cargar iconos y precios de la calculadora de cajas
      }, [fetchBoxCalculatorData]);
@@ -411,17 +460,49 @@ const FourWindsPage = () => {
                         <table className="w-full text-sm min-w-[800px]">
                           <thead>
                             <tr className="border-b border-gray-600 bg-gray-700/50">
-                              <th className="text-left py-3 px-4 text-gray-200 font-semibold text-xs uppercase tracking-wider">Material</th>
-                              <th className="text-center py-3 px-2 text-gray-200 font-semibold text-xs uppercase tracking-wider">Num/Box</th>
-                              <th className="text-center py-3 px-2 text-gray-200 font-semibold text-xs uppercase tracking-wider">Price/u</th>
-                              <th className="text-center py-3 px-2 text-gray-200 font-semibold text-xs uppercase tracking-wider">Price/Box</th>
+                              <th 
+                                className="text-left py-3 px-4 text-gray-200 font-semibold text-xs uppercase tracking-wider cursor-pointer hover:text-white transition-colors"
+                                onClick={() => handleSort('name')}
+                              >
+                                <div className="flex items-center gap-1">
+                                  Material
+                                  {getSortIcon('name')}
+                                </div>
+                              </th>
+                              <th 
+                                className="text-center py-3 px-2 text-gray-200 font-semibold text-xs uppercase tracking-wider cursor-pointer hover:text-white transition-colors"
+                                onClick={() => handleSort('numPerBox')}
+                              >
+                                <div className="flex items-center justify-center gap-1">
+                                  Num/Box
+                                  {getSortIcon('numPerBox')}
+                                </div>
+                              </th>
+                              <th 
+                                className="text-center py-3 px-2 text-gray-200 font-semibold text-xs uppercase tracking-wider cursor-pointer hover:text-white transition-colors"
+                                onClick={() => handleSort('pricePerUnit')}
+                              >
+                                <div className="flex items-center justify-center gap-1">
+                                  Price/u
+                                  {getSortIcon('pricePerUnit')}
+                                </div>
+                              </th>
+                              <th 
+                                className="text-center py-3 px-2 text-gray-200 font-semibold text-xs uppercase tracking-wider cursor-pointer hover:text-white transition-colors"
+                                onClick={() => handleSort('pricePerBox')}
+                              >
+                                <div className="flex items-center justify-center gap-1">
+                                  Price/Box
+                                  {getSortIcon('pricePerBox')}
+                                </div>
+                              </th>
                               <th className="text-center py-3 px-2 text-gray-200 font-semibold text-xs uppercase tracking-wider">250 Boxes</th>
                               <th className="text-center py-3 px-2 text-gray-200 font-semibold text-xs uppercase tracking-wider">2500 Boxes</th>
                               <th className="text-center py-3 px-2 text-gray-200 font-semibold text-xs uppercase tracking-wider">25000 Boxes</th>
                             </tr>
                           </thead>
                           <tbody>
-                            {boxCalculatorItems.filter(item => selectedBoxItems.has(item.id)).map((item, index) => (
+                            {sortedBoxCalculatorItems.filter(item => selectedBoxItems.has(item.id)).map((item, index) => (
                               <tr key={item.id} className={`border-b border-gray-700 hover:bg-gray-700/20 transition-colors group ${index % 2 === 0 ? 'bg-gray-800/20' : 'bg-gray-800/10'}`}>
                                 <td className="py-2 px-4 text-white text-sm">
                                   <div className="flex items-center">
@@ -465,13 +546,37 @@ const FourWindsPage = () => {
                         <table className="w-full text-sm min-w-[500px]">
                           <thead>
                             <tr className="border-b border-gray-600 bg-gray-700/50">
-                              <th className="text-left py-3 px-4 text-gray-200 font-semibold text-xs uppercase tracking-wider">Material</th>
-                              <th className="text-center py-3 px-4 text-gray-200 font-semibold text-xs uppercase tracking-wider">My Materials</th>
-                              <th className="text-center py-3 px-4 text-gray-200 font-semibold text-xs uppercase tracking-wider">Resulting Boxes</th>
+                              <th 
+                                className="text-left py-3 px-4 text-gray-200 font-semibold text-xs uppercase tracking-wider cursor-pointer hover:text-white transition-colors"
+                                onClick={() => handleSort('name')}
+                              >
+                                <div className="flex items-center gap-1">
+                                  Material
+                                  {getSortIcon('name')}
+                                </div>
+                              </th>
+                              <th 
+                                className="text-center py-3 px-4 text-gray-200 font-semibold text-xs uppercase tracking-wider cursor-pointer hover:text-white transition-colors"
+                                onClick={() => handleSort('myMaterials')}
+                              >
+                                <div className="flex items-center justify-center gap-1">
+                                  My Materials
+                                  {getSortIcon('myMaterials')}
+                                </div>
+                              </th>
+                              <th 
+                                className="text-center py-3 px-4 text-gray-200 font-semibold text-xs uppercase tracking-wider cursor-pointer hover:text-white transition-colors"
+                                onClick={() => handleSort('resultingBoxes')}
+                              >
+                                <div className="flex items-center justify-center gap-1">
+                                  Resulting Boxes
+                                  {getSortIcon('resultingBoxes')}
+                                </div>
+                              </th>
                             </tr>
                           </thead>
                           <tbody>
-                                                         {boxCalculatorItems.filter(item => selectedBoxItems.has(item.id)).map((item, index) => (
+                                                         {sortedBoxCalculatorItems.filter(item => selectedBoxItems.has(item.id)).map((item, index) => (
                                <tr key={item.id} className={`border-b border-gray-700 hover:bg-gray-700/20 transition-colors group ${index % 2 === 0 ? 'bg-gray-800/20' : 'bg-gray-800/10'}`}>
                                  <td className="py-1 px-4 text-white text-sm">
                                    <div className="flex items-center">
