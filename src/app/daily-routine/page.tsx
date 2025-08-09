@@ -1,27 +1,20 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import Image from 'next/image';
 import Navigation from '@/components/layout/Navigation';
-import { Timer, Star, Clock, CheckCircle, Circle } from 'lucide-react';
+import { Star, Clock, CheckCircle, Circle } from 'lucide-react';
 import { useDatabase, FarmItem } from '@/hooks/useDatabase';
 import ExpansionIcon from '@/components/ui/ExpansionIcon';
-
-interface TimerEvent {
-  id: string;
-  name: string;
-  time: string;
-  days: string[];
-  nextOccurrence: Date;
-  timeRemaining: string;
-}
+import { usePageTitle } from '@/hooks/usePageTitle';
 
 export default function DailyRoutine() {
+  usePageTitle('Daily Routine');
+  
   const { dbService } = useDatabase();
   const [farms, setFarms] = useState<FarmItem[]>([]);
   const [selectedFarms, setSelectedFarms] = useState<Set<string>>(new Set());
-  // const [isLoading, setIsLoading] = useState(true);
 
   // Función para formatear oro correctamente
   const formatGoldDisplay = (goldValue: string | undefined): string => {
@@ -48,74 +41,6 @@ export default function DailyRoutine() {
     return `${goldStr}g ${silverStr}s ${copperStr}c`;
   };
 
-  const [timers, setTimers] = useState<TimerEvent[]>([
-    {
-      id: '1',
-      name: 'Daily Reset',
-      time: '19:00',
-      days: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
-      nextOccurrence: new Date(),
-      timeRemaining: ''
-    },
-    {
-      id: '2',
-      name: 'Weekly Reset',
-      time: '02:30',
-      days: ['Monday'],
-      nextOccurrence: new Date(),
-      timeRemaining: ''
-    }
-  ]);
-
-  // Calcular próxima ocurrencia y tiempo restante
-  const calculateNextOccurrence = useCallback((time: string, days: string[]) => {
-    const now = new Date();
-    const [hours, minutes] = time.split(':').map(Number);
-    
-    // Convertir hora de Colombia (UTC-5) a hora local del usuario
-    const colombiaTime = new Date();
-    colombiaTime.setHours(hours, minutes, 0, 0);
-    
-    // Colombia está en UTC-5, así que agregamos 5 horas para obtener UTC
-    const utcTime = new Date(colombiaTime.getTime() + (5 * 60 * 60 * 1000));
-    
-    // Convertir UTC a hora local del usuario
-    const localTime = new Date(utcTime.getTime() - (now.getTimezoneOffset() * 60 * 1000));
-    
-    const nextDate = new Date();
-    nextDate.setHours(localTime.getHours(), localTime.getMinutes(), 0, 0);
-    
-    // Si ya pasó hoy, buscar el próximo día
-    if (nextDate <= now) {
-      nextDate.setDate(nextDate.getDate() + 1);
-    }
-    
-    // Buscar el próximo día válido
-    const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-    while (!days.includes(dayNames[nextDate.getDay()])) {
-      nextDate.setDate(nextDate.getDate() + 1);
-    }
-    
-    return nextDate;
-  }, []);
-
-  const formatTimeRemaining = useCallback((targetDate: Date) => {
-    const now = new Date();
-    const diff = targetDate.getTime() - now.getTime();
-    
-    if (diff <= 0) return 'Now!';
-    
-    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-    const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-    const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-    const seconds = Math.floor((diff % (1000 * 60)) / 1000);
-    
-    if (days > 0) return `${days}d ${hours}h ${minutes}m`;
-    if (hours > 0) return `${hours}h ${minutes}m ${seconds}s`;
-    if (minutes > 0) return `${minutes}m ${seconds}s`;
-    return `${seconds}s`;
-  }, []);
-
   // Cargar farms desde la base de datos
   useEffect(() => {
     const loadFarms = async () => {
@@ -130,30 +55,6 @@ export default function DailyRoutine() {
     };
     loadFarms();
   }, [dbService]);
-
-  // Inicializar timers solo una vez
-  useEffect(() => {
-    const updatedTimers = timers.map(timer => ({
-      ...timer,
-      nextOccurrence: calculateNextOccurrence(timer.time, timer.days)
-    }));
-    setTimers(updatedTimers);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [calculateNextOccurrence]);
-
-  // Actualizar timers cada segundo
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setTimers(prevTimers => 
-        prevTimers.map(timer => ({
-          ...timer,
-          timeRemaining: formatTimeRemaining(timer.nextOccurrence)
-        }))
-      );
-    }, 1000);
-
-    return () => clearInterval(interval);
-  }, [formatTimeRemaining]);
 
   const toggleFarmSelection = (farmId: string) => {
     setSelectedFarms(prev => {
@@ -176,8 +77,6 @@ export default function DailyRoutine() {
       const minutes = parseInt(parts[1]) || 0;
       const seconds = parseInt(parts[2]) || 0;
       const totalMinutes = hours * 60 + minutes + Math.round(seconds / 60);
-      
-  
       
       return totalMinutes;
     }
@@ -258,74 +157,55 @@ export default function DailyRoutine() {
     return `${goldStr}g ${silverStr}s ${copperStr}c`;
   };
 
-  // Debug: totales finales
-
-
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
       <Navigation />
       
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Header */}
+        {/* Header mejorado */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="text-center mb-8">
-          <h1 className="text-4xl font-bold text-white mb-4">
+          className="text-center mb-12"
+        >
+          <h1 className="text-5xl font-bold bg-gradient-to-r from-blue-400 via-purple-400 to-blue-600 bg-clip-text text-transparent mb-4">
             Daily Routine
           </h1>
-          <p className="text-xl text-gray-300 mb-4">
-            Select your favorite farms and keep track of important events
+          <p className="text-xl text-gray-300 mb-6 max-w-2xl mx-auto">
+            Select your favorite farms and create your perfect daily routine
           </p>
+          
+          {/* Información de reset estática */}
+          <div className="flex justify-center gap-8 text-sm text-gray-400">
+            <div className="flex items-center gap-2">
+              <Clock className="w-4 h-4" />
+              <span>Daily Reset: 19:00 Colombia</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <Clock className="w-4 h-4" />
+              <span>Weekly Reset: 02:30 Colombia (Monday)</span>
+            </div>
+          </div>
         </motion.div>
 
-        <div className="grid grid-cols-1 xl:grid-cols-4 gap-8">
-          {/* Timers de Eventos */}
-          <motion.div
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.2 }}
-            className="xl:col-span-1"
-          >
-            <div className="bg-gray-800 rounded-lg p-6 border border-gray-700">
-              <div className="flex items-center gap-2 mb-6">
-                <Timer className="w-6 h-6 text-blue-400" />
-                <h2 className="text-xl font-bold text-white">Important Events</h2>
-              </div>
-
-              <div className="space-y-4">
-                {timers.map((timer) => (
-                  <div key={timer.id} className="bg-gray-700 rounded-lg p-4 border border-gray-600">
-                    <div className="flex items-center justify-between mb-2">
-                      <h3 className="text-white font-semibold">{timer.name}</h3>
-                    </div>
-                    
-                    <div className="bg-gray-600 rounded-lg p-3 text-center">
-                      <div className="text-2xl font-bold text-blue-400">
-                        {timer.timeRemaining}
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </motion.div>
-
-          {/* Selección de Farms */}
+        <div className="grid grid-cols-1 gap-8">
+          {/* Selección de Farms mejorada */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3 }}
-            className="xl:col-span-3"
+            transition={{ delay: 0.2 }}
+            className="col-span-1"
           >
-            <div className="bg-gradient-to-br from-gray-800 to-gray-900 rounded-xl p-6 border border-gray-600 shadow-xl">
-              <div className="flex items-center justify-between mb-6">
-                <div className="flex items-center gap-2">
-                  <Star className="w-6 h-6 text-blue-400" />
-                  <h2 className="text-xl font-bold text-white">Select your Farms</h2>
+            <div className="bg-gradient-to-br from-gray-800/50 to-gray-900/50 backdrop-blur-sm rounded-2xl p-8 border border-gray-700/50 shadow-2xl">
+              <div className="flex items-center justify-between mb-8">
+                <div className="flex items-center gap-3">
+                  <div className="p-2 bg-blue-500/20 rounded-lg">
+                    <Star className="w-6 h-6 text-blue-400" />
+                  </div>
+                  <h2 className="text-2xl font-bold text-white">Select your Farms</h2>
                 </div>
                 <div className="text-right">
-                  <div className="text-white font-semibold">
+                  <div className="text-white font-semibold text-lg">
                     {selectedFarmsCount} selected
                   </div>
                   <div className="text-gray-400 text-sm">
@@ -334,27 +214,27 @@ export default function DailyRoutine() {
                 </div>
               </div>
 
-              {/* Lista de farms seleccionables */}
-              <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-2 2xl:grid-cols-3 gap-6">
+              {/* Lista de farms seleccionables mejorada */}
+              <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
                 {farms.map((farm) => (
                   <motion.div
                     key={farm.id}
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.3 }}
-                    className={`relative bg-gradient-to-br from-gray-800 to-gray-900 rounded-xl shadow-xl overflow-hidden cursor-pointer transition-all duration-300 p-6 px-8 border ${
+                    className={`relative bg-gradient-to-br from-gray-800/80 to-gray-900/80 backdrop-blur-sm rounded-xl shadow-xl overflow-hidden cursor-pointer transition-all duration-300 p-6 border ${
                       selectedFarms.has(farm.id)
                         ? 'border-blue-400 ring-2 ring-blue-400/30 shadow-blue-500/25 transform scale-105'
                         : 'border-gray-600 hover:border-blue-500/50 hover:shadow-2xl hover:transform hover:scale-[1.02]'
                     }`}
                     onClick={() => toggleFarmSelection(farm.id)}
                   >
-                    {/* Indicador de selección absoluto */}
-                    <div className={`absolute top-3 right-3 transition-all duration-300 ${
+                    {/* Indicador de selección mejorado */}
+                    <div className={`absolute top-4 right-4 transition-all duration-300 ${
                       selectedFarms.has(farm.id) ? 'opacity-100 scale-110' : 'opacity-60 hover:opacity-100'
                     }`}>
                       {selectedFarms.has(farm.id) ? (
-                        <div className="bg-blue-500 rounded-full p-1">
+                        <div className="bg-gradient-to-r from-blue-500 to-blue-600 rounded-full p-1.5 shadow-lg">
                           <CheckCircle className="w-4 h-4 text-white" />
                         </div>
                       ) : (
@@ -362,9 +242,9 @@ export default function DailyRoutine() {
                       )}
                     </div>
 
-                    {/* Header de la tarjeta */}
+                    {/* Header de la tarjeta mejorado */}
                     <div className="mb-4">
-                      <h3 className="text-white font-bold text-lg mb-2 pr-8">{farm.name}</h3>
+                      <h3 className="text-white font-bold text-lg mb-3 pr-12">{farm.name}</h3>
                       <div className="flex gap-1 flex-wrap">
                         {(Array.isArray(farm.expansion) ? farm.expansion : [farm.expansion]).map((exp) => (
                           <div key={exp} className="relative">
@@ -374,22 +254,22 @@ export default function DailyRoutine() {
                       </div>
                     </div>
                     
-                    {/* Descripción */}
+                    {/* Descripción mejorada */}
                     <div className="mb-4">
                       <p className="text-gray-300 text-sm leading-relaxed">{farm.description}</p>
                     </div>
                     
-                    {/* Estadísticas en grid */}
+                    {/* Estadísticas en grid mejoradas */}
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
                       {/* Tiempo - siempre se muestra */}
-                      <div className="bg-blue-500/10 border border-blue-500/20 rounded-lg p-2 flex items-center gap-2">
+                      <div className="bg-blue-500/10 border border-blue-500/20 rounded-lg p-3 flex items-center gap-2">
                         <Clock className="w-4 h-4 text-blue-400 flex-shrink-0" />
                         <span className="text-blue-300 font-medium">{farm.estimatedTime}</span>
                       </div>
                       
                       {/* Oro - solo si tiene valor */}
                       {farm.estimatedGold && farm.estimatedGold.trim() && (
-                        <div className={`bg-yellow-500/10 border border-yellow-500/20 rounded-lg p-2 flex items-center gap-2 ${
+                        <div className={`bg-yellow-500/10 border border-yellow-500/20 rounded-lg p-3 flex items-center gap-2 ${
                           formatGoldDisplay(farm.estimatedGold).length > 8 ? 'sm:col-span-2' : ''
                         }`}>
                           <Image 
@@ -405,7 +285,7 @@ export default function DailyRoutine() {
                       
                       {/* Spirit Shards - solo si tiene valor */}
                       {farm.estimatedSpirit && farm.estimatedSpirit.trim() && (
-                        <div className={`bg-blue-500/10 border border-blue-500/20 rounded-lg p-2 flex items-center gap-2 ${
+                        <div className={`bg-blue-500/10 border border-blue-500/20 rounded-lg p-3 flex items-center gap-2 ${
                           farm.estimatedSpirit.length > 6 ? 'sm:col-span-2' : ''
                         }`}>
                           <Image 
@@ -423,59 +303,61 @@ export default function DailyRoutine() {
                 ))}
               </div>
 
-              {/* Mensaje cuando no hay farms */}
+              {/* Mensaje cuando no hay farms mejorado */}
               {farms.length === 0 && (
                 <motion.div
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
-                  className="text-center py-12"
+                  className="text-center py-16"
                 >
-                  <div className="bg-gray-700 rounded-lg p-8">
-                    <Clock className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-                    <h3 className="text-xl font-semibold text-white mb-2">
+                  <div className="bg-gray-700/50 backdrop-blur-sm rounded-xl p-12 border border-gray-600/50">
+                    <Clock className="w-20 h-20 text-gray-400 mx-auto mb-6" />
+                    <h3 className="text-2xl font-semibold text-white mb-3">
                       No farms available
                     </h3>
-                    <p className="text-gray-400 mb-4">
-                      No farms created.
+                    <p className="text-gray-400 text-lg">
+                      No farms have been created yet.
                     </p>
                   </div>
                 </motion.div>
               )}
 
-              {/* Resumen de Rutina */}
+              {/* Resumen de Rutina mejorado */}
               {selectedFarmsCount > 0 && (
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
-                  className="mt-6 bg-gradient-to-r from-blue-900/50 to-slate-800/50 rounded-xl p-6 border border-blue-400/40 shadow-2xl backdrop-blur-sm"
+                  className="mt-8 bg-gradient-to-r from-blue-900/30 to-purple-900/30 backdrop-blur-sm rounded-2xl p-8 border border-blue-400/30 shadow-2xl"
                 >
-                  <h3 className="font-bold text-xl mb-4 text-center bg-gradient-to-r from-blue-400 to-slate-400 bg-clip-text text-transparent">Your Daily Routine</h3>
-                  <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-5 gap-4 text-center">
-                    <div>
-                      <div className="text-xl font-bold text-blue-400">{selectedFarmsCount}</div>
+                  <h3 className="font-bold text-2xl mb-6 text-center bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
+                    Your Daily Routine Summary
+                  </h3>
+                  <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-5 gap-6 text-center">
+                    <div className="bg-gray-800/50 rounded-xl p-4 border border-gray-600/50">
+                      <div className="text-2xl font-bold text-blue-400 mb-1">{selectedFarmsCount}</div>
                       <div className="text-gray-400 text-sm">Farms</div>
                     </div>
-                    <div>
-                      <div className="text-xl font-bold text-blue-400">{formatMinutesToReadable(totalEstimatedTime)}</div>
+                    <div className="bg-gray-800/50 rounded-xl p-4 border border-gray-600/50">
+                      <div className="text-2xl font-bold text-blue-400 mb-1">{formatMinutesToReadable(totalEstimatedTime)}</div>
                       <div className="text-gray-400 text-sm">Total time</div>
                     </div>
-                    <div>
-                      <div className="flex items-center justify-center gap-2">
-                        <Image 
-                          src="/images/expansions/Gold.png" 
-                          alt="Gold"
-                          width={20}
-                          height={20}
-                          className="w-5 h-5"
-                        />
-                        <div className="text-xl font-bold text-yellow-400 whitespace-nowrap overflow-hidden">
-                          {formatGoldTotal(Math.round(totalEstimatedGold))}
-                        </div>
-                      </div>
-                      <div className="text-gray-400 text-sm">Gold</div>
-                    </div>
-                    <div>
-                      <div className="flex items-center justify-center gap-2">
+                                         <div className="bg-gray-800/50 rounded-xl p-4 border border-gray-600/50">
+                       <div className="flex items-center justify-center gap-2 mb-1">
+                         <Image 
+                           src="/images/expansions/Gold.png" 
+                           alt="Gold"
+                           width={20}
+                           height={20}
+                           className="w-5 h-5"
+                         />
+                         <div className="text-xl font-bold text-yellow-400 whitespace-nowrap">
+                           {formatGoldTotal(Math.round(totalEstimatedGold))}
+                         </div>
+                       </div>
+                       <div className="text-gray-400 text-sm">Gold</div>
+                     </div>
+                    <div className="bg-gray-800/50 rounded-xl p-4 border border-gray-600/50">
+                      <div className="flex items-center justify-center gap-2 mb-1">
                         <Image 
                           src="/images/expansions/Spirit_Shard.png" 
                           alt="Spirit Shard"
@@ -483,14 +365,14 @@ export default function DailyRoutine() {
                           height={20}
                           className="w-5 h-5"
                         />
-                        <div className="text-xl font-bold text-blue-400">
+                        <div className="text-2xl font-bold text-blue-400">
                           {Math.round(totalSpiritShards)}
                         </div>
                       </div>
-                      <div className="text-gray-400 text-sm">SS</div>
+                      <div className="text-gray-400 text-sm">Spirit Shards</div>
                     </div>
-                    <div>
-                      <div className="text-xl font-bold text-blue-400">
+                    <div className="bg-gray-800/50 rounded-xl p-4 border border-gray-600/50">
+                      <div className="text-2xl font-bold text-blue-400 mb-1">
                         {Math.round((selectedFarmsCount / farms.length) * 100)}%
                       </div>
                       <div className="text-gray-400 text-sm">Completed</div>

@@ -5,11 +5,12 @@ import { motion } from 'framer-motion';
 import Image from 'next/image';
 import Navigation from '@/components/layout/Navigation';
 import AdminRoute from '@/components/auth/AdminRoute';
-import { Plus, Edit, Trash2, Save, X, Map, Clock, Users, CheckCircle, Calendar, User as UserIcon, AlertCircle } from 'lucide-react';
+import { Plus, Edit, Trash2, Save, X, Map, Clock, Users, CheckCircle, Calendar, User as UserIcon, AlertCircle, Copy, User } from 'lucide-react';
 import { validateEmailFormat } from '@/utils/emailValidation';
 import { useDatabase, FarmItem, User as UserType } from '@/hooks/useDatabase';
 import { useAuth } from '@/contexts/AuthContext';
 import ExpansionIcon from '@/components/ui/ExpansionIcon';
+import GW2Icon from '@/components/ui/GW2Icon';
 
 type AdminSection = 'farms' | 'users' | 'pending-farms';
 
@@ -24,7 +25,35 @@ export default function AdminPanel() {
   const [isLoadingPendingFarms, setIsLoadingPendingFarms] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [userToDelete, setUserToDelete] = useState<UserType | null>(null);
+  const [users, setUsers] = useState<UserType[]>([]);
+  const [pendingFarms, setPendingFarms] = useState<FarmItem[]>([]);
+  const [editingUser, setEditingUser] = useState<UserType | null>(null);
+  const [newUser, setNewUser] = useState({
+    username: '',
+    email: '',
+    role: 'user' as 'user' | 'admin' | 'moderator',
+    isActive: true
+  });
   const [editingFarm, setEditingFarm] = useState<FarmItem | null>(null);
+  const [editingSelectedCurrencies, setEditingSelectedCurrencies] = useState<string[]>(['gold']);
+  
+  // Estados para crear farm
+  const [selectedCurrencies, setSelectedCurrencies] = useState<string[]>(['gold']);
+  const [newFarm, setNewFarm] = useState({
+    name: '',
+    description: '',
+    estimatedTime: '',
+    estimatedGold: '',
+    estimatedSpirit: '',
+    estimatedRewards: {} as Record<string, string>,
+    expansion: [] as string[],
+    waypoint: '',
+    isSolo: false,
+    requiresSquad: false,
+    createdBy: '',
+    status: 'approved' as const,
+    selected: false
+  });
   
   // Modal state
   const [modal, setModal] = useState<{
@@ -75,48 +104,9 @@ export default function AdminPanel() {
     return `${cleaned.slice(0, 2)}:${cleaned.slice(2, 4)}:${cleaned.slice(4, 6)}`;
   };
 
-  // Función para formatear oro a formato GW2 (G S C)
-  const formatGoldInput = (value: string): string => {
-    // Remover todo excepto números y espacios
-    const cleaned = value.replace(/[^\d\s]/g, '').trim();
-    if (!cleaned) return '';
-    
-    // Si solo son números, asumir cobre
-    if (/^\d+$/.test(cleaned)) {
-      const copper = parseInt(cleaned);
-      const gold = Math.floor(copper / 10000);
-      const silver = Math.floor((copper % 10000) / 100);
-      const remainingCopper = copper % 100;
-      
-      // Siempre mostrar formato completo con ceros a la izquierda
-      const goldStr = gold.toString();
-      const silverStr = silver.toString().padStart(2, '0');
-      const copperStr = remainingCopper.toString().padStart(2, '0');
-      
-      return `${goldStr}g ${silverStr}s ${copperStr}c`;
-    }
-    
-    return value;
-  };
 
-  // Manejar cambio de oro con formato GW2
-  const handleGoldChange = (value: string, isEdit = false) => {
-    if (isEdit && editingFarm) {
-      setEditingFarm({...editingFarm, estimatedGold: value});
-    } else {
-      setNewFarm({...newFarm, estimatedGold: value});
-    }
-  };
 
-  // Formatear oro al perder el foco
-  const formatGoldOnBlur = (value: string, isEdit = false) => {
-    const formatted = formatGoldInput(value);
-    if (isEdit && editingFarm) {
-      setEditingFarm({...editingFarm, estimatedGold: formatted});
-    } else {
-      setNewFarm({...newFarm, estimatedGold: formatted});
-    }
-  };
+
 
   // Manejar cambio de tiempo
   const handleTimeChange = (value: string, isEdit = false) => {
@@ -134,16 +124,109 @@ export default function AdminPanel() {
     }
   };
 
-  // Manejar Spirit Shards
-  const handleSpiritChange = (value: string, isEdit = false) => {
-    // Solo permitir números
-    const cleaned = value.replace(/[^\d]/g, '');
-    if (isEdit && editingFarm) {
-      setEditingFarm({...editingFarm, estimatedSpirit: cleaned});
-    } else {
-      setNewFarm({...newFarm, estimatedSpirit: cleaned});
+
+
+  const copyWaypointToClipboard = async (waypoint: string) => {
+    try {
+      await navigator.clipboard.writeText(waypoint);
+      showSuccess('Copiado', 'Waypoint copiado al portapapeles');
+    } catch (error) {
+      console.error('Error copying to clipboard:', error);
+      showError('Error', 'No se pudo copiar el waypoint al portapapeles');
     }
   };
+
+  // Función para formatear oro automáticamente mientras el usuario escribe
+  const formatGoldInput = (value: string): string => {
+    // Remover todo excepto números
+    const numbersOnly = value.replace(/[^\d]/g, '');
+    
+    if (!numbersOnly) return '';
+    
+    // Padear con ceros a la izquierda para tener al menos 6 dígitos (GGSSCC)
+    const paddedValue = numbersOnly.padStart(6, '0');
+    
+    // Interpretar como formato posicional: últimos 6 dígitos son GGSSCC
+    const lastSixDigits = paddedValue.slice(-6);
+    const gold = parseInt(lastSixDigits.slice(0, 2)) || 0;
+    const silver = parseInt(lastSixDigits.slice(2, 4)) || 0;
+    const copper = parseInt(lastSixDigits.slice(4, 6)) || 0;
+    
+    // Si hay más de 6 dígitos, los primeros son oro adicional
+    if (paddedValue.length > 6) {
+      const extraGoldDigits = paddedValue.slice(0, -6);
+      const extraGold = parseInt(extraGoldDigits) || 0;
+      const totalGold = extraGold * 100 + gold;
+      
+      const silverFormatted = silver.toString().padStart(2, '0');
+      const copperFormatted = copper.toString().padStart(2, '0');
+      return `${totalGold}g ${silverFormatted}s ${copperFormatted}c`;
+    }
+    
+    // Construir el string formateado
+    let result = '';
+    if (gold > 0) {
+      // Formatear con ceros a la izquierda cuando hay oro: 15g 00s 00c
+      const silverFormatted = silver.toString().padStart(2, '0');
+      const copperFormatted = copper.toString().padStart(2, '0');
+      result += `${gold}g ${silverFormatted}s ${copperFormatted}c`;
+    } else if (silver > 0) {
+      // Para solo plata, usar padding: 00s 25c
+      const copperFormatted = copper.toString().padStart(2, '0');
+      result += `${silver.toString().padStart(2, '0')}s ${copperFormatted}c`;
+    } else {
+      // Para solo cobre: 00c
+      result += `${copper.toString().padStart(2, '0')}c`;
+    }
+    
+    return result.trim();
+  };
+
+  // Funciones para manejar cambios de monedas
+  const handleCurrencyChange = (currency: string, value: string) => {
+    // Formatear oro automáticamente
+    let formattedValue = value;
+    if (currency === 'gold' && value) {
+      formattedValue = formatGoldInput(value);
+    }
+    
+    setNewFarm({
+      ...newFarm,
+      estimatedRewards: {
+        ...newFarm.estimatedRewards,
+        [currency]: formattedValue
+      }
+    });
+  };
+
+  const handleEditingCurrencyChange = (currency: string, value: string) => {
+    if (!editingFarm) return;
+    
+    // Formatear oro automáticamente
+    let formattedValue = value;
+    if (currency === 'gold' && value) {
+      formattedValue = formatGoldInput(value);
+    }
+    
+    setEditingFarm({
+      ...editingFarm,
+      estimatedRewards: {
+        ...editingFarm.estimatedRewards,
+        [currency]: formattedValue
+      }
+    });
+  };
+
+  const currencyOptions = [
+    { value: 'gold', label: 'Oro', icon: 'gold' as const, placeholder: 'Escribe: 150025 → 15g 00s 25c' },
+    { value: 'spiritShards', label: 'Spirit Shards', icon: 'spirit-shard' as const, placeholder: '25' },
+    { value: 'imperialFavor', label: 'Imperial Favor', icon: 'imperial-favor' as const, placeholder: '50' },
+    { value: 'experience', label: 'Experiencia', icon: 'gold' as const, placeholder: '50000' },
+    { value: 'laurels', label: 'Laureles', icon: 'gold' as const, placeholder: '5' },
+    { value: 'otherCurrency', label: 'Otra Moneda', icon: 'gold' as const, placeholder: 'Especifica' }
+  ];
+
+
 
   // Manejar selección múltiple de expansiones
   const handleExpansionToggle = (expansionValue: 'core' | 'hot' | 'pof' | 'eod' | 'soto' | 'jw', isEdit = false) => {
@@ -174,17 +257,7 @@ export default function AdminPanel() {
     }
   };
 
-  const [newFarm, setNewFarm] = useState<Omit<FarmItem, 'id' | 'createdAt' | 'updatedAt'>>({
-    name: '',
-    description: '',
-    estimatedTime: '',
-    estimatedGold: '',
-    estimatedSpirit: '',
-    expansion: [],
-    selected: false,
-    status: 'approved',
-    createdBy: ''
-  });
+
 
   // Actualizar createdBy cuando el usuario esté disponible
   useEffect(() => {
@@ -218,20 +291,25 @@ export default function AdminPanel() {
     
     // Validar campos requeridos
     if (!newFarm.name.trim() || !newFarm.description.trim() || !newFarm.estimatedTime.trim()) {
-      showError('Validation Error', 'Name, description and time are required fields');
+      showError('Error de Validación', 'Nombre, descripción y tiempo son campos requeridos');
       return;
     }
 
-    // Validar que al menos oro o spirit shards esté presente
-    if (!newFarm.estimatedGold.trim() && !newFarm.estimatedSpirit?.trim()) {
-      showError('Validation Error', 'You must specify at least estimated gold or spirit shards');
+    // Verificar que al menos una recompensa esté especificada (formato antiguo o nuevo)
+    const hasOldRewards = newFarm.estimatedGold?.trim() || newFarm.estimatedSpirit?.trim();
+    const hasNewRewards = Object.values(newFarm.estimatedRewards).some(value => value && value.trim() !== '');
+    
+    if (!hasOldRewards && !hasNewRewards) {
+      showError('Error de Validación', 'Debes especificar al menos una recompensa estimada');
       return;
     }
 
     try {
-
       await dbService.createFarm({
         ...newFarm,
+        // Mapear nuevas recompensas a campos legacy para compatibilidad
+        estimatedGold: newFarm.estimatedGold || newFarm.estimatedRewards.gold || '',
+        estimatedSpirit: newFarm.estimatedSpirit || newFarm.estimatedRewards.spiritShards || '',
         createdByRole: 'admin'
       });
       
@@ -242,16 +320,21 @@ export default function AdminPanel() {
         estimatedTime: '',
         estimatedGold: '',
         estimatedSpirit: '',
+        estimatedRewards: {},
         expansion: [],
+        isSolo: false,
+        requiresSquad: false,
+        waypoint: '',
         selected: false,
         status: 'approved',
         createdBy: user?.id || prev.createdBy
       }));
 
+      setSelectedCurrencies(['gold']);
       setIsCreating(false);
       await loadFarms();
       
-      showSuccess('Success!', `Farm "${newFarm.name}" created successfully`);
+      showSuccess('¡Éxito!', `Farm "${newFarm.name}" creado exitosamente`);
     } catch (err) {
       console.error('Error creating farm:', err);
       showError('Error', 'Could not create the farm. Please try again.');
@@ -268,9 +351,15 @@ export default function AdminPanel() {
       return;
     }
 
-    // Validar que al menos oro o spirit shards esté presente
-    if (!editingFarm.estimatedGold.trim() && !editingFarm.estimatedSpirit?.trim()) {
-      showError('Validation Error', 'You must specify at least estimated gold or spirit shards');
+    // Validar que al menos una recompensa esté presente
+    const hasRewards = editingFarm.estimatedRewards && 
+      Object.values(editingFarm.estimatedRewards).some((value: unknown) => 
+        typeof value === 'string' && value.trim() !== ''
+      );
+    const hasLegacyRewards = editingFarm.estimatedGold?.trim() || editingFarm.estimatedSpirit?.trim();
+    
+    if (!hasRewards && !hasLegacyRewards) {
+      showError('Validation Error', 'You must specify at least one reward type');
       return;
     }
 
@@ -291,8 +380,11 @@ export default function AdminPanel() {
         estimatedTime: editingFarm.estimatedTime,
         estimatedGold: editingFarm.estimatedGold,
         estimatedSpirit: editingFarm.estimatedSpirit,
-        expansion: editingFarm.expansion
-
+        estimatedRewards: editingFarm.estimatedRewards,
+        expansion: editingFarm.expansion,
+        isSolo: editingFarm.isSolo,
+        requiresSquad: editingFarm.requiresSquad,
+        waypoint: editingFarm.waypoint
       });
       
       const farmName = editingFarm.name;
@@ -325,21 +417,9 @@ export default function AdminPanel() {
     }
   };
 
-  // Estados para usuarios
-  const [users, setUsers] = useState<UserType[]>([]);
+  // Estados adicionales para usuarios (ya declarados arriba)
   const [isLoadingUsers, setIsLoadingUsers] = useState(false);
-  const [editingUser, setEditingUser] = useState<UserType | null>(null);
   const [userSearchQuery, setUserSearchQuery] = useState('');
-  const [newUser, setNewUser] = useState({
-    email: '',
-    username: '',
-    password: '',
-    role: 'user' as 'user' | 'admin' | 'moderator',
-    isActive: true
-  });
-
-  // Estados para farms pendientes
-  const [pendingFarms, setPendingFarms] = useState<FarmItem[]>([]);
 
   // Cargar usuarios
   const loadUsers = useCallback(async () => {
@@ -359,8 +439,8 @@ export default function AdminPanel() {
   const handleCreateUser = async () => {
     if (!dbService) return;
     
-    if (!newUser.email.trim() || !newUser.username.trim() || !newUser.password.trim()) {
-      showError('Validation Error', 'Email, username and password are required');
+    if (!newUser.email.trim() || !newUser.username.trim()) {
+      showError('Validation Error', 'Email and username are required');
       return;
     }
 
@@ -377,7 +457,6 @@ export default function AdminPanel() {
       setNewUser({
         email: '',
         username: '',
-        password: '',
         role: 'user' as 'user' | 'admin' | 'moderator',
         isActive: true
       });
@@ -578,7 +657,7 @@ export default function AdminPanel() {
       {/* Create Farm Button */}
       <div className="flex justify-between items-center">
         <h2 className="text-2xl font-bold text-white">Gestión de Farms</h2>
-        {!isCreating && (
+        {!isCreating && !editingFarm && (
           <button
             onClick={() => setIsCreating(true)}
             className="flex items-center gap-2 px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors"
@@ -625,7 +704,7 @@ export default function AdminPanel() {
               />
             </div>
 
-            <div className="grid grid-cols-3 gap-4">
+            <div className="grid grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-medium text-gray-300 mb-2">
                   Tiempo Estimado
@@ -639,48 +718,127 @@ export default function AdminPanel() {
                 />
                 <p className="text-xs text-gray-400 mt-1">6 dígitos: HHMMSS (ej: 013000 = 01:30:00)</p>
               </div>
-              
-              <div>
-                <label className="flex items-center gap-2 text-sm font-medium text-gray-300 mb-2">
-                  <Image 
-                    src="/images/expansions/Gold.png" 
-                    alt="Gold"
-                    width={20}
-                    height={20}
-                    className="w-5 h-5"
-                  />
-                  Oro Estimado <span className="text-yellow-500">(opcional*)</span>
-                </label>
-                <input
-                  type="text"
-                  value={newFarm.estimatedGold}
-                  onChange={(e) => handleGoldChange(e.target.value)}
-                  onBlur={(e) => formatGoldOnBlur(e.target.value)}
-                  className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-purple-500"
-                  placeholder="15g 50s 25c/h"
-                />
-                <p className="text-xs text-gray-400 mt-1">Formato: XgYsZc</p>
-              </div>
 
               <div>
-                <label className="flex items-center gap-2 text-sm font-medium text-gray-300 mb-2">
-                  <Image 
-                    src="/images/expansions/Spirit_Shard.png" 
-                    alt="Spirit Shard"
-                    width={20}
-                    height={20}
-                    className="w-5 h-5"
-                  />
-                  Spirit Shards <span className="text-purple-500">(opcional*)</span>
+                <label className="block text-sm font-medium text-gray-300 mb-2">
+                  Waypoint
                 </label>
+                <div className="flex gap-2">
+                  <input
+                    type="text"
+                    value={newFarm.waypoint || ''}
+                    onChange={(e) => setNewFarm({...newFarm, waypoint: e.target.value})}
+                    className="flex-1 px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-purple-500"
+                    placeholder="[&AQAAAA==]"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => newFarm.waypoint && copyWaypointToClipboard(newFarm.waypoint)}
+                    disabled={!newFarm.waypoint}
+                    className="px-3 py-2 bg-purple-600 hover:bg-purple-700 disabled:bg-gray-600 disabled:opacity-50 text-white rounded-lg transition-colors"
+                    title="Copiar waypoint"
+                  >
+                    <Copy className="w-4 h-4" />
+                  </button>
+                </div>
+                <p className="text-xs text-gray-400 mt-1">Chat code del waypoint (opcional)</p>
+              </div>
+            </div>
+
+            {/* Checkboxes para Solo/Squad */}
+            <div className="grid grid-cols-2 gap-4">
+              <label className="flex items-center gap-2 p-3 bg-gray-700 rounded-lg border border-gray-600 hover:border-purple-500 cursor-pointer">
                 <input
-                  type="text"
-                  value={newFarm.estimatedSpirit}
-                  onChange={(e) => handleSpiritChange(e.target.value)}
-                  className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-purple-500"
-                  placeholder="25"
+                  type="checkbox"
+                  checked={newFarm.isSolo}
+                  onChange={(e) => setNewFarm({...newFarm, isSolo: e.target.checked})}
+                  className="w-4 h-4 text-purple-600 bg-gray-700 border-gray-600 rounded focus:ring-purple-500"
                 />
-                <p className="text-xs text-gray-400 mt-1">Cantidad por hora</p>
+                <span className="text-white">Farm Solitario</span>
+              </label>
+              
+              <label className="flex items-center gap-2 p-3 bg-gray-700 rounded-lg border border-gray-600 hover:border-purple-500 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={newFarm.requiresSquad}
+                  onChange={(e) => setNewFarm({...newFarm, requiresSquad: e.target.checked})}
+                  className="w-4 h-4 text-purple-600 bg-gray-700 border-gray-600 rounded focus:ring-purple-500"
+                />
+                <span className="text-white">Requiere Squad</span>
+              </label>
+            </div>
+
+            {/* Sistema de Monedas */}
+            <div className="space-y-4">
+              <label className="block text-sm font-medium text-gray-300 mb-2">
+                Recompensas Estimadas (por hora)
+              </label>
+              
+              {/* Tipos de Moneda */}
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-3">
+                  Tipos de Moneda
+                </label>
+                <div className="grid grid-cols-2 gap-3">
+                  {currencyOptions.map((option) => (
+                    <div key={option.value} className="flex items-center gap-3 p-3 bg-gray-700 rounded-lg border border-gray-600">
+                      <input
+                        type="checkbox"
+                        checked={selectedCurrencies.includes(option.value)}
+                        onChange={(e) => {
+                          if (e.target.checked) {
+                            setSelectedCurrencies(prev => [...prev, option.value]);
+                          } else {
+                            setSelectedCurrencies(prev => prev.filter(c => c !== option.value));
+                            setNewFarm(currentFarm => ({
+                              ...currentFarm,
+                              estimatedRewards: {
+                                ...currentFarm.estimatedRewards,
+                                [option.value]: ''
+                              }
+                            }));
+                          }
+                        }}
+                        className="w-4 h-4 text-purple-600 bg-gray-700 border-gray-600 rounded focus:ring-purple-500"
+                      />
+                      <GW2Icon type={option.icon} size="sm" />
+                      <span className="text-white text-sm min-w-0 flex-shrink-0">{option.label}</span>
+                      <input
+                        type={option.value === 'gold' ? 'text' : 'number'}
+                        min={option.value === 'gold' ? undefined : '0'}
+                        step={option.value === 'gold' ? undefined : '0.01'}
+                        value={newFarm.estimatedRewards[option.value as keyof typeof newFarm.estimatedRewards] || ''}
+                        onChange={(e) => {
+                          const value = e.target.value;
+                          
+                          if (option.value === 'gold') {
+                            // Para oro, permitir solo números y formatear automáticamente
+                            const numbersOnly = value.replace(/[^\d]/g, '');
+                            if (numbersOnly.length <= 10) { // Limitar a 10 dígitos max
+                              handleCurrencyChange(option.value, numbersOnly);
+                              // Auto-seleccionar el checkbox si se escribe algo
+                              if (numbersOnly && !selectedCurrencies.includes(option.value)) {
+                                setSelectedCurrencies(prev => [...prev, option.value]);
+                              }
+                            }
+                          } else {
+                            // Para otras monedas, lógica normal
+                            if (value === '' || (!isNaN(Number(value)) && Number(value) >= 0)) {
+                              handleCurrencyChange(option.value, value);
+                              // Auto-seleccionar el checkbox si se escribe algo
+                              if (value && !selectedCurrencies.includes(option.value)) {
+                                setSelectedCurrencies(prev => [...prev, option.value]);
+                              }
+                            }
+                          }
+                        }}
+                        className="flex-1 px-2 py-1 bg-gray-600 border border-gray-500 rounded text-white text-sm focus:outline-none focus:border-purple-500"
+                        placeholder={option.placeholder}
+                      />
+                    </div>
+                  ))}
+                </div>
+                <p className="text-xs text-gray-400 mt-2">Selecciona uno o más tipos de recompensa</p>
               </div>
             </div>
             
@@ -716,7 +874,10 @@ export default function AdminPanel() {
             {/* Nota explicativa */}
             <div className="bg-blue-900/30 border border-blue-500/30 rounded-lg p-3 mt-4">
               <p className="text-blue-300 text-sm">
-                <strong>*</strong> Debe especificar al menos oro <strong>o</strong> spirit shards. Algunos farms generan solo oro, otros solo spirit shards, y algunos ambos.
+                <strong>Recompensas:</strong> Debes especificar al menos una recompensa estimada. Puedes agregar múltiples tipos de monedas según lo que genere el farm. Utiliza el selector para elegir el tipo de moneda y especifica la cantidad por hora.
+              </p>
+              <p className="text-blue-300 text-sm mt-2">
+                <strong>Modalidad:</strong> Marca si el farm se puede hacer solo, si requiere squad, o ambos. El waypoint es opcional pero recomendado para facilitar el acceso.
               </p>
             </div>
             
@@ -756,7 +917,7 @@ export default function AdminPanel() {
               </label>
               <input
                 type="text"
-                value={editingFarm.name}
+                value={editingFarm.name || ''}
                 onChange={(e) => setEditingFarm({...editingFarm, name: e.target.value})}
                 className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-purple-500"
               />
@@ -767,70 +928,150 @@ export default function AdminPanel() {
                 Descripción
               </label>
               <textarea
-                value={editingFarm.description}
+                value={editingFarm.description || ''}
                 onChange={(e) => setEditingFarm({...editingFarm, description: e.target.value})}
                 className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-purple-500"
                 rows={3}
               />
             </div>
 
-            <div className="grid grid-cols-3 gap-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-300 mb-2">
-                  Tiempo Estimado
-                </label>
+            {/* Waypoint */}
+            <div>
+              <label className="block text-sm font-medium text-gray-300 mb-2">
+                Waypoint (opcional)
+              </label>
+              <div className="flex gap-2">
                 <input
                   type="text"
-                  value={editingFarm.estimatedTime}
-                  onChange={(e) => handleTimeChange(e.target.value, true)}
-                  className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-purple-500"
-                  placeholder="010000 → 01:00:00"
+                  value={editingFarm.waypoint || ''}
+                  onChange={(e) => setEditingFarm({...editingFarm, waypoint: e.target.value})}
+                  className="flex-1 px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-purple-500"
+                  placeholder="[&BBAHAAA=]"
                 />
-                <p className="text-xs text-gray-400 mt-1">6 dígitos: HHMMSS (ej: 013000 = 01:30:00)</p>
+                {editingFarm.waypoint && (
+                  <button
+                    type="button"
+                    onClick={() => copyWaypointToClipboard(editingFarm.waypoint!)}
+                    className="flex items-center gap-1 px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors"
+                  >
+                    <Copy className="w-4 h-4" />
+                  </button>
+                )}
               </div>
-              
-              <div>
-                <label className="flex items-center gap-2 text-sm font-medium text-gray-300 mb-2">
-                  <Image 
-                    src="/images/expansions/Gold.png" 
-                    alt="Gold"
-                    width={20}
-                    height={20}
-                    className="w-5 h-5"
-                  />
-                  Oro Estimado <span className="text-yellow-500">(opcional*)</span>
-                </label>
-                <input
-                  type="text"
-                  value={editingFarm.estimatedGold}
-                  onChange={(e) => handleGoldChange(e.target.value, true)}
-                  onBlur={(e) => formatGoldOnBlur(e.target.value, true)}
-                  className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-purple-500"
-                  placeholder="15g 50s 25c/h"
-                />
-                <p className="text-xs text-gray-400 mt-1">Formato: XgYsZc</p>
-              </div>
+              <p className="text-xs text-gray-400 mt-1">Chat code del waypoint para acceder al farm</p>
+            </div>
 
-              <div>
-                <label className="flex items-center gap-2 text-sm font-medium text-gray-300 mb-2">
-                  <Image 
-                    src="/images/expansions/Spirit_Shard.png" 
-                    alt="Spirit Shard"
-                    width={20}
-                    height={20}
-                    className="w-5 h-5"
+            {/* Modalidad del Farm */}
+            <div>
+              <label className="block text-sm font-medium text-gray-300 mb-3">
+                Modalidad del Farm
+              </label>
+              <div className="flex gap-4">
+                <label className="flex items-center gap-2 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={editingFarm.isSolo || false}
+                    onChange={(e) => setEditingFarm({...editingFarm, isSolo: e.target.checked})}
+                    className="w-4 h-4 text-green-600 bg-gray-700 border-gray-600 rounded focus:ring-green-500"
                   />
-                  Spirit Shards <span className="text-purple-500">(opcional*)</span>
+                  <span className="text-white text-sm">Farm Solitario</span>
                 </label>
-                <input
-                  type="text"
-                  value={editingFarm.estimatedSpirit || ''}
-                  onChange={(e) => handleSpiritChange(e.target.value, true)}
-                  className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-purple-500"
-                  placeholder="25"
-                />
-                <p className="text-xs text-gray-400 mt-1">Cantidad por hora</p>
+                
+                <label className="flex items-center gap-2 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={editingFarm.requiresSquad || false}
+                    onChange={(e) => setEditingFarm({...editingFarm, requiresSquad: e.target.checked})}
+                    className="w-4 h-4 text-purple-600 bg-gray-700 border-gray-600 rounded focus:ring-purple-500"
+                  />
+                  <span className="text-white text-sm">Requiere Squad</span>
+                </label>
               </div>
+            </div>
+
+            {/* Tiempo Estimado */}
+            <div>
+              <label className="block text-sm font-medium text-gray-300 mb-2">
+                Tiempo Estimado
+              </label>
+              <input
+                type="text"
+                value={editingFarm.estimatedTime || ''}
+                onChange={(e) => handleTimeChange(e.target.value, true)}
+                className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-purple-500"
+                placeholder="010000 → 01:00:00"
+              />
+              <p className="text-xs text-gray-400 mt-1">6 dígitos: HHMMSS (ej: 013000 = 01:30:00)</p>
+            </div>
+
+            {/* Tipos de Moneda con inputs directos */}
+            <div>
+              <label className="block text-sm font-medium text-gray-300 mb-3">
+                Tipos de Moneda
+              </label>
+              <div className="grid grid-cols-2 gap-3">
+                {currencyOptions.map((option) => (
+                  <div key={option.value} className="flex items-center gap-3 p-3 bg-gray-700 rounded-lg border border-gray-600">
+                    <input
+                      type="checkbox"
+                      checked={editingSelectedCurrencies.includes(option.value)}
+                      onChange={(e) => {
+                        if (e.target.checked) {
+                          setEditingSelectedCurrencies(prev => [...prev, option.value]);
+                        } else {
+                          setEditingSelectedCurrencies(prev => prev.filter(c => c !== option.value));
+                          // Limpiar el valor cuando se deselecciona
+                          if (editingFarm) {
+                            setEditingFarm(prev => ({
+                              ...prev!,
+                              estimatedRewards: {
+                                ...prev!.estimatedRewards,
+                                [option.value]: ''
+                              }
+                            }));
+                          }
+                        }
+                      }}
+                      className="w-4 h-4 text-purple-600 bg-gray-700 border-gray-600 rounded focus:ring-purple-500"
+                    />
+                    <GW2Icon type={option.icon} size="sm" />
+                    <span className="text-white text-sm min-w-0 flex-shrink-0">{option.label}</span>
+                    <input
+                      type={option.value === 'gold' ? 'text' : 'number'}
+                      min={option.value === 'gold' ? undefined : '0'}
+                      step={option.value === 'gold' ? undefined : '0.01'}
+                      value={editingFarm.estimatedRewards?.[option.value as keyof typeof editingFarm.estimatedRewards] || ''}
+                      onChange={(e) => {
+                        const value = e.target.value;
+                        
+                        if (option.value === 'gold') {
+                          // Para oro, permitir solo números y formatear automáticamente
+                          const numbersOnly = value.replace(/[^\d]/g, '');
+                          if (numbersOnly.length <= 10) { // Limitar a 10 dígitos max
+                            handleEditingCurrencyChange(option.value, numbersOnly);
+                            // Auto-seleccionar el checkbox si se escribe algo
+                            if (numbersOnly && !editingSelectedCurrencies.includes(option.value)) {
+                              setEditingSelectedCurrencies(prev => [...prev, option.value]);
+                            }
+                          }
+                        } else {
+                          // Para otras monedas, lógica normal
+                          if (value === '' || (!isNaN(Number(value)) && Number(value) >= 0)) {
+                            handleEditingCurrencyChange(option.value, value);
+                            // Auto-seleccionar el checkbox si se escribe algo
+                            if (value && !editingSelectedCurrencies.includes(option.value)) {
+                              setEditingSelectedCurrencies(prev => [...prev, option.value]);
+                            }
+                          }
+                        }
+                      }}
+                      className="flex-1 px-2 py-1 bg-gray-600 border border-gray-500 rounded text-white text-sm focus:outline-none focus:border-purple-500"
+                      placeholder={option.placeholder}
+                    />
+                  </div>
+                ))}
+              </div>
+              <p className="text-xs text-gray-400 mt-2">Selecciona uno o más tipos de recompensa</p>
             </div>
             
             <div>
@@ -927,27 +1168,65 @@ export default function AdminPanel() {
                   <Clock className="w-4 h-4 text-blue-400" />
                   <span className="text-blue-400">{farm.estimatedTime}</span>
                 </div>
-                {farm.estimatedGold && farm.estimatedGold.trim() && (
+                
+                {/* Mostrar modalidad */}
+                <div className="flex gap-2">
+                  {farm.isSolo && (
+                    <span className="px-2 py-1 bg-green-600 text-white text-xs rounded-full flex items-center gap-1">
+                      <User className="w-3 h-3" />
+                      Solo
+                    </span>
+                  )}
+                  {farm.requiresSquad && (
+                    <span className="px-2 py-1 bg-purple-600 text-white text-xs rounded-full flex items-center gap-1">
+                      <Users className="w-3 h-3" />
+                      Squad
+                    </span>
+                  )}
+                </div>
+              </div>
+
+              {/* Waypoint */}
+              {farm.waypoint && (
+                <div className="flex items-center gap-2 mb-3">
+                  <span className="text-sm text-gray-500">Waypoint:</span>
+                  <div className="flex items-center gap-1 px-2 py-1 bg-gray-700 rounded text-blue-400 text-sm">
+                    <span className="font-mono">{farm.waypoint}</span>
+                    <Copy className="w-3 h-3" />
+                  </div>
+                </div>
+              )}
+
+              {/* Recompensas estimadas */}
+              <div className="flex items-center gap-4 text-sm mb-3">
+                {/* Mostrar estimatedRewards (nuevo sistema) */}
+                {farm.estimatedRewards && Object.entries(farm.estimatedRewards).map(([currencyType, value]) => {
+                  if (!value || !value.trim()) return null;
+                  
+                  const currencyConfig = currencyOptions.find(c => c.value === currencyType);
+                  if (!currencyConfig) return null;
+
+                  return (
+                    <div key={currencyType} className="flex items-center gap-1">
+                      <GW2Icon type={currencyConfig.icon} size="sm" />
+                      <span className="text-white">{value}</span>
+                    </div>
+                  );
+                })}
+                
+                {/* Backward compatibility - mostrar legacy fields si no están duplicados en estimatedRewards */}
+                {farm.estimatedGold && farm.estimatedGold.trim() && 
+                 (!farm.estimatedRewards || !farm.estimatedRewards.gold || !farm.estimatedRewards.gold.trim()) && (
                   <div className="flex items-center gap-1">
-                    <Image 
-                      src="/images/expansions/Gold.png" 
-                      alt="Gold"
-                      width={16}
-                      height={16}
-                      className="w-4 h-4"
-                    />
+                    <GW2Icon type="gold" size="sm" />
                     <span className="text-yellow-400">{farm.estimatedGold}</span>
                   </div>
                 )}
-                {farm.estimatedSpirit && farm.estimatedSpirit.trim() && (
+                
+                {farm.estimatedSpirit && farm.estimatedSpirit.trim() && 
+                 (!farm.estimatedRewards || !farm.estimatedRewards.spiritShards || !farm.estimatedRewards.spiritShards.trim()) && (
                   <div className="flex items-center gap-1">
-                    <Image 
-                      src="/images/expansions/Spirit_Shard.png" 
-                      alt="Spirit Shard"
-                      width={16}
-                      height={16}
-                      className="w-4 h-4"
-                    />
+                    <GW2Icon type="spirit-shard" size="sm" />
                     <span className="text-purple-400">{farm.estimatedSpirit}</span>
                   </div>
                 )}
@@ -959,10 +1238,31 @@ export default function AdminPanel() {
                     // Asegurar que expansion esté en formato array
                     const farmToEdit = {
                       ...farm,
-                      expansion: Array.isArray(farm.expansion) ? farm.expansion : [farm.expansion]
+                      expansion: Array.isArray(farm.expansion) ? farm.expansion : [farm.expansion],
+                      estimatedRewards: farm.estimatedRewards || {}
                     };
               
                     setEditingFarm(farmToEdit);
+                    
+                    // Configurar monedas seleccionadas basadas en el farm actual
+                    const selectedCurrencies = [];
+                    if (farmToEdit.estimatedRewards && Object.keys(farmToEdit.estimatedRewards).length > 0) {
+                      // Si tiene estimatedRewards, usar esas monedas
+                      Object.entries(farmToEdit.estimatedRewards).forEach(([currency, value]) => {
+                        if (value && value.trim()) {
+                          selectedCurrencies.push(currency);
+                        }
+                      });
+                    } else {
+                      // Compatibilidad hacia atrás con campos legacy
+                      if (farmToEdit.estimatedGold && farmToEdit.estimatedGold.trim()) {
+                        selectedCurrencies.push('gold');
+                      }
+                      if (farmToEdit.estimatedSpirit && farmToEdit.estimatedSpirit.trim()) {
+                        selectedCurrencies.push('spiritShards');
+                      }
+                    }
+                    setEditingSelectedCurrencies(selectedCurrencies.length > 0 ? selectedCurrencies : ['gold']);
                   }}
                   className="flex-1 flex items-center justify-center gap-2 px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors"
                 >
@@ -1187,19 +1487,7 @@ export default function AdminPanel() {
                 placeholder="nombre usuario"/>
             </div>
             
-            <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">
-                Contraseña
-              </label>
-              <input
-                type="password"
-                value={newUser.password}
-                onChange={(e) => setNewUser({...newUser, password: e.target.value})}
-                className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-purple-500"
-                placeholder="********"
-              />
-            </div>
-            
+
             <div>
               <label className="block text-sm font-medium text-gray-300 mb-2">
                 Rol

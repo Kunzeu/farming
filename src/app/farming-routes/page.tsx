@@ -2,21 +2,50 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
-import Image from 'next/image';
 import Link from 'next/link';
 import Navigation from '@/components/layout/Navigation';
-import { Search, Map, Clock, RefreshCw, TrendingUp, Star } from 'lucide-react';
+import { Search, Map, Clock, RefreshCw, TrendingUp, Star, Copy, Users, User } from 'lucide-react';
 import { useDatabase, FarmItem } from '@/hooks/useDatabase';
 import ExpansionIcon from '@/components/ui/ExpansionIcon';
+import GW2Icon from '@/components/ui/GW2Icon';
 import GlossaryLink from '@/components/ui/GlossaryLink';
+import { usePageTitle } from '@/hooks/usePageTitle';
 
 export default function FarmingRoutes() {
+  usePageTitle('Farming Routes');
+  
   const { dbService } = useDatabase();
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedExpansions, setSelectedExpansions] = useState<string[]>([]);
   const [farmingRoutes, setFarmingRoutes] = useState<FarmItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [copiedWaypoint, setCopiedWaypoint] = useState<string | null>(null);
+
+  // Función para copiar waypoint al portapapeles
+  const copyWaypointToClipboard = async (waypoint: string, farmId: string) => {
+    try {
+      await navigator.clipboard.writeText(waypoint);
+      setCopiedWaypoint(`${farmId}-${waypoint}`);
+      
+      // Limpiar el mensaje después de 3 segundos
+      setTimeout(() => {
+        setCopiedWaypoint(null);
+      }, 2000);
+    } catch (err) {
+      console.error('Failed to copy waypoint: ', err);
+    }
+  };
+
+  // Mapeo de tipos de moneda a iconos y labels
+  const currencyMap = {
+    gold: { icon: 'gold' as const, label: 'Gold', suffix: '/h' },
+    spiritShards: { icon: 'spirit-shard' as const, label: 'Spirit Shards', suffix: '/h' },
+    imperialFavor: { icon: 'imperial-favor' as const, label: 'Imperial Favor', suffix: '/h' },
+    experience: { icon: 'gold' as const, label: 'Experience', suffix: '/h' }, // Usar gold como placeholder
+    laurels: { icon: 'gold' as const, label: 'Laurels', suffix: '/h' }, // Usar gold como placeholder
+    otherCurrency: { icon: 'gold' as const, label: 'Other Currency', suffix: '/h' }, // Usar gold como placeholder
+  };
 
   // Función para formatear oro correctamente
   const formatGoldDisplay = (goldValue: string | undefined): string => {
@@ -156,6 +185,8 @@ export default function FarmingRoutes() {
           </motion.div>
         )}
 
+
+
         {/* Filters */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -226,16 +257,67 @@ export default function FarmingRoutes() {
               transition={{ duration: 0.3 }}
               className="bg-gray-800 rounded-lg shadow-lg overflow-hidden p-6 min-h-[220px] hover:shadow-xl transition-all duration-300">
                 {/* Header */}
-                <div className="flex justify-between items-start mb-6">
+                <div className="flex justify-between items-start mb-4">
                   <div className="flex-1">
-                    <h3 className="text-xl font-bold text-white mb-3">{route.name}</h3>
-                    <p className="text-gray-400 text-base leading-relaxed">{route.description}</p>
+                    <div className="flex items-center gap-3 mb-3">
+                      <h3 className="text-xl font-bold text-white">{route.name}</h3>
+                      
+                      {/* Modalidad Badges */}
+                      <div className="flex gap-2">
+                        {route.isSolo && (
+                          <span className="px-2 py-1 bg-green-600 text-white text-xs rounded-full flex items-center gap-1">
+                            <User className="w-3 h-3" />
+                            Solo
+                          </span>
+                        )}
+                        {route.requiresSquad && (
+                          <span className="px-2 py-1 bg-purple-600 text-white text-xs rounded-full flex items-center gap-1">
+                            <Users className="w-3 h-3" />
+                            Squad
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                    <p className="text-gray-400 text-base leading-relaxed mb-3">{route.description}</p>
+                    
+                    {/* Waypoint */}
+                    {route.waypoint && (
+                      <div className="flex items-center gap-2 mb-2">
+                        <span className="text-sm text-gray-500">Waypoint:</span>
+                        <div className="relative">
+                          <button
+                            onClick={() => copyWaypointToClipboard(route.waypoint!, route.id)}
+                            className={`flex items-center gap-1 px-2 py-1 text-sm rounded transition-all duration-200 ${
+                              copiedWaypoint === `${route.id}-${route.waypoint}`
+                                ? 'bg-green-600 text-white'
+                                : 'bg-gray-700 hover:bg-gray-600 text-blue-400'
+                            }`}
+                            title={copiedWaypoint === `${route.id}-${route.waypoint}` ? "Copied!" : "Click to copy waypoint"}
+                          >
+                            <span className="font-mono">{route.waypoint}</span>
+                            <Copy className="w-3 h-3" />
+                          </button>
+                          
+                          {/* Notificación local al lado del botón */}
+                          {copiedWaypoint === `${route.id}-${route.waypoint}` && (
+                            <motion.div
+                              initial={{ opacity: 0, x: -10, scale: 0.95 }}
+                              animate={{ opacity: 1, x: 0, scale: 1 }}
+                              exit={{ opacity: 0, x: -10, scale: 0.95 }}
+                              className="absolute left-full ml-2 top-0 bg-green-600 text-white rounded-lg shadow-lg px-3 py-1 flex items-center gap-2 z-50 whitespace-nowrap">
+                              <Copy className="w-3 h-3" />
+                              <span className="text-xs font-medium">Waypoint copied!</span>
+                            </motion.div>
+                          )}
+                        </div>
+                      </div>
+                    )}
                   </div>
-                                            <div className="flex gap-1">
-                            {(Array.isArray(route.expansion) ? route.expansion : [route.expansion]).map((exp) => (
-                              <ExpansionIcon key={exp} expansion={exp as 'core' | 'hot' | 'pof' | 'eod' | 'soto' | 'jw'} size="md" variant="compact" />
-                            ))}
-                          </div>
+                  <div className="flex gap-1">
+                    {(Array.isArray(route.expansion) ? route.expansion : [route.expansion]).map((exp) => (
+                      <ExpansionIcon key={exp} expansion={exp as 'core' | 'hot' | 'pof' | 'eod' | 'soto' | 'jw'} size="md" variant="compact" />
+                    ))}
+                  </div>
                 </div>
 
                 {/* Stats */}
@@ -249,39 +331,57 @@ export default function FarmingRoutes() {
                     </div>
                   </div>
 
-                  {/* Oro - solo si tiene valor */}
-                                {route.estimatedGold && route.estimatedGold.trim() && (
-                <div className="flex items-center gap-3">
-                  <Image 
-                    src="/images/expansions/Gold.png" 
-                    alt="Gold"
-                    width={24}
-                    height={24}
-                    className="w-6 h-6"
-                  />
-                  <div>
-                    <p className="text-gray-400 text-sm">Gold/Hour</p>
-                    <p className="text-yellow-400 font-semibold text-lg">{formatGoldDisplay(route.estimatedGold)}</p>
-                  </div>
-                </div>
-              )}
+                  {/* Nuevas recompensas del sistema flexible */}
+                  {route.estimatedRewards && Object.entries(route.estimatedRewards).map(([currencyType, value]) => {
+                    if (!value || !value.trim()) return null;
+                    
+                    const currency = currencyMap[currencyType as keyof typeof currencyMap];
+                    if (!currency) return null;
 
-                                     {/* Spirit Shards - solo si tiene valor */}
-                   {route.estimatedSpirit && route.estimatedSpirit.trim() && (
-                     <div className="flex items-center gap-3">
-                       <Image 
-                         src="/images/expansions/Spirit_Shard.png" 
-                         alt="Spirit Shard"
-                         width={24}
-                         height={24}
-                         className="w-6 h-6"
-                       />
-                       <div>
-                         <p className="text-gray-400 text-sm">Spirit Shards</p>
-                         <p className="text-blue-400 font-semibold text-lg">{route.estimatedSpirit}/h</p>
-                       </div>
-                     </div>
-                   )}
+                    return (
+                      <div key={currencyType} className="flex items-center gap-3">
+                        <div className="relative">
+                          <GW2Icon 
+                            type={currency.icon} 
+                            size="md"
+                          />
+                        </div>
+                        <div>
+                          <p className="text-gray-400 text-sm">{currency.label}</p>
+                          <p className="text-yellow-400 font-semibold text-lg">
+                            {currencyType === 'gold' ? formatGoldDisplay(value) : `${value}${currency.suffix}`}
+                          </p>
+                        </div>
+                      </div>
+                    );
+                  })}
+
+                  {/* Compatibilidad hacia atrás - mostrar campos legacy si no hay estimatedRewards */}
+                  {(!route.estimatedRewards || Object.keys(route.estimatedRewards).length === 0) && (
+                    <>
+                      {/* Oro legacy */}
+                      {route.estimatedGold && route.estimatedGold.trim() && (
+                        <div className="flex items-center gap-3">
+                          <GW2Icon type="gold" size="md" />
+                          <div>
+                            <p className="text-gray-400 text-sm">Gold/Hour</p>
+                            <p className="text-yellow-400 font-semibold text-lg">{formatGoldDisplay(route.estimatedGold)}</p>
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Spirit Shards legacy */}
+                      {route.estimatedSpirit && route.estimatedSpirit.trim() && (
+                        <div className="flex items-center gap-3">
+                          <GW2Icon type="spirit-shard" size="md" />
+                          <div>
+                            <p className="text-gray-400 text-sm">Spirit Shards</p>
+                            <p className="text-blue-400 font-semibold text-lg">{route.estimatedSpirit}/h</p>
+                          </div>
+                        </div>
+                      )}
+                    </>
+                  )}
                 </div>
 
 
@@ -352,6 +452,8 @@ export default function FarmingRoutes() {
           </div>
         </motion.div>
       </main>
+
+
     </div>
   );
 } 

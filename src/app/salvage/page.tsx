@@ -6,10 +6,12 @@ import { Package, ChevronRight, Star, FileText, Wrench } from 'lucide-react';
 import Navigation from '@/components/layout/Navigation';
 import Link from 'next/link';
 import GlossaryLink from '@/components/ui/GlossaryLink';
+import { usePageTitle } from '@/hooks/usePageTitle';
 
 type SalvageSection = 'salvageables' | 'luck-calculator' | 'research-notes' | 'unidentified-gear';
 
 export default function SalvagePage() {
+  usePageTitle('Salvaging');
 
   // Salvage section configuration
   const salvageSections = [

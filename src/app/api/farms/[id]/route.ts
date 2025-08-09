@@ -51,6 +51,30 @@ export async function PUT(
       paramIndex++;
     }
     
+    if (body.estimatedRewards !== undefined) {
+      updateFields.push(`estimated_rewards = $${paramIndex}`);
+      values.push(JSON.stringify(body.estimatedRewards));
+      paramIndex++;
+    }
+    
+    if (body.isSolo !== undefined) {
+      updateFields.push(`is_solo = $${paramIndex}`);
+      values.push(body.isSolo);
+      paramIndex++;
+    }
+    
+    if (body.requiresSquad !== undefined) {
+      updateFields.push(`requires_squad = $${paramIndex}`);
+      values.push(body.requiresSquad);
+      paramIndex++;
+    }
+    
+    if (body.waypoint !== undefined) {
+      updateFields.push(`waypoint = $${paramIndex}`);
+      values.push(body.waypoint);
+      paramIndex++;
+    }
+    
     if (body.expansion !== undefined) {
       updateFields.push(`expansion = $${paramIndex}`);
       values.push(JSON.stringify(body.expansion));
@@ -98,8 +122,9 @@ export async function PUT(
       WHERE id = $${paramIndex}
       RETURNING id, name, description, estimated_time as "estimatedTime", 
                 estimated_gold as "estimatedGold", estimated_spirit as "estimatedSpirit",
-                expansion, selected, status, created_by as "createdBy", 
-                created_at as "createdAt", updated_at as "updatedAt"
+                estimated_rewards as "estimatedRewards", expansion, is_solo as "isSolo",
+                requires_squad as "requiresSquad", waypoint, selected, status, 
+                created_by as "createdBy", created_at as "createdAt", updated_at as "updatedAt"
     `;
     
     
@@ -121,6 +146,7 @@ export async function PUT(
       ...row,
       createdByUsername,
       expansion: typeof row.expansion === 'string' ? JSON.parse(row.expansion) : row.expansion,
+      estimatedRewards: typeof row.estimatedRewards === 'string' ? JSON.parse(row.estimatedRewards) : row.estimatedRewards || {},
       createdAt: new Date(row.createdAt),
       updatedAt: new Date(row.updatedAt)
     };

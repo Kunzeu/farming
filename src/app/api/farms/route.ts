@@ -56,8 +56,9 @@ export async function GET(request: NextRequest) {
     const query = `
       SELECT f.id, f.name, f.description, f.estimated_time as "estimatedTime", 
              f.estimated_gold as "estimatedGold", f.estimated_spirit as "estimatedSpirit",
-             f.expansion, f.selected, f.status, f.created_by as "createdBy", 
-             f.created_at as "createdAt", f.updated_at as "updatedAt",
+             f.estimated_rewards as "estimatedRewards", f.expansion, f.is_solo as "isSolo",
+             f.requires_squad as "requiresSquad", f.waypoint, f.selected, f.status, 
+             f.created_by as "createdBy", f.created_at as "createdAt", f.updated_at as "updatedAt",
              u.username as "createdByUsername"
       FROM farm_items f
       LEFT JOIN users u ON f.created_by = u.id
@@ -68,6 +69,7 @@ export async function GET(request: NextRequest) {
     const farms = result.rows.map(row => ({
       ...row,
       expansion: typeof row.expansion === 'string' ? JSON.parse(row.expansion) : row.expansion,
+      estimatedRewards: typeof row.estimatedRewards === 'string' ? JSON.parse(row.estimatedRewards) : row.estimatedRewards || {},
       createdAt: new Date(row.createdAt),
       updatedAt: new Date(row.updatedAt)
     }));
@@ -98,11 +100,14 @@ export async function POST(request: NextRequest) {
       }, { status: 400 });
     }
 
-    // Validar que al menos uno de estimatedGold o estimatedSpirit esté presente
-    if (!body.estimatedGold && !body.estimatedSpirit) {
+    // Validar que al menos una recompensa esté presente (nuevo formato o compatibilidad hacia atrás)
+    const hasOldFormatRewards = body.estimatedGold || body.estimatedSpirit;
+    const hasNewFormatRewards = body.estimatedRewards && Object.values(body.estimatedRewards).some((value: unknown) => typeof value === 'string' && value.trim() !== '');
+    
+    if (!hasOldFormatRewards && !hasNewFormatRewards) {
       return NextResponse.json({ 
         error: 'Validation error', 
-        details: 'At least one of estimatedGold or estimatedSpirit must be provided'
+        details: 'At least one reward must be specified'
       }, { status: 400 });
     }
 
@@ -137,20 +142,38 @@ export async function POST(request: NextRequest) {
     
     const query = `
       INSERT INTO farm_items (id, name, description, estimated_time, estimated_gold, 
-                             estimated_spirit, expansion, selected, status, created_by)
-      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+                             estimated_spirit, estimated_rewards, expansion, is_solo, 
+                             requires_squad, waypoint, selected, status, created_by)
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)
       RETURNING id, name, description, estimated_time as "estimatedTime", 
                 estimated_gold as "estimatedGold", estimated_spirit as "estimatedSpirit",
-                expansion, selected, status, created_by as "createdBy", 
-                created_at as "createdAt", updated_at as "updatedAt"
+                estimated_rewards as "estimatedRewards", expansion, is_solo as "isSolo",
+                requires_squad as "requiresSquad", waypoint, selected, status, 
+                created_by as "createdBy", created_at as "createdAt", updated_at as "updatedAt"
     `;
     
     // Determinar el status basado en el rol del usuario
     const status = body.createdByRole === 'admin' ? 'approved' : 'pending';
     
+    // Mapear nuevos campos a formato legacy para compatibilidad
+    const mappedGold = body.estimatedGold || (body.estimatedRewards?.gold) || null;
+    const mappedSpirit = body.estimatedSpirit || (body.estimatedRewards?.spiritShards) || null;
+    
     const values = [
-      id, body.name, body.description, body.estimatedTime, body.estimatedGold,
-      body.estimatedSpirit, JSON.stringify(body.expansion), body.selected, status, body.createdBy
+      id, 
+      body.name, 
+      body.description, 
+      body.estimatedTime, 
+      mappedGold,
+      mappedSpirit, 
+      JSON.stringify(body.estimatedRewards || {}), // Nuevas recompensas como JSON
+      JSON.stringify(body.expansion || []), // Expansiones como array
+      body.isSolo || false, // Nuevo campo: es solitario
+      body.requiresSquad || false, // Nuevo campo: requiere squad
+      body.waypoint || null, // Nuevo campo: waypoint
+      body.selected || false, 
+      status, 
+      body.createdBy
     ];
     
     const result = await pool.query(query, values);

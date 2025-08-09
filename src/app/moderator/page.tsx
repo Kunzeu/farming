@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import Navigation from '@/components/layout/Navigation';
 import ModeratorRoute from '@/components/auth/ModeratorRoute';
-import { Plus, Edit, Eye, CheckCircle, XCircle, Map, AlertCircle, Save, X } from 'lucide-react';
+import { Plus, Edit, Eye, CheckCircle, XCircle, Map, AlertCircle, Save, X, Copy } from 'lucide-react';
 import { useDatabase, FarmItem } from '@/hooks/useDatabase';
 import ExpansionIcon from '@/components/ui/ExpansionIcon';
 import GW2Icon from '@/components/ui/GW2Icon';
@@ -30,11 +30,17 @@ export default function ModeratorPanel() {
     estimatedTime: '',
     estimatedGold: '',
     estimatedSpirit: '',
+    estimatedRewards: {},
     expansion: [],
+    isSolo: false,
+    requiresSquad: false,
+    waypoint: '',
     selected: false,
     status: 'pending',
     createdBy: ''
   });
+
+  const [selectedCurrencies, setSelectedCurrencies] = useState<string[]>(['gold']);
 
   // Actualizar createdBy cuando el usuario esté disponible
   useEffect(() => {
@@ -115,24 +121,44 @@ export default function ModeratorPanel() {
     return value;
   };
 
-  // Manejar cambio de oro con formato GW2
-  const handleGoldChange = (value: string) => {
-    setNewFarm({...newFarm, estimatedGold: value});
-  };
-
-  const formatGoldOnBlur = (value: string) => {
-    const formatted = formatGoldInput(value);
-    setNewFarm({...newFarm, estimatedGold: formatted});
-  };
-
   const handleTimeChange = (value: string) => {
     const formatted = formatTimeInput(value);
     setNewFarm({...newFarm, estimatedTime: formatted});
   };
 
-  const handleSpiritChange = (value: string) => {
-    const cleaned = value.replace(/[^\d]/g, '');
-    setNewFarm({...newFarm, estimatedSpirit: cleaned});
+  // Funciones para manejar las nuevas monedas
+  const handleCurrencyChange = (currency: string, value: string) => {
+    setNewFarm({
+      ...newFarm,
+      estimatedRewards: {
+        ...newFarm.estimatedRewards,
+        [currency]: value
+      }
+    });
+  };
+
+  const copyWaypointToClipboard = async (waypoint: string) => {
+    try {
+      await navigator.clipboard.writeText(waypoint);
+      showSuccess('Copiado', 'Waypoint copiado al portapapeles');
+    } catch (error) {
+      console.error('Error copying to clipboard:', error);
+      showError('Error', 'No se pudo copiar el waypoint al portapapeles');
+    }
+  };
+
+  const currencyOptions = [
+    { value: 'gold', label: 'Oro', icon: 'gold' as const, placeholder: '15' },
+    { value: 'silver', label: 'Plata', icon: 'silver' as const, placeholder: '50' },
+    { value: 'copper', label: 'Cobre', icon: 'copper' as const, placeholder: '250' },
+    { value: 'spiritShards', label: 'Spirit Shards', icon: 'spirit-shard' as const, placeholder: '25' },
+    { value: 'imperialFavor', label: 'Imperial Favor', icon: 'imperial-favor' as const, placeholder: '50' },
+    { value: 'experience', label: 'Experiencia', icon: 'gold' as const, placeholder: '50000' }
+  ];
+
+  const getIconForCurrency = (currency: string) => {
+    const option = currencyOptions.find(c => c.value === currency);
+    return option?.icon || 'gold';
   };
 
   const handleExpansionToggle = (expansionValue: 'core' | 'hot' | 'pof' | 'eod' | 'soto' | 'jw') => {
@@ -195,7 +221,7 @@ export default function ModeratorPanel() {
       return;
     }
 
-    if (!editingFarm.estimatedGold.trim() && !editingFarm.estimatedSpirit?.trim()) {
+    if (!editingFarm.estimatedGold?.trim() && !editingFarm.estimatedSpirit?.trim()) {
 
       showError('Validation Error', 'You must specify at least estimated gold or spirit shards');
       return;
@@ -242,19 +268,25 @@ export default function ModeratorPanel() {
   // Crear farm
   const handleCreateFarm = async () => {
     if (!newFarm.name.trim() || !newFarm.description.trim() || !newFarm.estimatedTime.trim()) {
-      showError('Validation Error', 'Name, description and time are required fields');
+      showError('Error de Validación', 'Nombre, descripción y tiempo son campos requeridos');
       return;
     }
 
-    if (!newFarm.estimatedGold.trim() && !newFarm.estimatedSpirit?.trim()) {
-      showError('Validation Error', 'You must specify at least estimated gold or spirit shards');
+    // Verificar que al menos una recompensa esté especificada (formato antiguo o nuevo)
+    const hasOldRewards = newFarm.estimatedGold?.trim() || newFarm.estimatedSpirit?.trim();
+    const hasNewRewards = Object.values(newFarm.estimatedRewards).some(value => value && value.trim() !== '');
+    
+    if (!hasOldRewards && !hasNewRewards) {
+      showError('Error de Validación', 'Debes especificar al menos una recompensa estimada');
       return;
     }
 
     try {
-
       await dbService.createFarm({
         ...newFarm,
+        // Mapear nuevas recompensas a campos legacy para compatibilidad
+        estimatedGold: newFarm.estimatedGold || newFarm.estimatedRewards.gold || '',
+        estimatedSpirit: newFarm.estimatedSpirit || newFarm.estimatedRewards.spiritShards || '',
         createdBy: user?.id || '',
         createdByRole: 'moderator'
       });
@@ -266,18 +298,23 @@ export default function ModeratorPanel() {
         estimatedTime: '',
         estimatedGold: '',
         estimatedSpirit: '',
+        estimatedRewards: {},
         expansion: [],
+        isSolo: false,
+        requiresSquad: false,
+        waypoint: '',
         selected: false,
         status: 'pending',
         createdBy: user?.id || prev.createdBy
       }));
+      setSelectedCurrencies(['gold']);
       setIsCreating(false);
       await loadData();
       
-      showSuccess('Created!', `Farm "${newFarm.name}" created and sent for approval`);
+      showSuccess('¡Creado!', `Farm "${newFarm.name}" creado y enviado para aprobación`);
     } catch (err) {
       console.error('Error creating farm:', err);
-      showError('Error', 'Could not create the farm. Please try again.');
+      showError('Error', 'No se pudo crear el farm. Por favor intenta de nuevo.');
     }
   };
 
@@ -289,13 +326,15 @@ export default function ModeratorPanel() {
       {/* Create Farm Button */}
       <div className="flex justify-between items-center">
         <h2 className="text-2xl font-bold text-white">Mis Farms</h2>
-        <button
-          onClick={() => setIsCreating(true)}
-          className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors"
-        >
-          <Plus className="w-5 h-5" />
-          Crear Farm
-        </button>
+        {!isCreating && !editingFarm && (
+          <button
+            onClick={() => setIsCreating(true)}
+            className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors"
+          >
+            <Plus className="w-5 h-5" />
+            Crear Farm
+          </button>
+        )}
       </div>
 
              {/* Loading State */}
@@ -436,7 +475,7 @@ export default function ModeratorPanel() {
               />
             </div>
 
-            <div className="grid grid-cols-3 gap-4">
+            <div className="grid grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-medium text-gray-300 mb-2">
                   Tiempo Estimado
@@ -450,37 +489,141 @@ export default function ModeratorPanel() {
                 />
                 <p className="text-xs text-gray-400 mt-1">6 dígitos: HHMMSS (ej: 013000 = 01:30:00)</p>
               </div>
-              
-                              <div>
-                  <label className="flex items-center gap-2 text-sm font-medium text-gray-300 mb-2">
-                    <GW2Icon type="gold" size="sm" />
-                    Oro Estimado <span className="text-yellow-500">(opcional*)</span>
-                  </label>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-2">
+                  Waypoint
+                </label>
+                <div className="flex gap-2">
+                  <input
+                    type="text"
+                    value={newFarm.waypoint || ''}
+                    onChange={(e) => setNewFarm({...newFarm, waypoint: e.target.value})}
+                    className="flex-1 px-3 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white focus:outline-none focus:border-blue-500"
+                    placeholder="[&AQAAAA==]"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => newFarm.waypoint && copyWaypointToClipboard(newFarm.waypoint)}
+                    disabled={!newFarm.waypoint}
+                    className="px-3 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-600 disabled:opacity-50 text-white rounded-lg transition-colors"
+                    title="Copiar waypoint"
+                  >
+                    <Copy className="w-4 h-4" />
+                  </button>
+                </div>
+                <p className="text-xs text-gray-400 mt-1">Chat code del waypoint (opcional)</p>
+              </div>
+            </div>
+
+            {/* Checkboxes para Solo/Squad */}
+            <div className="grid grid-cols-2 gap-4">
+              <label className="flex items-center gap-2 p-3 bg-slate-700 rounded-lg border border-slate-600 hover:border-blue-500 cursor-pointer">
                 <input
-                  type="text"
-                  value={newFarm.estimatedGold}
-                  onChange={(e) => handleGoldChange(e.target.value)}
-                  onBlur={(e) => formatGoldOnBlur(e.target.value)}
-                  className="w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white focus:outline-none focus:border-blue-500"
-                  placeholder="15g 50s 25c/h"
+                  type="checkbox"
+                  checked={newFarm.isSolo}
+                  onChange={(e) => setNewFarm({...newFarm, isSolo: e.target.checked})}
+                  className="w-4 h-4 text-blue-600 bg-slate-700 border-slate-600 rounded focus:ring-blue-500"
                 />
-                <p className="text-xs text-gray-400 mt-1">Formato: XgYsZc</p>
+                <span className="text-white">Farm Solitario</span>
+              </label>
+              
+              <label className="flex items-center gap-2 p-3 bg-slate-700 rounded-lg border border-slate-600 hover:border-blue-500 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={newFarm.requiresSquad}
+                  onChange={(e) => setNewFarm({...newFarm, requiresSquad: e.target.checked})}
+                  className="w-4 h-4 text-blue-600 bg-slate-700 border-slate-600 rounded focus:ring-blue-500"
+                />
+                <span className="text-white">Requiere Squad</span>
+              </label>
+            </div>
+
+            {/* Sistema de Monedas */}
+            <div className="space-y-4">
+              <label className="block text-sm font-medium text-gray-300 mb-2">
+                Recompensas Estimadas (por hora)
+              </label>
+              
+              {/* Tipos de Moneda */}
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-3">
+                  Tipos de Moneda
+                </label>
+                <div className="grid grid-cols-2 gap-3">
+                  {currencyOptions.map((option) => (
+                    <div key={option.value} className="flex items-center gap-3 p-3 bg-slate-700 rounded-lg border border-slate-600">
+                      <input
+                        type="checkbox"
+                        checked={selectedCurrencies.includes(option.value)}
+                        onChange={(e) => {
+                          if (e.target.checked) {
+                            setSelectedCurrencies(prev => [...prev, option.value]);
+                          } else {
+                            setSelectedCurrencies(prev => prev.filter(c => c !== option.value));
+                            setNewFarm(currentFarm => ({
+                              ...currentFarm,
+                              estimatedRewards: {
+                                ...currentFarm.estimatedRewards,
+                                [option.value]: ''
+                              }
+                            }));
+                          }
+                        }}
+                        className="w-4 h-4 text-blue-600 bg-slate-700 border-slate-600 rounded focus:ring-blue-500"
+                      />
+                      <GW2Icon type={option.icon} size="sm" />
+                      <span className="text-white text-sm min-w-0 flex-shrink-0">{option.label}</span>
+                      <input
+                        type="number"
+                        min="0"
+                        step="0.01"
+                        value={newFarm.estimatedRewards[option.value as keyof typeof newFarm.estimatedRewards] || ''}
+                        onChange={(e) => {
+                          const value = e.target.value;
+                          // Solo permitir números válidos
+                          if (value === '' || (!isNaN(Number(value)) && Number(value) >= 0)) {
+                            handleCurrencyChange(option.value, value);
+                            // Auto-seleccionar el checkbox si se escribe algo
+                            if (value && !selectedCurrencies.includes(option.value)) {
+                              setSelectedCurrencies(prev => [...prev, option.value]);
+                            }
+                          }
+                        }}
+                        className="flex-1 px-2 py-1 bg-slate-600 border border-slate-500 rounded text-white text-sm focus:outline-none focus:border-blue-500"
+                        placeholder="0"
+                      />
+                    </div>
+                  ))}
+                </div>
+                <p className="text-xs text-gray-400 mt-2">Selecciona uno o más tipos de recompensa</p>
               </div>
 
-                              <div>
-                  <label className="flex items-center gap-2 text-sm font-medium text-gray-300 mb-2">
-                    <GW2Icon type="spirit-shard" size="sm" />
-                    Spirit Shards <span className="text-purple-500">(opcional*)</span>
-                  </label>
-                <input
-                  type="text"
-                  value={newFarm.estimatedSpirit}
-                  onChange={(e) => handleSpiritChange(e.target.value)}
-                  className="w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white focus:outline-none focus:border-blue-500"
-                  placeholder="25"
-                />
-                <p className="text-xs text-gray-400 mt-1">Cantidad por hora</p>
-              </div>
+              {/* Mostrar recompensas agregadas */}
+              {Object.entries(newFarm.estimatedRewards).some(([, value]) => value) && (
+                <div className="bg-slate-700/50 rounded-lg p-3">
+                  <h4 className="text-sm font-medium text-gray-300 mb-2">Recompensas configuradas:</h4>
+                  <div className="space-y-1">
+                    {Object.entries(newFarm.estimatedRewards).map(([currency, value]) => {
+                      if (!value) return null;
+                      const option = currencyOptions.find(c => c.value === currency);
+                      return (
+                        <div key={currency} className="flex items-center gap-2 text-sm">
+                          <GW2Icon type={getIconForCurrency(currency)} size="sm" />
+                          <span className="text-gray-300">{option?.label}: {value}</span>
+                          <button
+                            type="button"
+                            onClick={() => handleCurrencyChange(currency, '')}
+                            className="ml-auto text-red-400 hover:text-red-300"
+                          >
+                            <X className="w-3 h-3" />
+                          </button>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
             </div>
             
             <div>
@@ -513,7 +656,10 @@ export default function ModeratorPanel() {
             {/* Nota explicativa */}
             <div className="bg-blue-900/30 border border-blue-500/30 rounded-lg p-3 mt-4">
               <p className="text-blue-300 text-sm">
-                <strong>*</strong> Debe especificar al menos oro <strong>o</strong> spirit shards. Algunos farms generan solo oro, otros solo spirit shards, y algunos ambos.
+                <strong>Recompensas:</strong> Debes especificar al menos una recompensa estimada. Puedes agregar múltiples tipos de monedas según lo que genere el farm. Utiliza el selector para elegir el tipo de moneda y especifica la cantidad por hora.
+              </p>
+              <p className="text-blue-300 text-sm mt-2">
+                <strong>Modalidad:</strong> Marca si el farm se puede hacer solo, si requiere squad, o ambos. El waypoint es opcional pero recomendado para facilitar el acceso.
               </p>
             </div>
             
@@ -935,7 +1081,7 @@ export default function ModeratorPanel() {
                    </label>
                    <input
                      type="text"
-                     value={editingFarm.name}
+                     value={editingFarm.name || ''}
                      onChange={(e) => setEditingFarm({...editingFarm, name: e.target.value})}
                      className="w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white focus:outline-none focus:border-blue-500"
                      placeholder="Ej: Silverwastes RIBA"
@@ -948,7 +1094,7 @@ export default function ModeratorPanel() {
                   Descripción
                 </label>
                 <textarea
-                  value={editingFarm.description}
+                  value={editingFarm.description || ''}
                   onChange={(e) => setEditingFarm({...editingFarm, description: e.target.value})}
                   className="w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white focus:outline-none focus:border-blue-500"
                   rows={3}
@@ -963,7 +1109,7 @@ export default function ModeratorPanel() {
                    </label>
                    <input
                      type="text"
-                     value={editingFarm.estimatedTime}
+                     value={editingFarm.estimatedTime || ''}
                      onChange={(e) => {
                        const formatted = formatTimeInput(e.target.value);
                        setEditingFarm({...editingFarm, estimatedTime: formatted});
@@ -981,7 +1127,7 @@ export default function ModeratorPanel() {
                    </label>
                    <input
                      type="text"
-                     value={editingFarm.estimatedGold}
+                     value={editingFarm.estimatedGold || ''}
                      onChange={(e) => {
                        setEditingFarm({...editingFarm, estimatedGold: e.target.value});
                      }}

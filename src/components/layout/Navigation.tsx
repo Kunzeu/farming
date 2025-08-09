@@ -175,12 +175,18 @@ const Navigation = () => {
           </div>
 
           {/* Reset Timers - After Logo */}
-          <div className="hidden lg:flex items-center space-x-4">
-            <div className="flex items-center space-x-2 text-blue-300 px-3 py-2 rounded-lg bg-blue-900/20 border border-blue-700/30">
+          <div className="hidden lg:flex items-center space-x-4 -ml-4">
+            <div 
+              className="flex items-center space-x-2 text-blue-300 px-3 py-2 rounded-lg bg-blue-900/20 border border-blue-700/30 cursor-pointer hover:bg-blue-900/40 transition-colors"
+              title="Reset Daily - Daily rewards, missions and achievements reset"
+            >
               <Clock className="w-4 h-4" />
               <span className="text-sm font-mono font-bold">{dailyResetTime}</span>
             </div>
-            <div className="flex items-center space-x-2 text-purple-300 px-3 py-2 rounded-lg bg-purple-900/20 border border-purple-700/30">
+            <div 
+              className="flex items-center space-x-2 text-purple-300 px-3 py-2 rounded-lg bg-purple-900/20 border border-purple-700/30 cursor-pointer hover:bg-purple-900/40 transition-colors"
+              title="Reset Weekly - Weekly rewards, raids, fractals and WvW reset"
+            >
               <Calendar className="w-4 h-4" />
               <span className="text-sm font-mono font-bold">{weeklyResetTime}</span>
             </div>

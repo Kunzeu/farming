@@ -1,7 +1,7 @@
 import Image from 'next/image';
 import { Clock } from 'lucide-react';
 
-type GW2IconType = 'gold' | 'spirit-shard' | 'time';
+type GW2IconType = 'gold' | 'spirit-shard' | 'imperial-favor' | 'silver' | 'copper' | 'time';
 
 interface GW2IconProps {
   type: GW2IconType;
@@ -14,9 +14,21 @@ const iconConfig = {
     src: '/images/expansions/Gold.png',
     alt: 'Oro de Guild Wars 2'
   },
+  silver: {
+    src: '/images/expansions/Silver.png',
+    alt: 'Plata de Guild Wars 2'
+  },
+  copper: {
+    src: '/images/expansions/Copper.png',
+    alt: 'Cobre de Guild Wars 2'
+  },
   'spirit-shard': {
     src: '/images/expansions/Spirit_Shard.png',
     alt: 'Spirit Shard de Guild Wars 2'
+  },
+  'imperial-favor': {
+    src: '/images/expansions/Imperial_Favor.png',
+    alt: 'Imperial Favor de Guild Wars 2'
   }
 };
 
@@ -36,7 +48,7 @@ export default function GW2Icon({ type, size = 'md', className = '' }: GW2IconPr
     );
   }
 
-  // Para oro y spirit shards, usar las imágenes oficiales
+  // Para oro, spirit shards e imperial favor, usar las imágenes oficiales
   const config = iconConfig[type];
   return (
     <Image

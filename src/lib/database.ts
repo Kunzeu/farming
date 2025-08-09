@@ -4,8 +4,20 @@ export interface FarmItem {
   name: string;
   description: string;
   estimatedTime: string;
-  estimatedGold: string;
-  expansion: 'core' | 'hot' | 'pof' | 'eod' | 'soto' | 'jw'; // Agregado JW
+  estimatedGold?: string; // Mantener para compatibilidad hacia atrás
+  estimatedSpirit?: string; // Mantener para compatibilidad hacia atrás
+  estimatedRewards: {
+    gold?: string;
+    spiritShards?: string;
+    imperialFavor?: string;
+    experience?: string;
+    laurels?: string;
+    otherCurrency?: string;
+  };
+  expansion: ('core' | 'hot' | 'pof' | 'eod' | 'soto' | 'jw')[]; // Cambiar a array para múltiples expansiones
+  isSolo: boolean;
+  requiresSquad: boolean;
+  waypoint?: string;
   selected: boolean;
   createdAt: Date;
   updatedAt: Date;

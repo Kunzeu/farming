@@ -14,6 +14,7 @@ import {
   Wrench,
   FileText
 } from 'lucide-react';
+import { usePageTitle } from '@/hooks/usePageTitle';
 
 interface GlossaryItem {
   id: string;
@@ -30,6 +31,8 @@ interface GlossaryItem {
 }
 
 export default function GlossaryPage() {
+  usePageTitle('Glossary');
+  
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
 

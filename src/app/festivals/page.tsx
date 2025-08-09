@@ -12,6 +12,7 @@ import {
 } from 'lucide-react';
 import Link from 'next/link';
 import { festivalDates, getFestivalStatus } from '@/lib/festival-dates';
+import { usePageTitle } from '@/hooks/usePageTitle';
 
 const festivals = [
   {
@@ -143,6 +144,7 @@ const getStatusLabel = (status: string) => {
 };
 
 export default function FestivalsPage() {
+  usePageTitle('Festivals');
   return (
     <>
       <Navigation />

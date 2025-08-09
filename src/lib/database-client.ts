@@ -4,15 +4,27 @@ export interface FarmItem {
   name: string;
   description: string;
   estimatedTime: string;
-  estimatedGold: string;
-  estimatedSpirit?: string;
+  estimatedRewards: {
+    gold?: string;
+    spiritShards?: string;
+    karma?: string;
+    experience?: string;
+    laurels?: string;
+    otherCurrency?: string;
+  };
   expansion: ('core' | 'hot' | 'pof' | 'eod' | 'soto' | 'jw')[];
+  isSolo: boolean;
+  requiresSquad: boolean;
+  waypoint?: string;
   selected: boolean;
   createdAt: Date;
   updatedAt: Date;
   status: 'pending' | 'approved' | 'rejected';
   createdBy: string; // ID del usuario que creó el farm
   createdByUsername?: string; // Username del creador (para mostrar)
+  // Campos para compatibilidad hacia atrás
+  estimatedGold?: string;
+  estimatedSpirit?: string;
 }
 
 export interface User {
