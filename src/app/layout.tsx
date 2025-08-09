@@ -1,9 +1,7 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
-import 'primereact/resources/themes/lara-dark-blue/theme.css';
-import 'primereact/resources/primereact.min.css';
-import 'primeicons/primeicons.css';
+// PrimeReact styles removed to avoid lightningcss build issues on Vercel
 import { AuthProvider } from "@/contexts/AuthContext";
 import RoleChecker from "@/components/RoleChecker";
 
