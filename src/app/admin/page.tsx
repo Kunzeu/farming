@@ -55,7 +55,7 @@ export default function AdminPanel() {
     selected: false
   });
 
-  const DESCRIPTION_MAX = 300;
+  const DESCRIPTION_MAX = 500;
   
   // Modal state
   const [modal, setModal] = useState<{
@@ -1149,7 +1149,11 @@ export default function AdminPanel() {
                   <h3 className="text-lg font-semibold text-white mb-1">
                     {farm.name}
                   </h3>
-                  <p className="text-gray-400 text-sm line-clamp-3 break-words whitespace-pre-wrap" title={farm.description}>{farm.description}</p>
+                                <div className="p-3 rounded-lg mb-3">
+                <p className="text-gray-400 text-xs whitespace-pre-wrap break-all" title={farm.description}>
+                  {farm.description.length > 120 ? `${farm.description.substring(0, 120)}...` : farm.description}
+                </p>
+              </div>
                 </div>
                 <div className="flex gap-1">
                   {(Array.isArray(farm.expansion) ? farm.expansion : [farm.expansion]).map((exp) => (
@@ -1349,7 +1353,11 @@ export default function AdminPanel() {
                     ))}
                   </div>
                 </div>
-                <p className="text-gray-400 text-sm line-clamp-3 break-words whitespace-pre-wrap" title={farm.description}>{farm.description}</p>
+                            <div className="p-3 rounded-lg">
+              <p className="text-gray-400 text-xs whitespace-pre-wrap break-all" title={farm.description}>
+                {farm.description.length > 120 ? `${farm.description.substring(0, 120)}...` : farm.description}
+              </p>
+            </div>
               </div>
               
               <div className="flex items-center gap-4 text-sm mb-4">

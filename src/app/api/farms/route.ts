@@ -95,10 +95,10 @@ export async function POST(request: NextRequest) {
     // Validar campos requeridos
     if (!body.name || !body.description || !body.estimatedTime) {
     // Limitar longitud de descripción
-    if (typeof body.description !== 'string' || body.description.length > 300) {
+    if (typeof body.description !== 'string' || body.description.length > 500) {
       return NextResponse.json({ 
         error: 'Validation error', 
-        details: 'Description must be a string up to 300 characters'
+        details: 'Description must be a string up to 500 characters'
       }, { status: 400 });
     }
       return NextResponse.json({ 

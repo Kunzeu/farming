@@ -4,11 +4,12 @@ import { useState, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
 import Navigation from '@/components/layout/Navigation';
-import { Search, Map, Clock, RefreshCw, Star, Copy, Users, User } from 'lucide-react';
+import { Search, Map, Clock, RefreshCw, Star, Copy, Users, User, Info } from 'lucide-react';
 import { useDatabase, FarmItem } from '@/hooks/useDatabase';
 import ExpansionIcon from '@/components/ui/ExpansionIcon';
 import GW2Icon from '@/components/ui/GW2Icon';
 import { usePageTitle } from '@/hooks/usePageTitle';
+import DescriptionModal from '@/components/ui/DescriptionModal';
 
 export default function FarmingRoutes() {
   usePageTitle('Farming Routes');
@@ -20,6 +21,8 @@ export default function FarmingRoutes() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [copiedWaypoint, setCopiedWaypoint] = useState<string | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedRoute, setSelectedRoute] = useState<FarmItem | null>(null);
 
   // Función para copiar waypoint al portapapeles
   const copyWaypointToClipboard = async (waypoint: string, farmId: string) => {
@@ -36,11 +39,23 @@ export default function FarmingRoutes() {
     }
   };
 
+  // Función para abrir el modal de descripción
+  const openDescriptionModal = (route: FarmItem) => {
+    setSelectedRoute(route);
+    setIsModalOpen(true);
+  };
+
+  // Función para cerrar el modal de descripción
+  const closeDescriptionModal = () => {
+    setIsModalOpen(false);
+    setSelectedRoute(null);
+  };
+
   // Mapeo de tipos de moneda a iconos y labels
   const currencyMap = {
     gold: { icon: 'gold' as const, label: 'Gold', suffix: '/h' },
     spiritShards: { icon: 'spirit-shard' as const, label: 'Spirit Shards', suffix: '/h' },
-    imperialFavor: { icon: 'imperial-favor' as const, label: 'Imperial Favor', suffix: '/h' },
+    imperialFavor: { icon: 'imperial-favor' as const, label: 'Favor Imperial', suffix: '/h' },
     experience: { icon: 'gold' as const, label: 'Experience', suffix: '/h' }, // Usar gold como placeholder
     laurels: { icon: 'gold' as const, label: 'Laurels', suffix: '/h' }, // Usar gold como placeholder
     otherCurrency: { icon: 'gold' as const, label: 'Other Currency', suffix: '/h' }, // Usar gold como placeholder
@@ -277,7 +292,22 @@ export default function FarmingRoutes() {
                         )}
                       </div>
                     </div>
-                    <p className="text-gray-400 text-base leading-relaxed mb-3 line-clamp-3 break-words whitespace-pre-wrap" title={route.description}>{route.description}</p>
+                    <div className="mb-3">
+                      <button
+                        onClick={() => openDescriptionModal(route)}
+                        className="text-left w-full group"
+                      >
+                                      <div className="p-3 rounded-lg">
+                <p className="text-gray-400 text-sm leading-relaxed whitespace-pre-wrap break-all group-hover:text-gray-300 transition-colors">
+                  {route.description.length > 150 ? `${route.description.substring(0, 150)}...` : route.description}
+                </p>
+              </div>
+                        <div className="flex items-center gap-2 mt-2 text-blue-400 text-sm opacity-0 group-hover:opacity-100 transition-opacity">
+                          <Info className="w-4 h-4" />
+                          <span className="text-blue-400">See full description</span>
+                        </div>
+                      </button>
+                    </div>
                     
                     {/* Waypoint */}
                     {route.waypoint && (
@@ -410,6 +440,12 @@ export default function FarmingRoutes() {
 
       </main>
 
+      {/* Modal de descripción */}
+      <DescriptionModal
+        isOpen={isModalOpen}
+        onClose={closeDescriptionModal}
+        route={selectedRoute}
+      />
 
     </div>
   );

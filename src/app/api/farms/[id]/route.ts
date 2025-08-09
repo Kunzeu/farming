@@ -28,10 +28,10 @@ export async function PUT(
     }
     
     if (body.description !== undefined) {
-      if (typeof body.description !== 'string' || body.description.length > 300) {
+      if (typeof body.description !== 'string' || body.description.length > 500) {
         return NextResponse.json({ 
           error: 'Validation error', 
-          details: 'Description must be a string up to 300 characters'
+          details: 'Description must be a string up to 500 characters'
         }, { status: 400 });
       }
       updateFields.push(`description = $${paramIndex}`);
