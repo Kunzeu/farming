@@ -178,7 +178,7 @@ class DatabaseService {
             break;
         }
         
-        await this.updateFarm({ ...farm, expansion: expansion as FarmItem['expansion'] });
+        await this.updateFarm({ ...farm, expansion: [expansion] as FarmItem['expansion'] });
       }
     }
   }
