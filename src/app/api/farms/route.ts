@@ -94,6 +94,13 @@ export async function POST(request: NextRequest) {
 
     // Validar campos requeridos
     if (!body.name || !body.description || !body.estimatedTime) {
+    // Limitar longitud de descripción
+    if (typeof body.description !== 'string' || body.description.length > 300) {
+      return NextResponse.json({ 
+        error: 'Validation error', 
+        details: 'Description must be a string up to 300 characters'
+      }, { status: 400 });
+    }
       return NextResponse.json({ 
         error: 'Validation error', 
         details: 'Name, description, and estimatedTime are required fields'

@@ -4,11 +4,10 @@ import { useState, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
 import Navigation from '@/components/layout/Navigation';
-import { Search, Map, Clock, RefreshCw, TrendingUp, Star, Copy, Users, User } from 'lucide-react';
+import { Search, Map, Clock, RefreshCw, Star, Copy, Users, User } from 'lucide-react';
 import { useDatabase, FarmItem } from '@/hooks/useDatabase';
 import ExpansionIcon from '@/components/ui/ExpansionIcon';
 import GW2Icon from '@/components/ui/GW2Icon';
-import GlossaryLink from '@/components/ui/GlossaryLink';
 import { usePageTitle } from '@/hooks/usePageTitle';
 
 export default function FarmingRoutes() {
@@ -278,7 +277,7 @@ export default function FarmingRoutes() {
                         )}
                       </div>
                     </div>
-                    <p className="text-gray-400 text-base leading-relaxed mb-3">{route.description}</p>
+                    <p className="text-gray-400 text-base leading-relaxed mb-3 break-all whitespace-pre-wrap">{route.description}</p>
                     
                     {/* Waypoint */}
                     {route.waypoint && (
@@ -409,48 +408,6 @@ export default function FarmingRoutes() {
           </motion.div>
         )}
 
-        {/* Tips Section */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.6 }}
-          className="mt-12">
-          <h2 className="text-2xl font-bold text-white mb-6 text-center">
-            Farming Tips
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            <div className="bg-gray-800 rounded-lg p-6 border border-gray-700">
-              <TrendingUp className="w-8 h-8 text-green-400 mb-4" />
-              <h3 className="text-white font-semibold mb-2">Efficiency</h3>
-              <p className="text-gray-400 text-sm">
-                Optimized routes to maximize gold per hour
-              </p>
-            </div>
-            
-            <div className="bg-gray-800 rounded-lg p-6 border border-gray-700">
-              <Clock className="w-8 h-8 text-blue-400 mb-4" />
-              <h3 className="text-white font-semibold mb-2">Timing</h3>
-              <p className="text-gray-400 text-sm">
-                Plan your farming sessions according to the game&apos;s events and daily goals.
-              </p>
-            </div>
-            
-            <div className="bg-gray-800 rounded-lg p-6 border border-gray-700">
-              <Star className="w-8 h-8 text-yellow-400 mb-4" />
-              <h3 className="text-white font-semibold mb-2">Variety</h3>
-              <p className="text-gray-400 text-sm">
-                Different types of content for all tastes
-              </p>
-            </div>
-          </div>
-          
-          {/* Glossary Link */}
-          <div className="text-center mt-8">
-            <GlossaryLink>
-              Learn more farming concepts in the Glossary
-            </GlossaryLink>
-          </div>
-        </motion.div>
       </main>
 
 

@@ -54,6 +54,8 @@ export default function AdminPanel() {
     status: 'approved' as const,
     selected: false
   });
+
+  const DESCRIPTION_MAX = 300;
   
   // Modal state
   const [modal, setModal] = useState<{
@@ -218,7 +220,7 @@ export default function AdminPanel() {
   };
 
   const currencyOptions = [
-    { value: 'gold', label: 'Oro', icon: 'gold' as const, placeholder: 'Escribe: 150025 → 15g 00s 25c' },
+    { value: 'gold', label: 'Oro', icon: 'gold' as const, placeholder: '150025' },
     { value: 'spiritShards', label: 'Spirit Shards', icon: 'spirit-shard' as const, placeholder: '25' },
     { value: 'imperialFavor', label: 'Imperial Favor', icon: 'imperial-favor' as const, placeholder: '50' },
     { value: 'experience', label: 'Experiencia', icon: 'gold' as const, placeholder: '50000' },
@@ -295,6 +297,12 @@ export default function AdminPanel() {
       return;
     }
 
+    // Verificar longitud de descripción
+    if (newFarm.description.length > DESCRIPTION_MAX) {
+      showError('Error de Validación', `La descripción no puede exceder ${DESCRIPTION_MAX} caracteres`);
+      return;
+    }
+
     // Verificar que al menos una recompensa esté especificada (formato antiguo o nuevo)
     const hasOldRewards = newFarm.estimatedGold?.trim() || newFarm.estimatedSpirit?.trim();
     const hasNewRewards = Object.values(newFarm.estimatedRewards).some(value => value && value.trim() !== '');
@@ -348,6 +356,12 @@ export default function AdminPanel() {
     // Validar campos requeridos
     if (!editingFarm.name.trim() || !editingFarm.description.trim() || !editingFarm.estimatedTime.trim()) {
       showError('Validation Error', 'Name, description and time are required fields');
+      return;
+    }
+
+    // Validar longitud de descripción
+    if ((editingFarm.description || '').length > DESCRIPTION_MAX) {
+      showError('Validation Error', `Description cannot exceed ${DESCRIPTION_MAX} characters`);
       return;
     }
 
@@ -701,10 +715,12 @@ export default function AdminPanel() {
                 className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-purple-500"
                 rows={3}
                 placeholder="Descripción del farm..."
+                maxLength={DESCRIPTION_MAX}
               />
+              <div className="text-xs text-gray-400 mt-1 text-right">{newFarm.description.length}/{DESCRIPTION_MAX}</div>
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-medium text-gray-300 mb-2">
                   Tiempo Estimado
@@ -746,7 +762,7 @@ export default function AdminPanel() {
             </div>
 
             {/* Checkboxes para Solo/Squad */}
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <label className="flex items-center gap-2 p-3 bg-gray-700 rounded-lg border border-gray-600 hover:border-purple-500 cursor-pointer">
                 <input
                   type="checkbox"
@@ -779,62 +795,51 @@ export default function AdminPanel() {
                 <label className="block text-sm font-medium text-gray-300 mb-3">
                   Tipos de Moneda
                 </label>
-                <div className="grid grid-cols-2 gap-3">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   {currencyOptions.map((option) => (
-                    <div key={option.value} className="flex items-center gap-3 p-3 bg-gray-700 rounded-lg border border-gray-600">
-                      <input
-                        type="checkbox"
-                        checked={selectedCurrencies.includes(option.value)}
-                        onChange={(e) => {
-                          if (e.target.checked) {
-                            setSelectedCurrencies(prev => [...prev, option.value]);
-                          } else {
-                            setSelectedCurrencies(prev => prev.filter(c => c !== option.value));
-                            setNewFarm(currentFarm => ({
-                              ...currentFarm,
-                              estimatedRewards: {
-                                ...currentFarm.estimatedRewards,
-                                [option.value]: ''
-                              }
-                            }));
-                          }
-                        }}
-                        className="w-4 h-4 text-purple-600 bg-gray-700 border-gray-600 rounded focus:ring-purple-500"
-                      />
-                      <GW2Icon type={option.icon} size="sm" />
-                      <span className="text-white text-sm min-w-0 flex-shrink-0">{option.label}</span>
-                      <input
-                        type={option.value === 'gold' ? 'text' : 'number'}
-                        min={option.value === 'gold' ? undefined : '0'}
-                        step={option.value === 'gold' ? undefined : '0.01'}
-                        value={newFarm.estimatedRewards[option.value as keyof typeof newFarm.estimatedRewards] || ''}
-                        onChange={(e) => {
-                          const value = e.target.value;
-                          
-                          if (option.value === 'gold') {
-                            // Para oro, permitir solo números y formatear automáticamente
-                            const numbersOnly = value.replace(/[^\d]/g, '');
-                            if (numbersOnly.length <= 10) { // Limitar a 10 dígitos max
-                              handleCurrencyChange(option.value, numbersOnly);
-                              // Auto-seleccionar el checkbox si se escribe algo
-                              if (numbersOnly && !selectedCurrencies.includes(option.value)) {
-                                setSelectedCurrencies(prev => [...prev, option.value]);
-                              }
+                    <div key={option.value} className="p-3 bg-gray-700 rounded-lg border border-gray-600">
+                      <div className="flex items-center gap-2">
+                        <input
+                          type="checkbox"
+                          checked={selectedCurrencies.includes(option.value)}
+                          onChange={(e) => {
+                            if (e.target.checked) {
+                              setSelectedCurrencies(prev => [...prev, option.value]);
+                            } else {
+                              setSelectedCurrencies(prev => prev.filter(c => c !== option.value));
+                              setNewFarm(currentFarm => ({
+                                ...currentFarm,
+                                estimatedRewards: {
+                                  ...currentFarm.estimatedRewards,
+                                  [option.value]: ''
+                                }
+                              }));
                             }
-                          } else {
-                            // Para otras monedas, lógica normal
-                            if (value === '' || (!isNaN(Number(value)) && Number(value) >= 0)) {
+                          }}
+                          className="w-4 h-4 text-purple-600 bg-gray-700 border-gray-600 rounded focus:ring-purple-500"
+                        />
+                        <GW2Icon type={option.icon} size="sm" />
+                        <span className="text-white text-sm flex-1 min-w-0">{option.label}</span>
+                        <input
+                          type={option.value === 'gold' ? 'text' : 'number'}
+                          min={option.value === 'gold' ? undefined : '0'}
+                          step={option.value === 'gold' ? undefined : '0.01'}
+                          value={newFarm.estimatedRewards[option.value as keyof typeof newFarm.estimatedRewards] || ''}
+                          onChange={(e) => {
+                            const value = e.target.value;
+                            if (option.value === 'gold') {
+                              const numbersOnly = value.replace(/[^\d]/g, '');
+                              if (numbersOnly.length <= 10) {
+                                handleCurrencyChange(option.value, numbersOnly);
+                              }
+                            } else if (value === '' || (!isNaN(Number(value)) && Number(value) >= 0)) {
                               handleCurrencyChange(option.value, value);
-                              // Auto-seleccionar el checkbox si se escribe algo
-                              if (value && !selectedCurrencies.includes(option.value)) {
-                                setSelectedCurrencies(prev => [...prev, option.value]);
-                              }
                             }
-                          }
-                        }}
-                        className="flex-1 px-2 py-1 bg-gray-600 border border-gray-500 rounded text-white text-sm focus:outline-none focus:border-purple-500"
-                        placeholder={option.placeholder}
-                      />
+                          }}
+                          className="w-24 sm:w-28 md:w-32 lg:w-36 px-2 py-1 bg-gray-600 border border-gray-500 rounded text-white text-sm focus:outline-none focus:border-purple-500"
+                          placeholder={option.placeholder}
+                        />
+                      </div>
                     </div>
                   ))}
                 </div>
@@ -846,7 +851,7 @@ export default function AdminPanel() {
               <label className="block text-sm font-medium text-gray-300 mb-2">
                 Expansiones Requeridas
               </label>
-              <div className="grid grid-cols-2 gap-2">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                 {[
                   { value: 'core', label: 'Core Game' },
                   { value: 'hot', label: 'Heart of Thorns' },
@@ -932,7 +937,9 @@ export default function AdminPanel() {
                 onChange={(e) => setEditingFarm({...editingFarm, description: e.target.value})}
                 className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-purple-500"
                 rows={3}
+                maxLength={DESCRIPTION_MAX}
               />
+              <div className="text-xs text-gray-400 mt-1 text-right">{(editingFarm.description || '').length}/{DESCRIPTION_MAX}</div>
             </div>
 
             {/* Waypoint */}
@@ -1009,65 +1016,53 @@ export default function AdminPanel() {
               <label className="block text-sm font-medium text-gray-300 mb-3">
                 Tipos de Moneda
               </label>
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 {currencyOptions.map((option) => (
-                  <div key={option.value} className="flex items-center gap-3 p-3 bg-gray-700 rounded-lg border border-gray-600">
-                    <input
-                      type="checkbox"
-                      checked={editingSelectedCurrencies.includes(option.value)}
-                      onChange={(e) => {
-                        if (e.target.checked) {
-                          setEditingSelectedCurrencies(prev => [...prev, option.value]);
-                        } else {
-                          setEditingSelectedCurrencies(prev => prev.filter(c => c !== option.value));
-                          // Limpiar el valor cuando se deselecciona
-                          if (editingFarm) {
-                            setEditingFarm(prev => ({
-                              ...prev!,
-                              estimatedRewards: {
-                                ...prev!.estimatedRewards,
-                                [option.value]: ''
-                              }
-                            }));
-                          }
-                        }
-                      }}
-                      className="w-4 h-4 text-purple-600 bg-gray-700 border-gray-600 rounded focus:ring-purple-500"
-                    />
-                    <GW2Icon type={option.icon} size="sm" />
-                    <span className="text-white text-sm min-w-0 flex-shrink-0">{option.label}</span>
-                    <input
-                      type={option.value === 'gold' ? 'text' : 'number'}
-                      min={option.value === 'gold' ? undefined : '0'}
-                      step={option.value === 'gold' ? undefined : '0.01'}
-                      value={editingFarm.estimatedRewards?.[option.value as keyof typeof editingFarm.estimatedRewards] || ''}
-                      onChange={(e) => {
-                        const value = e.target.value;
-                        
-                        if (option.value === 'gold') {
-                          // Para oro, permitir solo números y formatear automáticamente
-                          const numbersOnly = value.replace(/[^\d]/g, '');
-                          if (numbersOnly.length <= 10) { // Limitar a 10 dígitos max
-                            handleEditingCurrencyChange(option.value, numbersOnly);
-                            // Auto-seleccionar el checkbox si se escribe algo
-                            if (numbersOnly && !editingSelectedCurrencies.includes(option.value)) {
-                              setEditingSelectedCurrencies(prev => [...prev, option.value]);
+                  <div key={option.value} className="p-3 bg-gray-700 rounded-lg border border-gray-600">
+                    <div className="flex items-center gap-2">
+                      <input
+                        type="checkbox"
+                        checked={editingSelectedCurrencies.includes(option.value)}
+                        onChange={(e) => {
+                          if (e.target.checked) {
+                            setEditingSelectedCurrencies(prev => [...prev, option.value]);
+                          } else {
+                            setEditingSelectedCurrencies(prev => prev.filter(c => c !== option.value));
+                            if (editingFarm) {
+                              setEditingFarm(prev => ({
+                                ...prev!,
+                                estimatedRewards: {
+                                  ...prev!.estimatedRewards,
+                                  [option.value]: ''
+                                }
+                              }));
                             }
                           }
-                        } else {
-                          // Para otras monedas, lógica normal
-                          if (value === '' || (!isNaN(Number(value)) && Number(value) >= 0)) {
+                        }}
+                        className="w-4 h-4 text-purple-600 bg-gray-700 border-gray-600 rounded focus:ring-purple-500"
+                      />
+                      <GW2Icon type={option.icon} size="sm" />
+                      <span className="text-white text-sm flex-1 min-w-0">{option.label}</span>
+                      <input
+                        type={option.value === 'gold' ? 'text' : 'number'}
+                        min={option.value === 'gold' ? undefined : '0'}
+                        step={option.value === 'gold' ? undefined : '0.01'}
+                        value={editingFarm.estimatedRewards?.[option.value as keyof typeof editingFarm.estimatedRewards] || ''}
+                        onChange={(e) => {
+                          const value = e.target.value;
+                          if (option.value === 'gold') {
+                            const numbersOnly = value.replace(/[^\d]/g, '');
+                            if (numbersOnly.length <= 10) {
+                              handleEditingCurrencyChange(option.value, numbersOnly);
+                            }
+                          } else if (value === '' || (!isNaN(Number(value)) && Number(value) >= 0)) {
                             handleEditingCurrencyChange(option.value, value);
-                            // Auto-seleccionar el checkbox si se escribe algo
-                            if (value && !editingSelectedCurrencies.includes(option.value)) {
-                              setEditingSelectedCurrencies(prev => [...prev, option.value]);
-                            }
                           }
-                        }
-                      }}
-                      className="flex-1 px-2 py-1 bg-gray-600 border border-gray-500 rounded text-white text-sm focus:outline-none focus:border-purple-500"
-                      placeholder={option.placeholder}
-                    />
+                        }}
+                        className="w-24 sm:w-28 md:w-32 lg:w-36 px-2 py-1 bg-gray-600 border border-gray-500 rounded text-white text-sm focus:outline-none focus:border-purple-500"
+                        placeholder={option.placeholder}
+                      />
+                    </div>
                   </div>
                 ))}
               </div>
@@ -1078,7 +1073,7 @@ export default function AdminPanel() {
               <label className="block text-sm font-medium text-gray-300 mb-2">
                 Expansiones Requeridas
               </label>
-              <div className="grid grid-cols-2 gap-2">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                 {[
                   { value: 'core', label: 'Core Game' },
                   { value: 'hot', label: 'Heart of Thorns' },
@@ -1154,7 +1149,7 @@ export default function AdminPanel() {
                   <h3 className="text-lg font-semibold text-white mb-1">
                     {farm.name}
                   </h3>
-                  <p className="text-gray-400 text-sm">{farm.description}</p>
+                  <p className="text-gray-400 text-sm break-all whitespace-pre-wrap">{farm.description}</p>
                 </div>
                 <div className="flex gap-1">
                   {(Array.isArray(farm.expansion) ? farm.expansion : [farm.expansion]).map((exp) => (
@@ -1354,7 +1349,7 @@ export default function AdminPanel() {
                     ))}
                   </div>
                 </div>
-                <p className="text-gray-400 text-sm">{farm.description}</p>
+                <p className="text-gray-400 text-sm break-all whitespace-pre-wrap">{farm.description}</p>
               </div>
               
               <div className="flex items-center gap-4 text-sm mb-4">

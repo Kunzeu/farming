@@ -1,6 +1,9 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
+import 'primereact/resources/themes/lara-dark-blue/theme.css';
+import 'primereact/resources/primereact.min.css';
+import 'primeicons/primeicons.css';
 import { AuthProvider } from "@/contexts/AuthContext";
 import RoleChecker from "@/components/RoleChecker";
 
@@ -9,6 +12,13 @@ const inter = Inter({ subsets: ["latin"] });
 export const metadata: Metadata = {
   title: "True Farming",
   description: "Your platform to optimize farming in Guild Wars 2",
+  icons: {
+    icon: [
+      { url: "/images/icons/icon.png", type: "image/png" },
+      { url: "/icon.png", type: "image/png" },
+      { url: "/images/icons/favicon.ico" }
+    ]
+  }
 };
 
 export default function RootLayout({

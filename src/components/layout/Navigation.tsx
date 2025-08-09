@@ -160,11 +160,12 @@ const Navigation = () => {
           {/* Logo - Esquina Izquierda */}
           <div className="flex-shrink-0">
             <Link href="/" className="flex items-center space-x-3 group">
-              <motion.div
+              <motion.img
                 whileHover={{ scale: 1.05, rotate: 5 }}
-                className="max-w-8 h-1 bg-gradient-to-br from-purple-500 via-blue-500 to-purple-600 rounded-xl flex items-center justify-center shadow-lg group-hover:shadow-purple-500/25 transition-all duration-300">
-                <span className="text-white font-bold text-xs">GW2</span>
-              </motion.div>
+                src="/images/icons/icon.png"
+                alt="True Farming"
+                className="w-8 h-8 rounded-md shadow-lg group-hover:shadow-purple-500/25 transition-all duration-300"
+              />
               <div className="hidden sm:block">
                 <div className="flex flex-col">
                   <span className="text-white font-black text-xl leading-tight">True Farming</span>
