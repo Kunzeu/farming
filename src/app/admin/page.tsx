@@ -1149,7 +1149,7 @@ export default function AdminPanel() {
                   <h3 className="text-lg font-semibold text-white mb-1">
                     {farm.name}
                   </h3>
-                  <p className="text-gray-400 text-sm break-all whitespace-pre-wrap">{farm.description}</p>
+                  <p className="text-gray-400 text-sm line-clamp-3 break-words whitespace-pre-wrap" title={farm.description}>{farm.description}</p>
                 </div>
                 <div className="flex gap-1">
                   {(Array.isArray(farm.expansion) ? farm.expansion : [farm.expansion]).map((exp) => (
@@ -1349,7 +1349,7 @@ export default function AdminPanel() {
                     ))}
                   </div>
                 </div>
-                <p className="text-gray-400 text-sm break-all whitespace-pre-wrap">{farm.description}</p>
+                <p className="text-gray-400 text-sm line-clamp-3 break-words whitespace-pre-wrap" title={farm.description}>{farm.description}</p>
               </div>
               
               <div className="flex items-center gap-4 text-sm mb-4">

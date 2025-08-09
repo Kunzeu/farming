@@ -277,7 +277,7 @@ export default function FarmingRoutes() {
                         )}
                       </div>
                     </div>
-                    <p className="text-gray-400 text-base leading-relaxed mb-3 break-all whitespace-pre-wrap">{route.description}</p>
+                    <p className="text-gray-400 text-base leading-relaxed mb-3 line-clamp-3 break-words whitespace-pre-wrap" title={route.description}>{route.description}</p>
                     
                     {/* Waypoint */}
                     {route.waypoint && (
