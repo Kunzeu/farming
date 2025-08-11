@@ -459,9 +459,9 @@ const FourWindsPage = () => {
           className="flex flex-wrap justify-center gap-2 mb-8"
         >
           {[
-                            { id: 'overview', label: 'Overview', icon: Info },
+            { id: 'overview', label: 'Overview', icon: Info },
             { id: 'calculators', label: 'Calculators', icon: Calculator },
-            { id: 'box-opening', label: 'Apertura de Cajas', icon: Package },
+            { id: 'box-opening', label: 'Box Opening', icon: Package },
             { id: 'strategies', label: 'Strategies', icon: TrendingUp },
 
           ].map((tab) => (
@@ -855,21 +855,21 @@ const FourWindsPage = () => {
             </div>
           )}
 
-          {/* Apertura de Cajas Section */}
+          {/* Box Opening Section */}
           {selectedSection === 'box-opening' && (
             <div className="space-y-8">
               <div className="bg-gray-800/50 backdrop-blur-sm border border-gray-700 rounded-lg p-6">
                 <h2 className="text-2xl font-bold text-white mb-6 flex items-center">
                   <Package className="w-6 h-6 mr-3 text-cyan-400" />
-                  Apertura de Cajas - Four Winds Festival
+                  Box Opening - Four Winds Festival
                 </h2>
                 
                 <div className="bg-gray-700/50 rounded-lg p-4 mb-6">
                   <div className="text-center">
-                    <h3 className="text-xl font-bold text-cyan-400 mb-2">Estadísticas de Apertura</h3>
-                    <p className="text-2xl font-bold text-white">280,000 Cajas Abiertas</p>
+                    <h3 className="text-xl font-bold text-cyan-400 mb-2">Opening Statistics</h3>
+                    <p className="text-2xl font-bold text-white">280,000 Boxes Opened</p>
                     <p className="text-gray-300 text-sm mt-2">
-                      Datos basados en la apertura masiva de cajas del festival Four Winds
+                      Data based on large-scale box openings during the Four Winds Festival
                     </p>
                   </div>
                 </div>
@@ -878,13 +878,13 @@ const FourWindsPage = () => {
                   <div>
                     <h3 className="text-xl font-bold text-white mb-4 flex items-center">
                       <Calculator className="w-6 h-6 mr-3 text-cyan-400" />
-                      Items Obtenidos
+                      Obtained Items
                     </h3>
                     {primaryItems.length === 0 ? (
                       <div className="bg-gray-800/30 rounded-lg border border-gray-700 overflow-hidden">
                         <div className="p-4 text-center text-gray-400">
-                          <p>{primaryLoading ? 'Cargando items…' : 'Esperando los IDs primarios...'}</p>
-                          <p className="text-sm mt-2">Pásame la lista de IDs y los agrego fijos en el código.</p>
+                          <p>{primaryLoading ? 'Loading items…' : 'Waiting for primary IDs...'}</p>
+                          <p className="text-sm mt-2">Send me the list of IDs and I will hardcode them.</p>
                         </div>
                       </div>
                     ) : (
@@ -896,10 +896,10 @@ const FourWindsPage = () => {
                                 <div className="flex items-center gap-1.5">Material {getPrimarySortIcon('name')}</div>
                               </th>
                               <th onClick={() => handlePrimarySort('quantity')} className="text-center py-2.5 px-2 text-gray-200 font-semibold text-sm uppercase tracking-wider cursor-pointer select-none">
-                                <div className="flex items-center justify-center gap-1.5">Cantidad {getPrimarySortIcon('quantity')}</div>
+                                <div className="flex items-center justify-center gap-1.5">Quantity {getPrimarySortIcon('quantity')}</div>
                               </th>
                               <th onClick={() => handlePrimarySort('perBox')} className="text-center py-2.5 px-2 text-gray-200 font-semibold text-sm uppercase tracking-wider cursor-pointer select-none">
-                                <div className="flex items-center justify-center gap-1.5">Por caja {getPrimarySortIcon('perBox')}</div>
+                                <div className="flex items-center justify-center gap-1.5">Per box {getPrimarySortIcon('perBox')}</div>
                               </th>
                               
                             </tr>
@@ -928,26 +928,26 @@ const FourWindsPage = () => {
                   <div>
                     <h3 className="text-xl font-bold text-white mb-4 flex items-center">
                       <TrendingUp className="w-6 h-6 mr-3 text-cyan-400" />
-                      Análisis de Resultados
+                      Results Analysis
                     </h3>
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                       <div className="bg-gray-700/50 rounded-lg p-4 text-center">
                         <div className="text-2xl font-bold text-cyan-400">
                           {primaryItems.filter(i => i.quantity > 0).length.toLocaleString()}
                         </div>
-                        <div className="text-gray-300 text-sm">Items Únicos</div>
+                        <div className="text-gray-300 text-sm">Unique Items</div>
                       </div>
                       <div className="bg-gray-700/50 rounded-lg p-4 text-center">
                         <div className="text-2xl font-bold text-green-400">
                           {primaryItems.reduce((sum, i) => sum + i.quantity, 0).toLocaleString()}
                         </div>
-                        <div className="text-gray-300 text-sm">Total de Items</div>
+                        <div className="text-gray-300 text-sm">Total Items</div>
                       </div>
                       <div className="bg-gray-700/50 rounded-lg p-4 text-center">
                         <div className="text-2xl font-bold text-yellow-400">
                           {formatGoldSilverCopper(primaryItems.reduce((sum, i) => sum + i.quantity * (i.pricePerUnit || 0), 0))}
                         </div>
-                        <div className="text-gray-300 text-sm">Valor Total (precio de compra)</div>
+                        <div className="text-gray-300 text-sm">Total Value (sell price)</div>
                       </div>
                     </div>
                   </div>
