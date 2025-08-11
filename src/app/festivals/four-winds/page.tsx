@@ -444,9 +444,9 @@ const FourWindsPage = () => {
           
           <div className="flex items-center justify-center mb-4">
             <Wind className="w-12 h-12 text-cyan-400 mr-3" />
-            <h1 className="text-4xl font-bold text-white">Four Winds Festival</h1>
+            <h1 className="text-3xl sm:text-4xl font-bold text-white">Four Winds Festival</h1>
           </div>
-          <p className="text-xl text-gray-300">
+          <p className="text-base sm:text-xl text-gray-300">
                           Calculators and analysis to maximize your profits during the Four Winds Festival
           </p>
         </motion.div>
@@ -556,7 +556,7 @@ const FourWindsPage = () => {
                               (Data saved automatically)
                             </span>
                           </h3>
-                          <div className="flex gap-2">
+                          <div className="flex gap-2 flex-wrap">
                             <button
                               onClick={() => setShowItemSelectionModal(true)}
                               className="flex items-center gap-2 px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded text-sm transition-colors duration-200"
@@ -575,7 +575,7 @@ const FourWindsPage = () => {
 
                           </div>
                         </div>
-                      <div className="overflow-x-auto bg-gray-800/30 rounded-lg border border-gray-700">
+                       <div className="overflow-x-auto bg-gray-800/30 rounded-lg border border-gray-700">
                         <table className="w-full text-sm min-w-[800px]">
                           <thead>
                             <tr className="border-b border-gray-600 bg-gray-700/50">
@@ -651,7 +651,8 @@ const FourWindsPage = () => {
                               </tr>
                             ))}
                           </tbody>
-                        </table>
+                         </table>
+                         <div className="md:hidden text-gray-400 text-xs mt-2 text-center">Swipe horizontally to see all columns</div>
                       </div>
                     </div>
 
@@ -765,7 +766,8 @@ const FourWindsPage = () => {
                                </td>
                             </tr>
                           </tfoot>
-                        </table>
+                         </table>
+                         <div className="md:hidden text-gray-400 text-xs mt-2 text-center">Swipe horizontally to see all columns</div>
                       </div>
                                          </div>
                    </div>
@@ -866,11 +868,12 @@ const FourWindsPage = () => {
                 
                 <div className="bg-gray-700/50 rounded-lg p-4 mb-6">
                   <div className="text-center">
-                    <h3 className="text-xl font-bold text-cyan-400 mb-2">Opening Statistics</h3>
-                    <p className="text-2xl font-bold text-white">280,000 Boxes Opened</p>
+                    <h3 className="text-lg sm:text-xl font-bold text-cyan-400 mb-2">Opening Statistics</h3>
+                    <p className="text-xl sm:text-2xl font-bold text-white">280,000 Boxes Opened</p>
                     <p className="text-gray-300 text-sm mt-2">
                       Data based on large-scale box openings during the Four Winds Festival
                     </p>
+                    <p className="text-gray-400 text-xs mt-1">Data credit: Vortus43</p>
                   </div>
                 </div>
 
@@ -920,7 +923,8 @@ const FourWindsPage = () => {
                               </tr>
                             ))}
                           </tbody>
-                        </table>
+                         </table>
+                         <div className="md:hidden text-gray-400 text-xs mt-2 text-center">Swipe horizontally to see all columns</div>
                       </div>
                     )}
                   </div>
