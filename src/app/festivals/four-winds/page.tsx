@@ -51,7 +51,7 @@ const boxCalculatorData: BoxCalculatorItem[] = [
   { id: 19721, name: 'Glob of Ectoplasm', icon: '', numPerBox: 0.14, pricePerUnit: 2500, pricePerBox: 725, myMaterials: 0, resultingBoxes: 0 },
   { id: 19729, name: 'Thick Leather Section', icon: '', numPerBox: 6, pricePerUnit: 150, pricePerBox: 3600, myMaterials: 0, resultingBoxes: 0 },
   { id: 19700, name: 'Mithril Ore', icon: '', numPerBox: 15, pricePerUnit: 200, pricePerBox: 3200, myMaterials: 0, resultingBoxes: 0 },
-  { id: 19728, name: 'Thin Leather Section', icon: '', numPerBox: 40, pricePerUnit: 25, pricePerBox: 1000, myMaterials: 0, resultingBoxes: 0 },
+  { id: 19728, name: 'Thin Leather Section', icon: '', numPerBox: 65, pricePerUnit: 25, pricePerBox: 1000, myMaterials:40, resultingBoxes: 0 },
   { id: 19722, name: 'Elder Wood Log', icon: '', numPerBox: 22, pricePerUnit: 150, pricePerBox: 3300, myMaterials: 0, resultingBoxes: 0 },
   { id: 44941, name: 'Watchwork Sprocket', icon: '', numPerBox: 6, pricePerUnit: 500, pricePerBox: 4000, myMaterials: 0, resultingBoxes: 0 },
   { id: 19719, name: 'Rawhide Leather Section', icon: '', numPerBox: 130, pricePerUnit: 8, pricePerBox: 672, myMaterials: 0, resultingBoxes: 0 },
@@ -77,11 +77,34 @@ const boxCalculatorData: BoxCalculatorItem[] = [
   { id: 96052, name: 'Research Notes', icon: '', numPerBox: 10, pricePerUnit: 90, pricePerBox: 15000, myMaterials: 0, resultingBoxes: 0 },
 ];
 
+// IDs primarios para "Apertura de Cajas" (rellenar con la lista definitiva)
+interface BoxOpeningPrimaryItem {
+  id: number;
+  name: string;
+  icon: string;
+  quantity: number;
+  perBox: number;
+  pricePerUnit?: number;
+}
+
+const BOX_OPENING_PRIMARY_IDS: number[] = [
+  24290,24342,24346,24272,24352,24284,24296,24278,24291,24343,24347,24273,24353,24285,24297,24279,24292,24344,24348,24274,24354,24286,24298,24280,24293,24345,24349,24275,24355,24287,24363,24281,24294,24341,24350,24276,24356,24288,24299,24282,24295,24358,24351,24277,24357,24289,24300,24283,66224,19718,19739,19741,19743,19748,19745,19697,19703,19699,19702,19698,19700,19701,19723,19726,19727,19724,19722,19725,19719,19728,19730,19731,19729,19732,43319,43773,43772,102170,88223,43909,48905,88118,48895,43952,
+  96978,70477,88148,70266,66165,42402,43955,63856,91086,100244,88732,92023,84882,79978,82006,81701,81807,99956,98092,98002,72503
+];
+
+const BOX_OPENING_PRIMARY_COUNTS: number[] = [
+  1227,1163,1226,1249,1165,1160,1185,1213,989,956,993,946,924,960,920,980,734,700,733,744,766,756,754,661,504,495,491,467,486,494,468,470,255,219,254,256,311,247,245,251,128,121,132,113,133,110,121,123,
+  786889,12025,9132,6018,2974,2048,610,12087,8836,9030,6117,2781,1042,629,12163,9015,5996,2997,4069,583,12098,8927,6125,2944,1196,575,1570,280000,113,152,658,506,161,600,922,310,
+  23,0,0,11,16,1,1,1,0,0,1,1,1,1,0,1,0,0,0,2,1
+];
+
+const TOTAL_OPENED_BOXES = 280000;
+
 // Clave para localStorage
 const FOUR_WINDS_CALCULATOR_KEY = 'four_winds_calculator_data';
 
 const FourWindsPage = () => {
-  const [selectedSection, setSelectedSection] = useState<string>('overview');
+  const [selectedSection, setSelectedSection] = useState<string>('box-opening');
   
   // Estados para la calculadora de cajas
      const [boxCalculatorItems, setBoxCalculatorItems] = useState<BoxCalculatorItem[]>(() => {
@@ -117,6 +140,12 @@ const FourWindsPage = () => {
   // Estados para ordenamiento
   const [sortField, setSortField] = useState<string>('name');
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
+
+  // Estado para Items Obtenidos (IDs primarios)
+  const [primaryItems, setPrimaryItems] = useState<BoxOpeningPrimaryItem[]>([]);
+  const [primaryLoading, setPrimaryLoading] = useState(false);
+  const [primarySortField, setPrimarySortField] = useState<'id' | 'name' | 'quantity' | 'perBox'>('id');
+  const [primarySortDirection, setPrimarySortDirection] = useState<'asc' | 'desc'>('asc');
 
   // Función para guardar datos en localStorage
   const saveCalculatorData = useCallback((data: BoxCalculatorItem[]) => {
@@ -190,6 +219,94 @@ const FourWindsPage = () => {
       setBoxCalculatorLoading(false);
     }
   }, [saveCalculatorData]);
+
+  // Cargar nombres e iconos de los IDs primarios (Apertura de Cajas)
+  const fetchPrimaryItems = useCallback(async () => {
+    try {
+      if (BOX_OPENING_PRIMARY_IDS.length === 0) {
+        setPrimaryItems([]);
+        return;
+      }
+      setPrimaryLoading(true);
+      const ids = BOX_OPENING_PRIMARY_IDS.join(',');
+      const [itemsRes, pricesRes] = await Promise.all([
+        fetch(`https://api.guildwars2.com/v2/items?ids=${ids}&lang=en`),
+        fetch(`https://api.guildwars2.com/v2/commerce/prices?ids=${ids}&lang=en`)
+      ]);
+      if (!itemsRes.ok) return;
+      const data: Gw2Item[] = await itemsRes.json();
+      const pricesData: Gw2Price[] = pricesRes.ok ? await pricesRes.json() : [];
+      const pricesMap: Record<number, Gw2Price> = {};
+      pricesData.forEach((p) => { pricesMap[p.id] = p; });
+      // Construir mapa id -> cantidad
+      const countById: Record<number, number> = {};
+      BOX_OPENING_PRIMARY_IDS.forEach((id, idx) => {
+        countById[id] = BOX_OPENING_PRIMARY_COUNTS[idx] ?? 0;
+      });
+      const mapped: BoxOpeningPrimaryItem[] = data.map((d) => ({
+        id: d.id,
+        name: d.name,
+        icon: d.icon,
+        quantity: countById[d.id] ?? 0,
+        perBox: (countById[d.id] ?? 0) / TOTAL_OPENED_BOXES,
+        pricePerUnit: pricesMap[d.id]?.sells?.unit_price ?? 0,
+      }));
+      setPrimaryItems(mapped);
+    } catch (e) {
+      console.error('Error cargando items primarios:', e);
+    } finally {
+      setPrimaryLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchPrimaryItems();
+  }, [fetchPrimaryItems]);
+
+  const handlePrimarySort = (field: 'id' | 'name' | 'quantity' | 'perBox') => {
+    if (primarySortField === field) {
+      setPrimarySortDirection(primarySortDirection === 'asc' ? 'desc' : 'asc');
+    } else {
+      setPrimarySortField(field);
+      setPrimarySortDirection('asc');
+    }
+  };
+
+  const getPrimarySortIcon = (field: 'id' | 'name' | 'quantity' | 'perBox') => {
+    if (primarySortField !== field) return <ArrowUpDown className="w-3.5 h-3.5" />;
+    return primarySortDirection === 'asc' ? <ArrowUp className="w-3.5 h-3.5" /> : <ArrowDown className="w-3.5 h-3.5" />;
+  };
+
+  // Eliminado el restablecer al orden original
+
+  const sortedPrimaryItems = useMemo(() => {
+    const items = [...primaryItems];
+    // Mapa para ordenar por la posición definida en BOX_OPENING_PRIMARY_IDS
+    const indexById: Record<number, number> = {};
+    BOX_OPENING_PRIMARY_IDS.forEach((id, idx) => {
+      indexById[id] = idx;
+    });
+    items.sort((a, b) => {
+      let aVal: string | number;
+      let bVal: string | number;
+      if (primarySortField === 'name') {
+        aVal = a.name.toLowerCase();
+        bVal = b.name.toLowerCase();
+      } else if (primarySortField === 'quantity') {
+        aVal = a.quantity;
+        bVal = b.quantity;
+      } else if (primarySortField === 'id') {
+        aVal = indexById[a.id] ?? Number.MAX_SAFE_INTEGER;
+        bVal = indexById[b.id] ?? Number.MAX_SAFE_INTEGER;
+      } else {
+        aVal = a.perBox;
+        bVal = b.perBox;
+      }
+      if (primarySortDirection === 'asc') return aVal > bVal ? 1 : aVal < bVal ? -1 : 0;
+      return aVal < bVal ? 1 : aVal > bVal ? -1 : 0;
+    });
+    return items;
+  }, [primaryItems, primarySortField, primarySortDirection]);
 
   // Función para aplicar selección de items en la calculadora de cajas
   const applyItemSelection = () => {
@@ -344,7 +461,9 @@ const FourWindsPage = () => {
           {[
                             { id: 'overview', label: 'Overview', icon: Info },
             { id: 'calculators', label: 'Calculators', icon: Calculator },
-                            { id: 'strategies', label: 'Strategies', icon: TrendingUp }
+            { id: 'box-opening', label: 'Apertura de Cajas', icon: Package },
+            { id: 'strategies', label: 'Strategies', icon: TrendingUp },
+
           ].map((tab) => (
             <button
               key={tab.id}
@@ -730,6 +849,107 @@ const FourWindsPage = () => {
                       <li>• Monitor prices of exclusive materials</li>
                       <li>• Participate in special events during the festival</li>
                     </ul>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Apertura de Cajas Section */}
+          {selectedSection === 'box-opening' && (
+            <div className="space-y-8">
+              <div className="bg-gray-800/50 backdrop-blur-sm border border-gray-700 rounded-lg p-6">
+                <h2 className="text-2xl font-bold text-white mb-6 flex items-center">
+                  <Package className="w-6 h-6 mr-3 text-cyan-400" />
+                  Apertura de Cajas - Four Winds Festival
+                </h2>
+                
+                <div className="bg-gray-700/50 rounded-lg p-4 mb-6">
+                  <div className="text-center">
+                    <h3 className="text-xl font-bold text-cyan-400 mb-2">Estadísticas de Apertura</h3>
+                    <p className="text-2xl font-bold text-white">280,000 Cajas Abiertas</p>
+                    <p className="text-gray-300 text-sm mt-2">
+                      Datos basados en la apertura masiva de cajas del festival Four Winds
+                    </p>
+                  </div>
+                </div>
+
+                <div className="space-y-6">
+                  <div>
+                    <h3 className="text-xl font-bold text-white mb-4 flex items-center">
+                      <Calculator className="w-6 h-6 mr-3 text-cyan-400" />
+                      Items Obtenidos
+                    </h3>
+                    {primaryItems.length === 0 ? (
+                      <div className="bg-gray-800/30 rounded-lg border border-gray-700 overflow-hidden">
+                        <div className="p-4 text-center text-gray-400">
+                          <p>{primaryLoading ? 'Cargando items…' : 'Esperando los IDs primarios...'}</p>
+                          <p className="text-sm mt-2">Pásame la lista de IDs y los agrego fijos en el código.</p>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="overflow-x-auto bg-gray-800/30 rounded-lg border border-gray-700">
+                        <table className="w-full text-base min-w-[520px]">
+                          <thead>
+                            <tr className="border-b border-gray-600 bg-gray-700/50">
+                              <th onClick={() => handlePrimarySort('name')} className="text-left py-2.5 px-3 text-gray-200 font-semibold text-sm uppercase tracking-wider cursor-pointer select-none">
+                                <div className="flex items-center gap-1.5">Material {getPrimarySortIcon('name')}</div>
+                              </th>
+                              <th onClick={() => handlePrimarySort('quantity')} className="text-center py-2.5 px-2 text-gray-200 font-semibold text-sm uppercase tracking-wider cursor-pointer select-none">
+                                <div className="flex items-center justify-center gap-1.5">Cantidad {getPrimarySortIcon('quantity')}</div>
+                              </th>
+                              <th onClick={() => handlePrimarySort('perBox')} className="text-center py-2.5 px-2 text-gray-200 font-semibold text-sm uppercase tracking-wider cursor-pointer select-none">
+                                <div className="flex items-center justify-center gap-1.5">Por caja {getPrimarySortIcon('perBox')}</div>
+                              </th>
+                              
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {sortedPrimaryItems.map((item, index) => (
+                              <tr key={item.id} className={`border-b border-gray-700 hover:bg-gray-700/20 transition-colors ${index % 2 === 0 ? 'bg-gray-800/20' : 'bg-gray-800/10'}`}>
+                                <td className="py-2 px-3 text-white">
+                                  <div className="flex items-center gap-2">
+                                    {item.icon ? (
+                                      <Image src={item.icon} alt={item.name} width={28} height={28} className="rounded border border-gray-600" onError={(e) => { e.currentTarget.style.display = 'none'; }} />
+                                    ) : null}
+                                    <span className="font-medium text-base">{item.name}</span>
+                                  </div>
+                                </td>
+                                <td className="py-2 px-2 text-center text-gray-300 font-mono text-base">{item.quantity.toLocaleString()}</td>
+                                <td className="py-2 px-2 text-center text-gray-300 font-mono text-base">{item.perBox.toFixed(6)}</td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
+                    )}
+                  </div>
+
+                  <div>
+                    <h3 className="text-xl font-bold text-white mb-4 flex items-center">
+                      <TrendingUp className="w-6 h-6 mr-3 text-cyan-400" />
+                      Análisis de Resultados
+                    </h3>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                      <div className="bg-gray-700/50 rounded-lg p-4 text-center">
+                        <div className="text-2xl font-bold text-cyan-400">
+                          {primaryItems.filter(i => i.quantity > 0).length.toLocaleString()}
+                        </div>
+                        <div className="text-gray-300 text-sm">Items Únicos</div>
+                      </div>
+                      <div className="bg-gray-700/50 rounded-lg p-4 text-center">
+                        <div className="text-2xl font-bold text-green-400">
+                          {primaryItems.reduce((sum, i) => sum + i.quantity, 0).toLocaleString()}
+                        </div>
+                        <div className="text-gray-300 text-sm">Total de Items</div>
+                      </div>
+                      <div className="bg-gray-700/50 rounded-lg p-4 text-center">
+                        <div className="text-2xl font-bold text-yellow-400">
+                          {formatGoldSilverCopper(primaryItems.reduce((sum, i) => sum + i.quantity * (i.pricePerUnit || 0), 0))}
+                        </div>
+                        <div className="text-gray-300 text-sm">Valor Total (precio de compra)</div>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>

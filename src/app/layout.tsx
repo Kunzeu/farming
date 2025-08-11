@@ -11,9 +11,8 @@ export const metadata: Metadata = {
   title: "True Farming",
   description: "Your platform to optimize farming in Guild Wars 2",
   icons: {
-    icon: "/icon.png",
-    shortcut: "/icon.ico",
-    apple: "/icon.png"
+    shortcut: "/images/icons/favicon.svg",
+    apple: "/images/icons/icon.png"
   }
 };
 
@@ -35,3 +34,4 @@ export default function RootLayout({
     </html>
   );
 }
+

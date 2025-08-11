@@ -266,7 +266,7 @@ export default function UnidentifiedGearRarePage() {
             <div className="flex items-start gap-3">
               <Info className="h-5 w-5 text-blue-400 mt-0.5 flex-shrink-0" />
               <div className="text-sm text-blue-200">
-                <strong>Note:</strong> Prices are obtained in real-time from the <a href="https://api.guildwars2.com/v2/commerce/prices" target="_blank" className="text-blue-300 hover:text-blue-100 underline">GW2 API</a>. 
+                <strong>Note:</strong> Prices are obtained in real-time from the GW2 API. 
                 The &quot;Processed Price&quot; includes Trading Post fees (15% discount on sell price). 
                 The cost of Unidentified Gear uses the current buy price from the Trading Post. 
                 Drop rates are based on official data from the GW2 Wiki for <strong>Piece of Rare Unidentified Gear</strong> opened and then salvaged with <strong>Silver-Fed Salvage-o-Matic</strong>. <strong>Recommendation: Have an inventory of 280 slots to facilitate the process.</strong>
@@ -291,7 +291,7 @@ export default function UnidentifiedGearRarePage() {
             
             {/* Botón Wiki */}
             <a 
-              href="https://wiki.guildwars2.com/wiki/Piece_of_Unidentified_Gear" 
+              href="https://wiki.guildwars2.com/wiki/Piece_of_Rare_Unidentified_Gear" 
               target="_blank" 
               className="inline-flex items-center gap-2 px-4 py-2 bg-slate-700 text-white rounded-lg hover:bg-slate-600 transition-colors">
               <BookOpen className="h-4 w-4" />
@@ -336,7 +336,7 @@ export default function UnidentifiedGearRarePage() {
             </div>
             <div className="bg-slate-700 rounded-lg p-3">
               <div className="text-gray-400">Profitability</div>
-              <div className="text-purple-400 font-semibold">Moderate</div>
+              <div className="text-yellow-400 font-semibold">High</div>
             </div>
           </div>
         </div>

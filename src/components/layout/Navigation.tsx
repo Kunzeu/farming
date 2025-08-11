@@ -164,7 +164,7 @@ const Navigation = () => {
                 whileHover={{ scale: 1.05, rotate: 5 }}
                 src="/images/icons/icon.png"
                 alt="True Farming"
-                className="w-8 h-8 rounded-md shadow-lg group-hover:shadow-purple-500/25 transition-all duration-300"
+                className="w-11 h-11 rounded-md shadow-lg group-hover:shadow-purple-500/25 transition-all duration-300"
               />
               <div className="hidden sm:block">
                 <div className="flex flex-col">
