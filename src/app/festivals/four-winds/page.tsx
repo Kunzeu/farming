@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback, useMemo } from 'react';
+import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { usePageTitle } from '@/hooks/usePageTitle';
 import { useI18n } from '@/contexts/I18nContext';
@@ -109,6 +109,7 @@ const FourWindsPage = () => {
   usePageTitle('Four Winds Festival');
   const { t, lang } = useI18n();
   const [selectedSection, setSelectedSection] = useState<string>('overview');
+  const pricesTableRef = useRef<HTMLDivElement | null>(null);
   
   // Estados para la calculadora de cajas
      const [boxCalculatorItems, setBoxCalculatorItems] = useState<BoxCalculatorItem[]>(() => {
@@ -411,6 +412,23 @@ const FourWindsPage = () => {
     });
   }, [boxCalculatorItems, sortField, sortDirection]);
 
+  // Ítem más barato por unidad (entre los seleccionados)
+  const cheapestByUnit = useMemo(() => {
+    const items = boxCalculatorItems.filter((i) => selectedBoxItems.has(i.id));
+    if (items.length === 0) return null;
+    return items.reduce((min, curr) => (curr.pricePerUnit < min.pricePerUnit ? curr : min));
+  }, [boxCalculatorItems, selectedBoxItems]);
+
+  // Ir a Calculators con orden Price/u ascendente y desplazar a la tabla
+  const goToCheapestByUnit = () => {
+    setSelectedSection('calculators');
+    setSortField('pricePerUnit');
+    setSortDirection('asc');
+    if (pricesTableRef.current) {
+      pricesTableRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  };
+
   // Cargar datos al montar el componente
      useEffect(() => {
        fetchBoxCalculatorData(); // Cargar iconos y precios de la calculadora de cajas
@@ -533,7 +551,7 @@ const FourWindsPage = () => {
                                   
                    <div className="flex flex-col xl:flex-row gap-4">
                                          {/* Tabla de Precios y Datos - IZQUIERDA */}
-                     <div className="flex-1 min-w-0">
+                     <div className="flex-1 min-w-0" ref={pricesTableRef}>
                                                                       <div className="flex justify-between items-center mb-4">
                           <h3 className="text-xl font-bold text-white flex items-center">
                             <Package className="w-6 h-6 mr-3 text-cyan-400" />
@@ -863,6 +881,39 @@ const FourWindsPage = () => {
                 </div>
 
                 <div className="space-y-6">
+                  {/* Quick: Precio caja (P.C) como tarjeta tipo "Results Analysis" */}
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <button
+                      type="button"
+                      onClick={goToCheapestByUnit}
+                      className="bg-gray-700/50 rounded-lg p-4 text-left hover:bg-gray-700/70 border border-gray-600 transition-all"
+                    >
+                      <div className="text-xs uppercase tracking-wider text-gray-400">{t('fourWinds.quick.pc.title')}</div>
+                      <div className="mt-1 text-sm text-gray-300">
+                        {cheapestByUnit ? (
+                          <div className="flex items-center gap-2">
+                            {cheapestByUnit.icon ? (
+                              <Image
+                                src={cheapestByUnit.icon}
+                                alt={cheapestByUnit.name}
+                                width={32}
+                                height={32}
+                                className="rounded border border-gray-600"
+                                onError={(e) => {
+                                  e.currentTarget.style.display = 'none';
+                                }}
+                              />
+                            ) : null}
+                            <span className="text-white font-medium">{cheapestByUnit.name}</span>
+                            <span className="text-gray-300">— {formatGoldSilverCopper(cheapestByUnit.pricePerUnit)}</span>
+                          </div>
+                        ) : (
+                          t('common.loadingApiData')
+                        )}
+                      </div>
+                      <div className="mt-2 text-cyan-400 text-sm font-semibold">{t('fourWinds.quick.seeInCalculator')}</div>
+                    </button>
+                  </div>
                   <div>
                     <h3 className="text-xl font-bold text-white mb-4 flex items-center">
                       <TrendingUp className="w-6 h-6 mr-3 text-cyan-400" />
