@@ -1,0 +1,42 @@
+{
+  "lang.english": "English",
+  "lang.german": "Deutsch",
+  "lang.spanish": "Español",
+  "lang.french": "Français",
+
+  "nav.home": "Accueil",
+  "nav.farms": "Itinéraires",
+  "nav.glossary": "Glossaire",
+  "nav.account": "Mon compte",
+  "nav.calculators": "Calculatrices",
+  "auth.login": "Connexion",
+  "auth.logout": "Déconnexion",
+  "auth.profile": "Profil",
+  "auth.settings": "Paramètres",
+  "auth.admin": "Panneau Admin",
+  "auth.moderation": "Modération",
+
+  "cta.activeEvent": "Événement actif : {name}",
+  "cta.viewCalculator": "Voir la calculatrice",
+  "cta.seeFullDescription": "Voir la description complète",
+
+  "section.availableTools": "Outils disponibles",
+  "glossary.title": "Glossaire GW2",
+  "festivals.title": "Festivals de Guild Wars 2",
+  "dailyRoutine.title": "Routine quotidienne",
+  "search.placeholder": "Rechercher...",
+  "search.routes": "Rechercher des itinéraires...",
+  "button.clear": "Effacer",
+  "button.reload": "Recharger",
+  "label.time": "Temps",
+  "label.goldPerHour": "Or/Heure",
+  "label.spiritShards": "Éclats d'esprit",
+  "label.waypoint": "Point de passage :",
+  "notif.copied": "Point de passage copié !",
+  "empty.noFarms": "Aucun itinéraire disponible",
+  "empty.noFarmsDesc": "Aucun itinéraire créé.",
+  "status.active": "Actif",
+  "status.upcoming": "À venir",
+  "status.ended": "Terminé"
+}
+

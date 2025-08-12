@@ -6,6 +6,7 @@ import Image from 'next/image';
 import { Package, TrendingUp, TrendingDown, Calculator, ArrowLeft, RefreshCw, Info, BookOpen, ChevronDown } from 'lucide-react';
 import Navigation from '@/components/layout/Navigation';
 import Link from 'next/link';
+import { usePageTitle } from '@/hooks/usePageTitle';
 
 interface Material {
   id: number;
@@ -46,6 +47,7 @@ const baseMaterials: Omit<Material, 'sellPrice' | 'processedPrice'>[] = [
 ];
 
 export default function UnidentifiedGearMasterworkPage() {
+  usePageTitle('Salvage - Masterwork');
   const [quantity, setQuantity] = useState(250);
   const [materials, setMaterials] = useState<Material[]>([]);
   const [results, setResults] = useState<SalvageResult[]>([]);

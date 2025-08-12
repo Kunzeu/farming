@@ -11,10 +11,12 @@ import { useDatabase, FarmItem, User as UserType } from '@/hooks/useDatabase';
 import { useAuth } from '@/contexts/AuthContext';
 import ExpansionIcon from '@/components/ui/ExpansionIcon';
 import GW2Icon from '@/components/ui/GW2Icon';
+import { usePageTitle } from '@/hooks/usePageTitle';
 
 type AdminSection = 'farms' | 'users' | 'pending-farms';
 
 export default function AdminPanel() {
+  usePageTitle('Admin Panel');
   const { dbService } = useDatabase();
   const { user } = useAuth();
   const [activeSection, setActiveSection] = useState<AdminSection>('farms');

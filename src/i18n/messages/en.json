@@ -1,0 +1,42 @@
+{
+  "lang.english": "English",
+  "lang.german": "Deutsch",
+  "lang.spanish": "Español",
+  "lang.french": "Français",
+
+  "nav.home": "Home",
+  "nav.farms": "Farms",
+  "nav.glossary": "Glossary",
+  "nav.account": "My Account",
+  "nav.calculators": "Calculators",
+  "auth.login": "Login",
+  "auth.logout": "Logout",
+  "auth.profile": "Profile",
+  "auth.settings": "Settings",
+  "auth.admin": "Admin Panel",
+  "auth.moderation": "Moderation Panel",
+
+  "cta.activeEvent": "Active event: {name}",
+  "cta.viewCalculator": "View Calculator",
+  "cta.seeFullDescription": "See full description",
+
+  "section.availableTools": "Available Tools",
+  "glossary.title": "GW2 Glossary",
+  "festivals.title": "Guild Wars 2 Festivals",
+  "dailyRoutine.title": "Daily Routine",
+  "search.placeholder": "Search...",
+  "search.routes": "Search routes...",
+  "button.clear": "Clear",
+  "button.reload": "Reload",
+  "label.time": "Time",
+  "label.goldPerHour": "Gold/Hour",
+  "label.spiritShards": "Spirit Shards",
+  "label.waypoint": "Waypoint:",
+  "notif.copied": "Waypoint copied!",
+  "empty.noFarms": "No farms available",
+  "empty.noFarmsDesc": "No farms created.",
+  "status.active": "Active",
+  "status.upcoming": "Upcoming",
+  "status.ended": "Ended"
+}
+

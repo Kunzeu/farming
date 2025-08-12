@@ -6,6 +6,7 @@ import { ArrowLeft, Shield } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
 import Navigation from '@/components/layout/Navigation';
+import { usePageTitle } from '@/hooks/usePageTitle';
 
 interface WalletItem {
   id: number;
@@ -22,6 +23,7 @@ interface Currency {
 
 const WalletPage = () => {
   const { isAuthenticated } = useAuth();
+  usePageTitle('Wallet');
   const [walletData, setWalletData] = useState<WalletItem[]>([]);
   const [currencies, setCurrencies] = useState<Currency[]>([]);
   const [isLoading, setIsLoading] = useState(true);

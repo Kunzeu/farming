@@ -7,6 +7,7 @@ import { Search, Calculator, BarChart3, Target, Percent, DollarSign, Package, X,
 import { GW2Item, GW2Price, GW2Listing } from '@/types/gw2'
 import { searchItems, getItemPrices, formatPrice, getPopularFarmingItems, getItemsByCategory, getItemListings } from '@/lib/gw2-api'
 import { useAuth } from '@/contexts/AuthContext'
+import { usePageTitle } from '@/hooks/usePageTitle'
 
 interface CalculatorData {
   buyTotalValue: number
@@ -56,6 +57,7 @@ interface CalculatorMetrics {
 
 export default function BuyoutPage() {
   const { user } = useAuth()
+  usePageTitle('Buyout Calculator')
   const [searchQuery, setSearchQuery] = useState('')
   const [searchResults, setSearchResults] = useState<GW2Item[]>([])
   const [isSearching, setIsSearching] = useState(false)

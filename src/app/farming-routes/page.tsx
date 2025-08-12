@@ -9,10 +9,12 @@ import { useDatabase, FarmItem } from '@/hooks/useDatabase';
 import ExpansionIcon from '@/components/ui/ExpansionIcon';
 import GW2Icon from '@/components/ui/GW2Icon';
 import { usePageTitle } from '@/hooks/usePageTitle';
+import { useI18n } from '@/contexts/I18nContext';
 import DescriptionModal from '@/components/ui/DescriptionModal';
 
 export default function FarmingRoutes() {
   usePageTitle('Farming Routes');
+  const { t } = useI18n();
   
   const { dbService } = useDatabase();
   const [searchQuery, setSearchQuery] = useState('');
@@ -213,7 +215,7 @@ export default function FarmingRoutes() {
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
               <input
                 type="text"
-                placeholder="Search routes..."
+                placeholder={t('search.routes', 'Search routes...')}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="pl-10 pr-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
@@ -242,7 +244,7 @@ export default function FarmingRoutes() {
                 <button
                   onClick={() => setSelectedExpansions([])}
                   className="px-4 py-2 bg-gray-600 hover:bg-gray-500 text-white rounded-lg transition-colors duration-200">
-                  Clear
+                  {t('button.clear', 'Clear')}
                 </button>
               )}
             </div>
@@ -252,7 +254,7 @@ export default function FarmingRoutes() {
               onClick={loadRoutes}
               className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors">
               <RefreshCw className="w-4 h-4" />
-              Reload
+              {t('button.reload', 'Reload')}
             </button>
           </div>
         </motion.div>
@@ -302,9 +304,9 @@ export default function FarmingRoutes() {
                   {route.description.length > 150 ? `${route.description.substring(0, 150)}...` : route.description}
                 </p>
               </div>
-                        <div className="flex items-center gap-2 mt-2 text-blue-400 text-sm opacity-0 group-hover:opacity-100 transition-opacity">
+                        <div className="flex items-center gap-2 mt-2 text-blue-400 text-sm">
                           <Info className="w-4 h-4" />
-                          <span className="text-blue-400">See full description</span>
+                          <span className="text-blue-400">{t('cta.seeFullDescription', 'See full description')}</span>
                         </div>
                       </button>
                     </div>
@@ -312,7 +314,7 @@ export default function FarmingRoutes() {
                     {/* Waypoint */}
                     {route.waypoint && (
                       <div className="flex items-center gap-2 mb-2">
-                        <span className="text-sm text-gray-500">Waypoint:</span>
+                        <span className="text-sm text-gray-500">{t('label.waypoint', 'Waypoint:')}</span>
                         <div className="relative">
                           <button
                             onClick={() => copyWaypointToClipboard(route.waypoint!, route.id)}
@@ -335,7 +337,7 @@ export default function FarmingRoutes() {
                               exit={{ opacity: 0, x: -10, scale: 0.95 }}
                               className="absolute left-full ml-2 top-0 bg-green-600 text-white rounded-lg shadow-lg px-3 py-1 flex items-center gap-2 z-50 whitespace-nowrap">
                               <Copy className="w-3 h-3" />
-                              <span className="text-xs font-medium">Waypoint copied!</span>
+                               <span className="text-xs font-medium">{t('notif.copied', 'Waypoint copied!')}</span>
                             </motion.div>
                           )}
                         </div>
@@ -355,7 +357,7 @@ export default function FarmingRoutes() {
                   <div className="flex items-center gap-3">
                     <Clock className="w-6 h-6 text-blue-400" />
                     <div>
-                      <p className="text-gray-400 text-sm">Time</p>
+                      <p className="text-gray-400 text-sm">{t('label.time', 'Time')}</p>
                       <p className="text-blue-400 font-semibold text-lg">{route.estimatedTime}</p>
                     </div>
                   </div>
@@ -393,7 +395,7 @@ export default function FarmingRoutes() {
                         <div className="flex items-center gap-3">
                           <GW2Icon type="gold" size="md" />
                           <div>
-                            <p className="text-gray-400 text-sm">Gold/Hour</p>
+                            <p className="text-gray-400 text-sm">{t('label.goldPerHour', 'Gold/Hour')}</p>
                             <p className="text-yellow-400 font-semibold text-lg">{formatGoldDisplay(route.estimatedGold)}</p>
                           </div>
                         </div>
@@ -404,7 +406,7 @@ export default function FarmingRoutes() {
                         <div className="flex items-center gap-3">
                           <GW2Icon type="spirit-shard" size="md" />
                           <div>
-                            <p className="text-gray-400 text-sm">Spirit Shards</p>
+                            <p className="text-gray-400 text-sm">{t('label.spiritShards', 'Spirit Shards')}</p>
                             <p className="text-blue-400 font-semibold text-lg">{route.estimatedSpirit}/h</p>
                           </div>
                         </div>

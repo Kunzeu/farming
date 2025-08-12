@@ -3,6 +3,7 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 // PrimeReact styles removed to avoid lightningcss build issues on Vercel
 import { AuthProvider } from "@/contexts/AuthContext";
+import { I18nProvider } from "@/contexts/I18nContext";
 import RoleChecker from "@/components/RoleChecker";
 
 const inter = Inter({ subsets: ["latin"] });
@@ -25,10 +26,12 @@ export default function RootLayout({
     <html lang="en">
       <body className={inter.className}>
         <AuthProvider>
-          <div className="min-h-screen bg-gradient-to-br from-slate-900 to-slate-800">
-            <RoleChecker />
-            {children}
-          </div>
+          <I18nProvider>
+            <div className="min-h-screen bg-gradient-to-br from-slate-900 to-slate-800">
+              <RoleChecker />
+              {children}
+            </div>
+          </I18nProvider>
         </AuthProvider>
       </body>
     </html>

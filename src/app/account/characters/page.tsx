@@ -6,6 +6,7 @@ import { ArrowLeft, Users, Search, Shield, Sword, Zap, Key, AlertCircle, Package
 import Link from 'next/link';
 import Navigation from '@/components/layout/Navigation';
 import Image from 'next/image';
+import { usePageTitle } from '@/hooks/usePageTitle';
 
 interface Character {
   name: string;
@@ -47,6 +48,7 @@ interface Character {
 
 const CharactersPage = () => {
   const { isAuthenticated } = useAuth();
+  usePageTitle('Characters');
   const [characters, setCharacters] = useState<Character[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');

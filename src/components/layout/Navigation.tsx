@@ -21,6 +21,8 @@ import {
   Crown,
   ShoppingCart
 } from 'lucide-react';
+import LanguageSwitcher from '@/components/ui/LanguageSwitcher';
+import { useI18n } from '@/contexts/I18nContext';
 
 const Navigation = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -132,11 +134,12 @@ const Navigation = () => {
     };
   }, [isMobileMenuOpen, isUserMenuOpen]);
 
+  const { t } = useI18n();
   const navItems = [
-    { href: '/', label: 'Home', icon: Home },
-    { href: '/farming-routes', label: 'Farms', icon: Map },
-    { href: '/glossary', label: 'Glossary', icon: BookOpen },
-    { href: '/account', label: 'My Account', icon: User },
+    { href: '/', label: t('nav.home', 'Home'), icon: Home },
+    { href: '/farming-routes', label: t('nav.farms', 'Farms'), icon: Map },
+    { href: '/glossary', label: t('nav.glossary', 'Glossary'), icon: BookOpen },
+    { href: '/account', label: t('nav.account', 'My Account'), icon: User },
   ];
 
   const toolsItems = [
@@ -213,7 +216,7 @@ const Navigation = () => {
                   onClick={() => setIsToolsMenuOpen(!isToolsMenuOpen)}
                   className="flex items-center space-x-2 text-gray-300 hover:text-white transition-all duration-200 px-3 py-2 rounded-lg hover:bg-gray-800/50 hover:shadow-md cursor-pointer">
                   <Shield className="w-4 h-4" />
-                  <span className="font-bold">Calculators</span>
+                  <span className="font-bold">{t('nav.calculators', 'Calculators')}</span>
                   <ChevronDown className={`w-4 h-4 text-gray-400 transition-transform duration-200 ${isToolsMenuOpen ? 'rotate-180' : ''}`} />
                 </button>
 
@@ -270,7 +273,7 @@ const Navigation = () => {
                           className="flex items-center space-x-3 px-4 py-2 text-gray-300 hover:text-white hover:bg-gray-700 transition-colors"
                           onClick={() => setIsUserMenuOpen(false)}>
                           <User className="w-4 h-4" />
-                          <span>Profile</span>
+                     <span>{t('auth.profile', 'Profile')}</span>
                         </Link>
                         
 
@@ -280,7 +283,7 @@ const Navigation = () => {
                           className="flex items-center space-x-3 px-4 py-2 text-gray-300 hover:text-white hover:bg-gray-700 transition-colors"
                           onClick={() => setIsUserMenuOpen(false)}>
                           <Settings className="w-4 h-4" />
-                          <span>Settings</span>
+                     <span>{t('auth.settings', 'Settings')}</span>
                         </Link>
 
                         {(user?.role === 'admin' || user?.isAdmin) && (
@@ -289,7 +292,7 @@ const Navigation = () => {
                             className="flex items-center space-x-3 px-4 py-2 text-purple-300 hover:text-purple-200 hover:bg-gray-700 transition-colors"
                             onClick={() => setIsUserMenuOpen(false)}>
                             <Shield className="w-4 h-4" />
-                            <span>Admin Panel</span>
+                             <span>{t('auth.admin', 'Admin Panel')}</span>
                           </Link>
                         )}
                         {(user?.role === 'moderator') && (
@@ -298,7 +301,7 @@ const Navigation = () => {
                             className="flex items-center space-x-3 px-4 py-2 text-blue-300 hover:text-blue-200 hover:bg-gray-700 transition-colors"
                             onClick={() => setIsUserMenuOpen(false)}>
                             <Shield className="w-4 h-4" />
-                            <span>Moderation Panel</span>
+                             <span>{t('auth.moderation', 'Moderation Panel')}</span>
                           </Link>
                         )}
                       </div>
@@ -308,7 +311,7 @@ const Navigation = () => {
                           onClick={handleLogout}
                           className="flex items-center space-x-3 px-4 py-2 text-red-400 hover:text-red-300 hover:bg-gray-700 transition-colors w-full text-left cursor-pointer">
                           <LogOut className="w-4 h-4" />
-                          <span>Logout</span>
+                          <span>{t('auth.logout', 'Logout')}</span>
                         </button>
                       </div>
                     </motion.div>
@@ -319,7 +322,7 @@ const Navigation = () => {
                   <Link
                     href="/login"
                     className="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-all duration-200 font-medium shadow-md hover:shadow-lg">
-                    Login
+                    {t('auth.login', 'Login')}
                   </Link>
                 </div>
               )}
@@ -330,7 +333,7 @@ const Navigation = () => {
                   <Link
                     href="/login"
                     className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-all duration-200 font-medium shadow-md hover:shadow-lg text-sm">
-                    Login
+                    {t('auth.login', 'Login')}
                   </Link>
                 </div>
               )}
@@ -462,6 +465,8 @@ const Navigation = () => {
                   </motion.div>
                 )}
               </div>
+              {/* Language Switcher */}
+              <LanguageSwitcher />
             </div>
           </div>
         </div>

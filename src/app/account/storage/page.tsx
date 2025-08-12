@@ -6,6 +6,7 @@ import { ArrowLeft, Database, Search } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
 import Navigation from '@/components/layout/Navigation';
+import { usePageTitle } from '@/hooks/usePageTitle';
 
 interface Material {
   id: number;
@@ -18,6 +19,7 @@ interface Material {
 
 const StoragePage = () => {
   const { isAuthenticated } = useAuth();
+  usePageTitle('Material Storage');
   const [materials, setMaterials] = useState<Material[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');

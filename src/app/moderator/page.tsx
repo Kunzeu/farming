@@ -10,10 +10,12 @@ import ExpansionIcon from '@/components/ui/ExpansionIcon';
 import GW2Icon from '@/components/ui/GW2Icon';
 import Modal from '@/components/ui/Modal';
 import { useAuth } from '@/contexts/AuthContext';
+import { usePageTitle } from '@/hooks/usePageTitle';
 
 type ModeratorSection = 'my-farms' | 'pending-farms' | 'published-farms';
 
 export default function ModeratorPanel() {
+  usePageTitle('Moderator Panel');
   const { dbService } = useDatabase();
   const { user } = useAuth();
   const [activeSection, setActiveSection] = useState<ModeratorSection>('my-farms');

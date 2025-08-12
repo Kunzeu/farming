@@ -132,7 +132,10 @@ const candyCornItems = [
 // Clave para localStorage
 const HALLOWEEN_CALCULATOR_KEY = 'halloween_calculator_data';
 
+import { usePageTitle } from '@/hooks/usePageTitle';
+
 const HalloweenPage = () => {
+  usePageTitle('Halloween Festival');
   const [selectedSection, setSelectedSection] = useState<string>('overview');
   const [isLoading, setIsLoading] = useState(false);
   const [calculatorItems, setCalculatorItems] = useState<CalculatorItem[]>(() => {

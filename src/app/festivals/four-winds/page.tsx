@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import { motion } from 'framer-motion';
+import { usePageTitle } from '@/hooks/usePageTitle';
 import Image from 'next/image';
 import Navigation from '@/components/layout/Navigation';
 import { 
@@ -89,13 +90,13 @@ interface BoxOpeningPrimaryItem {
 
 const BOX_OPENING_PRIMARY_IDS: number[] = [
   24290,24342,24346,24272,24352,24284,24296,24278,24291,24343,24347,24273,24353,24285,24297,24279,24292,24344,24348,24274,24354,24286,24298,24280,24293,24345,24349,24275,24355,24287,24363,24281,24294,24341,24350,24276,24356,24288,24299,24282,24295,24358,24351,24277,24357,24289,24300,24283,66224,19718,19739,19741,19743,19748,19745,19697,19703,19699,19702,19698,19700,19701,19723,19726,19727,19724,19722,19725,19719,19728,19730,19731,19729,19732,43319,43773,43772,102170,88223,43909,48905,88118,48895,43952,
-  96978,70477,88148,70266,66165,42402,43955,63856,91086,100244,88732,92023,84882,79978,82006,81701,81807,99956,98092,98002,72503
+  96978,70477,88148,70266,66165,42402,43955,63856,91086,100244,88732,92023,84882,79978,82006,81701,81807,99956,98092,98002,72503,99250
 ];
 
 const BOX_OPENING_PRIMARY_COUNTS: number[] = [
   1227,1163,1226,1249,1165,1160,1185,1213,989,956,993,946,924,960,920,980,734,700,733,744,766,756,754,661,504,495,491,467,486,494,468,470,255,219,254,256,311,247,245,251,128,121,132,113,133,110,121,123,
   786889,12025,9132,6018,2974,2048,610,12087,8836,9030,6117,2781,1042,629,12163,9015,5996,2997,4069,583,12098,8927,6125,2944,1196,575,1570,280000,113,152,658,506,161,600,922,310,
-  23,0,0,11,16,1,1,1,0,0,1,1,1,1,0,1,0,0,0,2,1
+  23,0,0,11,16,1,1,1,0,0,1,1,1,1,0,1,0,0,0,2,1,0
 ];
 
 const TOTAL_OPENED_BOXES = 280000;
@@ -104,7 +105,8 @@ const TOTAL_OPENED_BOXES = 280000;
 const FOUR_WINDS_CALCULATOR_KEY = 'four_winds_calculator_data';
 
 const FourWindsPage = () => {
-  const [selectedSection, setSelectedSection] = useState<string>('box-opening');
+  usePageTitle('Four Winds Festival');
+  const [selectedSection, setSelectedSection] = useState<string>('overview');
   
   // Estados para la calculadora de cajas
      const [boxCalculatorItems, setBoxCalculatorItems] = useState<BoxCalculatorItem[]>(() => {
@@ -880,6 +882,33 @@ const FourWindsPage = () => {
                 <div className="space-y-6">
                   <div>
                     <h3 className="text-xl font-bold text-white mb-4 flex items-center">
+                      <TrendingUp className="w-6 h-6 mr-3 text-cyan-400" />
+                      Results Analysis
+                    </h3>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                      <div className="bg-gray-700/50 rounded-lg p-4 text-center">
+                        <div className="text-2xl font-bold text-cyan-400">
+                          {primaryItems.filter(i => i.quantity > 0).length.toLocaleString()}
+                        </div>
+                        <div className="text-gray-300 text-sm">Unique Items</div>
+                      </div>
+                      <div className="bg-gray-700/50 rounded-lg p-4 text-center">
+                        <div className="text-2xl font-bold text-green-400">
+                          {primaryItems.reduce((sum, i) => sum + i.quantity, 0).toLocaleString()}
+                        </div>
+                        <div className="text-gray-300 text-sm">Total Items</div>
+                      </div>
+                      <div className="bg-gray-700/50 rounded-lg p-4 text-center">
+                        <div className="text-2xl font-bold text-yellow-400">
+                          {formatGoldSilverCopper(primaryItems.reduce((sum, i) => sum + i.quantity * (i.pricePerUnit || 0), 0))}
+                        </div>
+                        <div className="text-gray-300 text-sm">Total Value (sell price)</div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div>
+                    <h3 className="text-xl font-bold text-white mb-4 flex items-center">
                       <Calculator className="w-6 h-6 mr-3 text-cyan-400" />
                       Obtained Items
                     </h3>
@@ -927,33 +956,6 @@ const FourWindsPage = () => {
                          <div className="md:hidden text-gray-400 text-xs mt-2 text-center">Swipe horizontally to see all columns</div>
                       </div>
                     )}
-                  </div>
-
-                  <div>
-                    <h3 className="text-xl font-bold text-white mb-4 flex items-center">
-                      <TrendingUp className="w-6 h-6 mr-3 text-cyan-400" />
-                      Results Analysis
-                    </h3>
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                      <div className="bg-gray-700/50 rounded-lg p-4 text-center">
-                        <div className="text-2xl font-bold text-cyan-400">
-                          {primaryItems.filter(i => i.quantity > 0).length.toLocaleString()}
-                        </div>
-                        <div className="text-gray-300 text-sm">Unique Items</div>
-                      </div>
-                      <div className="bg-gray-700/50 rounded-lg p-4 text-center">
-                        <div className="text-2xl font-bold text-green-400">
-                          {primaryItems.reduce((sum, i) => sum + i.quantity, 0).toLocaleString()}
-                        </div>
-                        <div className="text-gray-300 text-sm">Total Items</div>
-                      </div>
-                      <div className="bg-gray-700/50 rounded-lg p-4 text-center">
-                        <div className="text-2xl font-bold text-yellow-400">
-                          {formatGoldSilverCopper(primaryItems.reduce((sum, i) => sum + i.quantity * (i.pricePerUnit || 0), 0))}
-                        </div>
-                        <div className="text-gray-300 text-sm">Total Value (sell price)</div>
-                      </div>
-                    </div>
                   </div>
                 </div>
               </div>

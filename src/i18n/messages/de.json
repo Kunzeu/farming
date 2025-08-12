@@ -1,0 +1,42 @@
+{
+  "lang.english": "English",
+  "lang.german": "Deutsch",
+  "lang.spanish": "Español",
+  "lang.french": "Français",
+
+  "nav.home": "Startseite",
+  "nav.farms": "Routen",
+  "nav.glossary": "Glossar",
+  "nav.account": "Mein Konto",
+  "nav.calculators": "Rechner",
+  "auth.login": "Anmelden",
+  "auth.logout": "Abmelden",
+  "auth.profile": "Profil",
+  "auth.settings": "Einstellungen",
+  "auth.admin": "Adminbereich",
+  "auth.moderation": "Moderation",
+
+  "cta.activeEvent": "Aktives Event: {name}",
+  "cta.viewCalculator": "Rechner anzeigen",
+  "cta.seeFullDescription": "Gesamte Beschreibung anzeigen",
+
+  "section.availableTools": "Verfügbare Tools",
+  "glossary.title": "GW2 Glossar",
+  "festivals.title": "Guild Wars 2 Festivals",
+  "dailyRoutine.title": "Tägliche Routine",
+  "search.placeholder": "Suchen...",
+  "search.routes": "Routen suchen...",
+  "button.clear": "Leeren",
+  "button.reload": "Neu laden",
+  "label.time": "Zeit",
+  "label.goldPerHour": "Gold/Stunde",
+  "label.spiritShards": "Geisterscherben",
+  "label.waypoint": "Wegmarke:",
+  "notif.copied": "Wegmarke kopiert!",
+  "empty.noFarms": "Keine Routen verfügbar",
+  "empty.noFarmsDesc": "Keine Routen erstellt.",
+  "status.active": "Aktiv",
+  "status.upcoming": "Bevorstehend",
+  "status.ended": "Beendet"
+}
+

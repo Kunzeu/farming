@@ -12,6 +12,7 @@ import {
   Clock
 } from 'lucide-react'
 import { usePageTitle } from '@/hooks/usePageTitle'
+import { useI18n } from '@/contexts/I18nContext'
 
 interface DashboardCard {
   title: string
@@ -24,6 +25,7 @@ interface DashboardCard {
 
 export default function HomePage() {
   usePageTitle('Home');
+  const { t } = useI18n();
   
   const dashboardCards: DashboardCard[] = [
     {
@@ -68,6 +70,76 @@ export default function HomePage() {
     }
   ]
 
+  // Eventos de festivales (fechas aproximadas; actualizar cada año según calendario oficial)
+  const now = new Date();
+  const currentYear = now.getFullYear();
+  type MonthDay = { month: number; day: number };
+  interface FestivalEvent {
+    name: string;
+    path: string;
+    start: MonthDay;
+    end: MonthDay;
+    color: string;
+  }
+  interface FestivalEventWithDates extends Omit<FestivalEvent, 'start' | 'end'> {
+    start: Date;
+    end: Date;
+  }
+  // UpcomingFestival type removed (CTA solo para activo)
+
+  const festivalEvents: FestivalEvent[] = [
+    {
+      name: 'Four Winds Festival',
+      path: '/festivals/four-winds',
+      start: { month: 7, day: 20 },
+      end: { month: 8, day: 20 },
+      color: 'from-green-600 to-cyan-600',
+    },
+    {
+      name: "Shadow of the Mad King (Halloween)",
+      path: '/festivals/halloween',
+      start: { month: 10, day: 15 },
+      end: { month: 11, day: 5 },
+      color: 'from-orange-600 to-orange-700',
+    },
+    {
+      name: 'Lunar New Year',
+      path: '/festivals/lunar-new-year',
+      start: { month: 1, day: 20 },
+      end: { month: 2, day: 10 },
+      color: 'from-red-600 to-yellow-500',
+    },
+    {
+      name: 'Dragon Bash',
+      path: '/festivals/dragon-bash',
+      start: { month: 6, day: 20 },
+      end: { month: 7, day: 10 },
+      color: 'from-emerald-600 to-teal-600',
+    },
+    {
+      name: 'Wintersday',
+      path: '/festivals/wintersday',
+      start: { month: 12, day: 12 },
+      end: { month: 1, day: 5 }, // cruza de año
+      color: 'from-sky-600 to-cyan-500',
+    },
+  ];
+
+  const addDates = (evt: FestivalEvent): FestivalEventWithDates => {
+    const start = new Date(currentYear, evt.start.month - 1, evt.start.day, 0, 0, 0);
+    let end = new Date(currentYear, evt.end.month - 1, evt.end.day, 23, 59, 59);
+    if (end < start) {
+      // Evento cruza de año
+      end = new Date(currentYear + 1, evt.end.month - 1, evt.end.day, 23, 59, 59);
+    }
+    return { ...evt, start, end };
+  };
+
+  const eventsWithDates: FestivalEventWithDates[] = festivalEvents.map(addDates);
+  const activeEvent = eventsWithDates.find(e => now >= e.start && now <= e.end);
+
+  // Nota: lógica de próximo evento removida porque el CTA solo se muestra con evento activo
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
       <Navigation />
@@ -109,6 +181,8 @@ export default function HomePage() {
                 transition={{ duration: 0.6 }}
                 className="space-y-4">
         
+                {/* (CTA de evento movido debajo, antes de Available Tools) */}
+
                 {/* Botón Purchase Now */}
                 {/*<div className="pt-4">
                   <motion.a
@@ -133,6 +207,17 @@ export default function HomePage() {
 
         {/* Sección de herramientas principales */}
         <section className="mb-12">
+          {/* CTA de Evento Activo arriba del título (solo cuando hay evento activo) */}
+          {activeEvent && (
+            <div className="mb-6 flex flex-col items-center">
+              <Link href={activeEvent.path}>
+                <span className={`inline-block bg-gradient-to-r ${activeEvent.color} hover:opacity-95 text-white font-bold py-3 px-8 rounded-lg text-lg shadow-lg hover:shadow-xl transition-all duración-300 transform hover:-translate-y-1 border border-white/10`}>
+                  {t('cta.activeEvent', `Active event: {name}`).replace('{name}', activeEvent.name)}
+                </span>
+              </Link>
+            </div>
+          )}
+
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -140,7 +225,7 @@ export default function HomePage() {
             className="mb-8"
           >
             <h2 className="text-3xl font-bold text-white mb-3 text-center">
-              Available Tools
+              {t('section.availableTools', 'Available Tools')}
             </h2>
             <p className="text-gray-400 text-center max-w-2xl mx-auto">
               Access to all available features and tools for optimizing your Guild Wars 2 farming experience

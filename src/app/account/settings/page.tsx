@@ -5,9 +5,11 @@ import { useAuth } from '@/contexts/AuthContext';
 import { ArrowLeft, Settings, Key, Save, CheckCircle, AlertCircle, Moon, Sun, Monitor } from 'lucide-react';
 import Link from 'next/link';
 import Navigation from '@/components/layout/Navigation';
+import { usePageTitle } from '@/hooks/usePageTitle';
 
 const SettingsPage = () => {
   const { isAuthenticated } = useAuth();
+  usePageTitle('Account Settings');
   const [apiKey, setApiKey] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [isValid, setIsValid] = useState<boolean | null>(null);

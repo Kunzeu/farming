@@ -17,6 +17,7 @@ import {
   Loader2
 } from 'lucide-react';
 import GlossaryLink from '@/components/ui/GlossaryLink';
+import { usePageTitle } from '@/hooks/usePageTitle';
 
 interface Gw2Price {
   id: number;
@@ -42,6 +43,7 @@ interface ConversionItem {
 }
 
 const CraftingPage = () => {
+  usePageTitle('Crafting Guide');
   const [selectedSection, setSelectedSection] = useState<string>('overview');
   const [conversionData, setConversionData] = useState<ConversionItem[]>([]);
   const [isLoadingConversions, setIsLoadingConversions] = useState(false);

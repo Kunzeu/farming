@@ -16,9 +16,11 @@ import {
   Save,
   Edit
 } from 'lucide-react';
+import { usePageTitle } from '@/hooks/usePageTitle';
 
 export default function ProfilePage() {
   const { user } = useAuth();
+  usePageTitle('My Profile');
   const [isEditing, setIsEditing] = useState(false);
   const [preferences, setPreferences] = useState({
     notifications: {

@@ -14,10 +14,12 @@ import {
   ArrowLeft,
   Home
 } from 'lucide-react';
+import { usePageTitle } from '@/hooks/usePageTitle';
 
 export default function RegisterPage() {
   const { isAuthenticated, isLoading } = useAuth();
   const router = useRouter();
+  usePageTitle('Register');
 
   useEffect(() => {
     if (isAuthenticated && !isLoading) {

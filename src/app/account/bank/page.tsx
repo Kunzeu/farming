@@ -5,6 +5,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { ArrowLeft, Package, Search, Database } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
+import { usePageTitle } from '@/hooks/usePageTitle';
 import Navigation from '@/components/layout/Navigation';
 
 interface BankItem {
@@ -53,6 +54,7 @@ interface ItemDetails {
 
 const BankPage = () => {
   const { isAuthenticated } = useAuth();
+  usePageTitle('Bank');
   const [bankItems, setBankItems] = useState<(BankItem | null)[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');

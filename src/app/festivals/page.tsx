@@ -13,6 +13,7 @@ import {
 import Link from 'next/link';
 import { festivalDates, getFestivalStatus } from '@/lib/festival-dates';
 import { usePageTitle } from '@/hooks/usePageTitle';
+import { useI18n } from '@/contexts/I18nContext';
 
 const festivals = [
   {
@@ -33,7 +34,7 @@ const festivals = [
     estimatedGoldPerHour: 18,
     difficulty: 'Easy',
     timeRequired: '2-3 hours',
-    path: '/festivals/lunar'
+    path: '/festivals/lunar-new-year'
   },
   {
     id: 'dragon-bash',
@@ -145,6 +146,7 @@ const getStatusLabel = (status: string) => {
 
 export default function FestivalsPage() {
   usePageTitle('Festivals');
+  const { t } = useI18n();
   return (
     <>
       <Navigation />
@@ -157,7 +159,7 @@ export default function FestivalsPage() {
             className="text-center mb-12">
             <h1 className="text-4xl font-bold text-white mb-4 flex items-center justify-center">
               <Calendar className="w-8 h-8 mr-3 text-purple-400" />
-              Guild Wars 2 Festivals
+              {t('festivals.title', 'Guild Wars 2 Festivals')}
             </h1>
             <p className="text-xl text-gray-300 max-w-3xl mx-auto">
               Specific calculators and guides to maximize your profits during annual festivals
@@ -185,7 +187,7 @@ export default function FestivalsPage() {
                         {festival.icon}
                       </div>
                       <span className={`px-2 py-1 rounded text-xs font-semibold ${getStatusColor(festival.status)}`}>
-                        {getStatusLabel(festival.status)}
+                         {t(`status.${festival.status}`, getStatusLabel(festival.status))}
                       </span>
                     </div>
 
@@ -206,7 +208,7 @@ export default function FestivalsPage() {
                     <div className="mt-auto">
                       <div className="flex items-center justify-between">
                         <span className="text-purple-400 text-sm font-semibold">
-                          View Calculator
+                          {t('cta.viewCalculator', 'View Calculator')}
                         </span>
                         <TrendingUp className="w-4 h-4 text-purple-400 group-hover:translate-x-1 transition-transform" />
                       </div>

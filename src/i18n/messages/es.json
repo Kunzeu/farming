@@ -1,0 +1,42 @@
+{
+  "lang.english": "English",
+  "lang.german": "Deutsch",
+  "lang.spanish": "Español",
+  "lang.french": "Français",
+
+  "nav.home": "Inicio",
+  "nav.farms": "Rutas",
+  "nav.glossary": "Glosario",
+  "nav.account": "Mi cuenta",
+  "nav.calculators": "Calculadoras",
+  "auth.login": "Iniciar sesión",
+  "auth.logout": "Cerrar sesión",
+  "auth.profile": "Perfil",
+  "auth.settings": "Configuración",
+  "auth.admin": "Panel de Admin",
+  "auth.moderation": "Panel de Moderación",
+
+  "cta.activeEvent": "Evento activo: {name}",
+  "cta.viewCalculator": "Ver calculadora",
+  "cta.seeFullDescription": "Ver descripción completa",
+
+  "section.availableTools": "Herramientas disponibles",
+  "glossary.title": "Glosario de GW2",
+  "festivals.title": "Festivales de Guild Wars 2",
+  "dailyRoutine.title": "Rutina diaria",
+  "search.placeholder": "Buscar...",
+  "search.routes": "Buscar rutas...",
+  "button.clear": "Limpiar",
+  "button.reload": "Recargar",
+  "label.time": "Tiempo",
+  "label.goldPerHour": "Oro/Hora",
+  "label.spiritShards": "Fragmentos de espíritu",
+  "label.waypoint": "Waypoint:",
+  "notif.copied": "¡Waypoint copiado!",
+  "empty.noFarms": "No hay rutas disponibles",
+  "empty.noFarmsDesc": "No se han creado rutas.",
+  "status.active": "Activo",
+  "status.upcoming": "Próximo",
+  "status.ended": "Finalizado"
+}
+
