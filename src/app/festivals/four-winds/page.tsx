@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { usePageTitle } from '@/hooks/usePageTitle';
+import { useI18n } from '@/contexts/I18nContext';
 import Image from 'next/image';
 import Navigation from '@/components/layout/Navigation';
 import { 
@@ -106,6 +107,7 @@ const FOUR_WINDS_CALCULATOR_KEY = 'four_winds_calculator_data';
 
 const FourWindsPage = () => {
   usePageTitle('Four Winds Festival');
+  const { t, lang } = useI18n();
   const [selectedSection, setSelectedSection] = useState<string>('overview');
   
   // Estados para la calculadora de cajas
@@ -172,8 +174,8 @@ const FourWindsPage = () => {
       const itemIds = boxCalculatorData.map(item => item.id).join(',');
       
       const [itemsResponse, pricesResponse] = await Promise.all([
-        fetch(`https://api.guildwars2.com/v2/items?ids=${itemIds}&lang=en`),
-        fetch(`https://api.guildwars2.com/v2/commerce/prices?ids=${itemIds}&lang=en`)
+        fetch(`https://api.guildwars2.com/v2/items?ids=${itemIds}&lang=${lang}`),
+        fetch(`https://api.guildwars2.com/v2/commerce/prices?ids=${itemIds}&lang=${lang}`)
       ]);
 
       if (itemsResponse.ok && pricesResponse.ok) {
@@ -202,6 +204,7 @@ const FourWindsPage = () => {
             
             return {
               ...item,
+              name: itemsMap[item.id]?.name || item.name,
               icon: itemsMap[item.id]?.icon || '',
               pricePerUnit: currentPrice,
               pricePerBox: pricePerBox,
@@ -220,7 +223,7 @@ const FourWindsPage = () => {
     } finally {
       setBoxCalculatorLoading(false);
     }
-  }, [saveCalculatorData]);
+  }, [saveCalculatorData, lang]);
 
   // Cargar nombres e iconos de los IDs primarios (Apertura de Cajas)
   const fetchPrimaryItems = useCallback(async () => {
@@ -232,8 +235,8 @@ const FourWindsPage = () => {
       setPrimaryLoading(true);
       const ids = BOX_OPENING_PRIMARY_IDS.join(',');
       const [itemsRes, pricesRes] = await Promise.all([
-        fetch(`https://api.guildwars2.com/v2/items?ids=${ids}&lang=en`),
-        fetch(`https://api.guildwars2.com/v2/commerce/prices?ids=${ids}&lang=en`)
+        fetch(`https://api.guildwars2.com/v2/items?ids=${ids}&lang=${lang}`),
+        fetch(`https://api.guildwars2.com/v2/commerce/prices?ids=${ids}&lang=${lang}`)
       ]);
       if (!itemsRes.ok) return;
       const data: Gw2Item[] = await itemsRes.json();
@@ -259,7 +262,7 @@ const FourWindsPage = () => {
     } finally {
       setPrimaryLoading(false);
     }
-  }, []);
+  }, [lang]);
 
   useEffect(() => {
     fetchPrimaryItems();
@@ -440,17 +443,15 @@ const FourWindsPage = () => {
               className="flex items-center gap-2 px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg transition-colors duration-200"
             >
               <ArrowLeft className="w-4 h-4" />
-              Back to Festivals
+              {t('nav.backToFestivals')}
             </a>
           </div>
           
           <div className="flex items-center justify-center mb-4">
             <Wind className="w-12 h-12 text-cyan-400 mr-3" />
-            <h1 className="text-3xl sm:text-4xl font-bold text-white">Four Winds Festival</h1>
+            <h1 className="text-3xl sm:text-4xl font-bold text-white">{t('festival.fourWinds')}</h1>
           </div>
-          <p className="text-base sm:text-xl text-gray-300">
-                          Calculators and analysis to maximize your profits during the Four Winds Festival
-          </p>
+            <p className="text-base sm:text-xl text-gray-300">{t('festivals.page.subtitle').replace('{name}', t('festival.fourWinds'))}</p>
         </motion.div>
 
         {/* Navigation Tabs */}
@@ -460,13 +461,12 @@ const FourWindsPage = () => {
           transition={{ delay: 0.2 }}
           className="flex flex-wrap justify-center gap-2 mb-8"
         >
-          {[
-            { id: 'overview', label: 'Overview', icon: Info },
-            { id: 'calculators', label: 'Calculators', icon: Calculator },
-            { id: 'box-opening', label: 'Box Opening', icon: Package },
-            { id: 'strategies', label: 'Strategies', icon: TrendingUp },
-
-          ].map((tab) => (
+          {([
+            { id: 'overview', label: t('festivals.tabs.overview'), icon: Info },
+            { id: 'calculators', label: t('festivals.tabs.calculators'), icon: Calculator },
+            { id: 'box-opening', label: t('festivals.tabs.boxOpening'), icon: Package },
+            { id: 'strategies', label: t('festivals.tabs.strategies'), icon: TrendingUp },
+          ] as const).map((tab) => (
             <button
               key={tab.id}
               onClick={() => setSelectedSection(tab.id)}
@@ -494,35 +494,22 @@ const FourWindsPage = () => {
               <div className="bg-gray-800/50 backdrop-blur-sm border border-gray-700 rounded-lg p-6">
                 <h2 className="text-2xl font-bold text-white mb-4 flex items-center">
                   <Info className="w-6 h-6 mr-3 text-cyan-400" />
-                  Four Winds Festival
+                  {t('festival.fourWinds')}
                 </h2>
-                <p className="text-gray-300 mb-6">
-                  The Four Winds Festival is an annual event that celebrates the cultural diversity of Tyria. 
-                  With activities like Queen&apos;s Gauntlet and Boss Blitz, it offers unique opportunities to obtain 
-                  valuable rewards and exclusive materials.
-                </p>
+                <p className="text-gray-300 mb-6">{t('fourWinds.overview.p1')}</p>
                 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                   <div className="bg-gray-700/50 rounded-lg p-4">
-                    <h3 className="text-white font-semibold mb-2">Queen&apos;s Gauntlet</h3>
-                    <p className="text-gray-300 text-sm">
-                      A series of combat challenges that reward unique tokens and 
-                      valuable materials. Requires skill and strategy.
-                    </p>
+                    <h3 className="text-white font-semibold mb-2">{t('fourWinds.cards.gauntlet.title')}</h3>
+                    <p className="text-gray-300 text-sm">{t('fourWinds.cards.gauntlet.desc')}</p>
                   </div>
                   <div className="bg-gray-700/50 rounded-lg p-4">
-                    <h3 className="text-white font-semibold mb-2">Boss Blitz</h3>
-                    <p className="text-gray-300 text-sm">
-                      Cooperative event where teams compete to defeat bosses quickly. 
-                      Rewards based on speed and efficiency.
-                    </p>
+                    <h3 className="text-white font-semibold mb-2">{t('fourWinds.cards.blitz.title')}</h3>
+                    <p className="text-gray-300 text-sm">{t('fourWinds.cards.blitz.desc')}</p>
                   </div>
                   <div className="bg-gray-700/50 rounded-lg p-4">
-                    <h3 className="text-white font-semibold mb-2">Festival Tokens</h3>
-                    <p className="text-gray-300 text-sm">
-                      Main festival currency. Can be exchanged for unique items 
-                      and valuable materials at festival merchants.
-                    </p>
+                    <h3 className="text-white font-semibold mb-2">{t('fourWinds.cards.tokens.title')}</h3>
+                    <p className="text-gray-300 text-sm">{t('fourWinds.cards.tokens.desc')}</p>
                   </div>
                 </div>
               </div>
@@ -536,9 +523,9 @@ const FourWindsPage = () => {
                <div className="bg-gray-800/50 backdrop-blur-sm border border-gray-700 rounded-lg p-6">
                                                                        <div className="mb-6">
                      <div className="flex items-center">
-                       <Calculator className="w-6 h-6 mr-3 text-cyan-400" />
+                        <Calculator className="w-6 h-6 mr-3 text-cyan-400" />
                                                 <h2 className="text-2xl font-bold text-white">
-                            Box Calculator
+                            {t('fourWinds.calculator.title')}
                           </h2>
                      </div>
                    </div>
@@ -550,29 +537,27 @@ const FourWindsPage = () => {
                                                                       <div className="flex justify-between items-center mb-4">
                           <h3 className="text-xl font-bold text-white flex items-center">
                             <Package className="w-6 h-6 mr-3 text-cyan-400" />
-                            Prices and Data
+                            {t('fourWinds.prices.title')}
                             {boxCalculatorLoading && (
                               <RefreshCw className="w-5 h-5 ml-3 animate-spin text-cyan-400" />
                             )}
-                            <span className="ml-2 text-sm text-green-400 font-normal">
-                              (Data saved automatically)
-                            </span>
+                             <span className="ml-2 text-sm text-green-400 font-normal">{t('fourWinds.prices.autoSave')}</span>
                           </h3>
                           <div className="flex gap-2 flex-wrap">
                             <button
                               onClick={() => setShowItemSelectionModal(true)}
                               className="flex items-center gap-2 px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded text-sm transition-colors duration-200"
                             >
-                              <Plus className="w-4 h-4" />
-                              Select Items
+                               <Plus className="w-4 h-4" />
+                               {t('common.selectItems')}
                             </button>
                             <button
                               onClick={fetchBoxCalculatorData}
                               disabled={boxCalculatorLoading}
                               className="flex items-center gap-2 px-3 py-1.5 bg-cyan-600 hover:bg-cyan-700 disabled:bg-gray-600 text-white rounded text-sm transition-colors duration-200"
                             >
-                              <RefreshCw className={`w-4 h-4 ${boxCalculatorLoading ? 'animate-spin' : ''}`} />
-                              Update
+                               <RefreshCw className={`w-4 h-4 ${boxCalculatorLoading ? 'animate-spin' : ''}`} />
+                               {t('common.refreshData')}
                             </button>
 
                           </div>
@@ -586,7 +571,7 @@ const FourWindsPage = () => {
                                 onClick={() => handleSort('name')}
                               >
                                 <div className="flex items-center gap-1">
-                                  Material
+                                   {t('salvage.table.material')}
                                   {getSortIcon('name')}
                                 </div>
                               </th>
@@ -595,7 +580,7 @@ const FourWindsPage = () => {
                                 onClick={() => handleSort('numPerBox')}
                               >
                                 <div className="flex items-center justify-center gap-1">
-                                  Num/Box
+                                   {t('fourWinds.table.numPerBox')}
                                   {getSortIcon('numPerBox')}
                                 </div>
                               </th>
@@ -604,7 +589,7 @@ const FourWindsPage = () => {
                                 onClick={() => handleSort('pricePerUnit')}
                               >
                                 <div className="flex items-center justify-center gap-1">
-                                  Price/u
+                                   {t('fourWinds.table.pricePerUnit')}
                                   {getSortIcon('pricePerUnit')}
                                 </div>
                               </th>
@@ -613,13 +598,13 @@ const FourWindsPage = () => {
                                 onClick={() => handleSort('pricePerBox')}
                               >
                                 <div className="flex items-center justify-center gap-1">
-                                  Price/Box
+                                   {t('fourWinds.table.pricePerBox')}
                                   {getSortIcon('pricePerBox')}
                                 </div>
                               </th>
-                              <th className="text-center py-3 px-2 text-gray-200 font-semibold text-xs uppercase tracking-wider">250 Boxes</th>
-                              <th className="text-center py-3 px-2 text-gray-200 font-semibold text-xs uppercase tracking-wider">2500 Boxes</th>
-                              <th className="text-center py-3 px-2 text-gray-200 font-semibold text-xs uppercase tracking-wider">25000 Boxes</th>
+                               <th className="text-center py-3 px-2 text-gray-200 font-semibold text-xs uppercase tracking-wider">{t('fourWinds.table.boxes250')}</th>
+                               <th className="text-center py-3 px-2 text-gray-200 font-semibold text-xs uppercase tracking-wider">{t('fourWinds.table.boxes2500')}</th>
+                               <th className="text-center py-3 px-2 text-gray-200 font-semibold text-xs uppercase tracking-wider">{t('fourWinds.table.boxes25000')}</th>
                             </tr>
                           </thead>
                           <tbody>
@@ -654,15 +639,15 @@ const FourWindsPage = () => {
                             ))}
                           </tbody>
                          </table>
-                         <div className="md:hidden text-gray-400 text-xs mt-2 text-center">Swipe horizontally to see all columns</div>
+                          <div className="md:hidden text-gray-400 text-xs mt-2 text-center">{t('common.swipeHint')}</div>
                       </div>
                     </div>
 
                                          {/* Calculadora de Cajas - DERECHA */}
                      <div className="flex-1 min-w-0">
                                               <h3 className="text-xl font-bold text-white mb-4 flex items-center">
-                         <Calculator className="w-6 h-6 mr-3 text-cyan-400" />
-                         Box Calculator
+                          <Calculator className="w-6 h-6 mr-3 text-cyan-400" />
+                         {t('fourWinds.calculator.title')}
                        </h3>
                       <div className="overflow-x-auto bg-gray-800/30 rounded-lg border border-gray-700">
                         <table className="w-full text-sm min-w-[500px]">
@@ -673,7 +658,7 @@ const FourWindsPage = () => {
                                 onClick={() => handleSort('name')}
                               >
                                 <div className="flex items-center gap-1">
-                                  Material
+                                  {t('salvage.table.material')}
                                   {getSortIcon('name')}
                                 </div>
                               </th>
@@ -682,7 +667,7 @@ const FourWindsPage = () => {
                                 onClick={() => handleSort('myMaterials')}
                               >
                                 <div className="flex items-center justify-center gap-1">
-                                  My Materials
+                                  {t('fourWinds.table.myMaterials')}
                                   {getSortIcon('myMaterials')}
                                 </div>
                               </th>
@@ -691,7 +676,7 @@ const FourWindsPage = () => {
                                 onClick={() => handleSort('resultingBoxes')}
                               >
                                 <div className="flex items-center justify-center gap-1">
-                                  Resulting Boxes
+                                  {t('fourWinds.table.resultingBoxes')}
                                   {getSortIcon('resultingBoxes')}
                                 </div>
                               </th>
@@ -758,8 +743,8 @@ const FourWindsPage = () => {
                             ))}
                           </tbody>
                           <tfoot className="border-t-2 border-cyan-500">
-                            <tr className="bg-gray-700/50">
-                                                             <td className="py-2 px-4 text-right text-gray-200 font-bold text-base">TOTAL:</td>
+                             <tr className="bg-gray-700/50">
+                                                              <td className="py-2 px-4 text-right text-gray-200 font-bold text-base">{t('common.total')}:</td>
                                <td className="py-2 px-4 text-center text-white font-bold text-base font-mono">
                                  {calculateBoxCalculatorTotals().totalMaterials.toLocaleString()}
                                </td>
@@ -769,7 +754,7 @@ const FourWindsPage = () => {
                             </tr>
                           </tfoot>
                          </table>
-                         <div className="md:hidden text-gray-400 text-xs mt-2 text-center">Swipe horizontally to see all columns</div>
+                          <div className="md:hidden text-gray-400 text-xs mt-2 text-center">{t('common.swipeHint')}</div>
                       </div>
                                          </div>
                    </div>
@@ -865,17 +850,15 @@ const FourWindsPage = () => {
               <div className="bg-gray-800/50 backdrop-blur-sm border border-gray-700 rounded-lg p-6">
                 <h2 className="text-2xl font-bold text-white mb-6 flex items-center">
                   <Package className="w-6 h-6 mr-3 text-cyan-400" />
-                  Box Opening - Four Winds Festival
+                  {t('fourWinds.boxOpening.title')}
                 </h2>
                 
                 <div className="bg-gray-700/50 rounded-lg p-4 mb-6">
                   <div className="text-center">
-                    <h3 className="text-lg sm:text-xl font-bold text-cyan-400 mb-2">Opening Statistics</h3>
-                    <p className="text-xl sm:text-2xl font-bold text-white">280,000 Boxes Opened</p>
-                    <p className="text-gray-300 text-sm mt-2">
-                      Data based on large-scale box openings during the Four Winds Festival
-                    </p>
-                    <p className="text-gray-400 text-xs mt-1">Data credit: Vortus43</p>
+                    <h3 className="text-lg sm:text-xl font-bold text-cyan-400 mb-2">{t('fourWinds.stats.title')}</h3>
+                    <p className="text-xl sm:text-2xl font-bold text-white">{t('fourWinds.stats.boxesOpened')}</p>
+                    <p className="text-gray-300 text-sm mt-2">{t('fourWinds.stats.desc')}</p>
+                    <p className="text-gray-400 text-xs mt-1">{t('fourWinds.stats.credit')}</p>
                   </div>
                 </div>
 
@@ -883,26 +866,26 @@ const FourWindsPage = () => {
                   <div>
                     <h3 className="text-xl font-bold text-white mb-4 flex items-center">
                       <TrendingUp className="w-6 h-6 mr-3 text-cyan-400" />
-                      Results Analysis
+                      {t('fourWinds.stats.resultsAnalysis')}
                     </h3>
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                       <div className="bg-gray-700/50 rounded-lg p-4 text-center">
                         <div className="text-2xl font-bold text-cyan-400">
                           {primaryItems.filter(i => i.quantity > 0).length.toLocaleString()}
                         </div>
-                        <div className="text-gray-300 text-sm">Unique Items</div>
+                         <div className="text-gray-300 text-sm">{t('fourWinds.stats.uniqueItems')}</div>
                       </div>
                       <div className="bg-gray-700/50 rounded-lg p-4 text-center">
                         <div className="text-2xl font-bold text-green-400">
                           {primaryItems.reduce((sum, i) => sum + i.quantity, 0).toLocaleString()}
                         </div>
-                        <div className="text-gray-300 text-sm">Total Items</div>
+                         <div className="text-gray-300 text-sm">{t('fourWinds.stats.totalItems')}</div>
                       </div>
                       <div className="bg-gray-700/50 rounded-lg p-4 text-center">
                         <div className="text-2xl font-bold text-yellow-400">
                           {formatGoldSilverCopper(primaryItems.reduce((sum, i) => sum + i.quantity * (i.pricePerUnit || 0), 0))}
                         </div>
-                        <div className="text-gray-300 text-sm">Total Value (sell price)</div>
+                         <div className="text-gray-300 text-sm">{t('fourWinds.stats.totalValue')}</div>
                       </div>
                     </div>
                   </div>
@@ -910,13 +893,13 @@ const FourWindsPage = () => {
                   <div>
                     <h3 className="text-xl font-bold text-white mb-4 flex items-center">
                       <Calculator className="w-6 h-6 mr-3 text-cyan-400" />
-                      Obtained Items
+                      {t('fourWinds.obtained.title')}
                     </h3>
                     {primaryItems.length === 0 ? (
                       <div className="bg-gray-800/30 rounded-lg border border-gray-700 overflow-hidden">
                         <div className="p-4 text-center text-gray-400">
-                          <p>{primaryLoading ? 'Loading items…' : 'Waiting for primary IDs...'}</p>
-                          <p className="text-sm mt-2">Send me the list of IDs and I will hardcode them.</p>
+                          <p>{primaryLoading ? t('common.loadingItems') : t('fourWinds.obtained.waiting')}</p>
+                          <p className="text-sm mt-2">{t('fourWinds.obtained.sendIds')}</p>
                         </div>
                       </div>
                     ) : (
@@ -925,13 +908,13 @@ const FourWindsPage = () => {
                           <thead>
                             <tr className="border-b border-gray-600 bg-gray-700/50">
                               <th onClick={() => handlePrimarySort('name')} className="text-left py-2.5 px-3 text-gray-200 font-semibold text-sm uppercase tracking-wider cursor-pointer select-none">
-                                <div className="flex items-center gap-1.5">Material {getPrimarySortIcon('name')}</div>
+                                 <div className="flex items-center gap-1.5">{t('salvage.table.material')} {getPrimarySortIcon('name')}</div>
                               </th>
                               <th onClick={() => handlePrimarySort('quantity')} className="text-center py-2.5 px-2 text-gray-200 font-semibold text-sm uppercase tracking-wider cursor-pointer select-none">
-                                <div className="flex items-center justify-center gap-1.5">Quantity {getPrimarySortIcon('quantity')}</div>
+                                 <div className="flex items-center justify-center gap-1.5">{t('table.quantity')} {getPrimarySortIcon('quantity')}</div>
                               </th>
                               <th onClick={() => handlePrimarySort('perBox')} className="text-center py-2.5 px-2 text-gray-200 font-semibold text-sm uppercase tracking-wider cursor-pointer select-none">
-                                <div className="flex items-center justify-center gap-1.5">Per box {getPrimarySortIcon('perBox')}</div>
+                                 <div className="flex items-center justify-center gap-1.5">{t('fourWinds.table.perBox')} {getPrimarySortIcon('perBox')}</div>
                               </th>
                               
                             </tr>
@@ -953,7 +936,7 @@ const FourWindsPage = () => {
                             ))}
                           </tbody>
                          </table>
-                         <div className="md:hidden text-gray-400 text-xs mt-2 text-center">Swipe horizontally to see all columns</div>
+                         <div className="md:hidden text-gray-400 text-xs mt-2 text-center">{t('common.swipeHint')}</div>
                       </div>
                     )}
                   </div>
@@ -970,7 +953,7 @@ const FourWindsPage = () => {
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
             <div className="bg-gray-800 rounded-lg max-w-4xl w-full max-h-[80vh] overflow-hidden">
               <div className="flex justify-between items-center p-6 border-b border-gray-700">
-                <h3 className="text-xl font-bold text-white">Select Items to Display</h3>
+                <h3 className="text-xl font-bold text-white">{t('fourWinds.modal.selectItemsTitle')}</h3>
                 <button
                   onClick={() => setShowItemSelectionModal(false)}
                   className="text-gray-400 hover:text-white transition-colors"
@@ -986,7 +969,7 @@ const FourWindsPage = () => {
                     <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
                     <input
                       type="text"
-                      placeholder="Search items..."
+                      placeholder={t('common.searchItemsPlaceholder')}
                       value={searchBoxTerm}
                       onChange={(e) => setSearchBoxTerm(e.target.value)}
                       className="w-full pl-10 pr-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400"
@@ -1000,13 +983,13 @@ const FourWindsPage = () => {
                     onClick={selectAllBoxItems}
                     className="px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded text-sm transition-colors"
                   >
-                    Select All
+                    {t('common.addAll')}
                   </button>
                   <button
                     onClick={deselectAllBoxItems}
                     className="px-3 py-1 bg-red-600 hover:bg-red-700 text-white rounded text-sm transition-colors"
                   >
-                    Deselect All
+                    {t('common.removeAll')}
                   </button>
                 </div>
 
@@ -1062,21 +1045,21 @@ const FourWindsPage = () => {
                 {/* Action Buttons */}
                 <div className="flex justify-between items-center mt-6 pt-4 border-t border-gray-700">
                   <div className="text-gray-400 text-sm">
-                    {selectedBoxItems.size} items selected
+                    {t('common.itemsSelected').replace('{count}', String(selectedBoxItems.size))}
                   </div>
                   <div className="flex gap-3">
                     <button
                       onClick={() => setShowItemSelectionModal(false)}
                       className="px-4 py-2 bg-gray-600 hover:bg-gray-500 text-white rounded-lg transition-colors"
                     >
-                      Cancel
+                      {t('common.cancel')}
                     </button>
                     <button
                       onClick={applyItemSelection}
                       disabled={selectedBoxItems.size === 0}
                       className="px-4 py-2 bg-cyan-600 hover:bg-cyan-700 disabled:bg-gray-600 text-white rounded-lg transition-colors"
                     >
-                      Apply Selection ({selectedBoxItems.size})
+                      {t('common.addSelected').replace('{count}', String(selectedBoxItems.size))}
                     </button>
                   </div>
                 </div>

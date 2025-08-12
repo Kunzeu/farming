@@ -7,6 +7,7 @@ import { Package, TrendingUp, TrendingDown, Calculator, ArrowLeft, RefreshCw, In
 import Navigation from '@/components/layout/Navigation';
 import Link from 'next/link';
 import { usePageTitle } from '@/hooks/usePageTitle';
+import { useI18n } from '@/contexts/I18nContext';
 
 interface Material {
   id: number;
@@ -48,6 +49,7 @@ const baseMaterials: Omit<Material, 'sellPrice' | 'processedPrice'>[] = [
 
 export default function UnidentifiedGearMasterworkPage() {
   usePageTitle('Salvage - Masterwork');
+  const { t } = useI18n();
   const [quantity, setQuantity] = useState(250);
   const [materials, setMaterials] = useState<Material[]>([]);
   const [results, setResults] = useState<SalvageResult[]>([]);

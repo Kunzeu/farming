@@ -5,10 +5,12 @@ import { motion } from 'framer-motion';
 import Navigation from '@/components/layout/Navigation';
 import { Info, Calculator, TrendingUp, ArrowLeft } from 'lucide-react';
 import { usePageTitle } from '@/hooks/usePageTitle';
+import { useI18n } from '@/contexts/I18nContext';
 
 const LunarNewYearPage = () => {
   const [selectedSection, setSelectedSection] = useState<'overview' | 'calculators' | 'strategies'>('overview');
   usePageTitle('Lunar New Year');
+  const { t } = useI18n();
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-red-900 to-yellow-900">
@@ -18,24 +20,24 @@ const LunarNewYearPage = () => {
           <div className="flex justify-start mb-4">
             <a href="/festivals" className="flex items-center gap-2 px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg transition-colors duration-200">
               <ArrowLeft className="w-4 h-4" />
-              Back to Festivals
+              {t('nav.backToFestivals')}
             </a>
           </div>
-          <h1 className="text-3xl sm:text-4xl font-bold text-white">Lunar New Year</h1>
-          <p className="text-base sm:text-xl text-gray-300">Calculators and analysis for Lunar New Year</p>
+          <h1 className="text-3xl sm:text-4xl font-bold text-white">{t('festival.lunarNewYear')}</h1>
+          <p className="text-base sm:text-xl text-gray-300">{t('festivals.page.subtitle').replace('{name}', t('festival.lunarNewYear'))}</p>
         </motion.div>
 
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="flex flex-wrap justify-center gap-2 mb-8">
-          {[
-            { id: 'overview', label: 'Overview', icon: Info },
-            { id: 'calculators', label: 'Calculators', icon: Calculator },
-            { id: 'strategies', label: 'Strategies', icon: TrendingUp },
-          ].map((tab) => (
+          {([
+            { id: 'overview' as const, label: t('festivals.tabs.overview'), icon: Info },
+            { id: 'calculators' as const, label: t('festivals.tabs.calculators'), icon: Calculator },
+            { id: 'strategies' as const, label: t('festivals.tabs.strategies'), icon: TrendingUp },
+          ] as { id: 'overview' | 'calculators' | 'strategies'; label: string; icon: typeof Info }[]).map((tab) => (
             <button
               key={tab.id}
-              onClick={() => setSelectedSection(tab.id as any)}
+              onClick={() => setSelectedSection(tab.id)}
               className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-colors duration-200 ${
-                selectedSection === (tab.id as any) ? 'bg-red-600 text-white' : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                selectedSection === tab.id ? 'bg-red-600 text-white' : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
               }`}
             >
               <tab.icon className="w-4 h-4" />
@@ -50,9 +52,9 @@ const LunarNewYearPage = () => {
               <div className="bg-gray-800/50 backdrop-blur-sm border border-gray-700 rounded-lg p-6">
                 <h2 className="text-2xl font-bold text-white mb-4 flex items-center">
                   <Info className="w-6 h-6 mr-3 text-red-400" />
-                  Lunar New Year
+                  {t('festival.lunarNewYear')}
                 </h2>
-                <p className="text-gray-300">Festival overview and best practices.</p>
+                <p className="text-gray-300">{t('festivals.overview.blurb')}</p>
               </div>
             </div>
           )}
@@ -62,9 +64,9 @@ const LunarNewYearPage = () => {
               <div className="bg-gray-800/50 backdrop-blur-sm border border-gray-700 rounded-lg p-6">
                 <h2 className="text-2xl font-bold text-white mb-4 flex items-center">
                   <Calculator className="w-6 h-6 mr-3 text-red-400" />
-                  Calculators
+                  {t('festivals.tabs.calculators')}
                 </h2>
-                <p className="text-gray-300">Coming soon…</p>
+                <p className="text-gray-300">{t('festivals.common.comingSoon')}</p>
               </div>
             </div>
           )}
@@ -74,9 +76,9 @@ const LunarNewYearPage = () => {
               <div className="bg-gray-800/50 backdrop-blur-sm border border-gray-700 rounded-lg p-6">
                 <h2 className="text-2xl font-bold text-white mb-4 flex items-center">
                   <TrendingUp className="w-6 h-6 mr-3 text-red-400" />
-                  Strategies
+                  {t('festivals.tabs.strategies')}
                 </h2>
-                <p className="text-gray-300">Coming soon…</p>
+                <p className="text-gray-300">{t('festivals.common.comingSoon')}</p>
               </div>
             </div>
           )}

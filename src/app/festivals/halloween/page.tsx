@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import { motion } from 'framer-motion';
+import Image from 'next/image';
 import Navigation from '@/components/layout/Navigation';
 import { 
   RefreshCw,
@@ -34,6 +35,7 @@ interface Gw2Item {
 interface CalculatorItem {
   id: number;
   name: string;
+  icon?: string;
   quantity: number;
   price100: number;
   price85: number;
@@ -133,9 +135,11 @@ const candyCornItems = [
 const HALLOWEEN_CALCULATOR_KEY = 'halloween_calculator_data';
 
 import { usePageTitle } from '@/hooks/usePageTitle';
+import { useI18n } from '@/contexts/I18nContext';
 
 const HalloweenPage = () => {
   usePageTitle('Halloween Festival');
+  const { t, lang } = useI18n();
   const [selectedSection, setSelectedSection] = useState<string>('overview');
   const [isLoading, setIsLoading] = useState(false);
   const [calculatorItems, setCalculatorItems] = useState<CalculatorItem[]>(() => {
@@ -180,11 +184,11 @@ const HalloweenPage = () => {
     setIsLoadingCalculator(true);
     try {
       // Obtener precios de la API de GW2
-      const pricesResponse = await fetch(`https://api.guildwars2.com/v2/commerce/prices?ids=${allItemIds.join(',')}&lang=en`);
+      const pricesResponse = await fetch(`https://api.guildwars2.com/v2/commerce/prices?ids=${allItemIds.join(',')}&lang=${lang}`);
       const prices = await pricesResponse.json();
       
       // Obtener detalles de los items
-      const itemsResponse = await fetch(`https://api.guildwars2.com/v2/items?ids=${allItemIds.join(',')}&lang=en`);
+      const itemsResponse = await fetch(`https://api.guildwars2.com/v2/items?ids=${allItemIds.join(',')}&lang=${lang}`);
       const items = await itemsResponse.json();
 
       // Crear mapas
@@ -207,6 +211,7 @@ const HalloweenPage = () => {
         return {
           id: item.id,
           name: itemInfo?.name || item.name,
+          icon: itemInfo?.icon || '',
           quantity: 0, // Cantidad por defecto
           price100: sellPrice,
           price85: Math.ceil(sellPrice * 0.85),
@@ -241,7 +246,7 @@ const HalloweenPage = () => {
     } finally {
       setIsLoadingCalculator(false);
     }
-  }, [allItemIds, saveCalculatorData]);
+  }, [allItemIds, saveCalculatorData, lang]);
 
   const fetchHalloweenData = useCallback(async () => {
     setIsLoading(true);
@@ -396,16 +401,16 @@ const HalloweenPage = () => {
                 href="/festivals"
                 className="flex items-center gap-2 px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg transition-colors duration-200">
                 <ArrowLeft className="w-4 h-4" />
-                Back to Festivals
+                {t('nav.backToFestivals')}
               </a>
             </div>
             
             <h1 className="text-4xl font-bold text-white mb-4 flex items-center justify-center">
               <span className="text-3xl mr-3">🎃</span>
-              Halloween Festival
+              {t('festival.halloween')}
             </h1>
             <p className="text-xl text-gray-300">
-              Calculators and analysis to maximize your profits during Halloween
+              {t('festivals.page.subtitle').replace('{name}', t('festival.halloween'))}
             </p>
           </motion.div>
 
@@ -415,11 +420,11 @@ const HalloweenPage = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
             className="flex flex-wrap justify-center gap-2 mb-8">
-            {[
-                              { id: 'overview', label: 'Overview', icon: Info },
-              { id: 'calculators', label: 'Calculators', icon: Calculator },
-                              { id: 'strategies', label: 'Strategies', icon: TrendingUp }
-            ].map((tab) => (
+            {([
+              { id: 'overview', label: t('festivals.tabs.overview'), icon: Info },
+              { id: 'calculators', label: t('festivals.tabs.calculators'), icon: Calculator },
+              { id: 'strategies', label: t('festivals.tabs.strategies'), icon: TrendingUp }
+            ] as const).map((tab) => (
               <button
                 key={tab.id}
                 onClick={() => setSelectedSection(tab.id)}
@@ -447,35 +452,22 @@ const HalloweenPage = () => {
                 <div className="bg-gray-800/50 backdrop-blur-sm border border-gray-700 rounded-lg p-6">
                                       <h2 className="text-2xl font-bold text-white mb-4 flex items-center">
                       <Info className="w-6 h-6 mr-3 text-orange-400" />
-                      Halloween Festival
+                      {t('festival.halloween')}
                     </h2>
-                    <p className="text-gray-300 mb-6">
-                      The Halloween Festival in Guild Wars 2 is one of the best farming opportunities. 
-                      With activities like the Mad King&apos;s Labyrinth and Trick-or-Treat Bags, you can generate 
-                      significant amounts of gold in a short time.
-                    </p>
+                    <p className="text-gray-300 mb-6">{t('halloween.overview.p1')}</p>
                   
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                     <div className="bg-gray-700/50 rounded-lg p-4">
-                      <h3 className="text-white font-semibold mb-2">Trick-or-Treat Bags</h3>
-                      <p className="text-gray-300 text-sm">
-                        The bags contain random items with different drop rates. 
-                        Price analysis helps you determine if it&apos;s profitable to open them.
-                      </p>
+                      <h3 className="text-white font-semibold mb-2">{t('halloween.cards.bags.title')}</h3>
+                      <p className="text-gray-300 text-sm">{t('halloween.cards.bags.desc')}</p>
                     </div>
                     <div className="bg-gray-700/50 rounded-lg p-4">
-                      <h3 className="text-white font-semibold mb-2">Mad King&apos;s Labyrinth</h3>
-                      <p className="text-gray-300 text-sm">
-                        The labyrinth is the main activity. With a good route and group, 
-                        you can obtain hundreds of bags per hour.
-                      </p>
+                      <h3 className="text-white font-semibold mb-2">{t('halloween.cards.lab.title')}</h3>
+                      <p className="text-gray-300 text-sm">{t('halloween.cards.lab.desc')}</p>
                     </div>
                     <div className="bg-gray-700/50 rounded-lg p-4">
-                      <h3 className="text-white font-semibold mb-2">Candy Corn</h3>
-                      <p className="text-gray-300 text-sm">
-                        The main festival material. Its prices fluctuate during 
-                        and after the event, creating trading opportunities.
-                      </p>
+                      <h3 className="text-white font-semibold mb-2">{t('halloween.cards.corn.title')}</h3>
+                      <p className="text-gray-300 text-sm">{t('halloween.cards.corn.desc')}</p>
                     </div>
                   </div>
                 </div>
@@ -489,11 +481,9 @@ const HalloweenPage = () => {
                   <div className="flex justify-between items-center mb-6">
                     <div className="flex items-center">
                       <Calculator className="w-6 h-6 mr-3 text-orange-400" />
-                      <h2 className="text-2xl font-bold text-white">
-                        Custom Halloween Calculator
-                      </h2>
+                      <h2 className="text-2xl font-bold text-white">{t('halloween.calculator.title')}</h2>
                     </div>
-                    <button
+                      <button
                       onClick={() => {
                         fetchHalloweenData();
                         fetchCalculatorData();
@@ -501,36 +491,34 @@ const HalloweenPage = () => {
                       disabled={isLoading || isLoadingCalculator}
                       className="flex items-center gap-2 px-4 py-2 bg-orange-600 hover:bg-orange-700 disabled:bg-gray-600 text-white rounded-lg transition-colors duration-200"
                     >
-                      <RefreshCw className={`w-4 h-4 ${isLoading || isLoadingCalculator ? 'animate-spin' : ''}`} />
-                      {isLoading || isLoadingCalculator ? 'Updating...' : 'Refresh Data'}
+                        <RefreshCw className={`w-4 h-4 ${isLoading || isLoadingCalculator ? 'animate-spin' : ''}`} />
+                        {isLoading || isLoadingCalculator ? t('common.updating') : t('common.refreshData')}
                     </button>
                   </div>
 
                   {/* Custom Calculator */}
                   <div className="mb-8">
-                    <h3 className="text-xl font-bold text-white mb-4 flex items-center">
+                      <h3 className="text-xl font-bold text-white mb-4 flex items-center">
                       <Package className="w-5 h-5 mr-2 text-orange-400" />
-                      Materials Calculator
-                      <span className="ml-2 text-sm text-green-400 font-normal">
-                        (Data saved automatically)
-                      </span>
+                        {t('halloween.calculator.materials')}
+                        <span className="ml-2 text-sm text-green-400 font-normal">{t('halloween.calculator.autoSave')}</span>
                     </h3>
                     
                     {/* Action Buttons */}
                     <div className="flex gap-3 mb-6">
-                      <button
+                        <button
                         onClick={() => setShowItemModal(true)}
                         className="flex items-center gap-2 px-4 py-2 bg-orange-600 hover:bg-orange-700 text-white rounded-lg transition-colors duration-200"
                       >
                         <Plus className="w-4 h-4" />
-                        Add Items
+                          {t('common.addItems')}
                       </button>
-                      <button
+                        <button
                         onClick={addAllItems}
                         className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors duration-200"
                       >
                         <List className="w-4 h-4" />
-                        Add All
+                          {t('common.addAll')}
                       </button>
                       {calculatorItems.length > 0 && (
                         <button
@@ -538,7 +526,7 @@ const HalloweenPage = () => {
                           className="flex items-center gap-2 px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors duration-200"
                         >
                           <X className="w-4 h-4" />
-                          Remove All
+                          {t('common.removeAll')}
                         </button>
                       )}
                     </div>
@@ -554,7 +542,7 @@ const HalloweenPage = () => {
                                 onClick={() => handleSort('name')}
                               >
                                 <div className="flex items-center gap-1">
-                                  Name
+                                   {t('table.name')}
                                   {getSortIcon('name')}
                                 </div>
                               </th>
@@ -563,7 +551,7 @@ const HalloweenPage = () => {
                                 onClick={() => handleSort('quantity')}
                               >
                                 <div className="flex items-center justify-center gap-1">
-                                  Number
+                                   {t('table.quantity')}
                                   {getSortIcon('quantity')}
                                 </div>
                               </th>
@@ -572,7 +560,7 @@ const HalloweenPage = () => {
                                 onClick={() => handleSort('price100')}
                               >
                                 <div className="flex items-center justify-center gap-1">
-                                  Price 100%
+                                   {t('table.price100')}
                                   {getSortIcon('price100')}
                                 </div>
                               </th>
@@ -581,7 +569,7 @@ const HalloweenPage = () => {
                                 onClick={() => handleSort('price85')}
                               >
                                 <div className="flex items-center justify-center gap-1">
-                                  Price 85%
+                                   {t('table.price85')}
                                   {getSortIcon('price85')}
                                 </div>
                               </th>
@@ -590,7 +578,7 @@ const HalloweenPage = () => {
                                 onClick={() => handleSort('total100')}
                               >
                                 <div className="flex items-center justify-center gap-1">
-                                  Total 100%
+                                   {t('table.total100')}
                                   {getSortIcon('total100')}
                                 </div>
                               </th>
@@ -599,17 +587,31 @@ const HalloweenPage = () => {
                                 onClick={() => handleSort('total85')}
                               >
                                 <div className="flex items-center justify-center gap-1">
-                                  Total 85%
+                                   {t('table.total85')}
                                   {getSortIcon('total85')}
                                 </div>
                               </th>
-                              <th className="text-center py-2 text-gray-300">Action</th>
+                              <th className="text-center py-2 text-gray-300">{t('table.action')}</th>
                             </tr>
                           </thead>
                           <tbody>
                             {sortedCalculatorItems.map((item) => (
                               <tr key={item.id} className="border-b border-gray-700">
-                                <td className="py-2 text-white">{item.name}</td>
+                                <td className="py-2 text-white">
+                                  <div className="flex items-center gap-2">
+                                    {item.icon && (
+                                      <Image
+                                        src={item.icon}
+                                        alt={item.name}
+                                        width={28}
+                                        height={28}
+                                        className="rounded border border-gray-600"
+                                        onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = 'none'; }}
+                                      />
+                                    )}
+                                    <span>{item.name}</span>
+                                  </div>
+                                </td>
                                 <td className="py-2 text-center">
                                   <input
                                     type="number"
@@ -667,15 +669,15 @@ const HalloweenPage = () => {
                     {!isLoadingCalculator && calculatorItems.length === 0 && (
                       <div className="text-center py-12 bg-gray-800/30 rounded-lg border border-gray-700">
                         <Package className="w-12 h-12 text-gray-500 mx-auto mb-4" />
-                        <p className="text-gray-400 mb-2">No items in calculator</p>
-                        <p className="text-gray-500 text-sm">Use the buttons above to add items</p>
+                        <p className="text-gray-400 mb-2">{t('halloween.calculator.empty')}</p>
+                        <p className="text-gray-500 text-sm">{t('halloween.calculator.emptyTip')}</p>
                       </div>
                     )}
 
                     {isLoadingCalculator && (
                       <div className="text-center py-8">
                         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-400 mx-auto"></div>
-                        <p className="text-gray-300 mt-2">Loading API data...</p>
+                        <p className="text-gray-300 mt-2">{t('common.loadingApiData')}</p>
                       </div>
                     )}
                   </div>
@@ -691,61 +693,61 @@ const HalloweenPage = () => {
             {selectedSection === 'strategies' && (
               <div className="space-y-8">
                 <div className="bg-gray-800/50 backdrop-blur-sm border border-gray-700 rounded-lg p-6">
-                  <h2 className="text-2xl font-bold text-white mb-6 flex items-center">
-                    <TrendingUp className="w-6 h-6 mr-3 text-orange-400" />
-                    Farming Strategies
-                  </h2>
+              <h2 className="text-2xl font-bold text-white mb-6 flex items-center">
+                <TrendingUp className="w-6 h-6 mr-3 text-orange-400" />
+                {t('halloween.strategies.title')}
+              </h2>
                   
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div className="space-y-4">
-                      <h3 className="text-xl font-bold text-white">Mad King&apos;s Labyrinth</h3>
+                      <h3 className="text-xl font-bold text-white">{t('halloween.strategies.lab.title')}</h3>
                       <div className="space-y-3">
                         <div className="flex items-start gap-3">
                           <div className="w-2 h-2 bg-orange-400 rounded-full mt-2 flex-shrink-0"></div>
                           <div>
-                                                      <h4 className="text-white font-semibold">Optimized Route</h4>
-                          <p className="text-gray-300 text-sm">Follow a specific route to maximize bags per hour.</p>
+                          <h4 className="text-white font-semibold">{t('halloween.strategies.lab.route')}</h4>
+                          <p className="text-gray-300 text-sm">{t('halloween.strategies.lab.routeDesc')}</p>
                         </div>
                       </div>
                       <div className="flex items-start gap-3">
                         <div className="w-2 h-2 bg-orange-400 rounded-full mt-2 flex-shrink-0"></div>
                         <div>
-                          <h4 className="text-white font-semibold">Coordinated Group</h4>
-                          <p className="text-gray-300 text-sm">A group of 5 people can obtain 200+ bags per hour.</p>
+                          <h4 className="text-white font-semibold">{t('halloween.strategies.lab.group')}</h4>
+                          <p className="text-gray-300 text-sm">{t('halloween.strategies.lab.groupDesc')}</p>
                         </div>
                       </div>
                       <div className="flex items-start gap-3">
                         <div className="w-2 h-2 bg-orange-400 rounded-full mt-2 flex-shrink-0"></div>
                         <div>
-                          <h4 className="text-white font-semibold">Timing</h4>
-                          <p className="text-gray-300 text-sm">The best times are during server peak hours.</p>
+                          <h4 className="text-white font-semibold">{t('halloween.strategies.lab.timing')}</h4>
+                          <p className="text-gray-300 text-sm">{t('halloween.strategies.lab.timingDesc')}</p>
                         </div>
                         </div>
                       </div>
                     </div>
                     
                     <div className="space-y-4">
-                      <h3 className="text-xl font-bold text-white">Trading Post</h3>
+                      <h3 className="text-xl font-bold text-white">{t('halloween.strategies.tp.title')}</h3>
                       <div className="space-y-3">
                         <div className="flex items-start gap-3">
                           <div className="w-2 h-2 bg-orange-400 rounded-full mt-2 flex-shrink-0"></div>
                           <div>
-                                                      <h4 className="text-white font-semibold">Early Purchase</h4>
-                          <p className="text-gray-300 text-sm">Buy bags before the festival when prices are low.</p>
+                          <h4 className="text-white font-semibold">{t('halloween.strategies.tp.early')}</h4>
+                          <p className="text-gray-300 text-sm">{t('halloween.strategies.tp.earlyDesc')}</p>
                         </div>
                       </div>
                       <div className="flex items-start gap-3">
                         <div className="w-2 h-2 bg-orange-400 rounded-full mt-2 flex-shrink-0"></div>
                         <div>
-                          <h4 className="text-white font-semibold">Strategic Selling</h4>
-                          <p className="text-gray-300 text-sm">Sell specific items when their prices reach peaks.</p>
+                          <h4 className="text-white font-semibold">{t('halloween.strategies.tp.sell')}</h4>
+                          <p className="text-gray-300 text-sm">{t('halloween.strategies.tp.sellDesc')}</p>
                         </div>
                       </div>
                       <div className="flex items-start gap-3">
                         <div className="w-2 h-2 bg-orange-400 rounded-full mt-2 flex-shrink-0"></div>
                         <div>
-                          <h4 className="text-white font-semibold">Candy Corn Trading</h4>
-                          <p className="text-gray-300 text-sm">Take advantage of Candy Corn price fluctuations.</p>
+                          <h4 className="text-white font-semibold">{t('halloween.strategies.tp.corn')}</h4>
+                          <p className="text-gray-300 text-sm">{t('halloween.strategies.tp.cornDesc')}</p>
                         </div>
                         </div>
                       </div>
@@ -763,7 +765,7 @@ const HalloweenPage = () => {
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
           <div className="bg-gray-800 rounded-lg max-w-4xl w-full max-h-[80vh] overflow-hidden">
             <div className="flex justify-between items-center p-6 border-b border-gray-700">
-              <h3 className="text-xl font-bold text-white">Select Items</h3>
+              <h3 className="text-xl font-bold text-white">{t('common.selectItems')}</h3>
               <button
                 onClick={() => setShowItemModal(false)}
                 className="text-gray-400 hover:text-white transition-colors"
@@ -779,7 +781,7 @@ const HalloweenPage = () => {
                   <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
                   <input
                     type="text"
-                    placeholder="Search items..."
+                    placeholder={t('common.searchItemsPlaceholder')}
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                     className="w-full pl-10 pr-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400"
@@ -825,21 +827,21 @@ const HalloweenPage = () => {
               {/* Action Buttons */}
               <div className="flex justify-between items-center mt-6 pt-4 border-t border-gray-700">
                 <div className="text-gray-400 text-sm">
-                  {selectedItems.size} items selected
+                  {t('common.itemsSelected').replace('{count}', String(selectedItems.size))}
                 </div>
                 <div className="flex gap-3">
                   <button
                     onClick={() => setShowItemModal(false)}
                     className="px-4 py-2 bg-gray-600 hover:bg-gray-500 text-white rounded-lg transition-colors"
                   >
-                                          Cancel
+                    {t('common.cancel')}
                     </button>
                     <button
                       onClick={addSelectedItems}
                       disabled={selectedItems.size === 0}
                       className="px-4 py-2 bg-orange-600 hover:bg-orange-700 disabled:bg-gray-600 text-white rounded-lg transition-colors"
                     >
-                      Add Selected ({selectedItems.size})
+                    {t('common.addSelected').replace('{count}', String(selectedItems.size))}
                     </button>
                 </div>
               </div>

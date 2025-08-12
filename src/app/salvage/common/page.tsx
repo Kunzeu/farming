@@ -7,6 +7,7 @@ import { Package, TrendingUp, TrendingDown, Calculator, ArrowLeft, RefreshCw, In
 import Navigation from '@/components/layout/Navigation';
 import Link from 'next/link';
 import { usePageTitle } from '@/hooks/usePageTitle';
+import { useI18n } from '@/contexts/I18nContext';
 
 interface Material {
   id: number;
@@ -47,6 +48,7 @@ const baseMaterials: Omit<Material, 'sellPrice' | 'processedPrice'>[] = [
 
 export default function UnidentifiedGearCommonPage() {
   usePageTitle('Salvage - Common');
+  const { t } = useI18n();
   const [quantity, setQuantity] = useState(250);
   const [materials, setMaterials] = useState<Material[]>([]);
   const [results, setResults] = useState<SalvageResult[]>([]);
@@ -187,7 +189,7 @@ export default function UnidentifiedGearCommonPage() {
       <div className="flex items-center justify-center min-h-screen">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto mb-4"></div>
-          <p className="text-gray-400">Loading prices from GW2 API...</p>
+          <p className="text-gray-400">{t('salvage.loadingPrices')}</p>
         </div>
       </div>
     );

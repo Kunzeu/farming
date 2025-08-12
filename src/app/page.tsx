@@ -75,7 +75,7 @@ export default function HomePage() {
   const currentYear = now.getFullYear();
   type MonthDay = { month: number; day: number };
   interface FestivalEvent {
-    name: string;
+    nameKey: string;
     path: string;
     start: MonthDay;
     end: MonthDay;
@@ -89,35 +89,35 @@ export default function HomePage() {
 
   const festivalEvents: FestivalEvent[] = [
     {
-      name: 'Four Winds Festival',
+      nameKey: 'festival.fourWinds',
       path: '/festivals/four-winds',
       start: { month: 7, day: 20 },
       end: { month: 8, day: 20 },
       color: 'from-green-600 to-cyan-600',
     },
     {
-      name: "Shadow of the Mad King (Halloween)",
+      nameKey: 'festival.halloween',
       path: '/festivals/halloween',
       start: { month: 10, day: 15 },
       end: { month: 11, day: 5 },
       color: 'from-orange-600 to-orange-700',
     },
     {
-      name: 'Lunar New Year',
+      nameKey: 'festival.lunarNewYear',
       path: '/festivals/lunar-new-year',
       start: { month: 1, day: 20 },
       end: { month: 2, day: 10 },
       color: 'from-red-600 to-yellow-500',
     },
     {
-      name: 'Dragon Bash',
+      nameKey: 'festival.dragonBash',
       path: '/festivals/dragon-bash',
       start: { month: 6, day: 20 },
       end: { month: 7, day: 10 },
       color: 'from-emerald-600 to-teal-600',
     },
     {
-      name: 'Wintersday',
+      nameKey: 'festival.wintersday',
       path: '/festivals/wintersday',
       start: { month: 12, day: 12 },
       end: { month: 1, day: 5 }, // cruza de año
@@ -212,7 +212,7 @@ export default function HomePage() {
             <div className="mb-6 flex flex-col items-center">
               <Link href={activeEvent.path}>
                 <span className={`inline-block bg-gradient-to-r ${activeEvent.color} hover:opacity-95 text-white font-bold py-3 px-8 rounded-lg text-lg shadow-lg hover:shadow-xl transition-all duración-300 transform hover:-translate-y-1 border border-white/10`}>
-                  {t('cta.activeEvent', `Active event: {name}`).replace('{name}', activeEvent.name)}
+                  {t('cta.activeEvent', `Active event: {name}`).replace('{name}', t(activeEvent.nameKey))}
                 </span>
               </Link>
             </div>
@@ -225,10 +225,10 @@ export default function HomePage() {
             className="mb-8"
           >
             <h2 className="text-3xl font-bold text-white mb-3 text-center">
-              {t('section.availableTools', 'Available Tools')}
+              {t('section.availableTools')}
             </h2>
             <p className="text-gray-400 text-center max-w-2xl mx-auto">
-              Access to all available features and tools for optimizing your Guild Wars 2 farming experience
+              {t('home.hero.subtitle')}
             </p>
           </motion.div>
 
@@ -249,10 +249,10 @@ export default function HomePage() {
                       </div>
                       <div>
                         <h3 className="text-xl font-bold text-white mb-2">
-                          {card.title}
+                          {t(card.title)}
                         </h3>
                         <p className="text-gray-100 text-sm leading-relaxed">
-                          {card.description}
+                          {t(card.description)}
                         </p>
                       </div>
                     </div>

@@ -159,7 +159,7 @@ export default function FestivalsPage() {
             className="text-center mb-12">
             <h1 className="text-4xl font-bold text-white mb-4 flex items-center justify-center">
               <Calendar className="w-8 h-8 mr-3 text-purple-400" />
-              {t('festivals.title', 'Guild Wars 2 Festivals')}
+              {t('festivals.title')}
             </h1>
             <p className="text-xl text-gray-300 max-w-3xl mx-auto">
               Specific calculators and guides to maximize your profits during annual festivals
@@ -187,7 +187,7 @@ export default function FestivalsPage() {
                         {festival.icon}
                       </div>
                       <span className={`px-2 py-1 rounded text-xs font-semibold ${getStatusColor(festival.status)}`}>
-                         {t(`status.${festival.status}`, getStatusLabel(festival.status))}
+                         {t(`status.${festival.status}`)}
                       </span>
                     </div>
 
@@ -208,7 +208,7 @@ export default function FestivalsPage() {
                     <div className="mt-auto">
                       <div className="flex items-center justify-between">
                         <span className="text-purple-400 text-sm font-semibold">
-                          {t('cta.viewCalculator', 'View Calculator')}
+                          {t('cta.viewCalculator')}
                         </span>
                         <TrendingUp className="w-4 h-4 text-purple-400 group-hover:translate-x-1 transition-transform" />
                       </div>

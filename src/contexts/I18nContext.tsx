@@ -25,13 +25,7 @@ const LANG_STORAGE_KEY = 'tf_lang';
 const ALL_MESSAGES: Record<LangCode, Messages> = { en, de, es, fr };
 
 function detectInitialLang(): LangCode {
-  if (typeof window === 'undefined') return 'en';
-  const stored = window.localStorage.getItem(LANG_STORAGE_KEY) as LangCode | null;
-  if (stored && ALL_MESSAGES[stored]) return stored;
-  const nav = navigator.language?.toLowerCase() || 'en';
-  if (nav.startsWith('es')) return 'es';
-  if (nav.startsWith('de')) return 'de';
-  if (nav.startsWith('fr')) return 'fr';
+  // Para evitar hydration mismatch, usar siempre 'en' como valor inicial SSR/CSR
   return 'en';
 }
 
@@ -44,6 +38,22 @@ export function I18nProvider({ children }: { children: React.ReactNode }) {
       window.localStorage.setItem(LANG_STORAGE_KEY, next);
     }
   };
+
+  useEffect(() => {
+    // Al montar en cliente, resolver idioma real desde localStorage o navegador
+    if (typeof window !== 'undefined') {
+      const stored = window.localStorage.getItem(LANG_STORAGE_KEY) as LangCode | null;
+      if (stored && ALL_MESSAGES[stored]) {
+        setLangState(stored);
+      } else {
+        const nav = navigator.language?.toLowerCase() || 'en';
+        if (nav.startsWith('es')) setLangState('es');
+        else if (nav.startsWith('de')) setLangState('de');
+        else if (nav.startsWith('fr')) setLangState('fr');
+        else setLangState('en');
+      }
+    }
+  }, []);
 
   useEffect(() => {
     // Mantener <html lang="...">
