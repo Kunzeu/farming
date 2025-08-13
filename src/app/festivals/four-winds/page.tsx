@@ -269,6 +269,14 @@ const FourWindsPage = () => {
     fetchPrimaryItems();
   }, [fetchPrimaryItems]);
 
+  // Auto-actualización de ítems obtenidos cada 5 minutos
+  useEffect(() => {
+    const interval = setInterval(() => {
+      fetchPrimaryItems();
+    }, 5 * 60 * 1000);
+    return () => clearInterval(interval);
+  }, [fetchPrimaryItems]);
+
   const handlePrimarySort = (field: 'id' | 'name' | 'quantity' | 'perBox') => {
     if (primarySortField === field) {
       setPrimarySortDirection(primarySortDirection === 'asc' ? 'desc' : 'asc');
@@ -313,6 +321,20 @@ const FourWindsPage = () => {
     });
     return items;
   }, [primaryItems, primarySortField, primarySortDirection]);
+
+  // Valor esperado por caja (bruto y tras tasa del 15%) basado en datos de apertura
+  const expectedValuePerBoxCopper = useMemo(() => {
+    if (primaryItems.length === 0) return 0;
+    return primaryItems.reduce((sum, item) => {
+      const unit = item.pricePerUnit || 0; // sells.unit_price
+      const perBox6 = Math.round((item.perBox || 0) * 1_000_000) / 1_000_000; // usar 6 decimales
+      return sum + perBox6 * unit;
+    }, 0);
+  }, [primaryItems]);
+
+  const expectedValuePerBoxAfterTaxCopper = useMemo(() => {
+    return Math.round(expectedValuePerBoxCopper * 0.85);
+  }, [expectedValuePerBoxCopper]);
 
   // Función para aplicar selección de items en la calculadora de cajas
   const applyItemSelection = () => {
@@ -413,10 +435,16 @@ const FourWindsPage = () => {
   }, [boxCalculatorItems, sortField, sortDirection]);
 
   // Ítem más barato por unidad (entre los seleccionados)
-  const cheapestByUnit = useMemo(() => {
+  function getPricePerBoxCopper(item: BoxCalculatorItem): number {
+    const perBox6 = Math.round((item.numPerBox || 0) * 1_000_000) / 1_000_000;
+    const unit = item.pricePerUnit || 0;
+    return Math.round(unit * perBox6);
+  }
+
+  const cheapestByBox = useMemo(() => {
     const items = boxCalculatorItems.filter((i) => selectedBoxItems.has(i.id));
     if (items.length === 0) return null;
-    return items.reduce((min, curr) => (curr.pricePerUnit < min.pricePerUnit ? curr : min));
+    return items.reduce((min, curr) => (getPricePerBoxCopper(curr) < getPricePerBoxCopper(min) ? curr : min));
   }, [boxCalculatorItems, selectedBoxItems]);
 
   // Ir a Calculators con orden Price/u ascendente y desplazar a la tabla
@@ -890,12 +918,12 @@ const FourWindsPage = () => {
                     >
                       <div className="text-xs uppercase tracking-wider text-gray-400">{t('fourWinds.quick.pc.title')}</div>
                       <div className="mt-1 text-sm text-gray-300">
-                        {cheapestByUnit ? (
+                        {cheapestByBox ? (
                           <div className="flex items-center gap-2">
-                            {cheapestByUnit.icon ? (
+                            {cheapestByBox.icon ? (
                               <Image
-                                src={cheapestByUnit.icon}
-                                alt={cheapestByUnit.name}
+                                src={cheapestByBox.icon}
+                                alt={cheapestByBox.name}
                                 width={32}
                                 height={32}
                                 className="rounded border border-gray-600"
@@ -904,8 +932,8 @@ const FourWindsPage = () => {
                                 }}
                               />
                             ) : null}
-                            <span className="text-white font-medium">{cheapestByUnit.name}</span>
-                            <span className="text-gray-300">— {formatGoldSilverCopper(cheapestByUnit.pricePerUnit)}</span>
+                            <span className="text-white font-medium">{cheapestByBox.name}</span>
+                            <span className="text-gray-300">— {formatGoldSilverCopper(getPricePerBoxCopper(cheapestByBox))}</span>
                           </div>
                         ) : (
                           t('common.loadingApiData')
@@ -913,6 +941,12 @@ const FourWindsPage = () => {
                       </div>
                       <div className="mt-2 text-cyan-400 text-sm font-semibold">{t('fourWinds.quick.seeInCalculator')}</div>
                     </button>
+                    {/* Valor por caja 85% (media) en contenedor aparte (reemplaza al inferior) */}
+                    <div className="bg-gray-700/50 rounded-lg p-4 text-center border border-gray-600">
+                      <div className="text-xs uppercase tracking-wider text-gray-400">{t('fourWinds.quick.expectedPerBox', 'VALOR POR CAJA 85% (MEDIA)')}</div>
+                      <div className="mt-1 text-cyan-400 font-bold text-lg">{formatGoldSilverCopper(expectedValuePerBoxAfterTaxCopper)}</div>
+                      <div className="text-gray-400 text-xs">{t('fourWinds.quick.beforeTax', 'Bruto')}: {formatGoldSilverCopper(Math.round(expectedValuePerBoxCopper))}</div>
+                    </div>
                   </div>
                   <div>
                     <h3 className="text-xl font-bold text-white mb-4 flex items-center">
@@ -938,14 +972,25 @@ const FourWindsPage = () => {
                         </div>
                          <div className="text-gray-300 text-sm">{t('fourWinds.stats.totalValue')}</div>
                       </div>
+                      {/* Eliminado el bloque inferior duplicado de valor por caja */}
                     </div>
                   </div>
 
                   <div>
-                    <h3 className="text-xl font-bold text-white mb-4 flex items-center">
-                      <Calculator className="w-6 h-6 mr-3 text-cyan-400" />
-                      {t('fourWinds.obtained.title')}
-                    </h3>
+                    <div className="flex items-center justify-between mb-4">
+                      <h3 className="text-xl font-bold text-white flex items-center">
+                        <Calculator className="w-6 h-6 mr-3 text-cyan-400" />
+                        {t('fourWinds.obtained.title')}
+                      </h3>
+                      <button
+                        onClick={fetchPrimaryItems}
+                        disabled={primaryLoading}
+                        className="flex items-center gap-2 px-3 py-1.5 bg-cyan-600 hover:bg-cyan-700 disabled:bg-gray-600 text-white rounded text-sm transition-colors duration-200"
+                      >
+                        <RefreshCw className={`w-4 h-4 ${primaryLoading ? 'animate-spin' : ''}`} />
+                        {t('common.refreshData', 'Refresh Data')}
+                      </button>
+                    </div>
                     {primaryItems.length === 0 ? (
                       <div className="bg-gray-800/30 rounded-lg border border-gray-700 overflow-hidden">
                         <div className="p-4 text-center text-gray-400">
@@ -955,18 +1000,20 @@ const FourWindsPage = () => {
                       </div>
                     ) : (
                       <div className="overflow-x-auto bg-gray-800/30 rounded-lg border border-gray-700">
-                        <table className="w-full text-base min-w-[520px]">
+                        <table className="w-full text-base min-w-[820px]">
                           <thead>
                             <tr className="border-b border-gray-600 bg-gray-700/50">
                               <th onClick={() => handlePrimarySort('name')} className="text-left py-2.5 px-3 text-gray-200 font-semibold text-sm uppercase tracking-wider cursor-pointer select-none">
                                  <div className="flex items-center gap-1.5">{t('salvage.table.material')} {getPrimarySortIcon('name')}</div>
                               </th>
+                              <th className="text-center py-2.5 px-2 text-gray-200 font-semibold text-sm uppercase tracking-wider select-none">{t('fourWinds.table.value85', 'Value 85%')}</th>
                               <th onClick={() => handlePrimarySort('quantity')} className="text-center py-2.5 px-2 text-gray-200 font-semibold text-sm uppercase tracking-wider cursor-pointer select-none">
                                  <div className="flex items-center justify-center gap-1.5">{t('table.quantity')} {getPrimarySortIcon('quantity')}</div>
                               </th>
                               <th onClick={() => handlePrimarySort('perBox')} className="text-center py-2.5 px-2 text-gray-200 font-semibold text-sm uppercase tracking-wider cursor-pointer select-none">
                                  <div className="flex items-center justify-center gap-1.5">{t('fourWinds.table.perBox')} {getPrimarySortIcon('perBox')}</div>
                               </th>
+                              <th className="text-center py-2.5 px-2 text-gray-200 font-semibold text-sm uppercase tracking-wider select-none">{t('fourWinds.table.valuePerBox', 'Valor por caja 85% (media)')}</th>
                               
                             </tr>
                           </thead>
@@ -981,8 +1028,18 @@ const FourWindsPage = () => {
                                     <span className="font-medium text-base">{item.name}</span>
                                   </div>
                                 </td>
+                                <td className="py-2 px-2 text-center text-gray-300 font-mono text-base">
+                                  {formatGoldSilverCopper(Math.round((item.pricePerUnit || 0) * 0.85))}
+                                </td>
                                 <td className="py-2 px-2 text-center text-gray-300 font-mono text-base">{item.quantity.toLocaleString()}</td>
                                 <td className="py-2 px-2 text-center text-gray-300 font-mono text-base">{item.perBox.toFixed(6)}</td>
+                                <td className="py-2 px-2 text-center text-gray-300 font-mono text-base">
+                                  {formatGoldSilverCopper(
+                                    Math.round(
+                                      (item.pricePerUnit || 0) * 0.85 * (Math.round((item.perBox || 0) * 1_000_000) / 1_000_000)
+                                    )
+                                  )}
+                                </td>
                               </tr>
                             ))}
                           </tbody>
