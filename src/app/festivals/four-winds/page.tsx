@@ -161,11 +161,13 @@ const FourWindsPage = () => {
 
   // Función para formatear moneda GW2
   const formatGoldSilverCopper = (copper: number) => {
-    const gold = Math.floor(copper / 10000);
-    const silver = Math.floor((copper % 10000) / 100);
-    const copperRemaining = copper % 100;
-    
-    return `${gold.toString().padStart(2, '0')}G ${silver.toString().padStart(2, '0')}S ${copperRemaining.toString().padStart(2, '0')}C`;
+    const isNegative = copper < 0;
+    const abs = Math.abs(copper);
+    const gold = Math.floor(abs / 10000);
+    const silver = Math.floor((abs % 10000) / 100);
+    const copperRemaining = abs % 100;
+    const sign = isNegative ? '-' : '';
+    return `${sign}${gold.toString().padStart(2, '0')}G ${silver.toString().padStart(2, '0')}S ${copperRemaining.toString().padStart(2, '0')}C`;
   };
 
   // Función para obtener iconos y precios de la API de GW2
@@ -322,19 +324,7 @@ const FourWindsPage = () => {
     return items;
   }, [primaryItems, primarySortField, primarySortDirection]);
 
-  // Valor esperado por caja (bruto y tras tasa del 15%) basado en datos de apertura
-  const expectedValuePerBoxCopper = useMemo(() => {
-    if (primaryItems.length === 0) return 0;
-    return primaryItems.reduce((sum, item) => {
-      const unit = item.pricePerUnit || 0; // sells.unit_price
-      const perBox6 = Math.round((item.perBox || 0) * 1_000_000) / 1_000_000; // usar 6 decimales
-      return sum + perBox6 * unit;
-    }, 0);
-  }, [primaryItems]);
-
-  const expectedValuePerBoxAfterTaxCopper = useMemo(() => {
-    return Math.round(expectedValuePerBoxCopper * 0.85);
-  }, [expectedValuePerBoxCopper]);
+  // (reservado) Métricas de valor por caja – se calcula después de determinar cheapestByBox
 
   // Función para aplicar selección de items en la calculadora de cajas
   const applyItemSelection = () => {
@@ -447,14 +437,81 @@ const FourWindsPage = () => {
     return items.reduce((min, curr) => (getPricePerBoxCopper(curr) < getPricePerBoxCopper(min) ? curr : min));
   }, [boxCalculatorItems, selectedBoxItems]);
 
+  // Valor por caja personalizado según reglas (sin SS/infusiones vs con infusiones+SS)
+  const {
+    valueNoSSCopper,
+    valueWithInfAndSSCopper,
+    ssFromTokens,
+    tokensPerBox,
+    avgNoSSCopper,
+    avgWithInfAndSSCopper
+  } = useMemo(() => {
+    const isInfusion = (name: string) => name.toLowerCase().includes('infus');
+    const isFestivalToken = (name: string) => {
+      const n = name.toLowerCase();
+      return (
+        n.includes('festival token') ||
+        n.includes('vale del festival') ||
+        n.includes('jeton du festival') ||
+        n.includes('festmarke')
+      );
+    };
+
+    let grossNoInfNoTok = 0; // sin infusiones, sin tokens
+    let grossWithInf = 0;     // con infusiones, sin tokens
+    let tokensPerBox = 0;     // promedio de FT por caja
+
+    for (const item of primaryItems) {
+      const unit = item.pricePerUnit || 0;
+      const perBox6 = Math.round((item.perBox || 0) * 1_000_000) / 1_000_000;
+      const name = item.name || '';
+
+      if (isFestivalToken(name)) {
+        // Volver a usar per-box como al inicio
+        tokensPerBox += perBox6;
+        continue; // tokens no aportan cobre directo, se convierten a SS
+      }
+
+      grossWithInf += perBox6 * unit;
+      if (!isInfusion(name)) {
+        grossNoInfNoTok += perBox6 * unit;
+      }
+    }
+
+    const afterNoInfNoTok = Math.round(grossNoInfNoTok * 0.85);
+    const afterWithInf = Math.round(grossWithInf * 0.85);
+
+    const ssFromTokens = tokensPerBox / 300; // 300 FT -> 1 SS (por caja)
+    const ssCopper = Math.round(ssFromTokens * 30000); // 1 SS = 3g = 30000 cobre
+
+    const costPerBox = cheapestByBox ? getPricePerBoxCopper(cheapestByBox) : 0;
+
+    return {
+      valueNoSSCopper: afterNoInfNoTok,
+      valueWithInfAndSSCopper: afterWithInf + ssCopper,
+      ssFromTokens,
+      tokensPerBox,
+      avgNoSSCopper: afterNoInfNoTok - costPerBox,
+      avgWithInfAndSSCopper: afterWithInf + ssCopper - costPerBox,
+    };
+  }, [primaryItems, cheapestByBox]);
+
   // Ir a Calculators con orden Price/u ascendente y desplazar a la tabla
   const goToCheapestByUnit = () => {
     setSelectedSection('calculators');
-    setSortField('pricePerUnit');
+    setSortField('pricePerBox');
     setSortDirection('asc');
     if (pricesTableRef.current) {
       pricesTableRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
+    // Reforzar el orden una vez montada la sección para evitar condiciones de carrera
+    setTimeout(() => {
+      setSortField('pricePerBox');
+      setSortDirection('asc');
+      if (pricesTableRef.current) {
+        pricesTableRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    }, 0);
   };
 
   // Cargar datos al montar el componente
@@ -941,11 +998,18 @@ const FourWindsPage = () => {
                       </div>
                       <div className="mt-2 text-cyan-400 text-sm font-semibold">{t('fourWinds.quick.seeInCalculator')}</div>
                     </button>
-                    {/* Valor por caja 85% (media) en contenedor aparte (reemplaza al inferior) */}
-                    <div className="bg-gray-700/50 rounded-lg p-4 text-center border border-gray-600">
-                      <div className="text-xs uppercase tracking-wider text-gray-400">{t('fourWinds.quick.expectedPerBox', 'VALOR POR CAJA 85% (MEDIA)')}</div>
-                      <div className="mt-1 text-cyan-400 font-bold text-lg">{formatGoldSilverCopper(expectedValuePerBoxAfterTaxCopper)}</div>
-                      <div className="text-gray-400 text-xs">{t('fourWinds.quick.beforeTax', 'Bruto')}: {formatGoldSilverCopper(Math.round(expectedValuePerBoxCopper))}</div>
+                    {/* Valor por caja (dos contenedores) */}
+                    <div className="bg-gray-700/50 rounded-lg p-4 border border-gray-600">
+                      <div className="text-xs uppercase tracking-wider text-gray-400">{t('fourWinds.quick.expectedPerBox', 'Valor por caja 85% (media)')}</div>
+                      <div className="mt-1 text-cyan-400 font-bold text-lg text-center">{formatGoldSilverCopper(valueNoSSCopper)}</div>
+                      <div className="mt-1 text-gray-400 text-xs text-center">{t('fourWinds.quick.variantWithoutSS', 'Sin SS (sin infusiones ni vales)')}</div>
+                      <div className="mt-2 text-gray-300 text-xs text-center">AVG: <span className="text-white font-semibold">{formatGoldSilverCopper(avgNoSSCopper)}</span></div>
+                    </div>
+                    <div className="bg-gray-700/50 rounded-lg p-4 border border-gray-600">
+                      <div className="text-xs uppercase tracking-wider text-gray-400">{t('fourWinds.quick.expectedPerBox', 'Valor por caja 85% (media)')}</div>
+                      <div className="mt-1 text-cyan-400 font-bold text-lg text-center">{formatGoldSilverCopper(valueWithInfAndSSCopper)}</div>
+                      <div className="mt-1 text-gray-400 text-xs text-center">{t('fourWinds.quick.variantWithSS', 'Con SS (300 FT → 1 Tome → 1 SS = 3g)')} <span className="text-gray-300">(+ {ssFromTokens.toFixed(3)} SS · FT/caja ≈ {tokensPerBox.toFixed(2)})</span></div>
+                      <div className="mt-2 text-gray-300 text-xs text-center">AVG: <span className="text-white font-semibold">{formatGoldSilverCopper(avgWithInfAndSSCopper)}</span></div>
                     </div>
                   </div>
                   <div>
@@ -1013,7 +1077,7 @@ const FourWindsPage = () => {
                               <th onClick={() => handlePrimarySort('perBox')} className="text-center py-2.5 px-2 text-gray-200 font-semibold text-sm uppercase tracking-wider cursor-pointer select-none">
                                  <div className="flex items-center justify-center gap-1.5">{t('fourWinds.table.perBox')} {getPrimarySortIcon('perBox')}</div>
                               </th>
-                              <th className="text-center py-2.5 px-2 text-gray-200 font-semibold text-sm uppercase tracking-wider select-none">{t('fourWinds.table.valuePerBox', 'Valor por caja 85% (media)')}</th>
+                              
                               
                             </tr>
                           </thead>
@@ -1033,13 +1097,7 @@ const FourWindsPage = () => {
                                 </td>
                                 <td className="py-2 px-2 text-center text-gray-300 font-mono text-base">{item.quantity.toLocaleString()}</td>
                                 <td className="py-2 px-2 text-center text-gray-300 font-mono text-base">{item.perBox.toFixed(6)}</td>
-                                <td className="py-2 px-2 text-center text-gray-300 font-mono text-base">
-                                  {formatGoldSilverCopper(
-                                    Math.round(
-                                      (item.pricePerUnit || 0) * 0.85 * (Math.round((item.perBox || 0) * 1_000_000) / 1_000_000)
-                                    )
-                                  )}
-                                </td>
+                                
                               </tr>
                             ))}
                           </tbody>
