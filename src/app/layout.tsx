@@ -5,6 +5,7 @@ import "./globals.css";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { I18nProvider } from "@/contexts/I18nContext";
 import RoleChecker from "@/components/RoleChecker";
+import Footer from "@/components/layout/Footer";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -27,9 +28,12 @@ export default function RootLayout({
       <body className={inter.className}>
         <AuthProvider>
           <I18nProvider>
-            <div className="min-h-screen bg-gradient-to-br from-slate-900 to-slate-800">
+            <div className="min-h-screen bg-gradient-to-br from-slate-900 to-slate-800 flex flex-col">
               <RoleChecker />
-              {children}
+              <div className="flex-1">
+                {children}
+              </div>
+              <Footer />
             </div>
           </I18nProvider>
         </AuthProvider>

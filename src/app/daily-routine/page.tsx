@@ -1,20 +1,52 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import Image from 'next/image';
 import Navigation from '@/components/layout/Navigation';
-import { Star, Clock, CheckCircle, Circle } from 'lucide-react';
+import { 
+  Star, 
+  Clock, 
+  CheckCircle, 
+  Circle, 
+  Search, 
+  Filter, 
+  Grid, 
+  List,
+  X,
+  SortAsc,
+  SortDesc
+} from 'lucide-react';
 import { useDatabase, FarmItem } from '@/hooks/useDatabase';
 import ExpansionIcon from '@/components/ui/ExpansionIcon';
 import { usePageTitle } from '@/hooks/usePageTitle';
+import { useI18n } from '@/contexts/I18nContext';
+
+// Mapeo de monedas a iconos (fuera del componente para evitar re-renders)
+const currencyConfig = {
+  gold: { icon: '/images/expansions/Gold.png', label: 'Gold', color: 'text-yellow-400' },
+  spiritShards: { icon: '/images/expansions/Spirit_Shard.png', label: 'Spirit Shards', color: 'text-blue-400' },
+  imperialFavor: { icon: '/images/expansions/Imperial_Favor.png', label: 'Imperial Favor', color: 'text-purple-400' },
+  experience: { icon: '/images/expansions/Gold.png', label: 'Experience', color: 'text-green-400' }, // Placeholder icon
+  laurels: { icon: '/images/expansions/Gold.png', label: 'Laurels', color: 'text-orange-400' }, // Placeholder icon
+  otherCurrency: { icon: '/images/expansions/Gold.png', label: 'Other', color: 'text-gray-400' } // Placeholder icon
+};
 
 export default function DailyRoutine() {
   usePageTitle('Daily Routine');
   
   const { dbService } = useDatabase();
+  const { t } = useI18n();
   const [farms, setFarms] = useState<FarmItem[]>([]);
   const [selectedFarms, setSelectedFarms] = useState<Set<string>>(new Set());
+  
+  // Estados para filtros y vista
+  const [searchTerm, setSearchTerm] = useState('');
+  const [selectedExpansions, setSelectedExpansions] = useState<Set<string>>(new Set());
+  const [viewMode, setViewMode] = useState<'grid' | 'list'>('list');
+  const [sortBy, setSortBy] = useState<'name' | 'time' | 'gold' | 'expansion'>('name');
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
+  const [showFilters, setShowFilters] = useState(false);
 
   // Función para formatear oro correctamente
   const formatGoldDisplay = (goldValue: string | undefined): string => {
@@ -97,8 +129,146 @@ export default function DailyRoutine() {
     }
   };
 
+  // Función para convertir oro a cobre para ordenamiento
+  const parseGoldToCopper = useCallback((goldValue: string | undefined): number => {
+    if (!goldValue || !goldValue.trim()) return 0;
+    
+    if (goldValue.includes('g') || goldValue.includes('s') || goldValue.includes('c')) {
+      const goldMatch = goldValue.match(/(\d+)g/);
+      const silverMatch = goldValue.match(/(\d+)s/);
+      const copperMatch = goldValue.match(/(\d+)c/);
+      
+      const gold = goldMatch ? parseInt(goldMatch[1]) : 0;
+      const silver = silverMatch ? parseInt(silverMatch[1]) : 0;
+      const copper = copperMatch ? parseInt(copperMatch[1]) : 0;
+      
+      return (gold * 10000) + (silver * 100) + copper;
+    } else {
+      const copperValue = parseInt(goldValue);
+      return isNaN(copperValue) ? 0 : copperValue;
+    }
+  }, []);
+
+  // Obtener todas las expansiones únicas
+  const allExpansions = useMemo(() => {
+    const expansions = new Set<string>();
+    farms.forEach(farm => {
+      const farmExpansions = Array.isArray(farm.expansion) ? farm.expansion : [farm.expansion];
+      farmExpansions.forEach(exp => expansions.add(exp));
+    });
+    return Array.from(expansions);
+  }, [farms]);
+
+  // Filtrar y ordenar farms
+  const filteredAndSortedFarms = useMemo(() => {
+    const filtered = farms.filter(farm => {
+      // Filtro por término de búsqueda
+      if (searchTerm && !farm.name.toLowerCase().includes(searchTerm.toLowerCase()) && 
+          !farm.description.toLowerCase().includes(searchTerm.toLowerCase())) {
+        return false;
+      }
+      
+      // Filtro por expansiones
+      if (selectedExpansions.size > 0) {
+        const farmExpansions = Array.isArray(farm.expansion) ? farm.expansion : [farm.expansion];
+        if (!farmExpansions.some(exp => selectedExpansions.has(exp))) {
+          return false;
+        }
+      }
+      
+      return true;
+    });
+
+    // Ordenar
+    filtered.sort((a, b) => {
+      let compareValue = 0;
+      
+      switch (sortBy) {
+        case 'name':
+          compareValue = a.name.localeCompare(b.name);
+          break;
+        case 'time':
+          const timeA = parseTimeToMinutes(a.estimatedTime);
+          const timeB = parseTimeToMinutes(b.estimatedTime);
+          compareValue = timeA - timeB;
+          break;
+        case 'gold':
+          const goldA = parseGoldToCopper(a.estimatedGold);
+          const goldB = parseGoldToCopper(b.estimatedGold);
+          compareValue = goldA - goldB;
+          break;
+        case 'expansion':
+          const expA = Array.isArray(a.expansion) ? a.expansion[0] : a.expansion;
+          const expB = Array.isArray(b.expansion) ? b.expansion[0] : b.expansion;
+          compareValue = expA.localeCompare(expB);
+          break;
+      }
+      
+      return sortOrder === 'asc' ? compareValue : -compareValue;
+    });
+
+    return filtered;
+  }, [farms, searchTerm, selectedExpansions, sortBy, sortOrder, parseGoldToCopper]);
+
+  // Funciones de manejo de filtros
+  const toggleExpansionFilter = (expansion: string) => {
+    setSelectedExpansions(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(expansion)) {
+        newSet.delete(expansion);
+      } else {
+        newSet.add(expansion);
+      }
+      return newSet;
+    });
+  };
+
+  const clearAllFilters = () => {
+    setSearchTerm('');
+    setSelectedExpansions(new Set());
+  };
+
   const selectedFarmsCount = selectedFarms.size;
   
+  // Función para obtener todas las monedas de un farm
+  const getAllCurrencies = useCallback((farm: FarmItem): Array<{currency: string, value: string, config: typeof currencyConfig[keyof typeof currencyConfig]}> => {
+    const currencies: Array<{currency: string, value: string, config: typeof currencyConfig[keyof typeof currencyConfig]}> = [];
+    
+    // Verificar campos legacy primero
+    if (farm.estimatedGold && farm.estimatedGold.trim()) {
+      currencies.push({
+        currency: 'gold',
+        value: farm.estimatedGold,
+        config: currencyConfig.gold
+      });
+    }
+    if (farm.estimatedSpirit && farm.estimatedSpirit.trim()) {
+      currencies.push({
+        currency: 'spiritShards',
+        value: farm.estimatedSpirit,
+        config: currencyConfig.spiritShards
+      });
+    }
+    
+    // Verificar campos en estimatedRewards
+    if (farm.estimatedRewards) {
+      Object.entries(farm.estimatedRewards).forEach(([currency, value]) => {
+        if (value && value.trim() && currencyConfig[currency as keyof typeof currencyConfig]) {
+          // Evitar duplicados (priorizar legacy)
+          if (!currencies.find(c => c.currency === currency)) {
+            currencies.push({
+              currency,
+              value,
+              config: currencyConfig[currency as keyof typeof currencyConfig]
+            });
+          }
+        }
+      });
+    }
+    
+    return currencies;
+  }, []);
+
   // Debug: ver farms seleccionados
   const selectedFarmsData = Array.from(selectedFarms).map(id => farms.find(farm => farm.id === id)).filter(Boolean) as FarmItem[];
   const totalEstimatedTime = selectedFarmsData
@@ -107,41 +277,30 @@ export default function DailyRoutine() {
       return total + timeInMinutes;
     }, 0);
 
-  // Calcular Spirit Shards totales (valor directo, no multiplicado por tiempo)
-  const totalSpiritShards = selectedFarmsData
-    .reduce((total, farm) => {
-      // Verificar si tiene Spirit Shards
-      if (farm.estimatedSpirit && farm.estimatedSpirit.trim()) {
-        const spiritValue = parseInt(farm.estimatedSpirit);
-        return total + (isNaN(spiritValue) ? 0 : spiritValue);
-      }
-      return total;
-    }, 0);
-
-  // Calcular oro estimado total (valor directo, no multiplicado por tiempo)
-  const totalEstimatedGold = selectedFarmsData
-    .reduce((total, farm) => {
-      if (farm.estimatedGold && farm.estimatedGold.trim()) {
-        // Si está en formato GW2, extraer el valor en cobre
-        if (farm.estimatedGold.includes('g') || farm.estimatedGold.includes('s') || farm.estimatedGold.includes('c')) {
-          // Extraer oro, plata y cobre del formato GW2
-          const goldMatch = farm.estimatedGold.match(/(\d+)g/);
-          const silverMatch = farm.estimatedGold.match(/(\d+)s/);
-          const copperMatch = farm.estimatedGold.match(/(\d+)c/);
-          
-          const gold = goldMatch ? parseInt(goldMatch[1]) : 0;
-          const silver = silverMatch ? parseInt(silverMatch[1]) : 0;
-          const copper = copperMatch ? parseInt(copperMatch[1]) : 0;
-          
-          return total + (gold * 10000) + (silver * 100) + copper;
+  // Calcular totales de todas las monedas
+  const currencyTotals = useMemo(() => {
+    const totals: Record<string, number> = {};
+    
+    selectedFarmsData.forEach(farm => {
+      const currencies = getAllCurrencies(farm);
+      currencies.forEach(({ currency, value }) => {
+        if (!totals[currency]) totals[currency] = 0;
+        
+        if (currency === 'gold') {
+          // Convertir oro a cobre para sumar
+          totals[currency] += parseGoldToCopper(value);
         } else {
-          // Si es solo números, asumir que es cobre
-          const copperValue = parseInt(farm.estimatedGold);
-          return total + (isNaN(copperValue) ? 0 : copperValue);
+          // Para otras monedas, sumar valor numérico
+          const numericValue = parseInt(value.replace(/[^\d]/g, '')) || 0;
+          totals[currency] += numericValue;
         }
-      }
-      return total;
-    }, 0);
+      });
+    });
+    
+    return totals;
+  }, [selectedFarmsData, getAllCurrencies, parseGoldToCopper]);
+
+  // Note: totalEstimatedGold and totalSpiritShards are now accessed through currencyTotals directly
 
   // Formatear oro total a formato legible
   const formatGoldTotal = (totalCopper: number): string => {
@@ -169,67 +328,310 @@ export default function DailyRoutine() {
           className="text-center mb-12"
         >
           <h1 className="text-5xl font-bold bg-gradient-to-r from-blue-400 via-purple-400 to-blue-600 bg-clip-text text-transparent mb-4">
-            Daily Routine
+            {t('dailyRoutine.title', 'Daily Routine')}
           </h1>
           <p className="text-xl text-gray-300 mb-6 max-w-2xl mx-auto">
-            Select your favorite farms and create your perfect daily routine
+            {t('dailyRoutine.subtitle', 'Select your favorite farms and create your perfect daily routine')}
           </p>
-          
-          {/* Información de reset estática */}
-          <div className="flex justify-center gap-8 text-sm text-gray-400">
-            <div className="flex items-center gap-2">
-              <Clock className="w-4 h-4" />
-              <span>Daily Reset: 19:00 Colombia</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <Clock className="w-4 h-4" />
-              <span>Weekly Reset: 02:30 Colombia (Monday)</span>
-            </div>
-          </div>
         </motion.div>
 
-        <div className="grid grid-cols-1 gap-8">
-          {/* Selección de Farms mejorada */}
+        {/* Resumen de rutina seleccionada (siempre visible arriba) */}
+        {selectedFarmsCount > 0 && (
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2 }}
-            className="col-span-1"
+            className="mb-8 bg-gradient-to-r from-blue-900/30 to-purple-900/30 backdrop-blur-sm rounded-2xl p-6 border border-blue-400/30 shadow-2xl"
           >
-            <div className="bg-gradient-to-br from-gray-800/50 to-gray-900/50 backdrop-blur-sm rounded-2xl p-8 border border-gray-700/50 shadow-2xl">
-              <div className="flex items-center justify-between mb-8">
-                <div className="flex items-center gap-3">
-                  <div className="p-2 bg-blue-500/20 rounded-lg">
-                    <Star className="w-6 h-6 text-blue-400" />
-                  </div>
-                  <h2 className="text-2xl font-bold text-white">Select your Farms</h2>
+            <h3 className="font-bold text-xl mb-4 text-center bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
+              {t('dailyRoutine.summary', 'Your Daily Routine Summary')}
+            </h3>
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 text-center">
+              {/* Farms count */}
+              <div className="bg-gray-800/50 rounded-xl p-3 border border-gray-600/50">
+                <div className="text-xl font-bold text-blue-400 mb-1">{selectedFarmsCount}</div>
+                <div className="text-gray-400 text-xs">{t('dailyRoutine.farms', 'Farms')}</div>
+              </div>
+              
+              {/* Time */}
+              <div className="bg-gray-800/50 rounded-xl p-3 border border-gray-600/50">
+                <div className="text-xl font-bold text-blue-400 mb-1">{formatMinutesToReadable(totalEstimatedTime)}</div>
+                <div className="text-gray-400 text-xs">{t('dailyRoutine.time', 'Time')}</div>
+              </div>
+              
+              {/* Dynamic currencies */}
+              {Object.entries(currencyTotals)
+                .filter(([, total]) => total > 0)
+                .slice(0, 4) // Limit to 4 currencies to not overflow
+                .map(([currency, total]) => {
+                  const config = currencyConfig[currency as keyof typeof currencyConfig];
+                  if (!config) return null;
+                  
+                  return (
+                    <div key={currency} className="bg-gray-800/50 rounded-xl p-3 border border-gray-600/50">
+                      <div className="flex items-center justify-center gap-1 mb-1">
+                        <Image 
+                          src={config.icon} 
+                          alt={config.label}
+                          width={16}
+                          height={16}
+                          className="w-4 h-4"
+                        />
+                        <div className={`text-lg font-bold ${config.color} whitespace-nowrap`}>
+                          {currency === 'gold' 
+                            ? formatGoldTotal(Math.round(total))
+                            : Math.round(total).toLocaleString()
+                          }
+                        </div>
+                      </div>
+                      <div className="text-gray-400 text-xs">{config.label}</div>
+                    </div>
+                  );
+                })}
+              
+              {/* Progress (always last) */}
+              <div className="bg-gray-800/50 rounded-xl p-3 border border-gray-600/50">
+                <div className="text-lg font-bold text-blue-400 mb-1">
+                  {Math.round((selectedFarmsCount / farms.length) * 100)}%
                 </div>
-                <div className="text-right">
-                  <div className="text-white font-semibold text-lg">
-                    {selectedFarmsCount} selected
-                  </div>
-                  <div className="text-gray-400 text-sm">
-                    Estimated time: {formatMinutesToReadable(totalEstimatedTime)}
-                  </div>
+                <div className="text-gray-400 text-xs">{t('dailyRoutine.progress', 'Progress')}</div>
+              </div>
+            </div>
+          </motion.div>
+        )}
+
+        {/* Panel principal de farms */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2 }}
+          className="bg-gradient-to-br from-gray-800/50 to-gray-900/50 backdrop-blur-sm rounded-2xl border border-gray-700/50 shadow-2xl overflow-hidden"
+        >
+          {/* Header con controles */}
+          <div className="p-6 border-b border-gray-700/50">
+            <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+              {/* Título y contador */}
+              <div className="flex items-center gap-3">
+                <div className="p-2 bg-blue-500/20 rounded-lg">
+                  <Star className="w-6 h-6 text-blue-400" />
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold text-white">{t('dailyRoutine.buildRoutine', 'Build Your Daily Routine')}</h2>
+                  <p className="text-gray-400 text-sm">
+                    {filteredAndSortedFarms.length} {t('dailyRoutine.farmsAvailable', 'farms available')} • {selectedFarmsCount} {t('dailyRoutine.selected', 'selected')}
+                  </p>
                 </div>
               </div>
 
-              {/* Lista de farms seleccionables mejorada */}
-              <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
-                {farms.map((farm) => (
+              {/* Controles de vista y ordenamiento */}
+              <div className="flex items-center gap-3">
+                {/* Búsqueda */}
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+                  <input
+                    type="text"
+                    placeholder={t('dailyRoutine.searchPlaceholder', 'Search farms...')}
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="pl-10 pr-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 w-48"
+                  />
+                </div>
+
+                {/* Filtros */}
+                <button
+                  onClick={() => setShowFilters(!showFilters)}
+                  className={`flex items-center gap-2 px-3 py-2 rounded-lg border transition-colors ${
+                    showFilters || selectedExpansions.size > 0
+                      ? 'bg-blue-500/20 border-blue-500/50 text-blue-400'
+                      : 'bg-gray-700 border-gray-600 text-gray-300 hover:bg-gray-600'
+                  }`}
+                >
+                  <Filter className="w-4 h-4" />
+                  <span className="text-sm">{t('dailyRoutine.filters', 'Filters')}</span>
+                  {selectedExpansions.size > 0 && (
+                    <span className="bg-blue-500 text-white text-xs px-1.5 py-0.5 rounded-full">
+                      {selectedExpansions.size}
+                    </span>
+                  )}
+                </button>
+
+                {/* Ordenamiento */}
+                <div className="flex items-center gap-1">
+                  <select
+                    value={sortBy}
+                    onChange={(e) => setSortBy(e.target.value as 'name' | 'time' | 'gold' | 'expansion')}
+                    className="bg-gray-700 border border-gray-600 rounded-lg text-white text-sm px-3 py-2 focus:outline-none focus:border-blue-500"
+                  >
+                    <option value="name">{t('dailyRoutine.sortName', 'Name')}</option>
+                    <option value="time">{t('dailyRoutine.sortTime', 'Time')}</option>
+                    <option value="gold">{t('dailyRoutine.sortGold', 'Gold')}</option>
+                    <option value="expansion">{t('dailyRoutine.sortExpansion', 'Expansion')}</option>
+                  </select>
+                  <button
+                    onClick={() => setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc')}
+                    className="p-2 bg-gray-700 border border-gray-600 rounded-lg text-gray-300 hover:text-white transition-colors"
+                  >
+                    {sortOrder === 'asc' ? <SortAsc className="w-4 h-4" /> : <SortDesc className="w-4 h-4" />}
+                  </button>
+                </div>
+
+                {/* Cambiar vista */}
+                <div className="flex items-center bg-gray-700 rounded-lg border border-gray-600">
+                  <button
+                    onClick={() => setViewMode('list')}
+                    className={`p-2 transition-colors ${
+                      viewMode === 'list' ? 'bg-blue-500 text-white' : 'text-gray-400 hover:text-white'
+                    }`}
+                  >
+                    <List className="w-4 h-4" />
+                  </button>
+                  <button
+                    onClick={() => setViewMode('grid')}
+                    className={`p-2 transition-colors ${
+                      viewMode === 'grid' ? 'bg-blue-500 text-white' : 'text-gray-400 hover:text-white'
+                    }`}
+                  >
+                    <Grid className="w-4 h-4" />
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            {/* Panel de filtros expandible */}
+            {showFilters && (
+              <motion.div
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: 'auto' }}
+                exit={{ opacity: 0, height: 0 }}
+                className="mt-4 pt-4 border-t border-gray-700/50"
+              >
+                <div className="flex flex-wrap items-center gap-3">
+                  <span className="text-gray-400 text-sm font-medium">{t('dailyRoutine.expansions', 'Expansions:')}</span>
+                  {allExpansions.map((expansion) => (
+                    <button
+                      key={expansion}
+                      onClick={() => toggleExpansionFilter(expansion)}
+                      className={`flex items-center gap-2 px-3 py-1.5 rounded-lg border text-sm transition-colors ${
+                        selectedExpansions.has(expansion)
+                          ? 'bg-blue-500/20 border-blue-500/50 text-blue-400'
+                          : 'bg-gray-700/50 border-gray-600 text-gray-300 hover:bg-gray-600'
+                      }`}
+                    >
+                      <ExpansionIcon expansion={expansion as 'core' | 'hot' | 'pof' | 'eod' | 'soto' | 'jw'} size="sm" variant="compact" />
+                      <span className="capitalize">{expansion}</span>
+                    </button>
+                  ))}
+                  {(searchTerm || selectedExpansions.size > 0) && (
+                    <button
+                      onClick={clearAllFilters}
+                      className="flex items-center gap-1 px-3 py-1.5 bg-red-500/20 border border-red-500/50 text-red-400 rounded-lg text-sm hover:bg-red-500/30 transition-colors"
+                    >
+                      <X className="w-3 h-3" />
+                      {t('dailyRoutine.clearAll', 'Clear all')}
+                    </button>
+                  )}
+                </div>
+              </motion.div>
+            )}
+          </div>
+
+          {/* Lista/Grid de farms */}
+          <div className="p-6">
+            {filteredAndSortedFarms.length === 0 ? (
+              <div className="text-center py-16">
+                <div className="bg-gray-700/50 backdrop-blur-sm rounded-xl p-12 border border-gray-600/50">
+                  <Search className="w-20 h-20 text-gray-400 mx-auto mb-6" />
+                  <h3 className="text-2xl font-semibold text-white mb-3">
+                    {t('dailyRoutine.noFarmsFound', 'No farms found')}
+                  </h3>
+                  <p className="text-gray-400 text-lg mb-4">
+                    {t('dailyRoutine.adjustFilters', 'Try adjusting your search or filters.')}
+                  </p>
+                  <button
+                    onClick={clearAllFilters}
+                    className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
+                  >
+                    {t('dailyRoutine.clearFilters', 'Clear filters')}
+                  </button>
+                </div>
+              </div>
+            ) : viewMode === 'list' ? (
+              /* Vista de lista (más compacta para muchos items) */
+              <div className="space-y-2">
+                {filteredAndSortedFarms.map((farm, index) => (
+                  <motion.div
+                    key={farm.id}
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ duration: 0.2, delay: index * 0.02 }}
+                    className={`flex items-center gap-4 p-4 rounded-xl border cursor-pointer transition-all duration-200 ${
+                      selectedFarms.has(farm.id)
+                        ? 'bg-blue-500/10 border-blue-500/50 shadow-lg'
+                        : 'bg-gray-800/30 border-gray-600/50 hover:bg-gray-700/30 hover:border-gray-500'
+                    }`}
+                    onClick={() => toggleFarmSelection(farm.id)}
+                  >
+                    {/* Checkbox */}
+                    <div className="flex-shrink-0">
+                      {selectedFarms.has(farm.id) ? (
+                        <div className="bg-blue-500 rounded p-1">
+                          <CheckCircle className="w-4 h-4 text-white" />
+                        </div>
+                      ) : (
+                        <Circle className="w-6 h-6 text-gray-400" />
+                      )}
+                    </div>
+
+                    {/* Nombre y expansiones */}
+                    <div className="flex-1 min-w-0">
+                      <h3 className="text-white font-medium truncate">{farm.name}</h3>
+                      <div className="flex gap-1 mt-1">
+                        {(Array.isArray(farm.expansion) ? farm.expansion : [farm.expansion]).map((exp) => (
+                          <ExpansionIcon key={exp} expansion={exp} size="sm" variant="compact" />
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Estadísticas compactas */}
+                    <div className="flex items-center gap-4 text-sm">
+                      <div className="flex items-center gap-1 text-blue-400">
+                        <Clock className="w-4 h-4" />
+                        <span>{farm.estimatedTime}</span>
+                      </div>
+                      {getAllCurrencies(farm).slice(0, 3).map(({ currency, value, config }) => (
+                        <div key={currency} className={`flex items-center gap-1 ${config.color}`}>
+                          <Image 
+                            src={config.icon} 
+                            alt={config.label}
+                            width={16}
+                            height={16}
+                            className="w-4 h-4"
+                          />
+                          <span className="whitespace-nowrap">
+                            {currency === 'gold' ? formatGoldDisplay(value) : value}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  </motion.div>
+                ))}
+              </div>
+            ) : (
+              /* Vista de grid (para pocos items o cuando se prefiere más detalle) */
+              <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+                {filteredAndSortedFarms.map((farm, index) => (
                   <motion.div
                     key={farm.id}
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.3 }}
+                    transition={{ duration: 0.3, delay: index * 0.05 }}
                     className={`relative bg-gradient-to-br from-gray-800/80 to-gray-900/80 backdrop-blur-sm rounded-xl shadow-xl overflow-hidden cursor-pointer transition-all duration-300 p-6 border ${
                       selectedFarms.has(farm.id)
-                        ? 'border-blue-400 ring-2 ring-blue-400/30 shadow-blue-500/25 transform scale-105'
-                        : 'border-gray-600 hover:border-blue-500/50 hover:shadow-2xl hover:transform hover:scale-[1.02]'
+                        ? 'border-blue-400 ring-2 ring-blue-400/30 shadow-blue-500/25'
+                        : 'border-gray-600 hover:border-blue-500/50 hover:shadow-2xl'
                     }`}
                     onClick={() => toggleFarmSelection(farm.id)}
                   >
-                    {/* Indicador de selección mejorado */}
+                    {/* Resto del contenido de la tarjeta igual que antes */}
                     <div className={`absolute top-4 right-4 transition-all duration-300 ${
                       selectedFarms.has(farm.id) ? 'opacity-100 scale-110' : 'opacity-60 hover:opacity-100'
                     }`}>
@@ -242,7 +644,6 @@ export default function DailyRoutine() {
                       )}
                     </div>
 
-                    {/* Header de la tarjeta mejorado */}
                     <div className="mb-4">
                       <h3 className="text-white font-bold text-lg mb-3 pr-12">{farm.name}</h3>
                       <div className="flex gap-1 flex-wrap">
@@ -254,135 +655,65 @@ export default function DailyRoutine() {
                       </div>
                     </div>
                     
-                    {/* Descripción mejorada */}
                     <div className="mb-4">
                       <p className="text-gray-300 text-sm leading-relaxed">{farm.description}</p>
                     </div>
                     
-                    {/* Estadísticas en grid mejoradas */}
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
-                      {/* Tiempo - siempre se muestra */}
+                      {/* Time always first */}
                       <div className="bg-blue-500/10 border border-blue-500/20 rounded-lg p-3 flex items-center gap-2">
                         <Clock className="w-4 h-4 text-blue-400 flex-shrink-0" />
                         <span className="text-blue-300 font-medium">{farm.estimatedTime}</span>
                       </div>
                       
-                      {/* Oro - solo si tiene valor */}
-                      {farm.estimatedGold && farm.estimatedGold.trim() && (
-                        <div className={`bg-yellow-500/10 border border-yellow-500/20 rounded-lg p-3 flex items-center gap-2 ${
-                          formatGoldDisplay(farm.estimatedGold).length > 8 ? 'sm:col-span-2' : ''
-                        }`}>
-                          <Image 
-                            src="/images/expansions/Gold.png" 
-                            alt="Gold"
-                            width={16}
-                            height={16}
-                            className="w-4 h-4 flex-shrink-0"
-                          />
-                          <span className="text-yellow-300 font-medium truncate">{formatGoldDisplay(farm.estimatedGold)}</span>
-                        </div>
-                      )}
-                      
-                      {/* Spirit Shards - solo si tiene valor */}
-                      {farm.estimatedSpirit && farm.estimatedSpirit.trim() && (
-                        <div className={`bg-blue-500/10 border border-blue-500/20 rounded-lg p-3 flex items-center gap-2 ${
-                          farm.estimatedSpirit.length > 6 ? 'sm:col-span-2' : ''
-                        }`}>
-                          <Image 
-                            src="/images/expansions/Spirit_Shard.png" 
-                            alt="Spirit Shard"
-                            width={16}
-                            height={16}
-                            className="w-4 h-4 flex-shrink-0"
-                          />
-                          <span className="text-blue-300 font-medium truncate">{farm.estimatedSpirit}</span>
-                        </div>
-                      )}
+                      {/* Dynamic currencies */}
+                      {getAllCurrencies(farm).map(({ currency, value, config }) => {
+                        const displayValue = currency === 'gold' ? formatGoldDisplay(value) : value;
+                        const isLong = displayValue.length > 8;
+                        
+                        // Map currency to appropriate background classes
+                        const getBgClasses = (currency: string) => {
+                          switch (currency) {
+                            case 'gold':
+                              return 'bg-yellow-500/10 border-yellow-500/20';
+                            case 'spiritShards':
+                              return 'bg-blue-500/10 border-blue-500/20';
+                            case 'imperialFavor':
+                              return 'bg-purple-500/10 border-purple-500/20';
+                            case 'experience':
+                              return 'bg-green-500/10 border-green-500/20';
+                            case 'laurels':
+                              return 'bg-orange-500/10 border-orange-500/20';
+                            default:
+                              return 'bg-gray-500/10 border-gray-500/20';
+                          }
+                        };
+                        
+                        return (
+                          <div 
+                            key={currency}
+                            className={`${getBgClasses(currency)} rounded-lg p-3 flex items-center gap-2 border ${
+                              isLong ? 'sm:col-span-2' : ''
+                            }`}
+                          >
+                            <Image 
+                              src={config.icon} 
+                              alt={config.label}
+                              width={16}
+                              height={16}
+                              className="w-4 h-4 flex-shrink-0"
+                            />
+                            <span className={`${config.color} font-medium truncate`}>{displayValue}</span>
+                          </div>
+                        );
+                      })}
                     </div>
                   </motion.div>
                 ))}
               </div>
-
-              {/* Mensaje cuando no hay farms mejorado */}
-              {farms.length === 0 && (
-                <motion.div
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  className="text-center py-16"
-                >
-                  <div className="bg-gray-700/50 backdrop-blur-sm rounded-xl p-12 border border-gray-600/50">
-                    <Clock className="w-20 h-20 text-gray-400 mx-auto mb-6" />
-                    <h3 className="text-2xl font-semibold text-white mb-3">
-                      No farms available
-                    </h3>
-                    <p className="text-gray-400 text-lg">
-                      No farms have been created yet.
-                    </p>
-                  </div>
-                </motion.div>
-              )}
-
-              {/* Resumen de Rutina mejorado */}
-              {selectedFarmsCount > 0 && (
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className="mt-8 bg-gradient-to-r from-blue-900/30 to-purple-900/30 backdrop-blur-sm rounded-2xl p-8 border border-blue-400/30 shadow-2xl"
-                >
-                  <h3 className="font-bold text-2xl mb-6 text-center bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
-                    Your Daily Routine Summary
-                  </h3>
-                  <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-5 gap-6 text-center">
-                    <div className="bg-gray-800/50 rounded-xl p-4 border border-gray-600/50">
-                      <div className="text-2xl font-bold text-blue-400 mb-1">{selectedFarmsCount}</div>
-                      <div className="text-gray-400 text-sm">Farms</div>
-                    </div>
-                    <div className="bg-gray-800/50 rounded-xl p-4 border border-gray-600/50">
-                      <div className="text-2xl font-bold text-blue-400 mb-1">{formatMinutesToReadable(totalEstimatedTime)}</div>
-                      <div className="text-gray-400 text-sm">Total time</div>
-                    </div>
-                                         <div className="bg-gray-800/50 rounded-xl p-4 border border-gray-600/50">
-                       <div className="flex items-center justify-center gap-2 mb-1">
-                         <Image 
-                           src="/images/expansions/Gold.png" 
-                           alt="Gold"
-                           width={20}
-                           height={20}
-                           className="w-5 h-5"
-                         />
-                         <div className="text-xl font-bold text-yellow-400 whitespace-nowrap">
-                           {formatGoldTotal(Math.round(totalEstimatedGold))}
-                         </div>
-                       </div>
-                       <div className="text-gray-400 text-sm">Gold</div>
-                     </div>
-                    <div className="bg-gray-800/50 rounded-xl p-4 border border-gray-600/50">
-                      <div className="flex items-center justify-center gap-2 mb-1">
-                        <Image 
-                          src="/images/expansions/Spirit_Shard.png" 
-                          alt="Spirit Shard"
-                          width={20}
-                          height={20}
-                          className="w-5 h-5"
-                        />
-                        <div className="text-2xl font-bold text-blue-400">
-                          {Math.round(totalSpiritShards)}
-                        </div>
-                      </div>
-                      <div className="text-gray-400 text-sm">Spirit Shards</div>
-                    </div>
-                    <div className="bg-gray-800/50 rounded-xl p-4 border border-gray-600/50">
-                      <div className="text-2xl font-bold text-blue-400 mb-1">
-                        {Math.round((selectedFarmsCount / farms.length) * 100)}%
-                      </div>
-                      <div className="text-gray-400 text-sm">Completed</div>
-                    </div>
-                  </div>
-                </motion.div>
-              )}
-            </div>
-          </motion.div>
-        </div>
+            )}
+          </div>
+        </motion.div>
       </main>
     </div>
   );

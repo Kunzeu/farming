@@ -152,6 +152,9 @@ const FourWindsPage = () => {
   const [primarySortField, setPrimarySortField] = useState<'id' | 'name' | 'quantity' | 'perBox'>('id');
   const [primarySortDirection, setPrimarySortDirection] = useState<'asc' | 'desc'>('asc');
 
+  // Estado para Zephyrite Supply Box
+  const [zephyriteBoxName, setZephyriteBoxName] = useState<string>('Zephyrite Supply Box');
+
   // Función para guardar datos en localStorage
   const saveCalculatorData = useCallback((data: BoxCalculatorItem[]) => {
     if (typeof window !== 'undefined') {
@@ -228,6 +231,19 @@ const FourWindsPage = () => {
     }
   }, [saveCalculatorData, lang]);
 
+  // Función para obtener el nombre de Zephyrite Supply Box
+  const fetchZephyriteBoxName = useCallback(async () => {
+    try {
+      const response = await fetch(`https://api.guildwars2.com/v2/items/88145?lang=${lang}`);
+      if (response.ok) {
+        const data: Gw2Item = await response.json();
+        setZephyriteBoxName(data.name);
+      }
+    } catch (error) {
+      console.error('Error fetching Zephyrite Supply Box name:', error);
+    }
+  }, [lang]);
+
   // Cargar nombres e iconos de los IDs primarios (Apertura de Cajas)
   const fetchPrimaryItems = useCallback(async () => {
     try {
@@ -269,7 +285,8 @@ const FourWindsPage = () => {
 
   useEffect(() => {
     fetchPrimaryItems();
-  }, [fetchPrimaryItems]);
+    fetchZephyriteBoxName();
+  }, [fetchPrimaryItems, fetchZephyriteBoxName]);
 
   // Auto-actualización de ítems obtenidos cada 5 minutos
   useEffect(() => {
@@ -441,8 +458,6 @@ const FourWindsPage = () => {
   const {
     valueNoSSCopper,
     valueWithInfAndSSCopper,
-    ssFromTokens,
-    tokensPerBox,
     avgNoSSCopper,
     avgWithInfAndSSCopper
   } = useMemo(() => {
@@ -482,15 +497,13 @@ const FourWindsPage = () => {
     const afterWithInf = Math.round(grossWithInf * 0.85);
 
     const ssFromTokens = tokensPerBox / 300; // 300 FT -> 1 SS (por caja)
-    const ssCopper = Math.round(ssFromTokens * 30000); // 1 SS = 3g = 30000 cobre
+    const ssCopper = Math.round(ssFromTokens * 28000); // 1 SS = 3g = 30000 cobre
 
     const costPerBox = cheapestByBox ? getPricePerBoxCopper(cheapestByBox) : 0;
 
     return {
       valueNoSSCopper: afterNoInfNoTok,
       valueWithInfAndSSCopper: afterWithInf + ssCopper,
-      ssFromTokens,
-      tokensPerBox,
       avgNoSSCopper: afterNoInfNoTok - costPerBox,
       avgWithInfAndSSCopper: afterWithInf + ssCopper - costPerBox,
     };
@@ -601,6 +614,28 @@ const FourWindsPage = () => {
                 </h2>
                 <p className="text-gray-300 mb-6">{t('fourWinds.overview.p1')}</p>
                 
+                {/* Información sobre Zephyrite Supply Box */}
+                <div className="bg-blue-900/30 border border-blue-500/50 rounded-lg p-4 mb-6">
+                  <div className="flex items-start gap-3">
+                    <Package className="w-6 h-6 text-blue-400 mt-1 flex-shrink-0" />
+                    <div>
+                      <h3 className="text-blue-300 font-semibold mb-2">Zephyrite Supply Box</h3>
+                      <p className="text-gray-300 text-sm mb-3">
+                        {t('fourWinds.zephyrite.description')}
+                      </p>
+                      <a
+                        href={`https://wiki-${lang}.guildwars2.com/wiki/${encodeURIComponent(zephyriteBoxName.replace(/ /g, '_'))}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-2 px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded text-sm transition-colors duration-200"
+                      >
+                        <Package className="w-4 h-4" />
+                        {t('fourWinds.zephyrite.wikiLink')}
+                      </a>
+                    </div>
+                  </div>
+                </div>
+                
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                   <div className="bg-gray-700/50 rounded-lg p-4">
                     <h3 className="text-white font-semibold mb-2">{t('fourWinds.cards.gauntlet.title')}</h3>
@@ -662,7 +697,6 @@ const FourWindsPage = () => {
                                <RefreshCw className={`w-4 h-4 ${boxCalculatorLoading ? 'animate-spin' : ''}`} />
                                {t('common.refreshData')}
                             </button>
-
                           </div>
                         </div>
                        <div className="overflow-x-auto bg-gray-800/30 rounded-lg border border-gray-700">
@@ -749,8 +783,8 @@ const FourWindsPage = () => {
                                          {/* Calculadora de Cajas - DERECHA */}
                      <div className="flex-1 min-w-0">
                                               <h3 className="text-xl font-bold text-white mb-4 flex items-center">
-                          <Calculator className="w-6 h-6 mr-3 text-cyan-400" />
-                         {t('fourWinds.calculator.title')}
+                         <Calculator className="w-6 h-6 mr-3 text-cyan-400" />
+                        {t('fourWinds.calculator.title')}
                        </h3>
                       <div className="overflow-x-auto bg-gray-800/30 rounded-lg border border-gray-700">
                         <table className="w-full text-sm min-w-[500px]">
@@ -998,17 +1032,17 @@ const FourWindsPage = () => {
                       </div>
                       <div className="mt-2 text-cyan-400 text-sm font-semibold">{t('fourWinds.quick.seeInCalculator')}</div>
                     </button>
-                    {/* Valor por caja (dos contenedores) */}
+                    {/* Valor por caja */}
                     <div className="bg-gray-700/50 rounded-lg p-4 border border-gray-600">
-                      <div className="text-xs uppercase tracking-wider text-gray-400">{t('fourWinds.quick.expectedPerBox', 'Valor por caja 85% (media)')}</div>
+                      <div className="text-xs uppercase tracking-wider text-gray-400">{t('fourWinds.quick.expectedPerBox')}</div>
                       <div className="mt-1 text-cyan-400 font-bold text-lg text-center">{formatGoldSilverCopper(valueNoSSCopper)}</div>
-                      <div className="mt-1 text-gray-400 text-xs text-center">{t('fourWinds.quick.variantWithoutSS', 'Sin SS (sin infusiones ni vales)')}</div>
+                      <div className="mt-1 text-gray-400 text-xs text-center">{t('fourWinds.quick.variantWithoutSS')}</div>
                       <div className="mt-2 text-gray-300 text-xs text-center">AVG: <span className="text-white font-semibold">{formatGoldSilverCopper(avgNoSSCopper)}</span></div>
                     </div>
                     <div className="bg-gray-700/50 rounded-lg p-4 border border-gray-600">
-                      <div className="text-xs uppercase tracking-wider text-gray-400">{t('fourWinds.quick.expectedPerBox', 'Valor por caja 85% (media)')}</div>
+                      <div className="text-xs uppercase tracking-wider text-gray-400">{t('fourWinds.quick.expectedPerBox')}</div>
                       <div className="mt-1 text-cyan-400 font-bold text-lg text-center">{formatGoldSilverCopper(valueWithInfAndSSCopper)}</div>
-                      <div className="mt-1 text-gray-400 text-xs text-center">{t('fourWinds.quick.variantWithSS', 'Con SS (300 FT → 1 Tome → 1 SS = 3g)')} <span className="text-gray-300">(+ {ssFromTokens.toFixed(3)} SS · FT/caja ≈ {tokensPerBox.toFixed(2)})</span></div>
+                      <div className="mt-1 text-gray-400 text-xs text-center">{t('fourWinds.quick.variantWithSS')}</div>
                       <div className="mt-2 text-gray-300 text-xs text-center">AVG: <span className="text-white font-semibold">{formatGoldSilverCopper(avgWithInfAndSSCopper)}</span></div>
                     </div>
                   </div>

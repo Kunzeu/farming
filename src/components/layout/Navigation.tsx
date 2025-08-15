@@ -139,7 +139,6 @@ const Navigation = () => {
     { href: '/', label: t('nav.home', 'Home'), icon: Home },
     { href: '/farming-routes', label: t('nav.farms', 'Farms'), icon: Map },
     { href: '/glossary', label: t('nav.glossary', 'Glossary'), icon: BookOpen },
-    { href: '/account', label: t('nav.account', 'My Account'), icon: User },
   ];
 
   const toolsItems = [

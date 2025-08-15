@@ -164,7 +164,7 @@ export default function HomePage() {
           {/* Logo central */}
           <div className="absolute inset-0 flex items-center justify-center -mt-16">
             <Image 
-              src="/images/backgrounds/gw2_release_logo_latest.webp" 
+              src="/images/backgrounds/GuildWars2.gif" 
               alt="Guild Wars 2: Visions of Eternity"
               width={500}
               height={500}
@@ -184,7 +184,7 @@ export default function HomePage() {
                 {/* (CTA de evento movido debajo, antes de Available Tools) */}
 
                 {/* Botón Purchase Now */}
-                {/*<div className="pt-4">
+                <div className="pt-4">
                   <motion.a
                     href="http://guildwars2.go2cloud.org/aff_c?offer_id=28&aff_id=757"
                     target="_blank"
@@ -199,7 +199,7 @@ export default function HomePage() {
                   <div className="mt-4 flex justify-center">
                     <div className="w-24 h-1 bg-gradient-to-r from-transparent via-blue-400 to-transparent rounded-full opacity-60"></div>
                   </div>
-                </div> */}
+                </div>
               </motion.div>
             </div>
           </div>
