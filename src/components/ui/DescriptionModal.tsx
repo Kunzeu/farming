@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { X, Map, Clock, Copy, Users, User } from 'lucide-react';
 import ExpansionIcon from './ExpansionIcon';
 import GW2Icon from './GW2Icon';
+import { useI18n } from '@/contexts/I18nContext';
 
 interface DescriptionModalProps {
   isOpen: boolean;
@@ -23,6 +24,7 @@ interface DescriptionModalProps {
 }
 
 export default function DescriptionModal({ isOpen, onClose, route }: DescriptionModalProps) {
+  const { t } = useI18n();
   const [copiedWaypoint, setCopiedWaypoint] = useState<string | null>(null);
   
   if (!route) return null;
@@ -98,12 +100,12 @@ export default function DescriptionModal({ isOpen, onClose, route }: Description
 
   // Mapeo de tipos de moneda a iconos y labels
   const currencyMap = {
-    gold: { icon: 'gold' as const, label: 'Gold', suffix: '/h' },
-    spiritShards: { icon: 'spirit-shard' as const, label: 'Spirit Shards', suffix: '/h' },
-    imperialFavor: { icon: 'imperial-favor' as const, label: 'Favor Imperial', suffix: '/h' },
-    experience: { icon: 'gold' as const, label: 'Experience', suffix: '/h' },
-    laurels: { icon: 'gold' as const, label: 'Laurels', suffix: '/h' },
-    otherCurrency: { icon: 'gold' as const, label: 'Other Currency', suffix: '/h' },
+    gold: { icon: 'gold' as const, labelKey: 'currency.gold', suffix: '/h' },
+    spiritShards: { icon: 'spirit-shard' as const, labelKey: 'currency.spiritShards', suffix: '/h' },
+    imperialFavor: { icon: 'imperial-favor' as const, labelKey: 'currency.imperialFavor', suffix: '/h' },
+    experience: { icon: 'gold' as const, labelKey: 'currency.experience', suffix: '/h' },
+    laurels: { icon: 'gold' as const, labelKey: 'currency.laurels', suffix: '/h' },
+    otherCurrency: { icon: 'gold' as const, labelKey: 'currency.other', suffix: '/h' },
   };
 
   return (
@@ -154,20 +156,20 @@ export default function DescriptionModal({ isOpen, onClose, route }: Description
                   {route.isSolo && (
                     <span className="px-3 py-1 bg-green-600 text-white text-sm rounded-full flex items-center gap-2">
                       <User className="w-4 h-4" />
-                      Solo
+                      {t('farmingRoutes.mode.solo', 'Solo')}
                     </span>
                   )}
                   {route.requiresSquad && (
                     <span className="px-3 py-1 bg-purple-600 text-white text-sm rounded-full flex items-center gap-2">
                       <Users className="w-4 h-4" />
-                      Squad
+                      {t('farmingRoutes.mode.squad', 'Squad')}
                     </span>
                   )}
                 </div>
 
                 {/* Expansiones */}
                 <div className="flex items-center gap-2">
-                  <span className="text-gray-400 text-sm">Required expansions:</span>
+                  <span className="text-gray-400 text-sm">{t('modal.requiredExpansions', 'Required expansions:')}</span>
                   <div className="flex gap-1">
                     {(Array.isArray(route.expansion) ? route.expansion : [route.expansion]).map((exp) => (
                       <ExpansionIcon 
@@ -182,7 +184,7 @@ export default function DescriptionModal({ isOpen, onClose, route }: Description
 
                 {/* Descripción completa */}
                 <div>
-                  <h4 className="text-lg font-semibold text-white mb-3">Description:</h4>
+                  <h4 className="text-lg font-semibold text-white mb-3">{t('modal.description', 'Description:')}</h4>
                   <div className="p-4">
                     <p className="text-gray-300 text-base leading-relaxed whitespace-pre-wrap break-all">
                       {processDescription(route.description)}
@@ -193,7 +195,7 @@ export default function DescriptionModal({ isOpen, onClose, route }: Description
                 {/* Waypoint */}
                 {route.waypoint && (
                   <div className="flex items-center gap-3">
-                    <span className="text-gray-400 text-sm">Waypoint:</span>
+                    <span className="text-gray-400 text-sm">{t('modal.waypoint', 'Waypoint:')}</span>
                     <div className="relative">
                       <button
                         onClick={() => copyWaypointToClipboard(route.waypoint!)}
@@ -202,7 +204,7 @@ export default function DescriptionModal({ isOpen, onClose, route }: Description
                             ? 'bg-green-600 text-white'
                             : 'bg-gray-700 hover:bg-gray-600 text-blue-400'
                         }`}
-                        title={copiedWaypoint === route.waypoint ? "Copied!" : "Click to copy waypoint"}
+                        title={copiedWaypoint === route.waypoint ? t('modal.copied', 'Copied!') : t('modal.clickToCopy', 'Click to copy waypoint')}
                       >
                         <span className="font-mono text-sm">{route.waypoint}</span>
                         <Copy className="w-4 h-4" />
@@ -216,7 +218,7 @@ export default function DescriptionModal({ isOpen, onClose, route }: Description
                           exit={{ opacity: 0, x: -10, scale: 0.95 }}
                           className="absolute left-full ml-2 top-0 bg-green-600 text-white rounded-lg shadow-lg px-3 py-1 flex items-center gap-2 z-50 whitespace-nowrap">
                           <Copy className="w-3 h-3" />
-                          <span className="text-xs font-medium">Waypoint copied!</span>
+                          <span className="text-xs font-medium">{t('modal.waypointCopied', 'Waypoint copied!')}</span>
                         </motion.div>
                       )}
                     </div>
@@ -229,7 +231,7 @@ export default function DescriptionModal({ isOpen, onClose, route }: Description
                   <div className="flex items-center gap-3 p-4 bg-gray-700 rounded-lg">
                     <Clock className="w-6 h-6 text-blue-400" />
                     <div>
-                      <p className="text-gray-400 text-sm">Estimated time:</p>
+                      <p className="text-gray-400 text-sm">{t('modal.estimatedTime', 'Estimated time:')}</p>
                       <p className="text-blue-400 font-semibold text-lg">{route.estimatedTime}</p>
                     </div>
                   </div>
@@ -250,7 +252,7 @@ export default function DescriptionModal({ isOpen, onClose, route }: Description
                           />
                         </div>
                         <div>
-                          <p className="text-gray-400 text-sm">{currency.label}</p>
+                          <p className="text-gray-400 text-sm">{t(currency.labelKey, currency.labelKey)}</p>
                           <p className="text-yellow-400 font-semibold text-lg">
                             {currencyType === 'gold' ? formatGoldDisplay(value) : `${value}${currency.suffix}`}
                           </p>
@@ -267,7 +269,7 @@ export default function DescriptionModal({ isOpen, onClose, route }: Description
                         <div className="flex items-center gap-3 p-4 bg-gray-700 rounded-lg">
                           <GW2Icon type="gold" size="md" />
                           <div>
-                            <p className="text-gray-400 text-sm">Gold per hour:</p>
+                            <p className="text-gray-400 text-sm">{t('modal.goldPerHour', 'Gold per hour:')}</p>
                             <p className="text-yellow-400 font-semibold text-lg">{formatGoldDisplay(route.estimatedGold)}</p>
                           </div>
                         </div>
@@ -278,7 +280,7 @@ export default function DescriptionModal({ isOpen, onClose, route }: Description
                         <div className="flex items-center gap-3 p-4 bg-gray-700 rounded-lg">
                           <GW2Icon type="spirit-shard" size="md" />
                           <div>
-                            <p className="text-gray-400 text-sm">Spirit Shards per hour:</p>
+                            <p className="text-gray-400 text-sm">{t('modal.spiritShardsPerHour', 'Spirit Shards per hour:')}</p>
                             <p className="text-blue-400 font-semibold text-lg">{route.estimatedSpirit}/h</p>
                           </div>
                         </div>
@@ -294,7 +296,7 @@ export default function DescriptionModal({ isOpen, onClose, route }: Description
                   onClick={onClose}
                   className="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors"
                 >
-                  Close
+                  {t('modal.close', 'Close')}
                 </button>
               </div>
             </div>

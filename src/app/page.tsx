@@ -29,40 +29,40 @@ export default function HomePage() {
   
   const dashboardCards: DashboardCard[] = [
     {
-      title: "Farms",
-      description: "Optimized routes for maximum efficiency",
+      title: "dashboard.farms.title",
+      description: "dashboard.farms.description",
       href: "/farming-routes",
       icon: <Route className="w-8 h-8" />,
       color: "from-blue-500 to-blue-600",
       delay: 0.1
     },
     {
-      title: "Daily Routine",
-      description: "Organize your daily activities efficiently",
+      title: "dashboard.dailyRoutine.title",
+      description: "dashboard.dailyRoutine.description",
       href: "/daily-routine",
       icon: <Clock className="w-8 h-8" />,
       color: "from-green-500 to-green-600",
       delay: 0.2
     },
     {
-      title: "Salvaging",
-      description: "Calculate profits from salvaging unidentified gear",
+      title: "dashboard.salvaging.title",
+      description: "dashboard.salvaging.description",
       href: "/salvage",
       icon: <Package className="w-8 h-8" />,
       color: "from-orange-500 to-orange-600",
       delay: 0.3
     },
     {
-      title: "Crafting",
-      description: "Calculate crafting costs and benefits",
+      title: "dashboard.crafting.title",
+      description: "dashboard.crafting.description",
       href: "/crafting",
       icon: <Hammer className="w-8 h-8" />,
       color: "from-purple-500 to-purple-600",
       delay: 0.4
     },
     {
-      title: "Festivals",
-      description: "Information about events and festivals",
+      title: "dashboard.festivals.title",
+      description: "dashboard.festivals.description",
       href: "/festivals",
       icon: <Gift className="w-8 h-8" />,
       color: "from-pink-500 to-pink-600",
@@ -168,6 +168,7 @@ export default function HomePage() {
               alt="Guild Wars 2: Visions of Eternity"
               width={500}
               height={500}
+              priority
               className="max-w-xs md:max-w-sm lg:max-w-md h-auto drop-shadow-2xl"
             />
           </div>
@@ -193,7 +194,7 @@ export default function HomePage() {
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
                   >
-                    Purchase Now
+                    {t('cta.purchaseNow', 'Purchase Now')}
                   </motion.a>
                   
                   <div className="mt-4 flex justify-center">
@@ -249,10 +250,10 @@ export default function HomePage() {
                       </div>
                       <div>
                         <h3 className="text-xl font-bold text-white mb-2">
-                          {t(card.title)}
+                          {t(card.title, card.title)}
                         </h3>
                         <p className="text-gray-100 text-sm leading-relaxed">
-                          {t(card.description)}
+                          {t(card.description, card.description)}
                         </p>
                       </div>
                     </div>

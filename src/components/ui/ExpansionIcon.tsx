@@ -4,7 +4,7 @@ import Image from 'next/image';
 interface ExpansionIconProps {
   expansion: 'core' | 'hot' | 'pof' | 'eod' | 'soto' | 'jw';
   showName?: boolean;
-  size?: 'sm' | 'md' | 'lg';
+  size?: 'xs' | 'sm' | 'md' | 'lg';
   variant?: 'default' | 'compact' | 'card';
 }
 
@@ -59,12 +59,14 @@ export default function ExpansionIcon({ expansion, showName = false, size = 'md'
   const data = expansionData[validExpansion];
   
   const sizeClasses = {
+    xs: 'w-5 h-5',
     sm: 'w-8 h-8',
     md: 'w-10 h-10',
     lg: 'w-14 h-14'
   };
 
   const imageSizes = {
+    xs: 20,
     sm: 32,
     md: 40,
     lg: 56

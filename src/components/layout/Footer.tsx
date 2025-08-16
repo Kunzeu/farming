@@ -45,7 +45,7 @@ export default function Footer() {
       <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-purple-500/5 rounded-full blur-3xl"></div>
       
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8 text-center md:text-left">
           
           {/* Sección 1: Apoya el sitio web */}
           <motion.div 
@@ -53,20 +53,21 @@ export default function Footer() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.1 }}
           >
-            <h3 className="text-white font-medium text-base mb-4 flex items-center gap-2">
+            <h3 className="text-white font-medium text-base mb-4 flex items-center gap-2 justify-center md:justify-start">
               <Coffee className="w-4 h-4 text-orange-400" />
               {t('footer.supportWebsite', 'Apoya el sitio web')}
             </h3>
             
             {/* Botón de Patreon compacto */}
-            <motion.a
-              href="#" // Cambiar cuando tengas el link
-              target="_blank"
-              rel="noopener noreferrer"
-              className="relative group inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-orange-500 to-pink-500 rounded-lg text-white font-medium text-sm hover:shadow-lg transition-all duration-300"
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-            >
+            <div className="flex justify-center md:justify-start">
+              <motion.a
+                href="#" // Cambiar cuando tengas el link
+                target="_blank"
+                rel="noopener noreferrer"
+                className="relative group inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-orange-500 to-pink-500 rounded-lg text-white font-medium text-sm hover:shadow-lg transition-all duration-300"
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+              >
               <motion.div
                 animate={{ rotate: [0, 360] }}
                 transition={{ duration: 6, repeat: Infinity, ease: "linear" }}
@@ -74,7 +75,8 @@ export default function Footer() {
                 <Heart className="w-4 h-4" />
               </motion.div>
               {t('footer.patreonTitle', '¡Apóyanos en Patreon!')}
-            </motion.a>
+              </motion.a>
+            </div>
           </motion.div>
 
           {/* Sección 2: Comunidad y contacto */}
@@ -83,11 +85,11 @@ export default function Footer() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.2 }}
           >
-            <h3 className="text-white font-medium text-base mb-4 flex items-center gap-2">
+            <h3 className="text-white font-medium text-base mb-4 flex items-center gap-2 justify-center md:justify-start">
               <Zap className="w-4 h-4 text-yellow-400" />
               {t('footer.communityContact', 'Comunidad y contacto')}
             </h3>
-            <div className="flex flex-wrap gap-4">
+            <div className="flex flex-wrap gap-4 justify-center md:justify-start">
               
               {/* Discord Bot */}
               <motion.a

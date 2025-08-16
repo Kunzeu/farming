@@ -55,12 +55,12 @@ export default function FarmingRoutes() {
 
   // Mapeo de tipos de moneda a iconos y labels
   const currencyMap = {
-    gold: { icon: 'gold' as const, label: 'Gold', suffix: '/h' },
-    spiritShards: { icon: 'spirit-shard' as const, label: 'Spirit Shards', suffix: '/h' },
-    imperialFavor: { icon: 'imperial-favor' as const, label: 'Favor Imperial', suffix: '/h' },
-    experience: { icon: 'gold' as const, label: 'Experience', suffix: '/h' }, // Usar gold como placeholder
-    laurels: { icon: 'gold' as const, label: 'Laurels', suffix: '/h' }, // Usar gold como placeholder
-    otherCurrency: { icon: 'gold' as const, label: 'Other Currency', suffix: '/h' }, // Usar gold como placeholder
+    gold: { icon: 'gold' as const, labelKey: 'currency.gold', suffix: '/h' },
+    spiritShards: { icon: 'spirit-shard' as const, labelKey: 'currency.spiritShards', suffix: '/h' },
+    imperialFavor: { icon: 'imperial-favor' as const, labelKey: 'currency.imperialFavor', suffix: '/h' },
+    experience: { icon: 'gold' as const, labelKey: 'currency.experience', suffix: '/h' }, // Usar gold como placeholder
+    laurels: { icon: 'gold' as const, labelKey: 'currency.laurels', suffix: '/h' }, // Usar gold como placeholder
+    otherCurrency: { icon: 'gold' as const, labelKey: 'currency.other', suffix: '/h' }, // Usar gold como placeholder
   };
 
   // Función para formatear oro correctamente
@@ -100,7 +100,7 @@ export default function FarmingRoutes() {
       const approvedRoutes = allRoutes.filter((route: FarmItem) => route.status === 'approved');
       setFarmingRoutes(approvedRoutes);
     } catch {
-      setError('Error loading routes from database');
+      setError(t('farmingRoutes.errorLoading', 'Error loading routes from database'));
     } finally {
       setIsLoading(false);
     }
@@ -150,7 +150,7 @@ export default function FarmingRoutes() {
           <div className="flex items-center justify-center h-64">
             <div className="text-center">
               <RefreshCw className="w-8 h-8 text-blue-400 animate-spin mx-auto mb-4" />
-                              <p className="text-white">Loading routes from database...</p>
+                              <p className="text-white">{t('farmingRoutes.loading', 'Loading routes from database...')}</p>
             </div>
           </div>
         </div>
@@ -169,10 +169,10 @@ export default function FarmingRoutes() {
           animate={{ opacity: 1, y: 0 }}
           className="text-center mb-8">
           <h1 className="text-4xl font-bold text-white mb-4">
-            Farming Routes
+            {t('farmingRoutes.title', 'Farming Routes')}
           </h1>
           <p className="text-xl text-gray-300 mb-6">
-            The best routes to make gold in Guild Wars 2
+            {t('farmingRoutes.subtitle', 'The best routes to make gold in Guild Wars 2')}
           </p>
           
           {/* Daily Routine Button */}
@@ -185,7 +185,7 @@ export default function FarmingRoutes() {
               href="/daily-routine"
               className="inline-flex items-center gap-3 px-6 py-3 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white font-semibold rounded-lg transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105">
               <Clock className="w-5 h-5" />
-              <span>Daily Routine</span>
+              <span>{t('dashboard.dailyRoutine.title', 'Daily Routine')}</span>
               <Star className="w-4 h-4" />
             </Link>
           </motion.div>
@@ -283,13 +283,13 @@ export default function FarmingRoutes() {
                         {route.isSolo && (
                           <span className="px-2 py-1 bg-green-600 text-white text-xs rounded-full flex items-center gap-1">
                             <User className="w-3 h-3" />
-                            Solo
+                            {t('farmingRoutes.mode.solo', 'Solo')}
                           </span>
                         )}
                         {route.requiresSquad && (
                           <span className="px-2 py-1 bg-purple-600 text-white text-xs rounded-full flex items-center gap-1">
                             <Users className="w-3 h-3" />
-                            Squad
+                            {t('farmingRoutes.mode.squad', 'Squad')}
                           </span>
                         )}
                       </div>
@@ -323,7 +323,7 @@ export default function FarmingRoutes() {
                                 ? 'bg-green-600 text-white'
                                 : 'bg-gray-700 hover:bg-gray-600 text-blue-400'
                             }`}
-                            title={copiedWaypoint === `${route.id}-${route.waypoint}` ? "Copied!" : "Click to copy waypoint"}
+                            title={copiedWaypoint === `${route.id}-${route.waypoint}` ? t('notif.copied', 'Copied!') : t('farmingRoutes.clickToCopy', 'Click to copy waypoint')}
                           >
                             <span className="font-mono">{route.waypoint}</span>
                             <Copy className="w-3 h-3" />
@@ -378,7 +378,7 @@ export default function FarmingRoutes() {
                           />
                         </div>
                         <div>
-                          <p className="text-gray-400 text-sm">{currency.label}</p>
+                          <p className="text-gray-400 text-sm">{t(currency.labelKey, currency.labelKey)}</p>
                           <p className="text-yellow-400 font-semibold text-lg">
                             {currencyType === 'gold' ? formatGoldDisplay(value) : `${value}${currency.suffix}`}
                           </p>
@@ -431,10 +431,10 @@ export default function FarmingRoutes() {
             <div className="bg-gray-800 rounded-lg p-8">
               <Map className="w-16 h-16 text-gray-400 mx-auto mb-4" />
               <h3 className="text-xl font-semibold text-white mb-2">
-                No farms available
+                {t('empty.noFarms', 'No farms available')}
               </h3>
               <p className="text-gray-400 mb-4">
-                No farms created.
+                {t('empty.noFarmsDesc', 'No farms created.')}
               </p>
             </div>
           </motion.div>

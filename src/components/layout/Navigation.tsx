@@ -19,7 +19,8 @@ import {
   BookOpen,
   Calendar,
   Crown,
-  ShoppingCart
+  ShoppingCart,
+  Star
 } from 'lucide-react';
 import LanguageSwitcher from '@/components/ui/LanguageSwitcher';
 import { useI18n } from '@/contexts/I18nContext';
@@ -38,6 +39,7 @@ const Navigation = () => {
   // Reset timers
   const [dailyResetTime, setDailyResetTime] = useState<string>('');
   const [weeklyResetTime, setWeeklyResetTime] = useState<string>('');
+  const [specialEventTime, setSpecialEventTime] = useState<string>('');
 
   // Calculate reset times
   useEffect(() => {
@@ -83,12 +85,33 @@ const Navigation = () => {
       setWeeklyResetTime(`${days}d ${hours}h ${minutes}m`);
     };
 
+    const calculateSpecialEvent = () => {
+      const now = new Date();
+      // 28 de octubre de 2025 a las 11:00 UTC
+      const endTime = new Date('2025-10-28T11:00:00.000Z');
+      
+      const diff = endTime.getTime() - now.getTime();
+      
+      if (diff <= 0) {
+        setSpecialEventTime('Ended');
+        return;
+      }
+      
+      const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+      const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+      
+      setSpecialEventTime(`${days}d ${hours}h ${minutes}m`);
+    };
+
     calculateDailyReset();
     calculateWeeklyReset();
+    calculateSpecialEvent();
     
     const interval = setInterval(() => {
       calculateDailyReset();
       calculateWeeklyReset();
+      calculateSpecialEvent();
     }, 1000); // Update every second
     
     return () => clearInterval(interval);
@@ -180,18 +203,25 @@ const Navigation = () => {
           {/* Reset Timers - After Logo */}
           <div className="hidden lg:flex items-center space-x-4 -ml-4">
             <div 
-              className="flex items-center space-x-2 text-blue-300 px-3 py-2 rounded-lg bg-blue-900/20 border border-blue-700/30 cursor-pointer hover:bg-blue-900/40 transition-colors"
-              title="Reset Daily - Daily rewards, missions and achievements reset"
+              className="flex items-center space-x-2 text-blue-300 px-3 py-2 rounded-lg bg-blue-900/20 border border-blue-700/30"
+              title={t('nav.dailyReset', 'Reset Daily - Daily rewards, missions and achievements reset')}
             >
               <Clock className="w-4 h-4" />
               <span className="text-sm font-mono font-bold">{dailyResetTime}</span>
             </div>
             <div 
-              className="flex items-center space-x-2 text-purple-300 px-3 py-2 rounded-lg bg-purple-900/20 border border-purple-700/30 cursor-pointer hover:bg-purple-900/40 transition-colors"
-              title="Reset Weekly - Weekly rewards, raids, fractals and WvW reset"
+              className="flex items-center space-x-2 text-purple-300 px-3 py-2 rounded-lg bg-purple-900/20 border border-purple-700/30"
+              title={t('nav.weeklyReset', 'Reset Weekly - Weekly rewards, raids, fractals and WvW reset')}
             >
               <Calendar className="w-4 h-4" />
               <span className="text-sm font-mono font-bold">{weeklyResetTime}</span>
+            </div>
+            <div 
+              className="flex items-center space-x-2 text-amber-300 px-3 py-2 rounded-lg bg-amber-900/20 border border-amber-700/30"
+              title={t('nav.specialEvent', 'Special Event - Ends October 28, 2025 at 11:00 UTC')}
+            >
+              <Star className="w-4 h-4" />
+              <span className="text-sm font-mono font-bold">{specialEventTime}</span>
             </div>
           </div>
 
@@ -215,7 +245,7 @@ const Navigation = () => {
                   onClick={() => setIsToolsMenuOpen(!isToolsMenuOpen)}
                   className="flex items-center space-x-2 text-gray-300 hover:text-white transition-all duration-200 px-3 py-2 rounded-lg hover:bg-gray-800/50 hover:shadow-md cursor-pointer">
                   <Shield className="w-4 h-4" />
-                  <span className="font-bold">{t('nav.calculators', 'Calculators')}</span>
+                  <span className="font-bold">{t('nav.tools', 'Tools')}</span>
                   <ChevronDown className={`w-4 h-4 text-gray-400 transition-transform duration-200 ${isToolsMenuOpen ? 'rotate-180' : ''}`} />
                 </button>
 
@@ -358,6 +388,36 @@ const Navigation = () => {
                     exit={{ opacity: 0, y: -20 }}
                     className="absolute top-full right-0 mt-2 w-64 bg-gray-800/90 rounded-lg border border-gray-700 shadow-xl z-50">
                     <div className="px-2 pt-2 pb-3 space-y-1">
+                      {/* Reset Timers - Mobile */}
+                      <div className="border-b border-gray-700 pb-3 mb-3">
+                        <div className="flex flex-col space-y-2">
+                          <div 
+                            className="flex items-center space-x-2 text-blue-300 px-3 py-2 rounded-lg bg-blue-900/20 border border-blue-700/30"
+                            title={t('nav.dailyReset', 'Reset Daily - Daily rewards, missions and achievements reset')}
+                          >
+                            <Clock className="w-4 h-4" />
+                            <span className="text-xs font-mono font-bold">{dailyResetTime}</span>
+                            <span className="text-xs text-blue-200 ml-auto">{t('nav.daily', 'Daily')}</span>
+                          </div>
+                          <div 
+                            className="flex items-center space-x-2 text-purple-300 px-3 py-2 rounded-lg bg-purple-900/20 border border-purple-700/30"
+                            title={t('nav.weeklyReset', 'Reset Weekly - Weekly rewards, raids, fractals and WvW reset')}
+                          >
+                            <Calendar className="w-4 h-4" />
+                            <span className="text-xs font-mono font-bold">{weeklyResetTime}</span>
+                            <span className="text-xs text-purple-200 ml-auto">{t('nav.weekly', 'Weekly')}</span>
+                          </div>
+                          <div 
+                            className="flex items-center space-x-2 text-amber-300 px-3 py-2 rounded-lg bg-amber-900/20 border border-amber-700/30"
+                            title={t('nav.specialEvent', 'Special Event - Ends October 28, 2025 at 11:00 UTC')}
+                          >
+                            <Star className="w-4 h-4" />
+                            <span className="text-xs font-mono font-bold">{specialEventTime}</span>
+                            <span className="text-xs text-amber-200 ml-auto">{t('nav.special', 'Special')}</span>
+                          </div>
+                        </div>
+                      </div>
+
                       {navItems.map((item) => (
                         <Link
                           key={item.href}
@@ -376,7 +436,7 @@ const Navigation = () => {
                           className="flex items-center justify-between w-full px-3 py-2 text-xs font-semibold text-gray-400 uppercase tracking-wider hover:text-white transition-colors duration-200 cursor-pointer">
                           <div className="flex items-center space-x-2">
                             <Shield className="w-4 h-4" />
-                            <span>Calculators</span>
+                            <span>{t('nav.tools', 'Tools')}</span>
                           </div>
                           <ChevronDown className={`w-4 h-4 text-gray-400 transition-transform duration-200 ${isMobileToolsOpen ? 'rotate-180' : ''}`} />
                         </button>
