@@ -556,61 +556,69 @@ export default function DailyRoutine() {
               </div>
             ) : viewMode === 'list' ? (
               /* Vista de lista (más compacta para muchos items) */
-              <div className="space-y-2">
+              <div className="space-y-3">
                 {filteredAndSortedFarms.map((farm, index) => (
                   <motion.div
                     key={farm.id}
                     initial={{ opacity: 0, x: -20 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ duration: 0.2, delay: index * 0.02 }}
-                    className={`flex items-center gap-4 p-4 rounded-xl border cursor-pointer transition-all duration-200 ${
+                    className={`p-4 rounded-xl border cursor-pointer transition-all duration-200 ${
                       selectedFarms.has(farm.id)
                         ? 'bg-blue-500/10 border-blue-500/50 shadow-lg'
                         : 'bg-gray-800/30 border-gray-600/50 hover:bg-gray-700/30 hover:border-gray-500'
                     }`}
                     onClick={() => toggleFarmSelection(farm.id)}
                   >
-                    {/* Checkbox */}
-                    <div className="flex-shrink-0">
-                      {selectedFarms.has(farm.id) ? (
-                        <div className="bg-blue-500 rounded p-1">
-                          <CheckCircle className="w-4 h-4 text-white" />
-                        </div>
-                      ) : (
-                        <Circle className="w-6 h-6 text-gray-400" />
-                      )}
-                    </div>
-
-                    {/* Nombre y expansiones */}
-                    <div className="flex-1 min-w-0">
-                      <h3 className="text-white font-medium truncate">{farm.name}</h3>
-                      <div className="flex gap-1 mt-1">
-                        {(Array.isArray(farm.expansion) ? farm.expansion : [farm.expansion]).map((exp) => (
-                          <ExpansionIcon key={exp} expansion={exp} size="sm" variant="compact" />
-                        ))}
+                    <div className="flex items-start gap-4">
+                      {/* Checkbox */}
+                      <div className="flex-shrink-0 mt-1">
+                        {selectedFarms.has(farm.id) ? (
+                          <div className="bg-blue-500 rounded p-1">
+                            <CheckCircle className="w-4 h-4 text-white" />
+                          </div>
+                        ) : (
+                          <Circle className="w-5 h-5 text-gray-400" />
+                        )}
                       </div>
-                    </div>
 
-                    {/* Estadísticas compactas */}
-                    <div className="flex items-center gap-4 text-sm">
-                      <div className="flex items-center gap-1 text-blue-400">
-                        <Clock className="w-4 h-4" />
-                        <span>{farm.estimatedTime}</span>
-                      </div>
-                      {getAllCurrencies(farm).slice(0, 3).map(({ currency, value, config }) => (
-                        <div key={currency} className={`flex items-center gap-1 ${config.color}`}>
-                          <Image 
-                            src={config.icon} 
-                            alt={config.label}
-                            width={16}
-                            height={16}
-                            className="w-4 h-4"
-                          />
-                          <span className="whitespace-nowrap">
-                            {currency === 'gold' ? formatGoldDisplay(value) : value}
-                          </span>
+                      {/* Contenido principal */}
+                      <div className="flex-1 min-w-0">
+                        {/* Primera línea: Nombre y expansiones */}
+                        <div className="flex items-center gap-3 mb-3">
+                          <h3 className="text-white font-semibold text-base flex-1 truncate">{farm.name}</h3>
+                          <div className="flex gap-1 flex-shrink-0">
+                            {(Array.isArray(farm.expansion) ? farm.expansion : [farm.expansion]).map((exp) => (
+                              <ExpansionIcon key={exp} expansion={exp} size="sm" variant="compact" />
+                            ))}
+                          </div>
                         </div>
-                      ))}
+
+                        {/* Segunda línea: Estadísticas */}
+                        <div className="flex items-center gap-3 flex-wrap">
+                          {/* Tiempo */}
+                          <div className="flex items-center gap-2 text-blue-400 bg-blue-500/10 px-3 py-1.5 rounded-lg">
+                            <Clock className="w-4 h-4" />
+                            <span className="text-sm font-medium">{farm.estimatedTime}</span>
+                          </div>
+                          
+                          {/* Monedas */}
+                          {getAllCurrencies(farm).map(({ currency, value, config }) => (
+                            <div key={currency} className={`flex items-center gap-2 bg-gray-700/30 px-3 py-1.5 rounded-lg border border-gray-600/30`}>
+                              <Image 
+                                src={config.icon} 
+                                alt={config.label}
+                                width={16}
+                                height={16}
+                                className="w-4 h-4"
+                              />
+                              <span className={`whitespace-nowrap text-sm font-medium ${config.color}`}>
+                                {currency === 'gold' ? formatGoldDisplay(value) : value}
+                              </span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
                     </div>
                   </motion.div>
                 ))}
