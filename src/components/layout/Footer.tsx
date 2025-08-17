@@ -106,7 +106,7 @@ export default function Footer() {
 
               {/* Discord Contacto */}
               <motion.a
-                href="https://discord.com/users/552563672162107431"
+                href="https://discord.gg/KQSrhA2qmx"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-2 text-gray-300 hover:text-white transition-colors group px-3 py-2 rounded-lg hover:bg-gray-800/50"
