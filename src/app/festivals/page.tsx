@@ -15,105 +15,105 @@ import { festivalDates, getFestivalStatus } from '@/lib/festival-dates';
 import { usePageTitle } from '@/hooks/usePageTitle';
 import { useI18n } from '@/contexts/I18nContext';
 
-const festivals = [
+const getFestivals = () => [
   {
     id: 'lunar',
-    name: 'Lunar New Year Festival',
-    description: 'The celebration of the new year in the Canthan calendar',
+    nameKey: 'festivals.names.lunar',
+    descriptionKey: 'festivals.descriptions.lunar',
     icon: '🏮',
     color: 'from-red-500 to-yellow-600',
     status: getFestivalStatus(festivalDates.lunar.startDate, festivalDates.lunar.endDate),
     startDate: festivalDates.lunar.startDateFormatted,
     endDate: festivalDates.lunar.endDateFormatted,
     features: [
-      'Lucky Envelopes',
-      'Essence of Luck',
-      'Dragon Ball Arena',
-      'Fireworks'
+      'festivals.features.lunar.luckyEnvelopes',
+      'festivals.features.lunar.essenceLuck',
+      'festivals.features.lunar.dragonBall',
+      'festivals.features.lunar.fireworks'
     ],
     estimatedGoldPerHour: 18,
-    difficulty: 'Easy',
-    timeRequired: '2-3 hours',
+    difficultyKey: 'festivals.difficulty.easy',
+    timeRequiredKey: 'festivals.timeRequired.short',
     path: '/festivals/lunar-new-year'
   },
   {
     id: 'dragon-bash',
-    name: 'Dragon Bash',
-    description: 'Summer festival celebrating resistance against the Elder Dragons',
+    nameKey: 'festivals.names.dragonBash',
+    descriptionKey: 'festivals.descriptions.dragonBash',
     icon: '🐉',
     color: 'from-purple-500 to-pink-600',
     status: getFestivalStatus(festivalDates['dragon-bash'].startDate, festivalDates['dragon-bash'].endDate),
     startDate: festivalDates['dragon-bash'].startDateFormatted,
     endDate: festivalDates['dragon-bash'].endDateFormatted,
     features: [
-      'Holographic Dragon Minions',
-      'Racing Events',
-      'Festival Tokens',
-      'Dragon-themed Rewards'
+      'festivals.features.dragonBash.holographic',
+      'festivals.features.dragonBash.racing',
+      'festivals.features.dragonBash.tokens',
+      'festivals.features.dragonBash.rewards'
     ],
     estimatedGoldPerHour: 12,
-    difficulty: 'Easy',
-    timeRequired: '2-3 hours',
+    difficultyKey: 'festivals.difficulty.easy',
+    timeRequiredKey: 'festivals.timeRequired.short',
     path: '/festivals/dragon-bash'
   },
   {
     id: 'four-winds',
-    name: 'Festival of the Four Winds',
-    description: 'Summer festival with mount races and adventures',
+    nameKey: 'festivals.names.fourWinds',
+    descriptionKey: 'festivals.descriptions.fourWinds',
     icon: '🪂',
     color: 'from-green-500 to-blue-600',
     status: getFestivalStatus(festivalDates['four-winds'].startDate, festivalDates['four-winds'].endDate),
     startDate: festivalDates['four-winds'].startDateFormatted,
     endDate: festivalDates['four-winds'].endDateFormatted,
     features: [
-      'Mount Races',
-      'Boss Blitz',
-      'Queen\'s Gauntlet',
-      'Scavenger Hunts'
+      'festivals.features.fourWinds.mountRaces',
+      'festivals.features.fourWinds.bossBlitz',
+      'festivals.features.fourWinds.gauntlet',
+      'festivals.features.fourWinds.scavenger'
     ],
     estimatedGoldPerHour: 10,
-    difficulty: 'Medium',
-    timeRequired: '3-4 hours',
+    difficultyKey: 'festivals.difficulty.medium',
+    timeRequiredKey: 'festivals.timeRequired.medium',
     path: '/festivals/four-winds'
   },
   {
     id: 'halloween',
-    name: 'Festival de Halloween',
-    description: 'The terrifying festival of Mad King Thorn',
+    nameKey: 'festivals.names.halloween',
+    descriptionKey: 'festivals.descriptions.halloween',
     icon: '🎃',
     color: 'from-orange-500 to-red-600',
     status: getFestivalStatus(festivalDates.halloween.startDate, festivalDates.halloween.endDate),
     startDate: festivalDates.halloween.startDateFormatted,
     endDate: festivalDates.halloween.endDateFormatted,
     features: [
-      'Trick-or-Treat Bags',
-      'Candy Corn',
-      'Mad King\'s Labyrinth',
-      'Clock Tower Puzzle'
+      'festivals.features.halloween.bags',
+      'festivals.features.halloween.corn',
+      'festivals.features.halloween.labyrinth',
+      'festivals.features.halloween.tower'
     ],
     estimatedGoldPerHour: 15,
-    difficulty: 'Easy',
-    timeRequired: '2-3 hours',
+    difficultyKey: 'festivals.difficulty.easy',
+    timeRequiredKey: 'festivals.timeRequired.short',
     path: '/festivals/halloween'
   },
   {
     id: 'wintersday',
-    name: 'Wintersday',
-    description: 'Winter festival celebrating the new year in the Mouvelian calendar',
+    nameKey: 'festivals.names.wintersday',
+    descriptionKey: 'festivals.descriptions.wintersday',
     icon: '❄️',
     color: 'from-blue-500 to-cyan-600',
     status: getFestivalStatus(festivalDates.wintersday.startDate, festivalDates.wintersday.endDate),
     startDate: festivalDates.wintersday.startDateFormatted,
     endDate: festivalDates.wintersday.endDateFormatted,
     features: [
-      'Wintersday Gifts',
-      'Winter Wonderland',
-      'Bell Choir Ensemble',
-      'Toypocalypse'
+      'festivals.features.wintersday.gifts',
+      'festivals.features.wintersday.wonderland',
+      'festivals.features.wintersday.choir',
+      'festivals.features.wintersday.toypocalypse'
     ],
     estimatedGoldPerHour: 20,
-    difficulty: 'Easy',
-    timeRequired: '2-3 hours',
+    difficultyKey: 'festivals.difficulty.easy',
+    timeRequiredKey: 'festivals.timeRequired.short',
     path: '/festivals/wintersday'
   }
 ];
@@ -131,22 +131,10 @@ const getStatusColor = (status: string) => {
   }
 };
 
-const getStatusLabel = (status: string) => {
-  switch (status) {
-    case 'active':
-      return 'Active';
-    case 'upcoming':
-      return 'Upcoming';
-    case 'ended':
-      return 'Ended';
-    default:
-      return 'Unknown';
-  }
-};
-
 export default function FestivalsPage() {
   usePageTitle('Festivals');
   const { t } = useI18n();
+  const festivals = getFestivals();
   return (
     <>
       <Navigation />
@@ -162,7 +150,7 @@ export default function FestivalsPage() {
               {t('festivals.title')}
             </h1>
             <p className="text-xl text-gray-300 max-w-3xl mx-auto">
-              Specific calculators and guides to maximize your profits during annual festivals
+              {t('festivals.description')}
             </p>
           </motion.div>
 
@@ -193,7 +181,7 @@ export default function FestivalsPage() {
 
                     {/* Content */}
                     <h3 className="text-xl font-bold text-white mb-4 group-hover:text-purple-400 transition-colors">
-                      {festival.name}
+                      {t(festival.nameKey)}
                     </h3>
 
                     {/* Dates */}
@@ -229,32 +217,29 @@ export default function FestivalsPage() {
             <div className="bg-gray-800/30 backdrop-blur-sm border border-gray-700 rounded-lg p-5">
               <h2 className="text-2xl font-bold text-white mb-4 flex items-center">
                 <Info className="w-6 h-6 mr-3 text-blue-400" />
-                What are Festivals?
+                {t('festivals.info.title')}
               </h2>
               <p className="text-gray-300 mb-6 leading-relaxed">
-                Festivals in Guild Wars 2 are seasonal celebrations that occur throughout the year. 
-                Each festival has its own theme, unique activities, and special rewards. 
-                These events typically last about 3 weeks and offer unique opportunities for 
-                farming and obtaining exclusive items.
+                {t('festivals.info.description')}
               </p>
               
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div className="bg-gray-700/50 rounded-lg p-3">
-                  <h3 className="text-white font-semibold mb-2">Unique Activities</h3>
+                  <h3 className="text-white font-semibold mb-2">{t('festivals.info.activities.title')}</h3>
                   <p className="text-gray-300 text-sm">
-                    Each festival includes specific activities such as puzzles, races, combat events, and special events.
+                    {t('festivals.info.activities.description')}
                   </p>
                 </div>
                 <div className="bg-gray-700/50 rounded-lg p-3">
-                  <h3 className="text-white font-semibold mb-2">Exclusive Items</h3>
+                  <h3 className="text-white font-semibold mb-2">{t('festivals.info.exclusiveItems.title')}</h3>
                   <p className="text-gray-300 text-sm">
-                    Skins, weapons, and other items that are only available during the festival.
+                    {t('festivals.info.exclusiveItems.description')}
                   </p>
                 </div>
                 <div className="bg-gray-700/50 rounded-lg p-3">
-                  <h3 className="text-white font-semibold mb-2">Temporary Rewards</h3>
+                  <h3 className="text-white font-semibold mb-2">{t('festivals.info.tempRewards.title')}</h3>
                   <p className="text-gray-300 text-sm">
-                    Materials, currencies, and other resources that can be sold for gold on the Trading Post.
+                    {t('festivals.info.tempRewards.description')}
                   </p>
                 </div>
               </div>
@@ -264,44 +249,44 @@ export default function FestivalsPage() {
             <div className="bg-gray-800/30 backdrop-blur-sm border border-gray-700 rounded-lg p-5">
               <h2 className="text-2xl font-bold text-white mb-4 flex items-center">
                 <TrendingUp className="w-6 h-6 mr-3 text-green-400" />
-                Festival Farming Strategies
+                {t('festivals.farming.title')}
               </h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                 <div className="space-y-4">
-                  <h3 className="text-xl font-bold text-white">During the Festival</h3>
+                  <h3 className="text-xl font-bold text-white">{t('festivals.farming.during.title')}</h3>
                   <div className="space-y-3">
                     <div className="flex items-start gap-3">
                       <div className="w-2 h-2 bg-green-400 rounded-full mt-2 flex-shrink-0"></div>
                       <div>
-                        <h4 className="text-white font-semibold">Participate in Activities</h4>
-                        <p className="text-gray-300 text-sm">Complete daily activities to obtain consistent rewards.</p>
+                        <h4 className="text-white font-semibold">{t('festivals.farming.during.participate.title')}</h4>
+                        <p className="text-gray-300 text-sm">{t('festivals.farming.during.participate.description')}</p>
                       </div>
                     </div>
                     <div className="flex items-start gap-3">
                       <div className="w-2 h-2 bg-green-400 rounded-full mt-2 flex-shrink-0"></div>
                       <div>
-                        <h4 className="text-white font-semibold">Intensive Farming</h4>
-                        <p className="text-gray-300 text-sm">Dedicate time to the most profitable activities of the festival.</p>
+                        <h4 className="text-white font-semibold">{t('festivals.farming.during.intensive.title')}</h4>
+                        <p className="text-gray-300 text-sm">{t('festivals.farming.during.intensive.description')}</p>
                       </div>
                     </div>
                   </div>
                 </div>
                 
                 <div className="space-y-4">
-                  <h3 className="text-xl font-bold text-white">After the Festival</h3>
+                  <h3 className="text-xl font-bold text-white">{t('festivals.farming.after.title')}</h3>
                   <div className="space-y-3">
                     <div className="flex items-start gap-3">
                       <div className="w-2 h-2 bg-blue-400 rounded-full mt-2 flex-shrink-0"></div>
                       <div>
-                        <h4 className="text-white font-semibold">Strategic Selling</h4>
-                        <p className="text-gray-300 text-sm">Wait for prices to rise after the festival.</p>
+                        <h4 className="text-white font-semibold">{t('festivals.farming.after.selling.title')}</h4>
+                        <p className="text-gray-300 text-sm">{t('festivals.farming.after.selling.description')}</p>
                       </div>
                     </div>
                     <div className="flex items-start gap-3">
                       <div className="w-2 h-2 bg-blue-400 rounded-full mt-2 flex-shrink-0"></div>
                       <div>
-                        <h4 className="text-white font-semibold">Market Analysis</h4>
-                        <p className="text-gray-300 text-sm">Monitor prices to identify the best selling moment.</p>
+                        <h4 className="text-white font-semibold">{t('festivals.farming.after.analysis.title')}</h4>
+                        <p className="text-gray-300 text-sm">{t('festivals.farming.after.analysis.description')}</p>
                       </div>
                     </div>
                   </div>
@@ -313,57 +298,55 @@ export default function FestivalsPage() {
             <div className="bg-gray-800/30 backdrop-blur-sm border border-gray-700 rounded-lg p-5">
               <h2 className="text-2xl font-bold text-white mb-4 flex items-center">
                 <Coins className="w-6 h-6 mr-3 text-yellow-400" />
-                How to Earn Gold in Festivals?
+                {t('festivals.goldEarning.title')}
               </h2>
               <p className="text-gray-300 mb-6 leading-relaxed">
-                Festivals are one of the best opportunities to generate gold in Guild Wars 2. 
-                Each festival has specific farming methods that can generate between 20-30g per hour 
-                depending on your efficiency and the festival in question.
+                {t('festivals.goldEarning.description')}
               </p>
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-6">
                 <div className="space-y-4">
-                  <h3 className="text-xl font-bold text-white">Main Methods</h3>
+                  <h3 className="text-xl font-bold text-white">{t('festivals.goldEarning.main.title')}</h3>
                   <div className="space-y-3">
                     <div className="flex items-start gap-3">
                       <div className="w-2 h-2 bg-yellow-400 rounded-full mt-2 flex-shrink-0"></div>
                       <div>
-                        <h4 className="text-white font-semibold">Activity Farming</h4>
-                        <p className="text-gray-300 text-sm">Repeatedly participate in the most profitable activities of the festival.</p>
+                        <h4 className="text-white font-semibold">{t('festivals.goldEarning.main.activity.title')}</h4>
+                        <p className="text-gray-300 text-sm">{t('festivals.goldEarning.main.activity.description')}</p>
                       </div>
                     </div>
                     <div className="flex items-start gap-3">
                       <div className="w-2 h-2 bg-yellow-400 rounded-full mt-2 flex-shrink-0"></div>
                       <div>
-                        <h4 className="text-white font-semibold">Container Opening</h4>
-                        <p className="text-gray-300 text-sm">Open bags, envelopes, and other containers to obtain valuable items.</p>
+                        <h4 className="text-white font-semibold">{t('festivals.goldEarning.main.containers.title')}</h4>
+                        <p className="text-gray-300 text-sm">{t('festivals.goldEarning.main.containers.description')}</p>
                       </div>
                     </div>
                     <div className="flex items-start gap-3">
                       <div className="w-2 h-2 bg-yellow-400 rounded-full mt-2 flex-shrink-0"></div>
                       <div>
-                        <h4 className="text-white font-semibold">Material Selling</h4>
-                        <p className="text-gray-300 text-sm">Sell festival-specific materials on the Trading Post.</p>
+                        <h4 className="text-white font-semibold">{t('festivals.goldEarning.main.materials.title')}</h4>
+                        <p className="text-gray-300 text-sm">{t('festivals.goldEarning.main.materials.description')}</p>
                       </div>
                     </div>
                   </div>
                 </div>
                 
                 <div className="space-y-4">
-                  <h3 className="text-xl font-bold text-white">Advanced Strategies</h3>
+                  <h3 className="text-xl font-bold text-white">{t('festivals.goldEarning.advanced.title')}</h3>
                   <div className="space-y-3">
                     <div className="flex items-start gap-3">
                       <div className="w-2 h-2 bg-green-400 rounded-full mt-2 flex-shrink-0"></div>
                       <div>
-                        <h4 className="text-white font-semibold">Storage</h4>
-                        <p className="text-gray-300 text-sm">Save items to sell them in the next festival.</p>
+                        <h4 className="text-white font-semibold">{t('festivals.goldEarning.advanced.storage.title')}</h4>
+                        <p className="text-gray-300 text-sm">{t('festivals.goldEarning.advanced.storage.description')}</p>
                       </div>
                     </div>
                     <div className="flex items-start gap-3">
                       <div className="w-2 h-2 bg-green-400 rounded-full mt-2 flex-shrink-0"></div>
                       <div>
-                        <h4 className="text-white font-semibold">Multiple Characters</h4>
-                        <p className="text-gray-300 text-sm">Use several characters to maximize daily rewards.</p>
+                        <h4 className="text-white font-semibold">{t('festivals.goldEarning.advanced.multiChar.title')}</h4>
+                        <p className="text-gray-300 text-sm">{t('festivals.goldEarning.advanced.multiChar.description')}</p>
                       </div>
                     </div>
                   </div>
@@ -371,11 +354,9 @@ export default function FestivalsPage() {
               </div>
 
               <div className="bg-yellow-900/20 border border-yellow-700 rounded-lg p-4">
-                <h4 className="text-yellow-300 font-semibold mb-2">💡 Pro Tip</h4>
+                <h4 className="text-yellow-300 font-semibold mb-2">{t('festivals.goldEarning.proTip.title')}</h4>
                 <p className="text-gray-300 text-sm">
-                  The most profitable festivals are usually Halloween (Trick-or-Treat Bags) and Wintersday (Wintersday Gifts). 
-                  These can generate 30-40g per hour with efficient farming. Use our specific calculators 
-                  to determine the exact profitability of each activity.
+                  {t('festivals.goldEarning.proTip.description')}
                 </p>
               </div>
             </div>
@@ -384,22 +365,22 @@ export default function FestivalsPage() {
             <div className="bg-gray-800/30 backdrop-blur-sm border border-gray-700 rounded-lg p-5">
               <h2 className="text-2xl font-bold text-white mb-4 flex items-center">
                 <Star className="w-6 h-6 mr-3 text-yellow-400" />
-                General Tips
+                {t('festivals.tips.title')}
               </h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                 <div className="space-y-3">
                   <div className="flex items-start gap-3">
                     <div className="w-2 h-2 bg-yellow-400 rounded-full mt-2 flex-shrink-0"></div>
                     <div>
-                      <h4 className="text-white font-semibold">Planning</h4>
-                      <p className="text-gray-300 text-sm">Research festivals in advance and prepare your characters.</p>
+                      <h4 className="text-white font-semibold">{t('festivals.tips.planning.title')}</h4>
+                      <p className="text-gray-300 text-sm">{t('festivals.tips.planning.description')}</p>
                     </div>
                   </div>
                   <div className="flex items-start gap-3">
                     <div className="w-2 h-2 bg-yellow-400 rounded-full mt-2 flex-shrink-0"></div>
                     <div>
-                      <h4 className="text-white font-semibold">Diversification</h4>
-                      <p className="text-gray-300 text-sm">Don&apos;t focus on just one activity, explore all options.</p>
+                      <h4 className="text-white font-semibold">{t('festivals.tips.diversification.title')}</h4>
+                      <p className="text-gray-300 text-sm">{t('festivals.tips.diversification.description')}</p>
                     </div>
                   </div>
                 </div>
@@ -407,15 +388,15 @@ export default function FestivalsPage() {
                   <div className="flex items-start gap-3">
                     <div className="w-2 h-2 bg-yellow-400 rounded-full mt-2 flex-shrink-0"></div>
                     <div>
-                      <h4 className="text-white font-semibold">Community</h4>
-                      <p className="text-gray-300 text-sm">Join organized groups to maximize efficiency.</p>
+                      <h4 className="text-white font-semibold">{t('festivals.tips.community.title')}</h4>
+                      <p className="text-gray-300 text-sm">{t('festivals.tips.community.description')}</p>
                     </div>
                   </div>
                   <div className="flex items-start gap-3">
                     <div className="w-2 h-2 bg-yellow-400 rounded-full mt-2 flex-shrink-0"></div>
                     <div>
-                      <h4 className="text-white font-semibold">Enjoy</h4>
-                      <p className="text-gray-300 text-sm">Remember that festivals are designed to be fun.</p>
+                      <h4 className="text-white font-semibold">{t('festivals.tips.enjoy.title')}</h4>
+                      <p className="text-gray-300 text-sm">{t('festivals.tips.enjoy.description')}</p>
                     </div>
                   </div>
                 </div>

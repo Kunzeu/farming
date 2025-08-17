@@ -16,8 +16,8 @@ export const festivalDates: Record<string, FestivalDate> = {
     endDateFormatted: 'February'
   },
   'dragon-bash': {
-    startDate: '2025-06-24',
-    endDate: '2025-07-15',
+    startDate: '2025-06-17',
+    endDate: '2025-07-08',
     startDateFormatted: 'June',
     endDateFormatted: 'July'
   },
