@@ -169,6 +169,7 @@ export default function HomePage() {
               width={500}
               height={500}
               priority
+              unoptimized
               className="max-w-xs md:max-w-sm lg:max-w-md h-auto drop-shadow-2xl"
             />
           </div>

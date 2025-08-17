@@ -542,8 +542,13 @@ const FourWindsPage = () => {
    }, [fetchBoxCalculatorData]);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-green-900 to-blue-900">
-      <Navigation />
+    <div className="min-h-screen bg-cover bg-center bg-no-repeat relative" style={{ backgroundImage: 'url(/images/backgrounds/Fourwinds.jpg)' }}>
+      {/* Overlay semitransparente para mejorar legibilidad */}
+      <div className="absolute inset-0 bg-black/40"></div>
+      
+      {/* Contenido principal */}
+      <div className="relative z-10">
+        <Navigation />
       
              <div className="max-w-[95%] mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
@@ -606,28 +611,28 @@ const FourWindsPage = () => {
         >
           {/* Overview Section */}
           {selectedSection === 'overview' && (
-            <div className="space-y-8">
-              <div className="bg-gray-800/50 backdrop-blur-sm border border-gray-700 rounded-lg p-6">
-                <h2 className="text-2xl font-bold text-white mb-4 flex items-center">
+            <div className="space-y-4">
+              <div className="bg-gray-900/80 backdrop-blur-sm border border-cyan-500/30 rounded-lg p-4 shadow-2xl">
+                <h2 className="text-2xl font-bold text-white mb-3 flex items-center">
                   <Info className="w-6 h-6 mr-3 text-cyan-400" />
                   {t('festival.fourWinds')}
                 </h2>
-                <p className="text-gray-300 mb-6">{t('fourWinds.overview.p1')}</p>
+                <p className="text-gray-200 mb-4">{t('fourWinds.overview.p1')}</p>
                 
                 {/* Información sobre Zephyrite Supply Box */}
-                <div className="bg-blue-900/30 border border-blue-500/50 rounded-lg p-4 mb-6">
+                <div className="bg-blue-900/40 border border-blue-500/50 rounded-lg p-4 mb-4 shadow-lg">
                   <div className="flex items-start gap-3">
                     <Package className="w-6 h-6 text-blue-400 mt-1 flex-shrink-0" />
                     <div>
                       <h3 className="text-blue-300 font-semibold mb-2">Zephyrite Supply Box</h3>
-                      <p className="text-gray-300 text-sm mb-3">
+                      <p className="text-gray-200 text-sm mb-3">
                         {t('fourWinds.zephyrite.description')}
                       </p>
                       <a
                         href={`https://wiki-${lang}.guildwars2.com/wiki/${encodeURIComponent(zephyriteBoxName.replace(/ /g, '_'))}`}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="inline-flex items-center gap-2 px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded text-sm transition-colors duration-200"
+                        className="inline-flex items-center gap-2 px-3 py-2 bg-blue-600/80 hover:bg-blue-700/80 text-white rounded text-sm transition-all duration-200 hover:scale-105 border border-blue-500/50"
                       >
                         <Package className="w-4 h-4" />
                         {t('fourWinds.zephyrite.wikiLink')}
@@ -636,18 +641,18 @@ const FourWindsPage = () => {
                   </div>
                 </div>
                 
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                  <div className="bg-gray-700/50 rounded-lg p-4">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div className="bg-gray-800/70 rounded-lg p-4 border border-cyan-500/20 hover:border-cyan-500/40 transition-all duration-200 hover:shadow-lg">
                     <h3 className="text-white font-semibold mb-2">{t('fourWinds.cards.gauntlet.title')}</h3>
-                    <p className="text-gray-300 text-sm">{t('fourWinds.cards.gauntlet.desc')}</p>
+                    <p className="text-gray-200 text-sm">{t('fourWinds.cards.gauntlet.desc')}</p>
                   </div>
-                  <div className="bg-gray-700/50 rounded-lg p-4">
+                  <div className="bg-gray-800/70 rounded-lg p-4 border border-cyan-500/20 hover:border-cyan-500/40 transition-all duration-200 hover:shadow-lg">
                     <h3 className="text-white font-semibold mb-2">{t('fourWinds.cards.blitz.title')}</h3>
-                    <p className="text-gray-300 text-sm">{t('fourWinds.cards.blitz.desc')}</p>
+                    <p className="text-gray-200 text-sm">{t('fourWinds.cards.blitz.desc')}</p>
                   </div>
-                  <div className="bg-gray-700/50 rounded-lg p-4">
+                  <div className="bg-gray-800/70 rounded-lg p-4 border border-cyan-500/20 hover:border-cyan-500/40 transition-all duration-200 hover:shadow-lg">
                     <h3 className="text-white font-semibold mb-2">{t('fourWinds.cards.tokens.title')}</h3>
-                    <p className="text-gray-300 text-sm">{t('fourWinds.cards.tokens.desc')}</p>
+                    <p className="text-gray-200 text-sm">{t('fourWinds.cards.tokens.desc')}</p>
                   </div>
                 </div>
               </div>
@@ -656,23 +661,19 @@ const FourWindsPage = () => {
 
                                  {/* Calculators Section */}
             {selectedSection === 'calculators' && (
-              <div className="space-y-8">
+              <div className="space-y-4">
                 {/* Calculadora de Cajas */}
-               <div className="bg-gray-800/50 backdrop-blur-sm border border-gray-700 rounded-lg p-6">
-                                                                       <div className="mb-6">
-                     <div className="flex items-center">
+               <div className="bg-gray-900/80 backdrop-blur-sm border border-cyan-500/30 rounded-lg p-4 shadow-2xl">
+                     <h2 className="text-2xl font-bold text-white mb-3 flex items-center">
                         <Calculator className="w-6 h-6 mr-3 text-cyan-400" />
-                                                <h2 className="text-2xl font-bold text-white">
-                            {t('fourWinds.calculator.title')}
-                          </h2>
-                     </div>
-                   </div>
+                        {t('fourWinds.calculator.title')}
+                     </h2>
 
                                   
                    <div className="flex flex-col xl:flex-row gap-4">
-                                         {/* Tabla de Precios y Datos - IZQUIERDA */}
+                    {/* Tabla de Precios y Datos - IZQUIERDA */}
                      <div className="flex-1 min-w-0" ref={pricesTableRef}>
-                                                                      <div className="flex justify-between items-center mb-4">
+                      <div className="flex justify-between items-center mb-4">
                           <h3 className="text-xl font-bold text-white flex items-center">
                             <Package className="w-6 h-6 mr-3 text-cyan-400" />
                             {t('fourWinds.prices.title')}
@@ -684,7 +685,7 @@ const FourWindsPage = () => {
                           <div className="flex gap-2 flex-wrap">
                             <button
                               onClick={() => setShowItemSelectionModal(true)}
-                              className="flex items-center gap-2 px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded text-sm transition-colors duration-200"
+                              className="flex items-center gap-2 px-3 py-1.5 bg-blue-600/80 hover:bg-blue-700/80 text-white rounded text-sm transition-all duration-200 hover:scale-105 border border-blue-500/50"
                             >
                                <Plus className="w-4 h-4" />
                                {t('common.selectItems')}
@@ -692,17 +693,17 @@ const FourWindsPage = () => {
                             <button
                               onClick={fetchBoxCalculatorData}
                               disabled={boxCalculatorLoading}
-                              className="flex items-center gap-2 px-3 py-1.5 bg-cyan-600 hover:bg-cyan-700 disabled:bg-gray-600 text-white rounded text-sm transition-colors duration-200"
+                              className="flex items-center gap-2 px-3 py-1.5 bg-cyan-600/80 hover:bg-cyan-700/80 disabled:bg-gray-600/60 text-white rounded text-sm transition-all duration-200 hover:scale-105 border border-cyan-500/50 disabled:border-gray-500/50"
                             >
                                <RefreshCw className={`w-4 h-4 ${boxCalculatorLoading ? 'animate-spin' : ''}`} />
                                {t('common.refreshData')}
                             </button>
                           </div>
                         </div>
-                       <div className="overflow-x-auto bg-gray-800/30 rounded-lg border border-gray-700">
-                        <table className="w-full text-sm min-w-[800px]">
+                          <div className="overflow-x-auto bg-gray-800/50 rounded-lg border border-cyan-500/20 shadow-lg">
+                         <table className="w-full text-sm">
                           <thead>
-                            <tr className="border-b border-gray-600 bg-gray-700/50">
+                            <tr className="border-b border-cyan-500/30 bg-gray-700/60">
                               <th 
                                 className="text-left py-3 px-4 text-gray-200 font-semibold text-xs uppercase tracking-wider cursor-pointer hover:text-white transition-colors"
                                 onClick={() => handleSort('name')}
@@ -746,7 +747,7 @@ const FourWindsPage = () => {
                           </thead>
                           <tbody>
                             {sortedBoxCalculatorItems.filter(item => selectedBoxItems.has(item.id)).map((item, index) => (
-                              <tr key={item.id} className={`border-b border-gray-700 hover:bg-gray-700/20 transition-colors group ${index % 2 === 0 ? 'bg-gray-800/20' : 'bg-gray-800/10'}`}>
+                              <tr key={item.id} className={`border-b border-cyan-500/20 hover:bg-cyan-500/10 transition-all duration-200 group ${index % 2 === 0 ? 'bg-gray-800/40' : 'bg-gray-800/20'}`}>
                                 <td className="py-2 px-4 text-white text-sm">
                                   <div className="flex items-center">
                                     {item.icon ? (
@@ -755,7 +756,7 @@ const FourWindsPage = () => {
                                         alt={item.name} 
                                         width={32}
                                         height={32}
-                                        className="mr-3 rounded border border-gray-600"
+                                        className="mr-3 rounded border border-cyan-500/30"
                                         onError={(e) => {
                                           e.currentTarget.style.display = 'none';
                                         }}
@@ -764,14 +765,14 @@ const FourWindsPage = () => {
                                     <span className="font-medium">{item.name}</span>
                                   </div>
                                 </td>
-                                                                 <td className="py-2 px-2 text-center text-gray-300 font-mono text-sm">
+                                                                 <td className="py-2 px-2 text-center text-gray-200 font-mono text-sm">
                                    <span>{item.numPerBox}</span>
                                  </td>
-                                <td className="py-2 px-2 text-center text-gray-300 whitespace-nowrap font-mono text-sm">{formatGoldSilverCopper(item.pricePerUnit)}</td>
-                                <td className="py-2 px-2 text-center text-gray-300 whitespace-nowrap font-mono text-sm">{formatGoldSilverCopper(item.pricePerBox)}</td>
-                                <td className="py-2 px-2 text-center text-gray-300 whitespace-nowrap font-mono text-sm">{formatGoldSilverCopper(item.pricePerBox * 250)}</td>
-                                <td className="py-2 px-2 text-center text-gray-300 whitespace-nowrap font-mono text-sm">{formatGoldSilverCopper(item.pricePerBox * 2500)}</td>
-                                <td className="py-2 px-2 text-center text-gray-300 whitespace-nowrap font-mono text-sm">{formatGoldSilverCopper(item.pricePerBox * 25000)}</td>
+                                <td className="py-2 px-2 text-center text-gray-200 whitespace-nowrap font-mono text-sm">{formatGoldSilverCopper(item.pricePerUnit)}</td>
+                                <td className="py-2 px-2 text-center text-gray-200 whitespace-nowrap font-mono text-sm">{formatGoldSilverCopper(item.pricePerBox)}</td>
+                                <td className="py-2 px-2 text-center text-gray-200 whitespace-nowrap font-mono text-sm">{formatGoldSilverCopper(item.pricePerBox * 250)}</td>
+                                <td className="py-2 px-2 text-center text-gray-200 whitespace-nowrap font-mono text-sm">{formatGoldSilverCopper(item.pricePerBox * 2500)}</td>
+                                <td className="py-2 px-2 text-center text-gray-200 whitespace-nowrap font-mono text-sm">{formatGoldSilverCopper(item.pricePerBox * 25000)}</td>
                               </tr>
                             ))}
                           </tbody>
@@ -780,16 +781,16 @@ const FourWindsPage = () => {
                       </div>
                     </div>
 
-                                         {/* Calculadora de Cajas - DERECHA */}
-                     <div className="flex-1 min-w-0">
-                                              <h3 className="text-xl font-bold text-white mb-4 flex items-center">
-                         <Calculator className="w-6 h-6 mr-3 text-cyan-400" />
-                        {t('fourWinds.calculator.title')}
-                       </h3>
-                      <div className="overflow-x-auto bg-gray-800/30 rounded-lg border border-gray-700">
-                        <table className="w-full text-sm min-w-[500px]">
+                                                                                   {/* Calculadora de Cajas - DERECHA */}
+                      <div className="flex-1 min-w-0">
+                         <h3 className="text-xl font-bold text-white mb-3 flex items-center">
+                           <Calculator className="w-6 h-6 mr-3 text-cyan-400" />
+                          {t('fourWinds.calculator.title')}
+                         </h3>
+                                             <div className="overflow-x-auto bg-gray-800/50 rounded-lg border border-cyan-500/20 shadow-lg">
+                         <table className="w-full text-sm">
                           <thead>
-                            <tr className="border-b border-gray-600 bg-gray-700/50">
+                            <tr className="border-b border-cyan-500/30 bg-gray-700/60">
                               <th 
                                 className="text-left py-3 px-4 text-gray-200 font-semibold text-xs uppercase tracking-wider cursor-pointer hover:text-white transition-colors"
                                 onClick={() => handleSort('name')}
@@ -821,7 +822,7 @@ const FourWindsPage = () => {
                           </thead>
                           <tbody>
                                                          {sortedBoxCalculatorItems.filter(item => selectedBoxItems.has(item.id)).map((item, index) => (
-                               <tr key={item.id} className={`border-b border-gray-700 hover:bg-gray-700/20 transition-colors group ${index % 2 === 0 ? 'bg-gray-800/20' : 'bg-gray-800/10'}`}>
+                               <tr key={item.id} className={`border-b border-cyan-500/20 hover:bg-cyan-500/10 transition-all duration-200 group ${index % 2 === 0 ? 'bg-gray-800/40' : 'bg-gray-800/20'}`}>
                                  <td className="py-1 px-4 text-white text-sm">
                                    <div className="flex items-center">
                                                                            {item.icon ? (
@@ -830,7 +831,7 @@ const FourWindsPage = () => {
                                           alt={item.name} 
                                           width={32}
                                           height={32}
-                                          className="mr-3 rounded border border-gray-600"
+                                          className="mr-3 rounded border border-cyan-500/30"
                                           onError={(e) => {
                                             e.currentTarget.style.display = 'none';
                                           }}
@@ -871,7 +872,7 @@ const FourWindsPage = () => {
                                          updateBoxCalculatorMaterials(item.id, 0);
                                        }
                                      }}
-                                     className="w-24 px-2 py-1 bg-gray-700 border border-gray-600 rounded text-white text-center text-sm font-mono focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
+                                     className="w-24 px-2 py-1 bg-gray-700/80 border border-cyan-500/30 rounded text-white text-center text-sm font-mono focus:outline-none focus:ring-2 focus:ring-cyan-500/50 focus:border-transparent transition-all duration-200"
                                      placeholder="0"
                                    />
                                 </td>
@@ -880,7 +881,7 @@ const FourWindsPage = () => {
                             ))}
                           </tbody>
                           <tfoot className="border-t-2 border-cyan-500">
-                             <tr className="bg-gray-700/50">
+                             <tr className="bg-gray-700/60">
                                                               <td className="py-2 px-4 text-right text-gray-200 font-bold text-base">{t('common.total')}:</td>
                                <td className="py-2 px-4 text-center text-white font-bold text-base font-mono">
                                  {calculateBoxCalculatorTotals().totalMaterials.toLocaleString()}
@@ -901,63 +902,63 @@ const FourWindsPage = () => {
 
           {/* Strategies Section */}
           {selectedSection === 'strategies' && (
-            <div className="space-y-8">
-              <div className="bg-gray-800/50 backdrop-blur-sm border border-gray-700 rounded-lg p-6">
-                <h2 className="text-2xl font-bold text-white mb-6 flex items-center">
+            <div className="space-y-4">
+              <div className="bg-gray-900/80 backdrop-blur-sm border border-cyan-500/30 rounded-lg p-4 shadow-2xl">
+                <h2 className="text-2xl font-bold text-white mb-3 flex items-center">
                   <TrendingUp className="w-6 h-6 mr-3 text-cyan-400" />
-                  Farming Strategies
+                  {t('fourWinds.strategies.title')}
                 </h2>
                 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-4">
-                    <h3 className="text-xl font-bold text-white">Queen&apos;s Gauntlet</h3>
+                    <h3 className="text-xl font-bold text-white">{t('fourWinds.strategies.gauntlet.title')}</h3>
                     <div className="space-y-3">
                       <div className="flex items-start gap-3">
                         <div className="w-2 h-2 bg-cyan-400 rounded-full mt-2 flex-shrink-0"></div>
                         <div>
-                          <h4 className="text-white font-semibold">Progressive Challenges</h4>
-                          <p className="text-gray-300 text-sm">Start with the easiest challenges and progress gradually.</p>
+                          <h4 className="text-white font-semibold">{t('fourWinds.strategies.gauntlet.progressive')}</h4>
+                          <p className="text-gray-200 text-sm">{t('fourWinds.strategies.gauntlet.progressiveDesc')}</p>
                         </div>
                       </div>
                       <div className="flex items-start gap-3">
                         <div className="w-2 h-2 bg-cyan-400 rounded-full mt-2 flex-shrink-0"></div>
                         <div>
-                          <h4 className="text-white font-semibold">Optimized Builds</h4>
-                          <p className="text-gray-300 text-sm">Use specific builds for each type of challenge.</p>
+                          <h4 className="text-white font-semibold">{t('fourWinds.strategies.gauntlet.builds')}</h4>
+                          <p className="text-gray-200 text-sm">{t('fourWinds.strategies.gauntlet.buildsDesc')}</p>
                         </div>
                       </div>
                       <div className="flex items-start gap-3">
                         <div className="w-2 h-2 bg-cyan-400 rounded-full mt-2 flex-shrink-0"></div>
                         <div>
-                          <h4 className="text-white font-semibold">Unique Rewards</h4>
-                          <p className="text-gray-300 text-sm">The most difficult challenges offer exclusive tokens and materials.</p>
+                          <h4 className="text-white font-semibold">{t('fourWinds.strategies.gauntlet.rewards')}</h4>
+                          <p className="text-gray-200 text-sm">{t('fourWinds.strategies.gauntlet.rewardsDesc')}</p>
                         </div>
                       </div>
                     </div>
                   </div>
                   
                   <div className="space-y-4">
-                    <h3 className="text-xl font-bold text-white">Boss Blitz</h3>
+                    <h3 className="text-xl font-bold text-white">{t('fourWinds.strategies.blitz.title')}</h3>
                     <div className="space-y-3">
                       <div className="flex items-start gap-3">
                         <div className="w-2 h-2 bg-cyan-400 rounded-full mt-2 flex-shrink-0"></div>
                         <div>
-                          <h4 className="text-white font-semibold">Team Coordination</h4>
-                          <p className="text-gray-300 text-sm">Form coordinated groups to maximize defeat speed.</p>
+                          <h4 className="text-white font-semibold">{t('fourWinds.strategies.blitz.coordination')}</h4>
+                          <p className="text-gray-200 text-sm">{t('fourWinds.strategies.blitz.coordinationDesc')}</p>
                         </div>
                       </div>
                       <div className="flex items-start gap-3">
                         <div className="w-2 h-2 bg-cyan-400 rounded-full mt-2 flex-shrink-0"></div>
                         <div>
-                          <h4 className="text-white font-semibold">Efficient Routes</h4>
-                          <p className="text-gray-300 text-sm">Plan routes that minimize travel time between bosses.</p>
+                          <h4 className="text-white font-semibold">{t('fourWinds.strategies.blitz.routes')}</h4>
+                          <p className="text-gray-200 text-sm">{t('fourWinds.strategies.blitz.routesDesc')}</p>
                         </div>
                       </div>
                       <div className="flex items-start gap-3">
                         <div className="w-2 h-2 bg-cyan-400 rounded-full mt-2 flex-shrink-0"></div>
                         <div>
-                          <h4 className="text-white font-semibold">Perfect Timing</h4>
-                          <p className="text-gray-300 text-sm">The best times are during server peak hours.</p>
+                          <h4 className="text-white font-semibold">{t('fourWinds.strategies.blitz.timing')}</h4>
+                          <p className="text-gray-200 text-sm">{t('fourWinds.strategies.blitz.timingDesc')}</p>
                         </div>
                       </div>
                     </div>
@@ -966,14 +967,14 @@ const FourWindsPage = () => {
 
                 {/* Consejos de Farming */}
                 <div className="mt-8">
-                  <h3 className="text-xl font-bold text-white mb-4">Farming Tips</h3>
-                  <div className="bg-gray-700/50 rounded-lg p-4">
-                    <ul className="text-gray-300 text-sm space-y-2">
-                      <li>• Prioritize Queen&apos;s Gauntlet for unique rewards</li>
-                      <li>• Form groups for faster Boss Blitz</li>
-                      <li>• Accumulate Festival Tokens for bulk exchanges</li>
-                      <li>• Monitor prices of exclusive materials</li>
-                      <li>• Participate in special events during the festival</li>
+                  <h3 className="text-xl font-bold text-white mb-4">{t('fourWinds.tips.title')}</h3>
+                  <div className="bg-gray-800/60 rounded-lg p-4 border border-cyan-500/20">
+                    <ul className="text-gray-200 text-sm space-y-2">
+                      <li>• {t('fourWinds.tips.gauntlet')}</li>
+                      <li>• {t('fourWinds.tips.groups')}</li>
+                      <li>• {t('fourWinds.tips.tokens')}</li>
+                      <li>• {t('fourWinds.tips.prices')}</li>
+                      <li>• {t('fourWinds.tips.events')}</li>
                     </ul>
                   </div>
                 </div>
@@ -983,32 +984,32 @@ const FourWindsPage = () => {
 
           {/* Box Opening Section */}
           {selectedSection === 'box-opening' && (
-            <div className="space-y-8">
-              <div className="bg-gray-800/50 backdrop-blur-sm border border-gray-700 rounded-lg p-6">
-                <h2 className="text-2xl font-bold text-white mb-6 flex items-center">
+            <div className="space-y-4">
+              <div className="bg-gray-900/80 backdrop-blur-sm border border-cyan-500/30 rounded-lg p-4 shadow-2xl">
+                <h2 className="text-2xl font-bold text-white mb-3 flex items-center">
                   <Package className="w-6 h-6 mr-3 text-cyan-400" />
                   {t('fourWinds.boxOpening.title')}
                 </h2>
                 
-                <div className="bg-gray-700/50 rounded-lg p-4 mb-6">
+                <div className="bg-gray-800/60 rounded-lg p-4 mb-4 border border-cyan-500/20 shadow-lg">
                   <div className="text-center">
                     <h3 className="text-lg sm:text-xl font-bold text-cyan-400 mb-2">{t('fourWinds.stats.title')}</h3>
                     <p className="text-xl sm:text-2xl font-bold text-white">{t('fourWinds.stats.boxesOpened')}</p>
-                    <p className="text-gray-300 text-sm mt-2">{t('fourWinds.stats.desc')}</p>
-                    <p className="text-gray-400 text-xs mt-1">{t('fourWinds.stats.credit')}</p>
+                    <p className="text-gray-200 text-sm mt-2">{t('fourWinds.stats.desc')}</p>
+                    <p className="text-gray-300 text-xs mt-1">{t('fourWinds.stats.credit')}</p>
                   </div>
                 </div>
 
-                <div className="space-y-6">
+                <div className="space-y-4">
                   {/* Quick: Precio caja (P.C) como tarjeta tipo "Results Analysis" */}
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                     <button
                       type="button"
                       onClick={goToCheapestByUnit}
-                      className="bg-gray-700/50 rounded-lg p-4 text-left hover:bg-gray-700/70 border border-gray-600 transition-all"
+                      className="bg-gray-800/60 rounded-lg p-3 text-left hover:bg-gray-700/70 border border-cyan-500/30 hover:border-cyan-500/50 transition-all duration-200 hover:shadow-lg group"
                     >
                       <div className="text-xs uppercase tracking-wider text-gray-400">{t('fourWinds.quick.pc.title')}</div>
-                      <div className="mt-1 text-sm text-gray-300">
+                      <div className="mt-1 text-sm text-gray-200">
                         {cheapestByBox ? (
                           <div className="flex items-center gap-2">
                             {cheapestByBox.icon ? (
@@ -1017,7 +1018,7 @@ const FourWindsPage = () => {
                                 alt={cheapestByBox.name}
                                 width={32}
                                 height={32}
-                                className="rounded border border-gray-600"
+                                className="rounded border border-cyan-500/30 group-hover:border-cyan-500/50 transition-colors"
                                 onError={(e) => {
                                   e.currentTarget.style.display = 'none';
                                 }}
@@ -1030,52 +1031,52 @@ const FourWindsPage = () => {
                           t('common.loadingApiData')
                         )}
                       </div>
-                      <div className="mt-2 text-cyan-400 text-sm font-semibold">{t('fourWinds.quick.seeInCalculator')}</div>
+                      <div className="mt-2 text-cyan-400 text-sm font-semibold group-hover:text-cyan-300 transition-colors">{t('fourWinds.quick.seeInCalculator')}</div>
                     </button>
                     {/* Valor por caja */}
-                    <div className="bg-gray-700/50 rounded-lg p-4 border border-gray-600">
+                    <div className="bg-gray-800/60 rounded-lg p-3 border border-cyan-500/30 shadow-lg">
                       <div className="text-xs uppercase tracking-wider text-gray-400">{t('fourWinds.quick.expectedPerBox')}</div>
                       <div className="mt-1 text-cyan-400 font-bold text-lg text-center">{formatGoldSilverCopper(valueNoSSCopper)}</div>
-                      <div className="mt-1 text-gray-400 text-xs text-center">{t('fourWinds.quick.variantWithoutSS')}</div>
-                      <div className="mt-2 text-gray-300 text-xs text-center">AVG: <span className="text-white font-semibold">{formatGoldSilverCopper(avgNoSSCopper)}</span></div>
+                      <div className="mt-1 text-gray-300 text-xs text-center">{t('fourWinds.quick.variantWithoutSS')}</div>
+                      <div className="mt-2 text-gray-200 text-xs text-center">AVG: <span className="text-white font-semibold">{formatGoldSilverCopper(avgNoSSCopper)}</span></div>
                     </div>
-                    <div className="bg-gray-700/50 rounded-lg p-4 border border-gray-600">
+                    <div className="bg-gray-800/60 rounded-lg p-3 border border-cyan-500/30 shadow-lg">
                       <div className="text-xs uppercase tracking-wider text-gray-400">{t('fourWinds.quick.expectedPerBox')}</div>
                       <div className="mt-1 text-cyan-400 font-bold text-lg text-center">{formatGoldSilverCopper(valueWithInfAndSSCopper)}</div>
-                      <div className="mt-1 text-gray-400 text-xs text-center">{t('fourWinds.quick.variantWithSS')}</div>
-                      <div className="mt-2 text-gray-300 text-xs text-center">AVG: <span className="text-white font-semibold">{formatGoldSilverCopper(avgWithInfAndSSCopper)}</span></div>
+                      <div className="mt-1 text-gray-300 text-xs text-center">{t('fourWinds.quick.variantWithSS')}</div>
+                      <div className="mt-2 text-gray-200 text-xs text-center">AVG: <span className="text-white font-semibold">{formatGoldSilverCopper(avgWithInfAndSSCopper)}</span></div>
                     </div>
                   </div>
                   <div>
-                    <h3 className="text-xl font-bold text-white mb-4 flex items-center">
+                    <h3 className="text-xl font-bold text-white mb-3 flex items-center">
                       <TrendingUp className="w-6 h-6 mr-3 text-cyan-400" />
                       {t('fourWinds.stats.resultsAnalysis')}
                     </h3>
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                      <div className="bg-gray-700/50 rounded-lg p-4 text-center">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                      <div className="bg-gray-800/60 rounded-lg p-3 text-center border border-cyan-500/20 shadow-lg">
                         <div className="text-2xl font-bold text-cyan-400">
                           {primaryItems.filter(i => i.quantity > 0).length.toLocaleString()}
                         </div>
-                         <div className="text-gray-300 text-sm">{t('fourWinds.stats.uniqueItems')}</div>
+                         <div className="text-gray-200 text-sm">{t('fourWinds.stats.uniqueItems')}</div>
                       </div>
-                      <div className="bg-gray-700/50 rounded-lg p-4 text-center">
+                      <div className="bg-gray-800/60 rounded-lg p-3 text-center border border-cyan-500/20 shadow-lg">
                         <div className="text-2xl font-bold text-green-400">
                           {primaryItems.reduce((sum, i) => sum + i.quantity, 0).toLocaleString()}
                         </div>
-                         <div className="text-gray-300 text-sm">{t('fourWinds.stats.totalItems')}</div>
+                         <div className="text-gray-200 text-sm">{t('fourWinds.stats.totalItems')}</div>
                       </div>
-                      <div className="bg-gray-700/50 rounded-lg p-4 text-center">
+                      <div className="bg-gray-800/60 rounded-lg p-3 text-center border border-cyan-500/20 shadow-lg">
                         <div className="text-2xl font-bold text-yellow-400">
                           {formatGoldSilverCopper(primaryItems.reduce((sum, i) => sum + i.quantity * (i.pricePerUnit || 0), 0))}
                         </div>
-                         <div className="text-gray-300 text-sm">{t('fourWinds.stats.totalValue')}</div>
+                         <div className="text-gray-200 text-sm">{t('fourWinds.stats.totalValue')}</div>
                       </div>
                       {/* Eliminado el bloque inferior duplicado de valor por caja */}
                     </div>
                   </div>
 
                   <div>
-                    <div className="flex items-center justify-between mb-4">
+                    <div className="flex items-center justify-between mb-3">
                       <h3 className="text-xl font-bold text-white flex items-center">
                         <Calculator className="w-6 h-6 mr-3 text-cyan-400" />
                         {t('fourWinds.obtained.title')}
@@ -1083,24 +1084,24 @@ const FourWindsPage = () => {
                       <button
                         onClick={fetchPrimaryItems}
                         disabled={primaryLoading}
-                        className="flex items-center gap-2 px-3 py-1.5 bg-cyan-600 hover:bg-cyan-700 disabled:bg-gray-600 text-white rounded text-sm transition-colors duration-200"
+                        className="flex items-center gap-2 px-3 py-1.5 bg-cyan-600/80 hover:bg-cyan-700/80 disabled:bg-gray-600/60 text-white rounded text-sm transition-all duration-200 hover:scale-105 border border-cyan-500/50 disabled:border-gray-500/50"
                       >
                         <RefreshCw className={`w-4 h-4 ${primaryLoading ? 'animate-spin' : ''}`} />
                         {t('common.refreshData', 'Refresh Data')}
                       </button>
                     </div>
                     {primaryItems.length === 0 ? (
-                      <div className="bg-gray-800/30 rounded-lg border border-gray-700 overflow-hidden">
-                        <div className="p-4 text-center text-gray-400">
+                      <div className="bg-gray-800/50 rounded-lg border border-cyan-500/20 overflow-hidden shadow-lg">
+                        <div className="p-4 text-center text-gray-300">
                           <p>{primaryLoading ? t('common.loadingItems') : t('fourWinds.obtained.waiting')}</p>
                           <p className="text-sm mt-2">{t('fourWinds.obtained.sendIds')}</p>
                         </div>
                       </div>
                     ) : (
-                      <div className="overflow-x-auto bg-gray-800/30 rounded-lg border border-gray-700">
-                        <table className="w-full text-base min-w-[820px]">
+                                             <div className="overflow-x-auto bg-gray-800/50 rounded-lg border border-cyan-500/20 shadow-lg">
+                         <table className="w-full text-base">
                           <thead>
-                            <tr className="border-b border-gray-600 bg-gray-700/50">
+                            <tr className="border-b border-cyan-500/30 bg-gray-700/60">
                               <th onClick={() => handlePrimarySort('name')} className="text-left py-2.5 px-3 text-gray-200 font-semibold text-sm uppercase tracking-wider cursor-pointer select-none">
                                  <div className="flex items-center gap-1.5">{t('salvage.table.material')} {getPrimarySortIcon('name')}</div>
                               </th>
@@ -1117,20 +1118,20 @@ const FourWindsPage = () => {
                           </thead>
                           <tbody>
                             {sortedPrimaryItems.map((item, index) => (
-                              <tr key={item.id} className={`border-b border-gray-700 hover:bg-gray-700/20 transition-colors ${index % 2 === 0 ? 'bg-gray-800/20' : 'bg-gray-800/10'}`}>
+                              <tr key={item.id} className={`border-b border-cyan-500/20 hover:bg-cyan-500/10 transition-all duration-200 ${index % 2 === 0 ? 'bg-gray-800/40' : 'bg-gray-800/20'}`}>
                                 <td className="py-2 px-3 text-white">
                                   <div className="flex items-center gap-2">
                                     {item.icon ? (
-                                      <Image src={item.icon} alt={item.name} width={28} height={28} className="rounded border border-gray-600" onError={(e) => { e.currentTarget.style.display = 'none'; }} />
+                                      <Image src={item.icon} alt={item.name} width={28} height={28} className="rounded border border-cyan-500/30" onError={(e) => { e.currentTarget.style.display = 'none'; }} />
                                     ) : null}
                                     <span className="font-medium text-base">{item.name}</span>
                                   </div>
                                 </td>
-                                <td className="py-2 px-2 text-center text-gray-300 font-mono text-base">
+                                <td className="py-2 px-2 text-center text-gray-200 font-mono text-base">
                                   {formatGoldSilverCopper(Math.round((item.pricePerUnit || 0) * 0.85))}
                                 </td>
-                                <td className="py-2 px-2 text-center text-gray-300 font-mono text-base">{item.quantity.toLocaleString()}</td>
-                                <td className="py-2 px-2 text-center text-gray-300 font-mono text-base">{item.perBox.toFixed(6)}</td>
+                                <td className="py-2 px-2 text-center text-gray-200 font-mono text-base">{item.quantity.toLocaleString()}</td>
+                                <td className="py-2 px-2 text-center text-gray-200 font-mono text-base">{item.perBox.toFixed(6)}</td>
                                 
                               </tr>
                             ))}
@@ -1150,13 +1151,13 @@ const FourWindsPage = () => {
 
                {/* Item Selection Modal for Box Calculator */}
         {showItemSelectionModal && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-            <div className="bg-gray-800 rounded-lg max-w-4xl w-full max-h-[80vh] overflow-hidden">
-              <div className="flex justify-between items-center p-6 border-b border-gray-700">
+          <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+            <div className="bg-gray-900/95 backdrop-blur-md rounded-lg max-w-4xl w-full max-h-[80vh] overflow-hidden border border-cyan-500/30 shadow-2xl">
+              <div className="flex justify-between items-center p-6 border-b border-cyan-500/30">
                 <h3 className="text-xl font-bold text-white">{t('fourWinds.modal.selectItemsTitle')}</h3>
                 <button
                   onClick={() => setShowItemSelectionModal(false)}
-                  className="text-gray-400 hover:text-white transition-colors"
+                  className="text-gray-400 hover:text-cyan-400 transition-colors"
                 >
                   <X className="w-6 h-6" />
                 </button>
@@ -1166,13 +1167,13 @@ const FourWindsPage = () => {
                 {/* Search Bar */}
                 <div className="mb-4">
                   <div className="relative">
-                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-cyan-400 w-4 h-4" />
                     <input
                       type="text"
                       placeholder={t('common.searchItemsPlaceholder')}
                       value={searchBoxTerm}
                       onChange={(e) => setSearchBoxTerm(e.target.value)}
-                      className="w-full pl-10 pr-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400"
+                      className="w-full pl-10 pr-4 py-2 bg-gray-800/80 border border-cyan-500/30 rounded-lg text-white placeholder-gray-400 focus:border-cyan-500/60 focus:outline-none focus:ring-2 focus:ring-cyan-500/20 transition-all duration-200"
                     />
                   </div>
                 </div>
@@ -1181,13 +1182,13 @@ const FourWindsPage = () => {
                 <div className="flex gap-3 mb-4">
                   <button
                     onClick={selectAllBoxItems}
-                    className="px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded text-sm transition-colors"
+                    className="px-3 py-1 bg-blue-600/80 hover:bg-blue-700/80 text-white rounded text-sm transition-all duration-200 hover:scale-105 border border-blue-500/50"
                   >
                     {t('common.addAll')}
                   </button>
                   <button
                     onClick={deselectAllBoxItems}
-                    className="px-3 py-1 bg-red-600 hover:bg-red-700 text-white rounded text-sm transition-colors"
+                    className="px-3 py-1 bg-red-600/80 hover:bg-red-700/80 text-white rounded text-sm transition-all duration-200 hover:scale-105 border border-red-500/50"
                   >
                     {t('common.removeAll')}
                   </button>
@@ -1199,10 +1200,10 @@ const FourWindsPage = () => {
                     {filteredBoxItems.map((item) => (
                       <label
                         key={item.id}
-                        className={`flex items-center p-3 rounded-lg border cursor-pointer transition-colors ${
+                        className={`flex items-center p-3 rounded-lg border cursor-pointer transition-all duration-200 ${
                           selectedBoxItems.has(item.id)
-                            ? 'bg-cyan-600 border-cyan-500'
-                            : 'bg-gray-700 border-gray-600 hover:bg-gray-600'
+                            ? 'bg-cyan-600/80 border-cyan-500 shadow-lg'
+                            : 'bg-gray-800/60 border-cyan-500/20 hover:bg-gray-700/80 hover:border-cyan-500/40'
                         }`}
                       >
                         <input
@@ -1217,7 +1218,7 @@ const FourWindsPage = () => {
                             }
                             setSelectedBoxItems(newSelected);
                           }}
-                          className="mr-3"
+                          className="mr-3 accent-cyan-500"
                         />
                         <div className="flex-1">
                           <div className="flex items-center">
@@ -1227,7 +1228,7 @@ const FourWindsPage = () => {
                                  alt={item.name} 
                                  width={16}
                                  height={16}
-                                 className="mr-2 rounded border border-gray-600"
+                                 className="mr-2 rounded border border-cyan-500/30"
                                  onError={(e) => {
                                    e.currentTarget.style.display = 'none';
                                  }}
@@ -1235,7 +1236,7 @@ const FourWindsPage = () => {
                              ) : null}
                             <div className="text-white font-medium text-sm">{item.name}</div>
                           </div>
-                          <div className="text-gray-400 text-xs">Num/Box: {item.numPerBox}</div>
+                          <div className="text-gray-300 text-xs">Num/Box: {item.numPerBox}</div>
                         </div>
                       </label>
                     ))}
@@ -1243,21 +1244,21 @@ const FourWindsPage = () => {
                 </div>
 
                 {/* Action Buttons */}
-                <div className="flex justify-between items-center mt-6 pt-4 border-t border-gray-700">
-                  <div className="text-gray-400 text-sm">
+                <div className="flex justify-between items-center mt-6 pt-4 border-t border-cyan-500/30">
+                  <div className="text-gray-300 text-sm">
                     {t('common.itemsSelected').replace('{count}', String(selectedBoxItems.size))}
                   </div>
                   <div className="flex gap-3">
                     <button
                       onClick={() => setShowItemSelectionModal(false)}
-                      className="px-4 py-2 bg-gray-600 hover:bg-gray-500 text-white rounded-lg transition-colors"
+                      className="px-4 py-2 bg-gray-700/80 hover:bg-gray-600/80 text-white rounded-lg transition-all duration-200 hover:scale-105 border border-gray-600/50"
                     >
                       {t('common.cancel')}
                     </button>
                     <button
                       onClick={applyItemSelection}
                       disabled={selectedBoxItems.size === 0}
-                      className="px-4 py-2 bg-cyan-600 hover:bg-cyan-700 disabled:bg-gray-600 text-white rounded-lg transition-colors"
+                      className="px-4 py-2 bg-cyan-600/80 hover:bg-cyan-700/80 disabled:bg-gray-600/60 text-white rounded-lg transition-all duration-200 hover:scale-105 border border-cyan-500/50 disabled:border-cyan-500/30"
                     >
                       {t('common.addSelected').replace('{count}', String(selectedBoxItems.size))}
                     </button>
@@ -1266,10 +1267,11 @@ const FourWindsPage = () => {
               </div>
             </div>
           </div>
-                 )}
+        )}
 
         
 
+        </div>
       </div>
     );
   };

@@ -3,6 +3,7 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import Image from 'next/image';
+import Link from 'next/link';
 import Navigation from '@/components/layout/Navigation';
 import { 
   Star, 
@@ -47,6 +48,7 @@ export default function DailyRoutine() {
   const [sortBy, setSortBy] = useState<'name' | 'time' | 'gold' | 'expansion'>('name');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
   const [showFilters, setShowFilters] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
 
   // Función para formatear oro correctamente
   const formatGoldDisplay = (goldValue: string | undefined): string => {
@@ -87,6 +89,22 @@ export default function DailyRoutine() {
     };
     loadFarms();
   }, [dbService]);
+
+  // Detectar si es dispositivo móvil
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 640);
+    };
+    
+    // Verificar inicialmente
+    checkMobile();
+    
+    // Agregar listener para cambios de tamaño
+    window.addEventListener('resize', checkMobile);
+    
+    // Cleanup
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   const toggleFarmSelection = (farmId: string) => {
     setSelectedFarms(prev => {
@@ -333,6 +351,22 @@ export default function DailyRoutine() {
           <p className="text-base sm:text-lg lg:text-xl text-gray-300 mb-6 max-w-2xl mx-auto px-4">
             {t('dailyRoutine.subtitle', 'Select your favorite farms and create your perfect daily routine')}
           </p>
+          
+          {/* Botón para volver a Farms */}
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3 }}
+            className="flex justify-center"
+          >
+            <Link
+              href="/farming-routes"
+              className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white font-medium rounded-lg transition-all duration-200 transform hover:scale-105 hover:shadow-lg border border-blue-400/30"
+            >
+              <Star className="w-4 h-4" />
+              {t('dailyRoutine.backToFarms', 'Back to Farms')}
+            </Link>
+          </motion.div>
         </motion.div>
 
         {/* Resumen de rutina seleccionada (siempre visible arriba) */}
@@ -559,12 +593,12 @@ export default function DailyRoutine() {
             ) : (
               /* En móvil siempre vista lista, en desktop respeta viewMode */
               <div className={`${
-                viewMode === 'list' || window.innerWidth < 640 ? 
+                (viewMode === 'list' || isMobile) ? 
                 'space-y-2' : 
                 'grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-6'
               }`}
               >
-                {viewMode === 'list' || window.innerWidth < 640 ? (
+                {(viewMode === 'list' || isMobile) ? (
                   /* Vista de lista (más compacta para muchos items) */
                   filteredAndSortedFarms.map((farm, index) => (
                     <motion.div
