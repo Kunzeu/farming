@@ -9,7 +9,8 @@ import {
   Gift,
   Hammer,
   Route,
-  Clock
+  Clock,
+  BarChart3
 } from 'lucide-react'
 import { usePageTitle } from '@/hooks/usePageTitle'
 import { useI18n } from '@/contexts/I18nContext'
@@ -67,6 +68,14 @@ export default function HomePage() {
       icon: <Gift className="w-8 h-8" />,
       color: "from-pink-500 to-pink-600",
       delay: 0.5
+    },
+    {
+      title: "dashboard.farmingTracker.title",
+      description: "dashboard.farmingTracker.description",
+      href: "/fractals",
+      icon: <BarChart3 className="w-8 h-8" />,
+      color: "from-indigo-500 to-indigo-600",
+      delay: 0.6
     }
   ]
 

@@ -168,6 +168,7 @@ const Navigation = () => {
     { href: '/salvage', label: 'Salvaging', icon: Package },
     { href: '/crafting', label: 'Crafting', icon: BookOpen },
     { href: '/festivals', label: 'Festivals', icon: Calendar },
+    { href: '/fractals', label: t('dashboard.farmingTracker.title', 'Fractals'), icon: Map },
     // Solo mostrar Buyout Calculator para admins
     ...(user?.role === 'admin' ? [{ href: '/buyout', label: 'Buyout Calculator', icon: ShoppingCart }] : []),
   ];

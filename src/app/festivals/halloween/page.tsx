@@ -412,7 +412,7 @@ const HalloweenPage = () => {
             <div className="flex justify-start mb-4">
               <a
                 href="/festivals"
-                className="flex items-center gap-2 px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg transition-colors duration-200">
+                className="flex items-center gap-2 px-4 py-2 bg-gray-900/80 hover:bg-gray-800/90 border border-orange-500/30 text-white rounded-lg transition-all duration-200 hover:scale-105 hover:shadow-lg">
                 <ArrowLeft className="w-4 h-4" />
                 {t('nav.backToFestivals')}
               </a>
@@ -441,10 +441,10 @@ const HalloweenPage = () => {
               <button
                 key={tab.id}
                 onClick={() => setSelectedSection(tab.id)}
-                className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-colors duration-200 ${
+                className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all duration-200 ${
                   selectedSection === tab.id
-                    ? 'bg-orange-600 text-white'
-                    : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                    ? 'bg-orange-600/80 text-white border border-orange-400/50 shadow-lg'
+                    : 'bg-gray-900/80 text-gray-300 hover:bg-gray-800/90 border border-orange-500/20 hover:border-orange-500/40'
                 }`}
               >
                 <tab.icon className="w-4 h-4" />
@@ -470,15 +470,15 @@ const HalloweenPage = () => {
                   <p className="text-gray-200 mb-6">{t('halloween.overview.p1')}</p>
                 
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <div className="bg-gray-800/70 rounded-lg p-4 border border-orange-500/20 hover:border-orange-500/40 transition-colors">
+                    <div className="bg-gray-900/80 backdrop-blur-sm rounded-lg p-4 border border-orange-500/30 hover:border-orange-500/50 transition-all duration-200 shadow-lg">
                       <h3 className="text-white font-semibold mb-2">{t('halloween.cards.bags.title')}</h3>
                       <p className="text-gray-200 text-sm">{t('halloween.cards.bags.desc')}</p>
                     </div>
-                    <div className="bg-gray-800/70 rounded-lg p-4 border border-orange-500/20 hover:border-orange-500/40 transition-colors">
+                    <div className="bg-gray-900/80 backdrop-blur-sm rounded-lg p-4 border border-orange-500/30 hover:border-orange-500/50 transition-all duration-200 shadow-lg">
                       <h3 className="text-white font-semibold mb-2">{t('halloween.cards.lab.title')}</h3>
                       <p className="text-gray-200 text-sm">{t('halloween.cards.lab.desc')}</p>
                     </div>
-                    <div className="bg-gray-800/70 rounded-lg p-4 border border-orange-500/20 hover:border-orange-500/40 transition-colors">
+                    <div className="bg-gray-900/80 backdrop-blur-sm rounded-lg p-4 border border-orange-500/30 hover:border-orange-500/50 transition-all duration-200 shadow-lg">
                       <h3 className="text-white font-semibold mb-2">{t('halloween.cards.corn.title')}</h3>
                       <p className="text-gray-200 text-sm">{t('halloween.cards.corn.desc')}</p>
                     </div>

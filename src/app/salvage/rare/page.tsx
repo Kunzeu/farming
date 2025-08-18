@@ -48,7 +48,7 @@ const baseMaterials: Omit<Material, 'sellPrice' | 'processedPrice'>[] = [
 
 export default function UnidentifiedGearRarePage() {
   usePageTitle('Salvage - Rare');
-  const { t } = useI18n();
+  const { t, lang } = useI18n();
   const [quantity, setQuantity] = useState(250);
   const [materials, setMaterials] = useState<Material[]>([]);
   const [results, setResults] = useState<SalvageResult[]>([]);
@@ -58,6 +58,9 @@ export default function UnidentifiedGearRarePage() {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const kitCost = 60; // Silver-Fed Salvage-o-Matic cost per use
   const [unidentifiedGearPrice, setUnidentifiedGearPrice] = useState<number | null>(null);
+  const [unidentifiedGearName, setUnidentifiedGearName] = useState<string | null>(null);
+  const [wikiUrl, setWikiUrl] = useState<string>('');
+  const [kitName, setKitName] = useState<string | null>(null);
 
   // Función para obtener precios desde GW2 API
   const fetchPrices = useCallback(async () => {
@@ -65,8 +68,9 @@ export default function UnidentifiedGearRarePage() {
       setLoading(true);
       const itemIds = baseMaterials.map(m => m.id).join(',');
       
-      // Obtener información básica de items
-      const itemsResponse = await fetch(`https://api.guildwars2.com/v2/items?ids=${itemIds}`);
+      // Obtener información básica de items con idioma
+      const apiLang = lang === 'es' ? 'es' : lang === 'de' ? 'de' : lang === 'fr' ? 'fr' : 'en';
+      const itemsResponse = await fetch(`https://api.guildwars2.com/v2/items?ids=${itemIds}&lang=${apiLang}`);
       const itemsData = await itemsResponse.json();
       
       // Obtener precios del Trading Post para materiales
@@ -76,6 +80,36 @@ export default function UnidentifiedGearRarePage() {
       // Obtener precio del Rare Unidentified Gear (ID: 83008)
       const unidGearResponse = await fetch('https://api.guildwars2.com/v2/commerce/prices/83008');
       const unidGearData = await unidGearResponse.json();
+      
+      // Obtener nombre del Rare Unidentified Gear
+      const unidGearItemResponse = await fetch(`https://api.guildwars2.com/v2/items/83008?lang=${apiLang}`);
+      const unidGearItemData = await unidGearItemResponse.json();
+      setUnidentifiedGearName(unidGearItemData.name);
+      
+      // Obtener nombre del Silver-Fed Salvage-o-Matic (ID: 67027 )
+      const kitItemResponse = await fetch(`https://api.guildwars2.com/v2/items/67027?lang=${apiLang}`);
+      const kitItemData = await kitItemResponse.json();
+      setKitName(kitItemData.name);
+      
+      // Construir URL de Wiki basada en el idioma y nombre del item
+      const buildWikiUrl = (itemName: string, language: string) => {
+        // Para español, usar el enlace fijo en inglés
+        if (language === 'es') {
+          return t('salvagePages.wikiLinks.rare', 'https://wiki.guildwars2.com/wiki/Piece_of_Rare_Unidentified_Gear');
+        }
+        
+        const encodedName = encodeURIComponent(itemName.replace(/ /g, '_'));
+        switch (language) {
+          case 'de':
+            return `https://wiki-de.guildwars2.com/wiki/${encodedName}`;
+          case 'fr':
+            return `https://wiki-fr.guildwars2.com/wiki/${encodedName}`;
+          default:
+            return `https://wiki.guildwars2.com/wiki/${encodedName}`;
+        }
+      };
+      
+      setWikiUrl(buildWikiUrl(unidGearItemData.name, apiLang));
       
       // Usar precio de compra (buys) para calcular costo real
       if (unidGearData.buys && unidGearData.buys.unit_price) {
@@ -126,7 +160,7 @@ export default function UnidentifiedGearRarePage() {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [lang, t]);
 
   // Calcular resultados cuando cambien materiales o cantidad
   useEffect(() => {
@@ -185,7 +219,7 @@ export default function UnidentifiedGearRarePage() {
       <div className="flex items-center justify-center min-h-screen">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto mb-4"></div>
-          <p className="text-gray-400">Loading prices from GW2 API...</p>
+          <p className="text-gray-400">{t('salvage.loadingPrices', 'Loading prices from GW2 API...')}</p>
         </div>
       </div>
     );
@@ -202,7 +236,7 @@ export default function UnidentifiedGearRarePage() {
               href="/salvage" 
               className="flex items-center gap-2 text-gray-400 hover:text-white transition-colors">
               <ArrowLeft className="h-5 w-5" />
-              <span>Back to Salvaging</span>
+              <span>{t('salvageCommon.backToSalvaging', 'Back to Salvaging')}</span>
             </Link>
           </div>
           
@@ -212,7 +246,7 @@ export default function UnidentifiedGearRarePage() {
               <button
                 onClick={() => setIsDropdownOpen(!isDropdownOpen)}
                 className="flex items-center gap-2 px-4 py-2 bg-slate-700 text-white rounded-lg hover:bg-slate-600 transition-colors">
-                <span>Rare</span>
+                <span>{t('salvage.dropdown.rare', 'Rare')}</span>
                 <ChevronDown className={`h-4 w-4 transition-transform ${isDropdownOpen ? 'rotate-180' : ''}`} />
               </button>
               
@@ -228,7 +262,7 @@ export default function UnidentifiedGearRarePage() {
                           height={16}
                           className="w-4 h-4"
                         />
-                        <span className="text-white">Common</span>
+                        <span className="text-white">{t('salvage.dropdown.common', 'Common')}</span>
                       </div>
                     </div>
                   </Link>
@@ -242,7 +276,7 @@ export default function UnidentifiedGearRarePage() {
                           height={16}
                           className="w-4 h-4"
                         />
-                        <span className="text-white">Masterwork</span>
+                        <span className="text-white">{t('salvage.dropdown.masterwork', 'Masterwork')}</span>
                       </div>
                     </div>
                   </Link>
@@ -256,7 +290,7 @@ export default function UnidentifiedGearRarePage() {
                           height={16}
                           className="w-4 h-4"
                         />
-                        <span className="text-white font-semibold">Rare</span>
+                        <span className="text-white font-semibold">{t('salvage.dropdown.rare', 'Rare')}</span>
                       </div>
                     </div>
                   </Link>
@@ -270,10 +304,7 @@ export default function UnidentifiedGearRarePage() {
             <div className="flex items-start gap-3">
               <Info className="h-5 w-5 text-blue-400 mt-0.5 flex-shrink-0" />
               <div className="text-sm text-blue-200">
-                <strong>Note:</strong> Prices are obtained in real-time from the GW2 API. 
-                The &quot;Processed Price&quot; includes Trading Post fees (15% discount on sell price). 
-                The cost of Unidentified Gear uses the current buy price from the Trading Post. 
-                Drop rates are based on official data from the GW2 Wiki for <strong>Piece of Rare Unidentified Gear</strong> opened and then salvaged with <strong>Silver-Fed Salvage-o-Matic</strong>. <strong>Recommendation: Have an inventory of 280 slots to facilitate the process.</strong>
+                <strong>{t('salvage.note.title', 'Note')}:</strong> {t('salvageRare.note', 'Prices are obtained in real-time from the GW2 API. The "Processed Price" includes Trading Post fees (15% discount on sell price). The cost of Unidentified Gear uses the current buy price from the Trading Post. Drop rates are based on official data from the GW2 Wiki for Piece of Rare Unidentified Gear opened and then salvaged with Silver-Fed Salvage-o-Matic. Recommendation: Have an inventory of 280 slots to facilitate the process.')}
               </div>
             </div>
           </div>
@@ -288,25 +319,25 @@ export default function UnidentifiedGearRarePage() {
                 className="w-8 h-8"
               />
               <div>
-                <h1 className="text-3xl font-bold text-white drop-shadow-lg">Unidentified Gear - Rare</h1>
-                <p className="text-gray-400">Calculate how much gold you earn by opening and salvaging Piece of Rare Unidentified Gear</p>
+                <h1 className="text-3xl font-bold text-white drop-shadow-lg">{unidentifiedGearName || t('salvageRare.title', 'Unidentified Gear - Rare')}</h1>
+                <p className="text-gray-400">{t('salvageRare.description', 'Calculate how much gold you earn by opening and salvaging Piece of Rare Unidentified Gear')}</p>
               </div>
             </div>
             
             {/* Botón Wiki */}
             <a 
-              href="https://wiki.guildwars2.com/wiki/Piece_of_Rare_Unidentified_Gear" 
+              href={wikiUrl || t('salvagePages.wikiLinks.rare', 'https://wiki.guildwars2.com/wiki/Piece_of_Rare_Unidentified_Gear')} 
               target="_blank" 
               className="inline-flex items-center gap-2 px-4 py-2 bg-slate-700 text-white rounded-lg hover:bg-slate-600 transition-colors">
               <BookOpen className="h-4 w-4" />
-              View Wiki
+              {t('salvagePages.viewWiki', 'View Wiki')}
             </a>
           </div>
           
           {lastUpdated && (
             <div className="flex items-center gap-2 text-sm text-gray-400">
               <RefreshCw className="h-4 w-4" />
-              <span>Last updated: {lastUpdated.toLocaleTimeString()}</span>
+              <span>{t('salvagePages.lastUpdated', 'Last updated: {time}').replace('{time}', lastUpdated.toLocaleTimeString())}</span>
             </div>
           )}
         </div>
@@ -322,25 +353,25 @@ export default function UnidentifiedGearRarePage() {
               className="w-12 h-12"
             />
             <div>
-              <h2 className="text-xl font-semibold text-white">Silver-Fed Salvage-o-Matic</h2>
-              <p className="text-gray-400">Recommended kit for Rare Unidentified Gear</p>
+              <h2 className="text-xl font-semibold text-white">{kitName || t('salvageRare.silverFedKit', 'Silver-Fed Salvage-o-Matic')}</h2>
+              <p className="text-gray-400">{t('salvageRare.recommendedKit', 'Recommended kit for Rare Unidentified Gear')}</p>
             </div>
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
             <div className="bg-slate-700 rounded-lg p-3">
-              <div className="text-gray-400">Cost per use</div>
+              <div className="text-gray-400">{t('salvagePages.costPerUse', 'Cost per use')}</div>
               <div className="text-white font-semibold flex items-center gap-1">
                 60 <Image src="/images/expansions/Copper.png" alt="Copper" width={16} height={16} />
               </div>
             </div>
             <div className="bg-slate-700 rounded-lg p-3">
-                              <div className="text-gray-400">Drop rates</div>
-                <div className="text-white font-semibold">Estimated</div>
+                              <div className="text-gray-400">{t('salvagePages.dropRates', 'Drop rates')}</div>
+                <div className="text-white font-semibold">{t('salvagePages.estimated', 'Estimated')}</div>
             </div>
             <div className="bg-slate-700 rounded-lg p-3">
-              <div className="text-gray-400">Profitability</div>
-              <div className="text-yellow-400 font-semibold">High</div>
+              <div className="text-gray-400">{t('salvagePages.profitability', 'Profitability')}</div>
+              <div className="text-yellow-400 font-semibold">{t('salvagePages.high', 'High')}</div>
             </div>
           </div>
         </div>
@@ -350,7 +381,7 @@ export default function UnidentifiedGearRarePage() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-300 mb-2">
-                Quantity of Rare Unidentified Gear
+                {t('salvageRare.quantityLabel', 'Quantity of Rare Unidentified Gear')}
               </label>
               <input
                 type="number"
@@ -366,7 +397,7 @@ export default function UnidentifiedGearRarePage() {
                  onClick={fetchPrices}
                  className="px-4 py-2 bg-yellow-600 text-white rounded-md hover:bg-yellow-700 transition-colors flex items-center gap-2">
                  <RefreshCw className="h-4 w-4" />
-                 Update Prices
+                 {t('salvagePages.updatePrices', 'Update Prices')}
                </button>
             </div>
           </div>
@@ -377,7 +408,7 @@ export default function UnidentifiedGearRarePage() {
           <div className="bg-blue-900/30 rounded-lg p-4 border border-blue-700">
             <div className="flex items-center gap-2 text-blue-300 mb-2">
               <Calculator className="h-5 w-5" />
-              <span className="font-semibold">Total Materials Value</span>
+              <span className="font-semibold">{t('salvagePages.totalMaterialsValue', 'Total Materials Value')}</span>
             </div>
             <p className="text-2xl font-bold text-blue-200">{formatCurrency(totalMaterialsValue)}</p>
           </div>
@@ -385,24 +416,24 @@ export default function UnidentifiedGearRarePage() {
           <div className="bg-red-900/30 rounded-lg p-4 border border-red-700">
             <div className="flex items-center gap-2 text-red-300 mb-2">
               <Package className="h-5 w-5" />
-              <span className="font-semibold">Cost {quantity} Rare Gear</span>
+              <span className="font-semibold">{t('salvageRare.costGear', 'Cost {quantity} Rare Gear').replace('{quantity}', quantity.toString())}</span>
             </div>
             {unidentifiedGearPrice ? (
               <>
                 <p className="text-2xl font-bold text-red-200">{formatCurrency(totalCost)}</p>
                 <p className="text-xs text-red-400 mt-1">
-                  {formatCurrency(unidentifiedGearPrice || 0)} each (TP)
+                  {formatCurrency(unidentifiedGearPrice || 0)} {t('salvagePages.eachTP', 'each (TP)')}
                 </p>
               </>
             ) : (
-              <p className="text-lg text-red-300">Loading price...</p>
+              <p className="text-lg text-red-300">{t('salvageCommon.loadingPrice', 'Loading price...')}</p>
             )}
           </div>
           
           <div className="bg-orange-900/30 rounded-lg p-4 border border-orange-700">
             <div className="flex items-center gap-2 text-orange-300 mb-2">
               <Package className="h-5 w-5" />
-              <span className="font-semibold">Kit Cost</span>
+              <span className="font-semibold">{t('salvagePages.kitCost', 'Kit Cost')}</span>
             </div>
             <p className="text-2xl font-bold text-orange-200">{formatCurrency(totalKitCost)}</p>
           </div>
@@ -410,7 +441,7 @@ export default function UnidentifiedGearRarePage() {
           <div className={`rounded-lg p-4 border ${totalProfit >= 0 ? 'bg-green-900/30 border-green-700' : 'bg-red-900/30 border-red-700'}`}>
             <div className={`flex items-center gap-2 mb-2 ${totalProfit >= 0 ? 'text-green-300' : 'text-red-300'}`}>
               {totalProfit >= 0 ? <TrendingUp className="h-5 w-5" /> : <TrendingDown className="h-5 w-5" />}
-              <span className="font-semibold">Total Profit</span>
+              <span className="font-semibold">{t('salvagePages.totalProfit', 'Total Profit')}</span>
             </div>
             <p className={`text-2xl font-bold ${totalProfit >= 0 ? 'text-green-200' : 'text-red-200'}`}>
               {formatCurrency(Math.abs(totalProfit))}
@@ -425,22 +456,22 @@ export default function UnidentifiedGearRarePage() {
               <thead className="bg-slate-700">
                 <tr>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
-                    Material
+                    {t('salvage.table.material', 'Material')}
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
-                    Mat per Unit
+                    {t('salvage.table.matPerUnit', 'Mat per Unit')}
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
-                    Sell Price
+                    {t('salvage.table.sellPrice', 'Sell Price')}
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
-                    Processed Price
+                    {t('salvage.table.processedPrice', 'Processed Price')}
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
-                    Quantity ({quantity})
+                    {t('salvage.table.quantity', 'Quantity')} ({quantity})
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
-                    Total Value
+                    {t('salvage.table.totalValue', 'Total Value')}
                   </th>
                 </tr>
               </thead>

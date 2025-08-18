@@ -13,12 +13,25 @@ const LunarNewYearPage = () => {
   const { t } = useI18n();
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-red-900 to-yellow-900">
-      <Navigation />
-      <div className="max-w-[95%] mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div
+      className="min-h-screen relative"
+      style={{
+        backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('/images/backgrounds/Lunar New Year.jpg')`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundAttachment: 'fixed'
+      }}
+    >
+      {/* Overlay oscuro para mejorar la legibilidad */}
+      <div className="absolute inset-0 bg-black/40"></div>
+      
+      {/* Contenido principal */}
+      <div className="relative z-10">
+        <Navigation />
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="text-center mb-8">
           <div className="flex justify-start mb-4">
-            <a href="/festivals" className="flex items-center gap-2 px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg transition-colors duration-200">
+            <a href="/festivals" className="flex items-center gap-2 px-4 py-2 bg-gray-900/80 hover:bg-gray-800/90 border border-red-500/30 text-white rounded-lg transition-all duration-200 hover:scale-105 hover:shadow-lg">
               <ArrowLeft className="w-4 h-4" />
               {t('nav.backToFestivals')}
             </a>
@@ -36,8 +49,8 @@ const LunarNewYearPage = () => {
             <button
               key={tab.id}
               onClick={() => setSelectedSection(tab.id)}
-              className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-colors duration-200 ${
-                selectedSection === tab.id ? 'bg-red-600 text-white' : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+              className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all duration-200 ${
+                selectedSection === tab.id ? 'bg-red-600/80 text-white border border-red-400/50 shadow-lg' : 'bg-gray-900/80 text-gray-300 hover:bg-gray-800/90 border border-red-500/20 hover:border-red-500/40'
               }`}
             >
               <tab.icon className="w-4 h-4" />
@@ -49,7 +62,7 @@ const LunarNewYearPage = () => {
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}>
           {selectedSection === 'overview' && (
             <div className="space-y-8">
-              <div className="bg-gray-800/50 backdrop-blur-sm border border-gray-700 rounded-lg p-6">
+              <div className="bg-gray-900/80 backdrop-blur-sm border border-red-500/30 rounded-lg p-6 shadow-2xl">
                 <h2 className="text-2xl font-bold text-white mb-4 flex items-center">
                   <Info className="w-6 h-6 mr-3 text-red-400" />
                   {t('festival.lunarNewYear')}
@@ -61,7 +74,7 @@ const LunarNewYearPage = () => {
 
           {selectedSection === 'calculators' && (
             <div className="space-y-8">
-              <div className="bg-gray-800/50 backdrop-blur-sm border border-gray-700 rounded-lg p-6">
+              <div className="bg-gray-900/80 backdrop-blur-sm border border-red-500/30 rounded-lg p-6 shadow-2xl">
                 <h2 className="text-2xl font-bold text-white mb-4 flex items-center">
                   <Calculator className="w-6 h-6 mr-3 text-red-400" />
                   {t('festivals.tabs.calculators')}
@@ -73,7 +86,7 @@ const LunarNewYearPage = () => {
 
           {selectedSection === 'strategies' && (
             <div className="space-y-8">
-              <div className="bg-gray-800/50 backdrop-blur-sm border border-gray-700 rounded-lg p-6">
+              <div className="bg-gray-900/80 backdrop-blur-sm border border-red-500/30 rounded-lg p-6 shadow-2xl">
                 <h2 className="text-2xl font-bold text-white mb-4 flex items-center">
                   <TrendingUp className="w-6 h-6 mr-3 text-red-400" />
                   {t('festivals.tabs.strategies')}
@@ -83,6 +96,7 @@ const LunarNewYearPage = () => {
             </div>
           )}
         </motion.div>
+        </div>
       </div>
     </div>
   );

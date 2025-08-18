@@ -138,8 +138,8 @@ export default function FestivalsPage() {
   return (
     <>
       <Navigation />
-      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+             <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
+         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           {/* Header */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -168,7 +168,7 @@ export default function FestivalsPage() {
                 transition={{ delay: 0.3 + index * 0.1 }}
                 className="group">
                 <Link href={festival.path}>
-                  <div className="bg-gray-800/50 backdrop-blur-sm border border-gray-700 rounded-lg p-6 hover:border-purple-500 transition-all duration-300 hover:transform hover:scale-105 flex flex-col h-full">
+                  <div className="bg-gray-900/80 backdrop-blur-sm border border-gray-700 rounded-lg p-6 hover:border-purple-500 transition-all duration-300 hover:transform hover:scale-105 flex flex-col h-full shadow-2xl">
                     {/* Header */}
                     <div className="flex items-center justify-between mb-4">
                       <div className={`w-12 h-12 bg-gradient-to-br ${festival.color} rounded-lg flex items-center justify-center text-2xl`}>
@@ -362,7 +362,7 @@ export default function FestivalsPage() {
             </div>
 
             {/* Consejos Generales */}
-            <div className="bg-gray-800/30 backdrop-blur-sm border border-gray-700 rounded-lg p-5">
+                          <div className="bg-gray-900/80 backdrop-blur-sm border border-gray-700 rounded-lg p-5 shadow-2xl">
               <h2 className="text-2xl font-bold text-white mb-4 flex items-center">
                 <Star className="w-6 h-6 mr-3 text-yellow-400" />
                 {t('festivals.tips.title')}
@@ -402,9 +402,9 @@ export default function FestivalsPage() {
                 </div>
               </div>
             </div>
-          </motion.div>
-        </div>
-      </div>
-    </>
-  );
+                     </motion.div>
+         </div>
+       </div>
+     </>
+   );
 } 

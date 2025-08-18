@@ -18,6 +18,7 @@ import {
 } from 'lucide-react';
 import GlossaryLink from '@/components/ui/GlossaryLink';
 import { usePageTitle } from '@/hooks/usePageTitle';
+import { useI18n } from '@/contexts/I18nContext';
 
 interface Gw2Price {
   id: number;
@@ -44,6 +45,7 @@ interface ConversionItem {
 
 const CraftingPage = () => {
   usePageTitle('Crafting Guide');
+  const { t } = useI18n();
   const [selectedSection, setSelectedSection] = useState<string>('overview');
   const [conversionData, setConversionData] = useState<ConversionItem[]>([]);
   const [isLoadingConversions, setIsLoadingConversions] = useState(false);
@@ -184,37 +186,37 @@ const CraftingPage = () => {
   const materialTiers = [
     {
       tier: 'T1',
-      name: 'Basic',
+      name: t('craftingPage.tiers.basic', 'Basic'),
       materials: ['Copper', 'Green Wood', 'Rawhide Leather', 'Linen'],
       color: 'from-gray-400 to-gray-600'
     },
     {
       tier: 'T2',
-      name: 'Fine',
+      name: t('craftingPage.tiers.fine', 'Fine'),
       materials: ['Bronze', 'Soft Wood', 'Thin Leather', 'Jute'],
       color: 'from-green-400 to-green-600'
     },
     {
       tier: 'T3',
-      name: 'Masterwork',
+      name: t('craftingPage.tiers.masterwork', 'Masterwork'),
       materials: ['Iron', 'Seasoned Wood', 'Coarse Leather', 'Wool'],
       color: 'from-blue-400 to-blue-600'
     },
     {
       tier: 'T4',
-      name: 'Rare',
+      name: t('craftingPage.tiers.rare', 'Rare'),
       materials: ['Steel', 'Hard Wood', 'Rugged Leather', 'Cotton'],
       color: 'from-purple-400 to-purple-600'
     },
     {
       tier: 'T5',
-      name: 'Exotic',
+      name: t('craftingPage.tiers.exotic', 'Exotic'),
       materials: ['Mithril', 'Ancient Wood', 'Hardened Leather', 'Silk'],
       color: 'from-orange-400 to-orange-600'
     },
     {
       tier: 'T6',
-      name: 'Ascended',
+      name: t('craftingPage.tiers.ascended', 'Ascended'),
       materials: ['Orichalcum', 'Elder Wood', 'Tempered Leather', 'Gossamer'],
       color: 'from-red-400 to-red-600'
     }
@@ -264,11 +266,10 @@ const CraftingPage = () => {
               </div>
             </div>
             <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">
-              Crafting Guide
+              {t('craftingPage.title', 'Crafting Guide')}
             </h1>
             <p className="text-xl text-gray-300 max-w-3xl mx-auto">
-              Everything you need to know about crafting in Guild Wars 2. 
-              From professions to profit strategies.
+              {t('craftingPage.subtitle', 'Everything you need to know about crafting in Guild Wars 2. From professions to profit strategies.')}
             </p>
           </motion.div>
 
@@ -280,10 +281,10 @@ const CraftingPage = () => {
             className="flex flex-wrap justify-center gap-2 mb-8"
           >
             {[
-              { id: 'overview', label: 'Overview', icon: Info },
-              { id: 'materials', label: 'Materials', icon: Package },
-              { id: 'strategies', label: 'Strategies', icon: TrendingUp },
-              { id: 'conversions', label: 'Conversions', icon: RefreshCw }
+              { id: 'overview', label: t('craftingPage.overview', 'Overview'), icon: Info },
+              { id: 'materials', label: t('craftingPage.materials', 'Materials'), icon: Package },
+              { id: 'strategies', label: t('craftingPage.strategies', 'Strategies'), icon: TrendingUp },
+              { id: 'conversions', label: t('craftingPage.conversions', 'Conversions'), icon: RefreshCw }
             ].map((tab) => (
               <button
                 key={tab.id}
@@ -312,34 +313,33 @@ const CraftingPage = () => {
                 <div className="bg-gray-800/50 backdrop-blur-sm border border-gray-700 rounded-lg p-6">
                   <h2 className="text-2xl font-bold text-white mb-4 flex items-center">
                     <Info className="w-6 h-6 mr-3 text-blue-400" />
-                    What is Crafting?
+                    {t('craftingPage.whatIsCrafting', 'What is Crafting?')}
                   </h2>
                                       <p className="text-gray-300 mb-4">
-                      Crafting in Guild Wars 2 is a way to create objects, weapons, armor, and consumables. 
-                      It&apos;s an excellent way to earn gold and obtain items for your character.
+                      {t('craftingPage.whatIsCraftingDesc', 'Crafting in Guild Wars 2 is a way to create objects, weapons, armor, and consumables. It\'s an excellent way to earn gold and obtain items for your character.')}
                     </p>
                   <div className="text-center mb-4">
                                           <GlossaryLink>
-                        Learn more crafting concepts in the Glossary
+                        {t('craftingPage.learnMoreGlossary', 'Learn more crafting concepts in the Glossary')}
                       </GlossaryLink>
                   </div>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="bg-gray-700/50 rounded-lg p-4">
-                      <h3 className="text-white font-semibold mb-2">Crafting Benefits</h3>
+                      <h3 className="text-white font-semibold mb-2">{t('craftingPage.craftingBenefits', 'Crafting Benefits')}</h3>
                       <ul className="text-gray-300 text-sm space-y-1">
-                        <li>• Create items for personal use</li>
-                        <li>• Sell items on the Trading Post</li>
-                        <li>• Complete collections and achievements</li>
-                        <li>• Gain level experience</li>
+                        <li>• {t('craftingPage.benefits.createItems', 'Create items for personal use')}</li>
+                        <li>• {t('craftingPage.benefits.sellItems', 'Sell items on the Trading Post')}</li>
+                        <li>• {t('craftingPage.benefits.completeCollections', 'Complete collections and achievements')}</li>
+                        <li>• {t('craftingPage.benefits.gainExperience', 'Gain level experience')}</li>
                       </ul>
                     </div>
                     <div className="bg-gray-700/50 rounded-lg p-4">
-                      <h3 className="text-white font-semibold mb-2">Basic Tips</h3>
+                      <h3 className="text-white font-semibold mb-2">{t('craftingPage.basicTips', 'Basic Tips')}</h3>
                       <ul className="text-gray-300 text-sm space-y-1">
-                        <li>• Start with a profession you like</li>
-                        <li>• Buy materials when they&apos;re cheap</li>
-                        <li>• Check prices before crafting</li>
-                        <li>• Use profit calculators</li>
+                        <li>• {t('craftingPage.tips.startProfession', 'Start with a profession you like')}</li>
+                        <li>• {t('craftingPage.tips.buyMaterials', 'Buy materials when they\'re cheap')}</li>
+                        <li>• {t('craftingPage.tips.checkPrices', 'Check prices before crafting')}</li>
+                        <li>• {t('craftingPage.tips.useProfitCalculators', 'Use profit calculators')}</li>
                       </ul>
                     </div>
                   </div>
@@ -355,7 +355,7 @@ const CraftingPage = () => {
                 <div className="bg-gray-800/50 backdrop-blur-sm border border-gray-700 rounded-lg p-6">
                   <h2 className="text-2xl font-bold text-white mb-6 flex items-center">
                     <Package className="w-6 h-6 mr-3 text-green-400" />
-                    Material Tiers
+                    {t('craftingPage.materialTiers', 'Material Tiers')}
                   </h2>
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                     {materialTiers.map((tier) => (
@@ -388,7 +388,7 @@ const CraftingPage = () => {
                 <div className="bg-gray-800/50 backdrop-blur-sm border border-gray-700 rounded-lg p-6">
                   <h2 className="text-2xl font-bold text-white mb-6 flex items-center">
                     <TrendingUp className="w-6 h-6 mr-3 text-green-400" />
-                    Profit Strategies
+                    {t('craftingPage.profitStrategies', 'Profit Strategies')}
                   </h2>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     {craftingTips.map((tip, index) => (
@@ -457,7 +457,7 @@ const CraftingPage = () => {
                     <div className="flex items-center">
                       <RefreshCw className="w-6 h-6 mr-3 text-yellow-400" />
                       <h2 className="text-2xl font-bold text-white">
-                        T6 Material Conversions
+                        {t('craftingPage.t6Conversions', 'T6 Material Conversions')}
                       </h2>
                     </div>
                     <button
@@ -466,12 +466,11 @@ const CraftingPage = () => {
                       className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-600 text-white rounded-lg transition-colors duration-200"
                     >
                       <RefreshCw className={`w-4 h-4 ${isLoadingConversions ? 'animate-spin' : ''}`} />
-                      {isLoadingConversions ? 'Updating...' : 'Refresh Data'}
+                      {isLoadingConversions ? t('craftingPage.updating', 'Updating...') : t('craftingPage.refreshData', 'Refresh Data')}
                     </button>
                   </div>
                   <p className="text-gray-400 mb-6">
-                    Calculate the profitability of converting Tier 5 to Tier 6 materials through the Mystic Forge.
-                    Prices are updated in real-time from the Guild Wars 2 API.
+                    {t('craftingPage.conversionsDesc', 'Calculate the profitability of converting Tier 5 to Tier 6 materials through the Mystic Forge. Prices are updated in real-time from the Guild Wars 2 API.')}
                   </p>
                   
 
@@ -480,19 +479,19 @@ const CraftingPage = () => {
                   {isLoadingConversions ? (
                     <div className="flex justify-center items-center h-48">
                       <Loader2 className="animate-spin text-blue-400" size={48} />
-                      <p className="ml-4 text-white text-lg">Loading conversion data...</p>
+                      <p className="ml-4 text-white text-lg">{t('craftingPage.loadingConversionData', 'Loading conversion data...')}</p>
                     </div>
                   ) : (
                     <div className="overflow-x-auto">
                       <table className="min-w-full bg-gray-700 rounded-lg overflow-hidden">
                         <thead className="bg-gray-600">
                           <tr>
-                            <th className="py-3 px-4 text-left text-sm font-semibold text-gray-200">Material</th>
-                            <th className="py-3 px-4 text-left text-sm font-semibold text-gray-200">Price 90%</th>
-                            <th className="py-3 px-4 text-left text-sm font-semibold text-gray-200">Price 85%</th>
-                            <th className="py-3 px-4 text-left text-sm font-semibold text-gray-200">Conv Cost 20</th>
-                            <th className="py-3 px-4 text-left text-sm font-semibold text-gray-200">Profit SS 90% T6</th>
-                            <th className="py-3 px-4 text-left text-sm font-semibold text-gray-200">Profit SS 85% T6</th>
+                            <th className="py-3 px-4 text-left text-sm font-semibold text-gray-200">{t('craftingPage.table.material', 'Material')}</th>
+                            <th className="py-3 px-4 text-left text-sm font-semibold text-gray-200">{t('craftingPage.table.price90', 'Price 90%')}</th>
+                            <th className="py-3 px-4 text-left text-sm font-semibold text-gray-200">{t('craftingPage.table.price85', 'Price 85%')}</th>
+                            <th className="py-3 px-4 text-left text-sm font-semibold text-gray-200">{t('craftingPage.table.convCost20', 'Conv Cost 20')}</th>
+                            <th className="py-3 px-4 text-left text-sm font-semibold text-gray-200">{t('craftingPage.table.profitSS90', 'Profit SS 90% T6')}</th>
+                            <th className="py-3 px-4 text-left text-sm font-semibold text-gray-200">{t('craftingPage.table.profitSS85', 'Profit SS 85% T6')}</th>
                           </tr>
                         </thead>
                         <tbody>

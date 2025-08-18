@@ -61,12 +61,13 @@ export default function Footer() {
             {/* Botón de Patreon compacto */}
             <div className="flex justify-center md:justify-start">
               <motion.a
-                href="#" // Cambiar cuando tengas el link
+                href="https://patreon.com/KunzeuLabs"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="relative group inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-orange-500 to-pink-500 rounded-lg text-white font-medium text-sm hover:shadow-lg transition-all duration-300"
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
+                suppressHydrationWarning={true}
               >
               <motion.div
                 animate={{ rotate: [0, 360] }}
