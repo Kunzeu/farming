@@ -954,11 +954,35 @@ export default function FarmingTrackerPage() {
 
              {/* Items Table */}
              <div className="bg-gray-900/80 backdrop-blur-sm border border-gray-700 rounded-lg shadow-2xl overflow-hidden">
+               <div className="p-6 border-b border-gray-700">
+                 <h2 className="text-2xl font-bold text-white flex items-center">
+                   <Package className="w-6 h-6 mr-3 text-green-400" />
+                   Contenedor de Items Ganados - Análisis de Box Opening
+                 </h2>
+               </div>
                <div className="overflow-x-auto">
-                 <table className="w-full">
-                   <thead className="bg-gray-800/60">
-                     <tr>
-                       <SortableHeader column="name">{t('farmingTracker.table.headers.item')}</SortableHeader>
+                 <table className="w-full text-sm">
+                   <thead>
+                     <tr className="border-b border-gray-700 bg-gray-800/60">
+                       <th className="text-left p-3 text-gray-200 font-semibold cursor-pointer hover:bg-gray-700/60 transition-colors select-none" onClick={() => handleSort('name')}>
+                         <div className="flex items-center gap-2">
+                           {t('farmingTracker.table.headers.item')}
+                           <div className="flex flex-col text-xs text-gray-500">
+                             {sortBy === 'name' ? (
+                               sortOrder === 'asc' ? (
+                                 <span className="text-blue-400">↑</span>
+                               ) : (
+                                 <span className="text-blue-400">↓</span>
+                               )
+                             ) : (
+                               <>
+                                 <span>↑</span>
+                                 <span>↓</span>
+                               </>
+                             )}
+                           </div>
+                         </div>
+                       </th>
                        <SortableHeader column="difference">{t('farmingTracker.table.headers.quantityObtained')}</SortableHeader>
                        <SortableHeader column="currentPrice">{t('farmingTracker.table.headers.currentPrice')}</SortableHeader>
                        <SortableHeader column="totalValue">{t('farmingTracker.table.headers.totalValueGained')}</SortableHeader>
@@ -966,12 +990,12 @@ export default function FarmingTrackerPage() {
                        <SortableHeader column="dropRate">{t('farmingTracker.table.headers.dropRatePerChest')}</SortableHeader>
                      </tr>
                    </thead>
-                   <tbody className="divide-y divide-gray-700">
+                   <tbody>
                      {dungeonChestStats.itemsWithStats
                        .filter(item => item.name.toLowerCase().includes(searchTerm.toLowerCase()))
                        .map((item, index) => (
-                         <tr key={index} className="hover:bg-gray-800/40 transition-colors">
-                           <td className="p-3">
+                         <tr key={`${item.id}-${index}`} className="border-b border-gray-800 hover:bg-gray-800/50 transition-colors">
+                           <td className="p-3 text-white">
                              <div className="flex items-center gap-3">
                                {item.id > 0 && itemDetails[item.id]?.icon ? (
                                  <Image
@@ -983,11 +1007,11 @@ export default function FarmingTrackerPage() {
                                  />
                                ) : (
                                  <div className="w-8 h-8 bg-gray-600 rounded flex items-center justify-center">
-                                   <Package className="w-4 h-4 text-gray-400" />
+                                   <span className="text-xs text-gray-400">?</span>
                                  </div>
                                )}
                                <div>
-                                 <div className="font-medium text-white">{itemDetails[item.id]?.name || item.name}</div>
+                                 <div className="font-medium">{itemDetails[item.id]?.name || item.name}</div>
                                </div>
                              </div>
                            </td>
@@ -1030,6 +1054,40 @@ export default function FarmingTrackerPage() {
                        ))}
                    </tbody>
                  </table>
+               </div>
+               
+               {/* Summary */}
+               <div className="p-6 bg-gray-800/60 border-t border-gray-700">
+                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-center">
+                   <div>
+                     <div className="text-2xl font-bold text-blue-400">
+                       {dungeonChestStats.itemsWithStats.filter(item => item.name.toLowerCase().includes(searchTerm.toLowerCase())).length}
+                     </div>
+                     <div className="text-gray-300 text-sm">{t('farmingTracker.summary.itemsShown')}</div>
+                   </div>
+                   <div>
+                     <div className="text-2xl font-bold text-green-400">
+                       {formatGoldSilverCopper(dungeonChestStats.itemsWithStats.filter(item => item.name.toLowerCase().includes(searchTerm.toLowerCase())).reduce((sum, item) => {
+                         if (item.id > 0 && itemDetails[item.id]?.currentPrice) {
+                           return sum + (itemDetails[item.id].currentPrice * Math.max(0, item.difference));
+                         }
+                         return sum;
+                       }, 0))}
+                     </div>
+                     <div className="text-gray-300 text-sm">{t('farmingTracker.summary.totalValueFiltered')}</div>
+                   </div>
+                   <div>
+                     <div className="text-2xl font-bold text-yellow-400">
+                       {formatGoldSilverCopper(Math.round(dungeonChestStats.itemsWithStats.filter(item => item.name.toLowerCase().includes(searchTerm.toLowerCase())).reduce((sum, item) => {
+                         if (item.id > 0 && itemDetails[item.id]?.currentPrice) {
+                           return sum + (itemDetails[item.id].currentPrice * Math.max(0, item.difference));
+                         }
+                         return sum;
+                       }, 0) / dungeonChestStats.estimatedChests))}
+                     </div>
+                     <div className="text-sm text-gray-300">{t('farmingTracker.summary.avgValuePerChest')}</div>
+                   </div>
+                 </div>
                </div>
              </div>
            </>
@@ -1118,11 +1176,35 @@ export default function FarmingTrackerPage() {
 
              {/* Items Table */}
              <div className="bg-gray-900/80 backdrop-blur-sm border border-gray-700 rounded-lg shadow-2xl overflow-hidden">
+               <div className="p-6 border-b border-gray-700">
+                 <h2 className="text-2xl font-bold text-white flex items-center">
+                   <Package className="w-6 h-6 mr-3 text-green-400" />
+                   Contenedor de Items Ganados - Análisis de Box Opening
+                 </h2>
+               </div>
                <div className="overflow-x-auto">
-                 <table className="w-full">
-                   <thead className="bg-gray-800/60">
-                     <tr>
-                       <SortableHeader column="name">{t('farmingTracker.table.headers.item')}</SortableHeader>
+                 <table className="w-full text-sm">
+                   <thead>
+                     <tr className="border-b border-gray-700 bg-gray-800/60">
+                       <th className="text-left p-3 text-gray-200 font-semibold cursor-pointer hover:bg-gray-700/60 transition-colors select-none" onClick={() => handleSort('name')}>
+                         <div className="flex items-center gap-2">
+                           {t('farmingTracker.table.headers.item')}
+                           <div className="flex flex-col text-xs text-gray-500">
+                             {sortBy === 'name' ? (
+                               sortOrder === 'asc' ? (
+                                 <span className="text-blue-400">↑</span>
+                               ) : (
+                                 <span className="text-blue-400">↓</span>
+                               )
+                             ) : (
+                               <>
+                                 <span>↑</span>
+                                 <span>↓</span>
+                               </>
+                             )}
+                           </div>
+                         </div>
+                       </th>
                        <SortableHeader column="difference">{t('farmingTracker.table.headers.quantityObtained')}</SortableHeader>
                        <SortableHeader column="currentPrice">{t('farmingTracker.table.headers.currentPrice')}</SortableHeader>
                        <SortableHeader column="totalValue">{t('farmingTracker.table.headers.totalValueGained')}</SortableHeader>
@@ -1130,12 +1212,12 @@ export default function FarmingTrackerPage() {
                        <SortableHeader column="dropRate">{t('farmingTracker.table.headers.dropRatePerChest')}</SortableHeader>
                      </tr>
                    </thead>
-                   <tbody className="divide-y divide-gray-700">
+                   <tbody>
                      {raidChestStats.itemsWithStats
                        .filter(item => item.name.toLowerCase().includes(searchTerm.toLowerCase()))
                        .map((item, index) => (
-                         <tr key={index} className="hover:bg-gray-800/40 transition-colors">
-                           <td className="p-3">
+                         <tr key={`${item.id}-${index}`} className="border-b border-gray-800 hover:bg-gray-800/50 transition-colors">
+                           <td className="p-3 text-white">
                              <div className="flex items-center gap-3">
                                {item.id > 0 && itemDetails[item.id]?.icon ? (
                                  <Image
@@ -1147,11 +1229,11 @@ export default function FarmingTrackerPage() {
                                  />
                                ) : (
                                  <div className="w-8 h-8 bg-gray-600 rounded flex items-center justify-center">
-                                   <Package className="w-4 h-4 text-gray-400" />
+                                   <span className="text-xs text-gray-400">?</span>
                                  </div>
                                )}
                                <div>
-                                 <div className="font-medium text-white">{itemDetails[item.id]?.name || item.name}</div>
+                                 <div className="font-medium">{itemDetails[item.id]?.name || item.name}</div>
                                </div>
                              </div>
                            </td>
@@ -1194,6 +1276,40 @@ export default function FarmingTrackerPage() {
                        ))}
                    </tbody>
                  </table>
+               </div>
+               
+               {/* Summary */}
+               <div className="p-6 bg-gray-800/60 border-t border-gray-700">
+                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-center">
+                   <div>
+                     <div className="text-2xl font-bold text-blue-400">
+                       {raidChestStats.itemsWithStats.filter(item => item.name.toLowerCase().includes(searchTerm.toLowerCase())).length}
+                     </div>
+                     <div className="text-gray-300 text-sm">{t('farmingTracker.summary.itemsShown')}</div>
+                   </div>
+                   <div>
+                     <div className="text-2xl font-bold text-green-400">
+                       {formatGoldSilverCopper(raidChestStats.itemsWithStats.filter(item => item.name.toLowerCase().includes(searchTerm.toLowerCase())).reduce((sum, item) => {
+                         if (item.id > 0 && itemDetails[item.id]?.currentPrice) {
+                           return sum + (itemDetails[item.id].currentPrice * Math.max(0, item.difference));
+                         }
+                         return sum;
+                       }, 0))}
+                     </div>
+                     <div className="text-gray-300 text-sm">{t('farmingTracker.summary.totalValueFiltered')}</div>
+                   </div>
+                   <div>
+                     <div className="text-2xl font-bold text-yellow-400">
+                       {formatGoldSilverCopper(Math.round(raidChestStats.itemsWithStats.filter(item => item.name.toLowerCase().includes(searchTerm.toLowerCase())).reduce((sum, item) => {
+                         if (item.id > 0 && itemDetails[item.id]?.currentPrice) {
+                           return sum + (itemDetails[item.id].currentPrice * Math.max(0, item.difference));
+                         }
+                         return sum;
+                       }, 0) / raidChestStats.estimatedChests))}
+                     </div>
+                     <div className="text-sm text-gray-300">{t('farmingTracker.summary.avgValuePerChest')}</div>
+                   </div>
+                 </div>
                </div>
              </div>
            </>
@@ -1282,11 +1398,35 @@ export default function FarmingTrackerPage() {
 
              {/* Items Table */}
              <div className="bg-gray-900/80 backdrop-blur-sm border border-gray-700 rounded-lg shadow-2xl overflow-hidden">
+               <div className="p-6 border-b border-gray-700">
+                 <h2 className="text-2xl font-bold text-white flex items-center">
+                   <Package className="w-6 h-6 mr-3 text-green-400" />
+                   Contenedor de Items Ganados - Análisis de Box Opening
+                 </h2>
+               </div>
                <div className="overflow-x-auto">
-                 <table className="w-full">
-                   <thead className="bg-gray-800/60">
-                     <tr>
-                       <SortableHeader column="name">{t('farmingTracker.table.headers.item')}</SortableHeader>
+                 <table className="w-full text-sm">
+                   <thead>
+                     <tr className="border-b border-gray-700 bg-gray-800/60">
+                       <th className="text-left p-3 text-gray-200 font-semibold cursor-pointer hover:bg-gray-700/60 transition-colors select-none" onClick={() => handleSort('name')}>
+                         <div className="flex items-center gap-2">
+                           {t('farmingTracker.table.headers.item')}
+                           <div className="flex flex-col text-xs text-gray-500">
+                             {sortBy === 'name' ? (
+                               sortOrder === 'asc' ? (
+                                 <span className="text-blue-400">↑</span>
+                               ) : (
+                                 <span className="text-blue-400">↓</span>
+                               )
+                             ) : (
+                               <>
+                                 <span>↑</span>
+                                 <span>↓</span>
+                               </>
+                             )}
+                           </div>
+                         </div>
+                       </th>
                        <SortableHeader column="difference">{t('farmingTracker.table.headers.quantityObtained')}</SortableHeader>
                        <SortableHeader column="currentPrice">{t('farmingTracker.table.headers.currentPrice')}</SortableHeader>
                        <SortableHeader column="totalValue">{t('farmingTracker.table.headers.totalValueGained')}</SortableHeader>
@@ -1294,12 +1434,12 @@ export default function FarmingTrackerPage() {
                        <SortableHeader column="dropRate">{t('farmingTracker.table.headers.dropRatePerChest')}</SortableHeader>
                      </tr>
                    </thead>
-                   <tbody className="divide-y divide-gray-700">
+                   <tbody>
                      {strikeChestStats.itemsWithStats
                        .filter(item => item.name.toLowerCase().includes(searchTerm.toLowerCase()))
                        .map((item, index) => (
-                         <tr key={index} className="hover:bg-gray-800/40 transition-colors">
-                           <td className="p-3">
+                         <tr key={`${item.id}-${index}`} className="border-b border-gray-800 hover:bg-gray-800/50 transition-colors">
+                           <td className="p-3 text-white">
                              <div className="flex items-center gap-3">
                                {item.id > 0 && itemDetails[item.id]?.icon ? (
                                  <Image
@@ -1311,11 +1451,11 @@ export default function FarmingTrackerPage() {
                                  />
                                ) : (
                                  <div className="w-8 h-8 bg-gray-600 rounded flex items-center justify-center">
-                                   <Package className="w-4 h-4 text-gray-400" />
+                                   <span className="text-xs text-gray-400">?</span>
                                  </div>
                                )}
                                <div>
-                                 <div className="font-medium text-white">{itemDetails[item.id]?.name || item.name}</div>
+                                 <div className="font-medium">{itemDetails[item.id]?.name || item.name}</div>
                                </div>
                              </div>
                            </td>
@@ -1358,6 +1498,40 @@ export default function FarmingTrackerPage() {
                        ))}
                    </tbody>
                  </table>
+               </div>
+               
+               {/* Summary */}
+               <div className="p-6 bg-gray-800/60 border-t border-gray-700">
+                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-center">
+                   <div>
+                     <div className="text-2xl font-bold text-blue-400">
+                       {strikeChestStats.itemsWithStats.filter(item => item.name.toLowerCase().includes(searchTerm.toLowerCase())).length}
+                     </div>
+                     <div className="text-gray-300 text-sm">{t('farmingTracker.summary.itemsShown')}</div>
+                   </div>
+                   <div>
+                     <div className="text-2xl font-bold text-green-400">
+                       {formatGoldSilverCopper(strikeChestStats.itemsWithStats.filter(item => item.name.toLowerCase().includes(searchTerm.toLowerCase())).reduce((sum, item) => {
+                         if (item.id > 0 && itemDetails[item.id]?.currentPrice) {
+                           return sum + (itemDetails[item.id].currentPrice * Math.max(0, item.difference));
+                         }
+                         return sum;
+                       }, 0))}
+                     </div>
+                     <div className="text-gray-300 text-sm">{t('farmingTracker.summary.totalValueFiltered')}</div>
+                   </div>
+                   <div>
+                     <div className="text-2xl font-bold text-yellow-400">
+                       {formatGoldSilverCopper(Math.round(strikeChestStats.itemsWithStats.filter(item => item.name.toLowerCase().includes(searchTerm.toLowerCase())).reduce((sum, item) => {
+                         if (item.id > 0 && itemDetails[item.id]?.currentPrice) {
+                           return sum + (itemDetails[item.id].currentPrice * Math.max(0, item.difference));
+                         }
+                         return sum;
+                       }, 0) / strikeChestStats.estimatedChests))}
+                     </div>
+                     <div className="text-sm text-gray-300">{t('farmingTracker.summary.avgValuePerChest')}</div>
+                   </div>
+                 </div>
                </div>
              </div>
            </>
@@ -1444,11 +1618,13 @@ export default function FarmingTrackerPage() {
         </div>
 
         {/* Items Container */}
-        <div className="bg-gray-900/80 backdrop-blur-sm border border-gray-700 rounded-lg p-6 shadow-2xl">
-          <h2 className="text-2xl font-bold text-white mb-6 flex items-center">
-            <Package className="w-6 h-6 mr-3 text-blue-400" />
-            {t('farmingTracker.table.title')}
-          </h2>
+        <div className="bg-gray-900/80 backdrop-blur-sm border border-gray-700 rounded-lg shadow-2xl overflow-hidden">
+          <div className="p-6 border-b border-gray-700">
+            <h2 className="text-2xl font-bold text-white flex items-center">
+              <Package className="w-6 h-6 mr-3 text-blue-400" />
+              Contenedor de Items Ganados - Análisis de Box Opening
+            </h2>
+          </div>
           
           {/* Table */}
           <div className="overflow-x-auto">
@@ -1552,7 +1728,7 @@ export default function FarmingTrackerPage() {
           </div>
           
           {/* Summary */}
-          <div className="mt-6 p-4 bg-gray-800/60 rounded-lg border border-gray-700">
+          <div className="p-6 bg-gray-800/60 border-t border-gray-700">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-center">
               <div>
                 <div className="text-2xl font-bold text-blue-400">{filteredAndSortedItems.length}</div>
@@ -1581,8 +1757,8 @@ export default function FarmingTrackerPage() {
                 <div className="text-sm text-gray-300">{t('farmingTracker.summary.avgValuePerChest')}</div>
               </div>
             </div>
-                     </div>
-         </div>
+          </div>
+        </div>
            </>
          )}
        </main>
