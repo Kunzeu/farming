@@ -55,14 +55,10 @@ export default function LoginForm() {
   };
 
   const handleDiscordLogin = () => {
-    const redirectUri = process.env.NEXT_PUBLIC_DISCORD_REDIRECT_URI;
-    const clientId = process.env.NEXT_PUBLIC_DISCORD_CLIENT_ID;
+    // Redirigir a Discord OAuth
+    const redirectUri = process.env.NEXT_PUBLIC_DISCORD_REDIRECT_URI || 'https://farming-coral.vercel.app/auth/discord/callback';
     
-    if (!redirectUri || !clientId) {
-      return; // Completamente silencioso
-    }
-    
-    const discordAuthUrl = `https://discord.com/oauth2/authorize?client_id=${clientId}&redirect_uri=${encodeURIComponent(redirectUri)}&response_type=code&scope=identify+guilds+email`;
+    const discordAuthUrl = `https://discord.com/api/oauth2/authorize?client_id=${process.env.NEXT_PUBLIC_DISCORD_CLIENT_ID}&redirect_uri=${encodeURIComponent(redirectUri)}&response_type=code&scope=identify%20email`;
     window.location.href = discordAuthUrl;
   };
 
