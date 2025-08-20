@@ -288,7 +288,21 @@ function AuthProviderInternal({ children }: { children: ReactNode }) {
       if (!tokenResponse.ok) {
         const errorData = await tokenResponse.text();
         console.error('Error en respuesta del token:', errorData);
-        throw new Error('Error al obtener token de Discord');
+        
+        // Intentar parsear el error para obtener más detalles
+        let errorMessage = 'Error al obtener token de Discord';
+        try {
+          const errorJson = JSON.parse(errorData);
+          if (errorJson.details) {
+            errorMessage = `Error de Discord: ${errorJson.details}`;
+          } else if (errorJson.error) {
+            errorMessage = `Error de Discord: ${errorJson.error}`;
+          }
+        } catch {
+          // Si no se puede parsear, usar el mensaje por defecto
+        }
+        
+        throw new Error(errorMessage);
       }
 
       const { access_token } = await tokenResponse.json();
