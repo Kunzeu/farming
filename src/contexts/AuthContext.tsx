@@ -114,6 +114,17 @@ function AuthProviderInternal({ children }: { children: ReactNode }) {
     checkAuth();
   }, []);
 
+  // Efecto para detectar cuando la autenticación es exitosa y redirigir
+  useEffect(() => {
+    if (state.isAuthenticated && state.user && !state.isLoading) {
+      console.log('Usuario autenticado detectado, redirigiendo...');
+      // Pequeño delay para asegurar que el estado se haya actualizado completamente
+      setTimeout(() => {
+        router.push('/');
+      }, 500);
+    }
+  }, [state.isAuthenticated, state.user, state.isLoading, router]);
+
   // Función de login
   const login = useCallback(async (credentials: LoginCredentials) => {
     dispatch({ type: 'AUTH_START' });
@@ -263,6 +274,8 @@ function AuthProviderInternal({ children }: { children: ReactNode }) {
     dispatch({ type: 'AUTH_START' });
 
     try {
+      console.log('Iniciando autenticación con Discord...');
+      
       // Intercambiar el código por un token de acceso
       const tokenResponse = await fetch('/api/auth/discord/token', {
         method: 'POST',
@@ -273,10 +286,13 @@ function AuthProviderInternal({ children }: { children: ReactNode }) {
       });
 
       if (!tokenResponse.ok) {
+        const errorData = await tokenResponse.text();
+        console.error('Error en respuesta del token:', errorData);
         throw new Error('Error al obtener token de Discord');
       }
 
       const { access_token } = await tokenResponse.json();
+      console.log('Token de Discord obtenido exitosamente');
 
       // Obtener información del usuario de Discord
       const userResponse = await fetch('https://discord.com/api/users/@me', {
@@ -290,7 +306,7 @@ function AuthProviderInternal({ children }: { children: ReactNode }) {
       }
 
       const discordUser = await userResponse.json();
-  
+      console.log('Información de usuario de Discord obtenida:', discordUser.username);
 
       // Buscar o crear usuario en la base de datos
       const { getDbService } = await import('@/lib/database-switch');
@@ -301,6 +317,7 @@ function AuthProviderInternal({ children }: { children: ReactNode }) {
       
 
       if (!dbUser) {
+        console.log('Creando nuevo usuario...');
         
         // Crear nuevo usuario
         const createdUser = await dbService.createUser({
@@ -314,6 +331,9 @@ function AuthProviderInternal({ children }: { children: ReactNode }) {
         
         // Usar el usuario recién creado
         dbUser = createdUser;
+        console.log('Usuario creado exitosamente');
+      } else {
+        console.log('Usuario existente encontrado');
       }
 
       if (!dbUser) {
@@ -348,16 +368,20 @@ function AuthProviderInternal({ children }: { children: ReactNode }) {
       localStorage.setItem('gw2_token', token);
       localStorage.setItem('gw2_user', JSON.stringify(user));
 
+      console.log('Usuario autenticado exitosamente:', user.username);
+
       dispatch({
         type: 'AUTH_SUCCESS',
         payload: { user, token }
       });
 
     } catch (error) {
+      console.error('Error en loginWithDiscord:', error);
       dispatch({
         type: 'AUTH_FAILURE',
         payload: error instanceof Error ? error.message : 'Discord authentication error',
       });
+      throw error; // Re-lanzar el error para que el callback lo maneje
     }
   }, []);
 

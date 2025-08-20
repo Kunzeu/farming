@@ -8,7 +8,7 @@ import { Loader2, CheckCircle, XCircle } from 'lucide-react';
 function DiscordCallbackContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const { loginWithDiscord } = useAuth();
+  const { loginWithDiscord, isAuthenticated, isLoading } = useAuth();
   const [status, setStatus] = useState<'loading' | 'success' | 'error'>('loading');
   const [message, setMessage] = useState('');
 
@@ -35,7 +35,9 @@ function DiscordCallbackContent() {
       await loginWithDiscord(code);
       setStatus('success');
       setMessage('¡Autenticación exitosa! Redirigiendo...');
-      setTimeout(() => router.push('/'), 2000);
+      
+      // La redirección ahora se maneja automáticamente en el AuthContext
+      // No necesitamos hacer nada más aquí
     } catch (error) {
       console.error('Error en Discord callback:', error);
       setStatus('error');
@@ -43,6 +45,15 @@ function DiscordCallbackContent() {
       setTimeout(() => router.push('/login'), 3000);
     }
   }, [searchParams, loginWithDiscord, router]);
+
+  // Efecto para detectar cuando la autenticación es exitosa
+  useEffect(() => {
+    if (isAuthenticated && !isLoading) {
+      setStatus('success');
+      setMessage('¡Autenticación exitosa! Redirigiendo...');
+      // La redirección se maneja automáticamente en el AuthContext
+    }
+  }, [isAuthenticated, isLoading]);
 
   useEffect(() => {
     handleDiscordCallback();
