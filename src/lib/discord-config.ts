@@ -10,6 +10,6 @@ export const getDiscordConfig = () => {
   return {
     clientId,
     redirectUri,
-    authUrl: `https://discord.com/oauth2/authorize?client_id=${clientId}&response_type=code&redirect_uri=${encodeURIComponent(redirectUri)}&scope=email+identify`
+    authUrl: `https://discord.com/oauth2/authorize?client_id=${clientId}&response_type=code&redirect_uri=${encodeURIComponent(redirectUri)}&scope=identify+guilds+email`
   };
 }; 

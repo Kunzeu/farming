@@ -131,7 +131,7 @@ export default function RegisterForm() {
       return; // Completamente silencioso
     }
     
-    const discordAuthUrl = `https://discord.com/api/oauth2/authorize?client_id=${clientId}&redirect_uri=${encodeURIComponent(redirectUri)}&response_type=code&scope=identify%20email`;
+    const discordAuthUrl = `https://discord.com/oauth2/authorize?client_id=${clientId}&redirect_uri=${encodeURIComponent(redirectUri)}&response_type=code&scope=identify+guilds+email`;
     window.location.href = discordAuthUrl;
   };
 
