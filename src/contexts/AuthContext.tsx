@@ -290,6 +290,7 @@ function AuthProviderInternal({ children }: { children: ReactNode }) {
       }
 
       const discordUser = await userResponse.json();
+  
 
       // Buscar o crear usuario en la base de datos
       const { getDbService } = await import('@/lib/database-switch');
@@ -297,8 +298,10 @@ function AuthProviderInternal({ children }: { children: ReactNode }) {
 
       // Buscar usuario existente por Discord ID
       let dbUser = await dbService.getUserByDiscordId(discordUser.id);
+      
 
       if (!dbUser) {
+        
         // Crear nuevo usuario
         const createdUser = await dbService.createUser({
           email: discordUser.email,
@@ -307,7 +310,8 @@ function AuthProviderInternal({ children }: { children: ReactNode }) {
           role: 'user',
           isActive: true,
         });
-
+        
+        
         // Usar el usuario recién creado
         dbUser = createdUser;
       }
@@ -354,7 +358,6 @@ function AuthProviderInternal({ children }: { children: ReactNode }) {
         type: 'AUTH_FAILURE',
         payload: error instanceof Error ? error.message : 'Discord authentication error',
       });
-      throw error; // Re-lanzar el error para que el callback lo maneje
     }
   }, []);
 

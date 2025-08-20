@@ -32,9 +32,6 @@ interface GW2Price {
   sells?: {
     unit_price: number;
   };
-  buys?: {
-    unit_price: number;
-  };
 }
 
 export default function FarmingTrackerPage() {
@@ -43,10 +40,10 @@ export default function FarmingTrackerPage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [sortBy, setSortBy] = useState('name');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
-  const [itemDetails, setItemDetails] = useState<Record<number, { icon: string; currentPrice: number; buyPrice: number; name: string }>>({});
+  const [itemDetails, setItemDetails] = useState<Record<number, { icon: string; currentPrice: number; name: string }>>({});
   const [loading, setLoading] = useState(true);
   const [lastUpdate, setLastUpdate] = useState<Date>(new Date());
-  const [activeSection, setActiveSection] = useState<'fractal' | 'initiate' | 'adept' | 'expert' | 'encryption'>('initiate');
+  const [activeSection, setActiveSection] = useState<'fractal' | 'initiate' | 'adept' | 'expert'>('initiate');
 
   const farmingData: FarmingItem[] = useMemo(() => [
     // Fractales
@@ -622,22 +619,12 @@ export default function FarmingTrackerPage() {
       setLoading(true);
       
       // Obtener todos los IDs de todas las secciones
-        const allItemIds = [
-    ...farmingData.map(item => item.id),
-    ...dungeonChestData.map(item => item.id),
-    ...raidChestData.map(item => item.id),
-    ...strikeChestData.map(item => item.id),
-    75919, // Fractal Encryption
-    // Materiales T5 IDs
-    24294, // Sangre
-    24341, // Hueso
-    24350, // Garra
-    24356, // Escama
-    24288, // Colmillo
-    24299, // Totem
-    24282, // Vesícula
-    24276  // Polvo
-  ].filter(id => id > 0);
+      const allItemIds = [
+        ...farmingData.map(item => item.id),
+        ...dungeonChestData.map(item => item.id),
+        ...raidChestData.map(item => item.id),
+        ...strikeChestData.map(item => item.id)
+      ].filter(id => id > 0);
       
       // Eliminar duplicados
       const uniqueItemIds = [...new Set(allItemIds)];
@@ -655,14 +642,13 @@ export default function FarmingTrackerPage() {
       const pricesResponse = await fetch(`https://api.guildwars2.com/v2/commerce/prices?ids=${uniqueItemIds.join(',')}`);
       const prices = await pricesResponse.json();
 
-      const details: Record<number, { icon: string; currentPrice: number; buyPrice: number; name: string }> = {};
+      const details: Record<number, { icon: string; currentPrice: number; name: string }> = {};
       
       items.forEach((item: GW2Item) => {
         const price = prices.find((p: GW2Price) => p.id === item.id);
         details[item.id] = {
           icon: item.icon,
           currentPrice: price?.sells?.unit_price || 0,
-          buyPrice: price?.buys?.unit_price || 0,
           name: item.name
         };
       });
@@ -727,31 +713,18 @@ export default function FarmingTrackerPage() {
 
 
   const formatGoldSilverCopper = (copper: number) => {
-    const isNegative = copper < 0;
-    const absCopper = Math.abs(copper);
-    const gold = Math.floor(absCopper / 10000);
-    const silver = Math.floor((absCopper % 10000) / 100);
-    const copperRemainder = Math.round(absCopper % 100);
-    const sign = isNegative ? '- ' : '';
-    return `${sign}${gold}g ${silver.toString().padStart(2, '0')}s ${copperRemainder.toString().padStart(2, '0')}c`;
+    const gold = Math.floor(copper / 10000);
+    const silver = Math.floor((copper % 10000) / 100);
+    const copperRemainder = copper % 100;
+    return `${gold}g ${silver}s ${copperRemainder}c`;
   };
-
-  // Utilidades de búsqueda multi-idioma (usa nombre localizado y normaliza acentos)
-  type ItemWithName = { id: number; name: string };
-  const normalizeForSearch = useCallback((text: string) =>
-    (text || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase()
-  , []);
-  const getItemDisplayName = useCallback((item: ItemWithName) => itemDetails[item.id]?.name || item.name, [itemDetails]);
-  const itemMatchesSearch = useCallback((item: ItemWithName, term: string) => {
-    if (!term) return true;
-    const name = normalizeForSearch(getItemDisplayName(item));
-    const q = normalizeForSearch(term);
-    return name.includes(q);
-  }, [normalizeForSearch, getItemDisplayName]);
 
   // Filtrar y ordenar items
   const filteredAndSortedItems = useMemo(() => {
-    const filtered = stats.itemsWithStats.filter(item => itemMatchesSearch(item, searchTerm));
+    const filtered = stats.itemsWithStats.filter(item => {
+      const matchesSearch = item.name.toLowerCase().includes(searchTerm.toLowerCase());
+      return matchesSearch;
+    });
 
     // Ordenar items
     const sorted = [...filtered].sort((a, b) => {
@@ -795,7 +768,7 @@ export default function FarmingTrackerPage() {
     });
 
     return sorted;
-  }, [stats.itemsWithStats, searchTerm, sortBy, sortOrder, itemDetails, itemMatchesSearch]);
+  }, [stats.itemsWithStats, searchTerm, sortBy, sortOrder, itemDetails]);
 
   // Función para manejar el ordenamiento por columna
   const handleSort = (column: string) => {
@@ -891,16 +864,6 @@ export default function FarmingTrackerPage() {
                  }`}
                >
                  {t('farmingTracker.sections.fractal')}
-               </button>
-               <button
-                 onClick={() => setActiveSection('encryption')}
-                 className={`px-6 py-3 rounded-lg font-semibold transition-all duration-200 ${
-                   activeSection === 'encryption'
-                     ? 'bg-teal-600 text-white shadow-lg'
-                     : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
-                 }`}
-               >
-                 Fractal Encryption
                </button>
              </div>
            </div>
@@ -1029,44 +992,7 @@ export default function FarmingTrackerPage() {
                    </thead>
                    <tbody>
                      {dungeonChestStats.itemsWithStats
-                       .filter(item => itemMatchesSearch(item, searchTerm))
-                       .sort((a, b) => {
-                         let aValue: string | number, bValue: string | number;
-                         switch (sortBy) {
-                           case 'name':
-                             aValue = a.name.toLowerCase();
-                             bValue = b.name.toLowerCase();
-                             break;
-                           case 'difference':
-                             aValue = a.difference;
-                             bValue = b.difference;
-                             break;
-                           case 'currentPrice':
-                             aValue = itemDetails[a.id]?.currentPrice || 0;
-                             bValue = itemDetails[b.id]?.currentPrice || 0;
-                             break;
-                           case 'totalValue':
-                             aValue = (itemDetails[a.id]?.currentPrice || 0) * Math.max(0, a.difference);
-                             bValue = (itemDetails[b.id]?.currentPrice || 0) * Math.max(0, b.difference);
-                             break;
-                           case 'percentage':
-                             aValue = a.percentage || 0;
-                             bValue = b.percentage || 0;
-                             break;
-                           case 'dropRate':
-                             aValue = a.dropRate || 0;
-                             bValue = b.dropRate || 0;
-                             break;
-                           default:
-                             aValue = a.name.toLowerCase();
-                             bValue = b.name.toLowerCase();
-                         }
-                         if (sortOrder === 'asc') {
-                           return aValue > bValue ? 1 : aValue < bValue ? -1 : 0;
-                         } else {
-                           return aValue < bValue ? 1 : aValue > bValue ? -1 : 0;
-                         }
-                       })
+                       .filter(item => item.name.toLowerCase().includes(searchTerm.toLowerCase()))
                        .map((item, index) => (
                          <tr key={`${item.id}-${index}`} className="border-b border-gray-800 hover:bg-gray-800/50 transition-colors">
                            <td className="p-3 text-white">
@@ -1135,13 +1061,13 @@ export default function FarmingTrackerPage() {
                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-center">
                    <div>
                      <div className="text-2xl font-bold text-blue-400">
-                       {dungeonChestStats.itemsWithStats.filter(item => itemMatchesSearch(item, searchTerm)).length}
+                       {dungeonChestStats.itemsWithStats.filter(item => item.name.toLowerCase().includes(searchTerm.toLowerCase())).length}
                      </div>
                      <div className="text-gray-300 text-sm">{t('farmingTracker.summary.itemsShown')}</div>
                    </div>
                    <div>
                      <div className="text-2xl font-bold text-green-400">
-                       {formatGoldSilverCopper(dungeonChestStats.itemsWithStats.filter(item => itemMatchesSearch(item, searchTerm)).reduce((sum, item) => {
+                       {formatGoldSilverCopper(dungeonChestStats.itemsWithStats.filter(item => item.name.toLowerCase().includes(searchTerm.toLowerCase())).reduce((sum, item) => {
                          if (item.id > 0 && itemDetails[item.id]?.currentPrice) {
                            return sum + (itemDetails[item.id].currentPrice * Math.max(0, item.difference));
                          }
@@ -1152,7 +1078,7 @@ export default function FarmingTrackerPage() {
                    </div>
                    <div>
                      <div className="text-2xl font-bold text-yellow-400">
-                       {formatGoldSilverCopper(Math.round(dungeonChestStats.itemsWithStats.filter(item => itemMatchesSearch(item, searchTerm)).reduce((sum, item) => {
+                       {formatGoldSilverCopper(Math.round(dungeonChestStats.itemsWithStats.filter(item => item.name.toLowerCase().includes(searchTerm.toLowerCase())).reduce((sum, item) => {
                          if (item.id > 0 && itemDetails[item.id]?.currentPrice) {
                            return sum + (itemDetails[item.id].currentPrice * Math.max(0, item.difference));
                          }
@@ -1288,44 +1214,7 @@ export default function FarmingTrackerPage() {
                    </thead>
                    <tbody>
                      {raidChestStats.itemsWithStats
-                       .filter(item => itemMatchesSearch(item, searchTerm))
-                       .sort((a, b) => {
-                         let aValue: string | number, bValue: string | number;
-                         switch (sortBy) {
-                           case 'name':
-                             aValue = a.name.toLowerCase();
-                             bValue = b.name.toLowerCase();
-                             break;
-                           case 'difference':
-                             aValue = a.difference;
-                             bValue = b.difference;
-                             break;
-                           case 'currentPrice':
-                             aValue = itemDetails[a.id]?.currentPrice || 0;
-                             bValue = itemDetails[b.id]?.currentPrice || 0;
-                             break;
-                           case 'totalValue':
-                             aValue = (itemDetails[a.id]?.currentPrice || 0) * Math.max(0, a.difference);
-                             bValue = (itemDetails[b.id]?.currentPrice || 0) * Math.max(0, b.difference);
-                             break;
-                           case 'percentage':
-                             aValue = a.percentage || 0;
-                             bValue = b.percentage || 0;
-                             break;
-                           case 'dropRate':
-                             aValue = a.dropRate || 0;
-                             bValue = b.dropRate || 0;
-                             break;
-                           default:
-                             aValue = a.name.toLowerCase();
-                             bValue = b.name.toLowerCase();
-                         }
-                         if (sortOrder === 'asc') {
-                           return aValue > bValue ? 1 : aValue < bValue ? -1 : 0;
-                         } else {
-                           return aValue < bValue ? 1 : aValue > bValue ? -1 : 0;
-                         }
-                       })
+                       .filter(item => item.name.toLowerCase().includes(searchTerm.toLowerCase()))
                        .map((item, index) => (
                          <tr key={`${item.id}-${index}`} className="border-b border-gray-800 hover:bg-gray-800/50 transition-colors">
                            <td className="p-3 text-white">
@@ -1394,13 +1283,13 @@ export default function FarmingTrackerPage() {
                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-center">
                    <div>
                      <div className="text-2xl font-bold text-blue-400">
-                       {raidChestStats.itemsWithStats.filter(item => itemMatchesSearch(item, searchTerm)).length}
+                       {raidChestStats.itemsWithStats.filter(item => item.name.toLowerCase().includes(searchTerm.toLowerCase())).length}
                      </div>
                      <div className="text-gray-300 text-sm">{t('farmingTracker.summary.itemsShown')}</div>
                    </div>
                    <div>
                      <div className="text-2xl font-bold text-green-400">
-                       {formatGoldSilverCopper(raidChestStats.itemsWithStats.filter(item => itemMatchesSearch(item, searchTerm)).reduce((sum, item) => {
+                       {formatGoldSilverCopper(raidChestStats.itemsWithStats.filter(item => item.name.toLowerCase().includes(searchTerm.toLowerCase())).reduce((sum, item) => {
                          if (item.id > 0 && itemDetails[item.id]?.currentPrice) {
                            return sum + (itemDetails[item.id].currentPrice * Math.max(0, item.difference));
                          }
@@ -1411,7 +1300,7 @@ export default function FarmingTrackerPage() {
                    </div>
                    <div>
                      <div className="text-2xl font-bold text-yellow-400">
-                       {formatGoldSilverCopper(Math.round(raidChestStats.itemsWithStats.filter(item => itemMatchesSearch(item, searchTerm)).reduce((sum, item) => {
+                       {formatGoldSilverCopper(Math.round(raidChestStats.itemsWithStats.filter(item => item.name.toLowerCase().includes(searchTerm.toLowerCase())).reduce((sum, item) => {
                          if (item.id > 0 && itemDetails[item.id]?.currentPrice) {
                            return sum + (itemDetails[item.id].currentPrice * Math.max(0, item.difference));
                          }
@@ -1547,44 +1436,7 @@ export default function FarmingTrackerPage() {
                    </thead>
                    <tbody>
                      {strikeChestStats.itemsWithStats
-                       .filter(item => itemMatchesSearch(item, searchTerm))
-                       .sort((a, b) => {
-                         let aValue: string | number, bValue: string | number;
-                         switch (sortBy) {
-                           case 'name':
-                             aValue = a.name.toLowerCase();
-                             bValue = b.name.toLowerCase();
-                             break;
-                           case 'difference':
-                             aValue = a.difference;
-                             bValue = b.difference;
-                             break;
-                           case 'currentPrice':
-                             aValue = itemDetails[a.id]?.currentPrice || 0;
-                             bValue = itemDetails[b.id]?.currentPrice || 0;
-                             break;
-                           case 'totalValue':
-                             aValue = (itemDetails[a.id]?.currentPrice || 0) * Math.max(0, a.difference);
-                             bValue = (itemDetails[b.id]?.currentPrice || 0) * Math.max(0, b.difference);
-                             break;
-                           case 'percentage':
-                             aValue = a.percentage || 0;
-                             bValue = b.percentage || 0;
-                             break;
-                           case 'dropRate':
-                             aValue = a.dropRate || 0;
-                             bValue = b.dropRate || 0;
-                             break;
-                           default:
-                             aValue = a.name.toLowerCase();
-                             bValue = b.name.toLowerCase();
-                         }
-                         if (sortOrder === 'asc') {
-                           return aValue > bValue ? 1 : aValue < bValue ? -1 : 0;
-                         } else {
-                           return aValue < bValue ? 1 : aValue > bValue ? -1 : 0;
-                         }
-                       })
+                       .filter(item => item.name.toLowerCase().includes(searchTerm.toLowerCase()))
                        .map((item, index) => (
                          <tr key={`${item.id}-${index}`} className="border-b border-gray-800 hover:bg-gray-800/50 transition-colors">
                            <td className="p-3 text-white">
@@ -1653,13 +1505,13 @@ export default function FarmingTrackerPage() {
                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-center">
                    <div>
                      <div className="text-2xl font-bold text-blue-400">
-                       {strikeChestStats.itemsWithStats.filter(item => itemMatchesSearch(item, searchTerm)).length}
+                       {strikeChestStats.itemsWithStats.filter(item => item.name.toLowerCase().includes(searchTerm.toLowerCase())).length}
                      </div>
                      <div className="text-gray-300 text-sm">{t('farmingTracker.summary.itemsShown')}</div>
                    </div>
                    <div>
                      <div className="text-2xl font-bold text-green-400">
-                       {formatGoldSilverCopper(strikeChestStats.itemsWithStats.filter(item => itemMatchesSearch(item, searchTerm)).reduce((sum, item) => {
+                       {formatGoldSilverCopper(strikeChestStats.itemsWithStats.filter(item => item.name.toLowerCase().includes(searchTerm.toLowerCase())).reduce((sum, item) => {
                          if (item.id > 0 && itemDetails[item.id]?.currentPrice) {
                            return sum + (itemDetails[item.id].currentPrice * Math.max(0, item.difference));
                          }
@@ -1670,7 +1522,7 @@ export default function FarmingTrackerPage() {
                    </div>
                    <div>
                      <div className="text-2xl font-bold text-yellow-400">
-                       {formatGoldSilverCopper(Math.round(strikeChestStats.itemsWithStats.filter(item => itemMatchesSearch(item, searchTerm)).reduce((sum, item) => {
+                       {formatGoldSilverCopper(Math.round(strikeChestStats.itemsWithStats.filter(item => item.name.toLowerCase().includes(searchTerm.toLowerCase())).reduce((sum, item) => {
                          if (item.id > 0 && itemDetails[item.id]?.currentPrice) {
                            return sum + (itemDetails[item.id].currentPrice * Math.max(0, item.difference));
                          }
@@ -1907,604 +1759,6 @@ export default function FarmingTrackerPage() {
             </div>
           </div>
         </div>
-           </>
-         )}
-
-         {/* Fractal Encryption Section */}
-         {activeSection === 'encryption' && (
-           <>
-             {/* Trofeos */}
-             <div className="bg-gray-900/80 backdrop-blur-sm border border-gray-700 rounded-lg p-6 shadow-2xl mb-8">
-               <h3 className="text-xl font-semibold text-white mb-4">Trofeos</h3>
-               <div className="overflow-x-auto">
-                 <table className="w-full text-sm">
-                   <thead>
-                     <tr className="border-b border-gray-700 bg-gray-800/60">
-                       <th className="text-left p-3 text-gray-200 font-semibold">Nombre</th>
-                       <th className="p-3 text-gray-200 font-semibold">Manuscrito</th>
-                       <th className="p-3 text-gray-200 font-semibold">Proof</th>
-                       <th className="p-3 text-gray-200 font-semibold">Treaties</th>
-                       <th className="p-3 text-gray-200 font-semibold">Postulado</th>
-                       <th className="p-3 text-gray-200 font-semibold"></th>
-                       <th className="p-3 text-gray-200 font-semibold">Total Por Caja</th>
-                       <th className="p-3 text-gray-200 font-semibold"></th>
-                       <th className="p-3 text-gray-200 font-semibold"></th>
-                       <th className="p-3 text-gray-200 font-semibold">Mejor Income Por Caja</th>
-                     </tr>
-                   </thead>
-                   <tbody>
-                     <tr className="border-b border-gray-800">
-                       <td className="p-3 text-gray-300">Precio</td>
-                       <td className="p-3 text-center text-green-400">00G 60S 00C</td>
-                       <td className="p-3 text-center text-green-400">00G 30S 00C</td>
-                       <td className="p-3 text-center text-green-400">00G 25S 00C</td>
-                       <td className="p-3 text-center text-green-400">00G 20S 00C</td>
-                       <td className="p-3"></td>
-                       <td className="p-3 text-center text-blue-400 font-semibold">00G 42S 83C</td>
-                       <td className="p-3"></td>
-                       <td className="p-3"></td>
-                       <td className="p-3 text-center text-yellow-400 font-semibold">00G 49S 10C</td>
-                     </tr>
-                     <tr className="border-b border-gray-800">
-                       <td className="p-3 text-gray-300">Ratio %</td>
-                       <td className="p-3 text-center text-gray-400">0.2854</td>
-                       <td className="p-3 text-center text-gray-400">0.428</td>
-                       <td className="p-3 text-center text-gray-400">0.2864</td>
-                       <td className="p-3 text-center text-gray-400">0.2855</td>
-                       <td className="p-3"></td>
-                       <td className="p-3"></td>
-                       <td className="p-3"></td>
-                       <td className="p-3"></td>
-                       <td className="p-3"></td>
-                     </tr>
-                   </tbody>
-                 </table>
-               </div>
-             </div>
-
-             {/* Materiales T5 */}
-             <div className="bg-gray-900/80 backdrop-blur-sm border border-gray-700 rounded-lg p-6 shadow-2xl mb-8">
-               <h3 className="text-xl font-semibold text-white mb-4">Materiales T5</h3>
-               <div className="overflow-x-auto">
-                 <table className="w-full text-sm">
-                   <thead>
-                     <tr className="border-b border-gray-700 bg-gray-800/60">
-                       <th className="text-left p-3 text-gray-200 font-semibold">Nombre</th>
-                       <th className="p-3 text-gray-200 font-semibold">Sangre (24294)</th>
-                       <th className="p-3 text-gray-200 font-semibold">Hueso (24341)</th>
-                       <th className="p-3 text-gray-200 font-semibold">Garra (24350)</th>
-                       <th className="p-3 text-gray-200 font-semibold">Escama (24356)</th>
-                       <th className="p-3 text-gray-200 font-semibold">Colmillo (24288)</th>
-                       <th className="p-3 text-gray-200 font-semibold">Totem (24299)</th>
-                       <th className="p-3 text-gray-200 font-semibold">Vesícula (24282)</th>
-                       <th className="p-3 text-gray-200 font-semibold">Polvo (24276)</th>
-                       <th className="p-3 text-gray-200 font-semibold"></th>
-                       <th className="p-3 text-gray-200 font-semibold">Total Por Caja</th>
-                     </tr>
-                   </thead>
-                   <tbody>
-                     <tr className="border-b border-gray-800">
-                       <td className="p-3 text-gray-300">Precio Base</td>
-                       <td className="p-3 text-center">
-                         <div className="flex items-center justify-center space-x-2">
-                           {itemDetails[24294]?.icon && (
-                             <Image 
-                               src={itemDetails[24294].icon} 
-                               alt="Sangre" 
-                               width={24}
-                               height={24}
-                               className="w-6 h-6"
-                             />
-                           )}
-                           <span className="text-green-400">
-                             {itemDetails[24294]?.buyPrice ? formatGoldSilverCopper(itemDetails[24294].buyPrice) : 'Cargando...'}
-                           </span>
-                         </div>
-                       </td>
-                       <td className="p-3 text-center">
-                         <div className="flex items-center justify-center space-x-2">
-                           {itemDetails[24341]?.icon && (
-                             <Image 
-                               src={itemDetails[24341].icon} 
-                               alt="Hueso" 
-                               width={24}
-                               height={24}
-                               className="w-6 h-6"
-                             />
-                           )}
-                           <span className="text-green-400">
-                             {itemDetails[24341]?.buyPrice ? formatGoldSilverCopper(itemDetails[24341].buyPrice) : 'Cargando...'}
-                           </span>
-                         </div>
-                       </td>
-                       <td className="p-3 text-center">
-                         <div className="flex items-center justify-center space-x-2">
-                           {itemDetails[24350]?.icon && (
-                             <Image 
-                               src={itemDetails[24350].icon} 
-                               alt="Garra" 
-                               width={24}
-                               height={24}
-                               className="w-6 h-6"
-                             />
-                           )}
-                           <span className="text-green-400">
-                             {itemDetails[24350]?.buyPrice ? formatGoldSilverCopper(itemDetails[24350].buyPrice) : 'Cargando...'}
-                           </span>
-                         </div>
-                       </td>
-                       <td className="p-3 text-center">
-                         <div className="flex items-center justify-center space-x-2">
-                           {itemDetails[24356]?.icon && (
-                             <Image 
-                               src={itemDetails[24356].icon} 
-                               alt="Escama" 
-                               width={24}
-                               height={24}
-                               className="w-6 h-6"
-                             />
-                           )}
-                           <span className="text-green-400">
-                             {itemDetails[24356]?.buyPrice ? formatGoldSilverCopper(itemDetails[24356].buyPrice) : 'Cargando...'}
-                           </span>
-                         </div>
-                       </td>
-                       <td className="p-3 text-center">
-                         <div className="flex items-center justify-center space-x-2">
-                           {itemDetails[24288]?.icon && (
-                             <Image 
-                               src={itemDetails[24288].icon} 
-                               alt="Colmillo" 
-                               width={24}
-                               height={24}
-                               className="w-6 h-6"
-                             />
-                           )}
-                           <span className="text-green-400">
-                             {itemDetails[24288]?.buyPrice ? formatGoldSilverCopper(itemDetails[24288].buyPrice) : 'Cargando...'}
-                           </span>
-                         </div>
-                       </td>
-                       <td className="p-3 text-center">
-                         <div className="flex items-center justify-center space-x-2">
-                           {itemDetails[24299]?.icon && (
-                             <Image 
-                               src={itemDetails[24299].icon} 
-                               alt="Totem" 
-                               width={24}
-                               height={24}
-                               className="w-6 h-6"
-                             />
-                           )}
-                           <span className="text-green-400">
-                             {itemDetails[24299]?.buyPrice ? formatGoldSilverCopper(itemDetails[24299].buyPrice) : 'Cargando...'}
-                           </span>
-                         </div>
-                       </td>
-                       <td className="p-3 text-center">
-                         <div className="flex items-center justify-center space-x-2">
-                           {itemDetails[24282]?.icon && (
-                             <Image 
-                               src={itemDetails[24282].icon} 
-                               alt="Vesícula" 
-                               width={24}
-                               height={24}
-                               className="w-6 h-6"
-                             />
-                           )}
-                           <span className="text-green-400">
-                             {itemDetails[24282]?.buyPrice ? formatGoldSilverCopper(itemDetails[24282].buyPrice) : 'Cargando...'}
-                           </span>
-                         </div>
-                       </td>
-                       <td className="p-3 text-center">
-                         <div className="flex items-center justify-center space-x-2">
-                           {itemDetails[24276]?.icon && (
-                             <Image 
-                               src={itemDetails[24276].icon} 
-                               width={24}
-                               height={24}
-                               alt="Polvo" 
-                               className="w-6 h-6"
-                             />
-                           )}
-                           <span className="text-green-400">
-                             {itemDetails[24276]?.buyPrice ? formatGoldSilverCopper(itemDetails[24276].buyPrice) : 'Cargando...'}
-                           </span>
-                         </div>
-                       </td>
-                       <td className="p-3"></td>
-                       <td className="p-3 text-center text-blue-400 font-semibold">
-                         {(() => {
-                           const ratios: Record<number, number> = {
-                             24294: 0.3378375, // Sangre
-                             24341: 0.3378375, // Hueso
-                             24350: 0.3378375, // Garra
-                             24356: 0.3378375, // Escama
-                             24288: 0.3378375, // Colmillo
-                             24299: 0.3378375, // Totem
-                             24282: 0.3378375, // Vesícula
-                             24276: 0.3378375  // Polvo
-                           };
-                           
-                           // 1. T5 × 2000 (excepto Polvo) - SIN ratios
-                           const t5Total = [24294, 24341, 24350, 24356, 24288, 24299, 24282]
-                             .map(id => {
-                               const basePrice = itemDetails[id]?.buyPrice || 0;
-                               return basePrice * 2000;
-                             })
-                             .reduce((sum, price) => sum + price, 0);
-                           
-                           // 2. Polvo normal (sin multiplicar)
-                           const polvoNormal = (itemDetails[24276]?.buyPrice || 0) * ratios[24276];
-                           
-                           // 3. ID 24277: sell × 0.9 y buy × 1650
-                           const polvoAdicionalSell = (itemDetails[24277]?.currentPrice || 0) * 0.9;
-                           const polvoAdicionalBuy = (itemDetails[24277]?.buyPrice || 0) * 1650;
-                           
-                           // 4. ID 19721: sell × 0.9 (892)
-                           const ectoplasmSell = (itemDetails[19721]?.currentPrice || 0) * 0.9;
-                           
-                           // 5. TRES TOTALES DIFERENTES
-                           const total1 = t5Total + polvoAdicionalBuy;        // T5suma + polvoAdicionalBuy
-                           const total2 = t5Total + polvoAdicionalSell;       // T5suma + polvoAdicionalSell
-                           const total3 = t5Total + ectoplasmSell;            // T5suma + ectoplasmSell
-                           
-                           // 6. Multiplicar cada total por 35g (350000)
-                           const finalResult1 = total1 * 350000;
-                           const finalResult2 = total2 * 350000;
-                           const finalResult3 = total3 * 350000;
-                           
-                           // 7. MAX entre los 3 totales y dividir por 14000
-                           const maxTotal = Math.max(total1, total2, total3);
-                           const maxDividedBy14000 = maxTotal / 14000;
-                           
-                           // LOG DEL CÁLCULO (oculto en consola)
-                           console.log('=== CÁLCULO OCULTO MATERIALES T5 ===');
-                           console.log('T5 × 2000:', formatGoldSilverCopper(t5Total));
-                           console.log('Polvo normal:', formatGoldSilverCopper(polvoNormal));
-                           console.log('Polvo adicional sell × 0.9:', formatGoldSilverCopper(polvoAdicionalSell));
-                           console.log('Polvo adicional buy × 1650:', formatGoldSilverCopper(polvoAdicionalBuy));
-                           console.log('Ectoplasm sell × 0.9:', formatGoldSilverCopper(ectoplasmSell));
-                           console.log('--- TOTALES ---');
-                           console.log('Total 1 (T5 + polvoBuy):', formatGoldSilverCopper(total1));
-                           console.log('Total 2 (T5 + polvoSell):', formatGoldSilverCopper(total2));
-                           console.log('Total 3 (T5 + ectoplasm):', formatGoldSilverCopper(total3));
-                           console.log('--- RESULTADOS FINALES × 35g ---');
-                           console.log('Resultado 1 × 35g:', formatGoldSilverCopper(finalResult1));
-                           console.log('Resultado 2 × 35g:', formatGoldSilverCopper(finalResult2));
-                           console.log('Resultado 3 × 35g:', formatGoldSilverCopper(finalResult3));
-                           console.log('--- CÁLCULO FINAL ---');
-                           console.log('MIN entre totales:', formatGoldSilverCopper(maxTotal));
-                           console.log('MIN ÷ 14000:', formatGoldSilverCopper(maxDividedBy14000));
-                           console.log('=====================================');
-                           
-                           // 8. Total por Caja (precio base × ratio de cada T5)
-                           const totalPorCaja = [24294, 24341, 24350, 24356, 24288, 24299, 24282, 24276]
-                             .map(id => {
-                               const basePrice = itemDetails[id]?.buyPrice || 0;
-                               const ratio = ratios[id];
-                               return basePrice * ratio;
-                             })
-                             .reduce((sum, price) => sum + price, 0);
-                           
-                           // Redondear a entero para evitar decimales en cobre
-                           const roundedTotal = Math.round(totalPorCaja);
-                           
-                           return roundedTotal > 0 ? formatGoldSilverCopper(roundedTotal) : 'Cargando...';
-                         })()}
-                       </td>
-                     </tr>
-                     <tr className="border-b border-gray-800">
-                       <td className="p-3 text-gray-300">Precio Max</td>
-                       <td className="p-3 text-center text-red-400">
-                         {(() => {
-                           const basePrice = itemDetails[24294]?.buyPrice || 0;
-                           // Función helper para calcular maxDividedBy14000
-                           const calculateMaxDividedBy14000 = () => {
-                             const t5TotalLocal = [24294, 24341, 24350, 24356, 24288, 24299, 24282]
-                               .map(id => (itemDetails[id]?.buyPrice || 0) * 2000)
-                               .reduce((sum, price) => sum + price, 0);
-                             return Math.max(
-                               (t5TotalLocal + (itemDetails[24277]?.buyPrice || 0) * 1650),
-                               (t5TotalLocal + (itemDetails[24277]?.currentPrice || 0) * 0.9),
-                               (t5TotalLocal + (itemDetails[19721]?.currentPrice || 0) * 0.9)
-                             ) / 14000;
-                           };
-                           const maxDividedBy14000 = calculateMaxDividedBy14000();
-                           return basePrice > 0 ? formatGoldSilverCopper(maxDividedBy14000 + basePrice) : 'Cargando...';
-                         })()}
-                       </td>
-                       <td className="p-3 text-center text-red-400">
-                         {(() => {
-                           const basePrice = itemDetails[24341]?.buyPrice || 0;
-                           const calculateMaxDividedBy14000 = () => {
-                             const t5TotalLocal = [24294, 24341, 24350, 24356, 24288, 24299, 24282]
-                               .map(id => (itemDetails[id]?.buyPrice || 0) * 2000)
-                               .reduce((sum, price) => sum + price, 0);
-                             return Math.max(
-                               (t5TotalLocal + (itemDetails[24277]?.buyPrice || 0) * 1650),
-                               (t5TotalLocal + (itemDetails[24277]?.currentPrice || 0) * 0.9),
-                               (t5TotalLocal + (itemDetails[19721]?.currentPrice || 0) * 0.9)
-                             ) / 14000;
-                           };
-                           const maxDividedBy14000 = calculateMaxDividedBy14000();
-                           return basePrice > 0 ? formatGoldSilverCopper(maxDividedBy14000 + basePrice) : 'Cargando...';
-                         })()}
-                       </td>
-                       <td className="p-3 text-center text-red-400">
-                         {(() => {
-                           const basePrice = itemDetails[24350]?.buyPrice || 0;
-                           const calculateMaxDividedBy14000 = () => {
-                             const t5TotalLocal = [24294, 24341, 24350, 24356, 24288, 24299, 24282]
-                               .map(id => (itemDetails[id]?.buyPrice || 0) * 2000)
-                               .reduce((sum, price) => sum + price, 0);
-                             return Math.max(
-                               (t5TotalLocal + (itemDetails[24277]?.buyPrice || 0) * 1650),
-                               (t5TotalLocal + (itemDetails[24277]?.currentPrice || 0) * 0.9),
-                               (t5TotalLocal + (itemDetails[19721]?.currentPrice || 0) * 0.9)
-                             ) / 14000;
-                           };
-                           const maxDividedBy14000 = calculateMaxDividedBy14000();
-                           return basePrice > 0 ? formatGoldSilverCopper(maxDividedBy14000 + basePrice) : 'Cargando...';
-                         })()}
-                       </td>
-                       <td className="p-3 text-center text-red-400">
-                         {(() => {
-                           const basePrice = itemDetails[24356]?.buyPrice || 0;
-                           const calculateMaxDividedBy14000 = () => {
-                             const t5TotalLocal = [24294, 24341, 24350, 24356, 24288, 24299, 24282]
-                               .map(id => (itemDetails[id]?.buyPrice || 0) * 2000)
-                               .reduce((sum, price) => sum + price, 0);
-                             return Math.max(
-                               (t5TotalLocal + (itemDetails[24277]?.buyPrice || 0) * 1650),
-                               (t5TotalLocal + (itemDetails[24277]?.currentPrice || 0) * 0.9),
-                               (t5TotalLocal + (itemDetails[19721]?.currentPrice || 0) * 0.9)
-                             ) / 14000;
-                           };
-                           const maxDividedBy14000 = calculateMaxDividedBy14000();
-                           return basePrice > 0 ? formatGoldSilverCopper(maxDividedBy14000) + basePrice : 'Cargando...';
-                         })()}
-                       </td>
-                       <td className="p-3 text-center text-red-400">
-                         {(() => {
-                           const basePrice = itemDetails[24288]?.buyPrice || 0;
-                           const calculateMaxDividedBy14000 = () => {
-                             const t5TotalLocal = [24294, 24341, 24350, 24356, 24288, 24299, 24282]
-                               .map(id => (itemDetails[id]?.buyPrice || 0) * 2000)
-                               .reduce((sum, price) => sum + price, 0);
-                             return Math.max(
-                               (t5TotalLocal + (itemDetails[24277]?.buyPrice || 0) * 1650),
-                               (t5TotalLocal + (itemDetails[24277]?.currentPrice || 0) * 0.9),
-                               (t5TotalLocal + (itemDetails[19721]?.currentPrice || 0) * 0.9)
-                             ) / 14000;
-                           };
-                           const maxDividedBy14000 = calculateMaxDividedBy14000();
-                           return basePrice > 0 ? formatGoldSilverCopper(maxDividedBy14000 + basePrice) : 'Cargando...';
-                         })()}
-                       </td>
-                       <td className="p-3 text-center text-red-400">
-                         {(() => {
-                           const basePrice = itemDetails[24341]?.buyPrice || 0;
-                           const calculateMaxDividedBy14000 = () => {
-                             const t5TotalLocal = [24294, 24341, 24350, 24356, 24288, 24299, 24282]
-                               .map(id => (itemDetails[id]?.buyPrice || 0) * 2000)
-                               .reduce((sum, price) => sum + price, 0);
-                             return Math.max(
-                               (t5TotalLocal + (itemDetails[24277]?.buyPrice || 0) * 1650),
-                               (t5TotalLocal + (itemDetails[24277]?.currentPrice || 0) * 0.9),
-                               (t5TotalLocal + (itemDetails[19721]?.currentPrice || 0) * 0.9)
-                             ) / 14000;
-                           };
-                           const maxDividedBy14000 = calculateMaxDividedBy14000();
-                           return basePrice > 0 ? formatGoldSilverCopper(maxDividedBy14000) + basePrice : 'Cargando...';
-                         })()}
-                       </td>
-                       <td className="p-3 text-center text-red-400">
-                         {(() => {
-                           const basePrice = itemDetails[24282]?.buyPrice || 0;
-                           const calculateMaxDividedBy14000 = () => {
-                             const t5TotalLocal = [24294, 24341, 24350, 24356, 24288, 24299, 24282]
-                               .map(id => (itemDetails[id]?.buyPrice || 0) * 2000)
-                               .reduce((sum, price) => sum + price, 0);
-                             return Math.max(
-                               (t5TotalLocal + (itemDetails[24277]?.buyPrice || 0) * 1650),
-                               (t5TotalLocal + (itemDetails[24277]?.currentPrice || 0) * 0.9),
-                               (t5TotalLocal + (itemDetails[19721]?.currentPrice || 0) * 0.9)
-                             ) / 14000;
-                           };
-                           const maxDividedBy14000 = calculateMaxDividedBy14000();
-                           return basePrice > 0 ? formatGoldSilverCopper(maxDividedBy14000 + basePrice) : 'Cargando...';
-                         })()}
-                       </td>
-                       <td className="p-3 text-center text-red-400">
-                         {(() => {
-                           const basePrice = itemDetails[24276]?.buyPrice || 0;
-                           const calculateMaxDividedBy14000 = () => {
-                             const t5TotalLocal = [24294, 24341, 24350, 24356, 24288, 24299, 24282]
-                               .map(id => (itemDetails[id]?.buyPrice || 0) * 2000)
-                               .reduce((sum, price) => sum + price, 0);
-                             return Math.max(
-                               (t5TotalLocal + (itemDetails[24277]?.buyPrice || 0) * 1650),
-                               (t5TotalLocal + (itemDetails[24277]?.currentPrice || 0) * 0.9),
-                               (t5TotalLocal + (itemDetails[19721]?.currentPrice || 0) * 0.9)
-                             ) / 14000;
-                           };
-                           const maxDividedBy14000 = calculateMaxDividedBy14000();
-                           return basePrice > 0 ? formatGoldSilverCopper(maxDividedBy14000 + basePrice) : 'Cargando...';
-                         })()}
-                       </td>
-                       <td className="p-3"></td>
-                       <td className="p-3 text-center text-blue-400 font-semibold">
-                         {(() => {
-                           const total = [24294, 24341, 24350, 24356, 24288, 24299, 24282, 24276]
-                             .map(id => {
-                               const basePrice = itemDetails[id]?.buyPrice || 0;
-                               const calculateMaxDividedBy14000 = () => {
-                                 const t5TotalLocal = [24294, 24341, 24350, 24356, 24288, 24299, 24282]
-                                   .map(id => (itemDetails[id]?.buyPrice || 0) * 2000)
-                                   .reduce((sum, price) => sum + price, 0);
-                                 return Math.max(
-                                   (t5TotalLocal + (itemDetails[24277]?.buyPrice || 0) * 1650),
-                                   (t5TotalLocal + (itemDetails[24277]?.currentPrice || 0) * 0.9),
-                                   (t5TotalLocal + (itemDetails[19721]?.currentPrice || 0) * 0.9)
-                                 ) / 14000;
-                               };
-                               const maxDividedBy14000 = calculateMaxDividedBy14000();
-                               return basePrice + maxDividedBy14000;
-                             })
-                             .reduce((sum, price) => sum + price, 0);
-                           return total > 0 ? formatGoldSilverCopper(total) : 'Cargando...';
-                         })()}
-                       </td>
-                     </tr>
-                     <tr className="border-b border-gray-800">
-                       <td className="p-3 text-gray-300">Ratio %</td>
-                       <td className="p-3 text-center text-gray-400">0.3378375</td>
-                       <td className="p-3 text-center text-gray-400">0.3378375</td>
-                       <td className="p-3 text-center text-gray-400">0.3378375</td>
-                       <td className="p-3 text-center text-gray-400">0.3378375</td>
-                       <td className="p-3 text-center text-gray-400">0.3378375</td>
-                       <td className="p-3 text-center text-gray-400">0.3378375</td>
-                       <td className="p-3 text-center text-gray-400">0.3378375</td>
-                       <td className="p-3 text-center text-gray-400">0.3378375</td>
-                       <td className="p-3"></td>
-                       <td className="p-3"></td>
-                     </tr>
-                   </tbody>
-                 </table>
-               </div>
-             </div>
-
-             {/* Otros Drops */}
-             <div className="bg-gray-900/80 backdrop-blur-sm border border-gray-700 rounded-lg p-6 shadow-2xl mb-8">
-               <h3 className="text-xl font-semibold text-white mb-4">Otros Drops</h3>
-               <div className="overflow-x-auto">
-                 <table className="w-full text-sm">
-                   <thead>
-                     <tr className="border-b border-gray-700 bg-gray-800/60">
-                       <th className="text-left p-3 text-gray-200 font-semibold">Nombre</th>
-                       <th className="p-3 text-gray-200 font-semibold">Infusion +1</th>
-                       <th className="p-3 text-gray-200 font-semibold">Llave Fractal</th>
-                       <th className="p-3 text-gray-200 font-semibold">Bolsa Reliquias</th>
-                       <th className="p-3 text-gray-200 font-semibold">Profesor Miau</th>
-                       <th className="p-3 text-gray-200 font-semibold">Rare Unid</th>
-                       <th className="p-3 text-gray-200 font-semibold">Empireos</th>
-                       <th className="p-3 text-gray-200 font-semibold">Aetherize Skins</th>
-                       <th className="p-3 text-gray-200 font-semibold"></th>
-                       <th className="p-3 text-gray-200 font-semibold">Total por Caja</th>
-                     </tr>
-                   </thead>
-                   <tbody>
-                     <tr className="border-b border-gray-800">
-                       <td className="p-3 text-gray-300">Precio Base</td>
-                       <td className="p-3 text-center text-green-400">00G 00S 86C</td>
-                       <td className="p-3 text-center text-green-400">00G 03S 33C</td>
-                       <td className="p-3 text-center text-green-400">00G 20S 04C</td>
-                       <td className="p-3 text-center text-green-400">00G 00S 00C</td>
-                       <td className="p-3 text-center text-green-400">00G 00S 01C</td>
-                       <td className="p-3 text-center text-green-400">00G 00S 82C</td>
-                       <td className="p-3 text-center text-green-400">00G 16S 71C</td>
-                       <td className="p-3"></td>
-                       <td className="p-3 text-center text-blue-400 font-semibold">00G 03S 61C</td>
-                     </tr>
-                     <tr className="border-b border-gray-800">
-                       <td className="p-3 text-gray-300">Precio Max</td>
-                       <td className="p-3 text-center text-green-400">00G 00S 23C</td>
-                       <td className="p-3 text-center text-green-400">00G 03S 33C</td>
-                       <td className="p-3 text-center text-green-400">00G 20S 04C</td>
-                       <td className="p-3 text-center text-green-400">00G 00S 00C</td>
-                       <td className="p-3 text-center text-green-400">00G 00S 01C</td>
-                       <td className="p-3 text-center text-green-400">00G 00S 82C</td>
-                       <td className="p-3 text-center text-green-400">00G 16S 71C</td>
-                       <td className="p-3"></td>
-                       <td className="p-3 text-center text-blue-400 font-semibold">00G 02S 19C</td>
-                     </tr>
-                     <tr className="border-b border-gray-800">
-                       <td className="p-3 text-gray-300">Ratio %</td>
-                       <td className="p-3 text-center text-gray-400">2.2637</td>
-                       <td className="p-3 text-center text-gray-400">0.1</td>
-                       <td className="p-3 text-center text-gray-400">0.0668</td>
-                       <td className="p-3 text-center text-gray-400">0.02</td>
-                       <td className="p-3 text-center text-gray-400">0.00017</td>
-                       <td className="p-3 text-center text-gray-400">1.0108</td>
-                       <td className="p-3 text-center text-gray-400">0.0021</td>
-                       <td className="p-3"></td>
-                       <td className="p-3"></td>
-                     </tr>
-                   </tbody>
-                 </table>
-               </div>
-             </div>
-
-             {/* Profits */}
-             <div className="bg-gray-900/80 backdrop-blur-sm border border-gray-700 rounded-lg p-6 shadow-2xl mb-8">
-               <h3 className="text-xl font-semibold text-white mb-4">Profits</h3>
-               <div className="overflow-x-auto">
-                 <table className="w-full text-sm">
-                   <thead>
-                     <tr className="border-b border-gray-700 bg-gray-800/60">
-                       <th className="text-left p-3 text-gray-200 font-semibold">Caja + Llave Tipos</th>
-                       <th className="p-3 text-gray-200 font-semibold">Caja</th>
-                       <th className="p-3 text-gray-200 font-semibold">Llave</th>
-                       <th className="p-3 text-gray-200 font-semibold">Total</th>
-                       <th className="p-3 text-gray-200 font-semibold">Profit AVG</th>
-                       <th className="p-3 text-gray-200 font-semibold">ROI</th>
-                     </tr>
-                   </thead>
-                   <tbody>
-                     <tr className="border-b border-gray-800">
-                       <td className="p-3 text-gray-300">Caja + Llave 90%</td>
-                       <td className="p-3 text-center text-green-400">00G 22S 58C</td>
-                       <td className="p-3 text-center text-green-400">00G 29S 95C</td>
-                       <td className="p-3 text-center text-blue-400 font-semibold">00G 52S 53C</td>
-                       <td className="p-3 text-center text-red-400 font-semibold">-00G 03S 43C</td>
-                       <td className="p-3 text-center text-red-400 font-semibold">-6.53%</td>
-                     </tr>
-                     <tr className="border-b border-gray-800">
-                       <td className="p-3 text-gray-300">Caja + Llave BuyOrder</td>
-                       <td className="p-3 text-center text-green-400">00G 22S 10C</td>
-                       <td className="p-3 text-center text-green-400">00G 27S 32C</td>
-                       <td className="p-3 text-center text-blue-400 font-semibold">00G 49S 42C</td>
-                       <td className="p-3 text-center text-red-400 font-semibold">-00G 00S 32C</td>
-                       <td className="p-3 text-center text-red-400 font-semibold">-0.64%</td>
-                     </tr>
-                     <tr className="border-b border-gray-800">
-                       <td className="p-3 text-gray-300">Caja + Llave SellOrder</td>
-                       <td className="p-3 text-center text-green-400">00G 25S 09C</td>
-                       <td className="p-3 text-center text-green-400">00G 33S 28C</td>
-                       <td className="p-3 text-center text-blue-400 font-semibold">00G 58S 37C</td>
-                       <td className="p-3 text-center text-red-400 font-semibold">-00G 09S 27C</td>
-                       <td className="p-3 text-center text-red-400 font-semibold">-15.87%</td>
-                     </tr>
-                     <tr className="border-b border-gray-800">
-                       <td className="p-3 text-gray-300">Caja MIN + Llave 20s</td>
-                       <td className="p-3 text-center text-green-400">00G 22S 10C</td>
-                       <td className="p-3 text-center text-green-400">00G 20S 00C</td>
-                       <td className="p-3 text-center text-blue-400 font-semibold">00G 42S 10C</td>
-                       <td className="p-3 text-center text-green-400 font-semibold">00G 07S 00C</td>
-                       <td className="p-3 text-center text-green-400 font-semibold">16.64%</td>
-                     </tr>
-                     <tr className="border-b border-gray-800">
-                       <td className="p-3 text-gray-300">Caja MIN + Llave 25s04c</td>
-                       <td className="p-3 text-center text-green-400">00G 22S 10C</td>
-                       <td className="p-3 text-center text-green-400">00G 25S 04C</td>
-                       <td className="p-3 text-center text-blue-400 font-semibold">00G 47S 14C</td>
-                       <td className="p-3 text-center text-green-400 font-semibold">00G 01S 96C</td>
-                       <td className="p-3 text-center text-green-400 font-semibold">4.17%</td>
-                     </tr>
-                     <tr className="border-b border-gray-800">
-                       <td className="p-3 text-gray-300">Caja MIN + Llave 30s</td>
-                       <td className="p-3 text-center text-green-400">00G 22S 10C</td>
-                       <td className="p-3 text-center text-green-400">00G 30S 00C</td>
-                       <td className="p-3 text-center text-blue-400 font-semibold">00G 52S 10C</td>
-                       <td className="p-3 text-center text-red-400 font-semibold">-00G 03S 00C</td>
-                       <td className="p-3 text-center text-red-400 font-semibold">-5.75%</td>
-                     </tr>
-                   </tbody>
-                 </table>
-               </div>
-             </div>
            </>
          )}
        </main>
