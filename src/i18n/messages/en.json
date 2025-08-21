@@ -640,6 +640,13 @@
   
   "fractals.profits.boxKey90": "Box + Key 90%",
   "fractals.profits.boxKeyBuyOrder": "Box + Key BuyOrder",
-  "fractals.profits.boxKeySellOrder": "Box + Key SellOrder"
+  "fractals.profits.boxKeySellOrder": "Box + Key SellOrder",
+  
+  "fractals.profits.table.boxKeyTypes": "Box + Key Types",
+  "fractals.profits.table.box": "Box",
+  "fractals.profits.table.key": "Key",
+  "fractals.profits.table.total": "Total",
+  "fractals.profits.table.profitAvg": "Profit AVG",
+  "fractals.profits.table.roi": "ROI"
 }
 

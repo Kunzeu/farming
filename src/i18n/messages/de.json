@@ -640,6 +640,13 @@
   
   "fractals.profits.boxKey90": "Kiste + Schlüssel 90%",
   "fractals.profits.boxKeyBuyOrder": "Kiste + Schlüssel Kaufauftrag",
-  "fractals.profits.boxKeySellOrder": "Kiste + Schlüssel Verkaufsauftrag"
+  "fractals.profits.boxKeySellOrder": "Kiste + Schlüssel Verkaufsauftrag",
+  
+  "fractals.profits.table.boxKeyTypes": "Kiste + Schlüssel Typen",
+  "fractals.profits.table.box": "Kiste",
+  "fractals.profits.table.key": "Schlüssel",
+  "fractals.profits.table.total": "Gesamt",
+  "fractals.profits.table.profitAvg": "Profit AVG",
+  "fractals.profits.table.roi": "ROI"
 }
 

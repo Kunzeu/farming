@@ -2477,10 +2477,12 @@ export default function FarmingTrackerPage() {
                  <table className="w-full text-sm">
                    <thead>
                      <tr className="border-b border-gray-700 bg-gray-800/60">
-                       <th className="text-left p-3 text-gray-200 font-semibold">{t('fractals.table.name')}</th>
-                        <th className="p-2 text-gray-200 font-semibold">{t('fractals.table.basePrice')}</th>
-                        <th className="p-2 text-gray-200 font-semibold">{t('fractals.table.maxPrice')}</th>
-                        <th className="p-2 text-gray-200 font-semibold">{t('fractals.table.ratio')}</th>
+                       <th className="text-left p-2 text-gray-200 font-semibold">{t('fractals.profits.table.boxKeyTypes')}</th>
+                       <th className="p-2 text-gray-200 font-semibold">{t('fractals.profits.table.box')}</th>
+                       <th className="p-2 text-gray-200 font-semibold">{t('fractals.profits.table.key')}</th>
+                       <th className="p-2 text-gray-200 font-semibold">{t('fractals.profits.table.total')}</th>
+                       <th className="p-2 text-gray-200 font-semibold">{t('fractals.profits.table.profitAvg')}</th>
+                       <th className="p-2 text-gray-200 font-semibold">{t('fractals.profits.table.roi')}</th>
                      </tr>
                    </thead>
                    <tbody>
@@ -2490,20 +2492,30 @@ export default function FarmingTrackerPage() {
                         { label: t('fractals.profits.boxKeySellOrder'), keyRatio: 1.2 },
                       ].map((row, idx) => (
                         <tr key={idx} className="border-b border-gray-800">
-                          <td className="p-3 text-gray-300">{row.label}</td>
-                          <td className="p-3 text-center text-green-400">
+                          <td className="p-2 text-gray-300">{row.label}</td>
+                          <td className="p-2 text-center text-green-400">
                             <span className="whitespace-nowrap">
                               {itemDetails[70438]?.buyPrice ? formatGoldSilverCopper(itemDetails[70438].buyPrice) : '—'}
                             </span>
                           </td>
-                          <td className="p-3 text-center text-green-400">
+                          <td className="p-2 text-center text-green-400">
                             <span className="whitespace-nowrap">
                               {itemDetails[70438]?.currentPrice ? formatGoldSilverCopper(itemDetails[70438].currentPrice) : '—'}
                             </span>
                           </td>
-                          <td className="p-3 text-center text-yellow-300 font-semibold">
+                          <td className="p-2 text-center text-blue-400">
                             <span className="whitespace-nowrap">
                               {itemDetails[70438]?.buyPrice ? formatGoldSilverCopper(Math.round((itemDetails[70438]?.buyPrice || 0) * row.keyRatio)) : '—'}
+                            </span>
+                          </td>
+                          <td className="p-2 text-center text-yellow-300 font-semibold">
+                            <span className="whitespace-nowrap">
+                              {itemDetails[70438]?.buyPrice ? formatGoldSilverCopper(Math.round((itemDetails[70438]?.buyPrice || 0) * row.keyRatio * 0.85)) : '—'}
+                            </span>
+                          </td>
+                          <td className="p-2 text-center text-purple-300 font-semibold">
+                            <span className="whitespace-nowrap">
+                              {itemDetails[70438]?.buyPrice ? `${Math.round(((itemDetails[70438]?.buyPrice || 0) * row.keyRatio * 0.85 / (itemDetails[70438]?.buyPrice || 1)) * 100)}%` : '—'}
                             </span>
                           </td>
                      </tr>

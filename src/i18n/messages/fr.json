@@ -641,6 +641,13 @@
   
   "fractals.profits.boxKey90": "Caisse + Clé 90%",
   "fractals.profits.boxKeyBuyOrder": "Caisse + Clé Ordre d'Achat",
-  "fractals.profits.boxKeySellOrder": "Caisse + Clé Ordre de Vente"
+  "fractals.profits.boxKeySellOrder": "Caisse + Clé Ordre de Vente",
+  
+  "fractals.profits.table.boxKeyTypes": "Types Caisse + Clé",
+  "fractals.profits.table.box": "Caisse",
+  "fractals.profits.table.key": "Clé",
+  "fractals.profits.table.total": "Total",
+  "fractals.profits.table.profitAvg": "Profit AVG",
+  "fractals.profits.table.roi": "ROI"
 }
 
