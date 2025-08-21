@@ -32,6 +32,9 @@ interface GW2Price {
   sells?: {
     unit_price: number;
   };
+  buys?: {
+    unit_price: number;
+  };
 }
 
 export default function FarmingTrackerPage() {
@@ -40,10 +43,10 @@ export default function FarmingTrackerPage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [sortBy, setSortBy] = useState('name');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
-  const [itemDetails, setItemDetails] = useState<Record<number, { icon: string; currentPrice: number; name: string }>>({});
+  const [itemDetails, setItemDetails] = useState<Record<number, { icon: string; currentPrice: number; buyPrice: number; name: string }>>({});
   const [loading, setLoading] = useState(true);
   const [lastUpdate, setLastUpdate] = useState<Date>(new Date());
-  const [activeSection, setActiveSection] = useState<'fractal' | 'initiate' | 'adept' | 'expert'>('initiate');
+  const [activeSection, setActiveSection] = useState<'fractal' | 'initiate' | 'adept' | 'expert' | 'encryption'>('initiate');
 
   const farmingData: FarmingItem[] = useMemo(() => [
     // Fractales
@@ -619,12 +622,27 @@ export default function FarmingTrackerPage() {
       setLoading(true);
       
       // Obtener todos los IDs de todas las secciones
-      const allItemIds = [
-        ...farmingData.map(item => item.id),
-        ...dungeonChestData.map(item => item.id),
-        ...raidChestData.map(item => item.id),
-        ...strikeChestData.map(item => item.id)
-      ].filter(id => id > 0);
+        const allItemIds = [
+    ...farmingData.map(item => item.id),
+    ...dungeonChestData.map(item => item.id),
+    ...raidChestData.map(item => item.id),
+    ...strikeChestData.map(item => item.id),
+    75919, // Fractal Encryption
+    // Materiales T5 IDs
+    24294, // Sangre
+    24341, // Hueso
+    24350, // Garra
+    24356, // Escama
+    24288, // Colmillo
+    24299, // Totem
+    24282, // Vesícula
+    24276, // Polvo
+    // IDs faltantes para los cálculos
+    24277, // Polvo adicional (usado en Total1 y Total2)
+     19721,  // Ectoplasm (usado en Total3)
+     // IDs para Cálculo 0.9 × 250
+     24295, 24358, 24351, 24357, 24289, 24300, 24283,
+  ].filter(id => id > 0);
       
       // Eliminar duplicados
       const uniqueItemIds = [...new Set(allItemIds)];
@@ -634,22 +652,55 @@ export default function FarmingTrackerPage() {
         return;
       }
 
-      // Obtener detalles de los items
-      const itemsResponse = await fetch(`https://api.guildwars2.com/v2/items?ids=${uniqueItemIds.join(',')}&lang=${lang}`);
-      const items = await itemsResponse.json();
+      // Helper: dividir en lotes seguros para la API
+      const chunkArray = <T,>(arr: T[], size: number): T[][] => {
+        const out: T[][] = [];
+        for (let i = 0; i < arr.length; i += size) out.push(arr.slice(i, i + size));
+        return out;
+      };
+      const chunkSize = 180; // bajo el límite de 200 ids por request de la API
 
-      // Obtener precios actuales
-      const pricesResponse = await fetch(`https://api.guildwars2.com/v2/commerce/prices?ids=${uniqueItemIds.join(',')}`);
-      const prices = await pricesResponse.json();
+      // Obtener detalles de los items en lotes
+      const itemChunks = chunkArray(uniqueItemIds, chunkSize);
+      const itemsArrays = await Promise.all(
+        itemChunks.map(async (chunk) => {
+          try {
+            const res = await fetch(`https://api.guildwars2.com/v2/items?ids=${chunk.join(',')}&lang=${lang}`);
+            const data = await res.json();
+            return Array.isArray(data) ? data : [data];
+          } catch {
+            return [];
+          }
+        })
+      );
+      const items: Array<GW2Item> = itemsArrays.flat();
 
-      const details: Record<number, { icon: string; currentPrice: number; name: string }> = {};
+      // Obtener precios actuales en lotes
+      const priceChunks = itemChunks;
+      const pricesArrays = await Promise.all(
+        priceChunks.map(async (chunk) => {
+          try {
+            const res = await fetch(`https://api.guildwars2.com/v2/commerce/prices?ids=${chunk.join(',')}`);
+            const data = await res.json();
+            return Array.isArray(data) ? data : [data];
+          } catch {
+            return [];
+          }
+        })
+      );
+      const prices: Array<GW2Price> = pricesArrays.flat();
+      const priceById: Record<number, GW2Price> = {};
+      prices.forEach((p) => { if (p && typeof p.id === 'number') priceById[p.id] = p; });
+
+      const details: Record<number, { icon: string; currentPrice: number; buyPrice: number; name: string }> = {};
       
       items.forEach((item: GW2Item) => {
-        const price = prices.find((p: GW2Price) => p.id === item.id);
+        const price = priceById[item.id];
         details[item.id] = {
-          icon: item.icon,
+          icon: item.icon || '',
           currentPrice: price?.sells?.unit_price || 0,
-          name: item.name
+          buyPrice: price?.buys?.unit_price || 0,
+          name: item.name || ''
         };
       });
 
@@ -708,23 +759,137 @@ export default function FarmingTrackerPage() {
     };
   }, [farmingData, itemDetails]);
 
+  // Función comentada ya que las secciones de Multiplicaciones y Cálculo 0.9 × 250 están ocultas
+  /*
+  const refreshItemPrice = useCallback(async (id: number) => {
+    try {
+      const pricesResponse = await fetch(`https://api.guildwars2.com/v2/commerce/prices?ids=${id}`);
+      const prices = await pricesResponse.json();
+      const priceData = Array.isArray(prices) ? prices[0] : prices;
+      setItemDetails(prev => ({
+        ...prev,
+        [id]: {
+          icon: prev[id]?.icon || '',
+          name: prev[id]?.name || '',
+          currentPrice: priceData?.sells?.unit_price || prev[id]?.currentPrice || 0,
+          buyPrice: priceData?.buys?.unit_price || prev[id]?.buyPrice || 0,
+        }
+      }));
+      setLastUpdate(new Date());
+    } catch (error) {
+      console.error('Error refreshing item price:', id, error);
+    }
+  }, []);
+  */
 
-
-
+  // Función comentada ya que las secciones de Multiplicaciones y Cálculo 0.9 × 250 están ocultas
+  /*
+  const refreshItemPricesBulk = useCallback(async (ids: number[]) => {
+    try {
+      const validIds = Array.from(new Set((ids || []).filter((x) => x > 0)));
+      if (validIds.length === 0) return;
+      const [itemsResp, pricesResp] = await Promise.all([
+        fetch(`https://api.guildwars2.com/v2/items?ids=${validIds.join(',')}&lang=${lang}`),
+        fetch(`https://api.guildwars2.com/v2/commerce/prices?ids=${validIds.join(',')}`),
+      ]);
+      const itemsJson: Array<{ id: number; icon: string; name: string }> = await itemsResp.json();
+      const pricesJson: Array<GW2Price> = await pricesResp.json();
+      const priceById: Record<number, GW2Price> = {};
+      (Array.isArray(pricesJson) ? pricesJson : [pricesJson]).forEach((p) => {
+        if (p && typeof p.id === 'number') priceById[p.id] = p;
+      });
+      setItemDetails((prev) => {
+        const next: Record<number, { icon: string; currentPrice: number; buyPrice: number; name: string }> = { ...prev };
+        (Array.isArray(itemsJson) ? itemsJson : [itemsJson]).forEach((it) => {
+          const price = priceById[it.id];
+          next[it.id] = {
+            icon: it.icon || next[it.id]?.icon || '',
+            name: it.name || next[it.id]?.name || '',
+            currentPrice: price?.sells?.unit_price || next[it.id]?.currentPrice || 0,
+            buyPrice: price?.buys?.unit_price || next[it.id]?.buyPrice || 0,
+          };
+        });
+        return next;
+      });
+      setLastUpdate(new Date());
+    } catch (err) {
+      console.error('Error refreshing bulk item prices:', ids, err);
+    }
+  }, [lang]);
+  */
 
   const formatGoldSilverCopper = (copper: number) => {
-    const gold = Math.floor(copper / 10000);
-    const silver = Math.floor((copper % 10000) / 100);
-    const copperRemainder = copper % 100;
-    return `${gold}g ${silver}s ${copperRemainder}c`;
+    const isNegative = copper < 0;
+    const absCopper = Math.abs(copper);
+    const gold = Math.floor(absCopper / 10000);
+    const silver = Math.floor((absCopper % 10000) / 100);
+    const copperRemainder = Math.round(absCopper % 100);
+    const sign = isNegative ? '- ' : '';
+    return `${sign}${gold}g ${silver.toString().padStart(2, '0')}s ${copperRemainder.toString().padStart(2, '0')}c`;
   };
+
+  // Mapeo de IDs a nombres de traducción para los items de fractales
+  const fractalItemNames: Record<number, string> = {
+    24294: 'fractals.items.blood',    // Sangre
+    24341: 'fractals.items.bone',     // Hueso
+    24350: 'fractals.items.claw',     // Garra
+    24356: 'fractals.items.scale',    // Escama
+    24288: 'fractals.items.fang',     // Colmillo
+    24299: 'fractals.items.totem',    // Tótem
+    24282: 'fractals.items.venom',    // Vesícula
+    24276: 'fractals.items.dust',     // Polvo
+    19721: 'fractals.items.ectoplasm', // Ectoplasma
+    24277: 'fractals.items.ancientWood', // Madera Antigua
+    24295: 'fractals.items.orichalcum',  // Oricalco
+    24358: 'fractals.items.gossamer',    // Gossamer
+    24351: 'fractals.items.silk',        // Seda
+    24357: 'fractals.items.thickLeather', // Cuero Grueso
+    24289: 'fractals.items.wool',        // Lana
+    24300: 'fractals.items.linen',       // Lino
+    24283: 'fractals.items.iron',        // Hierro
+    24342: 'fractals.items.platinum',    // Platino
+    24343: 'fractals.items.mithril',     // Mitril
+    24344: 'fractals.items.gold',        // Oro
+    24345: 'fractals.items.silver',      // Plata
+    24346: 'fractals.items.copper',      // Cobre
+    24347: 'fractals.items.tin',         // Estaño
+    24348: 'fractals.items.softWood',    // Madera Blanda
+    24349: 'fractals.items.seasonedWood', // Madera Sazonada
+    24352: 'fractals.items.hardWood',    // Madera Dura
+    24353: 'fractals.items.rawhide',     // Cuero Crudo
+    24354: 'fractals.items.thinLeather', // Cuero Fino
+    24355: 'fractals.items.coarseLeather', // Cuero Grueso
+    24359: 'fractals.items.ruggedLeather', // Cuero Resistente
+    24360: 'fractals.items.jute',        // Yute
+    24361: 'fractals.items.cotton',      // Algodón
+    24362: 'fractals.items.silkScrap',   // Retal de Seda
+    24363: 'fractals.items.woolScrap',   // Retal de Lana
+    24364: 'fractals.items.linenScrap',  // Retal de Lino
+    24365: 'fractals.items.ironOre',     // Mineral de Hierro
+    24366: 'fractals.items.platinumOre', // Mineral de Platino
+    24367: 'fractals.items.mithrilOre',  // Mineral de Mitril
+    24368: 'fractals.items.goldOre',     // Mineral de Oro
+    24369: 'fractals.items.silverOre',   // Mineral de Plata
+    24370: 'fractals.items.copperOre',   // Mineral de Cobre
+    24371: 'fractals.items.tinOre'       // Mineral de Estaño
+  };
+
+  // Utilidades de búsqueda multi-idioma (usa nombre localizado y normaliza acentos)
+  type ItemWithName = { id: number; name: string };
+  const normalizeForSearch = useCallback((text: string) =>
+    (text || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase()
+  , []);
+  const getItemDisplayName = useCallback((item: ItemWithName) => itemDetails[item.id]?.name || item.name, [itemDetails]);
+  const itemMatchesSearch = useCallback((item: ItemWithName, term: string) => {
+    if (!term) return true;
+    const name = normalizeForSearch(getItemDisplayName(item));
+    const q = normalizeForSearch(term);
+    return name.includes(q);
+  }, [normalizeForSearch, getItemDisplayName]);
 
   // Filtrar y ordenar items
   const filteredAndSortedItems = useMemo(() => {
-    const filtered = stats.itemsWithStats.filter(item => {
-      const matchesSearch = item.name.toLowerCase().includes(searchTerm.toLowerCase());
-      return matchesSearch;
-    });
+    const filtered = stats.itemsWithStats.filter(item => itemMatchesSearch(item, searchTerm));
 
     // Ordenar items
     const sorted = [...filtered].sort((a, b) => {
@@ -768,7 +933,7 @@ export default function FarmingTrackerPage() {
     });
 
     return sorted;
-  }, [stats.itemsWithStats, searchTerm, sortBy, sortOrder, itemDetails]);
+  }, [stats.itemsWithStats, searchTerm, sortBy, sortOrder, itemDetails, itemMatchesSearch]);
 
   // Función para manejar el ordenamiento por columna
   const handleSort = (column: string) => {
@@ -864,6 +1029,16 @@ export default function FarmingTrackerPage() {
                  }`}
                >
                  {t('farmingTracker.sections.fractal')}
+               </button>
+               <button
+                 onClick={() => setActiveSection('encryption')}
+                 className={`px-6 py-3 rounded-lg font-semibold transition-all duration-200 ${
+                   activeSection === 'encryption'
+                     ? 'bg-teal-600 text-white shadow-lg'
+                     : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
+                 }`}
+               >
+                 {t('farmingTracker.sections.encryption')}
                </button>
              </div>
            </div>
@@ -992,7 +1167,44 @@ export default function FarmingTrackerPage() {
                    </thead>
                    <tbody>
                      {dungeonChestStats.itemsWithStats
-                       .filter(item => item.name.toLowerCase().includes(searchTerm.toLowerCase()))
+                       .filter(item => itemMatchesSearch(item, searchTerm))
+                       .sort((a, b) => {
+                         let aValue: string | number, bValue: string | number;
+                         switch (sortBy) {
+                           case 'name':
+                             aValue = a.name.toLowerCase();
+                             bValue = b.name.toLowerCase();
+                             break;
+                           case 'difference':
+                             aValue = a.difference;
+                             bValue = b.difference;
+                             break;
+                           case 'currentPrice':
+                             aValue = itemDetails[a.id]?.currentPrice || 0;
+                             bValue = itemDetails[b.id]?.currentPrice || 0;
+                             break;
+                           case 'totalValue':
+                             aValue = (itemDetails[a.id]?.currentPrice || 0) * Math.max(0, a.difference);
+                             bValue = (itemDetails[b.id]?.currentPrice || 0) * Math.max(0, b.difference);
+                             break;
+                           case 'percentage':
+                             aValue = a.percentage || 0;
+                             bValue = b.percentage || 0;
+                             break;
+                           case 'dropRate':
+                             aValue = a.dropRate || 0;
+                             bValue = b.dropRate || 0;
+                             break;
+                           default:
+                             aValue = a.name.toLowerCase();
+                             bValue = b.name.toLowerCase();
+                         }
+                         if (sortOrder === 'asc') {
+                           return aValue > bValue ? 1 : aValue < bValue ? -1 : 0;
+                         } else {
+                           return aValue < bValue ? 1 : aValue > bValue ? -1 : 0;
+                         }
+                       })
                        .map((item, index) => (
                          <tr key={`${item.id}-${index}`} className="border-b border-gray-800 hover:bg-gray-800/50 transition-colors">
                            <td className="p-3 text-white">
@@ -1061,13 +1273,13 @@ export default function FarmingTrackerPage() {
                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-center">
                    <div>
                      <div className="text-2xl font-bold text-blue-400">
-                       {dungeonChestStats.itemsWithStats.filter(item => item.name.toLowerCase().includes(searchTerm.toLowerCase())).length}
+                       {dungeonChestStats.itemsWithStats.filter(item => itemMatchesSearch(item, searchTerm)).length}
                      </div>
                      <div className="text-gray-300 text-sm">{t('farmingTracker.summary.itemsShown')}</div>
                    </div>
                    <div>
                      <div className="text-2xl font-bold text-green-400">
-                       {formatGoldSilverCopper(dungeonChestStats.itemsWithStats.filter(item => item.name.toLowerCase().includes(searchTerm.toLowerCase())).reduce((sum, item) => {
+                       {formatGoldSilverCopper(dungeonChestStats.itemsWithStats.filter(item => itemMatchesSearch(item, searchTerm)).reduce((sum, item) => {
                          if (item.id > 0 && itemDetails[item.id]?.currentPrice) {
                            return sum + (itemDetails[item.id].currentPrice * Math.max(0, item.difference));
                          }
@@ -1078,7 +1290,7 @@ export default function FarmingTrackerPage() {
                    </div>
                    <div>
                      <div className="text-2xl font-bold text-yellow-400">
-                       {formatGoldSilverCopper(Math.round(dungeonChestStats.itemsWithStats.filter(item => item.name.toLowerCase().includes(searchTerm.toLowerCase())).reduce((sum, item) => {
+                       {formatGoldSilverCopper(Math.round(dungeonChestStats.itemsWithStats.filter(item => itemMatchesSearch(item, searchTerm)).reduce((sum, item) => {
                          if (item.id > 0 && itemDetails[item.id]?.currentPrice) {
                            return sum + (itemDetails[item.id].currentPrice * Math.max(0, item.difference));
                          }
@@ -1214,7 +1426,44 @@ export default function FarmingTrackerPage() {
                    </thead>
                    <tbody>
                      {raidChestStats.itemsWithStats
-                       .filter(item => item.name.toLowerCase().includes(searchTerm.toLowerCase()))
+                       .filter(item => itemMatchesSearch(item, searchTerm))
+                       .sort((a, b) => {
+                         let aValue: string | number, bValue: string | number;
+                         switch (sortBy) {
+                           case 'name':
+                             aValue = a.name.toLowerCase();
+                             bValue = b.name.toLowerCase();
+                             break;
+                           case 'difference':
+                             aValue = a.difference;
+                             bValue = b.difference;
+                             break;
+                           case 'currentPrice':
+                             aValue = itemDetails[a.id]?.currentPrice || 0;
+                             bValue = itemDetails[b.id]?.currentPrice || 0;
+                             break;
+                           case 'totalValue':
+                             aValue = (itemDetails[a.id]?.currentPrice || 0) * Math.max(0, a.difference);
+                             bValue = (itemDetails[b.id]?.currentPrice || 0) * Math.max(0, b.difference);
+                             break;
+                           case 'percentage':
+                             aValue = a.percentage || 0;
+                             bValue = b.percentage || 0;
+                             break;
+                           case 'dropRate':
+                             aValue = a.dropRate || 0;
+                             bValue = b.dropRate || 0;
+                             break;
+                           default:
+                             aValue = a.name.toLowerCase();
+                             bValue = b.name.toLowerCase();
+                         }
+                         if (sortOrder === 'asc') {
+                           return aValue > bValue ? 1 : aValue < bValue ? -1 : 0;
+                         } else {
+                           return aValue < bValue ? 1 : aValue > bValue ? -1 : 0;
+                         }
+                       })
                        .map((item, index) => (
                          <tr key={`${item.id}-${index}`} className="border-b border-gray-800 hover:bg-gray-800/50 transition-colors">
                            <td className="p-3 text-white">
@@ -1283,13 +1532,13 @@ export default function FarmingTrackerPage() {
                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-center">
                    <div>
                      <div className="text-2xl font-bold text-blue-400">
-                       {raidChestStats.itemsWithStats.filter(item => item.name.toLowerCase().includes(searchTerm.toLowerCase())).length}
+                       {raidChestStats.itemsWithStats.filter(item => itemMatchesSearch(item, searchTerm)).length}
                      </div>
                      <div className="text-gray-300 text-sm">{t('farmingTracker.summary.itemsShown')}</div>
                    </div>
                    <div>
                      <div className="text-2xl font-bold text-green-400">
-                       {formatGoldSilverCopper(raidChestStats.itemsWithStats.filter(item => item.name.toLowerCase().includes(searchTerm.toLowerCase())).reduce((sum, item) => {
+                       {formatGoldSilverCopper(raidChestStats.itemsWithStats.filter(item => itemMatchesSearch(item, searchTerm)).reduce((sum, item) => {
                          if (item.id > 0 && itemDetails[item.id]?.currentPrice) {
                            return sum + (itemDetails[item.id].currentPrice * Math.max(0, item.difference));
                          }
@@ -1300,7 +1549,7 @@ export default function FarmingTrackerPage() {
                    </div>
                    <div>
                      <div className="text-2xl font-bold text-yellow-400">
-                       {formatGoldSilverCopper(Math.round(raidChestStats.itemsWithStats.filter(item => item.name.toLowerCase().includes(searchTerm.toLowerCase())).reduce((sum, item) => {
+                       {formatGoldSilverCopper(Math.round(raidChestStats.itemsWithStats.filter(item => itemMatchesSearch(item, searchTerm)).reduce((sum, item) => {
                          if (item.id > 0 && itemDetails[item.id]?.currentPrice) {
                            return sum + (itemDetails[item.id].currentPrice * Math.max(0, item.difference));
                          }
@@ -1436,7 +1685,44 @@ export default function FarmingTrackerPage() {
                    </thead>
                    <tbody>
                      {strikeChestStats.itemsWithStats
-                       .filter(item => item.name.toLowerCase().includes(searchTerm.toLowerCase()))
+                       .filter(item => itemMatchesSearch(item, searchTerm))
+                       .sort((a, b) => {
+                         let aValue: string | number, bValue: string | number;
+                         switch (sortBy) {
+                           case 'name':
+                             aValue = a.name.toLowerCase();
+                             bValue = b.name.toLowerCase();
+                             break;
+                           case 'difference':
+                             aValue = a.difference;
+                             bValue = b.difference;
+                             break;
+                           case 'currentPrice':
+                             aValue = itemDetails[a.id]?.currentPrice || 0;
+                             bValue = itemDetails[b.id]?.currentPrice || 0;
+                             break;
+                           case 'totalValue':
+                             aValue = (itemDetails[a.id]?.currentPrice || 0) * Math.max(0, a.difference);
+                             bValue = (itemDetails[b.id]?.currentPrice || 0) * Math.max(0, b.difference);
+                             break;
+                           case 'percentage':
+                             aValue = a.percentage || 0;
+                             bValue = b.percentage || 0;
+                             break;
+                           case 'dropRate':
+                             aValue = a.dropRate || 0;
+                             bValue = b.dropRate || 0;
+                             break;
+                           default:
+                             aValue = a.name.toLowerCase();
+                             bValue = b.name.toLowerCase();
+                         }
+                         if (sortOrder === 'asc') {
+                           return aValue > bValue ? 1 : aValue < bValue ? -1 : 0;
+                         } else {
+                           return aValue < bValue ? 1 : aValue > bValue ? -1 : 0;
+                         }
+                       })
                        .map((item, index) => (
                          <tr key={`${item.id}-${index}`} className="border-b border-gray-800 hover:bg-gray-800/50 transition-colors">
                            <td className="p-3 text-white">
@@ -1505,13 +1791,13 @@ export default function FarmingTrackerPage() {
                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-center">
                    <div>
                      <div className="text-2xl font-bold text-blue-400">
-                       {strikeChestStats.itemsWithStats.filter(item => item.name.toLowerCase().includes(searchTerm.toLowerCase())).length}
+                       {strikeChestStats.itemsWithStats.filter(item => itemMatchesSearch(item, searchTerm)).length}
                      </div>
                      <div className="text-gray-300 text-sm">{t('farmingTracker.summary.itemsShown')}</div>
                    </div>
                    <div>
                      <div className="text-2xl font-bold text-green-400">
-                       {formatGoldSilverCopper(strikeChestStats.itemsWithStats.filter(item => item.name.toLowerCase().includes(searchTerm.toLowerCase())).reduce((sum, item) => {
+                       {formatGoldSilverCopper(strikeChestStats.itemsWithStats.filter(item => itemMatchesSearch(item, searchTerm)).reduce((sum, item) => {
                          if (item.id > 0 && itemDetails[item.id]?.currentPrice) {
                            return sum + (itemDetails[item.id].currentPrice * Math.max(0, item.difference));
                          }
@@ -1522,7 +1808,7 @@ export default function FarmingTrackerPage() {
                    </div>
                    <div>
                      <div className="text-2xl font-bold text-yellow-400">
-                       {formatGoldSilverCopper(Math.round(strikeChestStats.itemsWithStats.filter(item => item.name.toLowerCase().includes(searchTerm.toLowerCase())).reduce((sum, item) => {
+                       {formatGoldSilverCopper(Math.round(strikeChestStats.itemsWithStats.filter(item => itemMatchesSearch(item, searchTerm)).reduce((sum, item) => {
                          if (item.id > 0 && itemDetails[item.id]?.currentPrice) {
                            return sum + (itemDetails[item.id].currentPrice * Math.max(0, item.difference));
                          }
@@ -1759,6 +2045,549 @@ export default function FarmingTrackerPage() {
             </div>
           </div>
         </div>
+           </>
+         )}
+
+         {/* Fractal Encryption Section */}
+         {activeSection === 'encryption' && (
+           <>
+             {/* Trofeos */}
+             <div className="bg-gray-900/80 backdrop-blur-sm border border-gray-700 rounded-lg p-6 shadow-2xl mb-8">
+               <h3 className="text-xl font-semibold text-white mb-4">{t('fractals.sections.trophies')}</h3>
+              <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+                <div className="lg:col-span-3 overflow-x-auto">
+                 <table className="w-full text-sm">
+                   <thead>
+                     <tr className="border-b border-gray-700 bg-gray-800/60">
+                       <th className="text-left p-3 text-gray-200 font-semibold">{t('fractals.table.name')}</th>
+                       <th className="p-2 text-gray-200 font-semibold">{t('fractals.table.manuscript')}</th>
+                       <th className="p-2 text-gray-200 font-semibold">{t('fractals.table.proof')}</th>
+                       <th className="p-2 text-gray-200 font-semibold">{t('fractals.table.treaties')}</th>
+                       <th className="p-2 text-gray-200 font-semibold">{t('fractals.table.postulate')}</th>
+                     </tr>
+                   </thead>
+                   <tbody>
+                     <tr className="border-b border-gray-800">
+                       <td className="p-3 text-gray-300">{t('fractals.table.basePrice')}</td>
+                       <td className="p-3 text-center text-green-400">00G 60S 00C</td>
+                       <td className="p-3 text-center text-green-400">00G 30S 00C</td>
+                       <td className="p-3 text-center text-green-400">00G 25S 00C</td>
+                       <td className="p-3 text-center text-green-400">00G 20S 00C</td>
+                     </tr>
+                      <tr>
+                       <td className="p-3 text-gray-300">{t('fractals.table.ratio')}</td>
+                       <td className="p-3 text-center text-gray-400">0.2854</td>
+                       <td className="p-3 text-center text-gray-400">0.428</td>
+                       <td className="p-3 text-center text-gray-400">0.2864</td>
+                       <td className="p-3 text-center text-gray-400">0.2855</td>
+                     </tr>
+                   </tbody>
+                 </table>
+                </div>
+                <div className="lg:col-span-1 space-y-2">
+                  <div className="bg-amber-200/20 border border-amber-300/30 rounded-lg p-2">
+                    <div className="text-xs font-semibold text-amber-200">{t('fractals.calculations.totalPerBox')}</div>
+                    <div className="text-sm font-bold text-amber-300">00G 42S 83C</div>
+                  </div>
+                  <div className="bg-amber-200/20 border border-amber-300/30 rounded-lg p-2">
+                    <div className="text-xs font-semibold text-amber-200">{t('fractals.calculations.bestIncomePerBox')}</div>
+                    <div className="text-sm font-bold text-amber-300">00G 48S 53C</div>
+                  </div>
+                </div>
+               </div>
+             </div>
+
+             {/* Materiales T5 */}
+             <div className="bg-gray-900/80 backdrop-blur-sm border border-gray-700 rounded-lg p-6 shadow-2xl mb-8">
+               <h3 className="text-xl font-semibold text-white mb-4">{t('fractals.sections.materialsT5')}</h3>
+              <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+                <div className="lg:col-span-3 overflow-x-auto">
+                 <table className="w-full text-sm">
+                   <thead>
+                     <tr className="border-b border-gray-700 bg-gray-800/60">
+                       <th className="text-left p-2 text-gray-200 font-semibold">{t('fractals.table.name')}</th>
+                       <th className="p-2 text-gray-200 font-semibold">
+                         <div className="flex items-center justify-center" title={t(fractalItemNames[24294])}>
+                           {itemDetails[24294]?.icon && (
+                             <Image 
+                               src={itemDetails[24294].icon} 
+                               alt={t(fractalItemNames[24294])}
+                               width={31} 
+                               height={31} 
+                               className="w-8 h-8"
+                             />
+                           )}
+                         </div>
+                       </th>
+                       <th className="p-2 text-gray-200 font-semibold">
+                         <div className="flex items-center justify-center" title={t(fractalItemNames[24341])}>
+                           {itemDetails[24341]?.icon && (
+                             <Image 
+                               src={itemDetails[24341].icon} 
+                               alt={t(fractalItemNames[24341])}
+                               width={31} 
+                               height={31} 
+                               className="w-8 h-8"
+                             />
+                           )}
+                         </div>
+                       </th>
+                       <th className="p-2 text-gray-200 font-semibold">
+                         <div className="flex items-center justify-center" title={t(fractalItemNames[24350])}>
+                           {itemDetails[24350]?.icon && (
+                             <Image 
+                               src={itemDetails[24350].icon} 
+                               alt={t(fractalItemNames[24350])}
+                               width={31} 
+                               height={31} 
+                               className="w-8 h-8"
+                             />
+                           )}
+                         </div>
+                       </th>
+                       <th className="p-2 text-gray-200 font-semibold">
+                         <div className="flex items-center justify-center" title={t(fractalItemNames[24356])}>
+                           {itemDetails[24356]?.icon && (
+                             <Image 
+                               src={itemDetails[24356].icon} 
+                               alt={t(fractalItemNames[24356])}
+                               width={31} 
+                               height={31} 
+                               className="w-8 h-8"
+                             />
+                           )}
+                         </div>
+                       </th>
+                       <th className="p-2 text-gray-200 font-semibold">
+                         <div className="flex items-center justify-center" title={t(fractalItemNames[24288])}>
+                           {itemDetails[24288]?.icon && (
+                             <Image 
+                               src={itemDetails[24288].icon} 
+                               alt={t(fractalItemNames[24288])}
+                               width={31} 
+                               height={31} 
+                               className="w-8 h-8"
+                             />
+                           )}
+                         </div>
+                       </th>
+                       <th className="p-2 text-gray-200 font-semibold">
+                         <div className="flex items-center justify-center" title={t(fractalItemNames[24299])}>
+                           {itemDetails[24299]?.icon && (
+                             <Image 
+                               src={itemDetails[24299].icon} 
+                               alt={t(fractalItemNames[24299])}
+                               width={31} 
+                               height={31} 
+                               className="w-8 h-8"
+                             />
+                           )}
+                         </div>
+                       </th>
+                       <th className="p-2 text-gray-200 font-semibold">
+                         <div className="flex items-center justify-center" title={t(fractalItemNames[24282])}>
+                           {itemDetails[24282]?.icon && (
+                             <Image 
+                               src={itemDetails[24282].icon} 
+                               alt={t(fractalItemNames[24282])}
+                               width={31} 
+                               height={31} 
+                               className="w-8 h-8"
+                             />
+                           )}
+                         </div>
+                       </th>
+                       <th className="p-2 text-gray-200 font-semibold">
+                         <div className="flex items-center justify-center" title={t(fractalItemNames[24276])}>
+                           {itemDetails[24276]?.icon && (
+                             <Image 
+                               src={itemDetails[24276].icon} 
+                               alt={t(fractalItemNames[24276])}
+                               width={31} 
+                               height={31} 
+                               className="w-8 h-8"
+                             />
+                           )}
+                         </div>
+                       </th>
+                     </tr>
+                   </thead>
+                   <tbody>
+                     <tr className="border-b border-gray-800">
+                                               <td className="p-1 text-gray-300">{t('fractals.table.basePrice')}</td>
+                        {([24294, 24341, 24350, 24356, 24288, 24299, 24282, 24276] as number[]).map((id) => (
+                          <td key={id} className="p-1 text-center">
+                           <span className="text-green-400 whitespace-nowrap">
+                              {itemDetails[id]?.buyPrice ? formatGoldSilverCopper(itemDetails[id].buyPrice) : '00G 00S 00C'}
+                           </span>
+                       </td>
+                        ))}
+                      </tr>
+                      <tr className="border-b border-gray-800">
+                        <td className="p-1 text-gray-300">{t('fractals.table.maxPrice')}</td>
+                        {([24294, 24341, 24350, 24356, 24288, 24299, 24282, 24276] as number[]).map((id) => (
+                          <td key={id} className="p-1 text-center">
+                           <span className="text-green-400 whitespace-nowrap">
+                         {(() => {
+                                  // Calcular las 3 diferencias de la tabla de Multiplicaciones
+                                  const dynamicRows = [
+                                    { qty: 1650, priceCopper: (itemDetails[24277]?.currentPrice || 0) * 0.9 },
+                                    { qty: 1650, priceCopper: (itemDetails[24277]?.buyPrice || 0) },
+                                    { qty: 892, priceCopper: (itemDetails[19721]?.currentPrice || 0) * 0.9 },
+                                  ];
+                                
+                                const differences = dynamicRows.map(row => {
+                                  // Total del bloque 0.9 × 250
+                                  const ids09 = [24295, 24358, 24351, 24357, 24289, 24300, 24283, 24277];
+                                  const total09 = ids09
+                                    .map(id => (itemDetails[id]?.currentPrice || 0) * 0.9 * 250)
+                                    .reduce((sum, v) => sum + v, 0);
+                                  
+                                  // T5 × 2000 + Resultado + 35g
+                                  const t5Ids = [24294, 24341, 24350, 24356, 24288, 24299, 24282];
+                                  const t5x2000 = t5Ids
+                                    .map(t5Id => (itemDetails[t5Id]?.buyPrice || 0) * 2000)
+                             .reduce((sum, price) => sum + price, 0);
+                           
+                                  const mult = row.qty * row.priceCopper;
+                                  const plusThirtyFiveGold = 350000;
+                                  const combined = t5x2000 + mult + plusThirtyFiveGold;
+                                  
+                                  return total09 - combined;
+                                });
+                                
+                                // MIN(diferencia1, diferencia2, diferencia3) / 14000 + precioBase
+                                const minDifference = Math.min(...differences);
+                                const precioBase = itemDetails[id]?.buyPrice || 0;
+                                const precioMax = (minDifference / 14000) + precioBase;
+                                
+                                return formatGoldSilverCopper(Math.round(precioMax));
+                         })()}
+                           </span>
+                       </td>
+                        ))}
+                     </tr>
+                      {/* Fila T5 × 2000 - OCULTA EN FRONTEND */}
+                      {/* 
+                     <tr className="border-b border-gray-800">
+                        <td className="p-3 text-gray-300">T5 × 2000</td>
+                        {([24294, 24341, 24350, 24356, 24288, 24299, 24282, 24276] as number[]).map((id) => (
+                          <td key={id} className="p-3 text-center">
+                           <span className="text-green-400">
+                              {id !== 24276
+                                ? formatGoldSilverCopper((itemDetails[id]?.buyPrice || 0) * 2000)
+                                : '—'}
+                           </span>
+                       </td>
+                        ))}
+                     </tr>
+                      */}
+                      <tr>
+                       <td className="p-1 text-gray-300">{t('fractals.table.ratio')}</td>
+                        {Array.from({ length: 8 }).map((_, idx) => (
+                          <td key={idx} className="p-1 text-center text-gray-400">0.3378375</td>
+                        ))}
+                     </tr>
+                    </tbody>
+                  </table>
+                         </div>
+                <div className="lg:col-span-1 space-y-2">
+                  <div className="bg-amber-200/20 border border-amber-300/30 rounded-lg p-2">
+                    <div className="text-xs font-semibold text-amber-200">{t('fractals.calculations.totalPerBox')}</div>
+                    <div className="text-sm font-bold text-amber-300">
+                         {(() => {
+                           const ratios: Record<number, number> = {
+                          24294: 0.3378375,
+                          24341: 0.3378375,
+                          24350: 0.3378375,
+                          24356: 0.3378375,
+                          24288: 0.3378375,
+                          24299: 0.3378375,
+                          24282: 0.3378375,
+                          24276: 0.3378375,
+                        };
+                           const total = [24294, 24341, 24350, 24356, 24288, 24299, 24282, 24276]
+                          .map((id) => (itemDetails[id]?.buyPrice || 0) * ratios[id])
+                                   .reduce((sum, price) => sum + price, 0);
+                        return formatGoldSilverCopper(Math.round(total));
+                         })()}
+                               </div>
+                  </div>
+                                    {/* Sidebar Total T5 × 2000 - OCULTO EN FRONTEND */}
+                  {/* 
+                  <div className="bg-amber-200/20 border border-amber-300/30 rounded-lg p-4">
+                    <div className="text-sm font-semibold text-amber-200">Total T5 × 2000</div>
+                    <div className="text-lg font-bold text-amber-300">
+                         {(() => {
+                        const ids = [24294, 24341, 24350, 24356, 24288, 24299, 24282];
+                        const total = ids
+                          .map((id) => (itemDetails[id]?.buyPrice || 0) * 2000)
+                             .reduce((sum, price) => sum + price, 0);
+                        return formatGoldSilverCopper(Math.round(total));
+                         })()}
+                               </div>
+                  </div>
+                  */}
+                                   </div>
+                                   </div>
+                                   </div>
+
+             {/* Otros Drops */}
+             <div className="bg-gray-900/80 backdrop-blur-sm border border-gray-700 rounded-lg p-6 shadow-2xl mb-8">
+               <h3 className="text-xl font-semibold text-white mb-4">{t('fractals.sections.otherDrops')}</h3>
+              <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+                <div className="lg:col-span-3 overflow-x-auto">
+                 <table className="w-full text-sm">
+                   <thead>
+                     <tr className="border-b border-gray-700 bg-gray-800/60">
+                       <th className="text-left p-3 text-gray-200 font-semibold">{t('fractals.table.name')}</th>
+                        <th className="p-2 text-gray-200 font-semibold">{t('fractals.table.basePrice')}</th>
+                        <th className="p-2 text-gray-200 font-semibold">{t('fractals.table.maxPrice')}</th>
+                        <th className="p-2 text-gray-200 font-semibold">{t('fractals.table.ratio')}</th>
+                     </tr>
+                   </thead>
+                   <tbody>
+                      {[
+                        { id: 49424, label: t('fractals.items.infusion'), ratio: 2.2637 },
+                        { id: 70438, label: t('fractals.items.fractalKey'), ratio: 0.1 },
+                        { id: 71428, label: t('fractals.items.relicBag'), ratio: 0.0668 },
+                      ].map((row) => (
+                        <tr key={row.id} className="border-b border-gray-800">
+                          <td className="p-3 text-gray-300">{row.label}</td>
+                          <td className="p-3 text-center text-green-400">
+                            <span className="whitespace-nowrap">
+                              {itemDetails[row.id]?.buyPrice ? formatGoldSilverCopper(itemDetails[row.id].buyPrice) : '00G 00S 00C'}
+                            </span>
+                       </td>
+                          <td className="p-3 text-center text-green-400">
+                            <span className="whitespace-nowrap">
+                              {itemDetails[row.id]?.currentPrice ? formatGoldSilverCopper(itemDetails[row.id].currentPrice) : '00G 00S 00C'}
+                            </span>
+                       </td>
+                          <td className="p-3 text-center text-gray-400">{row.ratio}</td>
+                        </tr>
+                      ))}
+                   </tbody>
+                 </table>
+                </div>
+                <div className="lg:col-span-1 space-y-2">
+                  <div className="bg-amber-200/20 border border-amber-300/30 rounded-lg p-2">
+                    <div className="text-xs font-semibold text-amber-200">{t('fractals.calculations.totalPerBoxOther')}</div>
+                    <div className="text-sm font-bold text-amber-300">
+                         {(() => {
+                           const ratios = { 49424: 2.2637, 70438: 0.1, 71428: 0.0668 } as Record<number, number>;
+                           const total = [49424, 70438, 71428]
+                             .map((id) => (itemDetails[id]?.buyPrice || 0) * (ratios[id] || 0))
+                             .reduce((sum, price) => sum + price, 0);
+                           return formatGoldSilverCopper(Math.round(total));
+                         })()}
+                               </div>
+                                   </div>
+                                   </div>
+                                   </div>
+                                   </div>
+
+             {/* Multiplicaciones - OCULTO EN FRONTEND */}
+             {/* 
+             <div className="bg-gray-900/80 backdrop-blur-sm border border-gray-700 rounded-lg p-6 shadow-2xl mb-8">
+                 <div className="flex items-center justify-between mb-4">
+                   <h3 className="text-xl font-semibold text-white">Multiplicaciones</h3>
+                   <div className="flex items-center gap-2">
+                     <button
+                       onClick={() => refreshItemPrice(24277)}
+                       className="px-3 py-1.5 bg-teal-600 hover:bg-teal-700 text-white rounded-md text-sm"
+                     >
+                       Refrescar 24277
+                     </button>
+                     <button
+                       onClick={() => refreshItemPrice(19721)}
+                       className="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-md text-sm"
+                     >
+                       Refrescar 19721
+                     </button>
+                               </div>
+                                 </div>
+               <div className="overflow-x-auto">
+                 <table className="w-full text-sm">
+                   <thead>
+                     <tr className="border-b border-gray-700 bg-gray-800/60">
+                         <th className="text-left p-3 text-gray-200 font-semibold">Cantidad</th>
+                         <th className="p-2 text-gray-200 font-semibold">Valor</th>
+                         <th className="p-2 text-gray-200 font-semibold">Resultado</th>
+                         <th className="p-2 text-gray-200 font-semibold">T5 × 2000 + Resultado + 35g</th>
+                         <th className="p-2 text-gray-200 font-semibold">Diferencia vs 0.9 × 250</th>
+                     </tr>
+                   </thead>
+                   <tbody>
+                       {(() => {
+                         const dynamicRows = [
+                           { qty: 1650, priceCopper: Math.round((itemDetails[24277]?.currentPrice || 0) * 0.9), display: itemDetails[24277]?.currentPrice ? formatGoldSilverCopper(itemDetails[24277].currentPrice * 0.9) : '—' },
+                           { qty: 1650, priceCopper: Math.round((itemDetails[24277]?.buyPrice || 0)), display: itemDetails[24277]?.buyPrice ? formatGoldSilverCopper(itemDetails[24277].buyPrice  ) : '—' },
+                           { qty: 892, priceCopper: Math.round((itemDetails[19721]?.currentPrice || 0) * 0.9), display: itemDetails[19721]?.currentPrice ? formatGoldSilverCopper(itemDetails[19721].currentPrice * 0.9) : '—' },
+                         ];
+                         return dynamicRows.map((row, idx) => (
+                           <tr key={idx} className="border-b border-gray-800">
+                             <td className="p-3 text-gray-300 font-semibold">{row.qty.toLocaleString()}</td>
+                             <td className="p-3 text-green-400">{row.display}</td>
+                             <td className="p-3 text-yellow-300 font-semibold">{formatGoldSilverCopper(row.qty * row.priceCopper)}</td>
+                             <td className="p-3 text-blue-300 font-semibold">
+                               {(() => {
+                                 const t5Ids = [24294, 24341, 24350, 24356, 24288, 24299, 24282];
+                                 const t5x2000 = t5Ids
+                                   .map((id: number) => (itemDetails[id]?.buyPrice || 0) * 2000)
+                                   .reduce((sum: number, price: number) => sum + price, 0);
+                                 const mult = row.qty * row.priceCopper;
+                                 const plusThirtyFiveGold = 350000; // 35g en cobre
+                                 return formatGoldSilverCopper(Math.round(t5x2000 + mult + plusThirtyFiveGold));
+                         })()}
+                       </td>
+                             <td className="p-3 text-red-300 font-semibold">
+                               {(() => {
+                                 // Total del bloque 0.9 × 250 (IDs provistas)
+                                 const ids09: number[] = [24295, 24358, 24351, 24357, 24289, 24300, 24283, 24277];
+                                 const total09 = ids09
+                                   .map((id: number) => Math.round((itemDetails[id]?.currentPrice || 0) * 0.9) * 250)
+                                   .reduce((sum: number, v: number) => sum + v, 0);
+                                 // Valor combinado de esta fila: T5×2000 + (qty×valor) + 35g
+                                 const t5Ids: number[] = [24294, 24341, 24350, 24356, 24288, 24299, 24282];
+                                 const t5x2000 = t5Ids
+                                   .map((id: number) => (itemDetails[id]?.buyPrice || 0) * 2000)
+                                   .reduce((sum: number, price: number) => sum + price, 0);
+                                 const mult = row.qty * row.priceCopper;
+                                 const plusThirtyFiveGold = 350000;
+                                 const combined = Math.round(t5x2000 + mult + plusThirtyFiveGold);
+                                 const diff = total09 - combined;
+                                 return formatGoldSilverCopper(diff);
+                               })()}
+                             </td>
+                     </tr>
+                         ));
+                       })()}
+                   </tbody>
+                 </table>
+               </div>
+             </div>
+             */}
+
+             {/* Profits */}
+             <div className="bg-gray-900/80 backdrop-blur-sm border border-gray-700 rounded-lg p-6 shadow-2xl mb-8">
+               <h3 className="text-xl font-semibold text-white mb-4">{t('fractals.sections.profits')}</h3>
+              <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+                <div className="lg:col-span-3 overflow-x-auto">
+                 <table className="w-full text-sm">
+                   <thead>
+                     <tr className="border-b border-gray-700 bg-gray-800/60">
+                       <th className="text-left p-3 text-gray-200 font-semibold">{t('fractals.table.name')}</th>
+                        <th className="p-2 text-gray-200 font-semibold">{t('fractals.table.basePrice')}</th>
+                        <th className="p-2 text-gray-200 font-semibold">{t('fractals.table.maxPrice')}</th>
+                        <th className="p-2 text-gray-200 font-semibold">{t('fractals.table.ratio')}</th>
+                     </tr>
+                   </thead>
+                   <tbody>
+                      {[
+                        { label: t('fractals.profits.boxKey90'), keyRatio: 0.9 },
+                        { label: t('fractals.profits.boxKeyBuyOrder'), keyRatio: 1.0 },
+                        { label: t('fractals.profits.boxKeySellOrder'), keyRatio: 1.2 },
+                      ].map((row, idx) => (
+                        <tr key={idx} className="border-b border-gray-800">
+                          <td className="p-3 text-gray-300">{row.label}</td>
+                          <td className="p-3 text-center text-green-400">
+                            <span className="whitespace-nowrap">
+                              {itemDetails[70438]?.buyPrice ? formatGoldSilverCopper(itemDetails[70438].buyPrice) : '—'}
+                            </span>
+                          </td>
+                          <td className="p-3 text-center text-green-400">
+                            <span className="whitespace-nowrap">
+                              {itemDetails[70438]?.currentPrice ? formatGoldSilverCopper(itemDetails[70438].currentPrice) : '—'}
+                            </span>
+                          </td>
+                          <td className="p-3 text-center text-yellow-300 font-semibold">
+                            <span className="whitespace-nowrap">
+                              {itemDetails[70438]?.buyPrice ? formatGoldSilverCopper(Math.round((itemDetails[70438]?.buyPrice || 0) * row.keyRatio)) : '—'}
+                            </span>
+                          </td>
+                     </tr>
+                      ))}
+                   </tbody>
+                 </table>
+                </div>
+                <div className="lg:col-span-1 space-y-2">
+                  <div className="bg-amber-200/20 border border-amber-300/30 rounded-lg p-2">
+                    <div className="text-xs font-semibold text-amber-200">{t('fractals.calculations.totalPerBox')}</div>
+                    <div className="text-sm font-bold text-amber-300">
+                         {(() => {
+                           const total = [0.9, 1.0, 1.2]
+                             .map((ratio) => (itemDetails[70438]?.buyPrice || 0) * ratio)
+                             .reduce((sum, price) => sum + price, 0);
+                           return formatGoldSilverCopper(Math.round(total));
+                         })()}
+                               </div>
+                  </div>
+                </div>
+               </div>
+             </div>
+
+             {/* Cálculo 0.9 × 250 - OCULTO EN FRONTEND */}
+             {/* 
+             <div className="bg-gray-900/80 backdrop-blur-sm border border-gray-700 rounded-lg p-6 shadow-2xl mb-8">
+                 <div className="flex items-center justify-between mb-4">
+                   <h3 className="text-xl font-semibold text-white">Cálculo 0.9 × 250</h3>
+                   {(() => {
+                     const ids = [24295, 24358, 24351, 24357, 24289, 24300, 24283, 24277];
+                     return (
+                       <button
+                         onClick={() => refreshItemPricesBulk(ids)}
+                         className="px-3 py-1.5 bg-purple-600 hover:bg-purple-700 text-white rounded-md text-sm"
+                       >
+                         Refrescar IDs 0.9×250
+                       </button>
+                     );
+                   })()}
+                 </div>
+               <div className="overflow-x-auto">
+                 <table className="w-full text-sm">
+                   <thead>
+                     <tr className="border-b border-gray-700 bg-gray-800/60">
+                         <th className="text-left p-3 text-gray-200 font-semibold">Item</th>
+                         <th className="p-2 text-gray-200 font-semibold">Precio (sell)</th>
+                         <th className="p-2 text-gray-200 font-semibold">× 0.9</th>
+                         <th className="p-2 text-gray-200 font-semibold">× 250</th>
+                         <th className="p-2 text-gray-200 font-semibold">Resultado</th>
+                     </tr>
+                   </thead>
+                   <tbody>
+                       {(() => {
+                         const idsToSum: number[] = [24295, 24358, 24351, 24357, 24289, 24300, 24283, 24277];
+                         const rows = idsToSum.map((id) => {
+                           const price = itemDetails[id]?.currentPrice || 0;
+                           const price90 = Math.round(price * 0.9);
+                           const result = price90 * 250;
+                           return { id, price, price90, result };
+                         });
+                         const total = rows.reduce((sum, r) => sum + r.result, 0);
+                         return (
+                           <>
+                             {rows.map((r) => (
+                               <tr key={r.id} className="border-b border-gray-800">
+                                 <td className="p-3 text-gray-300">{itemDetails[r.id]?.name || r.id}</td>
+                                 <td className="p-3 text-center text-green-400">{r.price ? formatGoldSilverCopper(r.price) : '—'}</td>
+                                 <td className="p-3 text-center text-blue-400">{r.price ? formatGoldSilverCopper(r.price90) : '—'}</td>
+                                 <td className="p-3 text-center text-gray-300">250</td>
+                                 <td className="p-3 text-center text-yellow-300 font-semibold">{r.price ? formatGoldSilverCopper(r.result) : '—'}</td>
+                     </tr>
+                             ))}
+                             <tr>
+                               <td className="p-3 text-right text-gray-200 font-semibold" colSpan={4}>Total</td>
+                               <td className="p-3 text-center text-amber-300 font-bold">{formatGoldSilverCopper(total)}</td>
+                     </tr>
+                           </>
+                         );
+                       })()}
+                   </tbody>
+                 </table>
+               </div>
+             </div>
+             */}
            </>
          )}
        </main>
