@@ -642,6 +642,9 @@
   "fractals.profits.boxKey90": "Caisse + Clé 90%",
   "fractals.profits.boxKeyBuyOrder": "Caisse + Clé Ordre d'Achat",
   "fractals.profits.boxKeySellOrder": "Caisse + Clé Ordre de Vente",
+  "fractals.profits.boxMinKey20s": "Caisse MIN + Clé 20s",
+  "fractals.profits.boxMinKey25s04c": "Caisse MIN + Clé 25s04c",
+  "fractals.profits.boxMinKey30s": "Caisse MIN + Clé 30s",
   
   "fractals.profits.table.boxKeyTypes": "Types Caisse + Clé",
   "fractals.profits.table.box": "Caisse",

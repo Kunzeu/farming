@@ -641,6 +641,9 @@
   "fractals.profits.boxKey90": "Box + Key 90%",
   "fractals.profits.boxKeyBuyOrder": "Box + Key BuyOrder",
   "fractals.profits.boxKeySellOrder": "Box + Key SellOrder",
+  "fractals.profits.boxMinKey20s": "Box MIN + Key 20s",
+  "fractals.profits.boxMinKey25s04c": "Box MIN + Key 25s04c",
+  "fractals.profits.boxMinKey30s": "Box MIN + Key 30s",
   
   "fractals.profits.table.boxKeyTypes": "Box + Key Types",
   "fractals.profits.table.box": "Box",

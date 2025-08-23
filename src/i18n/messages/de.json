@@ -641,6 +641,9 @@
   "fractals.profits.boxKey90": "Kiste + Schlüssel 90%",
   "fractals.profits.boxKeyBuyOrder": "Kiste + Schlüssel Kaufauftrag",
   "fractals.profits.boxKeySellOrder": "Kiste + Schlüssel Verkaufsauftrag",
+  "fractals.profits.boxMinKey20s": "Kiste MIN + Schlüssel 20s",
+  "fractals.profits.boxMinKey25s04c": "Kiste MIN + Schlüssel 25s04c",
+  "fractals.profits.boxMinKey30s": "Kiste MIN + Schlüssel 30s",
   
   "fractals.profits.table.boxKeyTypes": "Kiste + Schlüssel Typen",
   "fractals.profits.table.box": "Kiste",

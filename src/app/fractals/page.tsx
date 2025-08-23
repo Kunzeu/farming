@@ -2111,11 +2111,114 @@ export default function FarmingTrackerPage() {
                 <div className="lg:col-span-1 space-y-2">
                   <div className="bg-amber-200/20 border border-amber-300/30 rounded-lg p-2">
                     <div className="text-xs font-semibold text-amber-200">{t('fractals.calculations.totalPerBox')}</div>
-                    <div className="text-sm font-bold text-amber-300">00G 42S 83C</div>
+                    <div className="text-sm font-bold text-amber-300">00g 42s 83c</div>
                   </div>
                   <div className="bg-amber-200/20 border border-amber-300/30 rounded-lg p-2">
                     <div className="text-xs font-semibold text-amber-200">{t('fractals.calculations.bestIncomePerBox')}</div>
-                    <div className="text-sm font-bold text-amber-300">00G 48S 53C</div>
+                    <div className="text-sm font-bold text-amber-300">
+                      {(() => {
+                        // precioFijo: valor base
+                        const precioFijo = 4283; // 00G 42S 83C en cobre (42×100 + 83 = 4,283)
+                        
+                        // Calcular los valores de Total Por Caja de T5
+                        const totalPorCajaT5_1 = (() => {
+                          const ratios: Record<number, number> = {
+                            24294: 0.3378375, 24341: 0.3378375, 24350: 0.3378375, 24356: 0.3378375,
+                            24288: 0.3378375, 24299: 0.3378375, 24282: 0.3378375, 24276: 0.3378375,
+                          };
+                          return [24294, 24341, 24350, 24356, 24288, 24299, 24282, 24276]
+                            .map((id) => (itemDetails[id]?.buyPrice || 0) * ratios[id])
+                            .reduce((sum, price) => sum + price, 0);
+                        })();
+                        
+                        const totalPorCajaT5_2 = (() => {
+                          const dynamicRows = [
+                            { qty: 1650, priceCopper: (itemDetails[24277]?.currentPrice || 0) * 0.9 },
+                            { qty: 1650, priceCopper: (itemDetails[24277]?.buyPrice || 0) },
+                            { qty: 892, priceCopper: (itemDetails[19721]?.currentPrice || 0) * 0.9 },
+                          ];
+                          
+                          const differences = dynamicRows.map(row => {
+                            const ids09 = [24295, 24358, 24351, 24357, 24289, 24300, 24283, 24277];
+                            const total09 = ids09
+                              .map(id => (itemDetails[id]?.currentPrice || 0) * 0.9 * 250)
+                              .reduce((sum, v) => sum + v, 0);
+                            
+                            const t5Ids = [24294, 24341, 24350, 24356, 24288, 24299, 24282];
+                            const t5x2000 = t5Ids
+                              .map(t5Id => (itemDetails[t5Id]?.buyPrice || 0) * 2000)
+                              .reduce((sum, price) => sum + price, 0);
+                          
+                            const mult = row.qty * row.priceCopper;
+                            const plusThirtyFiveGold = 350000;
+                            const combined = t5x2000 + mult + plusThirtyFiveGold;
+                            
+                            return total09 - combined;
+                          });
+                          
+                          const minDifference = Math.max(...differences);
+                          const totalPorCaja = (() => {
+                            const ratios: Record<number, number> = {
+                              24294: 0.3378375, 24341: 0.3378375, 24350: 0.3378375, 24356: 0.3378375,
+                              24288: 0.3378375, 24299: 0.3378375, 24282: 0.3378375, 24276: 0.3378375,
+                            };
+                            return [24294, 24341, 24350, 24356, 24288, 24299, 24282, 24276]
+                              .map((id) => (itemDetails[id]?.buyPrice || 0) * ratios[id])
+                              .reduce((sum, price) => sum + price, 0);
+                          })();
+                          
+                          return (minDifference / 14000) + totalPorCaja;
+                        })();
+                        
+                        // MAX entre los 2 TotalPorCajaT5
+                        const maxTotalPorCajaT5 = Math.max(totalPorCajaT5_1, totalPorCajaT5_2);
+                        
+                        // Calcular los valores de Total Por Caja de Otros Drops
+                        const totalPorCajaOtrosDrops_1 = (() => {
+                          const ratios = { 
+                            49424: 2.2637, 73248: 0.1, 70064: 0.0668, 74268: 0.02, 83008: 0.00017,
+                            46735: 1.0108, 43971: 0.0021
+                          } as Record<number, number>;
+                          
+                          const infusionPrice = (itemDetails[49424]?.currentPrice || 0) * 0.9;
+                          const otherItemsTotal = [73248, 70064, 74268, 83008].map((id) => {
+                            if (id === 83008) {
+                              const currentPrice = itemDetails[id]?.currentPrice || 0;
+                              const price85 = currentPrice * 0.85;
+                              const ratio = ratios[id] || 0;
+                              return Math.max(0.01, price85 * ratio);
+                            } else if (id === 49424) {
+                              return (itemDetails[id]?.currentPrice || 0) * 0.9 * (ratios[id] || 0);
+                            } else {
+                              return (itemDetails[id]?.buyPrice || 0) * (ratios[id] || 0);
+                            }
+                          }).reduce((sum, price) => sum + price, 0);
+                          
+                          return infusionPrice + otherItemsTotal;
+                        })();
+                        
+                        const totalPorCajaOtrosDrops_2 = (() => {
+                          const ratios = { 
+                            49424: 2.2637, 73248: 0.1, 70064: 0.0668, 74268: 0.02, 83008: 0.00017,
+                            46735: 1.0108, 43971: 0.0021
+                          } as Record<number, number>;
+                          
+                          return [49424, 73248, 70064, 74268, 83008].map((id) => {
+                            const precioMax = (window as any).precioMaxValues?.[id] || 0;
+                            const ratio = ratios[id] || 0;
+                            return precioMax * ratio;
+                          }).reduce((sum, price) => sum + price, 0);
+                        })();
+                        
+                        // MAX entre las 2 líneas de OtrosDrops
+                        const maxTotalPorCajaOtrosDrops = Math.max(totalPorCajaOtrosDrops_1, totalPorCajaOtrosDrops_2);
+                        
+                        // Calcular Mejor Income Por Caja
+                        const mejorIncomePorCaja = precioFijo + maxTotalPorCajaT5 + maxTotalPorCajaOtrosDrops;
+                        
+                        return formatGoldSilverCopper(Math.round(mejorIncomePorCaja));
+                      })()}
+                    </div>
                   </div>
                 </div>
                </div>
@@ -2129,107 +2232,107 @@ export default function FarmingTrackerPage() {
                  <table className="w-full text-xs sm:text-sm">
                    <thead>
                      <tr className="border-b border-gray-700 bg-gray-800/60">
-                       <th className="text-left p-1 sm:p-2 text-gray-200 font-semibold">{t('fractals.table.name')}</th>
-                       <th className="p-1 sm:p-2 text-gray-200 font-semibold">
+                       <th className="text-left p-1 text-gray-200 font-semibold">{t('fractals.table.name')}</th>
+                       <th className="p-1 text-gray-200 font-semibold">
                          <div className="flex items-center justify-center" title={t(fractalItemNames[24294])}>
                            {itemDetails[24294]?.icon && (
                              <Image 
                                src={itemDetails[24294].icon} 
                                alt={t(fractalItemNames[24294])}
-                               width={31} 
-                               height={31} 
-                               className="w-6 h-6 sm:w-8 sm:h-8"
+                               width={29} 
+                               height={29} 
+                               className="w-7 h-7"
                              />
                            )}
                          </div>
                        </th>
-                       <th className="p-2 text-gray-200 font-semibold">
+                       <th className="p-1 text-gray-200 font-semibold">
                          <div className="flex items-center justify-center" title={t(fractalItemNames[24341])}>
                            {itemDetails[24341]?.icon && (
                              <Image 
                                src={itemDetails[24341].icon} 
                                alt={t(fractalItemNames[24341])}
-                               width={31} 
-                               height={31} 
-                               className="w-8 h-8"
+                               width={29} 
+                               height={29} 
+                               className="w-7 h-7"
                              />
                            )}
                          </div>
                        </th>
-                       <th className="p-2 text-gray-200 font-semibold">
+                       <th className="p-1 text-gray-200 font-semibold">
                          <div className="flex items-center justify-center" title={t(fractalItemNames[24350])}>
                            {itemDetails[24350]?.icon && (
                              <Image 
                                src={itemDetails[24350].icon} 
                                alt={t(fractalItemNames[24350])}
-                               width={31} 
-                               height={31} 
-                               className="w-8 h-8"
+                               width={29} 
+                               height={29} 
+                               className="w-7 h-7"
                              />
                            )}
                          </div>
                        </th>
-                       <th className="p-2 text-gray-200 font-semibold">
+                       <th className="p-1 text-gray-200 font-semibold">
                          <div className="flex items-center justify-center" title={t(fractalItemNames[24356])}>
                            {itemDetails[24356]?.icon && (
                              <Image 
                                src={itemDetails[24356].icon} 
                                alt={t(fractalItemNames[24356])}
-                               width={31} 
-                               height={31} 
-                               className="w-8 h-8"
+                               width={29} 
+                               height={29} 
+                               className="w-7 h-7"
                              />
                            )}
                          </div>
                        </th>
-                       <th className="p-2 text-gray-200 font-semibold">
+                       <th className="p-1 text-gray-200 font-semibold">
                          <div className="flex items-center justify-center" title={t(fractalItemNames[24288])}>
                            {itemDetails[24288]?.icon && (
                              <Image 
                                src={itemDetails[24288].icon} 
                                alt={t(fractalItemNames[24288])}
-                               width={31} 
-                               height={31} 
-                               className="w-8 h-8"
+                               width={29} 
+                               height={29} 
+                               className="w-7 h-7"
                              />
                            )}
                          </div>
                        </th>
-                       <th className="p-2 text-gray-200 font-semibold">
+                       <th className="p-1 text-gray-200 font-semibold">
                          <div className="flex items-center justify-center" title={t(fractalItemNames[24299])}>
                            {itemDetails[24299]?.icon && (
                              <Image 
                                src={itemDetails[24299].icon} 
                                alt={t(fractalItemNames[24299])}
-                               width={31} 
-                               height={31} 
-                               className="w-8 h-8"
+                               width={29} 
+                               height={29} 
+                               className="w-7 h-7"
                              />
                            )}
                          </div>
                        </th>
-                       <th className="p-2 text-gray-200 font-semibold">
+                       <th className="p-1 text-gray-200 font-semibold">
                          <div className="flex items-center justify-center" title={t(fractalItemNames[24282])}>
                            {itemDetails[24282]?.icon && (
                              <Image 
                                src={itemDetails[24282].icon} 
                                alt={t(fractalItemNames[24282])}
-                               width={31} 
-                               height={31} 
-                               className="w-8 h-8"
+                               width={29} 
+                               height={29} 
+                               className="w-7 h-7"
                              />
                            )}
                          </div>
                        </th>
-                       <th className="p-2 text-gray-200 font-semibold">
+                       <th className="p-1 text-gray-200 font-semibold">
                          <div className="flex items-center justify-center" title={t(fractalItemNames[24276])}>
                            {itemDetails[24276]?.icon && (
                              <Image 
                                src={itemDetails[24276].icon} 
                                alt={t(fractalItemNames[24276])}
-                               width={31} 
-                               height={31} 
-                               className="w-8 h-8"
+                               width={29} 
+                               height={29} 
+                               className="w-7 h-7"
                              />
                            )}
                          </div>
@@ -2280,7 +2383,7 @@ export default function FarmingTrackerPage() {
                                   return total09 - combined;
                                 });
                                 
-                                // MIN(diferencia1, diferencia2, diferencia3) / 14000 + precioBase
+                                // MAX(diferencia1, diferencia2, diferencia3) / 14000 + precioBase
                                 const minDifference = Math.min(...differences);
                                 const precioBase = itemDetails[id]?.buyPrice || 0;
                                 const precioMax = (minDifference / 14000) + precioBase;
@@ -2365,18 +2468,12 @@ export default function FarmingTrackerPage() {
                            return total09 - combined;
                          });
                          
-                         // MIN(diferencia1, diferencia2, diferencia3) / 14000 + totalPorCaja
-                         const minDifference = Math.min(...differences);
+                         // MAX(diferencia1, diferencia2, diferencia3) / 14000 + totalPorCaja
+                         const minDifference = Math.max(...differences);
                          const totalPorCaja = (() => {
                            const ratios: Record<number, number> = {
-                             24294: 0.3378375,
-                             24341: 0.3378375,
-                             24350: 0.3378375,
-                             24356: 0.3378375,
-                             24288: 0.3378375,
-                             24299: 0.3378375,
-                             24282: 0.3378375,
-                             24276: 0.3378375,
+                             24294: 0.3378375, 24341: 0.3378375, 24350: 0.3378375, 24356: 0.3378375,
+                             24288: 0.3378375, 24299: 0.3378375, 24282: 0.3378375, 24276: 0.3378375,
                            };
                            return [24294, 24341, 24350, 24356, 24288, 24299, 24282, 24276]
                              .map((id) => (itemDetails[id]?.buyPrice || 0) * ratios[id])
@@ -2401,7 +2498,7 @@ export default function FarmingTrackerPage() {
                              .reduce((sum, price) => sum + price, 0);
                         return formatGoldSilverCopper(Math.round(total));
                          })()}
-                               </div>
+                   </div>
                   </div>
                   */}
                                    </div>
@@ -2423,8 +2520,8 @@ export default function FarmingTrackerPage() {
                              <Image 
                                src={itemDetails[49424].icon} 
                                alt={t('fractals.items.infusion')}
-                               width={31} 
-                               height={31} 
+                               width={30} 
+                               height={30} 
                                className="w-6 h-6 sm:w-8 sm:h-8"
                              />
                            )}
@@ -2436,8 +2533,8 @@ export default function FarmingTrackerPage() {
                              <Image 
                                src={itemDetails[70438].icon} 
                                alt={t('fractals.items.fractalKey')}
-                               width={31} 
-                               height={31} 
+                               width={30} 
+                               height={30} 
                                className="w-6 h-6 sm:w-8 sm:h-8"
                              />
                            )}
@@ -2448,8 +2545,8 @@ export default function FarmingTrackerPage() {
                            <Image 
                              src="https://render.guildwars2.com/file/F435090B4D1205CD0491DA2D5D20A12FE2023B6E/740217.png"
                              alt="Bag of Fractal Relics"
-                             width={31} 
-                             height={31} 
+                             width={30} 
+                             height={30} 
                              className="w-6 h-6 sm:w-8 sm:h-8"
                            />
                          </div>
@@ -2459,8 +2556,8 @@ export default function FarmingTrackerPage() {
                            <Image 
                              src="https://render.guildwars2.com/file/BAF43C0425BA631B9C49E771F9EB16E32C1E57E1/1203237.png"
                              alt="Mini Professor Mew"
-                             width={31} 
-                             height={31} 
+                             width={30} 
+                             height={30} 
                              className="w-6 h-6 sm:w-8 sm:h-8"
                            />
                          </div>
@@ -2470,8 +2567,8 @@ export default function FarmingTrackerPage() {
                              <Image 
                                src="https://render.guildwars2.com/file/EF63A10BD2317CECCEA63A3B7E6555550B414C4E/1766399.png"
                                alt="Rare Unid"
-                               width={31} 
-                               height={31} 
+                               width={30} 
+                               height={30} 
                                className="w-6 h-6 sm:w-8 sm:h-8"
                              />                           
                          </div>
@@ -2492,8 +2589,8 @@ export default function FarmingTrackerPage() {
                              <Image 
                                src="https://render.guildwars2.com/file/C5DA0BE8047D800F72D9CE2B62E5036754D7E3DB/607547.png" 
                                alt="Aetherize Skins"
-                               width={31} 
-                               height={31} 
+                               width={30} 
+                               height={30} 
                                className="w-6 h-6 sm:w-8 sm:h-8"
                              />
                          </div>
@@ -2519,8 +2616,8 @@ export default function FarmingTrackerPage() {
                                     // Cálculo oculto: Total crafting cost ÷ 5 para Toxic Tuning Crystal
                                     // Ingredientes: 3 Crystalline Dust + 5 Pristine Toxic Spore + 100 Empyreal Fragment
                                     const crystallineDust = (itemDetails[24277]?.buyPrice || 0) * 3;
-                                    const toxicSpore = (itemDetails[19721]?.buyPrice || 0) * 5;
-                                    const empyrealFragment = (itemDetails[19718]?.buyPrice || 0) * 100;
+                                    const toxicSpore = (itemDetails[48884]?.buyPrice || 0) * 5;
+                                    const empyrealFragment = (itemDetails[46735]?.buyPrice || 0)*100;
                                     const totalCraftingCost = crystallineDust + toxicSpore + empyrealFragment;
                                     const pricePerUnit = (totalCraftingCost / 5);
                                     
@@ -2551,70 +2648,72 @@ export default function FarmingTrackerPage() {
                          </td>
                        ))}
                      </tr>
-                     <tr className="border-b border-gray-800">
-                       <td className="p-1 text-gray-300">{t('fractals.table.maxPrice')}</td>
-                       {([49424, 73248, 70064, 74268, 83008, 46735, 43971] as number[]).map((id) => (
-                         <td key={id} className="p-1 text-center">
-                           <span className="text-green-400 whitespace-nowrap">
-                              {id === 49424 
-                                ? (() => {
-                                    // Cálculo oculto para +9 Agony Infusion (solo en precioMax)
-                                    // Ingredientes: 255 Reactivo termocatalítico + 256 Infusión +1
-                                    // Reactivo termocatalítico: 10 por 14s 96c = 1s 50c cada uno
-                                    const reactivoTermocatalitico = 150 * 255; // 1s 50c = 150 cobre
-                                    const infusionPlus1 = (itemDetails[49424]?.buyPrice || 0) * 256;
-                                    const totalCraftingCost = reactivoTermocatalitico + infusionPlus1;
-                                    
-                                    const Agony9 = (itemDetails[49432]?.currentPrice || 0) * 0.85;
-                                    const finalPrice =(totalCraftingCost-Agony9);
-
-                                    const finalResult = (finalPrice / 256) * 2.2637;
-                                    
-                                    return formatGoldSilverCopper(Math.round(finalResult));
-                                  })()  
-                                : id === 73248
-                                ? (itemDetails[id]?.currentPrice ? formatGoldSilverCopper(Math.round((itemDetails[id].currentPrice || 0) * 0.1)) : '00g 00s 00c')
-                                : id === 70064
-                                ? formatGoldSilverCopper(Math.round(30000 * 0.0668))
-                                : id === 83008
-                                ? (itemDetails[id]?.currentPrice ? formatGoldSilverCopper(Math.max(1, Math.round((itemDetails[id].currentPrice || 0) * 0.85 * 0.00017))) : '00g 00s 00c')
-                                : id === 46735
-                                ? (() => {
-                                    // Cálculo oculto: Total crafting cost ÷ 5 para Toxic Tuning Crystal
-                                    // Ingredientes: 3 Crystalline Dust + 5 Pristine Toxic Spore + 100 Empyreal Fragment
-                                    const crystallineDust = (itemDetails[24277]?.buyPrice || 0) * 3;
-                                    const toxicSpore = (itemDetails[19721]?.buyPrice || 0) * 5;
-                                    const empyrealFragment = (itemDetails[19718]?.buyPrice || 0) * 100;
-                                    const totalCraftingCost = crystallineDust + toxicSpore + empyrealFragment;
-                                    const pricePerUnit = (totalCraftingCost / 5);
-                                    
-                                    // Nueva fórmula: (precio del toxin al 0.85 × 5) - resultado pricePerUnit
-                                    const toxinPrice = (itemDetails[48917]?.currentPrice || 0) * 0.85; // Solo ×0.85
-                                    const finalPrice = ((toxinPrice * 5) - pricePerUnit); // (×0.85 × 5) - pricePerUnit
-                                    
-                                    // Aplicar (resultadoFinal / 100) × ratio
-                                    const finalResult = (finalPrice / 100) * 1.0108;
-                                    
-                                    return formatGoldSilverCopper((finalResult));
-                                  })()
-                                : id === 43971
-                                ? (() => {
-                                    // Cálculo oculto: Media de 19 IDs × 0.85 (Aetherized weapons correctos)
-                                    const ids = [44001, 44004, 44007, 44010, 44013, 44016, 44019, 44022, 44025, 44028, 44031, 44034, 44037, 44040, 44043, 44046, 44049, 44052, 44055];
-                                    const totalSum = ids.reduce((sum, itemId) => sum + ((itemDetails[itemId]?.currentPrice || 0) * 0.85), 0);
-                                    const averagePrice = totalSum / 19;
-                                    
-                                    // Aplicar ratio 0.0021 al promedio
-                                    const finalResult = averagePrice * 0.0021;
-                                    
-                                    return formatGoldSilverCopper(Math.round(finalResult));
-                                  })()
-                                : (itemDetails[id]?.currentPrice ? formatGoldSilverCopper(itemDetails[id].currentPrice) : '00g 00s 00c')
-                              }
-                           </span>
-                         </td>
-                       ))}
-                     </tr>
+                     {(() => {
+                       // Calcular y almacenar los valores de Precio Max para poder usarlos en el total
+                       const precioMaxValues: Record<number, number> = {
+                         49424: (() => {
+                           const reactivoTermocatalitico = 150 * 255;
+                           const infusionPlus1 = (itemDetails[49424]?.buyPrice || 0) * 256;
+                           const totalCraftingCost = reactivoTermocatalitico + infusionPlus1;
+                           const Agony9 = (itemDetails[49432]?.currentPrice || 0) * 0.85;
+                           const finalPrice = totalCraftingCost - Agony9;
+                           return (finalPrice / 256) ;
+                         })(),
+                         73248: (itemDetails[73248]?.currentPrice || 0) * 0.1,
+                         70064: 30000 * 0.0668,
+                         74268: (itemDetails[74268]?.currentPrice || 0) * 0.02,
+                         83008: (itemDetails[83008]?.currentPrice || 0) * 0.00017,
+                         46735: (() => {
+                           // Cálculo oculto: Total crafting cost ÷ 5 para Toxic Tuning Crystal
+                           // Ingredientes: 3 Crystalline Dust + 5 Pristine Toxic Spore + 100 Empyreal Fragment
+                           const crystallineDust = (itemDetails[24277]?.buyPrice || 0) * 3;
+                           const toxicSpore = (itemDetails[48884]?.buyPrice || 0) * 5;
+                           const empyrealFragment = (itemDetails[46735]?.buyPrice || 0) * 100;
+                           const totalCraftingCost = crystallineDust + toxicSpore + empyrealFragment;
+                           const pricePerUnit = (totalCraftingCost / 5);
+                           
+                           // Nueva fórmula: (precio del toxin al 0.85 × 5) - resultado pricePerUnit
+                           const toxinPrice = (itemDetails[48917]?.currentPrice || 0) * 0.85;
+                           const finalPrice = ((toxinPrice * 5) - pricePerUnit);
+                           
+                           // Aplicar (resultadoFinal / 100) × ratio
+                           const finalResult = (finalPrice / 100) * 1.0108;
+                           
+                           return finalResult;
+                         })(),
+                         43971: (() => {
+                           const ids = [44001, 44004, 44007, 44010, 44013, 44016, 44019, 44022, 44025, 44028, 44031, 44034, 44037, 44040, 44043, 44046, 44049, 44052, 44055];
+                           const totalSum = ids.reduce((sum, itemId) => sum + ((itemDetails[itemId]?.currentPrice || 0) * 0.85), 0);
+                           const averagePrice = totalSum / 19;
+                           return averagePrice * 0.0021;
+                         })()
+                       };
+                       
+                       // Almacenar los valores en una variable global para poder usarlos en el total
+                       (window as any).precioMaxValues = precioMaxValues;
+                       
+                       return (
+                         <>
+                           <tr className="border-b border-gray-800">
+                             <td className="p-1 text-gray-300">{t('fractals.table.maxPrice')}</td>
+                             {([49424, 73248, 70064, 74268, 83008, 46735, 43971] as number[]).map((id) => (
+                               <td key={id} className="p-1 text-center">
+                                 <span className="text-green-400 whitespace-nowrap">
+                                    {(() => {
+                                      const value = precioMaxValues[id];
+                                      if (id === 49424 && value < 0) {
+                                        return `-${formatGoldSilverCopper(Math.abs(Math.round(value)))}`;
+                                      } else {
+                                        return formatGoldSilverCopper(Math.round(value));
+                                      }
+                                    })()}
+                                 </span>
+                               </td>
+                             ))}
+                           </tr>
+                         </>
+                       );
+                     })()}
                      <tr>
                        <td className="p-1 text-gray-300">{t('fractals.table.ratio')}</td>
                        {[
@@ -2667,11 +2766,28 @@ export default function FarmingTrackerPage() {
                              })
                              .reduce((sum, price) => sum + price, 0);
                            
-                           const total = infusionPrice + otherItemsTotal;
+                                                      const total = infusionPrice + otherItemsTotal;
                            
-
+                           // Calcular Total por Caja precioMax: usar los valores ya calculados de precioMaxValues
+                           const totalMax = [49424, 73248, 70064, 74268, 83008].map((id) => {
+                             const precioMax = (window as any).precioMaxValues?.[id] || 0;
+                             const ratio = ratios[id] || 0;
+                             const result = precioMax * ratio;
+                             
+                             console.log(`ID ${id}: precioMax=${precioMax}, ratio=${ratio}, result=${result}`);
+                             
+                             return result;
+                           }).reduce((sum, price) => sum + price, 0);
                            
-                           return formatGoldSilverCopper(Math.round(total));
+                           console.log(`Total sumado: ${totalMax}`);
+                           console.log(`Total formateado: ${formatGoldSilverCopper(Math.round(totalMax))}`);
+                           
+                           return (
+                             <>
+                               <div>{formatGoldSilverCopper(Math.round(total))}</div>
+                               <div>{formatGoldSilverCopper(Math.round(totalMax))}</div>
+                             </>
+                           );
                          })()}
                                </div>
                                    </div>
@@ -2780,31 +2896,82 @@ export default function FarmingTrackerPage() {
                    <tbody>
                       {[
                         { label: t('fractals.profits.boxKey90'), boxItemId: 75919, boxRatio: 0.9, keyItemId: 73248, keyRatio: 0.9 },
-                        { label: t('fractals.profits.boxKeyBuyOrder'), boxItemId: 70438, boxRatio: 1.0, keyItemId: 70438, keyRatio: 1.0 },
-                        { label: t('fractals.profits.boxKeySellOrder'), boxItemId: 70438, boxRatio: 1.0, keyItemId: 70438, keyRatio: 1.2 },
+                        { label: t('fractals.profits.boxKeyBuyOrder'), boxItemId: 75919, boxRatio: 1.0, keyItemId: 73248, keyRatio: 1.0 },
+                        { label: t('fractals.profits.boxKeySellOrder'), boxItemId: 75919, boxRatio: 1.0, keyItemId: 73248, keyRatio: 1.0},
+                        { label: t('fractals.profits.boxMinKey20s'), boxItemId: 75919, boxRatio: (() => {
+                          const prices = [
+                            (itemDetails[75919]?.currentPrice || 0) * 0.9,  // Caja + Llave 90%
+                            (itemDetails[75919]?.buyPrice || 0) * 1.0,      // Caja + Llave BuyOrder
+                            (itemDetails[75919]?.currentPrice || 0) * 1.0   // Caja + Llave SellOrder
+                          ];
+                          const minPrice = Math.min(...prices);
+                          if (minPrice === (itemDetails[75919]?.currentPrice || 0) * 0.9) return 0.9;
+                          if (minPrice === (itemDetails[75919]?.buyPrice || 0) * 1.0) return 1.0;
+                          return 1.0;
+                        })(), keyItemId: 73248, keyRatio: 1.0 },
+                        { label: t('fractals.profits.boxMinKey25s04c'), boxItemId: 75919, boxRatio: (() => {
+                          const prices = [
+                            (itemDetails[75919]?.currentPrice || 0) * 0.9,  // Caja + Llave 90%
+                            (itemDetails[75919]?.buyPrice || 0) * 1.0,      // Caja + Llave BuyOrder
+                            (itemDetails[75919]?.currentPrice || 0) * 1.0   // Caja + Llave SellOrder
+                          ];
+                          const minPrice = Math.min(...prices);
+                          if (minPrice === (itemDetails[75919]?.currentPrice || 0) * 0.9) return 0.9;
+                          if (minPrice === (itemDetails[75919]?.buyPrice || 0) * 1.0) return 1.0;
+                          return 1.0;
+                        })(), keyItemId: 73248, keyRatio: 1.0 },
+                        { label: t('fractals.profits.boxMinKey30s'), boxItemId: 75919, boxRatio: (() => {
+                          const prices = [
+                            (itemDetails[75919]?.currentPrice || 0) * 0.9,  // Caja + Llave 90%
+                            (itemDetails[75919]?.buyPrice || 0) * 1.0,      // Caja + Llave BuyOrder
+                            (itemDetails[75919]?.currentPrice || 0) * 1.0   // Caja + Llave SellOrder
+                          ];
+                          const minPrice = Math.min(...prices);
+                          if (minPrice === (itemDetails[75919]?.currentPrice || 0) * 0.9) return 0.9;
+                          if (minPrice === (itemDetails[75919]?.buyPrice || 0) * 1.0) return 1.0;
+                          return 1.0;
+                        })(), keyItemId: 73248, keyRatio: 1.0 },
                       ].map((row, idx) => (
                         <tr key={idx} className="border-b border-gray-800">
                           <td className="p-1 sm:p-2 text-gray-300 text-xs sm:text-sm">{row.label}</td>
                           <td className="p-1 sm:p-2 text-center text-green-400 text-xs sm:text-sm">
                             <span className="whitespace-nowrap">
-                              {itemDetails[row.boxItemId]?.currentPrice ? formatGoldSilverCopper(Math.round((itemDetails[row.boxItemId]?.currentPrice || 0) * row.boxRatio)) : '—'}
+                              {itemDetails[row.boxItemId]?.currentPrice ? formatGoldSilverCopper(Math.round((row.boxItemId === 75919 && row.label === t('fractals.profits.boxKeyBuyOrder') ? (itemDetails[row.boxItemId]?.buyPrice || 0) : (itemDetails[row.boxItemId]?.currentPrice || 0)) * row.boxRatio)) : '—'}
                             </span>
                           </td>
                           <td className="p-1 sm:p-2 text-center text-green-400 text-xs sm:text-sm">
                             <span className="whitespace-nowrap">
-                              {itemDetails[row.keyItemId]?.currentPrice ? formatGoldSilverCopper(Math.round((itemDetails[row.keyItemId]?.currentPrice || 0) * row.keyRatio)) : '—'}
+                              {itemDetails[row.keyItemId]?.currentPrice ? formatGoldSilverCopper(Math.round((() => {
+                                if (row.label === t('fractals.profits.boxMinKey20s')) return 2000;
+                                if (row.label === t('fractals.profits.boxMinKey25s04c')) return 2504;
+                                if (row.label === t('fractals.profits.boxMinKey30s')) return 3000;
+                                if (row.label === t('fractals.profits.boxKeyBuyOrder')) return (itemDetails[row.keyItemId]?.buyPrice || 0) * row.keyRatio;
+                                return (itemDetails[row.keyItemId]?.currentPrice || 0) * row.keyRatio;
+                              })())) : '—'}
                             </span>
                           </td>
                           <td className="p-1 sm:p-2 text-center text-blue-400 text-xs sm:text-sm">
                             <span className="whitespace-nowrap">
-                              {itemDetails[row.boxItemId]?.currentPrice ? formatGoldSilverCopper(Math.round((itemDetails[row.boxItemId]?.currentPrice || 0) * row.boxRatio + (itemDetails[row.keyItemId]?.currentPrice || 0) * row.keyRatio)) : '—'}
+                              {itemDetails[row.boxItemId]?.currentPrice ? formatGoldSilverCopper(Math.round((row.boxItemId === 75919 && row.label === t('fractals.profits.boxKeyBuyOrder') ? (itemDetails[row.boxItemId]?.buyPrice || 0) : (itemDetails[row.boxItemId]?.currentPrice || 0)) * row.boxRatio + (() => {
+                                if (row.label === t('fractals.profits.boxMinKey20s')) return 2000;
+                                if (row.label === t('fractals.profits.boxMinKey25s04c')) return 2504;
+                                if (row.label === t('fractals.profits.boxMinKey30s')) return 3000;
+                                if (row.label === t('fractals.profits.boxKeyBuyOrder')) return (itemDetails[row.keyItemId]?.buyPrice || 0) * row.keyRatio;
+                                return (itemDetails[row.keyItemId]?.currentPrice || 0) * row.keyRatio;
+                              })())) : '—'}
                             </span>
                           </td>
                           <td className="p-1 sm:p-2 text-center text-yellow-300 font-semibold text-xs sm:text-sm">
                             <span className="whitespace-nowrap">
                               {itemDetails[row.boxItemId]?.currentPrice ? (() => {
                                 // Calcular el Total (Caja + Llave)
-                                const total = (itemDetails[row.boxItemId]?.currentPrice || 0) * row.boxRatio + (itemDetails[row.keyItemId]?.currentPrice || 0) * row.keyRatio;
+                                const total = (row.boxItemId === 75919 && row.label === t('fractals.profits.boxKeyBuyOrder') ? (itemDetails[row.boxItemId]?.buyPrice || 0) : (itemDetails[row.boxItemId]?.currentPrice || 0)) * row.boxRatio + (() => {
+                                  if (row.label === t('fractals.profits.boxMinKey20s')) return 2000;
+                                  if (row.label === t('fractals.profits.boxMinKey25s04c')) return 2504;
+                                  if (row.label === t('fractals.profits.boxMinKey30s')) return 3000;
+                                  if (row.label === t('fractals.profits.boxKeyBuyOrder')) return (itemDetails[row.keyItemId]?.buyPrice || 0) * row.keyRatio;
+                                  return (itemDetails[row.keyItemId]?.currentPrice || 0) * row.keyRatio;
+                                })();
                                 
                                 // Calcular Mejor Income Por Caja (valor L19)
                                 const dynamicRows = [
@@ -2834,7 +3001,7 @@ export default function FarmingTrackerPage() {
                                 });
                                 
                                 // MIN(diferencia1, diferencia2, diferencia3) / 14000 + totalPorCaja
-                                const minDifference = Math.min(...differences);
+                                const minDifference = Math.max(...differences);
                                 const totalPorCaja = (() => {
                                   const ratios: Record<number, number> = {
                                     24294: 0.3378375,
@@ -2854,7 +3021,7 @@ export default function FarmingTrackerPage() {
 
                                 
                                 // Profit AVG = Mejor Income Por Caja - Total
-                                const mejorIncomePorCaja = 4934; // 00G 48S 53C en cobre
+                                const mejorIncomePorCaja = 4853; // 00G 48S 53C en cobre
                                 const profitAvg = mejorIncomePorCaja - total;
                                 
                                 return formatGoldSilverCopper(Math.round(profitAvg));
@@ -2864,8 +3031,14 @@ export default function FarmingTrackerPage() {
                           <td className="p-1 sm:p-2 text-center text-purple-300 font-semibold text-xs sm:text-sm">
                             <span className="whitespace-nowrap">
                               {itemDetails[row.boxItemId]?.currentPrice ? (() => {
-                                const total = (itemDetails[row.boxItemId]?.currentPrice || 0) * row.boxRatio + (itemDetails[row.keyItemId]?.currentPrice || 0) * row.keyRatio;
-                                const mejorIncomePorCaja = 4934; // 00G 48S 53C en cobre
+                                const total = (row.boxItemId === 75919 && row.label === t('fractals.profits.boxKeyBuyOrder') ? (itemDetails[row.boxItemId]?.buyPrice || 0) : (itemDetails[row.boxItemId]?.currentPrice || 0)) * row.boxRatio + (() => {
+                                  if (row.label === t('fractals.profits.boxMinKey20s')) return 2000;
+                                  if (row.label === t('fractals.profits.boxMinKey25s04c')) return 2504;
+                                  if (row.label === t('fractals.profits.boxMinKey30s')) return 3000;
+                                  if (row.label === t('fractals.profits.boxKeyBuyOrder')) return (itemDetails[row.keyItemId]?.buyPrice || 0) * row.keyRatio;
+                                  return (itemDetails[row.keyItemId]?.currentPrice || 0) * row.keyRatio;
+                                })();
+                                const mejorIncomePorCaja = 4853; // 00G 48S 53C en cobre
                                 
                                 // ROI = (Mejor Income Por Caja - Total) / Total
                                 const roi = ((mejorIncomePorCaja - total) / total) * 100;
@@ -2879,19 +3052,7 @@ export default function FarmingTrackerPage() {
                    </tbody>
                  </table>
                 </div>
-                <div className="lg:col-span-1 space-y-2">
-                  <div className="bg-amber-200/20 border border-amber-300/30 rounded-lg p-2">
-                    <div className="text-xs font-semibold text-amber-200">{t('fractals.calculations.totalPerBox')}</div>
-                    <div className="text-sm font-bold text-amber-300">
-                         {(() => {
-                           const total = [0.9, 1.0, 1.2]
-                             .map((ratio) => (itemDetails[70438]?.buyPrice || 0) * ratio)
-                             .reduce((sum, price) => sum + price, 0);
-                           return formatGoldSilverCopper(Math.round(total));
-                         })()}
-                               </div>
-                  </div>
-                </div>
+
                </div>
              </div>
 

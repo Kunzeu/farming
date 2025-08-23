@@ -676,6 +676,9 @@
   "fractals.profits.boxKey90": "Caja + Llave 90%",
   "fractals.profits.boxKeyBuyOrder": "Caja + Llave BuyOrder",
   "fractals.profits.boxKeySellOrder": "Caja + Llave SellOrder",
+  "fractals.profits.boxMinKey20s": "Caja MIN + Llave 20s",
+  "fractals.profits.boxMinKey25s04c": "Caja MIN + Llave 25s04c",
+  "fractals.profits.boxMinKey30s": "Caja MIN + Llave 30s",
   
   "fractals.profits.table.boxKeyTypes": "Caja + Llave Tipos",
   "fractals.profits.table.box": "Caja",
