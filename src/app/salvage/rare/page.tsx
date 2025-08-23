@@ -245,15 +245,15 @@ export default function UnidentifiedGearRarePage() {
             <div className="relative">
               <button
                 onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                className="flex items-center gap-2 px-4 py-2 bg-slate-700 text-white rounded-lg hover:bg-slate-600 transition-colors">
-                <span>{t('salvage.dropdown.rare', 'Rare')}</span>
+                className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-yellow-600 to-yellow-500 text-white rounded-lg hover:from-yellow-700 hover:to-yellow-600 transition-all duration-200 shadow-lg hover:shadow-xl border border-yellow-400/30">
+                <span className="font-semibold">{t('salvage.dropdown.rare', 'Rare')}</span>
                 <ChevronDown className={`h-4 w-4 transition-transform ${isDropdownOpen ? 'rotate-180' : ''}`} />
               </button>
               
               {isDropdownOpen && (
-                <div className="absolute top-full left-0 mt-2 bg-slate-800 border border-slate-600 rounded-lg shadow-lg z-10 min-w-[200px]">
+                <div className="absolute top-full left-0 mt-2 bg-slate-800 border border-slate-600 rounded-lg shadow-lg z-10 min-w-[200px] overflow-hidden">
                   <Link href="/salvage/common">
-                    <div className="px-4 py-3 hover:bg-slate-700 transition-colors cursor-pointer border-b border-slate-600">
+                    <div className="px-4 py-3 hover:bg-blue-600/20 transition-all duration-200 cursor-pointer border-b border-slate-600 bg-gradient-to-r from-blue-600/30 to-blue-500/20 hover:from-blue-600/40 hover:to-blue-500/30">
                       <div className="flex items-center gap-3">
                         <Image
                           src="https://render.guildwars2.com/file/E37A036C10C33E4242E568690CB2EA55AA65B915/1938436.png"
@@ -262,12 +262,12 @@ export default function UnidentifiedGearRarePage() {
                           height={16}
                           className="w-4 h-4"
                         />
-                        <span className="text-white">{t('salvage.dropdown.common', 'Common')}</span>
+                        <span className="text-blue-200 font-semibold">{t('salvage.dropdown.common', 'Common')}</span>
                       </div>
                     </div>
                   </Link>
                   <Link href="/salvage/masterwork">
-                    <div className="px-4 py-3 hover:bg-slate-700 transition-colors cursor-pointer border-b border-slate-600">
+                    <div className="px-4 py-3 hover:bg-green-600/20 transition-all duration-200 cursor-pointer border-b border-slate-600 bg-gradient-to-r from-green-600/30 to-green-500/20 hover:from-green-600/40 hover:to-green-500/30">
                       <div className="flex items-center gap-3">
                         <Image
                           src="https://render.guildwars2.com/file/B147379DFC5430E207FCB742804E199EDF727719/1766400.png"
@@ -276,12 +276,12 @@ export default function UnidentifiedGearRarePage() {
                           height={16}
                           className="w-4 h-4"
                         />
-                        <span className="text-white">{t('salvage.dropdown.masterwork', 'Masterwork')}</span>
+                        <span className="text-white font-semibold">{t('salvage.dropdown.masterwork', 'Masterwork')}</span>
                       </div>
                     </div>
                   </Link>
                   <Link href="/salvage/rare">
-                    <div className="px-4 py-3 hover:bg-slate-700 transition-colors cursor-pointer bg-yellow-600/20">
+                    <div className="px-4 py-3 hover:bg-yellow-600/20 transition-all duration-200 cursor-pointer bg-gradient-to-r from-yellow-600/30 to-yellow-500/20 hover:from-yellow-600/40 hover:to-yellow-500/30">
                       <div className="flex items-center gap-3">
                         <Image
                           src="https://render.guildwars2.com/file/EF63A10BD2317CECCEA63A3B7E6555550B414C4E/1766399.png"
@@ -290,7 +290,7 @@ export default function UnidentifiedGearRarePage() {
                           height={16}
                           className="w-4 h-4"
                         />
-                        <span className="text-white font-semibold">{t('salvage.dropdown.rare', 'Rare')}</span>
+                        <span className="text-yellow-200 font-semibold">{t('salvage.dropdown.rare', 'Rare')}</span>
                       </div>
                     </div>
                   </Link>

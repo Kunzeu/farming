@@ -2204,7 +2204,7 @@ export default function FarmingTrackerPage() {
                           } as Record<number, number>;
                           
                           return [49424, 73248, 70064, 74268, 83008].map((id) => {
-                            const precioMax = (window as any).precioMaxValues?.[id] || 0;
+                            const precioMax = typeof window !== 'undefined' ? (window as { precioMaxValues?: Record<number, number> }).precioMaxValues?.[id] || 0 : 0;
                             const ratio = ratios[id] || 0;
                             return precioMax * ratio;
                           }).reduce((sum, price) => sum + price, 0);
@@ -2690,7 +2690,9 @@ export default function FarmingTrackerPage() {
                        };
                        
                        // Almacenar los valores en una variable global para poder usarlos en el total
-                       (window as any).precioMaxValues = precioMaxValues;
+                       if (typeof window !== 'undefined') {
+                         (window as { precioMaxValues?: Record<number, number> }).precioMaxValues = precioMaxValues;
+                       }
                        
                        return (
                          <>
@@ -2770,7 +2772,7 @@ export default function FarmingTrackerPage() {
                            
                            // Calcular Total por Caja precioMax: usar los valores ya calculados de precioMaxValues
                            const totalMax = [49424, 73248, 70064, 74268, 83008].map((id) => {
-                             const precioMax = (window as any).precioMaxValues?.[id] || 0;
+                             const precioMax = typeof window !== 'undefined' ? (window as { precioMaxValues?: Record<number, number> }).precioMaxValues?.[id] || 0 : 0;
                              const ratio = ratios[id] || 0;
                              const result = precioMax * ratio;
                              
@@ -2999,26 +3001,6 @@ export default function FarmingTrackerPage() {
                                   
                                   return total09 - combined;
                                 });
-                                
-                                // MIN(diferencia1, diferencia2, diferencia3) / 14000 + totalPorCaja
-                                const minDifference = Math.max(...differences);
-                                const totalPorCaja = (() => {
-                                  const ratios: Record<number, number> = {
-                                    24294: 0.3378375,
-                                    24341: 0.3378375,
-                                    24350: 0.3378375,
-                                    24356: 0.3378375,
-                                    24288: 0.3378375,
-                                    24299: 0.3378375,
-                                    24282: 0.3378375,
-                                    24276: 0.3378375,
-                                  };
-                                  return [24294, 24341, 24350, 24356, 24288, 24299, 24282, 24276]
-                                    .map((id) => (itemDetails[id]?.buyPrice || 0) * ratios[id])
-                                    .reduce((sum, price) => sum + price, 0);
-                                })();
-                                
-
                                 
                                 // Profit AVG = Mejor Income Por Caja - Total
                                 const mejorIncomePorCaja = 4853; // 00G 48S 53C en cobre

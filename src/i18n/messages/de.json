@@ -95,7 +95,7 @@
   "salvage.dropdown.masterwork": "Meisterwerk",
   "salvage.dropdown.rare": "Selten",
 
-  "salvage.note.title": "Hinweis:",
+  "salvage.note.title": "Hinweis",
   "salvage.note.common": "Preise werden in Echtzeit von der GW2-API abgerufen. Der \"Verarbeitete Preis\" enthält die Gebühren des Handelspostens (15% Abzug vom Verkaufspreis). Die Kosten für nicht identifizierte Ausrüstung verwenden den aktuellen Kaufpreis im Handelsposten. Drop-Raten basieren auf offiziellen Daten des GW2-Wiki für das Stück edle nicht identifizierte Ausrüstung, geöffnet und anschließend mit dem Copper-Fed Salvage-o-Matic zerlegt. Empfehlung: Ein Inventar mit 280 Plätzen erleichtert den Prozess.",
   "salvage.note.masterwork": "Preise werden in Echtzeit von der GW2-API abgerufen. Der \"Verarbeitete Preis\" enthält die Gebühren des Handelspostens (15% Abzug vom Verkaufspreis). Die Kosten für nicht identifizierte Ausrüstung verwenden den aktuellen Kaufpreis im Handelsposten. Drop-Raten basieren auf offiziellen Daten des GW2-Wiki für das Stück nicht identifizierte Ausrüstung (Meisterwerk), geöffnet und anschließend mit dem Runecrafter's Salvage-o-Matic zerlegt. Empfehlung: Ein Inventar mit 280 Plätzen erleichtert den Prozess.",
   "salvage.note.rare": "Preise werden in Echtzeit von der GW2-API abgerufen. Der \"Verarbeitete Preis\" enthält die Gebühren des Handelspostens (15% Abzug vom Verkaufspreis). Die Kosten für nicht identifizierte Ausrüstung verwenden den aktuellen Kaufpreis im Handelsposten. Drop-Raten basieren auf offiziellen Daten des GW2-Wiki für das Stück seltene nicht identifizierte Ausrüstung, geöffnet und anschließend mit dem Silver-Fed Salvage-o-Matic zerlegt. Empfehlung: Ein Inventar mit 280 Plätzen erleichtert den Prozess.",

@@ -183,7 +183,7 @@ export default function FarmingRoutes() {
             className="flex justify-center">
             <Link
               href="/daily-routine"
-              className="inline-flex items-center gap-3 px-6 py-3 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white font-semibold rounded-lg transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105">
+              className="inline-flex items-center gap-3 px-6 py-3 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white font-semibold rounded-lg transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105">
               <Clock className="w-5 h-5" />
               <span>{t('dashboard.dailyRoutine.title', 'Daily Routine')}</span>
               <Star className="w-4 h-4" />
@@ -252,7 +252,7 @@ export default function FarmingRoutes() {
             {/* Reload Button */}
             <button
               onClick={loadRoutes}
-              className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors">
+              className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white rounded-lg transition-all duration-200 shadow-lg hover:shadow-xl">
               <RefreshCw className="w-4 h-4" />
               {t('button.reload', 'Reload')}
             </button>

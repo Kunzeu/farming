@@ -96,7 +96,7 @@
   "salvage.dropdown.masterwork": "Chef-d'œuvre",
   "salvage.dropdown.rare": "Rare",
 
-  "salvage.note.title": "Remarque :",
+  "salvage.note.title": "Remarque",
   "salvage.note.common": "Les prix sont obtenus en temps réel depuis l'API GW2. Le \"Prix traité\" inclut les frais du Comptoir (réduction de 15% sur le prix de vente). Le coût de l'équipement non identifié utilise le prix d'achat actuel au Comptoir. Les taux de butin sont basés sur des données officielles du Wiki GW2 pour la Pièce d'équipement non identifié (Raffiné), ouverte puis recyclée avec le Copper-Fed Salvage-o-Matic. Recommandation : disposez d'un inventaire de 280 emplacements pour faciliter le processus.",
   "salvage.note.masterwork": "Les prix sont obtenus en temps réel depuis l'API GW2. Le \"Prix traité\" inclut les frais du Comptoir (réduction de 15% sur le prix de vente). Le coût de l'équipement non identifié utilise le prix d'achat actuel au Comptoir. Les taux de butin sont basés sur des données officielles du Wiki GW2 pour la Pièce d'équipement non identifié (Chef-d'œuvre), ouverte puis recyclée avec le Runecrafter's Salvage-o-Matic. Recommandation : disposez d'un inventaire de 280 emplacements pour faciliter le processus.",
   "salvage.note.rare": "Les prix sont obtenus en temps réel depuis l'API GW2. Le \"Prix traité\" inclut les frais du Comptoir (réduction de 15% sur le prix de vente). Le coût de l'équipement non identifié utilise le prix d'achat actuel au Comptoir. Les taux de butin sont basés sur des données officielles du Wiki GW2 pour la Pièce d'équipement non identifié rare, ouverte puis recyclée avec le Silver-Fed Salvage-o-Matic. Recommandation : disposez d'un inventaire de 280 emplacements pour faciliter le processus.",
