@@ -637,11 +637,22 @@ export default function FarmingTrackerPage() {
     24299, // Totem
     24282, // Vesícula
     24276, // Polvo
-    // IDs faltantes para los cálculos
+         // IDs faltantes para los cálculos
     24277, // Polvo adicional (usado en Total1 y Total2)
      19721,  // Ectoplasm (usado en Total3)
+     19718,  // Empyreal Fragment (usado en item 46735)
      // IDs para Cálculo 0.9 × 250
      24295, 24358, 24351, 24357, 24289, 24300, 24283,
+     // IDs para el cálculo oculto del item 43971 (19 IDs × 0.85 ÷ 19 - Aetherized weapons correctos)
+     44001, 44004, 44007, 44010, 44013, 44016, 44019, 44022, 44025, 44028, 44031, 44034, 44037, 44040, 44043, 44046, 44049, 44052, 44055,
+     // ID para el cálculo oculto del item 46735 (Toxic Tuning Crystal)
+     48917,
+     // ID para el item 83008 (Rare Unid)
+     83008,
+     // ID para el cálculo oculto del item 49424 (+9 Agony Infusion)
+     49432,
+     // ID para Reactivo termocatalítico (usado en +9 Agony Infusion)
+     46747,
   ].filter(id => id > 0);
       
       // Eliminar duplicados
@@ -825,7 +836,7 @@ export default function FarmingTrackerPage() {
     const silver = Math.floor((absCopper % 10000) / 100);
     const copperRemainder = Math.round(absCopper % 100);
     const sign = isNegative ? '- ' : '';
-    return `${sign}${gold}g ${silver.toString().padStart(2, '0')}s ${copperRemainder.toString().padStart(2, '0')}c`;
+    return `${sign}${gold.toString().padStart(2, '0')}g ${silver.toString().padStart(2, '0')}s ${copperRemainder.toString().padStart(2, '0')}c`;
   };
 
   // Mapeo de IDs a nombres de traducción para los items de fractales
@@ -948,11 +959,11 @@ export default function FarmingTrackerPage() {
   // Componente de encabezado ordenable
   const SortableHeader = ({ column, children }: { column: string; children: React.ReactNode }) => (
     <th 
-      className="text-center p-3 text-gray-200 font-semibold cursor-pointer hover:bg-gray-700/60 transition-all duration-200 select-none group"
+      className="text-center p-2 sm:p-3 text-gray-200 font-semibold cursor-pointer hover:bg-gray-700/60 transition-all duration-200 select-none group"
       onClick={() => handleSort(column)}
     >
-      <div className="flex items-center justify-center gap-2">
-        <span>{children}</span>
+      <div className="flex items-center justify-center gap-1 sm:gap-2">
+        <span className="text-xs sm:text-sm">{children}</span>
         <div className="flex flex-col text-xs">
           {sortBy === column ? (
             sortOrder === 'asc' ? (
@@ -973,26 +984,39 @@ export default function FarmingTrackerPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
+      <style jsx global>{`
+        @media (max-width: 640px) {
+          .overflow-x-auto {
+            -webkit-overflow-scrolling: touch;
+          }
+          table {
+            font-size: 0.75rem;
+          }
+          th, td {
+            padding: 0.5rem 0.25rem;
+          }
+        }
+      `}</style>
       <Navigation />
       
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <main className="max-w-7xl mx-auto px-2 sm:px-4 md:px-6 lg:px-8 py-4 sm:py-6 md:py-8">
         {/* Header */}
-                 <div className="text-center mb-8">
-           <h1 className="text-4xl font-bold text-white mb-4">
+                 <div className="text-center mb-6 md:mb-8">
+           <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white mb-3 md:mb-4">
              {t('farmingTracker.title')}
            </h1>
-           <p className="text-gray-300 text-lg">
+           <p className="text-gray-300 text-sm sm:text-base md:text-lg">
              {t('farmingTracker.subtitle')}
            </p>
                   </div>
  
          {/* Section Navigation */}
          <div className="flex justify-center mb-8">
-           <div className="bg-gray-900/80 backdrop-blur-sm border border-gray-700 rounded-lg p-2 shadow-2xl">
-             <div className="flex space-x-2">
+           <div className="bg-gray-900/80 backdrop-blur-sm border border-gray-700 rounded-lg p-2 shadow-2xl w-full max-w-4xl">
+             <div className="flex flex-wrap justify-center gap-2">
                <button
                  onClick={() => setActiveSection('initiate')}
-                 className={`px-6 py-3 rounded-lg font-semibold transition-all duration-200 ${
+                 className={`px-3 sm:px-4 md:px-6 py-2 md:py-3 rounded-lg font-semibold transition-all duration-200 text-sm md:text-base ${
                    activeSection === 'initiate'
                      ? 'bg-green-600 text-white shadow-lg'
                      : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
@@ -1002,7 +1026,7 @@ export default function FarmingTrackerPage() {
                </button>
                <button
                  onClick={() => setActiveSection('adept')}
-                 className={`px-6 py-3 rounded-lg font-semibold transition-all duration-200 ${
+                 className={`px-3 sm:px-4 md:px-6 py-2 md:py-3 rounded-lg font-semibold transition-all duration-200 text-sm md:text-base ${
                    activeSection === 'adept'
                      ? 'bg-purple-600 text-white shadow-lg'
                      : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
@@ -1012,7 +1036,7 @@ export default function FarmingTrackerPage() {
                </button>
                <button
                  onClick={() => setActiveSection('expert')}
-                 className={`px-6 py-3 rounded-lg font-semibold transition-all duration-200 ${
+                 className={`px-3 sm:px-4 md:px-6 py-2 md:py-3 rounded-lg font-semibold transition-all duration-200 text-sm md:text-base ${
                    activeSection === 'expert'
                      ? 'bg-orange-600 text-white shadow-lg'
                      : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
@@ -1022,7 +1046,7 @@ export default function FarmingTrackerPage() {
                </button>
                <button
                  onClick={() => setActiveSection('fractal')}
-                 className={`px-6 py-3 rounded-lg font-semibold transition-all duration-200 ${
+                 className={`px-3 sm:px-4 md:px-6 py-2 md:py-3 rounded-lg font-semibold transition-all duration-200 text-sm md:text-base ${
                    activeSection === 'fractal'
                      ? 'bg-blue-600 text-white shadow-lg'
                      : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
@@ -1032,7 +1056,7 @@ export default function FarmingTrackerPage() {
                </button>
                <button
                  onClick={() => setActiveSection('encryption')}
-                 className={`px-6 py-3 rounded-lg font-semibold transition-all duration-200 ${
+                 className={`px-3 sm:px-4 md:px-6 py-2 md:py-3 rounded-lg font-semibold transition-all duration-200 text-sm md:text-base ${
                    activeSection === 'encryption'
                      ? 'bg-teal-600 text-white shadow-lg'
                      : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
@@ -1050,37 +1074,37 @@ export default function FarmingTrackerPage() {
          {activeSection === 'initiate' && (
            <>
              {/* Stats Overview */}
-             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-               <div className="bg-gray-900/80 backdrop-blur-sm border border-gray-700 rounded-lg p-6 shadow-2xl">
-                 <h3 className="text-lg font-semibold text-gray-300 mb-2">{t('farmingTracker.stats.totalValueGained')}</h3>
-                 <div className="text-3xl font-bold text-green-400">
+             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-6 mb-6 md:mb-8">
+               <div className="bg-gray-900/80 backdrop-blur-sm border border-gray-700 rounded-lg p-3 sm:p-4 md:p-6 shadow-2xl">
+                 <h3 className="text-sm sm:text-base md:text-lg font-semibold text-gray-300 mb-2">{t('farmingTracker.stats.totalValueGained')}</h3>
+                 <div className="text-xl sm:text-2xl md:text-3xl font-bold text-green-400">
                    {formatGoldSilverCopper(dungeonChestStats.totalValue)}
                  </div>
-                 <p className="text-sm text-gray-400 mt-2">{t('farmingTracker.stats.totalValueGained')}</p>
+                 <p className="text-xs sm:text-sm text-gray-400 mt-2">{t('farmingTracker.stats.totalValueGained')}</p>
                </div>
                
-               <div className="bg-gray-900/80 backdrop-blur-sm border border-gray-700 rounded-lg p-6 shadow-2xl">
-                 <h3 className="text-lg font-semibold text-gray-300 mb-2">{t('farmingTracker.stats.itemsGained')}</h3>
-                 <div className="text-3xl font-bold text-blue-400">
+               <div className="bg-gray-900/80 backdrop-blur-sm border border-gray-700 rounded-lg p-3 sm:p-4 md:p-6 shadow-2xl">
+                 <h3 className="text-sm sm:text-base md:text-lg font-semibold text-gray-300 mb-2">{t('farmingTracker.stats.itemsGained')}</h3>
+                 <div className="text-xl sm:text-2xl md:text-3xl font-bold text-blue-400">
                    {dungeonChestStats.totalItems.toLocaleString()}
                  </div>
-                 <p className="text-sm text-gray-400 mt-2">{t('farmingTracker.stats.totalAmount')}</p>
+                 <p className="text-xs sm:text-sm text-gray-400 mt-2">{t('farmingTracker.stats.totalAmount')}</p>
                </div>
                
-               <div className="bg-gray-900/80 backdrop-blur-sm border border-gray-700 rounded-lg p-6 shadow-2xl">
-                 <h3 className="text-lg font-semibold text-gray-300 mb-2">{t('farmingTracker.stats.chestsOpened')}</h3>
-                 <div className="text-3xl font-bold text-purple-400">
+               <div className="bg-gray-900/80 backdrop-blur-sm border border-gray-700 rounded-lg p-3 sm:p-4 md:p-6 shadow-2xl">
+                 <h3 className="text-sm sm:text-base md:text-lg font-semibold text-gray-300 mb-2">{t('farmingTracker.stats.chestsOpened')}</h3>
+                 <div className="text-xl sm:text-2xl md:text-3xl font-bold text-purple-400">
                    {dungeonChestStats.estimatedChests.toLocaleString()}
                  </div>
-                 <p className="text-sm text-gray-400 mt-2">{t('farmingTracker.stats.basedOnRelics')}</p>
+                 <p className="text-xs sm:text-sm text-gray-400 mt-2">{t('farmingTracker.stats.basedOnRelics')}</p>
                </div>
                
-               <div className="bg-gray-900/80 backdrop-blur-sm border border-gray-700 rounded-lg p-6 shadow-2xl">
-                 <h3 className="text-lg font-semibold text-gray-300 mb-2">{t('farmingTracker.stats.avgGoldPerChest')}</h3>
-                 <div className="text-3xl font-bold text-yellow-400">
+               <div className="bg-gray-900/80 backdrop-blur-sm border border-gray-700 rounded-lg p-3 sm:p-4 md:p-6 shadow-2xl">
+                 <h3 className="text-sm sm:text-base md:text-lg font-semibold text-gray-300 mb-2">{t('farmingTracker.stats.avgGoldPerChest')}</h3>
+                 <div className="text-xl sm:text-2xl md:text-3xl font-bold text-yellow-400">
                    {formatGoldSilverCopper(Math.round(dungeonChestStats.avgGoldPerChest))}
                  </div>
-                 <p className="text-sm text-gray-400 mt-2">{t('farmingTracker.stats.avgValuePerChest')}</p>
+                 <p className="text-xs sm:text-sm text-gray-400 mt-2">{t('farmingTracker.stats.avgValuePerChest')}</p>
                </div>
              </div>
 
@@ -1269,16 +1293,16 @@ export default function FarmingTrackerPage() {
                </div>
                
                {/* Summary */}
-               <div className="p-6 bg-gray-800/60 border-t border-gray-700">
-                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-center">
+               <div className="p-3 sm:p-4 md:p-6 bg-gray-800/60 border-t border-gray-700">
+                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 text-center">
                    <div>
-                     <div className="text-2xl font-bold text-blue-400">
+                     <div className="text-lg sm:text-xl md:text-2xl font-bold text-blue-400">
                        {dungeonChestStats.itemsWithStats.filter(item => itemMatchesSearch(item, searchTerm)).length}
                      </div>
-                     <div className="text-gray-300 text-sm">{t('farmingTracker.summary.itemsShown')}</div>
+                     <div className="text-gray-300 text-xs sm:text-sm">{t('farmingTracker.summary.itemsShown')}</div>
                    </div>
                    <div>
-                     <div className="text-2xl font-bold text-green-400">
+                     <div className="text-lg sm:text-xl md:text-2xl font-bold text-green-400">
                        {formatGoldSilverCopper(dungeonChestStats.itemsWithStats.filter(item => itemMatchesSearch(item, searchTerm)).reduce((sum, item) => {
                          if (item.id > 0 && itemDetails[item.id]?.currentPrice) {
                            return sum + (itemDetails[item.id].currentPrice * Math.max(0, item.difference));
@@ -1286,10 +1310,10 @@ export default function FarmingTrackerPage() {
                          return sum;
                        }, 0))}
                      </div>
-                     <div className="text-gray-300 text-sm">{t('farmingTracker.summary.totalValueFiltered')}</div>
+                     <div className="text-gray-300 text-xs sm:text-sm">{t('farmingTracker.summary.totalValueFiltered')}</div>
                    </div>
                    <div>
-                     <div className="text-2xl font-bold text-yellow-400">
+                     <div className="text-lg sm:text-xl md:text-2xl font-bold text-yellow-400">
                        {formatGoldSilverCopper(Math.round(dungeonChestStats.itemsWithStats.filter(item => itemMatchesSearch(item, searchTerm)).reduce((sum, item) => {
                          if (item.id > 0 && itemDetails[item.id]?.currentPrice) {
                            return sum + (itemDetails[item.id].currentPrice * Math.max(0, item.difference));
@@ -1297,7 +1321,7 @@ export default function FarmingTrackerPage() {
                          return sum;
                        }, 0) / dungeonChestStats.estimatedChests))}
                      </div>
-                     <div className="text-sm text-gray-300">{t('farmingTracker.summary.avgValuePerChest')}</div>
+                     <div className="text-xs sm:text-sm text-gray-300">{t('farmingTracker.summary.avgValuePerChest')}</div>
                    </div>
                  </div>
                </div>
@@ -2052,34 +2076,34 @@ export default function FarmingTrackerPage() {
          {activeSection === 'encryption' && (
            <>
              {/* Trofeos */}
-             <div className="bg-gray-900/80 backdrop-blur-sm border border-gray-700 rounded-lg p-6 shadow-2xl mb-8">
-               <h3 className="text-xl font-semibold text-white mb-4">{t('fractals.sections.trophies')}</h3>
-              <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+             <div className="bg-gray-900/80 backdrop-blur-sm border border-gray-700 rounded-lg p-3 sm:p-4 md:p-6 shadow-2xl mb-6 md:mb-8">
+               <h3 className="text-lg sm:text-xl font-semibold text-white mb-3 md:mb-4">{t('fractals.sections.trophies')}</h3>
+              <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 md:gap-6">
                 <div className="lg:col-span-3 overflow-x-auto">
-                 <table className="w-full text-sm">
+                 <table className="w-full text-xs sm:text-sm">
                    <thead>
                      <tr className="border-b border-gray-700 bg-gray-800/60">
-                       <th className="text-left p-3 text-gray-200 font-semibold">{t('fractals.table.name')}</th>
-                       <th className="p-2 text-gray-200 font-semibold">{t('fractals.table.manuscript')}</th>
-                       <th className="p-2 text-gray-200 font-semibold">{t('fractals.table.proof')}</th>
-                       <th className="p-2 text-gray-200 font-semibold">{t('fractals.table.treaties')}</th>
-                       <th className="p-2 text-gray-200 font-semibold">{t('fractals.table.postulate')}</th>
+                       <th className="text-left p-2 sm:p-3 text-gray-200 font-semibold">{t('fractals.table.name')}</th>
+                       <th className="p-1 sm:p-2 text-gray-200 font-semibold">{t('fractals.table.manuscript')}</th>
+                       <th className="p-1 sm:p-2 text-gray-200 font-semibold">{t('fractals.table.proof')}</th>
+                       <th className="p-1 sm:p-2 text-gray-200 font-semibold">{t('fractals.table.treaties')}</th>
+                       <th className="p-1 sm:p-2 text-gray-200 font-semibold">{t('fractals.table.postulate')}</th>
                      </tr>
                    </thead>
                    <tbody>
                      <tr className="border-b border-gray-800">
-                       <td className="p-3 text-gray-300">{t('fractals.table.basePrice')}</td>
-                       <td className="p-3 text-center text-green-400">00G 60S 00C</td>
-                       <td className="p-3 text-center text-green-400">00G 30S 00C</td>
-                       <td className="p-3 text-center text-green-400">00G 25S 00C</td>
-                       <td className="p-3 text-center text-green-400">00G 20S 00C</td>
+                       <td className="p-2 sm:p-3 text-gray-300 text-xs sm:text-sm">{t('fractals.table.basePrice')}</td>
+                       <td className="p-2 sm:p-3 text-center text-green-400 text-xs sm:text-sm">00G 60S 00C</td>
+                       <td className="p-2 sm:p-3 text-center text-green-400 text-xs sm:text-sm">00G 30S 00C</td>
+                       <td className="p-2 sm:p-3 text-center text-green-400 text-xs sm:text-sm">00G 25S 00C</td>
+                       <td className="p-2 sm:p-3 text-center text-green-400 text-xs sm:text-sm">00G 20S 00C</td>
                      </tr>
                       <tr>
-                       <td className="p-3 text-gray-300">{t('fractals.table.ratio')}</td>
-                       <td className="p-3 text-center text-gray-400">0.2854</td>
-                       <td className="p-3 text-center text-gray-400">0.428</td>
-                       <td className="p-3 text-center text-gray-400">0.2864</td>
-                       <td className="p-3 text-center text-gray-400">0.2855</td>
+                       <td className="p-2 sm:p-3 text-gray-300 text-xs sm:text-sm">{t('fractals.table.ratio')}</td>
+                       <td className="p-2 sm:p-3 text-center text-gray-400 text-xs sm:text-sm">0.2854</td>
+                       <td className="p-2 sm:p-3 text-center text-gray-400 text-xs sm:text-sm">0.428</td>
+                       <td className="p-2 sm:p-3 text-center text-gray-400 text-xs sm:text-sm">0.2864</td>
+                       <td className="p-2 sm:p-3 text-center text-gray-400 text-xs sm:text-sm">0.2855</td>
                      </tr>
                    </tbody>
                  </table>
@@ -2098,15 +2122,15 @@ export default function FarmingTrackerPage() {
              </div>
 
              {/* Materiales T5 */}
-             <div className="bg-gray-900/80 backdrop-blur-sm border border-gray-700 rounded-lg p-6 shadow-2xl mb-8">
-               <h3 className="text-xl font-semibold text-white mb-4">{t('fractals.sections.materialsT5')}</h3>
-              <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+             <div className="bg-gray-900/80 backdrop-blur-sm border border-gray-700 rounded-lg p-3 sm:p-4 md:p-6 shadow-2xl mb-6 md:mb-8">
+               <h3 className="text-lg sm:text-xl font-semibold text-white mb-3 md:mb-4">{t('fractals.sections.materialsT5')}</h3>
+              <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 md:gap-6">
                 <div className="lg:col-span-3 overflow-x-auto">
-                 <table className="w-full text-sm">
+                 <table className="w-full text-xs sm:text-sm">
                    <thead>
                      <tr className="border-b border-gray-700 bg-gray-800/60">
-                       <th className="text-left p-2 text-gray-200 font-semibold">{t('fractals.table.name')}</th>
-                       <th className="p-2 text-gray-200 font-semibold">
+                       <th className="text-left p-1 sm:p-2 text-gray-200 font-semibold">{t('fractals.table.name')}</th>
+                       <th className="p-1 sm:p-2 text-gray-200 font-semibold">
                          <div className="flex items-center justify-center" title={t(fractalItemNames[24294])}>
                            {itemDetails[24294]?.icon && (
                              <Image 
@@ -2114,7 +2138,7 @@ export default function FarmingTrackerPage() {
                                alt={t(fractalItemNames[24294])}
                                width={31} 
                                height={31} 
-                               className="w-8 h-8"
+                               className="w-6 h-6 sm:w-8 sm:h-8"
                              />
                            )}
                          </div>
@@ -2311,7 +2335,59 @@ export default function FarmingTrackerPage() {
                                    .reduce((sum, price) => sum + price, 0);
                         return formatGoldSilverCopper(Math.round(total));
                          })()}
-                               </div>
+                    </div>
+                    <div className="text-sm font-bold text-amber-300">
+                         {(() => {
+                           // Calcular las 3 diferencias de la tabla de Multiplicaciones
+                           const dynamicRows = [
+                             { qty: 1650, priceCopper: (itemDetails[24277]?.currentPrice || 0) * 0.9 },
+                             { qty: 1650, priceCopper: (itemDetails[24277]?.buyPrice || 0) },
+                             { qty: 892, priceCopper: (itemDetails[19721]?.currentPrice || 0) * 0.9 },
+                           ];
+                         
+                         const differences = dynamicRows.map(row => {
+                           // Total del bloque 0.9 × 250
+                           const ids09 = [24295, 24358, 24351, 24357, 24289, 24300, 24283, 24277];
+                           const total09 = ids09
+                             .map(id => (itemDetails[id]?.currentPrice || 0) * 0.9 * 250)
+                             .reduce((sum, v) => sum + v, 0);
+                           
+                           // T5 × 2000 + Resultado + 35g
+                           const t5Ids = [24294, 24341, 24350, 24356, 24288, 24299, 24282];
+                           const t5x2000 = t5Ids
+                             .map(t5Id => (itemDetails[t5Id]?.buyPrice || 0) * 2000)
+                             .reduce((sum, price) => sum + price, 0);
+                         
+                           const mult = row.qty * row.priceCopper;
+                           const plusThirtyFiveGold = 350000;
+                           const combined = t5x2000 + mult + plusThirtyFiveGold;
+                           
+                           return total09 - combined;
+                         });
+                         
+                         // MIN(diferencia1, diferencia2, diferencia3) / 14000 + totalPorCaja
+                         const minDifference = Math.min(...differences);
+                         const totalPorCaja = (() => {
+                           const ratios: Record<number, number> = {
+                             24294: 0.3378375,
+                             24341: 0.3378375,
+                             24350: 0.3378375,
+                             24356: 0.3378375,
+                             24288: 0.3378375,
+                             24299: 0.3378375,
+                             24282: 0.3378375,
+                             24276: 0.3378375,
+                           };
+                           return [24294, 24341, 24350, 24356, 24288, 24299, 24282, 24276]
+                             .map((id) => (itemDetails[id]?.buyPrice || 0) * ratios[id])
+                             .reduce((sum, price) => sum + price, 0);
+                         })();
+                         
+                         const resultado = (minDifference / 14000) + totalPorCaja;
+                         
+                         return formatGoldSilverCopper(Math.round(resultado));
+                         })()}
+                    </div>
                   </div>
                                     {/* Sidebar Total T5 × 2000 - OCULTO EN FRONTEND */}
                   {/* 
@@ -2333,40 +2409,226 @@ export default function FarmingTrackerPage() {
                                    </div>
 
              {/* Otros Drops */}
-             <div className="bg-gray-900/80 backdrop-blur-sm border border-gray-700 rounded-lg p-6 shadow-2xl mb-8">
-               <h3 className="text-xl font-semibold text-white mb-4">{t('fractals.sections.otherDrops')}</h3>
-              <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+             <div className="bg-gray-900/80 backdrop-blur-sm border border-gray-700 rounded-lg p-3 sm:p-4 md:p-6 shadow-2xl mb-6 md:mb-8">
+               <h3 className="text-lg sm:text-xl font-semibold text-white mb-3 md:mb-4">{t('fractals.sections.otherDrops')}</h3>
+              <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 md:gap-6">
                 <div className="lg:col-span-3 overflow-x-auto">
-                 <table className="w-full text-sm">
+                 <table className="w-full text-xs sm:text-sm">
                    <thead>
                      <tr className="border-b border-gray-700 bg-gray-800/60">
-                       <th className="text-left p-3 text-gray-200 font-semibold">{t('fractals.table.name')}</th>
-                        <th className="p-2 text-gray-200 font-semibold">{t('fractals.table.basePrice')}</th>
-                        <th className="p-2 text-gray-200 font-semibold">{t('fractals.table.maxPrice')}</th>
-                        <th className="p-2 text-gray-200 font-semibold">{t('fractals.table.ratio')}</th>
+                       <th className="text-left p-1 sm:p-2 text-gray-200 font-semibold">{t('fractals.table.name')}</th>
+                       <th className="p-1 sm:p-2 text-gray-200 font-semibold">
+                         <div className="flex items-center justify-center">
+                           {itemDetails[49424]?.icon && (
+                             <Image 
+                               src={itemDetails[49424].icon} 
+                               alt={t('fractals.items.infusion')}
+                               width={31} 
+                               height={31} 
+                               className="w-6 h-6 sm:w-8 sm:h-8"
+                             />
+                           )}
+                         </div>
+                       </th>
+                       <th className="p-1 sm:p-2 text-gray-200 font-semibold">
+                         <div className="flex items-center justify-center">
+                           {itemDetails[70438]?.icon && (
+                             <Image 
+                               src={itemDetails[70438].icon} 
+                               alt={t('fractals.items.fractalKey')}
+                               width={31} 
+                               height={31} 
+                               className="w-6 h-6 sm:w-8 sm:h-8"
+                             />
+                           )}
+                         </div>
+                       </th>
+                       <th className="p-1 sm:p-2 text-gray-200 font-semibold">
+                         <div className="flex items-center justify-center">
+                           <Image 
+                             src="https://render.guildwars2.com/file/F435090B4D1205CD0491DA2D5D20A12FE2023B6E/740217.png"
+                             alt="Bag of Fractal Relics"
+                             width={31} 
+                             height={31} 
+                             className="w-6 h-6 sm:w-8 sm:h-8"
+                           />
+                         </div>
+                       </th>
+                       <th className="p-1 sm:p-2 text-gray-200 font-semibold">
+                         <div className="flex items-center justify-center">
+                           <Image 
+                             src="https://render.guildwars2.com/file/BAF43C0425BA631B9C49E771F9EB16E32C1E57E1/1203237.png"
+                             alt="Mini Professor Mew"
+                             width={31} 
+                             height={31} 
+                             className="w-6 h-6 sm:w-8 sm:h-8"
+                           />
+                         </div>
+                       </th>
+                       <th className="p-1 sm:p-2 text-gray-200 font-semibold">
+                         <div className="flex items-center justify-center">
+                             <Image 
+                               src="https://render.guildwars2.com/file/EF63A10BD2317CECCEA63A3B7E6555550B414C4E/1766399.png"
+                               alt="Rare Unid"
+                               width={31} 
+                               height={31} 
+                               className="w-6 h-6 sm:w-8 sm:h-8"
+                             />                           
+                         </div>
+                       </th>
+                       <th className="p-1 sm:p-2 text-gray-200 font-semibold">
+                         <div className="flex items-center justify-center">
+                             <Image 
+                               src="https://render.guildwars2.com/file/DE4779014F27DE027BDBE761607B220923DB03D5/631484.png" 
+                               alt="Empireos"
+                               width={31} 
+                               height={31} 
+                               className="w-6 h-6 sm:w-8 sm:h-8"
+                             />
+                         </div>
+                       </th>
+                       <th className="p-1 sm:p-2 text-gray-200 font-semibold">
+                         <div className="flex items-center justify-center" title="Aetherize Skins">
+                             <Image 
+                               src="https://render.guildwars2.com/file/C5DA0BE8047D800F72D9CE2B62E5036754D7E3DB/607547.png" 
+                               alt="Aetherize Skins"
+                               width={31} 
+                               height={31} 
+                               className="w-6 h-6 sm:w-8 sm:h-8"
+                             />
+                         </div>
+                       </th>
                      </tr>
                    </thead>
                    <tbody>
-                      {[
-                        { id: 49424, label: t('fractals.items.infusion'), ratio: 2.2637 },
-                        { id: 70438, label: t('fractals.items.fractalKey'), ratio: 0.1 },
-                        { id: 71428, label: t('fractals.items.relicBag'), ratio: 0.0668 },
-                      ].map((row) => (
-                        <tr key={row.id} className="border-b border-gray-800">
-                          <td className="p-3 text-gray-300">{row.label}</td>
-                          <td className="p-3 text-center text-green-400">
-                            <span className="whitespace-nowrap">
-                              {itemDetails[row.id]?.buyPrice ? formatGoldSilverCopper(itemDetails[row.id].buyPrice) : '00G 00S 00C'}
-                            </span>
-                       </td>
-                          <td className="p-3 text-center text-green-400">
-                            <span className="whitespace-nowrap">
-                              {itemDetails[row.id]?.currentPrice ? formatGoldSilverCopper(itemDetails[row.id].currentPrice) : '00G 00S 00C'}
-                            </span>
-                       </td>
-                          <td className="p-3 text-center text-gray-400">{row.ratio}</td>
-                        </tr>
-                      ))}
+                     <tr className="border-b border-gray-800">
+                       <td className="p-1 text-gray-300">{t('fractals.table.basePrice')}</td>
+                       {([49424, 73248, 70064, 74268, 83008, 46735, 43971] as number[]).map((id) => (
+                         <td key={id} className="p-1 text-center">
+                           <span className="text-green-400 whitespace-nowrap">
+                              {id === 49424 
+                                ? (itemDetails[id]?.currentPrice ? formatGoldSilverCopper(Math.round((itemDetails[id].currentPrice || 0) * 0.9 * 2.2637)) : '00g 00s 00c')
+                                : id === 73248
+                                ? (itemDetails[id]?.currentPrice ? formatGoldSilverCopper(Math.round((itemDetails[id].currentPrice || 0) * 0.1)) : '00g 00s 00c')
+                                : id === 70064
+                                ? formatGoldSilverCopper(Math.round(30000 * 0.0668))
+                                : id === 83008
+                                ? (itemDetails[id]?.currentPrice ? formatGoldSilverCopper(Math.max(1, Math.round((itemDetails[id].currentPrice || 0) * 0.85 * 0.00017))) : '00g 00s 00c')
+                                : id === 46735
+                                ? (() => {
+                                    // Cálculo oculto: Total crafting cost ÷ 5 para Toxic Tuning Crystal
+                                    // Ingredientes: 3 Crystalline Dust + 5 Pristine Toxic Spore + 100 Empyreal Fragment
+                                    const crystallineDust = (itemDetails[24277]?.buyPrice || 0) * 3;
+                                    const toxicSpore = (itemDetails[19721]?.buyPrice || 0) * 5;
+                                    const empyrealFragment = (itemDetails[19718]?.buyPrice || 0) * 100;
+                                    const totalCraftingCost = crystallineDust + toxicSpore + empyrealFragment;
+                                    const pricePerUnit = (totalCraftingCost / 5);
+                                    
+                                    // Nueva fórmula: (precio del toxin al 0.85 × 5) - resultado pricePerUnit
+                                    const toxinPrice = (itemDetails[48917]?.currentPrice || 0) * 0.85;
+                                    const finalPrice = ((toxinPrice * 5)- pricePerUnit);
+                                    
+                                    // Aplicar (resultadoFinal / 100) × ratio
+                                    const finalResult = (finalPrice / 100) * 1.0108;
+                                    
+                                    return formatGoldSilverCopper(Math.round(finalResult));
+                                  })()
+                                : id === 43971
+                                ? (() => {
+                                    // Cálculo oculto: Media de 19 IDs × 0.85 (Aetherized weapons correctos)
+                                    const ids = [44001, 44004, 44007, 44010, 44013, 44016, 44019, 44022, 44025, 44028, 44031, 44034, 44037, 44040, 44043, 44046, 44049, 44052, 44055];
+                                    const totalSum = ids.reduce((sum, itemId) => sum + ((itemDetails[itemId]?.currentPrice || 0) * 0.85), 0);
+                                    const averagePrice = totalSum / 19;
+                                    
+                                    // Aplicar ratio 0.0021 al promedio
+                                    const finalResult = averagePrice * 0.0021;
+                                    
+                                    return formatGoldSilverCopper(Math.round(finalResult));
+                                  })()
+                                : (itemDetails[id]?.buyPrice ? formatGoldSilverCopper(itemDetails[id].buyPrice) : '00g 00s 00c')
+                              }
+                           </span>
+                         </td>
+                       ))}
+                     </tr>
+                     <tr className="border-b border-gray-800">
+                       <td className="p-1 text-gray-300">{t('fractals.table.maxPrice')}</td>
+                       {([49424, 73248, 70064, 74268, 83008, 46735, 43971] as number[]).map((id) => (
+                         <td key={id} className="p-1 text-center">
+                           <span className="text-green-400 whitespace-nowrap">
+                              {id === 49424 
+                                ? (() => {
+                                    // Cálculo oculto para +9 Agony Infusion (solo en precioMax)
+                                    // Ingredientes: 255 Reactivo termocatalítico + 256 Infusión +1
+                                    // Reactivo termocatalítico: 10 por 14s 96c = 1s 50c cada uno
+                                    const reactivoTermocatalitico = 150 * 255; // 1s 50c = 150 cobre
+                                    const infusionPlus1 = (itemDetails[49424]?.buyPrice || 0) * 256;
+                                    const totalCraftingCost = reactivoTermocatalitico + infusionPlus1;
+                                    
+                                    const Agony9 = (itemDetails[49432]?.currentPrice || 0) * 0.85;
+                                    const finalPrice =(totalCraftingCost-Agony9);
+
+                                    const finalResult = (finalPrice / 256) * 2.2637;
+                                    
+                                    return formatGoldSilverCopper(Math.round(finalResult));
+                                  })()  
+                                : id === 73248
+                                ? (itemDetails[id]?.currentPrice ? formatGoldSilverCopper(Math.round((itemDetails[id].currentPrice || 0) * 0.1)) : '00g 00s 00c')
+                                : id === 70064
+                                ? formatGoldSilverCopper(Math.round(30000 * 0.0668))
+                                : id === 83008
+                                ? (itemDetails[id]?.currentPrice ? formatGoldSilverCopper(Math.max(1, Math.round((itemDetails[id].currentPrice || 0) * 0.85 * 0.00017))) : '00g 00s 00c')
+                                : id === 46735
+                                ? (() => {
+                                    // Cálculo oculto: Total crafting cost ÷ 5 para Toxic Tuning Crystal
+                                    // Ingredientes: 3 Crystalline Dust + 5 Pristine Toxic Spore + 100 Empyreal Fragment
+                                    const crystallineDust = (itemDetails[24277]?.buyPrice || 0) * 3;
+                                    const toxicSpore = (itemDetails[19721]?.buyPrice || 0) * 5;
+                                    const empyrealFragment = (itemDetails[19718]?.buyPrice || 0) * 100;
+                                    const totalCraftingCost = crystallineDust + toxicSpore + empyrealFragment;
+                                    const pricePerUnit = (totalCraftingCost / 5);
+                                    
+                                    // Nueva fórmula: (precio del toxin al 0.85 × 5) - resultado pricePerUnit
+                                    const toxinPrice = (itemDetails[48917]?.currentPrice || 0) * 0.85; // Solo ×0.85
+                                    const finalPrice = ((toxinPrice * 5) - pricePerUnit); // (×0.85 × 5) - pricePerUnit
+                                    
+                                    // Aplicar (resultadoFinal / 100) × ratio
+                                    const finalResult = (finalPrice / 100) * 1.0108;
+                                    
+                                    return formatGoldSilverCopper((finalResult));
+                                  })()
+                                : id === 43971
+                                ? (() => {
+                                    // Cálculo oculto: Media de 19 IDs × 0.85 (Aetherized weapons correctos)
+                                    const ids = [44001, 44004, 44007, 44010, 44013, 44016, 44019, 44022, 44025, 44028, 44031, 44034, 44037, 44040, 44043, 44046, 44049, 44052, 44055];
+                                    const totalSum = ids.reduce((sum, itemId) => sum + ((itemDetails[itemId]?.currentPrice || 0) * 0.85), 0);
+                                    const averagePrice = totalSum / 19;
+                                    
+                                    // Aplicar ratio 0.0021 al promedio
+                                    const finalResult = averagePrice * 0.0021;
+                                    
+                                    return formatGoldSilverCopper(Math.round(finalResult));
+                                  })()
+                                : (itemDetails[id]?.currentPrice ? formatGoldSilverCopper(itemDetails[id].currentPrice) : '00g 00s 00c')
+                              }
+                           </span>
+                         </td>
+                       ))}
+                     </tr>
+                     <tr>
+                       <td className="p-1 text-gray-300">{t('fractals.table.ratio')}</td>
+                       {[
+                         { id: 49424, ratio: 2.2637 },
+                         { id: 73248, ratio: 0.1 },
+                         { id: 70064, ratio: 0.0668 },
+                         { id: 74268, ratio: 0.02 },
+                         { id: 83008, ratio: 0.00017 },
+                         { id: 46735, ratio: 1.0108 },
+                         { id: 43971, ratio: 0.0021 },
+                       ].map((item) => (
+                         <td key={item.id} className="p-1 text-center text-gray-400">{item.ratio}</td>
+                       ))}
+                     </tr>
                    </tbody>
                  </table>
                 </div>
@@ -2375,10 +2637,40 @@ export default function FarmingTrackerPage() {
                     <div className="text-xs font-semibold text-amber-200">{t('fractals.calculations.totalPerBoxOther')}</div>
                     <div className="text-sm font-bold text-amber-300">
                          {(() => {
-                           const ratios = { 49424: 2.2637, 70438: 0.1, 71428: 0.0668 } as Record<number, number>;
-                           const total = [49424, 70438, 71428]
-                             .map((id) => (itemDetails[id]?.buyPrice || 0) * (ratios[id] || 0))
+                           const ratios = { 
+                             49424: 2.2637, 
+                             73248: 0.1, 
+                             70064: 0.0668,
+                             74268: 0.02,
+                             83008: 0.00017,
+                             46735: 1.0108,
+                             43971: 0.0021
+                           } as Record<number, number>;
+                           
+                           const infusionPrice = (itemDetails[49424]?.currentPrice || 0) * 0.9;
+                           const otherItemsTotal = [73248, 70064, 74268, 83008].map((id) => {
+                               if (id === 83008) {
+                                 // Para 83008: sell * 0.85 * ratio, mínimo 0.01 cobre
+                                 const currentPrice = itemDetails[id]?.currentPrice || 0;
+                                 const price85 = currentPrice * 0.85;
+                                 const ratio = ratios[id] || 0;
+                                 const result = Math.max(0.01, price85 * ratio);
+                                 
+                                 return result;
+                               } else if (id === 49424) {
+                                 // Para 49424: currentPrice * 0.9 * ratio
+                                 return (itemDetails[id]?.currentPrice || 0) * 0.9 * (ratios[id] || 0);
+                               } else {
+                                 // Para otros items: buyPrice * ratio
+                                 return (itemDetails[id]?.buyPrice || 0) * (ratios[id] || 0);
+                               }
+                             })
                              .reduce((sum, price) => sum + price, 0);
+                           
+                           const total = infusionPrice + otherItemsTotal;
+                           
+
+                           
                            return formatGoldSilverCopper(Math.round(total));
                          })()}
                                </div>
@@ -2470,52 +2762,116 @@ export default function FarmingTrackerPage() {
              */}
 
              {/* Profits */}
-             <div className="bg-gray-900/80 backdrop-blur-sm border border-gray-700 rounded-lg p-6 shadow-2xl mb-8">
-               <h3 className="text-xl font-semibold text-white mb-4">{t('fractals.sections.profits')}</h3>
-              <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+             <div className="bg-gray-900/80 backdrop-blur-sm border border-gray-700 rounded-lg p-3 sm:p-4 md:p-6 shadow-2xl mb-6 md:mb-8">
+               <h3 className="text-lg sm:text-xl font-semibold text-white mb-3 md:mb-4">{t('fractals.sections.profits')}</h3>
+              <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 md:gap-6">
                 <div className="lg:col-span-3 overflow-x-auto">
-                 <table className="w-full text-sm">
+                 <table className="w-full text-xs sm:text-sm">
                    <thead>
                      <tr className="border-b border-gray-700 bg-gray-800/60">
-                       <th className="text-left p-2 text-gray-200 font-semibold">{t('fractals.profits.table.boxKeyTypes')}</th>
-                       <th className="p-2 text-gray-200 font-semibold">{t('fractals.profits.table.box')}</th>
-                       <th className="p-2 text-gray-200 font-semibold">{t('fractals.profits.table.key')}</th>
-                       <th className="p-2 text-gray-200 font-semibold">{t('fractals.profits.table.total')}</th>
-                       <th className="p-2 text-gray-200 font-semibold">{t('fractals.profits.table.profitAvg')}</th>
-                       <th className="p-2 text-gray-200 font-semibold">{t('fractals.profits.table.roi')}</th>
+                       <th className="text-left p-1 sm:p-2 text-gray-200 font-semibold">{t('fractals.profits.table.boxKeyTypes')}</th>
+                       <th className="p-1 sm:p-2 text-gray-200 font-semibold">{t('fractals.profits.table.box')}</th>
+                       <th className="p-1 sm:p-2 text-gray-200 font-semibold">{t('fractals.profits.table.key')}</th>
+                       <th className="p-1 sm:p-2 text-gray-200 font-semibold">{t('fractals.profits.table.total')}</th>
+                       <th className="p-1 sm:p-2 text-gray-200 font-semibold">{t('fractals.profits.table.profitAvg')}</th>
+                       <th className="p-1 sm:p-2 text-gray-200 font-semibold">{t('fractals.profits.table.roi')}</th>
                      </tr>
                    </thead>
                    <tbody>
                       {[
-                        { label: t('fractals.profits.boxKey90'), keyRatio: 0.9 },
-                        { label: t('fractals.profits.boxKeyBuyOrder'), keyRatio: 1.0 },
-                        { label: t('fractals.profits.boxKeySellOrder'), keyRatio: 1.2 },
+                        { label: t('fractals.profits.boxKey90'), boxItemId: 75919, boxRatio: 0.9, keyItemId: 73248, keyRatio: 0.9 },
+                        { label: t('fractals.profits.boxKeyBuyOrder'), boxItemId: 70438, boxRatio: 1.0, keyItemId: 70438, keyRatio: 1.0 },
+                        { label: t('fractals.profits.boxKeySellOrder'), boxItemId: 70438, boxRatio: 1.0, keyItemId: 70438, keyRatio: 1.2 },
                       ].map((row, idx) => (
                         <tr key={idx} className="border-b border-gray-800">
-                          <td className="p-2 text-gray-300">{row.label}</td>
-                          <td className="p-2 text-center text-green-400">
+                          <td className="p-1 sm:p-2 text-gray-300 text-xs sm:text-sm">{row.label}</td>
+                          <td className="p-1 sm:p-2 text-center text-green-400 text-xs sm:text-sm">
                             <span className="whitespace-nowrap">
-                              {itemDetails[70438]?.buyPrice ? formatGoldSilverCopper(itemDetails[70438].buyPrice) : '—'}
+                              {itemDetails[row.boxItemId]?.currentPrice ? formatGoldSilverCopper(Math.round((itemDetails[row.boxItemId]?.currentPrice || 0) * row.boxRatio)) : '—'}
                             </span>
                           </td>
-                          <td className="p-2 text-center text-green-400">
+                          <td className="p-1 sm:p-2 text-center text-green-400 text-xs sm:text-sm">
                             <span className="whitespace-nowrap">
-                              {itemDetails[70438]?.currentPrice ? formatGoldSilverCopper(itemDetails[70438].currentPrice) : '—'}
+                              {itemDetails[row.keyItemId]?.currentPrice ? formatGoldSilverCopper(Math.round((itemDetails[row.keyItemId]?.currentPrice || 0) * row.keyRatio)) : '—'}
                             </span>
                           </td>
-                          <td className="p-2 text-center text-blue-400">
+                          <td className="p-1 sm:p-2 text-center text-blue-400 text-xs sm:text-sm">
                             <span className="whitespace-nowrap">
-                              {itemDetails[70438]?.buyPrice ? formatGoldSilverCopper(Math.round((itemDetails[70438]?.buyPrice || 0) * row.keyRatio)) : '—'}
+                              {itemDetails[row.boxItemId]?.currentPrice ? formatGoldSilverCopper(Math.round((itemDetails[row.boxItemId]?.currentPrice || 0) * row.boxRatio + (itemDetails[row.keyItemId]?.currentPrice || 0) * row.keyRatio)) : '—'}
                             </span>
                           </td>
-                          <td className="p-2 text-center text-yellow-300 font-semibold">
+                          <td className="p-1 sm:p-2 text-center text-yellow-300 font-semibold text-xs sm:text-sm">
                             <span className="whitespace-nowrap">
-                              {itemDetails[70438]?.buyPrice ? formatGoldSilverCopper(Math.round((itemDetails[70438]?.buyPrice || 0) * row.keyRatio * 0.85)) : '—'}
+                              {itemDetails[row.boxItemId]?.currentPrice ? (() => {
+                                // Calcular el Total (Caja + Llave)
+                                const total = (itemDetails[row.boxItemId]?.currentPrice || 0) * row.boxRatio + (itemDetails[row.keyItemId]?.currentPrice || 0) * row.keyRatio;
+                                
+                                // Calcular Mejor Income Por Caja (valor L19)
+                                const dynamicRows = [
+                                  { qty: 1650, priceCopper: (itemDetails[24277]?.currentPrice || 0) * 0.9 },
+                                  { qty: 1650, priceCopper: (itemDetails[24277]?.buyPrice || 0) },
+                                  { qty: 892, priceCopper: (itemDetails[19721]?.currentPrice || 0) * 0.9 },
+                                ];
+                              
+                                const differences = dynamicRows.map(row => {
+                                  // Total del bloque 0.9 × 250
+                                  const ids09 = [24295, 24358, 24351, 24357, 24289, 24300, 24283, 24277];
+                                  const total09 = ids09
+                                    .map(id => (itemDetails[id]?.currentPrice || 0) * 0.9 * 250)
+                                    .reduce((sum, v) => sum + v, 0);
+                                  
+                                  // T5 × 2000 + Resultado + 35g
+                                  const t5Ids = [24294, 24341, 24350, 24356, 24288, 24299, 24282];
+                                  const t5x2000 = t5Ids
+                                    .map(t5Id => (itemDetails[t5Id]?.buyPrice || 0) * 2000)
+                                    .reduce((sum, price) => sum + price, 0);
+                                
+                                  const mult = row.qty * row.priceCopper;
+                                  const plusThirtyFiveGold = 350000;
+                                  const combined = t5x2000 + mult + plusThirtyFiveGold;
+                                  
+                                  return total09 - combined;
+                                });
+                                
+                                // MIN(diferencia1, diferencia2, diferencia3) / 14000 + totalPorCaja
+                                const minDifference = Math.min(...differences);
+                                const totalPorCaja = (() => {
+                                  const ratios: Record<number, number> = {
+                                    24294: 0.3378375,
+                                    24341: 0.3378375,
+                                    24350: 0.3378375,
+                                    24356: 0.3378375,
+                                    24288: 0.3378375,
+                                    24299: 0.3378375,
+                                    24282: 0.3378375,
+                                    24276: 0.3378375,
+                                  };
+                                  return [24294, 24341, 24350, 24356, 24288, 24299, 24282, 24276]
+                                    .map((id) => (itemDetails[id]?.buyPrice || 0) * ratios[id])
+                                    .reduce((sum, price) => sum + price, 0);
+                                })();
+                                
+
+                                
+                                // Profit AVG = Mejor Income Por Caja - Total
+                                const mejorIncomePorCaja = 4934; // 00G 48S 53C en cobre
+                                const profitAvg = mejorIncomePorCaja - total;
+                                
+                                return formatGoldSilverCopper(Math.round(profitAvg));
+                              })() : '—'}
                             </span>
                           </td>
-                          <td className="p-2 text-center text-purple-300 font-semibold">
+                          <td className="p-1 sm:p-2 text-center text-purple-300 font-semibold text-xs sm:text-sm">
                             <span className="whitespace-nowrap">
-                              {itemDetails[70438]?.buyPrice ? `${Math.round(((itemDetails[70438]?.buyPrice || 0) * row.keyRatio * 0.85 / (itemDetails[70438]?.buyPrice || 1)) * 100)}%` : '—'}
+                              {itemDetails[row.boxItemId]?.currentPrice ? (() => {
+                                const total = (itemDetails[row.boxItemId]?.currentPrice || 0) * row.boxRatio + (itemDetails[row.keyItemId]?.currentPrice || 0) * row.keyRatio;
+                                const mejorIncomePorCaja = 4934; // 00G 48S 53C en cobre
+                                
+                                // ROI = (Mejor Income Por Caja - Total) / Total
+                                const roi = ((mejorIncomePorCaja - total) / total) * 100;
+                                
+                                return `${roi.toFixed(2)}%`;
+                              })() : '—'}
                             </span>
                           </td>
                      </tr>
