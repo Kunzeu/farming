@@ -615,8 +615,8 @@ export default function DailyRoutine() {
                       }`}
                       onClick={() => toggleFarmSelection(farm.id)}
                     >
-                      {/* Layout principal usando CSS Grid */}
-                      <div className="grid grid-cols-[auto_1fr_auto] md:grid-cols-[auto_2fr_1fr] gap-3 md:gap-4 items-center">
+                                            {/* Layout principal usando CSS Grid */}
+                      <div className="grid grid-cols-[auto_1fr_auto] md:grid-cols-[auto_1fr_auto] gap-3 md:gap-4 items-center">
                         
                         {/* Columna 1: Checkbox */}
                         <div className="flex-shrink-0">
@@ -651,16 +651,16 @@ export default function DailyRoutine() {
                           </div>
 
                           {/* Estadísticas en móvil - layout horizontal compacto */}
-                          <div className="flex md:hidden flex-wrap items-center gap-2">
+                          <div className="flex md:hidden flex-wrap items-center gap-2 max-w-none">
                             {/* Tiempo */}
-                            <div className="flex items-center gap-1.5 text-blue-400 bg-blue-500/10 px-2 py-1 rounded-md">
+                            <div className="flex items-center gap-1.5 text-blue-400 bg-blue-500/10 px-2 py-1 rounded-md flex-shrink-0">
                               <Clock className="w-3 h-3" />
                               <span className="text-xs font-medium">{farm.estimatedTime}</span>
                             </div>
                             
                             {/* Monedas */}
                             {getAllCurrencies(farm).map(({ currency, value, config }) => (
-                              <div key={currency} className={`flex items-center gap-1 ${config.color} bg-gray-700/50 px-2 py-1 rounded-md`}>
+                              <div key={currency} className={`flex items-center gap-1 ${config.color} bg-gray-700/50 px-2 py-1 rounded-md flex-shrink-0`}>
                                 <Image 
                                   src={config.icon} 
                                   alt={t(config.labelKey, config.labelKey)}
@@ -677,7 +677,7 @@ export default function DailyRoutine() {
                         </div>
 
                         {/* Columna 3: Estadísticas (solo desktop) */}
-                        <div className="hidden md:flex items-center gap-3 lg:gap-4 justify-end">
+                        <div className="hidden md:flex items-center gap-3 lg:gap-4 justify-start">
                           {/* Tiempo */}
                           <div className="flex items-center gap-2 text-blue-400 bg-blue-500/10 px-3 py-1.5 rounded-md">
                             <Clock className="w-4 h-4" />
@@ -687,7 +687,7 @@ export default function DailyRoutine() {
                           {/* Monedas */}
                           <div className="flex items-center gap-2 lg:gap-3">
                             {getAllCurrencies(farm).map(({ currency, value, config }) => (
-                              <div key={currency} className={`flex items-center gap-1.5 ${config.color}`}>
+                              <div key={currency} className={`flex items-center gap-1.5 ${config.color} flex-shrink-0`}>
                                 <Image 
                                   src={config.icon} 
                                   alt={t(config.labelKey, config.labelKey)}
@@ -757,7 +757,7 @@ export default function DailyRoutine() {
                         </div>
                         
                         {/* Dynamic currencies - limit to 3 to keep cards compact */}
-                        {getAllCurrencies(farm).slice(0, 3).map(({ currency, value, config }) => {
+                        {getAllCurrencies(farm).slice(0, 7).map(({ currency, value, config }) => {
                           const displayValue = currency === 'gold' ? formatGoldDisplay(value) : value;
                           const isLong = displayValue.length > 8;
                           
