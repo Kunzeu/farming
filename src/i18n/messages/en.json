@@ -87,10 +87,13 @@
 
   "currency.gold": "Gold",
   "currency.spiritShards": "Spirit Shards",
+  "currency.karma": "Karma",
+  "currency.fractalRelics": "Fractal Relics",
+  "currency.volatileMagic": "Volatile Magic",
+  "currency.unboundMagic": "Unbound Magic",
+  "currency.riftEssences": "Rift Essences",
+  "currency.mysticClovers": "Mystic Clovers",
   "currency.imperialFavor": "Imperial Favor",
-  "currency.experience": "Experience",
-  "currency.laurels": "Laurels",
-  "currency.other": "Other Currency",
 
   "salvage.dropdown.common": "Common",
   "salvage.dropdown.masterwork": "Masterwork",

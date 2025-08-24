@@ -102,10 +102,13 @@ export default function DescriptionModal({ isOpen, onClose, route }: Description
   const currencyMap = {
     gold: { icon: 'gold' as const, labelKey: 'currency.gold', suffix: '/h' },
     spiritShards: { icon: 'spirit-shard' as const, labelKey: 'currency.spiritShards', suffix: '/h' },
-    imperialFavor: { icon: 'imperial-favor' as const, labelKey: 'currency.imperialFavor', suffix: '/h' },
-    experience: { icon: 'gold' as const, labelKey: 'currency.experience', suffix: '/h' },
-    laurels: { icon: 'gold' as const, labelKey: 'currency.laurels', suffix: '/h' },
-    otherCurrency: { icon: 'gold' as const, labelKey: 'currency.other', suffix: '/h' },
+    karma: { icon: 'karma' as const, labelKey: 'currency.karma', suffix: '/h' },
+    fractalRelics: { icon: 'fractal-relic' as const, labelKey: 'currency.fractalRelics', suffix: '/h' },
+    volatileMagic: { icon: 'volatile-magic' as const, labelKey: 'currency.volatileMagic', suffix: '/h' },
+    unboundMagic: { icon: 'unbound-magic' as const, labelKey: 'currency.unboundMagic', suffix: '/h' },
+    riftEssences: { icon: 'rift-essence' as const, labelKey: 'currency.riftEssences', suffix: '/h' },
+    mysticClovers: { icon: 'mystic-clover' as const, labelKey: 'currency.mysticClovers', suffix: '/h' },
+    imperialFavor: { icon: 'imperial-favor' as const, labelKey: 'currency.imperialFavor', suffix: '/h' }
   };
 
   return (

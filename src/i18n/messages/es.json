@@ -90,10 +90,13 @@
 
   "currency.gold": "Oro",
   "currency.spiritShards": "Esquirla espiritual",
+  "currency.karma": "Karma",
+  "currency.fractalRelics": "Reliquias de Fractal",
+  "currency.volatileMagic": "Magia Volátil",
+  "currency.unboundMagic": "Magia Desatada",
+  "currency.riftEssences": "Esencias de Rift",
+  "currency.mysticClovers": "Tréboles Místicos",
   "currency.imperialFavor": "Favor Imperial",
-  "currency.experience": "Experiencia",
-  "currency.laurels": "Laureles",
-  "currency.other": "Otra Moneda",
 
   "salvage.dropdown.common": "Selecto",
   "salvage.dropdown.masterwork": "Obra de arte",

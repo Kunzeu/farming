@@ -84,12 +84,15 @@
 
   "common.all": "Alle",
 
-  "currency.gold": "Gold",
-  "currency.spiritShards": "Geisterscherben",
+  "currency.gold": "Münzen",
+  "currency.spiritShards": "Geister-Scherbe",
+  "currency.karma": "Karma",
+  "currency.fractalRelics": "Fraktal-Relikt",
+  "currency.volatileMagic": "Flüchtige Magie",
+  "currency.unboundMagic": "Entfesselte Magie",
+  "currency.riftEssences": "Edle Riss-Essenz",
+  "currency.mysticClovers": "Mystischer Glücksklee",
   "currency.imperialFavor": "Kaiserliche Gunst",
-  "currency.experience": "Erfahrung",
-  "currency.laurels": "Lorbeeren",
-  "currency.other": "Andere Währung",
 
   "salvage.dropdown.common": "Edel",
   "salvage.dropdown.masterwork": "Meisterwerk",

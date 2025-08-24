@@ -8,9 +8,12 @@ export interface FarmItem {
     gold?: string;
     spiritShards?: string;
     karma?: string;
-    experience?: string;
-    laurels?: string;
-    otherCurrency?: string;
+    fractalRelics?: string;
+    volatileMagic?: string;
+    unboundMagic?: string;
+    riftEssences?: string;
+    mysticClovers?: string;
+    imperialFavor?: string;
   };
   expansion: ('core' | 'hot' | 'pof' | 'eod' | 'soto' | 'jw')[];
   isSolo: boolean;

@@ -102,39 +102,72 @@ export default function ModeratorPanel() {
     return `${cleaned.slice(0, 2)}:${cleaned.slice(2, 4)}:${cleaned.slice(4, 6)}`;
   };
 
-  // Función para formatear oro a formato GW2 (G S C)
-  const formatGoldInput = (value: string): string => {
-    const cleaned = value.replace(/[^\d\s]/g, '').trim();
-    if (!cleaned) return '';
-    
-    if (/^\d+$/.test(cleaned)) {
-      const copper = parseInt(cleaned);
-      const gold = Math.floor(copper / 10000);
-      const silver = Math.floor((copper % 10000) / 100);
-      const remainingCopper = copper % 100;
-      
-      const goldStr = gold.toString();
-      const silverStr = silver.toString().padStart(2, '0');
-      const copperStr = remainingCopper.toString().padStart(2, '0');
-      
-      return `${goldStr}g ${silverStr}s ${copperStr}c`;
-    }
-    
-    return value;
-  };
+
 
   const handleTimeChange = (value: string) => {
     const formatted = formatTimeInput(value);
     setNewFarm({...newFarm, estimatedTime: formatted});
   };
 
-  // Funciones para manejar las nuevas monedas
+  // Función para formatear oro automáticamente mientras el usuario escribe
+  const formatGoldInput = (value: string): string => {
+    // Remover todo excepto números
+    const numbersOnly = value.replace(/[^\d]/g, '');
+    
+    if (!numbersOnly) return '';
+    
+    // Padear con ceros a la izquierda para tener al menos 6 dígitos (GGSSCC)
+    const paddedValue = numbersOnly.padStart(6, '0');
+    
+    // Interpretar como formato posicional: últimos 6 dígitos son GGSSCC
+    const lastSixDigits = paddedValue.slice(-6);
+    const gold = parseInt(lastSixDigits.slice(0, 2)) || 0;
+    const silver = parseInt(lastSixDigits.slice(2, 4)) || 0;
+    const copper = parseInt(lastSixDigits.slice(4, 6)) || 0;
+    
+    // Si hay más de 6 dígitos, los primeros son oro adicional
+    if (paddedValue.length > 6) {
+      const extraGoldDigits = paddedValue.slice(0, -6);
+      const extraGold = parseInt(extraGoldDigits) || 0;
+      const totalGold = extraGold * 100 + gold;
+      
+      const silverFormatted = silver.toString().padStart(2, '0');
+      const copperFormatted = copper.toString().padStart(2, '0');
+      return `${totalGold}g ${silverFormatted}s ${copperFormatted}c`;
+    }
+    
+    // Construir el string formateado
+    let result = '';
+    if (gold > 0) {
+      // Formatear con ceros a la izquierda cuando hay oro: 15g 00s 00c
+      const silverFormatted = silver.toString().padStart(2, '0');
+      const copperFormatted = copper.toString().padStart(2, '0');
+      result += `${gold}g ${silverFormatted}s ${copperFormatted}c`;
+    } else if (silver > 0) {
+      // Para solo plata, usar padding: 00s 25c
+      const copperFormatted = copper.toString().padStart(2, '0');
+      result += `${silver.toString().padStart(2, '0')}s ${copperFormatted}c`;
+    } else {
+      // Para solo cobre: 00c
+      result += `${copper.toString().padStart(2, '0')}c`;
+    }
+    
+    return result.trim();
+  };
+
+  // Funciones para manejar cambios de monedas
   const handleCurrencyChange = (currency: string, value: string) => {
+    // Formatear oro automáticamente
+    let formattedValue = value;
+    if (currency === 'gold' && value) {
+      formattedValue = formatGoldInput(value);
+    }
+    
     setNewFarm({
       ...newFarm,
       estimatedRewards: {
         ...newFarm.estimatedRewards,
-        [currency]: value
+        [currency]: formattedValue
       }
     });
   };
@@ -150,12 +183,15 @@ export default function ModeratorPanel() {
   };
 
   const currencyOptions = [
-    { value: 'gold', label: 'Oro', icon: 'gold' as const, placeholder: '15' },
-    { value: 'silver', label: 'Plata', icon: 'silver' as const, placeholder: '50' },
-    { value: 'copper', label: 'Cobre', icon: 'copper' as const, placeholder: '250' },
+    { value: 'gold', label: 'Oro', icon: 'gold' as const, placeholder: '150025' },
     { value: 'spiritShards', label: 'Spirit Shards', icon: 'spirit-shard' as const, placeholder: '25' },
-    { value: 'imperialFavor', label: 'Imperial Favor', icon: 'imperial-favor' as const, placeholder: '50' },
-    { value: 'experience', label: 'Experiencia', icon: 'gold' as const, placeholder: '50000' }
+    { value: 'karma', label: 'Karma', icon: 'karma' as const, placeholder: '5000' },
+    { value: 'fractalRelics', label: 'Fractal Relics', icon: 'fractal-relic' as const, placeholder: '50' },
+    { value: 'volatileMagic', label: 'Volatile Magic', icon: 'volatile-magic' as const, placeholder: '1000' },
+    { value: 'unboundMagic', label: 'Unbound Magic', icon: 'unbound-magic' as const, placeholder: '1000' },
+    { value: 'riftEssences', label: 'Rift Essences', icon: 'rift-essence' as const, placeholder: '25' },
+    { value: 'mysticClovers', label: 'Mystic Clovers', icon: 'mystic-clover' as const, placeholder: '2' },
+    { value: 'imperialFavor', label: 'Imperial Favor', icon: 'imperial-favor' as const, placeholder: '50' }
   ];
 
   const getIconForCurrency = (currency: string) => {
@@ -541,7 +577,7 @@ export default function ModeratorPanel() {
               </label>
             </div>
 
-            {/* Sistema de Monedas */}
+            {/* Sistema de Monedas - Mismo que Admin */}
             <div className="space-y-4">
               <label className="block text-sm font-medium text-gray-300 mb-2">
                 Recompensas Estimadas (por hora)
@@ -552,66 +588,68 @@ export default function ModeratorPanel() {
                 <label className="block text-sm font-medium text-gray-300 mb-3">
                   Tipos de Moneda
                 </label>
-                <div className="grid grid-cols-2 gap-3">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   {currencyOptions.map((option) => (
-                    <div key={option.value} className="flex items-center gap-3 p-3 bg-slate-700 rounded-lg border border-slate-600">
-                      <input
-                        type="checkbox"
-                        checked={selectedCurrencies.includes(option.value)}
-                        onChange={(e) => {
-                          if (e.target.checked) {
-                            setSelectedCurrencies(prev => [...prev, option.value]);
-                          } else {
-                            setSelectedCurrencies(prev => prev.filter(c => c !== option.value));
-                            setNewFarm(currentFarm => ({
-                              ...currentFarm,
-                              estimatedRewards: {
-                                ...currentFarm.estimatedRewards,
-                                [option.value]: ''
-                              }
-                            }));
-                          }
-                        }}
-                        className="w-4 h-4 text-blue-600 bg-slate-700 border-slate-600 rounded focus:ring-blue-500"
-                      />
-                      <GW2Icon type={option.icon} size="sm" />
-                      <span className="text-white text-sm min-w-0 flex-shrink-0">{option.label}</span>
-                      <input
-                        type="number"
-                        min="0"
-                        step="0.01"
-                        value={newFarm.estimatedRewards[option.value as keyof typeof newFarm.estimatedRewards] || ''}
-                        onChange={(e) => {
-                          const value = e.target.value;
-                          // Solo permitir números válidos
-                          if (value === '' || (!isNaN(Number(value)) && Number(value) >= 0)) {
-                            handleCurrencyChange(option.value, value);
-                            // Auto-seleccionar el checkbox si se escribe algo
-                            if (value && !selectedCurrencies.includes(option.value)) {
+                    <div key={option.value} className="p-3 bg-slate-700 rounded-lg border border-slate-600">
+                      <div className="flex items-center gap-2">
+                        <input
+                          type="checkbox"
+                          checked={selectedCurrencies.includes(option.value)}
+                          onChange={(e) => {
+                            if (e.target.checked) {
                               setSelectedCurrencies(prev => [...prev, option.value]);
+                            } else {
+                              setSelectedCurrencies(prev => prev.filter(c => c !== option.value));
+                              setNewFarm(currentFarm => ({
+                                ...currentFarm,
+                                estimatedRewards: {
+                                  ...currentFarm.estimatedRewards,
+                                  [option.value]: ''
+                                }
+                              }));
                             }
-                          }
-                        }}
-                        className="flex-1 px-2 py-1 bg-slate-600 border border-slate-500 rounded text-white text-sm focus:outline-none focus:border-blue-500"
-                        placeholder="0"
-                      />
+                          }}
+                          className="w-4 h-4 text-blue-600 bg-slate-700 border-slate-600 rounded focus:ring-blue-500"
+                        />
+                        <GW2Icon type={option.icon} size="sm" />
+                        <span className="text-white text-sm flex-1 min-w-0">{option.label}</span>
+                        <input
+                          type={option.value === 'gold' ? 'text' : 'number'}
+                          min={option.value === 'gold' ? undefined : '0'}
+                          step={option.value === 'gold' ? undefined : '0.01'}
+                          value={newFarm.estimatedRewards[option.value as keyof typeof newFarm.estimatedRewards] || ''}
+                          onChange={(e) => {
+                            const value = e.target.value;
+                            if (option.value === 'gold') {
+                              const numbersOnly = value.replace(/[^\d]/g, '');
+                              if (numbersOnly.length <= 10) {
+                                handleCurrencyChange(option.value, numbersOnly);
+                              }
+                            } else if (value === '' || (!isNaN(Number(value)) && Number(value) >= 0)) {
+                              handleCurrencyChange(option.value, value);
+                            }
+                          }}
+                          className="w-24 sm:w-28 md:w-32 lg:w-36 px-2 py-1 bg-slate-600 border border-slate-500 rounded text-white text-sm focus:outline-none focus:border-blue-500"
+                          placeholder={option.placeholder}
+                        />
+                      </div>
                     </div>
                   ))}
                 </div>
                 <p className="text-xs text-gray-400 mt-2">Selecciona uno o más tipos de recompensa</p>
               </div>
-
-              {/* Mostrar recompensas agregadas */}
-              {Object.entries(newFarm.estimatedRewards).some(([, value]) => value) && (
+              
+              {/* Mostrar recompensas configuradas */}
+              {Object.entries(newFarm.estimatedRewards).some(([, value]) => value && value.trim()) && (
                 <div className="bg-slate-700/50 rounded-lg p-3">
                   <h4 className="text-sm font-medium text-gray-300 mb-2">Recompensas configuradas:</h4>
-                  <div className="space-y-1">
+                  <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
                     {Object.entries(newFarm.estimatedRewards).map(([currency, value]) => {
-                      if (!value) return null;
+                      if (!value || !value.trim()) return null;
                       const option = currencyOptions.find(c => c.value === currency);
                       return (
-                        <div key={currency} className="flex items-center gap-2 text-sm">
-                          <GW2Icon type={getIconForCurrency(currency)} size="sm" />
+                        <div key={currency} className="flex items-center gap-2 text-sm bg-slate-600 rounded p-2">
+                          <GW2Icon type={option?.icon || 'gold'} size="sm" />
                           <span className="text-gray-300">{option?.label}: {value}</span>
                           <button
                             type="button"

@@ -1,7 +1,7 @@
 import Image from 'next/image';
 import { Clock } from 'lucide-react';
 
-type GW2IconType = 'gold' | 'spirit-shard' | 'imperial-favor' | 'silver' | 'copper' | 'time';
+type GW2IconType = 'time' | 'gold' | 'spirit-shard' | 'karma' | 'fractal-relic' | 'volatile-magic' | 'unbound-magic' | 'rift-essence' | 'mystic-clover' | 'imperial-favor';
 
 interface GW2IconProps {
   type: GW2IconType;
@@ -14,17 +14,33 @@ const iconConfig = {
     src: '/images/expansions/Gold.png',
     alt: 'Oro de Guild Wars 2'
   },
-  silver: {
-    src: '/images/expansions/Silver.png',
-    alt: 'Plata de Guild Wars 2'
-  },
-  copper: {
-    src: '/images/expansions/Copper.png',
-    alt: 'Cobre de Guild Wars 2'
-  },
   'spirit-shard': {
     src: '/images/expansions/Spirit_Shard.png',
     alt: 'Spirit Shard de Guild Wars 2'
+  },
+  karma: {
+    src: '/images/expansions/karma.png',
+    alt: 'Karma de Guild Wars 2'
+  },
+  'fractal-relic': {
+    src: '/images/expansions/fractal-relic.png',
+    alt: 'Fractal Relic de Guild Wars 2'
+  },
+  'volatile-magic': {
+    src: '/images/expansions/volatile-magic.png',
+    alt: 'Volatile Magic de Guild Wars 2'
+  },
+  'unbound-magic': {
+    src: '/images/expansions/unbound-magic.png',
+    alt: 'Unbound Magic de Guild Wars 2'
+  },
+  'rift-essence': {
+    src: '/images/expansions/rift-essence.png',
+    alt: 'Rift Essence de Guild Wars 2'
+  },
+  'mystic-clover': {
+    src: '/images/expansions/mystic-clover.png',
+    alt: 'Mystic Clover de Guild Wars 2'
   },
   'imperial-favor': {
     src: '/images/expansions/Imperial_Favor.png',

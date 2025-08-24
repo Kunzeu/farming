@@ -224,10 +224,13 @@ export default function AdminPanel() {
   const currencyOptions = [
     { value: 'gold', label: 'Oro', icon: 'gold' as const, placeholder: '150025' },
     { value: 'spiritShards', label: 'Spirit Shards', icon: 'spirit-shard' as const, placeholder: '25' },
-    { value: 'imperialFavor', label: 'Imperial Favor', icon: 'imperial-favor' as const, placeholder: '50' },
-    { value: 'experience', label: 'Experiencia', icon: 'gold' as const, placeholder: '50000' },
-    { value: 'laurels', label: 'Laureles', icon: 'gold' as const, placeholder: '5' },
-    { value: 'otherCurrency', label: 'Otra Moneda', icon: 'gold' as const, placeholder: 'Especifica' }
+    { value: 'karma', label: 'Karma', icon: 'karma' as const, placeholder: '5000' },
+    { value: 'fractalRelics', label: 'Fractal Relics', icon: 'fractal-relic' as const, placeholder: '50' },
+    { value: 'volatileMagic', label: 'Volatile Magic', icon: 'volatile-magic' as const, placeholder: '1000' },
+    { value: 'unboundMagic', label: 'Unbound Magic', icon: 'unbound-magic' as const, placeholder: '1000' },
+    { value: 'riftEssences', label: 'Rift Essences', icon: 'rift-essence' as const, placeholder: '25' },
+    { value: 'mysticClovers', label: 'Mystic Clovers', icon: 'mystic-clover' as const, placeholder: '2' },
+    { value: 'imperialFavor', label: 'Imperial Favor', icon: 'imperial-favor' as const, placeholder: '50' }
   ];
 
 

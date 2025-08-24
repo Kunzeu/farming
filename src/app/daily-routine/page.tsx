@@ -25,12 +25,15 @@ import { useI18n } from '@/contexts/I18nContext';
 
 // Mapeo de monedas a iconos (fuera del componente para evitar re-renders)
 const currencyConfig = {
-  gold: { icon: '/images/expansions/Gold.png', label: 'Gold', color: 'text-yellow-400' },
-  spiritShards: { icon: '/images/expansions/Spirit_Shard.png', label: 'Spirit Shards', color: 'text-blue-400' },
-  imperialFavor: { icon: '/images/expansions/Imperial_Favor.png', label: 'Imperial Favor', color: 'text-purple-400' },
-  experience: { icon: '/images/expansions/Gold.png', label: 'Experience', color: 'text-green-400' }, // Placeholder icon
-  laurels: { icon: '/images/expansions/Gold.png', label: 'Laurels', color: 'text-orange-400' }, // Placeholder icon
-  otherCurrency: { icon: '/images/expansions/Gold.png', label: 'Other', color: 'text-gray-400' } // Placeholder icon
+  gold: { icon: '/images/expansions/Gold.png', labelKey: 'currency.gold', color: 'text-yellow-400' },
+  spiritShards: { icon: '/images/expansions/Spirit_Shard.png', labelKey: 'currency.spiritShards', color: 'text-blue-400' },
+  karma: { icon: '/images/expansions/karma.png', labelKey: 'currency.karma', color: 'text-green-400' },
+  fractalRelics: { icon: '/images/expansions/fractal-relic.png', labelKey: 'currency.fractalRelics', color: 'text-purple-400' },
+  volatileMagic: { icon: '/images/expansions/volatile-magic.png', labelKey: 'currency.volatileMagic', color: 'text-orange-400' },
+  unboundMagic: { icon: '/images/expansions/unbound-magic.png', labelKey: 'currency.unboundMagic', color: 'text-indigo-400' },
+  riftEssences: { icon: '/images/expansions/rift-essence.png', labelKey: 'currency.riftEssences', color: 'text-pink-400' },
+  mysticClovers: { icon: '/images/expansions/mystic-clover.png', labelKey: 'currency.mysticClovers', color: 'text-emerald-400' },
+  imperialFavor: { icon: '/images/expansions/Imperial_Favor.png', labelKey: 'currency.imperialFavor', color: 'text-purple-400' }
 };
 
 export default function DailyRoutine() {
@@ -379,7 +382,7 @@ export default function DailyRoutine() {
             <h3 className="font-bold text-lg sm:text-xl mb-4 text-center text-white bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text" style={{ WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
               {t('dailyRoutine.summary', 'Your Daily Routine Summary')}
             </h3>
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3 sm:gap-4 text-center">
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 gap-3 sm:gap-4 text-center">
               {/* Farms count */}
               <div className="bg-gray-800/50 rounded-xl p-2 sm:p-3 border border-gray-600/50">
                 <div className="text-lg sm:text-xl font-bold text-blue-400 mb-1">{selectedFarmsCount}</div>
@@ -392,10 +395,9 @@ export default function DailyRoutine() {
                 <div className="text-gray-400 text-xs">{t('dailyRoutine.time', 'Time')}</div>
               </div>
               
-              {/* Dynamic currencies */}
+              {/* Dynamic currencies - show ALL currencies */}
               {Object.entries(currencyTotals)
                 .filter(([, total]) => total > 0)
-                .slice(0, 4) // Limit to 4 currencies to not overflow
                 .map(([currency, total]) => {
                   const config = currencyConfig[currency as keyof typeof currencyConfig];
                   if (!config) return null;
@@ -405,7 +407,7 @@ export default function DailyRoutine() {
                       <div className="flex items-center justify-center gap-1 mb-1">
                         <Image 
                           src={config.icon} 
-                          alt={config.label}
+                          alt={t(config.labelKey, config.labelKey)}
                           width={16}
                           height={16}
                           className="w-3 h-3 sm:w-4 sm:h-4"
@@ -417,7 +419,7 @@ export default function DailyRoutine() {
                           }
                         </div>
                       </div>
-                      <div className="text-gray-400 text-xs">{config.label}</div>
+                      <div className="text-gray-400 text-xs">{t(config.labelKey, config.labelKey)}</div>
                     </div>
                   );
                 })}
@@ -661,7 +663,7 @@ export default function DailyRoutine() {
                               <div key={currency} className={`flex items-center gap-1 ${config.color} bg-gray-700/50 px-2 py-1 rounded-md`}>
                                 <Image 
                                   src={config.icon} 
-                                  alt={config.label}
+                                  alt={t(config.labelKey, config.labelKey)}
                                   width={12}
                                   height={12}
                                   className="w-3 h-3"
@@ -688,7 +690,7 @@ export default function DailyRoutine() {
                               <div key={currency} className={`flex items-center gap-1.5 ${config.color}`}>
                                 <Image 
                                   src={config.icon} 
-                                  alt={config.label}
+                                  alt={t(config.labelKey, config.labelKey)}
                                   width={20}
                                   height={20}
                                   className="w-5 h-5"
@@ -786,7 +788,7 @@ export default function DailyRoutine() {
                             >
                               <Image 
                                 src={config.icon} 
-                                alt={config.label}
+                                alt={t(config.labelKey, config.labelKey)}
                                 width={12}
                                 height={12}
                                 className="w-3 h-3 sm:w-4 sm:h-4 flex-shrink-0"

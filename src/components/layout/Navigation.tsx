@@ -169,7 +169,7 @@ const Navigation = () => {
     { href: '/crafting', label: 'Crafting', icon: BookOpen },
     { href: '/festivals', label: 'Festivals', icon: Calendar },
     { href: '/fractals', label: t('dashboard.farmingTracker.title', 'Fractals'), icon: Map },
-    // Solo mostrar Buyout Calculator para admins
+    // Solo mostrar Buyout Calculator para admins puros
     ...(user?.role === 'admin' ? [{ href: '/buyout', label: 'Buyout Calculator', icon: ShoppingCart }] : []),
   ];
 
@@ -316,7 +316,8 @@ const Navigation = () => {
                      <span>{t('auth.settings', 'Settings')}</span>
                         </Link>
 
-                        {(user?.role === 'admin' || user?.isAdmin) && (
+                        {/* Solo mostrar Admin Panel si es admin y NO moderador */}
+                        {((user?.role === 'admin' || user?.isAdmin) && user?.role !== 'moderator') && (
                           <Link
                             href="/admin"
                             className="flex items-center space-x-3 px-4 py-2 text-purple-300 hover:text-purple-200 hover:bg-gray-700 transition-colors"
@@ -325,6 +326,7 @@ const Navigation = () => {
                              <span>{t('auth.admin', 'Admin Panel')}</span>
                           </Link>
                         )}
+                        {/* Solo mostrar Moderation Panel si es moderador */}
                         {(user?.role === 'moderator') && (
                           <Link
                             href="/moderator"
@@ -488,7 +490,8 @@ const Navigation = () => {
                                   <span className="font-medium">Settings</span>
                                 </Link>
 
-                                {(user?.role === 'admin' || user?.isAdmin) && (
+                                {/* Solo mostrar Admin Panel si es admin y NO moderador */}
+                                {((user?.role === 'admin' || user?.isAdmin) && user?.role !== 'moderator') && (
                                   <Link
                                     href="/admin"
                                     onClick={() => setIsMobileMenuOpen(false)}

@@ -85,12 +85,15 @@
 
   "common.all": "Tous",
 
-  "currency.gold": "Or",
-  "currency.spiritShards": "Éclats d'Esprit",
-  "currency.imperialFavor": "Faveur Impériale",
-  "currency.experience": "Expérience",
-  "currency.laurels": "Lauriers",
-  "currency.other": "Autre Monnaie",
+  "currency.gold": "Pièces",
+  "currency.spiritShards": "Eclats d'esprits",
+  "currency.karma": "Karma",
+  "currency.fractalRelics": "Reliques fractales",
+  "currency.volatileMagic": "magie volatile",
+  "currency.unboundMagic": "Magie déliée",
+  "currency.riftEssences": "Essence de brèche raffinée",
+  "currency.mysticClovers": "Trèfle mystique",
+  "currency.imperialFavor": "Faveur impériale",
 
   "salvage.dropdown.common": "Raffiné",
   "salvage.dropdown.masterwork": "Chef-d'œuvre",
