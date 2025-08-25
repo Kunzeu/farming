@@ -234,7 +234,7 @@ export default function UnidentifiedGearRarePage() {
           <div className="flex items-center gap-4 mb-4">
             <Link 
               href="/salvage" 
-              className="flex items-center gap-2 text-gray-400 hover:text-white transition-colors">
+              className="flex items-center gap-2 px-4 py-2 bg-gray-900/80 hover:bg-gray-800/90 border border-yellow-500/30 text-white rounded-lg transition-all duration-200 hover:scale-105 hover:shadow-lg">
               <ArrowLeft className="h-5 w-5" />
               <span>{t('salvageCommon.backToSalvaging', 'Back to Salvaging')}</span>
             </Link>
