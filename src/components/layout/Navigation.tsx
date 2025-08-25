@@ -24,6 +24,7 @@ import {
 } from 'lucide-react';
 import LanguageSwitcher from '@/components/ui/LanguageSwitcher';
 import { useI18n } from '@/contexts/I18nContext';
+import { Analytics } from "@vercel/analytics/next";
 
 const Navigation = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -534,6 +535,7 @@ const Navigation = () => {
           </div>
         </div>
       </div>
+      <Analytics />
     </nav>
   );
 };

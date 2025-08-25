@@ -9,6 +9,7 @@ import GlossaryLink from '@/components/ui/GlossaryLink';
 import { usePageTitle } from '@/hooks/usePageTitle';
 import { useI18n } from '@/contexts/I18nContext';
 
+
 type SalvageSection = 'salvageables' | 'luck-calculator' | 'research-notes' | 'unidentified-gear';
 
 export default function SalvagePage() {

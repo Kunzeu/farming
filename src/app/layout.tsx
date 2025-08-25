@@ -7,6 +7,7 @@ import { I18nProvider } from "@/contexts/I18nContext";
 import RoleChecker from "@/components/RoleChecker";
 import Footer from "@/components/layout/Footer";
 
+
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {

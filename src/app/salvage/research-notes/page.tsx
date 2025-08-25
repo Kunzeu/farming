@@ -8,6 +8,7 @@ import { usePageTitle } from '@/hooks/usePageTitle';
 import { useI18n } from '@/contexts/I18nContext';
 import { useEffect, useState, useMemo } from 'react';
 
+
 interface GW2Item {
   id: number;
   name: string;
@@ -56,6 +57,8 @@ export default function ResearchNotesPage() {
   const { t } = useI18n();
   const [item13393, setItem13393] = useState<GW2Item | null>(null);
   const [price13393, setPrice13393] = useState<GW2Price | null>(null);
+  const [price24511, setPrice24511] = useState<GW2Price | null>(null);
+  const [price19700, setPrice19700] = useState<GW2Price | null>(null);
   const [item13477, setItem13477] = useState<GW2Item | null>(null);
   const [price13477, setPrice13477] = useState<GW2Price | null>(null);
   const [item13436, setItem13436] = useState<GW2Item | null>(null);
@@ -79,6 +82,9 @@ export default function ResearchNotesPage() {
   const [item41448, setItem41448] = useState<GW2Item | null>(null);
   const [price41448, setPrice41448] = useState<GW2Price | null>(null);
   const [loading, setLoading] = useState(true);
+  const [sortField, setSortField] = useState<'craftingLevel' | 'level' | 'notes' | 'buyPrice' | 'sellPrice' | 'craftingCost'>('craftingLevel');
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc'); // 'desc' = mayor a menor, 'asc' = menor a mayor
+  const [craftingPriceSide, setCraftingPriceSide] = useState<'buy' | 'sell'>('sell');
 
   // Función para convertir precios de cobre al formato GW2 (00g 02s 60c)
   const formatGW2Price = (copperPrice: number): string => {
@@ -93,6 +99,79 @@ export default function ResearchNotesPage() {
     const copperStr = copper > 0 ? ` ${copper.toString().padStart(2, '0')}c` : ' 00c';
     
     return `${goldStr}${silverStr}${copperStr}`;
+  };
+
+  // Función para obtener el nivel de crafting de un item
+  const getCraftingLevel = (itemId: number): number => {
+    const craftingLevels: { [key: number]: number } = {
+      13393: 375,
+      13477: 375,
+      13436: 300,
+      13437: 300,
+      13435: 300,
+      13440: 325,
+      13438: 325,
+      13441: 325,
+      45925: 325,
+      41450: 325,
+      13413: 375,
+      41448: 375
+    };
+    return craftingLevels[itemId] || 0;
+  };
+
+  // Función para ordenar items por cualquier campo
+  const sortItemsByField = (items: CraftingItem[]): CraftingItem[] => {
+    return [...items].sort((a, b) => {
+      let valueA: any;
+      let valueB: any;
+      
+      switch (sortField) {
+        case 'craftingLevel':
+          valueA = getCraftingLevel(a.id || 0);
+          valueB = getCraftingLevel(b.id || 0);
+          break;
+        case 'level':
+          valueA = typeof a.level === 'string' ? parseInt(a.level) || 0 : a.level;
+          valueB = typeof b.level === 'string' ? parseInt(b.level) || 0 : b.level;
+          break;
+        case 'notes':
+          valueA = a.notes;
+          valueB = b.notes;
+          break;
+        case 'buyPrice':
+          valueA = parseFloat(a.buyPrice?.replace(/[^0-9.]/g, '') || '0');
+          valueB = parseFloat(b.buyPrice?.replace(/[^0-9.]/g, '') || '0');
+          break;
+        case 'sellPrice':
+          valueA = parseFloat(a.sellPrice?.replace(/[^0-9.]/g, '') || '0');
+          valueB = parseFloat(b.sellPrice?.replace(/[^0-9.]/g, '') || '0');
+          break;
+        case 'craftingCost':
+          valueA = parseFloat(a.craftingCost?.replace(/[^0-9.]/g, '') || '0');
+          valueB = parseFloat(b.craftingCost?.replace(/[^0-9.]/g, '') || '0');
+          break;
+        default:
+          valueA = 0;
+          valueB = 0;
+      }
+      
+      if (sortOrder === 'desc') {
+        return valueB - valueA; // Mayor a menor
+      } else {
+        return valueA - valueB; // Menor a mayor
+      }
+    });
+  };
+
+  // Función para manejar el cambio de campo de ordenamiento
+  const handleSortChange = (field: 'craftingLevel' | 'level' | 'notes' | 'buyPrice' | 'sellPrice' | 'craftingCost') => {
+    if (sortField === field) {
+      setSortOrder(sortOrder === 'desc' ? 'asc' : 'desc');
+    } else {
+      setSortField(field);
+      setSortOrder('desc');
+    }
   };
 
   // Función para calcular el costo de crafting (estimado basado en materiales típicos)
@@ -112,7 +191,14 @@ export default function ResearchNotesPage() {
       13413: 12000,  // ~1.2g - materiales de nivel 375
       41448: 12000   // ~1.2g - materiales de nivel 375
     };
-    
+    // Si es el item 13393, calcular dinámicamente con 24511 x1 y 19700 x14
+    if (itemId === 13393 && price24511 && price19700) {
+      const buyTotal = (price24511.buys?.unit_price || 0) * 1 + (price19700.buys?.unit_price || 0) * 14;
+      const sellTotal = (price24511.sells?.unit_price || 0) * 1 + (price19700.sells?.unit_price || 0) * 14;
+      const selected = craftingPriceSide === 'buy' ? buyTotal : sellTotal;
+      return formatGW2Price(selected);
+    }
+
     const cost = craftingCosts[itemId] || 0;
     return formatGW2Price(cost);
   };
@@ -132,6 +218,15 @@ export default function ResearchNotesPage() {
         const price13393Response = await fetch('https://api.guildwars2.com/v2/commerce/prices/13393');
         const price13393Data: GW2Price = await price13393Response.json();
         setPrice13393(price13393Data);
+
+        // Traer precios para insumos de 13393: 24511 x1 y 19700 x14
+        const matsPricesResp = await fetch('https://api.guildwars2.com/v2/commerce/prices?ids=24511,19700');
+        const matsPricesData: GW2Price[] = await matsPricesResp.json();
+        const matsMap = matsPricesData.reduce((acc: Record<number, GW2Price>, p: GW2Price) => {
+          acc[p.id] = p; return acc;
+        }, {} as Record<number, GW2Price>);
+        setPrice24511(matsMap[24511] || null);
+        setPrice19700(matsMap[19700] || null);
 
         // Obtener información del item 13477
         const item13477Response = await fetch('https://api.guildwars2.com/v2/items/13477');
@@ -259,7 +354,7 @@ export default function ResearchNotesPage() {
       name: 'Jeweler',
       icon: Gem,
       color: 'text-purple-400',
-      items: [
+      items: sortItemsByField([
                                    { 
             id: 13393,
             name: item13393?.name || 'Loading...', 
@@ -358,10 +453,10 @@ export default function ResearchNotesPage() {
                      notes: 4, 
                      buyPrice: price41448 ? formatGW2Price(price41448.buys.unit_price) : '00g 00s 00c',
                      sellPrice: price41448 ? formatGW2Price(price41448.sells.unit_price) : '00g 00s 00c'
-                   }
-                ]
-              }
-            ], [item13393, price13393, item13477, price13477, item13436, price13436, item13437, price13437, item13435, price13435, item13440, price13440, item13438, price13438, item13441, price13441, item45925, price45925, item41450, price41450, item13413, price13413, item41448, price41448]);
+                                        }
+                 ])
+               }
+             ], [item13393, price13393, item13477, price13477, item13436, price13436, item13437, price13437, item13435, price13435, item13440, price13440, item13438, price13438, item13441, price13441, item45925, price45925, item41450, price41450, item13413, price13413, item41448, price41448, price24511, price19700, craftingPriceSide, sortOrder, sortField]);
 
   // Datos de ejemplo para Research Notes (mantenidos para compatibilidad)
   const researchNoteItems = [
@@ -447,18 +542,18 @@ export default function ResearchNotesPage() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
             className="bg-gradient-to-r from-slate-800/50 to-slate-700/50 backdrop-blur-sm rounded-xl p-6 mb-8 border border-slate-600/50">
-            <div className="flex items-center justify-between mb-6">
-              <div className="flex items-center gap-3">
-                <Hammer className="h-6 w-6 text-green-400" />
-                <h2 className="text-2xl font-bold text-white">{t('researchNotesPage.craftingDisciplines', 'Crafting Disciplines - Research Notes')}</h2>
-              </div>
-              {loading && (
-                <div className="flex items-center gap-2 text-sm text-gray-400">
-                  <div className="w-4 h-4 border-2 border-green-400 border-t-transparent rounded-full animate-spin"></div>
-                  <span>Loading item data...</span>
-                </div>
-              )}
-            </div>
+                         <div className="flex items-center justify-between mb-6">
+               <div className="flex items-center gap-3">
+                 <Hammer className="h-6 w-6 text-green-400" />
+                 <h2 className="text-2xl font-bold text-white">{t('researchNotesPage.craftingDisciplines', 'Crafting Disciplines - Research Notes')}</h2>
+               </div>
+                               {loading && (
+                  <div className="flex items-center gap-2 text-sm text-gray-400">
+                    <div className="w-4 h-4 border-2 border-green-400 border-t-transparent rounded-full animate-spin"></div>
+                    <span>Loading item data...</span>
+                  </div>
+                )}
+             </div>
 
             <div className="space-y-6">
               {craftingDisciplines.map((discipline, index) => (
@@ -476,14 +571,96 @@ export default function ResearchNotesPage() {
                   <div className="overflow-x-auto">
                     <table className="w-full text-sm">
                       <thead>
-                        <tr className="border-b border-slate-600/50">
-                          <th className="text-left py-2 px-3 text-gray-300 font-medium">Item</th>
-                                                     <th className="text-left py-2 px-3 text-gray-300 font-medium">Crafting Level</th>
-                          <th className="text-left py-2 px-3 text-gray-300 font-medium">Level</th>
-                          <th className="text-left py-2 px-3 text-gray-300 font-medium">Notes</th>
-                                                     <th className="text-left py-2 px-3 text-gray-300 font-medium">Buy Price</th>
-                           <th className="text-left py-2 px-3 text-gray-300 font-medium">Sell Price</th>
-                           <th className="text-left py-2 px-3 text-gray-300 font-medium">Crafting Cost</th>
+                                                 <tr className="border-b border-slate-600/50">
+                           <th className="text-left py-2 px-3 text-gray-300 font-medium">Item</th>
+                           <th className="text-left py-2 px-3 text-gray-300 font-medium">
+                             <button
+                               onClick={() => handleSortChange('craftingLevel')}
+                               className="flex items-center gap-2 hover:text-white transition-colors group"
+                               title={`Ordenar por Crafting Level ${sortField === 'craftingLevel' ? (sortOrder === 'desc' ? 'menor a mayor' : 'mayor a menor') : 'descendente'}`}
+                             >
+                               Crafting Level
+                               <span className="text-xs text-gray-400 group-hover:text-white">
+                                 {sortField === 'craftingLevel' ? (sortOrder === 'desc' ? '↓' : '↑') : '↕'}
+                               </span>
+                             </button>
+                           </th>
+                           <th className="text-left py-2 px-3 text-gray-300 font-medium">
+                             <button
+                               onClick={() => handleSortChange('level')}
+                               className="flex items-center gap-2 hover:text-white transition-colors group"
+                               title={`Ordenar por Level ${sortField === 'level' ? (sortOrder === 'desc' ? 'menor a mayor' : 'mayor a menor') : 'descendente'}`}
+                             >
+                               Level
+                               <span className="text-xs text-gray-400 group-hover:text-white">
+                                 {sortField === 'level' ? (sortOrder === 'desc' ? '↓' : '↑') : '↕'}
+                               </span>
+                             </button>
+                           </th>
+                           <th className="text-left py-2 px-3 text-gray-300 font-medium">
+                             <button
+                               onClick={() => handleSortChange('notes')}
+                               className="flex items-center gap-2 hover:text-white transition-colors group"
+                               title={`Ordenar por Notes ${sortField === 'notes' ? (sortOrder === 'desc' ? 'menor a mayor' : 'mayor a mayor') : 'descendente'}`}
+                             >
+                               Notes
+                               <span className="text-xs text-gray-400 group-hover:text-white">
+                                 {sortField === 'notes' ? (sortOrder === 'desc' ? '↓' : '↑') : '↕'}
+                               </span>
+                             </button>
+                           </th>
+                           <th className="text-left py-2 px-3 text-gray-300 font-medium">
+                             <button
+                               onClick={() => handleSortChange('buyPrice')}
+                               className="flex items-center gap-2 hover:text-white transition-colors group"
+                               title={`Ordenar por Buy Price ${sortField === 'buyPrice' ? (sortOrder === 'desc' ? 'menor a mayor' : 'mayor a menor') : 'descendente'}`}
+                             >
+                               Buy Price
+                               <span className="text-xs text-gray-400 group-hover:text-white">
+                                 {sortField === 'buyPrice' ? (sortOrder === 'desc' ? '↓' : '↑') : '↕'}
+                               </span>
+                             </button>
+                           </th>
+                           <th className="text-left py-2 px-3 text-gray-300 font-medium">
+                             <button
+                               onClick={() => handleSortChange('sellPrice')}
+                               className="flex items-center gap-2 hover:text-white transition-colors group"
+                               title={`Ordenar por Sell Price ${sortField === 'sellPrice' ? (sortOrder === 'desc' ? 'menor a mayor' : 'mayor a menor') : 'descendente'}`}
+                             >
+                               Sell Price
+                               <span className="text-xs text-gray-400 group-hover:text-white">
+                                 {sortField === 'sellPrice' ? (sortOrder === 'desc' ? '↓' : '↑') : '↕'}
+                               </span>
+                             </button>
+                           </th>
+                           <th className="text-left py-2 px-3 text-gray-300 font-medium">
+                             <button
+                               onClick={() => handleSortChange('craftingCost')}
+                               className="flex items-center gap-2 hover:text-white transition-colors group"
+                               title={`Ordenar por Crafting Cost ${sortField === 'craftingCost' ? (sortOrder === 'desc' ? 'menor a mayor' : 'mayor a menor') : 'descendente'}`}
+                             >
+                               Crafting Cost
+                               <span className="text-xs text-gray-400 group-hover:text-white">
+                                 {sortField === 'craftingCost' ? (sortOrder === 'desc' ? '↓' : '↑') : '↕'}
+                               </span>
+                             </button>
+                            <div className="mt-1 flex gap-2">
+                              <button
+                                onClick={() => setCraftingPriceSide('buy')}
+                                className={`text-xs px-2 py-0.5 rounded ${craftingPriceSide === 'buy' ? 'bg-blue-600 text-white' : 'bg-gray-600 text-gray-200 hover:bg-gray-500'}`}
+                                title="Usar precios de compra (Buy) para el coste"
+                              >
+                                Buy
+                              </button>
+                              <button
+                                onClick={() => setCraftingPriceSide('sell')}
+                                className={`text-xs px-2 py-0.5 rounded ${craftingPriceSide === 'sell' ? 'bg-green-600 text-white' : 'bg-gray-600 text-gray-200 hover:bg-gray-500'}`}
+                                title="Usar precios de venta (Sell) para el coste"
+                              >
+                                Sell
+                              </button>
+                            </div>
+                          </th>
                         </tr>
                       </thead>
                        <tbody>
@@ -588,10 +765,10 @@ export default function ResearchNotesPage() {
                              <td className="py-2 px-3 text-gray-300">{item.level}</td>
                              <td className="py-2 px-3 text-green-400 font-medium">{item.notes}</td>
                              <td className="py-2 px-3 text-blue-400 font-medium">
-                               {item.buyPrice ? `${item.buyPrice}g` : '-'}
+                               {item.buyPrice ? `${item.buyPrice}` : '-'}
                              </td>
                                                            <td className="py-2 px-3 text-green-400 font-medium">
-                                {item.sellPrice ? `${item.sellPrice}g` : '-'}
+                                {item.sellPrice ? `${item.sellPrice}` : '-'}
                               </td>
                               <td className="py-2 px-3 text-orange-400 font-medium">
                                 {item.craftingCost ? `${item.craftingCost}` : '-'}
@@ -703,12 +880,12 @@ export default function ResearchNotesPage() {
                 </ul>
               </div>
             </div>
-          </motion.div>
-        </div>
-      </div>
-    </>
-  );
-}
+                     </motion.div>
+         </div>
+               </div>
+      </>
+    );
+  }
 
 // Funciones auxiliares para colores
 function getRarityColor(rarity: string): string {
