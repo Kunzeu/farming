@@ -45,7 +45,7 @@ interface CraftingItem {
 
 interface CraftingDiscipline {
   name: string;
-  icon: any;
+  icon: React.ComponentType<{ className?: string }>;
   color: string;
   items: CraftingItem[];
 }
@@ -123,8 +123,8 @@ export default function ResearchNotesPage() {
   // Función para ordenar items por cualquier campo
   const sortItemsByField = (items: CraftingItem[]): CraftingItem[] => {
     return [...items].sort((a, b) => {
-      let valueA: any;
-      let valueB: any;
+      let valueA: number;
+      let valueB: number;
       
       switch (sortField) {
         case 'craftingLevel':
@@ -456,7 +456,7 @@ export default function ResearchNotesPage() {
                                         }
                  ])
                }
-             ], [item13393, price13393, item13477, price13477, item13436, price13436, item13437, price13437, item13435, price13435, item13440, price13440, item13438, price13438, item13441, price13441, item45925, price45925, item41450, price41450, item13413, price13413, item41448, price41448, price24511, price19700, craftingPriceSide, sortOrder, sortField]);
+             ], [item13393, price13393, item13477, price13477, item13436, price13436, item13437, price13437, item13435, price13435, item13440, price13440, item13438, price13438, item13441, price13441, item45925, price45925, item41450, price41450, item13413, price13413, item41448, price41448, price24511, price19700, craftingPriceSide, sortOrder, sortField, calculateCraftingCost, sortItemsByField]);
 
   // Datos de ejemplo para Research Notes (mantenidos para compatibilidad)
   const researchNoteItems = [
@@ -886,23 +886,3 @@ export default function ResearchNotesPage() {
       </>
     );
   }
-
-// Funciones auxiliares para colores
-function getRarityColor(rarity: string): string {
-  switch (rarity) {
-    case 'Fine': return 'text-blue-400';
-    case 'Masterwork': return 'text-green-400';
-    case 'Rare': return 'text-yellow-400';
-    case 'Exotic': return 'text-orange-400';
-    default: return 'text-gray-400';
-  }
-}
-
-function getEfficiencyColor(efficiency: string): string {
-  switch (efficiency) {
-    case 'High': return 'text-green-400';
-    case 'Medium': return 'text-yellow-400';
-    case 'Low': return 'text-red-400';
-    default: return 'text-gray-400';
-  }
-}
