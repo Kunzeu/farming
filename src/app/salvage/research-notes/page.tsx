@@ -459,26 +459,50 @@ export default function ResearchNotesPage() {
                         <tr className="border-b border-slate-600/50">
                                                      <th className="text-left py-2 px-3 text-gray-300 font-medium">{t('researchNotesPage.table.item')}</th>
                                                      <th className="text-center py-2 px-3 text-gray-300 font-medium">
-                             <button
-                               onClick={() => handleSortChange('craftingLevel')}
-                               className="flex items-center justify-center gap-2 hover:text-white transition-colors group w-full"
-                                                              title={`${t('researchNotesPage.table.sortBy')} ${t('researchNotesPage.table.craftingLevel')} ${sortField === 'craftingLevel' ? (sortOrder === 'desc' ? t('researchNotesPage.table.sortAscending') : t('researchNotesPage.table.sortDescending')) : t('researchNotesPage.table.sortDefault')}`}
-                             >
-                                                              {t('researchNotesPage.table.craftingLevel')}
-                               <span className="text-xs text-gray-400 group-hover:text-white">
-                                 {sortField === 'craftingLevel' ? (sortOrder === 'desc' ? '↓' : '↑') : '↕'}
-                               </span>
-                             </button>
-                           </th>
+                            <button
+                              onClick={() => handleSortChange('craftingLevel')}
+                              className="flex items-center justify-center gap-2 hover:text-white transition-colors group w-full"
+                              title={`${t('researchNotesPage.table.sortBy')} ${t('researchNotesPage.table.craftingLevel')} ${sortField === 'craftingLevel' ? (sortOrder === 'desc' ? t('researchNotesPage.table.sortAscending') : t('researchNotesPage.table.sortDescending')) : t('researchNotesPage.table.sortDefault')}`}
+                            >
+                              {t('researchNotesPage.table.craftingLevel')}
+                              <span className="text-xs text-gray-400 group-hover:text-white">
+                                {sortField === 'craftingLevel' ? (sortOrder === 'desc' ? (
+                                  <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                                  </svg>
+                                ) : (
+                                  <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
+                                  </svg>
+                                )) : (
+                                  <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4" />
+                                  </svg>
+                                )}
+                              </span>
+                            </button>
+                          </th>
                           <th className="text-left py-2 px-3 text-gray-300 font-medium">
                             <button
                               onClick={() => handleSortChange('level')}
                               className="flex items-center gap-2 hover:text-white transition-colors group"
-                                                             title={`${t('researchNotesPage.table.sortBy')} ${t('researchNotesPage.table.level')} ${sortField === 'level' ? (sortOrder === 'desc' ? t('researchNotesPage.table.sortAscending') : t('researchNotesPage.table.sortDescending')) : t('researchNotesPage.table.sortDefault')}`}
+                              title={`${t('researchNotesPage.table.sortBy')} ${t('researchNotesPage.table.level')} ${sortField === 'level' ? (sortOrder === 'desc' ? t('researchNotesPage.table.sortAscending') : t('researchNotesPage.table.sortDescending')) : t('researchNotesPage.table.sortDefault')}`}
                             >
-                                                             {t('researchNotesPage.table.level')}
+                              {t('researchNotesPage.table.level')}
                               <span className="text-xs text-gray-400 group-hover:text-white">
-                                {sortField === 'level' ? (sortOrder === 'desc' ? '↓' : '↑') : '↕'}
+                                {sortField === 'level' ? (sortOrder === 'desc' ? (
+                                  <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                                  </svg>
+                                ) : (
+                                  <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
+                                  </svg>
+                                )) : (
+                                  <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4" />
+                                  </svg>
+                                )}
                               </span>
                             </button>
                           </th>
@@ -486,11 +510,23 @@ export default function ResearchNotesPage() {
                             <button
                               onClick={() => handleSortChange('notes')}
                               className="flex items-center gap-2 hover:text-white transition-colors group"
-                                                             title={`${t('researchNotesPage.table.sortBy')} ${t('researchNotesPage.table.notes')} ${sortField === 'notes' ? (sortOrder === 'desc' ? t('researchNotesPage.table.sortAscending') : t('researchNotesPage.table.sortDescending')) : t('researchNotesPage.table.sortDefault')}`}
+                              title={`${t('researchNotesPage.table.sortBy')} ${t('researchNotesPage.table.notes')} ${sortField === 'notes' ? (sortOrder === 'desc' ? t('researchNotesPage.table.sortAscending') : t('researchNotesPage.table.sortDescending')) : t('researchNotesPage.table.sortDefault')}`}
                             >
-                                                             {t('researchNotesPage.table.notes')}
+                              {t('researchNotesPage.table.notes')}
                               <span className="text-xs text-gray-400 group-hover:text-white">
-                                {sortField === 'notes' ? (sortOrder === 'desc' ? '↓' : '↑') : '↕'}
+                                {sortField === 'notes' ? (sortOrder === 'desc' ? (
+                                  <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                                  </svg>
+                                ) : (
+                                  <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
+                                  </svg>
+                                )) : (
+                                  <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4" />
+                                  </svg>
+                                )}
                               </span>
                             </button>
                           </th>
@@ -498,11 +534,23 @@ export default function ResearchNotesPage() {
                             <button
                               onClick={() => handleSortChange('buyPrice')}
                               className="flex items-center gap-2 hover:text-white transition-colors group"
-                                                             title={`${t('researchNotesPage.table.sortBy')} ${t('researchNotesPage.table.buyPrice')} ${sortField === 'buyPrice' ? (sortOrder === 'desc' ? t('researchNotesPage.table.sortAscending') : t('researchNotesPage.table.sortDescending')) : t('researchNotesPage.table.sortDefault')}`}
+                              title={`${t('researchNotesPage.table.sortBy')} ${t('researchNotesPage.table.buyPrice')} ${sortField === 'buyPrice' ? (sortOrder === 'desc' ? t('researchNotesPage.table.sortAscending') : t('researchNotesPage.table.sortDescending')) : t('researchNotesPage.table.sortDefault')}`}
                             >
-                                                             {t('researchNotesPage.table.buyPrice')}
+                              {t('researchNotesPage.table.buyPrice')}
                               <span className="text-xs text-gray-400 group-hover:text-white">
-                                {sortField === 'buyPrice' ? (sortOrder === 'desc' ? '↓' : '↑') : '↕'}
+                                {sortField === 'buyPrice' ? (sortOrder === 'desc' ? (
+                                  <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                                  </svg>
+                                ) : (
+                                  <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
+                                  </svg>
+                                )) : (
+                                  <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4" />
+                                  </svg>
+                                )}
                               </span>
                             </button>
                           </th>
@@ -510,52 +558,88 @@ export default function ResearchNotesPage() {
                             <button
                               onClick={() => handleSortChange('sellPrice')}
                               className="flex items-center gap-2 hover:text-white transition-colors group"
-                                                             title={`${t('researchNotesPage.table.sortBy')} ${t('researchNotesPage.table.sellPrice')} ${sortField === 'sellPrice' ? (sortOrder === 'desc' ? t('researchNotesPage.table.sortAscending') : t('researchNotesPage.table.sortDescending')) : t('researchNotesPage.table.sortDefault')}`}
+                              title={`${t('researchNotesPage.table.sortBy')} ${t('researchNotesPage.table.sellPrice')} ${sortField === 'sellPrice' ? (sortOrder === 'desc' ? t('researchNotesPage.table.sortAscending') : t('researchNotesPage.table.sortDescending')) : t('researchNotesPage.table.sortDefault')}`}
                             >
-                                                             {t('researchNotesPage.table.sellPrice')}
+                              {t('researchNotesPage.table.sellPrice')}
                               <span className="text-xs text-gray-400 group-hover:text-white">
-                                {sortField === 'sellPrice' ? (sortOrder === 'desc' ? '↓' : '↑') : '↕'}
+                                {sortField === 'sellPrice' ? (sortOrder === 'desc' ? (
+                                  <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                                  </svg>
+                                ) : (
+                                  <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
+                                  </svg>
+                                )) : (
+                                  <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4" />
+                                  </svg>
+                                )}
                               </span>
                             </button>
                           </th>
-                                                     <th className="text-left py-2 px-3 text-gray-300 font-medium">
-                             <button
-                               onClick={() => handleSortChange('craftingCost')}
-                               className="flex items-center gap-2 hover:text-white transition-colors group"
-                                                               title={`${t('researchNotesPage.table.sortBy')} ${t('researchNotesPage.table.craftingCost')} ${sortField === 'craftingCost' ? (sortOrder === 'desc' ? t('researchNotesPage.table.sortAscending') : t('researchNotesPage.table.sortDescending')) : t('researchNotesPage.table.sortDefault')}`}
-                             >
-                                                               {t('researchNotesPage.table.craftingCost')}
-                               <span className="text-xs text-gray-400 group-hover:text-white">
-                                 {sortField === 'craftingCost' ? (sortOrder === 'desc' ? '↓' : '↑') : '↕'}
-                               </span>
-                             </button>
-                             <div className="mt-1 flex gap-2">
-                               <button
-                                 onClick={() => setCraftingPriceSide('buy')}
-                                 className={`text-xs px-2 py-0.5 rounded ${craftingPriceSide === 'buy' ? 'bg-blue-600 text-white' : 'bg-gray-600 text-gray-200 hover:bg-gray-500'}`}
-                               >
-                                                                   {t('researchNotesPage.table.buy')}
-                               </button>
-                               <button
-                                 onClick={() => setCraftingPriceSide('sell')}
-                                 className={`text-xs px-2 py-0.5 rounded ${craftingPriceSide === 'sell' ? 'bg-green-600 text-white' : 'bg-gray-600 text-gray-200 hover:bg-gray-500'}`}
-                               >
-                                                                   {t('researchNotesPage.table.sell')}
-                               </button>
-                             </div>
-                           </th>
-                                                       <th className="text-left py-2 px-2 text-gray-300 font-medium min-w-[100px]">
+                          <th className="text-left py-2 px-3 text-gray-300 font-medium">
+                            <button
+                              onClick={() => handleSortChange('craftingCost')}
+                              className="flex items-center gap-2 hover:text-white transition-colors group"
+                              title={`${t('researchNotesPage.table.sortBy')} ${t('researchNotesPage.table.craftingCost')} ${sortField === 'craftingCost' ? (sortOrder === 'desc' ? t('researchNotesPage.table.sortAscending') : t('researchNotesPage.table.sortDescending')) : t('researchNotesPage.table.sortDefault')}`}
+                            >
+                              {t('researchNotesPage.table.craftingCost')}
+                              <span className="text-xs text-gray-400 group-hover:text-white">
+                                {sortField === 'craftingCost' ? (sortOrder === 'desc' ? (
+                                  <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                                  </svg>
+                                ) : (
+                                  <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
+                                  </svg>
+                                )) : (
+                                  <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4" />
+                                  </svg>
+                                )}
+                              </span>
+                            </button>
+                            <div className="mt-1 flex gap-2">
                               <button
-                                onClick={() => handleSortChange('pricePerNote')}
-                                className="flex items-center gap-1 hover:text-white transition-colors group"
-                                                                title={`${t('researchNotesPage.table.sortBy')} ${t('researchNotesPage.table.pricePerNote')} ${sortField === 'pricePerNote' ? (sortOrder === 'desc' ? t('researchNotesPage.table.sortAscending') : t('researchNotesPage.table.sortDescending')) : t('researchNotesPage.table.sortDefault')}`}
+                                onClick={() => setCraftingPriceSide('buy')}
+                                className={`text-xs px-2 py-0.5 rounded ${craftingPriceSide === 'buy' ? 'bg-blue-600 text-white' : 'bg-gray-600 text-gray-200 hover:bg-gray-500'}`}
                               >
-                                                                {t('researchNotesPage.table.pricePerNote')}
-                                <span className="text-xs text-gray-400 group-hover:text-white">
-                                  {sortField === 'pricePerNote' ? (sortOrder === 'desc' ? '↓' : '↑') : '↕'}
-                                </span>
+                                {t('researchNotesPage.table.buy')}
                               </button>
-                            </th>
+                              <button
+                                onClick={() => setCraftingPriceSide('sell')}
+                                className={`text-xs px-2 py-0.5 rounded ${craftingPriceSide === 'sell' ? 'bg-green-600 text-white' : 'bg-gray-600 text-gray-200 hover:bg-gray-500'}`}
+                              >
+                                {t('researchNotesPage.table.sell')}
+                              </button>
+                            </div>
+                          </th>
+                          <th className="text-left py-2 px-2 text-gray-300 font-medium min-w-[100px]">
+                            <button
+                              onClick={() => handleSortChange('pricePerNote')}
+                              className="flex items-center gap-1 hover:text-white transition-colors group"
+                              title={`${t('researchNotesPage.table.sortBy')} ${t('researchNotesPage.table.pricePerNote')} ${sortField === 'pricePerNote' ? (sortOrder === 'desc' ? t('researchNotesPage.table.sortAscending') : t('researchNotesPage.table.sortDescending')) : t('researchNotesPage.table.sortDefault')}`}
+                            >
+                              {t('researchNotesPage.table.pricePerNote')}
+                              <span className="text-xs text-gray-400 group-hover:text-white">
+                                {sortField === 'pricePerNote' ? (sortOrder === 'desc' ? (
+                                  <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                                  </svg>
+                                ) : (
+                                  <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
+                                  </svg>
+                                )) : (
+                                  <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4" />
+                                  </svg>
+                                )}
+                              </span>
+                            </button>
+                          </th>
                         </tr>
                       </thead>
                       <tbody>

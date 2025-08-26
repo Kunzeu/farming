@@ -3,7 +3,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useI18n } from '@/contexts/I18nContext';
 import { motion } from 'framer-motion';
-import { ArrowLeft, Package, Coins, Info, ExternalLink, AlertTriangle } from 'lucide-react';
+import { ArrowLeft, Info, ExternalLink } from 'lucide-react';
 import Link from 'next/link';
 import Navigation from '@/components/layout/Navigation';
 import Footer from '@/components/layout/Footer';
@@ -18,7 +18,7 @@ interface ItemData {
   rarity: string;
   vendor_value: number;
   icon: string;
-  details?: any;
+  details?: Record<string, unknown>;
 }
 
 interface PriceData {
@@ -121,7 +121,7 @@ export default function OrrianJewelryBoxPage() {
             // If price API fails, it means the item is not tradeable
             setNoMarketData(true);
           }
-        } catch (priceErr) {
+        } catch {
           // If price API fails, it means the item is not tradeable
           setNoMarketData(true);
         }
@@ -157,7 +157,7 @@ export default function OrrianJewelryBoxPage() {
     };
 
     fetchData();
-  }, [lang]);
+  }, [lang, dropItemIds, itemQuantities]);
 
   // Sort drop items by quantity
   const sortedDropItemsByQuantity = useMemo(() => {
@@ -208,22 +208,6 @@ export default function OrrianJewelryBoxPage() {
       return total;
     }, 0);
   }, [dropItems]);
-
-  // Calculate profit from vendor value
-  const vendorProfit = useMemo(() => {
-    if (!priceData || noMarketData) return null;
-    
-    const buyPrice = priceData.buys?.unit_price || 0;
-    const sellPrice = priceData.sells?.unit_price || 0;
-    const vendorValue = itemData?.vendor_value || 0;
-    
-    return {
-      buyProfit: vendorValue - buyPrice,
-      sellProfit: vendorValue - sellPrice,
-      buyProfitPercent: buyPrice > 0 ? ((vendorValue - buyPrice) / buyPrice * 100) : 0,
-      sellProfitPercent: sellPrice > 0 ? ((vendorValue - sellPrice) / sellPrice * 100) : 0
-    };
-  }, [priceData, itemData, noMarketData]);
 
   if (loading) {
     return (
@@ -458,7 +442,7 @@ export default function OrrianJewelryBoxPage() {
             </div>
             
             <div className="space-y-0">
-              {finalSortedItems.map((item, index) => (
+              {finalSortedItems.map((item) => (
                 <div key={item.id}>
                   {/* Desktop Row */}
                   <div className="hidden sm:grid grid-cols-2 gap-4 py-3 px-4 hover:bg-slate-700/30 transition-colors">
