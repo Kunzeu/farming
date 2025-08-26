@@ -2,7 +2,7 @@
 
 
 import { motion } from 'framer-motion';
-import { Package, ChevronRight, Star, FileText, Wrench } from 'lucide-react';
+import { Package, ChevronRight, Star, FileText, Wrench, Gift } from 'lucide-react';
 import Navigation from '@/components/layout/Navigation';
 import Link from 'next/link';
 import GlossaryLink from '@/components/ui/GlossaryLink';
@@ -10,7 +10,7 @@ import { usePageTitle } from '@/hooks/usePageTitle';
 import { useI18n } from '@/contexts/I18nContext';
 
 
-type SalvageSection = 'salvageables' | 'luck-calculator' | 'research-notes' | 'unidentified-gear';
+type SalvageSection = 'salvageables' | 'luck-calculator' | 'research-notes' | 'unidentified-gear' | 'orrian-jewelry-box';
 
 export default function SalvagePage() {
   usePageTitle('Salvaging');
@@ -63,8 +63,20 @@ export default function SalvagePage() {
       bgGradient: 'from-purple-500/20 to-purple-600/20',
       borderColor: 'border-purple-500/30',
       textColor: 'text-purple-400',
-      features: [t('salvagePage.features.commonMasterworkRare', 'Common, Masterwork, Rare'), t('salvagePage.features.specificDropRates', 'Specific drop rates'), t('salvagePage.features.profitabilityByType', 'Profitability by type')],
+      features: [t('salvagePage.features.commonMasterworkRates', 'Common, Masterwork, Rare'), t('salvagePage.features.specificDropRates', 'Specific drop rates'), t('salvagePage.features.profitabilityByType', 'Profitability by type')],
       href: '/salvage/common'
+    },
+    {
+      id: 'orrian-jewelry-box' as SalvageSection,
+      name: t('salvagePage.orrianJewelryBox', 'Orrian Jewelry Box'),
+      description: t('salvagePage.orrianJewelryBoxDesc', 'Analyze box profitability'),
+      icon: Gift,
+      color: 'orange',
+      bgGradient: 'from-orange-500/20 to-orange-600/20',
+      borderColor: 'border-orange-500/30',
+      textColor: 'text-orange-400',
+      features: [t('salvagePage.features.boxValue', 'Box value analysis'), t('salvagePage.features.marketPrices', 'Market price comparison'), t('salvagePage.features.openOrSell', 'Open or sell decision')],
+      href: '/orrian-jewelry-box'
     }
   ];
 
