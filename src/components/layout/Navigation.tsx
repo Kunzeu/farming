@@ -20,7 +20,8 @@ import {
   Calendar,
   Crown,
   ShoppingCart,
-  Star
+  Star,
+  FileText
 } from 'lucide-react';
 import LanguageSwitcher from '@/components/ui/LanguageSwitcher';
 import { useI18n } from '@/contexts/I18nContext';
@@ -128,6 +129,8 @@ const Navigation = () => {
         setIsToolsMenuOpen(false);
       }
       
+
+      
       // Cerrar menú de usuario
       if (userMenuRef.current && !userMenuRef.current.contains(target)) {
         setIsUserMenuOpen(false);
@@ -166,9 +169,9 @@ const Navigation = () => {
   ];
 
   const toolsItems = [
-    { href: '/salvage', label: 'Salvaging', icon: Package },
-    { href: '/crafting', label: 'Crafting', icon: BookOpen },
-    { href: '/festivals', label: 'Festivals', icon: Calendar },
+    { href: '/salvage', label: t('nav.salvaging', 'Salvaging'), icon: Package },
+    { href: '/crafting', label: t('nav.crafting', 'Crafting'), icon: BookOpen },
+    { href: '/festivals', label: t('nav.festivals', 'Festivals'), icon: Calendar },
     { href: '/fractals', label: t('dashboard.farmingTracker.title', 'Fractals'), icon: Map },
     // Solo mostrar Buyout Calculator para admins puros
     ...(user?.role === 'admin' ? [{ href: '/buyout', label: 'Buyout Calculator', icon: ShoppingCart }] : []),
@@ -241,6 +244,8 @@ const Navigation = () => {
                 </Link>
               ))}
               
+
+
               {/* Tools Dropdown */}
               <div className="relative" ref={toolsMenuRef}>
                 <button
@@ -432,6 +437,8 @@ const Navigation = () => {
                           <span className="font-medium">{item.label}</span>
                         </Link>
                       ))}
+
+
 
                       {/* Tools Section */}
                       <div className="border-t border-gray-700 my-2 pt-2">
