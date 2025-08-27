@@ -2995,26 +2995,6 @@ export default function FarmingTrackerPage() {
                                   { qty: 892, priceCopper: (itemDetails[19721]?.currentPrice || 0) * 0.9 },
                                 ];
                               
-                                const differences = dynamicRows.map(row => {
-                                  // Total del bloque 0.9 × 250
-                                  const ids09 = [24295, 24358, 24351, 24357, 24289, 24300, 24283, 24277];
-                                  const total09 = ids09
-                                    .map(id => (itemDetails[id]?.currentPrice || 0) * 0.9 * 250)
-                                    .reduce((sum, v) => sum + v, 0);
-                                  
-                                  // T5 × 2000 + Resultado + 35g
-                                  const t5Ids = [24294, 24341, 24350, 24356, 24288, 24299, 24282];
-                                  const t5x2000 = t5Ids
-                                    .map(t5Id => (itemDetails[t5Id]?.buyPrice || 0) * 2000)
-                                    .reduce((sum, price) => sum + price, 0);
-                                
-                                  const mult = row.qty * row.priceCopper;
-                                  const plusThirtyFiveGold = 350000;
-                                  const combined = t5x2000 + mult + plusThirtyFiveGold;
-                                  
-                                  return total09 - combined;
-                                });
-                                
                                 // Profit AVG = Mejor Income Por Caja - Total
                                 const mejorIncomePorCaja = 4853; // 00G 48S 53C en cobre
                                 const profitAvg = mejorIncomePorCaja - total;

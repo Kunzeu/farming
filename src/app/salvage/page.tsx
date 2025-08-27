@@ -31,7 +31,7 @@ export default function SalvagePage() {
         const itemsData = await response.json();
         
         const names: {[key: string]: string} = {};
-        itemsData.forEach((item: any) => {
+        itemsData.forEach((item: { id: number; name: string }) => {
           if (item.id === 44602) {
             names.copperFed = item.name;
           }
