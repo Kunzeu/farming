@@ -4,7 +4,7 @@ import React, { createContext, useContext, useEffect, useMemo, useState } from '
 
 type LangCode = 'en' | 'de' | 'es' | 'fr';
 
-type Messages = Record<string, string>;
+type Messages = Record<string, string | Record<string, string>>;
 
 interface I18nContextValue {
   lang: LangCode;
@@ -66,7 +66,14 @@ export function I18nProvider({ children }: { children: React.ReactNode }) {
 
   const t = useMemo(() => {
     return (key: string, fallback?: string) => {
-      return messages[key] ?? fallback ?? key;
+      const value = messages[key];
+      if (typeof value === 'string') {
+        return value;
+      } else if (typeof value === 'object' && value !== null) {
+        // Si es un objeto anidado, devolver la clave como fallback
+        return fallback ?? key;
+      }
+      return fallback ?? key;
     };
   }, [messages]);
 
