@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useCallback } from 'react';
 import { useI18n } from '@/contexts/I18nContext';
 import { motion } from 'framer-motion';
 import { ArrowLeft, Info, ExternalLink } from 'lucide-react';
@@ -40,6 +40,58 @@ interface DropItem {
   quantity: number;
 }
 
+// Datos estáticos movidos fuera del componente para evitar recreación
+const DROP_ITEM_IDS = [
+  36448, // Drop of Liquid Karma
+  36451, // Taste of Liquid Karma
+  36456, // Vial of Liquid Karma
+  36457, // Swig of Liquid Karma
+  39223, // Unidentifiable Object
+  24305, // Charged Lodestone
+  24330, // Crystal Lodestone
+  24325, // Destroyer Lodestone
+  24320, // Glacial Lodestone
+  24340, // Corrupted Lodestone
+  24315, // Molten Lodestone
+  24310, // Onyx Lodestone
+  24335, // Pile of Putrid Essence
+  19925, // Obsidian Shard
+  39090, // Mini Risen Priest of Balthazar
+  35750, // Warm Potion
+  35749, // Charged Potion
+  35747,  // Cold Potion
+  35748 // Hard Potion
+] as const;
+
+const ITEM_QUANTITIES: Record<number, number> = {
+  36448: 13406, // Drop of Liquid Karma
+  36451: 2986,  // Taste of Liquid Karma
+  36456: 1224,  // Vial of Liquid Karma
+  36457: 1332,  // Swig of Liquid Karma
+  39223: 28494, // Unidentifiable Object
+  24305: 44,    // Charged Lodestone
+  24330: 48,    // Crystal Lodestone
+  24325: 40,    // Destroyer Lodestone
+  24320: 40,    // Glacial Lodestone
+  24340: 43,    // Corrupted Lodestone
+  24315: 35,    // Molten Lodestone
+  24310: 37,    // Onyx Lodestone
+  24335: 47,    // Pile of Putrid Essence
+  19925: 1507,  // Obsidian Shard
+  39090: 102,   // Mini Risen Priest of Balthazar
+  35750: 3,     // Warm Potion (combinando las dos entradas)
+  35749: 5,     // Charged Potion
+  35747: 1,     // Cold Potion
+  35748: 2      // Hard Potion    
+};
+
+const KARMA_VALUES: Record<number, number> = {
+  36448: 600,    // Drop of Liquid Karma: 600 karma
+  36451: 2500,   // Taste of Liquid Karma: 2,000 karma
+  36456: 3750,   // Vial of Liquid Karma: 4,000 karma
+  36457: 4500    // Swig of Liquid Karma: 6,000 karma
+};
+
 export default function OrrianJewelryBoxPage() {
   usePageTitle('Orrian Jewelry Box');
   const { t, lang } = useI18n();
@@ -51,52 +103,18 @@ export default function OrrianJewelryBoxPage() {
   const [dropItems, setDropItems] = useState<DropItem[]>([]);
   const [nameSortOrder, setNameSortOrder] = useState<'asc' | 'desc'>('asc');
   const [quantitySortOrder, setQuantitySortOrder] = useState<'asc' | 'desc'>('desc');
+  const [lastSortType, setLastSortType] = useState<'name' | 'quantity'>('quantity');
 
-  // IDs de los items que pueden caer de la caja
-  const dropItemIds = [
-    36448, // Drop of Liquid Karma
-    36451, // Taste of Liquid Karma
-    36456, // Vial of Liquid Karma
-    36457, // Swig of Liquid Karma
-    39223, // Unidentifiable Object
-    24305, // Charged Lodestone
-    24330, // Crystal Lodestone
-    24325, // Destroyer Lodestone
-    24320, // Glacial Lodestone
-    24340, // Corrupted Lodestone
-    24315, // Molten Lodestone
-    24310, // Onyx Lodestone
-    24335, // Pile of Putrid Essence
-    19925, // Obsidian Shard
-    39090, // Mini Risen Priest of Balthazar
-    35750, // Warm Potion
-    35749, // Charged Potion
-    35747,  // Cold Potion
-    35748 // Hard Potion
-  ];
+  // Memoizar las funciones de ordenamiento para evitar recreaciones
+  const handleNameSort = useCallback(() => {
+    setNameSortOrder(prev => prev === 'asc' ? 'desc' : 'asc');
+    setLastSortType('name');
+  }, []);
 
-  // Cantidades hardcodeadas para cada item
-  const itemQuantities = {
-    36448: 13406, // Drop of Liquid Karma
-    36451: 2986,  // Taste of Liquid Karma
-    36456: 1224,  // Vial of Liquid Karma
-    36457: 1332,  // Swig of Liquid Karma
-    39223: 28494, // Unidentifiable Object
-    24305: 44,    // Charged Lodestone
-    24330: 48,    // Crystal Lodestone
-    24325: 40,    // Destroyer Lodestone
-    24320: 40,    // Glacial Lodestone
-    24340: 43,    // Corrupted Lodestone
-    24315: 35,    // Molten Lodestone
-    24310: 37,    // Onyx Lodestone
-    24335: 47,    // Pile of Putrid Essence
-    19925: 1507,  // Obsidian Shard
-    39090: 102,   // Mini Risen Priest of Balthazar
-    35750: 3,     // Warm Potion (combinando las dos entradas)
-    35749: 5,     // Charged Potion
-    35747: 1,     // Cold Potion
-    35748: 2      // Hard Potion    
-  };
+  const handleQuantitySort = useCallback(() => {
+    setQuantitySortOrder(prev => prev === 'asc' ? 'desc' : 'asc');
+    setLastSortType('quantity');
+  }, []);
 
   // Fetch item data and price
   useEffect(() => {
@@ -128,8 +146,8 @@ export default function OrrianJewelryBoxPage() {
 
         // Fetch drop items data
         try {
-          console.log('Fetching drop items with IDs:', dropItemIds);
-          const dropItemsResponse = await fetch(`https://api.guildwars2.com/v2/items?ids=${dropItemIds.join(',')}&lang=${lang}`);
+          console.log('Fetching drop items with IDs:', DROP_ITEM_IDS);
+          const dropItemsResponse = await fetch(`https://api.guildwars2.com/v2/items?ids=${DROP_ITEM_IDS.join(',')}&lang=${lang}`);
           if (dropItemsResponse.ok) {
             const dropItemsData: ItemData[] = await dropItemsResponse.json();
             console.log('Received drop items data:', dropItemsData);
@@ -137,7 +155,7 @@ export default function OrrianJewelryBoxPage() {
               id: item.id,
               name: item.name,
               icon: item.icon,
-              quantity: itemQuantities[item.id as keyof typeof itemQuantities] || 0
+              quantity: ITEM_QUANTITIES[item.id] || 0
             }));
             console.log('Formatted drop items:', formattedDropItems);
             setDropItems(formattedDropItems);
@@ -157,9 +175,9 @@ export default function OrrianJewelryBoxPage() {
     };
 
     fetchData();
-  }, [lang, dropItemIds, itemQuantities]);
+  }, [lang]); // Solo depende de lang ahora
 
-  // Sort drop items by quantity
+  // Sort drop items by quantity - memoizado
   const sortedDropItemsByQuantity = useMemo(() => {
     return [...dropItems].sort((a, b) => {
       if (quantitySortOrder === 'desc') {
@@ -170,7 +188,7 @@ export default function OrrianJewelryBoxPage() {
     });
   }, [dropItems, quantitySortOrder]);
 
-  // Sort drop items by name
+  // Sort drop items by name - memoizado
   const sortedDropItemsByName = useMemo(() => {
     return [...dropItems].sort((a, b) => {
       if (nameSortOrder === 'asc') {
@@ -186,22 +204,14 @@ export default function OrrianJewelryBoxPage() {
   }, [dropItems, nameSortOrder]);
 
   // Determine which sorted list to use based on last interaction
-  const [lastSortType, setLastSortType] = useState<'name' | 'quantity'>('quantity');
-  
-  const finalSortedItems = lastSortType === 'name' ? sortedDropItemsByName : sortedDropItemsByQuantity;
+  const finalSortedItems = useMemo(() => {
+    return lastSortType === 'name' ? sortedDropItemsByName : sortedDropItemsByQuantity;
+  }, [lastSortType, sortedDropItemsByName, sortedDropItemsByQuantity]);
 
-  // Calculate total karma recovered from drops
+  // Calculate total karma recovered from drops - memoizado
   const totalKarmaRecovered = useMemo(() => {
-    // Mapeo específico de karma por item para obtener 26,092,600 total
-    const karmaValues = {
-      36448: 600,    // Drop of Liquid Karma: 600 karma
-      36451: 2500,   // Taste of Liquid Karma: 2,000 karma
-      36456: 3750,   // Vial of Liquid Karma: 4,000 karma
-      36457: 4500    // Swig of Liquid Karma: 6,000 karma
-    };
-
     return dropItems.reduce((total, item) => {
-      const karmaValue = karmaValues[item.id as keyof typeof karmaValues];
+      const karmaValue = KARMA_VALUES[item.id];
       if (karmaValue) {
         return total + (item.quantity * karmaValue);
       }
@@ -209,40 +219,46 @@ export default function OrrianJewelryBoxPage() {
     }, 0);
   }, [dropItems]);
 
-  if (loading) {
-    return (
-      <>
-        <Navigation />
-        <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white">
-          <div className="max-w-7xl mx-auto p-6">
-            <div className="text-center">
-              <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-white mx-auto"></div>
-              <p className="mt-4 text-xl">{t('orrianJewelryBoxPage.loading', 'Cargando datos de la caja...')}</p>
-            </div>
+  // Memoizar el componente de loading para evitar re-renders
+  const LoadingComponent = useMemo(() => (
+    <>
+      <Navigation />
+      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white">
+        <div className="max-w-7xl mx-auto p-6">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-white mx-auto"></div>
+            <p className="mt-4 text-xl">{t('orrianJewelryBoxPage.loading', 'Cargando datos de la caja...')}</p>
           </div>
         </div>
-        <Footer />
-      </>
-    );
+      </div>
+      <Footer />
+    </>
+  ), [t]);
+
+  // Memoizar el componente de error
+  const ErrorComponent = useMemo(() => (
+    <>
+      <Navigation />
+      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white">
+        <div className="max-w-7xl mx-auto p-6">
+          <div className="text-center">
+            <p className="text-red-400 text-xl">{error || 'Error al cargar los datos'}</p>
+            <Link href="/" className="mt-4 inline-block text-blue-300 hover:text-blue-200">
+              ← Volver al inicio
+            </Link>
+          </div>
+        </div>
+      </div>
+      <Footer />
+    </>
+  ), [error]);
+
+  if (loading) {
+    return LoadingComponent;
   }
 
   if (error || !itemData) {
-    return (
-      <>
-        <Navigation />
-        <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white">
-          <div className="max-w-7xl mx-auto p-6">
-            <div className="text-center">
-              <p className="text-red-400 text-xl">{error || 'Error al cargar los datos'}</p>
-              <Link href="/" className="mt-4 inline-block text-blue-300 hover:text-blue-200">
-                ← Volver al inicio
-              </Link>
-            </div>
-          </div>
-        </div>
-        <Footer />
-      </>
-    );
+    return ErrorComponent;
   }
 
   return (
@@ -358,10 +374,7 @@ export default function OrrianJewelryBoxPage() {
               <div className="font-semibold text-gray-300 flex items-center">
                 <span>Drop</span>
                 <button
-                  onClick={() => {
-                    setNameSortOrder(prev => prev === 'asc' ? 'desc' : 'asc');
-                    setLastSortType('name');
-                  }}
+                  onClick={handleNameSort}
                   className="ml-2 p-1 hover:bg-slate-600/50 rounded transition-colors"
                 >
                   {nameSortOrder === 'asc' ? (
@@ -378,10 +391,7 @@ export default function OrrianJewelryBoxPage() {
               <div className="font-semibold text-gray-300 flex items-center justify-center">
                 <span>Cantidad</span>
                 <button
-                  onClick={() => {
-                    setQuantitySortOrder(prev => prev === 'asc' ? 'desc' : 'asc');
-                    setLastSortType('quantity');
-                  }}
+                  onClick={handleQuantitySort}
                   className="ml-2 p-1 hover:bg-slate-600/50 rounded transition-colors"
                 >
                   {quantitySortOrder === 'desc' ? (
@@ -402,10 +412,7 @@ export default function OrrianJewelryBoxPage() {
               <div className="font-semibold text-gray-300 text-sm flex items-center">
                 <span>Drop</span>
                 <button
-                  onClick={() => {
-                    setNameSortOrder(prev => prev === 'asc' ? 'desc' : 'asc');
-                    setLastSortType('name');
-                  }}
+                  onClick={handleNameSort}
                   className="ml-1 p-1 hover:bg-slate-600/50 rounded transition-colors"
                 >
                   {nameSortOrder === 'asc' ? (
@@ -422,10 +429,7 @@ export default function OrrianJewelryBoxPage() {
               <div className="font-semibold text-gray-300 text-sm flex items-center justify-center">
                 <span>Cantidad</span>
                 <button
-                  onClick={() => {
-                    setQuantitySortOrder(prev => prev === 'asc' ? 'desc' : 'asc');
-                    setLastSortType('quantity');
-                  }}
+                  onClick={handleQuantitySort}
                   className="ml-1 p-1 hover:bg-slate-600/50 rounded transition-colors"
                 >
                   {quantitySortOrder === 'desc' ? (
