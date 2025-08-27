@@ -25,18 +25,49 @@ import {
 } from 'lucide-react';
 import LanguageSwitcher from '@/components/ui/LanguageSwitcher';
 import { useI18n } from '@/contexts/I18nContext';
-import { Analytics } from "@vercel/analytics/next";
+
 
 const Navigation = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
-  const [isToolsMenuOpen, setIsToolsMenuOpen] = useState(false);
-  const [isMobileToolsOpen, setIsMobileToolsOpen] = useState(false);
+  const [isToolsMenuOpen, setIsToolsMenuOpen] = useState(true); // Por defecto abierto
+  const [isMobileToolsOpen, setIsMobileToolsOpen] = useState(true); // Por defecto abierto
   const [isMobileUserOpen, setIsMobileUserOpen] = useState(false);
   const { user, isAuthenticated, logout } = useAuth();
   const toolsMenuRef = useRef<HTMLDivElement>(null);
   const mobileMenuRef = useRef<HTMLDivElement>(null);
   const userMenuRef = useRef<HTMLDivElement>(null);
+
+  // Funciones para manejar el estado del menú de tools con localStorage
+  const handleToolsMenuToggle = (isOpen: boolean) => {
+    setIsToolsMenuOpen(isOpen);
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('toolsMenuOpen', JSON.stringify(isOpen));
+    }
+  };
+
+  const handleMobileToolsToggle = (isOpen: boolean) => {
+    setIsMobileToolsOpen(isOpen);
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('mobileToolsOpen', JSON.stringify(isOpen));
+    }
+  };
+
+  // Cargar preferencias del localStorage después de la hidratación
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const savedToolsMenu = localStorage.getItem('toolsMenuOpen');
+      const savedMobileTools = localStorage.getItem('mobileToolsOpen');
+      
+      if (savedToolsMenu !== null) {
+        setIsToolsMenuOpen(JSON.parse(savedToolsMenu));
+      }
+      
+      if (savedMobileTools !== null) {
+        setIsMobileToolsOpen(JSON.parse(savedMobileTools));
+      }
+    }
+  }, []);
   
   // Reset timers
   const [dailyResetTime, setDailyResetTime] = useState<string>('');
@@ -126,7 +157,7 @@ const Navigation = () => {
       
       // Cerrar menú de herramientas
       if (toolsMenuRef.current && !toolsMenuRef.current.contains(target)) {
-        setIsToolsMenuOpen(false);
+        handleToolsMenuToggle(false);
       }
       
 
@@ -148,7 +179,7 @@ const Navigation = () => {
           if (!isClickInsideMenu && !isClickInsideButton) {
             setIsMobileMenuOpen(false);
             setIsUserMenuOpen(false);
-            setIsMobileToolsOpen(false);
+            handleMobileToolsToggle(false);
             setIsMobileUserOpen(false);
           }
         }
@@ -249,7 +280,7 @@ const Navigation = () => {
               {/* Tools Dropdown */}
               <div className="relative" ref={toolsMenuRef}>
                 <button
-                  onClick={() => setIsToolsMenuOpen(!isToolsMenuOpen)}
+                  onClick={() => handleToolsMenuToggle(!isToolsMenuOpen)}
                   className="flex items-center space-x-2 text-gray-300 hover:text-white transition-all duration-200 px-3 py-2 rounded-lg hover:bg-gray-800/50 hover:shadow-md cursor-pointer">
                   <Shield className="w-4 h-4" />
                   <span className="font-bold">{t('nav.tools', 'Tools')}</span>
@@ -268,7 +299,7 @@ const Navigation = () => {
                         key={item.href}
                         href={item.href}
                         className="flex items-center space-x-3 px-4 py-2 text-gray-300 hover:text-white hover:bg-gray-700 transition-colors"
-                        onClick={() => setIsToolsMenuOpen(false)}>
+                        onClick={() => handleToolsMenuToggle(false)}>
                         <item.icon className="w-4 h-4" />
                         <span>{item.label}</span>
                       </Link>
@@ -443,7 +474,7 @@ const Navigation = () => {
                       {/* Tools Section */}
                       <div className="border-t border-gray-700 my-2 pt-2">
                         <button
-                          onClick={() => setIsMobileToolsOpen(!isMobileToolsOpen)}
+                          onClick={() => handleMobileToolsToggle(!isMobileToolsOpen)}
                           className="flex items-center justify-between w-full px-3 py-2 text-xs font-semibold text-gray-400 uppercase tracking-wider hover:text-white transition-colors duration-200 cursor-pointer">
                           <div className="flex items-center space-x-2">
                             <Shield className="w-4 h-4" />
@@ -542,7 +573,6 @@ const Navigation = () => {
           </div>
         </div>
       </div>
-      <Analytics />
     </nav>
   );
 };

@@ -100,6 +100,8 @@
   "salvage.dropdown.rare": "Rare",
 
   "salvage.note.title": "Note",
+  "salvage.note.showMore": "Show more",
+  "salvage.note.showLess": "Show less",
   "salvage.note.common": "Prices are obtained in real-time from the GW2 API. The \"Processed Price\" includes Trading Post fees (15% discount on sell price). The cost of Unidentified Gear uses the current buy price from the Trading Post. Drop rates are based on official data from the GW2 Wiki for Piece of Common Unidentified Gear opened and then salvaged with Copper-Fed Salvage-o-Matic. Recommendation: Have an inventory of 280 slots to facilitate the process.",
   "salvage.note.masterwork": "Prices are obtained in real-time from the GW2 API. The \"Processed Price\" includes Trading Post fees (15% discount on sell price). The cost of Unidentified Gear uses the current buy price from the Trading Post. Drop rates are based on official data from the GW2 Wiki for Piece of Unidentified Gear (Masterwork) opened and then salvaged with Runecrafter's Salvage-o-Matic. Recommendation: Have an inventory of 280 slots to facilitate the process.",
   "salvage.note.rare": "Prices are obtained in real-time from the GW2 API. The \"Processed Price\" includes Trading Post fees (15% discount on sell price). The cost of Unidentified Gear uses the current buy price from the Trading Post. Drop rates are based on official data from the GW2 Wiki for Piece of Rare Unidentified Gear opened and then salvaged with Silver-Fed Salvage-o-Matic. Recommendation: Have an inventory of 280 slots to facilitate the process.",
@@ -739,6 +741,11 @@
   "salvagePage.features.marketPrices": "Market price comparison",
   "salvagePage.features.openOrSell": "Open or sell decision",
   "researchNotesPage.discipline.jeweler": "Jeweler",
-  "orrianJewelryBoxPage.possibleDrops": "Possible Box Drops"
+  "orrianJewelryBoxPage.possibleDrops": "Possible Box Drops",
+  "orrianJewelryBoxPage.karmaRecuperado": "Recovered Karma",
+  "orrianJewelryBoxPage.drop": "Drop",
+  "orrianJewelryBoxPage.cantidad": "Quantity",
+  "orrianJewelryBoxPage.errorLoadingData": "Error loading data",
+  "orrianJewelryBoxPage.backToHome": "← Back to Home"
 }
 

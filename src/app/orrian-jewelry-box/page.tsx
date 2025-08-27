@@ -6,7 +6,6 @@ import { motion } from 'framer-motion';
 import { ArrowLeft, Info, ExternalLink } from 'lucide-react';
 import Link from 'next/link';
 import Navigation from '@/components/layout/Navigation';
-import Footer from '@/components/layout/Footer';
 import { usePageTitle } from '@/hooks/usePageTitle';
 
 interface ItemData {
@@ -231,7 +230,6 @@ export default function OrrianJewelryBoxPage() {
           </div>
         </div>
       </div>
-      <Footer />
     </>
   ), [t]);
 
@@ -242,14 +240,13 @@ export default function OrrianJewelryBoxPage() {
       <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white">
         <div className="max-w-7xl mx-auto p-6">
           <div className="text-center">
-            <p className="text-red-400 text-xl">{error || 'Error al cargar los datos'}</p>
-            <Link href="/" className="mt-4 inline-block text-blue-300 hover:text-blue-200">
-              ← Volver al inicio
+            <p className="text-red-400 text-xl">{error || t('orrianJewelryBoxPage.errorLoadingData', 'Error al cargar los datos')}</p>
+                          <Link href="/" className="mt-4 inline-block text-blue-300 hover:text-blue-200">
+                {t('orrianJewelryBoxPage.backToHome', '← Volver al inicio')}
             </Link>
           </div>
         </div>
       </div>
-      <Footer />
     </>
   ), [error]);
 
@@ -346,7 +343,7 @@ export default function OrrianJewelryBoxPage() {
             </div>
 
             <div className="bg-slate-800/50 border border-slate-600/50 rounded-lg p-6 text-center">
-              <p className="text-sm text-gray-400 mb-2">Karma Recuperado</p>
+              <p className="text-sm text-gray-400 mb-2">{t('orrianJewelryBoxPage.karmaRecuperado', 'Karma Recuperado')}</p>
               <div className="flex items-center justify-center gap-2">
                 <p className="text-3xl font-bold text-purple-300">{totalKarmaRecovered.toLocaleString()}</p>
                 <img 
@@ -372,7 +369,7 @@ export default function OrrianJewelryBoxPage() {
             {/* Table Header with Filter */}
             <div className="hidden sm:grid grid-cols-2 gap-4 py-3 px-4 bg-slate-700/50 rounded-t-lg border-b border-slate-600/50">
               <div className="font-semibold text-gray-300 flex items-center">
-                <span>Drop</span>
+                <span>{t('orrianJewelryBoxPage.drop', 'Drop')}</span>
                 <button
                   onClick={handleNameSort}
                   className="ml-2 p-1 hover:bg-slate-600/50 rounded transition-colors"
@@ -389,7 +386,7 @@ export default function OrrianJewelryBoxPage() {
                 </button>
               </div>
               <div className="font-semibold text-gray-300 flex items-center justify-center">
-                <span>Cantidad</span>
+                <span>{t('orrianJewelryBoxPage.cantidad', 'Cantidad')}</span>
                 <button
                   onClick={handleQuantitySort}
                   className="ml-2 p-1 hover:bg-slate-600/50 rounded transition-colors"
@@ -410,7 +407,7 @@ export default function OrrianJewelryBoxPage() {
             {/* Mobile Header */}
             <div className="sm:hidden grid grid-cols-2 gap-4 py-3 px-4 bg-slate-700/50 rounded-t-lg border-b border-slate-600/50">
               <div className="font-semibold text-gray-300 text-sm flex items-center">
-                <span>Drop</span>
+                <span>{t('orrianJewelryBoxPage.drop', 'Drop')}</span>
                 <button
                   onClick={handleNameSort}
                   className="ml-1 p-1 hover:bg-slate-600/50 rounded transition-colors"
@@ -427,7 +424,7 @@ export default function OrrianJewelryBoxPage() {
                 </button>
               </div>
               <div className="font-semibold text-gray-300 text-sm flex items-center justify-center">
-                <span>Cantidad</span>
+                <span>{t('orrianJewelryBoxPage.cantidad', 'Cantidad')}</span>
                 <button
                   onClick={handleQuantitySort}
                   className="ml-1 p-1 hover:bg-slate-600/50 rounded transition-colors"
@@ -477,66 +474,8 @@ export default function OrrianJewelryBoxPage() {
               ))}
             </div>
           </motion.div>
-
-          {/* Tips Section */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.6 }}
-            className="bg-slate-800/50 backdrop-blur-sm rounded-lg p-6 border border-slate-600/50"
-          >
-            <h3 className="text-2xl font-bold mb-6 text-center flex items-center justify-center">
-              <Info className="w-6 h-6 mr-2" />
-              {t('orrianJewelryBoxPage.tips', 'Consejos Pro')}
-            </h3>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div>
-                <h4 className="text-lg font-semibold mb-3 text-blue-400">
-                  {t('orrianJewelryBoxPage.openingTips', 'Consejos para Abrir')}
-                </h4>
-                <ul className="space-y-2 text-gray-300">
-                  <li>• {t('orrianJewelryBoxPage.tip1', 'Las cajas pueden contener joyas de diferentes rarezas')}</li>
-                  <li>• {t('orrianJewelryBoxPage.tip2', 'Considera el valor esperado vs. el precio de compra')}</li>
-                  <li>• {t('orrianJewelryBoxPage.tip3', 'Los precios del mercado pueden fluctuar')}</li>
-                  <li>• {t('orrianJewelryBoxPage.tip7', 'Esta caja no se puede comerciar, solo abrir')}</li>
-                </ul>
-              </div>
-              
-              <div>
-                <h4 className="text-lg font-semibold mb-3 text-green-400">
-                  {t('orrianJewelryBoxPage.marketTips', 'Consejos de Mercado')}
-                </h4>
-                <ul className="space-y-2 text-gray-300">
-                  <li>• {t('orrianJewelryBoxPage.tip4', 'Verifica los precios antes de comprar o vender')}</li>
-                  <li>• {t('orrianJewelryBoxPage.tip5', 'Las cajas no se pueden reciclar')}</li>
-                  <li>• {t('orrianJewelryBoxPage.tip6', 'Considera el valor sentimental vs. monetario')}</li>
-                  <li>• {t('orrianJewelryBoxPage.tip8', 'El valor del vendedor es muy bajo, mejor abrir')}</li>
-                </ul>
-              </div>
-            </div>
-          </motion.div>
-
-          {/* External Links */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.8 }}
-            className="mt-8 text-center"
-          >
-            <a 
-              href="https://wiki.guildwars2.com/wiki/Orrian_Jewelry_Box" 
-              target="_blank" 
-              rel="noopener noreferrer"
-              className="inline-flex items-center text-blue-300 hover:text-blue-200 transition-colors"
-            >
-              <ExternalLink className="w-4 h-4 mr-2" />
-              {t('orrianJewelryBoxPage.viewWiki', 'Ver en Wiki de Guild Wars 2')}
-            </a>
-          </motion.div>
         </div>
       </div>
-      <Footer />
     </>
   );
 }

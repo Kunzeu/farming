@@ -19,6 +19,42 @@ export default function SalvagePage() {
   // Salvage section configuration
   const salvageSections = [
     {
+      id: 'unidentified-gear' as SalvageSection,
+      name: t('salvagePage.unidentifiedGear', 'Unidentified Gear'),
+      description: t('salvagePage.unidentifiedGearDesc', 'Unidentified Gear calculators'),
+      icon: Wrench,
+      color: 'purple',
+      bgGradient: 'from-purple-500/20 to-purple-600/20',
+      borderColor: 'border-purple-500/30',
+      textColor: 'text-purple-400',
+      features: [t('salvagePage.features.commonMasterworkRates', 'Common, Masterwork, Rare'), t('salvagePage.features.specificDropRates', 'Specific drop rates'), t('salvagePage.features.profitabilityByType', 'Profitability by type')],
+      href: '/salvage/common'
+    },
+    {
+      id: 'research-notes' as SalvageSection,
+      name: t('salvagePage.researchNotes', 'Research Notes'),
+      description: t('salvagePage.researchNotesDesc', 'Research Note costs'),
+      icon: FileText,
+      color: 'green',
+      bgGradient: 'from-green-500/20 to-green-600/20',
+      borderColor: 'border-green-500/30',
+      textColor: 'text-green-400',
+      features: [t('salvagePage.features.costPerNote', 'Cost per Research Note'), t('salvagePage.features.itemsGiveNotes', 'Items that give Research Notes'), t('salvagePage.features.salvagingEfficiency', 'Salvaging efficiency')],
+      href: '/salvage/research-notes'
+    },
+    {
+      id: 'orrian-jewelry-box' as SalvageSection,
+      name: t('salvagePage.orrianJewelryBox', 'Orrian Jewelry Box'),
+      description: t('salvagePage.orrianJewelryBoxDesc', 'Analyze box profitability'),
+      icon: Gift,
+      color: 'orange',
+      bgGradient: 'from-orange-500/20 to-orange-600/20',
+      borderColor: 'border-orange-500/30',
+      textColor: 'text-orange-400',
+      features: [t('salvagePage.features.boxValue', 'Box value analysis'), t('salvagePage.features.marketPrices', 'Market price comparison'), t('salvagePage.features.openOrSell', 'Open or sell decision')],
+      href: '/orrian-jewelry-box'
+    },
+    {
       id: 'salvageables' as SalvageSection,
       name: t('salvagePage.salvageables', 'Salvageables'),
       description: t('salvagePage.salveageablesDesc', 'Items that can be salvaged'),
@@ -41,42 +77,6 @@ export default function SalvagePage() {
       textColor: 'text-yellow-400',
       features: [t('salvagePage.features.costPer1000', 'Cost per 1000 luck'), t('salvagePage.features.efficiency', 'Efficiency of different kits'), t('salvagePage.features.profitability', 'Profitability comparison')],
       href: '/salvage/luck-calculator'
-    },
-    {
-      id: 'research-notes' as SalvageSection,
-      name: t('salvagePage.researchNotes', 'Research Notes'),
-      description: t('salvagePage.researchNotesDesc', 'Research Note costs'),
-      icon: FileText,
-      color: 'green',
-      bgGradient: 'from-green-500/20 to-green-600/20',
-      borderColor: 'border-green-500/30',
-      textColor: 'text-green-400',
-      features: [t('salvagePage.features.costPerNote', 'Cost per Research Note'), t('salvagePage.features.itemsGiveNotes', 'Items that give Research Notes'), t('salvagePage.features.salvagingEfficiency', 'Salvaging efficiency')],
-      href: '/salvage/research-notes'
-    },
-    {
-      id: 'unidentified-gear' as SalvageSection,
-      name: t('salvagePage.unidentifiedGear', 'Unidentified Gear'),
-      description: t('salvagePage.unidentifiedGearDesc', 'Unidentified Gear calculators'),
-      icon: Wrench,
-      color: 'purple',
-      bgGradient: 'from-purple-500/20 to-purple-600/20',
-      borderColor: 'border-purple-500/30',
-      textColor: 'text-purple-400',
-      features: [t('salvagePage.features.commonMasterworkRates', 'Common, Masterwork, Rare'), t('salvagePage.features.specificDropRates', 'Specific drop rates'), t('salvagePage.features.profitabilityByType', 'Profitability by type')],
-      href: '/salvage/common'
-    },
-    {
-      id: 'orrian-jewelry-box' as SalvageSection,
-      name: t('salvagePage.orrianJewelryBox', 'Orrian Jewelry Box'),
-      description: t('salvagePage.orrianJewelryBoxDesc', 'Analyze box profitability'),
-      icon: Gift,
-      color: 'orange',
-      bgGradient: 'from-orange-500/20 to-orange-600/20',
-      borderColor: 'border-orange-500/30',
-      textColor: 'text-orange-400',
-      features: [t('salvagePage.features.boxValue', 'Box value analysis'), t('salvagePage.features.marketPrices', 'Market price comparison'), t('salvagePage.features.openOrSell', 'Open or sell decision')],
-      href: '/orrian-jewelry-box'
     }
   ];
 

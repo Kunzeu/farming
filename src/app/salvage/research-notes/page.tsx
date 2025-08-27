@@ -60,7 +60,8 @@ export default function ResearchNotesPage() {
    const [item13435, setItem13435] = useState<GW2Item | null>(null);
    const [item104934, setItem104934] = useState<GW2Item | null>(null);
    const [item104934B, setItem104934B] = useState<GW2Item | null>(null);
-  
+   const [item13438, setItem13438] = useState<GW2Item | null>(null);
+    
      // Estados para precios de items
    const [price8883, setPrice8883] = useState<GW2Price | null>(null);
    const [price13436, setPrice13436] = useState<GW2Price | null>(null);
@@ -68,6 +69,7 @@ export default function ResearchNotesPage() {
    const [price13435, setPrice13435] = useState<GW2Price | null>(null);
    const [price104934, setPrice104934] = useState<GW2Price | null>(null);
    const [price104934B, setPrice104934B] = useState<GW2Price | null>(null);
+   const [price13438, setPrice13438] = useState<GW2Price | null>(null);
   
      // Estados para precios de materiales
    const [price19700, setPrice19700] = useState<GW2Price | null>(null);
@@ -81,15 +83,40 @@ export default function ResearchNotesPage() {
        const [price19722, setPrice19722] = useState<GW2Price | null>(null);
     const [price19729, setPrice19729] = useState<GW2Price | null>(null);
     const [price19748, setPrice19748] = useState<GW2Price | null>(null);
-    const [price68063, setPrice68063] = useState<GW2Price | null>(null);
+         const [price68063, setPrice68063] = useState<GW2Price | null>(null);
+     const [price24475, setPrice24475] = useState<GW2Price | null>(null);
   
   const [loading, setLoading] = useState(true);
      const [sortField, setSortField] = useState<'craftingLevel' | 'level' | 'notes' | 'buyPrice' | 'sellPrice' | 'craftingCost' | 'pricePerNote'>('craftingLevel');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
   const [craftingPriceSide, setCraftingPriceSide] = useState<'buy' | 'sell'>('sell');
 
-  // Función para convertir precios de cobre al formato GW2 (00g 02s 60c)
-  const formatGW2Price = (copperPrice: number): string => {
+     // Función para obtener el color de la rareza
+   const getRarityColor = (rarity: string): string => {
+     switch (rarity.toLowerCase()) {
+       case 'junk':
+         return 'text-gray-400';
+       case 'basic':
+         return 'text-gray-300';
+       case 'fine':
+         return 'text-blue-400';
+       case 'masterwork':
+         return 'text-green-400';
+       case 'rare':
+         return 'text-yellow-400';
+       case 'exotic':
+         return 'text-orange-400';
+       case 'ascended':
+         return 'text-purple-400';
+       case 'legendary':
+         return 'text-yellow-300';
+       default:
+         return 'text-white';
+     }
+   };
+
+   // Función para convertir precios de cobre al formato GW2 (00g 02s 60c)
+   const formatGW2Price = (copperPrice: number): string => {
     if (copperPrice === 0) return '00g 00s 00c';
     
     const gold = Math.floor(copperPrice / 10000);
@@ -110,6 +137,7 @@ export default function ResearchNotesPage() {
       13436: 300,
       13437: 300,
       13435: 300,
+             13438: 75,
       104934: 0,
     };
     return craftingLevels[itemId] || 0;
@@ -210,6 +238,14 @@ export default function ResearchNotesPage() {
        return formatGW2Price(selected);
      }
 
+    // Si es el item 13438, calcular dinámicamente con 19700 x8 y 24475 x1
+    if (itemId === 13438 && price19700 && price24475) {
+      const buyTotal = (price19700.buys?.unit_price || 0) * 8 + (price24475.buys?.unit_price || 0) * 1;
+      const sellTotal = (price19700.sells?.unit_price || 0) * 8 + (price24475.sells?.unit_price || 0) * 1;
+      const selected = craftingPriceSide === 'buy' ? buyTotal : sellTotal;
+      return formatGW2Price(selected);
+    }
+
     // Si es el item 104934, calcular dinámicamente con 19722 x30, 19700 x20, 19748 x30, 68063 x1
       if (itemId === 104934 && price19722 && price19700 && price19748 && price68063) {
         const buyTotal = (price19722.buys?.unit_price || 0) * 30 + (price19700.buys?.unit_price || 0) * 20 + (price19748.buys?.unit_price || 0) * 30 + (price68063.buys?.unit_price || 0) * 1;
@@ -240,22 +276,24 @@ export default function ResearchNotesPage() {
         setLoading(true);
         
                           // Obtener información de todos los items
-          const [item8883Response, item13436Response, item13437Response, item13435Response, item104934Response, item104934BResponse] = await Promise.all([
+                     const [item8883Response, item13436Response, item13437Response, item13435Response, item104934Response, item104934BResponse, item13438Response] = await Promise.all([
             fetch(`https://api.guildwars2.com/v2/items/8883?lang=${lang}`),
             fetch(`https://api.guildwars2.com/v2/items/13436?lang=${lang}`),
             fetch(`https://api.guildwars2.com/v2/items/13437?lang=${lang}`),
             fetch(`https://api.guildwars2.com/v2/items/13435?lang=${lang}`),
             fetch(`https://api.guildwars2.com/v2/items/104934?lang=${lang}`),
-            fetch(`https://api.guildwars2.com/v2/items/104934?lang=${lang}`)
+            fetch(`https://api.guildwars2.com/v2/items/104934?lang=${lang}`),
+                         fetch(`https://api.guildwars2.com/v2/items/13438?lang=${lang}`)
           ]);
 
-         const [item8883Data, item13436Data, item13437Data, item13435Data, item104934Data, item104934BData] = await Promise.all([
+         const [item8883Data, item13436Data, item13437Data, item13435Data, item104934Data, item104934BData, item13438Data] = await Promise.all([
            item8883Response.json(),
            item13436Response.json(),
            item13437Response.json(),
            item13435Response.json(),
            item104934Response.json(),
-           item104934BResponse.json()
+           item104934BResponse.json(),
+           item13438Response.json()
          ]);
 
          setItem8883(item8883Data);
@@ -264,24 +302,27 @@ export default function ResearchNotesPage() {
          setItem13435(item13435Data);
          setItem104934(item104934Data);
          setItem104934B(item104934BData);
+         setItem13438(item13438Data);
 
                           // Obtener precios de todos los items
-          const [price8883Response, price13436Response, price13437Response, price13435Response, price104934Response, price104934BResponse] = await Promise.all([
+                     const [price8883Response, price13436Response, price13437Response, price13435Response, price104934Response, price104934BResponse, price13438Response] = await Promise.all([
             fetch(`https://api.guildwars2.com/v2/commerce/prices/8883?lang=${lang}`),
             fetch(`https://api.guildwars2.com/v2/commerce/prices/13436?lang=${lang}`),
             fetch(`https://api.guildwars2.com/v2/commerce/prices/13437?lang=${lang}`),
             fetch(`https://api.guildwars2.com/v2/commerce/prices/13435?lang=${lang}`),
             fetch(`https://api.guildwars2.com/v2/commerce/prices/104934?lang=${lang}`),
-            fetch(`https://api.guildwars2.com/v2/commerce/prices/104934?lang=${lang}`)
+            fetch(`https://api.guildwars2.com/v2/commerce/prices/104934?lang=${lang}`),
+                         fetch(`https://api.guildwars2.com/v2/commerce/prices/13438?lang=${lang}`)
           ]);
 
-         const [price8883Data, price13436Data, price13437Data, price13435Data, price104934Data, price104934BData] = await Promise.all([
+         const [price8883Data, price13436Data, price13437Data, price13435Data, price104934Data, price104934BData, price13438Data] = await Promise.all([
            price8883Response.json(),
            price13436Response.json(),
            price13437Response.json(),
            price13435Response.json(),
            price104934Response.json(),
-           price104934BResponse.json()
+           price104934BResponse.json(),
+           price13438Response.json()
          ]);
 
          setPrice8883(price8883Data);
@@ -290,9 +331,10 @@ export default function ResearchNotesPage() {
          setPrice13435(price13435Data);
          setPrice104934(price104934Data);
          setPrice104934B(price104934BData);
+         setPrice13438(price13438Data);
 
                                                        // Obtener precios de todos los materiales de una sola vez
-           const allMatsPricesResp = await fetch(`https://api.guildwars2.com/v2/commerce/prices?ids=19700,24473,24519,24511,24277,24351,24300,12156,19722,19729,19748,68063&lang=${lang}`);
+         const allMatsPricesResp = await fetch(`https://api.guildwars2.com/v2/commerce/prices?ids=19700,24473,24475,24519,24511,24277,24351,24300,12156,19722,19729,19748,68063&lang=${lang}`);
          const allMatsPricesData: GW2Price[] = await allMatsPricesResp.json();
          
          const allMatsMap = allMatsPricesData.reduce((acc: Record<number, GW2Price>, p: GW2Price) => {
@@ -309,9 +351,10 @@ export default function ResearchNotesPage() {
          setPrice24300(allMatsMap[24300] || null);
          setPrice12156(allMatsMap[12156] || null);
          setPrice19722(allMatsMap[19722] || null);
-          setPrice19729(allMatsMap[19729] || null);
-          setPrice19748(allMatsMap[19748] || null);
-          setPrice68063(allMatsMap[68063] || null);
+         setPrice19729(allMatsMap[19729] || null);
+         setPrice19748(allMatsMap[19748] || null);
+         setPrice68063(allMatsMap[68063] || null);
+         setPrice24475(allMatsMap[24475] || null);
         
       } catch (error) {
         console.error('Error fetching items:', error);
@@ -327,7 +370,7 @@ export default function ResearchNotesPage() {
     const craftingDisciplines: CraftingDiscipline[] = useMemo(() => {
       return [
        {
-                   name: t('researchNotesPage.discipline.jeweler'),
+         name: t('researchNotesPage.discipline.jeweler'),
          icon: Gem,
          color: 'text-purple-400',
          items: sortItemsByField([
@@ -367,6 +410,15 @@ export default function ResearchNotesPage() {
              sellPrice: price13435?.sells?.unit_price ? formatGW2Price(price13435.sells.unit_price) : '00g 00s 00c',
              craftingCost: calculateCraftingCost(13435)
            },
+           { 
+             id: 13438,
+             name: item13438?.name || 'Loading...', 
+             level: item13438?.level || 0, 
+             notes: 5.1, 
+             buyPrice: price13438?.buys?.unit_price ? formatGW2Price(price13438.buys.unit_price) : '00g 00s 00c',
+             sellPrice: price13438?.sells?.unit_price ? formatGW2Price(price13438.sells.unit_price) : '00g 00s 00c',
+             craftingCost: calculateCraftingCost(13438)
+           },
                        { 
               id: 104934,
               name: (item104934?.name || 'Loading...') + ` (${t('researchNotesPage.suffixes.elder')})`, 
@@ -388,7 +440,7 @@ export default function ResearchNotesPage() {
          ])
        }
      ];
-   }, [item8883, price8883, item13436, price13436, item13437, price13437, item13435, price13435, item104934, price104934, item104934B, price104934B, price19700, price24473, price24519, price24511, price24277, price24351, price24300, price12156, price19722, price19729, price19748, price68063, craftingPriceSide, sortOrder, sortField, calculateCraftingCost, sortItemsByField]);
+   }, [item8883, price8883, item13436, price13436, item13437, price13437, item13435, price13435, item13438, price13438, item104934, price104934, item104934B, price104934B, price19700, price24473, price24475, price24519, price24511, price24277, price24351, price24300, price12156, price19722, price19729, price19748, price68063, craftingPriceSide, sortOrder, sortField, calculateCraftingCost, sortItemsByField]);
 
   
 
@@ -402,32 +454,35 @@ export default function ResearchNotesPage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             className="mb-8">
-            <div className="flex items-center justify-between mb-4">
-              {/* Back Button - Left Side */}
-              <motion.div
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                className="flex-shrink-0">
-                <Link href="/salvage">
-                  <button className="px-4 py-2 bg-gradient-to-r from-slate-600 to-slate-700 hover:from-slate-500 hover:to-slate-600 text-white font-medium text-sm rounded-lg transition-all duration-200 transform hover:scale-105 shadow-lg">
-                    {t('researchNotesPage.backToSalvaging')}
-                  </button>
-                </Link>
-              </motion.div>
+                                                                                                       <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 mb-4">
+                {/* Back Button - Top Left on mobile, Left on desktop */}
+                <motion.div
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  className="flex-shrink-0 order-1 sm:order-1">
+                  <Link href="/salvage">
+                    <button className="flex items-center gap-2 px-4 py-2 bg-gray-900/80 hover:bg-gray-800/90 border border-white/30 text-white rounded-lg transition-all duration-200 hover:scale-105 hover:shadow-lg">
+                      <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 12H5M12 19l-7-7 7-7" />
+                      </svg>
+                      <span>{t('researchNotesPage.backToSalvaging')}</span>
+                    </button>
+                  </Link>
+                </motion.div>
 
-              {/* Title and Icon - Center */}
-              <div className="flex items-center gap-3">
-                <div className="w-16 h-16 bg-gradient-to-br from-green-500 to-emerald-600 rounded-xl shadow-lg flex items-center justify-center">
-                  <FileText className="h-8 w-8 text-white" />
-                </div>
-                 <h1 className="text-4xl font-bold bg-gradient-to-r from-green-400 to-emerald-400 bg-clip-text text-transparent">
-                   {t('researchNotesPage.title')}
-                 </h1>
-              </div>
+                                 {/* Title and Icon - Center, full width on mobile */}
+                  <div className="flex flex-col sm:flex-row items-center gap-3 order-2 sm:order-2 flex-1 justify-center w-full">
+                    <div className="w-16 h-16 bg-gradient-to-br from-green-500 to-emerald-600 rounded-xl shadow-lg flex items-center justify-center">
+                      <FileText className="h-8 w-8 text-white" />
+                    </div>
+                     <h1 className="text-3xl sm:text-4xl font-bold bg-gradient-to-r from-green-400 to-emerald-400 bg-clip-text text-transparent text-center">
+                       {t('researchNotesPage.title')}
+                     </h1>
+                  </div>
 
-              {/* Spacer for balance */}
-              <div className="w-32 flex-shrink-0"></div>
-            </div>
+                 {/* Spacer for balance - hidden on mobile */}
+                 <div className="hidden sm:block w-32 flex-shrink-0 order-3"></div>
+               </div>
             
              <p className="text-lg text-gray-300 max-w-3xl mx-auto leading-relaxed text-center">
                {t('researchNotesPage.subtitle')}
@@ -457,8 +512,8 @@ export default function ResearchNotesPage() {
                     <table className="w-full text-sm">
                       <thead>
                         <tr className="border-b border-slate-600/50">
-                                                     <th className="text-left py-2 px-3 text-gray-300 font-medium">{t('researchNotesPage.table.item')}</th>
-                                                     <th className="text-center py-2 px-3 text-gray-300 font-medium">
+                          <th className="text-left py-2 px-3 text-gray-300 font-medium">{t('researchNotesPage.table.item')}</th>
+                          <th className="text-center py-2 px-3 text-gray-300 font-medium">
                             <button
                               onClick={() => handleSortChange('craftingLevel')}
                               className="flex items-center justify-center gap-2 hover:text-white transition-colors group w-full"
@@ -482,15 +537,63 @@ export default function ResearchNotesPage() {
                               </span>
                             </button>
                           </th>
+                                                     <th className="text-left py-2 px-3 text-gray-300 font-medium">
+                             <button
+                               onClick={() => handleSortChange('notes')}
+                               className="flex items-center gap-2 hover:text-white transition-colors group"
+                               title={`${t('researchNotesPage.table.sortBy')} ${t('researchNotesPage.table.notes')} ${sortField === 'notes' ? (sortOrder === 'desc' ? t('researchNotesPage.table.sortAscending') : t('researchNotesPage.table.sortDescending')) : t('researchNotesPage.table.sortDefault')}`}
+                             >
+                               {t('researchNotesPage.table.notes')}
+                               <span className="text-xs text-gray-400 group-hover:text-white">
+                                 {sortField === 'notes' ? (sortOrder === 'desc' ? (
+                                   <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                                   </svg>
+                                 ) : (
+                                   <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
+                                   </svg>
+                                 )) : (
+                                   <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4" />
+                                   </svg>
+                                 )}
+                               </span>
+                             </button>
+                           </th>
+                           <th className="text-left py-2 px-2 text-gray-300 font-medium min-w-[100px]">
+                             <button
+                               onClick={() => handleSortChange('pricePerNote')}
+                               className="flex items-center gap-1 hover:text-white transition-colors group"
+                               title={`${t('researchNotesPage.table.sortBy')} ${t('researchNotesPage.table.pricePerNote')} ${sortField === 'pricePerNote' ? (sortOrder === 'desc' ? t('researchNotesPage.table.sortAscending') : t('researchNotesPage.table.sortDescending')) : t('researchNotesPage.table.sortDefault')}`}
+                             >
+                               {t('researchNotesPage.table.pricePerNote')}
+                               <span className="text-xs text-gray-400 group-hover:text-white">
+                                 {sortField === 'pricePerNote' ? (sortOrder === 'desc' ? (
+                                   <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                                   </svg>
+                                 ) : (
+                                   <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
+                                   </svg>
+                                 )) : (
+                                   <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4" />
+                                   </svg>
+                                 )}
+                               </span>
+                             </button>
+                           </th>
                           <th className="text-left py-2 px-3 text-gray-300 font-medium">
                             <button
-                              onClick={() => handleSortChange('level')}
+                              onClick={() => handleSortChange('craftingCost')}
                               className="flex items-center gap-2 hover:text-white transition-colors group"
-                              title={`${t('researchNotesPage.table.sortBy')} ${t('researchNotesPage.table.level')} ${sortField === 'level' ? (sortOrder === 'desc' ? t('researchNotesPage.table.sortAscending') : t('researchNotesPage.table.sortDescending')) : t('researchNotesPage.table.sortDefault')}`}
+                              title={`${t('researchNotesPage.table.sortBy')} ${t('researchNotesPage.table.craftingCost')} ${sortField === 'craftingCost' ? (sortOrder === 'desc' ? t('researchNotesPage.table.sortAscending') : t('researchNotesPage.table.sortDescending')) : t('researchNotesPage.table.sortDefault')}`}
                             >
-                              {t('researchNotesPage.table.level')}
+                              {t('researchNotesPage.table.craftingCost')}
                               <span className="text-xs text-gray-400 group-hover:text-white">
-                                {sortField === 'level' ? (sortOrder === 'desc' ? (
+                                {sortField === 'craftingCost' ? (sortOrder === 'desc' ? (
                                   <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                                   </svg>
@@ -505,30 +608,20 @@ export default function ResearchNotesPage() {
                                 )}
                               </span>
                             </button>
-                          </th>
-                          <th className="text-left py-2 px-3 text-gray-300 font-medium">
-                            <button
-                              onClick={() => handleSortChange('notes')}
-                              className="flex items-center gap-2 hover:text-white transition-colors group"
-                              title={`${t('researchNotesPage.table.sortBy')} ${t('researchNotesPage.table.notes')} ${sortField === 'notes' ? (sortOrder === 'desc' ? t('researchNotesPage.table.sortAscending') : t('researchNotesPage.table.sortDescending')) : t('researchNotesPage.table.sortDefault')}`}
-                            >
-                              {t('researchNotesPage.table.notes')}
-                              <span className="text-xs text-gray-400 group-hover:text-white">
-                                {sortField === 'notes' ? (sortOrder === 'desc' ? (
-                                  <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                                  </svg>
-                                ) : (
-                                  <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
-                                  </svg>
-                                )) : (
-                                  <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4" />
-                                  </svg>
-                                )}
-                              </span>
-                            </button>
+                            <div className="mt-1 flex gap-2">
+                              <button
+                                onClick={() => setCraftingPriceSide('buy')}
+                                className={`text-xs px-2 py-0.5 rounded ${craftingPriceSide === 'buy' ? 'bg-blue-600 text-white' : 'bg-gray-600 text-gray-200 hover:bg-gray-500'}`}
+                              >
+                                {t('researchNotesPage.table.buy')}
+                              </button>
+                              <button
+                                onClick={() => setCraftingPriceSide('sell')}
+                                className={`text-xs px-2 py-0.5 rounded ${craftingPriceSide === 'sell' ? 'bg-green-600 text-white' : 'bg-gray-600 text-gray-200 hover:bg-gray-500'}`}
+                              >
+                                {t('researchNotesPage.table.sell')}
+                              </button>
+                            </div>
                           </th>
                           <th className="text-left py-2 px-3 text-gray-300 font-medium">
                             <button
@@ -580,51 +673,13 @@ export default function ResearchNotesPage() {
                           </th>
                           <th className="text-left py-2 px-3 text-gray-300 font-medium">
                             <button
-                              onClick={() => handleSortChange('craftingCost')}
+                              onClick={() => handleSortChange('level')}
                               className="flex items-center gap-2 hover:text-white transition-colors group"
-                              title={`${t('researchNotesPage.table.sortBy')} ${t('researchNotesPage.table.craftingCost')} ${sortField === 'craftingCost' ? (sortOrder === 'desc' ? t('researchNotesPage.table.sortAscending') : t('researchNotesPage.table.sortDescending')) : t('researchNotesPage.table.sortDefault')}`}
+                              title={`${t('researchNotesPage.table.sortBy')} ${t('researchNotesPage.table.level')} ${sortField === 'level' ? (sortOrder === 'desc' ? t('researchNotesPage.table.sortAscending') : t('researchNotesPage.table.sortDescending')) : t('researchNotesPage.table.sortDefault')}`}
                             >
-                              {t('researchNotesPage.table.craftingCost')}
+                              {t('researchNotesPage.table.level')}
                               <span className="text-xs text-gray-400 group-hover:text-white">
-                                {sortField === 'craftingCost' ? (sortOrder === 'desc' ? (
-                                  <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                                  </svg>
-                                ) : (
-                                  <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
-                                  </svg>
-                                )) : (
-                                  <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4" />
-                                  </svg>
-                                )}
-                              </span>
-                            </button>
-                            <div className="mt-1 flex gap-2">
-                              <button
-                                onClick={() => setCraftingPriceSide('buy')}
-                                className={`text-xs px-2 py-0.5 rounded ${craftingPriceSide === 'buy' ? 'bg-blue-600 text-white' : 'bg-gray-600 text-gray-200 hover:bg-gray-500'}`}
-                              >
-                                {t('researchNotesPage.table.buy')}
-                              </button>
-                              <button
-                                onClick={() => setCraftingPriceSide('sell')}
-                                className={`text-xs px-2 py-0.5 rounded ${craftingPriceSide === 'sell' ? 'bg-green-600 text-white' : 'bg-gray-600 text-gray-200 hover:bg-gray-500'}`}
-                              >
-                                {t('researchNotesPage.table.sell')}
-                              </button>
-                            </div>
-                          </th>
-                          <th className="text-left py-2 px-2 text-gray-300 font-medium min-w-[100px]">
-                            <button
-                              onClick={() => handleSortChange('pricePerNote')}
-                              className="flex items-center gap-1 hover:text-white transition-colors group"
-                              title={`${t('researchNotesPage.table.sortBy')} ${t('researchNotesPage.table.pricePerNote')} ${sortField === 'pricePerNote' ? (sortOrder === 'desc' ? t('researchNotesPage.table.sortAscending') : t('researchNotesPage.table.sortDescending')) : t('researchNotesPage.table.sortDefault')}`}
-                            >
-                              {t('researchNotesPage.table.pricePerNote')}
-                              <span className="text-xs text-gray-400 group-hover:text-white">
-                                {sortField === 'pricePerNote' ? (sortOrder === 'desc' ? (
+                                {sortField === 'level' ? (sortOrder === 'desc' ? (
                                   <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                                   </svg>
@@ -645,74 +700,92 @@ export default function ResearchNotesPage() {
                       <tbody>
                                                  {craftingDisciplines[0].items.map((item, itemIndex) => (
                            <tr key={itemIndex} className="border-b border-slate-600/30 hover:bg-slate-600/20">
-                             <td className="py-2 px-3 text-white">
-                               <div className="flex items-center gap-3">
-                                 {item.id === 8883 && item8883?.icon ? (
+                                                           <td className="py-2 px-3">
+                                <div className="flex items-center gap-3">
+                                  {item.id === 8883 && item8883?.icon ? (
+                                    <img 
+                                      src={item8883.icon} 
+                                      alt={item.name}
+                                      className="w-8 h-8 rounded"
+                                    />
+                                  ) : item.id === 13436 && item13436?.icon ? (
+                                    <img 
+                                      src={item13436.icon} 
+                                      alt={item.name}
+                                      className="w-8 h-8 rounded"
+                                    />
+                                  ) : item.id === 13437 && item13437?.icon ? (
                                    <img 
-                                     src={item8883.icon} 
+                                     src={item13437.icon} 
                                      alt={item.name}
                                      className="w-8 h-8 rounded"
                                    />
-                                 ) : item.id === 13436 && item13436?.icon ? (
-                                   <img 
-                                     src={item13436.icon} 
-                                     alt={item.name}
-                                     className="w-8 h-8 rounded"
-                                   />
-                                 ) : item.id === 13437 && item13437?.icon ? (
-                                  <img 
-                                    src={item13437.icon} 
-                                    alt={item.name}
-                                    className="w-8 h-8 rounded"
-                                  />
-                                                                 ) : item.id === 13435 && item13435?.icon ? (
-                                    <img 
-                                      src={item13435.icon} 
-                                      alt={item.name}
-                                      className="w-8 h-8 rounded"
-                                    />
-                                  ) : item.id === 104934 && item104934?.icon ? (
-                                    <img 
-                                      src={item104934.icon} 
-                                      alt={item.name}
-                                      className="w-8 h-8 rounded"
-                                    />
-                                  ) : item.id === 104934.1 && item104934B?.icon ? (
-                                    <img 
-                                      src={item104934B.icon} 
-                                      alt={item.name}
-                                      className="w-8 h-8 rounded"
-                                    />
-                                  ) : (
-                                    <div className="w-8 h-8 bg-slate-600 rounded"></div>
-                                  )}
-                                <span>{item.name}</span>
-                              </div>
-                            </td>
-                                                                                                                                                                        <td className="py-2 px-3 text-gray-300 text-center">
-                                {item.id === 8883 ? '400' : 
-                                 item.id === 13436 ? '300' : 
-                                 item.id === 13437 ? '300' : 
-                                 item.id === 13435 ? '300' : 
-                                 item.id === 104934 ? '0' : 
-                                 item.id === 104934.1 ? '0' : '-'}
-                              </td>
-                            <td className="py-2 px-3 text-gray-300">{item.level}</td>
-                            <td className="py-2 px-3 text-green-400 font-medium">{item.notes}</td>
+                                                                  ) : item.id === 13435 && item13435?.icon ? (
+                                     <img 
+                                       src={item13435.icon} 
+                                       alt={item.name}
+                                       className="w-8 h-8 rounded"
+                                     />
+                                                                      ) : item.id === 13438 && item13438?.icon ? (
+                                      <img 
+                                        src={item13438.icon} 
+                                        alt={item.name}
+                                        className="w-8 h-8 rounded"
+                                      />
+                                   ) : item.id === 104934 && item104934?.icon ? (
+                                     <img 
+                                       src={item104934.icon} 
+                                       alt={item.name}
+                                       className="w-8 h-8 rounded"
+                                     />
+                                   ) : item.id === 104934.1 && item104934B?.icon ? (
+                                     <img 
+                                       src={item104934B.icon} 
+                                       alt={item.name}
+                                       className="w-8 h-8 rounded"
+                                     />
+                                   ) : (
+                                     <div className="w-8 h-8 bg-slate-600 rounded"></div>
+                                   )}
+                                                                  <span className={(() => {
+                                    if (item.id === 8883) return getRarityColor(item8883?.rarity || '');
+                                    if (item.id === 13436) return getRarityColor(item13436?.rarity || '');
+                                    if (item.id === 13437) return getRarityColor(item13437?.rarity || '');
+                                    if (item.id === 13435) return getRarityColor(item13435?.rarity || '');
+                                    if (item.id === 13438) return getRarityColor(item13438?.rarity || '');
+                                    if (item.id === 104934) return getRarityColor(item104934?.rarity || '');
+                                    if (item.id === 104934.1) return getRarityColor(item104934B?.rarity || '');
+                                    return 'text-white';
+                                  })()}>
+                                    {item.name}
+                                  </span>
+                               </div>
+                             </td>
+                                                         <td className="py-2 px-3 text-gray-300 text-center">
+                                 {item.id === 8883 ? '400' : 
+                                  item.id === 13436 ? '300' : 
+                                  item.id === 13437 ? '300' : 
+                                  item.id === 13435 ? '300' : 
+                                  item.id === 13438 ? '325' :  
+                                  item.id === 104934 ? '0' : 
+                                  item.id === 104934.1 ? '0' : '-'}
+                               </td>
+                             <td className="py-2 px-3 text-green-400 font-medium">{item.notes}</td>
+                             <td className="py-2 px-2 text-purple-400 font-medium min-w-[100px]">
+                                 {item.craftingCost && item.notes ? 
+                                   formatGW2Price(Math.round(parseFloat(item.craftingCost.replace(/[^0-9.]/g, '')) / item.notes)) : 
+                                   '-'}
+                               </td>
+                            <td className="py-2 px-3 text-orange-400 font-medium">
+                               {item.craftingCost ? `${item.craftingCost}` : '-'}
+                             </td>
                             <td className="py-2 px-3 text-blue-400 font-medium">
                               {item.buyPrice ? `${item.buyPrice}` : '-'}
                             </td>
                             <td className="py-2 px-3 text-green-400 font-medium">
                               {item.sellPrice ? `${item.sellPrice}` : '-'}
                             </td>
-                                                        <td className="py-2 px-3 text-orange-400 font-medium">
-                               {item.craftingCost ? `${item.craftingCost}` : '-'}
-                             </td>
-                                                          <td className="py-2 px-2 text-purple-400 font-medium min-w-[100px]">
-                                {item.craftingCost && item.notes ? 
-                                  formatGW2Price(Math.round(parseFloat(item.craftingCost.replace(/[^0-9.]/g, '')) / item.notes)) : 
-                                  '-'}
-                              </td>
+                            <td className="py-2 px-3 text-gray-300">{item.level}</td>
                            </tr>
                         ))}
                       </tbody>

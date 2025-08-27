@@ -9,7 +9,7 @@ import {
   Zap,
   Bot
 } from 'lucide-react';
-import { Analytics } from "@vercel/analytics/next";
+
 
 // Icono personalizado de X (más fiel al logo oficial)
 const XIcon = ({ className }: { className?: string }) => (
@@ -155,7 +155,6 @@ export default function Footer() {
           </div>
         </motion.div>
       </div>
-      <Analytics />
     </footer>
   );
 }

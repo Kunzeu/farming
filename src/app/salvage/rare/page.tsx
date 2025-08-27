@@ -56,6 +56,7 @@ export default function UnidentifiedGearRarePage() {
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
 
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [isNoteExpanded, setIsNoteExpanded] = useState(false);
   const kitCost = 60; // Silver-Fed Salvage-o-Matic cost per use
   const [unidentifiedGearPrice, setUnidentifiedGearPrice] = useState<number | null>(null);
   const [unidentifiedGearName, setUnidentifiedGearName] = useState<string | null>(null);
@@ -303,8 +304,27 @@ export default function UnidentifiedGearRarePage() {
           <div className="mb-4 bg-blue-900/20 border border-blue-700 rounded-lg p-4">
             <div className="flex items-start gap-3">
               <Info className="h-5 w-5 text-blue-400 mt-0.5 flex-shrink-0" />
-              <div className="text-sm text-blue-200">
-                <strong>{t('salvage.note.title', 'Note')}:</strong> {t('salvageRare.note', 'Prices are obtained in real-time from the GW2 API. The "Processed Price" includes Trading Post fees (15% discount on sell price). The cost of Unidentified Gear uses the current buy price from the Trading Post. Drop rates are based on official data from the GW2 Wiki for Piece of Rare Unidentified Gear opened and then salvaged with Silver-Fed Salvage-o-Matic. Recommendation: Have an inventory of 280 slots to facilitate the process.')}
+              <div className="text-sm text-blue-200 flex-1">
+                <strong>{t('salvage.note.title', 'Note')}:</strong>
+                <div className={`mt-1 ${!isNoteExpanded ? 'line-clamp-2' : ''}`}>
+                  {t('salvageRare.note', 'Prices are obtained in real-time from the GW2 API. The "Processed Price" includes Trading Post fees (15% discount on sell price). The cost of Unidentified Gear uses the current buy price from the Trading Post. Drop rates are based on official data from the GW2 Wiki for Piece of Rare Unidentified Gear opened and then salvaged with Silver-Fed Salvage-o-Matic. Recommendation: Have an inventory of 280 slots to facilitate the process.')}
+                </div>
+                <button
+                  onClick={() => setIsNoteExpanded(!isNoteExpanded)}
+                  className="mt-2 text-blue-300 hover:text-blue-200 text-xs font-medium flex items-center gap-1 transition-colors"
+                >
+                  {isNoteExpanded ? (
+                    <>
+                      <ChevronDown className="h-3 w-3 rotate-180" />
+                      {t('salvage.note.showLess', 'Ver menos')}
+                    </>
+                  ) : (
+                    <>
+                      <ChevronDown className="h-3 w-3" />
+                      {t('salvage.note.showMore', 'Ver más')}
+                    </>
+                  )}
+                </button>
               </div>
             </div>
           </div>
