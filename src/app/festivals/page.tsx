@@ -132,7 +132,7 @@ const getStatusColor = (status: string) => {
 };
 
 export default function FestivalsPage() {
-  usePageTitle('Festivals');
+  usePageTitle('pageTitles.festivals', 'Festivals');
   const { t } = useI18n();
   const festivals = getFestivals();
   return (

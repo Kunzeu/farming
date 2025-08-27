@@ -23,7 +23,7 @@ interface Currency {
 
 const WalletPage = () => {
   const { isAuthenticated } = useAuth();
-  usePageTitle('Wallet');
+  usePageTitle('pageTitles.wallet', 'Wallet');
   const [walletData, setWalletData] = useState<WalletItem[]>([]);
   const [currencies, setCurrencies] = useState<Currency[]>([]);
   const [isLoading, setIsLoading] = useState(true);

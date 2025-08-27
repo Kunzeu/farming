@@ -48,7 +48,7 @@ interface Character {
 
 const CharactersPage = () => {
   const { isAuthenticated } = useAuth();
-  usePageTitle('Characters');
+  usePageTitle('pageTitles.characters', 'Characters');
   const [characters, setCharacters] = useState<Character[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');

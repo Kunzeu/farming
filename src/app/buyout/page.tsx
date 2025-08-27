@@ -57,7 +57,7 @@ interface CalculatorMetrics {
 
 export default function BuyoutPage() {
   const { user } = useAuth()
-  usePageTitle('Buyout Calculator')
+  usePageTitle('pageTitles.buyout', 'Buyout Calculator')
   const [searchQuery, setSearchQuery] = useState('')
   const [searchResults, setSearchResults] = useState<GW2Item[]>([])
   const [isSearching, setIsSearching] = useState(false)

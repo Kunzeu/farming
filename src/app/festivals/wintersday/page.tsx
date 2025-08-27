@@ -9,7 +9,7 @@ import { useI18n } from '@/contexts/I18nContext';
 
 const WintersdayPage = () => {
   const [selectedSection, setSelectedSection] = useState<'overview' | 'calculators' | 'strategies'>('overview');
-  usePageTitle('Wintersday');
+  usePageTitle('pageTitles.wintersday', 'Wintersday');
   const { t } = useI18n();
 
   return (

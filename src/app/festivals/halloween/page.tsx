@@ -139,7 +139,7 @@ import { usePageTitle } from '@/hooks/usePageTitle';
 import { useI18n } from '@/contexts/I18nContext';
 
 const HalloweenPage = () => {
-  usePageTitle('Halloween Festival');
+  usePageTitle('pageTitles.halloween', 'Halloween Festival');
   const { t, lang } = useI18n();
   const [selectedSection, setSelectedSection] = useState<string>('overview');
   const [isLoading, setIsLoading] = useState(false);

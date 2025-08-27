@@ -9,7 +9,7 @@ import { useI18n } from '@/contexts/I18nContext';
 
 const DragonBashPage = () => {
   const [selectedSection, setSelectedSection] = useState<'overview' | 'calculators' | 'strategies'>('overview');
-  usePageTitle('Dragon Bash');
+  usePageTitle('pageTitles.dragonBash', 'Dragon Bash');
   const { t } = useI18n();
 
   return (

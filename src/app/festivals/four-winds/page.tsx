@@ -106,7 +106,7 @@ const TOTAL_OPENED_BOXES = 280000;
 const FOUR_WINDS_CALCULATOR_KEY = 'four_winds_calculator_data';
 
 const FourWindsPage = () => {
-  usePageTitle('Four Winds Festival');
+  usePageTitle('pageTitles.fourWinds', 'Four Winds Festival');
   const { t, lang } = useI18n();
   const [selectedSection, setSelectedSection] = useState<string>('overview');
   const pricesTableRef = useRef<HTMLDivElement | null>(null);

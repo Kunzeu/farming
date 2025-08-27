@@ -19,7 +19,7 @@ import { usePageTitle } from '@/hooks/usePageTitle';
 export default function RegisterPage() {
   const { isAuthenticated, isLoading } = useAuth();
   const router = useRouter();
-  usePageTitle('Register');
+  usePageTitle('pageTitles.register', 'Register');
 
   useEffect(() => {
     if (isAuthenticated && !isLoading) {

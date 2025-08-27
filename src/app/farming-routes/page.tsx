@@ -13,7 +13,7 @@ import { useI18n } from '@/contexts/I18nContext';
 import DescriptionModal from '@/components/ui/DescriptionModal';
 
 export default function FarmingRoutes() {
-  usePageTitle('Farming Routes');
+  usePageTitle('pageTitles.farmingRoutes', 'Farming Routes');
   const { t } = useI18n();
   
   const { dbService } = useDatabase();

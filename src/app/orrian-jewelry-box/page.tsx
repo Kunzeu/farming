@@ -92,14 +92,21 @@ const KARMA_VALUES: Record<number, number> = {
 };
 
 export default function OrrianJewelryBoxPage() {
-  usePageTitle('Orrian Jewelry Box');
+  usePageTitle('orrianJewelryBoxPage.title', 'Orrian Jewelry Box');
   const { t, lang } = useI18n();
+  const wikiUrl = useMemo(() => {
+    // En español, usar la wiki en inglés
+    if (lang === 'de') return 'https://wiki-de.guildwars2.com/wiki/Verlorene_orrianische_Juwelenkiste';
+    if (lang === 'fr') return 'https://wiki-fr.guildwars2.com/wiki/Bo%C3%AEte_%C3%A0_bijoux_orrienne_perdue';
+    return 'https://wiki.guildwars2.com/wiki/Orrian_Jewelry_Box';
+  }, [lang]);
   const [itemData, setItemData] = useState<ItemData | null>(null);
   const [priceData, setPriceData] = useState<PriceData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [noMarketData, setNoMarketData] = useState(false);
   const [dropItems, setDropItems] = useState<DropItem[]>([]);
+  const [dropWarning, setDropWarning] = useState<string | null>(null);
   const [nameSortOrder, setNameSortOrder] = useState<'asc' | 'desc'>('asc');
   const [quantitySortOrder, setQuantitySortOrder] = useState<'asc' | 'desc'>('desc');
   const [lastSortType, setLastSortType] = useState<'name' | 'quantity'>('quantity');
@@ -128,41 +135,25 @@ export default function OrrianJewelryBoxPage() {
         if (!itemResponse.ok) throw new Error('Failed to fetch item data');
         const itemData: ItemData = await itemResponse.json();
 
-        // Fetch price data
-        try {
-          const priceResponse = await fetch(`https://api.guildwars2.com/v2/commerce/prices/39088`);
-          if (priceResponse.ok) {
-            const priceData: PriceData = await priceResponse.json();
-            setPriceData(priceData);
-          } else {
-            // If price API fails, it means the item is not tradeable
-            setNoMarketData(true);
-          }
-        } catch {
-          // If price API fails, it means the item is not tradeable
-          setNoMarketData(true);
-        }
-
         // Fetch drop items data
         try {
-          console.log('Fetching drop items with IDs:', DROP_ITEM_IDS);
           const dropItemsResponse = await fetch(`https://api.guildwars2.com/v2/items?ids=${DROP_ITEM_IDS.join(',')}&lang=${lang}`);
           if (dropItemsResponse.ok) {
             const dropItemsData: ItemData[] = await dropItemsResponse.json();
-            console.log('Received drop items data:', dropItemsData);
             const formattedDropItems: DropItem[] = dropItemsData.map(item => ({
               id: item.id,
               name: item.name,
               icon: item.icon,
               quantity: ITEM_QUANTITIES[item.id] || 0
             }));
-            console.log('Formatted drop items:', formattedDropItems);
             setDropItems(formattedDropItems);
           } else {
             console.error('Failed to fetch drop items:', dropItemsResponse.status);
+            setDropWarning(t('orrianJewelryBoxPage.dropWarning', 'No se pudieron cargar los drops. Mostrando cantidades preconfiguradas.'));
           }
         } catch (dropErr) {
           console.error('Error fetching drop items:', dropErr);
+          setDropWarning(t('orrianJewelryBoxPage.dropWarning', 'No se pudieron cargar los drops. Mostrando cantidades preconfiguradas.'));
         }
 
         setItemData(itemData);
@@ -275,6 +266,16 @@ export default function OrrianJewelryBoxPage() {
             </div>
           </div>
 
+          {dropWarning && (
+            <div className="mb-6 bg-yellow-900/30 border border-yellow-700 text-yellow-200 rounded-md p-4">
+              <div className="flex items-start gap-3">
+                <Info className="h-5 w-5 flex-shrink-0" />
+                <div className="flex-1 text-sm">{dropWarning}</div>
+                <button onClick={() => setDropWarning(null)} className="text-yellow-300 hover:text-yellow-200 text-xs">{t('common.dismiss', 'Cerrar')}</button>
+              </div>
+            </div>
+          )}
+
           {/* Header */}
           <motion.div
             initial={{ opacity: 0, y: -20 }}
@@ -287,6 +288,8 @@ export default function OrrianJewelryBoxPage() {
               {t('orrianJewelryBoxPage.subtitle', 'Analiza el valor y rentabilidad de esta caja misteriosa de Orr. Descubre si vale la pena abrirla o venderla en el mercado.')}
             </p>
           </motion.div>
+
+          
 
           {/* Item Information Card */}
           <motion.div
@@ -307,13 +310,38 @@ export default function OrrianJewelryBoxPage() {
 
               {/* Item Details */}
               <div className="flex-1 text-center md:text-left">
-                <h2 className="text-2xl font-bold mb-2">{itemData.name}</h2>
+                <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+                  <h2 className="text-2xl font-bold mb-2 md:mb-0">{itemData.name}</h2>
+                  {/* Botón desktop (inline con el título) */}
+                  <a 
+                    href={wikiUrl}
+                    target="_blank"
+                    className="hidden md:inline-flex items-center gap-2 px-4 py-2 bg-slate-700 text-white rounded-lg hover:bg-slate-600 transition-colors border border-slate-600/50"
+                  >
+                    <ExternalLink className="h-4 w-4" />
+                    {t('salvagePages.viewWiki', 'View Wiki')}
+                  </a>
+                </div>
                 <p className="text-gray-300 mb-4">{itemData.description}</p>
+                {/* Botón móvil (debajo del texto) */}
+                <div className="flex justify-center md:hidden">
+                  <a 
+                    href={wikiUrl}
+                    target="_blank"
+                    className="inline-flex items-center gap-2 px-4 py-2 bg-slate-700 text-white rounded-lg hover:bg-slate-600 transition-colors border border-slate-600/50"
+                  >
+                    <ExternalLink className="h-4 w-4" />
+                    {t('salvagePages.viewWiki', 'View Wiki')}
+                  </a>
+                </div>
               </div>
             </div>
           </motion.div>
 
           {/* Summary Cards - Combined Data */}
+          <div className="mb-6 text-center text-base text-gray-400">
+            {t('orrianJewelryBoxPage.credits', 'Crédito de datos: kusanagi.1093 y zirial.2698')}
+          </div>
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -322,7 +350,7 @@ export default function OrrianJewelryBoxPage() {
           >
             <div className="bg-slate-800/50 border border-slate-600/50 rounded-lg p-6 text-center">
               <p className="text-sm text-gray-400 mb-2">{t('orrianJewelryBoxPage.karmaInicial', 'Karma Inicial')}</p>
-              <p className="text-3xl font-bold text-blue-300">46,115,972</p>
+              <p className="text-3xl font-bold text-blue-300">45,500,000</p>
             </div>
             
             <div className="bg-slate-800/50 border border-slate-600/50 rounded-lg p-6 text-center">

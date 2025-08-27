@@ -23,7 +23,7 @@ import { usePageTitle } from '@/hooks/usePageTitle';
 
 const SearchPage = () => {
   const { isAuthenticated } = useAuth();
-  usePageTitle('Account Search');
+  usePageTitle('pageTitles.search', 'Account Search');
   const [searchTerm, setSearchTerm] = useState('');
   const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
   const [isLoading, setIsLoading] = useState(false);

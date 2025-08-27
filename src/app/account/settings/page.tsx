@@ -9,7 +9,7 @@ import { usePageTitle } from '@/hooks/usePageTitle';
 
 const SettingsPage = () => {
   const { isAuthenticated } = useAuth();
-  usePageTitle('Account Settings');
+  usePageTitle('pageTitles.settings', 'Account Settings');
   const [apiKey, setApiKey] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [isValid, setIsValid] = useState<boolean | null>(null);

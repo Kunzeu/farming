@@ -5,6 +5,7 @@ import { useI18n } from '@/contexts/I18nContext';
 import Navigation from '@/components/layout/Navigation';
 import { Package, Search } from 'lucide-react';
 import Image from 'next/image';
+import { usePageTitle } from '@/hooks/usePageTitle';
 
 interface FarmingItem {
   id: number;
@@ -38,6 +39,7 @@ interface GW2Price {
 }
 
 export default function FarmingTrackerPage() {
+  usePageTitle('pageTitles.fractals', 'Fractal Chest Analysis');
   const { t, lang } = useI18n();
   
   const [searchTerm, setSearchTerm] = useState('');
@@ -2075,6 +2077,17 @@ export default function FarmingTrackerPage() {
          {/* Fractal Encryption Section */}
          {activeSection === 'encryption' && (
            <>
+             {/* Data Source Info */}
+             <div className="bg-blue-900/20 backdrop-blur-sm border border-blue-700/30 rounded-lg p-4 mb-6 md:mb-8">
+               <div className="flex items-center gap-3">
+                 <div className="w-3 h-3 bg-blue-400 rounded-full animate-pulse"></div>
+                 <div className="text-blue-300 text-sm sm:text-base">
+                   <strong>{t('fractals.dataSource.label')}</strong> {t('fractals.dataSource.description')}{' '}
+                   <span className="text-blue-200 font-bold">1.1M {t('fractals.dataSource.boxes')}</span> {t('fractals.dataSource.opened')}
+                 </div>
+               </div>
+             </div>
+             
              {/* Trofeos */}
              <div className="bg-gray-900/80 backdrop-blur-sm border border-gray-700 rounded-lg p-3 sm:p-4 md:p-6 shadow-2xl mb-6 md:mb-8">
                <h3 className="text-lg sm:text-xl font-semibold text-white mb-3 md:mb-4">{t('fractals.sections.trophies')}</h3>

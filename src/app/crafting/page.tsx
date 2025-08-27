@@ -44,7 +44,7 @@ interface ConversionItem {
 }
 
 const CraftingPage = () => {
-  usePageTitle('Crafting Guide');
+  usePageTitle('pageTitles.crafting', 'Crafting Guide');
   const { t } = useI18n();
   const [selectedSection, setSelectedSection] = useState<string>('overview');
   const [conversionData, setConversionData] = useState<ConversionItem[]>([]);

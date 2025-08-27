@@ -50,7 +50,7 @@ interface CraftingDiscipline {
 }
 
 export default function ResearchNotesPage() {
-  usePageTitle('Research Notes - Salvaging');
+  usePageTitle('pageTitles.researchNotes', 'Research Notes - Salvaging');
   const { t, lang } = useI18n();
   
      // Estados para items

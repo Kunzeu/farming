@@ -9,7 +9,7 @@ import { useI18n } from '@/contexts/I18nContext';
 
 const LunarNewYearPage = () => {
   const [selectedSection, setSelectedSection] = useState<'overview' | 'calculators' | 'strategies'>('overview');
-  usePageTitle('Lunar New Year');
+  usePageTitle('pageTitles.lunarNewYear', 'Lunar New Year');
   const { t } = useI18n();
 
   return (

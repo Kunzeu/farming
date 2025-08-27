@@ -48,7 +48,7 @@ const baseMaterials: Omit<Material, 'sellPrice' | 'processedPrice'>[] = [
 ];
 
 export default function UnidentifiedGearMasterworkPage() {
-  usePageTitle('Salvage - Masterwork');
+  usePageTitle('pageTitles.salvageMasterwork', 'Salvage - Masterwork');
   const { t, lang } = useI18n();
   const [quantity, setQuantity] = useState(250);
   const [materials, setMaterials] = useState<Material[]>([]);
@@ -307,12 +307,12 @@ export default function UnidentifiedGearMasterworkPage() {
               <Info className="h-5 w-5 text-blue-400 mt-0.5 flex-shrink-0" />
               <div className="text-sm text-blue-200 flex-1">
                 <strong>{t('salvage.note.title', 'Note')}:</strong>
-                <div className={`mt-1 ${!isNoteExpanded ? 'line-clamp-2' : ''}`}>
+                <div className={`mt-1 ${!isNoteExpanded ? 'line-clamp-2 md:line-clamp-none' : ''}`}>
                   {t('salvageMasterwork.note', 'Prices are obtained in real-time from the GW2 API. The "Processed Price" includes Trading Post fees (15% discount on sell price). The cost of Unidentified Gear uses the current buy price from the Trading Post. Drop rates are based on official data from the GW2 Wiki for Piece of Unidentified Gear (Masterwork) opened and then salvaged with Runecrafter\'s Salvage-o-Matic. Recommendation: Have an inventory of 280 slots to facilitate the process.')}
                 </div>
                 <button
                   onClick={() => setIsNoteExpanded(!isNoteExpanded)}
-                  className="mt-2 text-blue-300 hover:text-blue-200 text-xs font-medium flex items-center gap-1 transition-colors"
+                  className="mt-2 text-blue-300 hover:text-blue-200 text-xs font-medium flex items-center gap-1 transition-colors md:hidden"
                 >
                   {isNoteExpanded ? (
                     <>
@@ -467,6 +467,27 @@ export default function UnidentifiedGearMasterworkPage() {
             <p className={`text-2xl font-bold ${totalProfit >= 0 ? 'text-green-200' : 'text-red-200'}`}>
               {formatCurrency(Math.abs(totalProfit))}
             </p>
+          </div>
+        </div>
+        {/* Indicador móvil encima de la tabla */}
+        <div className="sm:hidden flex justify-center mb-3">
+          <div className="px-3 py-1.5 rounded-full bg-slate-900/80 border border-slate-600 text-gray-200 shadow-md">
+            <svg
+              className="h-4 w-64 text-gray-200"
+              viewBox="0 0 260 16"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <defs>
+                <marker id="arrowHead" markerWidth="6" markerHeight="6" refX="3" refY="3" orient="auto" markerUnits="strokeWidth">
+                  <path d="M0,0 L6,3 L0,6 z" fill="currentColor" />
+                </marker>
+                <marker id="arrowHeadLeft" markerWidth="6" markerHeight="6" refX="3" refY="3" orient="auto" markerUnits="strokeWidth">
+                  <path d="M6,0 L0,3 L6,6 z" fill="currentColor" />
+                </marker>
+              </defs>
+              <line x1="12" y1="8" x2="248" y2="8" stroke="currentColor" strokeWidth="2.5" markerStart="url(#arrowHeadLeft)" markerEnd="url(#arrowHead)" />
+            </svg>
           </div>
         </div>
 

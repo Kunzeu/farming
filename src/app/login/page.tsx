@@ -19,7 +19,7 @@ import { usePageTitle } from '@/hooks/usePageTitle';
 export default function LoginPage() {
   const { isAuthenticated, isLoading } = useAuth();
   const router = useRouter();
-  usePageTitle('Login');
+  usePageTitle('pageTitles.login', 'Login');
 
   useEffect(() => {
     if (isAuthenticated && !isLoading) {

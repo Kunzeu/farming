@@ -15,7 +15,7 @@ import { usePageTitle } from '@/hooks/usePageTitle';
 type ModeratorSection = 'my-farms' | 'pending-farms' | 'published-farms';
 
 export default function ModeratorPanel() {
-  usePageTitle('Moderator Panel');
+  usePageTitle('pageTitles.moderator', 'Moderator Panel');
   const { dbService } = useDatabase();
   const { user } = useAuth();
   const [activeSection, setActiveSection] = useState<ModeratorSection>('my-farms');

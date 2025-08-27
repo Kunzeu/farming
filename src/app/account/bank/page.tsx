@@ -54,7 +54,7 @@ interface ItemDetails {
 
 const BankPage = () => {
   const { isAuthenticated } = useAuth();
-  usePageTitle('Bank');
+  usePageTitle('pageTitles.bank', 'Bank');
   const [bankItems, setBankItems] = useState<(BankItem | null)[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');

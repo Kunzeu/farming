@@ -196,14 +196,14 @@ const Navigation = () => {
   const navItems = [
     { href: '/', label: t('nav.home', 'Home'), icon: Home },
     { href: '/farming-routes', label: t('nav.farms', 'Farms'), icon: Map },
-    { href: '/glossary', label: t('nav.glossary', 'Glossary'), icon: BookOpen },
+    { href: '/salvage', label: t('nav.salvaging', 'Salvaging'), icon: Package },
   ];
 
   const toolsItems = [
-    { href: '/salvage', label: t('nav.salvaging', 'Salvaging'), icon: Package },
-    { href: '/crafting', label: t('nav.crafting', 'Crafting'), icon: BookOpen },
+    { href: '/crafting', label: t('nav.crafting', 'Crafting'), icon: FileText },
     { href: '/festivals', label: t('nav.festivals', 'Festivals'), icon: Calendar },
     { href: '/fractals', label: t('dashboard.farmingTracker.title', 'Fractals'), icon: Map },
+    { href: '/glossary', label: t('nav.glossary', 'Glossary'), icon: BookOpen },
     // Solo mostrar Buyout Calculator para admins puros
     ...(user?.role === 'admin' ? [{ href: '/buyout', label: 'Buyout Calculator', icon: ShoppingCart }] : []),
   ];

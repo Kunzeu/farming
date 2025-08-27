@@ -37,7 +37,7 @@ const currencyConfig = {
 };
 
 export default function DailyRoutine() {
-  usePageTitle('Daily Routine');
+  usePageTitle('pageTitles.dailyRoutine', 'Daily Routine');
   
   const { dbService } = useDatabase();
   const { t } = useI18n();

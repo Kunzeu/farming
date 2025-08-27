@@ -16,7 +16,7 @@ import { usePageTitle } from '@/hooks/usePageTitle';
 type AdminSection = 'farms' | 'users' | 'pending-farms';
 
 export default function AdminPanel() {
-  usePageTitle('Admin Panel');
+  usePageTitle('pageTitles.admin', 'Admin Panel');
   const { dbService } = useDatabase();
   const { user } = useAuth();
   const [activeSection, setActiveSection] = useState<AdminSection>('farms');

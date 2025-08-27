@@ -19,7 +19,7 @@ interface Material {
 
 const StoragePage = () => {
   const { isAuthenticated } = useAuth();
-  usePageTitle('Material Storage');
+  usePageTitle('pageTitles.storage', 'Material Storage');
   const [materials, setMaterials] = useState<Material[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');

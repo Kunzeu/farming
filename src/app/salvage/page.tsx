@@ -1,6 +1,6 @@
 'use client';
 
-
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Package, ChevronRight, Star, FileText, Wrench, Gift } from 'lucide-react';
 import Navigation from '@/components/layout/Navigation';
@@ -13,8 +13,45 @@ import { useI18n } from '@/contexts/I18nContext';
 type SalvageSection = 'salvageables' | 'luck-calculator' | 'research-notes' | 'unidentified-gear' | 'orrian-jewelry-box';
 
 export default function SalvagePage() {
-  usePageTitle('Salvaging');
-  const { t } = useI18n();
+  usePageTitle('pageTitles.salvaging', 'Salvaging');
+  const { t, lang } = useI18n();
+  const [kitNames, setKitNames] = useState<{[key: string]: string}>({});
+
+  // Función para obtener los nombres de los kits desde la API
+  useEffect(() => {
+    const fetchKitNames = async () => {
+      try {
+        const apiLang = lang === 'es' ? 'es' : lang === 'de' ? 'de' : lang === 'fr' ? 'fr' : 'en';
+        
+        // IDs de los kits: 44602 (Copper-Fed), 89409 (Runecrafter's), 67027 (Silver-Fed)
+        const kitIds = ['44602', '89409', '67027'];
+        const kitIdsString = kitIds.join(',');
+        
+        const response = await fetch(`https://api.guildwars2.com/v2/items?ids=${kitIdsString}&lang=${apiLang}`);
+        const itemsData = await response.json();
+        
+        const names: {[key: string]: string} = {};
+        itemsData.forEach((item: any) => {
+          if (item.id === 44602) {
+            names.copperFed = item.name;
+          }
+          if (item.id === 89409) {
+            names.runecrafters = item.name;
+          }
+          if (item.id === 67027) {
+            names.silverFed = item.name;
+          }
+        });
+        setKitNames(names);
+      } catch (error) {
+        console.error('Error fetching kit names:', error);
+        // Fallback vacío si hay error
+        setKitNames({});
+      }
+    };
+
+    fetchKitNames();
+  }, [lang]);
 
   // Salvage section configuration
   const salvageSections = [
@@ -187,9 +224,9 @@ export default function SalvagePage() {
                   {t('salvagePage.salvageKits', 'Salvage Kits')}
                 </h3>
                 <div className="space-y-2 text-gray-300 text-sm">
-                  <p><strong className="text-blue-400">Copper-Fed:</strong> {t('salvagePage.copperFed', 'For Common Gear')}</p>
-                  <p><strong className="text-green-400">Runecrafter&apos;s:</strong> {t('salvagePage.runecrafters', 'For Masterwork')}</p>
-                  <p><strong className="text-yellow-400">Silver-Fed:</strong> {t('salvagePage.silverFed', 'For Rare Gear')}</p>
+                  <p><strong className="text-blue-400">{kitNames.copperFed || ''}:</strong> {t('salvagePage.copperFed', 'For Common Gear')}</p>
+                  <p><strong className="text-green-400">{kitNames.runecrafters || ''}:</strong> {t('salvagePage.runecrafters', 'For Masterwork')}</p>
+                  <p><strong className="text-yellow-400">{kitNames.silverFed || ''}:</strong> {t('salvagePage.silverFed', 'For Rare Gear')}</p>
                 </div>
               </div>
               <div>

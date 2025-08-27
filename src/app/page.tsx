@@ -25,7 +25,7 @@ interface DashboardCard {
 }
 
 export default function HomePage() {
-  usePageTitle('Home');
+  usePageTitle('pageTitles.home', 'Home');
   const { t } = useI18n();
   
   const dashboardCards: DashboardCard[] = [
@@ -157,7 +157,7 @@ export default function HomePage() {
       <div className="container mx-auto px-4 py-8">
         
         {/* Hero Section - Banner Promocional */}
-        <section className="relative overflow-hidden rounded-xl mb-12 h-96">
+        <section className="relative overflow-hidden rounded-xl mb-12 h-72 md:h-96">
           {/* Imagen de fondo de Visions of Eternity */}
           <div 
             className="absolute inset-0 bg-cover bg-center bg-no-repeat rounded-xl"
@@ -171,20 +171,20 @@ export default function HomePage() {
           </div>
 
           {/* Logo central */}
-          <div className="absolute inset-0 flex items-center justify-center -mt-16">
+          <div className="absolute inset-0 flex items-center justify-center -mt-8 md:-mt-16">
             <Image 
               src="/images/backgrounds/GuildWars2.gif" 
               alt="Guild Wars 2: Visions of Eternity"
-              width={500}
-              height={500}
+              width={420}
+              height={420}
               priority
               unoptimized
-              className="max-w-xs md:max-w-sm lg:max-w-md h-auto drop-shadow-2xl"
+              className="max-w-[260px] md:max-w-sm lg:max-w-md h-auto drop-shadow-2xl"
             />
           </div>
 
           {/* Contenido principal */}
-          <div className="absolute bottom-8 left-0 right-0 text-center">
+          <div className="absolute bottom-8 left-0 right-0 text-center translate-y-[0.5cm]">
             <div className="max-w-3xl mx-auto">
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
@@ -195,20 +195,20 @@ export default function HomePage() {
                 {/* (CTA de evento movido debajo, antes de Available Tools) */}
 
                 {/* Botón Purchase Now */}
-                <div className="pt-4">
+                <div className="pt-2">
                   <motion.a
                     href="http://guildwars2.go2cloud.org/aff_c?offer_id=28&aff_id=757"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-block bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white font-bold py-3 px-8 rounded-lg text-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1"
+                    className="inline-block bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white font-bold py-2 px-6 rounded-md text-base shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-0.5"
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
                   >
                     {t('cta.purchaseNow', 'Purchase Now')}
                   </motion.a>
                   
-                  <div className="mt-4 flex justify-center">
-                    <div className="w-24 h-1 bg-gradient-to-r from-transparent via-blue-400 to-transparent rounded-full opacity-60"></div>
+                  <div className="mt-3 flex justify-center">
+                    <div className="w-20 h-1 bg-gradient-to-r from-transparent via-blue-400 to-transparent rounded-full opacity-60"></div>
                   </div>
                 </div>
               </motion.div>
