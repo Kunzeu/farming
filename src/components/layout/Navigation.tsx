@@ -33,7 +33,7 @@ const Navigation = () => {
   const [isToolsMenuOpen, setIsToolsMenuOpen] = useState(true); // Por defecto abierto
   const [isMobileToolsOpen, setIsMobileToolsOpen] = useState(true); // Por defecto abierto
   const [isMobileUserOpen, setIsMobileUserOpen] = useState(false);
-  const { user, isAuthenticated, logout } = useAuth();
+  const { user, isAuthenticated, isLoading, logout } = useAuth();
   const toolsMenuRef = useRef<HTMLDivElement>(null);
   const mobileMenuRef = useRef<HTMLDivElement>(null);
   const userMenuRef = useRef<HTMLDivElement>(null);
@@ -225,11 +225,11 @@ const Navigation = () => {
                 whileHover={{ scale: 1.05, rotate: 5 }}
                 src="/images/icons/icon.png"
                 alt="True Farming"
-                className="w-11 h-11 rounded-md shadow-lg group-hover:shadow-purple-500/25 transition-all duration-300"
+                className="w-9 h-9 sm:w-10 sm:h-10 md:w-11 md:h-11 rounded-md shadow-lg group-hover:shadow-purple-500/25 transition-all duration-300"
               />
-              <div className="hidden sm:block">
+              <div className="block">
                 <div className="flex flex-col">
-                  <span className="text-white font-black text-xl leading-tight">True Farming</span>
+                  <span className="text-white font-black text-base sm:text-lg md:text-xl leading-tight">True Farming</span>
                   <span className="text-gray-400 text-xs">Guild Wars 2</span>
                 </div>
               </div>
@@ -311,100 +311,104 @@ const Navigation = () => {
 
             {/* User Menu / Auth Buttons */}
             <div className="flex items-center space-x-4">
-              {isAuthenticated ? (
-                <div className="relative hidden lg:block" ref={userMenuRef}>
-                  <button
-                    onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
-                    className="flex items-center space-x-3 text-gray-300 hover:text-white transition-all duration-200 px-4 py-2 rounded-lg hover:bg-gray-800/50 hover:shadow-md cursor-pointer">
-                    <div className="w-8 h-8 bg-gradient-to-br from-purple-500 to-blue-500 rounded-full flex items-center justify-center shadow-md">
-                      <User className="w-4 h-4 text-white" />
+              {!isLoading && (
+                <>
+                  {isAuthenticated ? (
+                    <div className="relative hidden lg:block" ref={userMenuRef}>
+                      <button
+                        onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
+                        className="flex items-center space-x-3 text-gray-300 hover:text-white transition-all duration-200 px-4 py-2 rounded-lg hover:bg-gray-800/50 hover:shadow-md cursor-pointer">
+                        <div className="w-8 h-8 bg-gradient-to-br from-purple-500 to-blue-500 rounded-full flex items-center justify-center shadow-md">
+                          <User className="w-4 h-4 text-white" />
+                        </div>
+                        <span className="hidden sm:block font-bold">{user?.username}</span>
+                        <ChevronDown className={`w-4 h-4 text-gray-400 transition-transform duration-200 ${isUserMenuOpen ? 'rotate-180' : ''}`} />
+                      </button>
+
+                      {/* User Dropdown */}
+                      {isUserMenuOpen && (
+                        <motion.div
+                          initial={{ opacity: 0, y: -10, scale: 0.95 }}
+                          animate={{ opacity: 1, y: 0, scale: 1 }}
+                          exit={{ opacity: 0, y: -10, scale: 0.95 }}
+                          className="absolute right-0 mt-2 w-56 bg-gray-800 rounded-lg shadow-xl border border-gray-700 py-2 z-50">
+                          <div className="px-4 py-3 border-b border-gray-700">
+                            <p className="text-white font-semibold">{user?.username}</p>
+                          </div>
+                          
+                          <div className="py-1">
+                            <Link
+                              href="/profile"
+                              className="flex items-center space-x-3 px-4 py-2 text-gray-300 hover:text-white hover:bg-gray-700 transition-colors"
+                              onClick={() => setIsUserMenuOpen(false)}>
+                              <User className="w-4 h-4" />
+                       <span>{t('auth.profile', 'Profile')}</span>
+                            </Link>
+                            
+
+                            
+                            <Link
+                              href="/settings"
+                              className="flex items-center space-x-3 px-4 py-2 text-gray-300 hover:text-white hover:bg-gray-700 transition-colors"
+                              onClick={() => setIsUserMenuOpen(false)}>
+                              <Settings className="w-4 h-4" />
+                       <span>{t('auth.settings', 'Settings')}</span>
+                            </Link>
+
+                            {/* Solo mostrar Admin Panel si es admin y NO moderador */}
+                            {((user?.role === 'admin' || user?.isAdmin) && user?.role !== 'moderator') && (
+                              <Link
+                                href="/admin"
+                                className="flex items-center space-x-3 px-4 py-2 text-purple-300 hover:text-purple-200 hover:bg-gray-700 transition-colors"
+                                onClick={() => setIsUserMenuOpen(false)}>
+                                <Shield className="w-4 h-4" />
+                                 <span>{t('auth.admin', 'Admin Panel')}</span>
+                              </Link>
+                            )}
+                            {/* Solo mostrar Moderation Panel si es moderador */}
+                            {(user?.role === 'moderator') && (
+                              <Link
+                                href="/moderator"
+                                className="flex items-center space-x-3 px-4 py-2 text-blue-300 hover:text-blue-200 hover:bg-gray-700 transition-colors"
+                                onClick={() => setIsUserMenuOpen(false)}>
+                                <Shield className="w-4 h-4" />
+                                 <span>{t('auth.admin', 'Moderation Panel')}</span>
+                              </Link>
+                            )}
+                          </div>
+                          
+                          <div className="border-t border-gray-700 pt-1">
+                            <button
+                              onClick={handleLogout}
+                              className="flex items-center space-x-3 px-4 py-2 text-red-400 hover:text-red-300 hover:bg-gray-700 transition-colors w-full text-left cursor-pointer">
+                              <LogOut className="w-4 h-4" />
+                              <span>{t('auth.logout', 'Logout')}</span>
+                            </button>
+                          </div>
+                        </motion.div>
+                      )}
                     </div>
-                    <span className="hidden sm:block font-bold">{user?.username}</span>
-                    <ChevronDown className={`w-4 h-4 text-gray-400 transition-transform duration-200 ${isUserMenuOpen ? 'rotate-180' : ''}`} />
-                  </button>
-
-                  {/* User Dropdown */}
-                  {isUserMenuOpen && (
-                    <motion.div
-                      initial={{ opacity: 0, y: -10, scale: 0.95 }}
-                      animate={{ opacity: 1, y: 0, scale: 1 }}
-                      exit={{ opacity: 0, y: -10, scale: 0.95 }}
-                      className="absolute right-0 mt-2 w-56 bg-gray-800 rounded-lg shadow-xl border border-gray-700 py-2 z-50">
-                      <div className="px-4 py-3 border-b border-gray-700">
-                        <p className="text-white font-semibold">{user?.username}</p>
-                      </div>
-                      
-                      <div className="py-1">
-                        <Link
-                          href="/profile"
-                          className="flex items-center space-x-3 px-4 py-2 text-gray-300 hover:text-white hover:bg-gray-700 transition-colors"
-                          onClick={() => setIsUserMenuOpen(false)}>
-                          <User className="w-4 h-4" />
-                     <span>{t('auth.profile', 'Profile')}</span>
-                        </Link>
-                        
-
-                        
-                        <Link
-                          href="/settings"
-                          className="flex items-center space-x-3 px-4 py-2 text-gray-300 hover:text-white hover:bg-gray-700 transition-colors"
-                          onClick={() => setIsUserMenuOpen(false)}>
-                          <Settings className="w-4 h-4" />
-                     <span>{t('auth.settings', 'Settings')}</span>
-                        </Link>
-
-                        {/* Solo mostrar Admin Panel si es admin y NO moderador */}
-                        {((user?.role === 'admin' || user?.isAdmin) && user?.role !== 'moderator') && (
-                          <Link
-                            href="/admin"
-                            className="flex items-center space-x-3 px-4 py-2 text-purple-300 hover:text-purple-200 hover:bg-gray-700 transition-colors"
-                            onClick={() => setIsUserMenuOpen(false)}>
-                            <Shield className="w-4 h-4" />
-                             <span>{t('auth.admin', 'Admin Panel')}</span>
-                          </Link>
-                        )}
-                        {/* Solo mostrar Moderation Panel si es moderador */}
-                        {(user?.role === 'moderator') && (
-                          <Link
-                            href="/moderator"
-                            className="flex items-center space-x-3 px-4 py-2 text-blue-300 hover:text-blue-200 hover:bg-gray-700 transition-colors"
-                            onClick={() => setIsUserMenuOpen(false)}>
-                            <Shield className="w-4 h-4" />
-                             <span>{t('auth.moderation', 'Moderation Panel')}</span>
-                          </Link>
-                        )}
-                      </div>
-                      
-                      <div className="border-t border-gray-700 pt-1">
-                        <button
-                          onClick={handleLogout}
-                          className="flex items-center space-x-3 px-4 py-2 text-red-400 hover:text-red-300 hover:bg-gray-700 transition-colors w-full text-left cursor-pointer">
-                          <LogOut className="w-4 h-4" />
-                          <span>{t('auth.logout', 'Logout')}</span>
-                        </button>
-                      </div>
-                    </motion.div>
+                  ) : (
+                    <div className="hidden lg:flex items-center">
+                      <Link
+                        href="/login"
+                        className="px-4 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-all duration-200 font-medium shadow-md hover:shadow-lg text-sm">
+                        {t('auth.login', 'Login')}
+                      </Link>
+                    </div>
                   )}
-                </div>
-              ) : (
-                <div className="hidden lg:flex items-center">
-                  <Link
-                    href="/login"
-                    className="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-all duration-200 font-medium shadow-md hover:shadow-lg">
-                    {t('auth.login', 'Login')}
-                  </Link>
-                </div>
-              )}
 
-              {/* Mobile Auth Button */}
-              {!isAuthenticated && (
-                <div className="lg:hidden">
-                  <Link
-                    href="/login"
-                    className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-all duration-200 font-medium shadow-md hover:shadow-lg text-sm">
-                    {t('auth.login', 'Login')}
-                  </Link>
-                </div>
+                  {/* Mobile Auth Button */}
+                  {!isAuthenticated && (
+                    <div className="lg:hidden">
+                      <Link
+                        href="/login"
+                        className="px-4 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-all duration-200 font-medium shadow-md hover:shadow-lg text-xs">
+                        {t('auth.login', 'Login')}
+                      </Link>
+                    </div>
+                  )}
+                </>
               )}
 
               {/* Mobile menu button */}
