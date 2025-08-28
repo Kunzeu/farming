@@ -630,6 +630,11 @@ export default function FarmingTrackerPage() {
     ...raidChestData.map(item => item.id),
     ...strikeChestData.map(item => item.id),
     75919, // Fractal Encryption
+    // IDs de Trofeos para la tabla
+    73478, // Manuscript
+    75220, // Proof
+    73848, // Treaties
+    72336, // Postulate
     // Materiales T5 IDs
     24294, // Sangre
     24341, // Hueso
@@ -1001,7 +1006,7 @@ export default function FarmingTrackerPage() {
       `}</style>
       <Navigation />
       
-      <main className="max-w-7xl mx-auto px-2 sm:px-4 md:px-6 lg:px-8 py-4 sm:py-6 md:py-8">
+      <main className="max-w-6xl mx-auto px-2 sm:px-4 md:px-6 lg:px-8 py-4 sm:py-6 md:py-8">
         {/* Header */}
                  <div className="text-center mb-6 md:mb-8">
            <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white mb-3 md:mb-4">
@@ -1014,7 +1019,7 @@ export default function FarmingTrackerPage() {
  
          {/* Section Navigation */}
          <div className="flex justify-center mb-8">
-           <div className="bg-gray-900/80 backdrop-blur-sm border border-gray-700 rounded-lg p-2 shadow-2xl w-full max-w-4xl">
+           <div className="bg-gray-900/80 backdrop-blur-sm border border-gray-700 rounded-lg p-2 shadow-2xl w-full max-w-3xl">
              <div className="flex flex-wrap justify-center gap-2">
                <button
                  onClick={() => setActiveSection('initiate')}
@@ -1077,7 +1082,7 @@ export default function FarmingTrackerPage() {
            <>
              {/* Stats Overview */}
              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-6 mb-6 md:mb-8">
-               <div className="bg-gray-900/80 backdrop-blur-sm border border-gray-700 rounded-lg p-3 sm:p-4 md:p-6 shadow-2xl">
+               <div className="bg-gray-900/80 backdrop-blur-sm border border-gray-700 rounded-lg p-3 sm:p-4 md:p-6 shadow-2xl text-center sm:text-left">
                  <h3 className="text-sm sm:text-base md:text-lg font-semibold text-gray-300 mb-2">{t('farmingTracker.stats.totalValueGained')}</h3>
                  <div className="text-xl sm:text-2xl md:text-3xl font-bold text-green-400">
                    {formatGoldSilverCopper(dungeonChestStats.totalValue)}
@@ -1085,7 +1090,7 @@ export default function FarmingTrackerPage() {
                  <p className="text-xs sm:text-sm text-gray-400 mt-2">{t('farmingTracker.stats.totalValueGained')}</p>
                </div>
                
-               <div className="bg-gray-900/80 backdrop-blur-sm border border-gray-700 rounded-lg p-3 sm:p-4 md:p-6 shadow-2xl">
+               <div className="bg-gray-900/80 backdrop-blur-sm border border-gray-700 rounded-lg p-3 sm:p-4 md:p-6 shadow-2xl text-center sm:text-left">
                  <h3 className="text-sm sm:text-base md:text-lg font-semibold text-gray-300 mb-2">{t('farmingTracker.stats.itemsGained')}</h3>
                  <div className="text-xl sm:text-2xl md:text-3xl font-bold text-blue-400">
                    {dungeonChestStats.totalItems.toLocaleString()}
@@ -1093,7 +1098,7 @@ export default function FarmingTrackerPage() {
                  <p className="text-xs sm:text-sm text-gray-400 mt-2">{t('farmingTracker.stats.totalAmount')}</p>
                </div>
                
-               <div className="bg-gray-900/80 backdrop-blur-sm border border-gray-700 rounded-lg p-3 sm:p-4 md:p-6 shadow-2xl">
+               <div className="bg-gray-900/80 backdrop-blur-sm border border-gray-700 rounded-lg p-3 sm:p-4 md:p-6 shadow-2xl text-center sm:text-left">
                  <h3 className="text-sm sm:text-base md:text-lg font-semibold text-gray-300 mb-2">{t('farmingTracker.stats.chestsOpened')}</h3>
                  <div className="text-xl sm:text-2xl md:text-3xl font-bold text-purple-400">
                    {dungeonChestStats.estimatedChests.toLocaleString()}
@@ -1101,7 +1106,7 @@ export default function FarmingTrackerPage() {
                  <p className="text-xs sm:text-sm text-gray-400 mt-2">{t('farmingTracker.stats.basedOnRelics')}</p>
                </div>
                
-               <div className="bg-gray-900/80 backdrop-blur-sm border border-gray-700 rounded-lg p-3 sm:p-4 md:p-6 shadow-2xl">
+               <div className="bg-gray-900/80 backdrop-blur-sm border border-gray-700 rounded-lg p-3 sm:p-4 md:p-6 shadow-2xl text-center sm:text-left">
                  <h3 className="text-sm sm:text-base md:text-lg font-semibold text-gray-300 mb-2">{t('farmingTracker.stats.avgGoldPerChest')}</h3>
                  <div className="text-xl sm:text-2xl md:text-3xl font-bold text-yellow-400">
                    {formatGoldSilverCopper(Math.round(dungeonChestStats.avgGoldPerChest))}
@@ -1335,37 +1340,37 @@ export default function FarmingTrackerPage() {
          {activeSection === 'adept' && (
            <>
              {/* Stats Overview */}
-             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-               <div className="bg-gray-900/80 backdrop-blur-sm border border-gray-700 rounded-lg p-6 shadow-2xl">
-                 <h3 className="text-lg font-semibold text-gray-300 mb-2">{t('farmingTracker.stats.totalValueGained')}</h3>
-                 <div className="text-3xl font-bold text-green-400">
+             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-6 mb-6 md:mb-8">
+               <div className="bg-gray-900/80 backdrop-blur-sm border border-gray-700 rounded-lg p-3 sm:p-4 md:p-6 shadow-2xl text-center sm:text-left">
+                 <h3 className="text-sm sm:text-base md:text-lg font-semibold text-gray-300 mb-2">{t('farmingTracker.stats.totalValueGained')}</h3>
+                 <div className="text-xl sm:text-2xl md:text-3xl font-bold text-green-400">
                    {formatGoldSilverCopper(raidChestStats.totalValue)}
                  </div>
-                 <p className="text-sm text-gray-400 mt-2">{t('farmingTracker.stats.totalValueGained')}</p>
+                 <p className="text-xs sm:text-sm text-gray-400 mt-2">{t('farmingTracker.stats.totalValueGained')}</p>
                </div>
                
-               <div className="bg-gray-900/80 backdrop-blur-sm border border-gray-700 rounded-lg p-6 shadow-2xl">
-                 <h3 className="text-lg font-semibold text-gray-300 mb-2">{t('farmingTracker.stats.itemsGained')}</h3>
-                 <div className="text-3xl font-bold text-blue-400">
+               <div className="bg-gray-900/80 backdrop-blur-sm border border-gray-700 rounded-lg p-3 sm:p-4 md:p-6 shadow-2xl text-center sm:text-left">
+                 <h3 className="text-sm sm:text-base md:text-lg font-semibold text-gray-300 mb-2">{t('farmingTracker.stats.itemsGained')}</h3>
+                 <div className="text-xl sm:text-2xl md:text-3xl font-bold text-blue-400">
                    {raidChestStats.totalItems.toLocaleString()}
                  </div>
-                 <p className="text-sm text-gray-400 mt-2">{t('farmingTracker.stats.totalAmount')}</p>
+                 <p className="text-xs sm:text-sm text-gray-400 mt-2">{t('farmingTracker.stats.totalAmount')}</p>
                </div>
                
-               <div className="bg-gray-900/80 backdrop-blur-sm border border-gray-700 rounded-lg p-6 shadow-2xl">
-                 <h3 className="text-lg font-semibold text-gray-300 mb-2">{t('farmingTracker.stats.chestsOpened')}</h3>
-                 <div className="text-3xl font-bold text-purple-400">
+               <div className="bg-gray-900/80 backdrop-blur-sm border border-gray-700 rounded-lg p-3 sm:p-4 md:p-6 shadow-2xl text-center sm:text-left">
+                 <h3 className="text-sm sm:text-base md:text-lg font-semibold text-gray-300 mb-2">{t('farmingTracker.stats.chestsOpened')}</h3>
+                 <div className="text-xl sm:text-2xl md:text-3xl font-bold text-purple-400">
                    {raidChestStats.estimatedChests.toLocaleString()}
                  </div>
-                 <p className="text-sm text-gray-400 mt-2">{t('farmingTracker.stats.basedOnRelics')}</p>
+                 <p className="text-xs sm:text-sm text-gray-400 mt-2">{t('farmingTracker.stats.basedOnRelics')}</p>
                </div>
                
-               <div className="bg-gray-900/80 backdrop-blur-sm border border-gray-700 rounded-lg p-6 shadow-2xl">
-                 <h3 className="text-lg font-semibold text-gray-300 mb-2">{t('farmingTracker.stats.avgGoldPerChest')}</h3>
-                 <div className="text-3xl font-bold text-yellow-400">
+               <div className="bg-gray-900/80 backdrop-blur-sm border border-gray-700 rounded-lg p-3 sm:p-4 md:p-6 shadow-2xl text-center sm:text-left">
+                 <h3 className="text-sm sm:text-base md:text-lg font-semibold text-gray-300 mb-2">{t('farmingTracker.stats.avgGoldPerChest')}</h3>
+                 <div className="text-2xl sm:text-3xl md:text-4xl font-bold text-yellow-400">
                    {formatGoldSilverCopper(Math.round(raidChestStats.avgGoldPerChest))}
                  </div>
-                 <p className="text-sm text-gray-400 mt-2">{t('farmingTracker.stats.avgValuePerChest')}</p>
+                 <p className="text-xs sm:text-sm text-gray-400 mt-2">{t('farmingTracker.stats.avgValuePerChest')}</p>
                </div>
              </div>
 
@@ -1594,37 +1599,37 @@ export default function FarmingTrackerPage() {
          {activeSection === 'expert' && (
            <>
              {/* Stats Overview */}
-             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-               <div className="bg-gray-900/80 backdrop-blur-sm border border-gray-700 rounded-lg p-6 shadow-2xl">
-                 <h3 className="text-lg font-semibold text-gray-300 mb-2">{t('farmingTracker.stats.totalValueGained')}</h3>
-                 <div className="text-3xl font-bold text-green-400">
+             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-6 mb-6 md:mb-8">
+               <div className="bg-gray-900/80 backdrop-blur-sm border border-gray-700 rounded-lg p-3 sm:p-4 md:p-6 shadow-2xl text-center sm:text-left">
+                 <h3 className="text-sm sm:text-base md:text-lg font-semibold text-gray-300 mb-2">{t('farmingTracker.stats.totalValueGained')}</h3>
+                 <div className="text-xl sm:text-2xl md:text-3xl font-bold text-green-400">
                    {formatGoldSilverCopper(strikeChestStats.totalValue)}
                  </div>
-                 <p className="text-sm text-gray-400 mt-2">{t('farmingTracker.stats.totalValueGained')}</p>
+                 <p className="text-xs sm:text-sm text-gray-400 mt-2">{t('farmingTracker.stats.totalValueGained')}</p>
                </div>
                
-               <div className="bg-gray-900/80 backdrop-blur-sm border border-gray-700 rounded-lg p-6 shadow-2xl">
-                 <h3 className="text-lg font-semibold text-gray-300 mb-2">{t('farmingTracker.stats.itemsGained')}</h3>
-                 <div className="text-3xl font-bold text-blue-400">
+               <div className="bg-gray-900/80 backdrop-blur-sm border border-gray-700 rounded-lg p-3 sm:p-4 md:p-6 shadow-2xl text-center sm:text-left">
+                 <h3 className="text-sm sm:text-base md:text-lg font-semibold text-gray-300 mb-2">{t('farmingTracker.stats.itemsGained')}</h3>
+                 <div className="text-xl sm:text-2xl md:text-3xl font-bold text-blue-400">
                    {strikeChestStats.totalItems.toLocaleString()}
                  </div>
-                 <p className="text-sm text-gray-400 mt-2">{t('farmingTracker.stats.totalAmount')}</p>
+                 <p className="text-xs sm:text-sm text-gray-400 mt-2">{t('farmingTracker.stats.totalAmount')}</p>
                </div>
                
-               <div className="bg-gray-900/80 backdrop-blur-sm border border-gray-700 rounded-lg p-6 shadow-2xl">
-                 <h3 className="text-lg font-semibold text-gray-300 mb-2">{t('farmingTracker.stats.chestsOpened')}</h3>
-                 <div className="text-3xl font-bold text-purple-400">
+               <div className="bg-gray-900/80 backdrop-blur-sm border border-gray-700 rounded-lg p-3 sm:p-4 md:p-6 shadow-2xl text-center sm:text-left">
+                 <h3 className="text-sm sm:text-base md:text-lg font-semibold text-gray-300 mb-2">{t('farmingTracker.stats.chestsOpened')}</h3>
+                 <div className="text-xl sm:text-2xl md:text-3xl font-bold text-purple-400">
                    {strikeChestStats.estimatedChests.toLocaleString()}
                  </div>
-                 <p className="text-sm text-gray-400 mt-2">{t('farmingTracker.stats.basedOnRelics')}</p>
+                 <p className="text-xs sm:text-sm text-gray-400 mt-2">{t('farmingTracker.stats.basedOnRelics')}</p>
                </div>
                
-               <div className="bg-gray-900/80 backdrop-blur-sm border border-gray-700 rounded-lg p-6 shadow-2xl">
-                 <h3 className="text-lg font-semibold text-gray-300 mb-2">{t('farmingTracker.stats.avgGoldPerChest')}</h3>
-                 <div className="text-3xl font-bold text-yellow-400">
+               <div className="bg-gray-900/80 backdrop-blur-sm border border-gray-700 rounded-lg p-3 sm:p-4 md:p-6 shadow-2xl text-center sm:text-left">
+                 <h3 className="text-sm sm:text-base md:text-lg font-semibold text-gray-300 mb-2">{t('farmingTracker.stats.avgGoldPerChest')}</h3>
+                 <div className="text-xl sm:text-2xl md:text-3xl font-bold text-yellow-400">
                    {formatGoldSilverCopper(Math.round(strikeChestStats.avgGoldPerChest))}
                  </div>
-                 <p className="text-sm text-gray-400 mt-2">{t('farmingTracker.stats.avgValuePerChest')}</p>
+                 <p className="text-xs sm:text-sm text-gray-400 mt-2">{t('farmingTracker.stats.avgValuePerChest')}</p>
                </div>
              </div>
 
@@ -1853,41 +1858,41 @@ export default function FarmingTrackerPage() {
          {activeSection === 'fractal' && (
            <>
              {/* Stats Overview */}
-             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          <div className="bg-gray-900/80 backdrop-blur-sm border border-gray-700 rounded-lg p-6 shadow-2xl">
-            <h3 className="text-lg font-semibold text-gray-300 mb-2">{t('farmingTracker.stats.totalValueGained')}</h3>
-            <div className="text-3xl font-bold text-green-400">
-              {formatGoldSilverCopper(stats.totalValue)}
-            </div>
-            <p className="text-sm text-gray-400 mt-2">
-              {t('farmingTracker.stats.totalValueGained')}
-            </p>
-          </div>
-          
-          <div className="bg-gray-900/80 backdrop-blur-sm border border-gray-700 rounded-lg p-6 shadow-2xl">
-            <h3 className="text-lg font-semibold text-gray-300 mb-2">{t('farmingTracker.stats.itemsGained')}</h3>
-            <div className="text-3xl font-bold text-blue-400">
-              {stats.totalItems.toLocaleString()}
-            </div>
-            <p className="text-sm text-gray-400 mt-2">{t('farmingTracker.stats.totalAmount')}</p>
-          </div>
-          
-          <div className="bg-gray-900/80 backdrop-blur-sm border border-gray-700 rounded-lg p-6 shadow-2xl">
-            <h3 className="text-lg font-semibold text-gray-300 mb-2">{t('farmingTracker.stats.chestsOpened')}</h3>
-            <div className="text-3xl font-bold text-purple-400">
-              {stats.estimatedChests.toLocaleString()}
-            </div>
-            <p className="text-sm text-gray-400 mt-2">{t('farmingTracker.stats.basedOnRelics')}</p>
-          </div>
-          
-          <div className="bg-gray-900/80 backdrop-blur-sm border border-gray-700 rounded-lg p-6 shadow-2xl">
-            <h3 className="text-lg font-semibold text-gray-300 mb-2">{t('farmingTracker.stats.avgGoldPerChest')}</h3>
-            <div className="text-3xl font-bold text-yellow-400">
-              {formatGoldSilverCopper(Math.round(stats.avgGoldPerChest))}
-            </div>
-            <p className="text-sm text-gray-400 mt-2">{t('farmingTracker.stats.avgValuePerChest')}</p>
-          </div>
-        </div>
+             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-6 mb-6 md:mb-8">
+               <div className="bg-gray-900/80 backdrop-blur-sm border border-gray-700 rounded-lg p-3 sm:p-4 md:p-6 shadow-2xl text-center sm:text-left">
+                 <h3 className="text-sm sm:text-base md:text-lg font-semibold text-gray-300 mb-2">{t('farmingTracker.stats.totalValueGained')}</h3>
+                 <div className="text-xl sm:text-2xl md:text-3xl font-bold text-green-400">
+                   {formatGoldSilverCopper(stats.totalValue)}
+                 </div>
+                 <p className="text-xs sm:text-sm text-gray-400 mt-2">
+                   {t('farmingTracker.stats.totalValueGained')}
+                 </p>
+               </div>
+               
+               <div className="bg-gray-900/80 backdrop-blur-sm border border-gray-700 rounded-lg p-3 sm:p-4 md:p-6 shadow-2xl text-center sm:text-left">
+                 <h3 className="text-sm sm:text-base md:text-lg font-semibold text-gray-300 mb-2">{t('farmingTracker.stats.itemsGained')}</h3>
+                 <div className="text-xl sm:text-2xl md:text-3xl font-bold text-blue-400">
+                   {stats.totalItems.toLocaleString()}
+                 </div>
+                 <p className="text-xs sm:text-sm text-gray-400 mt-2">{t('farmingTracker.stats.totalAmount')}</p>
+               </div>
+               
+               <div className="bg-gray-900/80 backdrop-blur-sm border border-gray-700 rounded-lg p-3 sm:p-4 md:p-6 shadow-2xl text-center sm:text-left">
+                 <h3 className="text-sm sm:text-base md:text-lg font-semibold text-gray-300 mb-2">{t('farmingTracker.stats.chestsOpened')}</h3>
+                 <div className="text-xl sm:text-2xl md:text-3xl font-bold text-purple-400">
+                   {stats.estimatedChests.toLocaleString()}
+                 </div>
+                 <p className="text-sm text-gray-400 mt-2">{t('farmingTracker.stats.basedOnRelics')}</p>
+               </div>
+               
+               <div className="bg-gray-900/80 backdrop-blur-sm border border-gray-700 rounded-lg p-3 sm:p-4 md:p-6 shadow-2xl text-center sm:text-left">
+                 <h3 className="text-sm sm:text-base md:text-lg font-semibold text-gray-300 mb-2">{t('farmingTracker.stats.avgGoldPerChest')}</h3>
+                 <div className="text-xl sm:text-2xl md:text-3xl font-bold text-yellow-400">
+                   {formatGoldSilverCopper(Math.round(stats.avgGoldPerChest))}
+                 </div>
+                 <p className="text-sm text-gray-400 mt-2">{t('farmingTracker.stats.avgValuePerChest')}</p>
+               </div>
+             </div>
 
         {/* Search and Filters */}
         <div className="bg-gray-900/80 backdrop-blur-sm border border-gray-700 rounded-lg p-6 shadow-2xl mb-8">
@@ -2097,10 +2102,58 @@ export default function FarmingTrackerPage() {
                    <thead>
                      <tr className="border-b border-gray-700 bg-gray-800/60">
                        <th className="text-left p-2 sm:p-3 text-gray-200 font-semibold">{t('fractals.table.name')}</th>
-                       <th className="p-1 sm:p-2 text-gray-200 font-semibold">{t('fractals.table.manuscript')}</th>
-                       <th className="p-1 sm:p-2 text-gray-200 font-semibold">{t('fractals.table.proof')}</th>
-                       <th className="p-1 sm:p-2 text-gray-200 font-semibold">{t('fractals.table.treaties')}</th>
-                       <th className="p-1 sm:p-2 text-gray-200 font-semibold">{t('fractals.table.postulate')}</th>
+                       <th className="p-1 sm:p-2 text-gray-200 font-semibold">
+                         <div className="flex items-center justify-center">
+                           {itemDetails[73478]?.icon && (
+                             <Image 
+                               src={itemDetails[73478].icon} 
+                               alt={t('fractals.table.manuscript')}
+                               width={29} 
+                               height={29} 
+                               className="w-7 h-7"
+                             />
+                           )}
+                         </div>
+                       </th>
+                       <th className="p-1 sm:p-2 text-gray-200 font-semibold">
+                         <div className="flex items-center justify-center">
+                           {itemDetails[75220]?.icon && (
+                             <Image 
+                               src={itemDetails[75220].icon} 
+                               alt={t('fractals.table.proof')}
+                               width={29} 
+                               height={29} 
+                               className="w-7 h-7"
+                             />
+                           )}
+                         </div>
+                       </th>
+                       <th className="p-1 sm:p-2 text-gray-200 font-semibold">
+                         <div className="flex items-center justify-center">
+                           {itemDetails[73848]?.icon && (
+                             <Image 
+                               src={itemDetails[73848].icon} 
+                               alt={t('fractals.table.treaties')}
+                               width={29} 
+                               height={29} 
+                               className="w-7 h-7"
+                             />
+                           )}
+                         </div>
+                       </th>
+                       <th className="p-1 sm:p-2 text-gray-200 font-semibold">
+                         <div className="flex items-center justify-center">
+                           {itemDetails[72336]?.icon && (
+                             <Image 
+                               src={itemDetails[72336].icon} 
+                               alt={t('fractals.table.postulate')}
+                               width={29} 
+                               height={29} 
+                               className="w-7 h-7"
+                             />
+                           )}
+                         </div>
+                       </th>
                      </tr>
                    </thead>
                    <tbody>
@@ -2247,7 +2300,7 @@ export default function FarmingTrackerPage() {
                      <tr className="border-b border-gray-700 bg-gray-800/60">
                        <th className="text-left p-1 text-gray-200 font-semibold">{t('fractals.table.name')}</th>
                        <th className="p-1 text-gray-200 font-semibold">
-                         <div className="flex items-center justify-center" title={t(fractalItemNames[24294])}>
+                         <div className="flex items-center justify-center">
                            {itemDetails[24294]?.icon && (
                              <Image 
                                src={itemDetails[24294].icon} 
@@ -2260,7 +2313,7 @@ export default function FarmingTrackerPage() {
                          </div>
                        </th>
                        <th className="p-1 text-gray-200 font-semibold">
-                         <div className="flex items-center justify-center" title={t(fractalItemNames[24341])}>
+                         <div className="flex items-center justify-center">
                            {itemDetails[24341]?.icon && (
                              <Image 
                                src={itemDetails[24341].icon} 
@@ -2273,7 +2326,7 @@ export default function FarmingTrackerPage() {
                          </div>
                        </th>
                        <th className="p-1 text-gray-200 font-semibold">
-                         <div className="flex items-center justify-center" title={t(fractalItemNames[24350])}>
+                         <div className="flex items-center justify-center">
                            {itemDetails[24350]?.icon && (
                              <Image 
                                src={itemDetails[24350].icon} 
@@ -2286,7 +2339,7 @@ export default function FarmingTrackerPage() {
                          </div>
                        </th>
                        <th className="p-1 text-gray-200 font-semibold">
-                         <div className="flex items-center justify-center" title={t(fractalItemNames[24356])}>
+                         <div className="flex items-center justify-center">
                            {itemDetails[24356]?.icon && (
                              <Image 
                                src={itemDetails[24356].icon} 
@@ -2299,7 +2352,7 @@ export default function FarmingTrackerPage() {
                          </div>
                        </th>
                        <th className="p-1 text-gray-200 font-semibold">
-                         <div className="flex items-center justify-center" title={t(fractalItemNames[24288])}>
+                         <div className="flex items-center justify-center">
                            {itemDetails[24288]?.icon && (
                              <Image 
                                src={itemDetails[24288].icon} 
@@ -2312,7 +2365,7 @@ export default function FarmingTrackerPage() {
                          </div>
                        </th>
                        <th className="p-1 text-gray-200 font-semibold">
-                         <div className="flex items-center justify-center" title={t(fractalItemNames[24299])}>
+                         <div className="flex items-center justify-center">
                            {itemDetails[24299]?.icon && (
                              <Image 
                                src={itemDetails[24299].icon} 
@@ -2325,7 +2378,7 @@ export default function FarmingTrackerPage() {
                          </div>
                        </th>
                        <th className="p-1 text-gray-200 font-semibold">
-                         <div className="flex items-center justify-center" title={t(fractalItemNames[24282])}>
+                         <div className="flex items-center justify-center">
                            {itemDetails[24282]?.icon && (
                              <Image 
                                src={itemDetails[24282].icon} 
@@ -2338,7 +2391,7 @@ export default function FarmingTrackerPage() {
                          </div>
                        </th>
                        <th className="p-1 text-gray-200 font-semibold">
-                         <div className="flex items-center justify-center" title={t(fractalItemNames[24276])}>
+                         <div className="flex items-center justify-center">
                            {itemDetails[24276]?.icon && (
                              <Image 
                                src={itemDetails[24276].icon} 
@@ -2397,9 +2450,9 @@ export default function FarmingTrackerPage() {
                                 });
                                 
                                 // MAX(diferencia1, diferencia2, diferencia3) / 14000 + precioBase
-                                const minDifference = Math.min(...differences);
+                                const maxDifference = Math.max(...differences);
                                 const precioBase = itemDetails[id]?.buyPrice || 0;
-                                const precioMax = (minDifference / 14000) + precioBase;
+                                const precioMax = (maxDifference / 14000) + precioBase;
                                 
                                 return formatGoldSilverCopper(Math.round(precioMax));
                          })()}
@@ -2482,7 +2535,7 @@ export default function FarmingTrackerPage() {
                          });
                          
                          // MAX(diferencia1, diferencia2, diferencia3) / 14000 + totalPorCaja
-                         const minDifference = Math.max(...differences);
+                         const maxDifference = Math.max(...differences);
                          const totalPorCaja = (() => {
                            const ratios: Record<number, number> = {
                              24294: 0.3378375, 24341: 0.3378375, 24350: 0.3378375, 24356: 0.3378375,
@@ -2493,7 +2546,7 @@ export default function FarmingTrackerPage() {
                              .reduce((sum, price) => sum + price, 0);
                          })();
                          
-                         const resultado = (minDifference / 14000) + totalPorCaja;
+                         const resultado = (maxDifference / 14000) + totalPorCaja;
                          
                          return formatGoldSilverCopper(Math.round(resultado));
                          })()}
@@ -2789,13 +2842,8 @@ export default function FarmingTrackerPage() {
                              const ratio = ratios[id] || 0;
                              const result = precioMax * ratio;
                              
-                             console.log(`ID ${id}: precioMax=${precioMax}, ratio=${ratio}, result=${result}`);
-                             
                              return result;
                            }).reduce((sum, price) => sum + price, 0);
-                           
-                           console.log(`Total sumado: ${totalMax}`);
-                           console.log(`Total formateado: ${formatGoldSilverCopper(Math.round(totalMax))}`);
                            
                            return (
                              <>

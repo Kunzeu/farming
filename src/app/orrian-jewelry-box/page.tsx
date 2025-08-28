@@ -37,6 +37,8 @@ interface DropItem {
   name: string;
   icon: string;
   quantity: number;
+  buyPrice?: number;
+  sellPrice?: number;
 }
 
 // Datos estáticos movidos fuera del componente para evitar recreación
@@ -91,6 +93,20 @@ const KARMA_VALUES: Record<number, number> = {
   36457: 4500    // Swig of Liquid Karma: 6,000 karma
 };
 
+const FAVOR_VALUES: Record<number, number> = {
+  39223: 50 // Unidentifiable Object: 50 Favor
+};
+
+function formatCoins(totalCopper: number): string {
+  const gold = Math.floor(totalCopper / 10000);
+  const silver = Math.floor((totalCopper % 10000) / 100);
+  const copper = totalCopper % 100;
+  const g = String(gold).padStart(2, '0');
+  const s = String(silver).padStart(2, '0');
+  const c = String(copper).padStart(2, '0');
+  return `${g}g ${s}s ${c}c`;
+}
+
 export default function OrrianJewelryBoxPage() {
   usePageTitle('orrianJewelryBoxPage.title', 'Orrian Jewelry Box');
   const { t, lang } = useI18n();
@@ -109,7 +125,9 @@ export default function OrrianJewelryBoxPage() {
   const [dropWarning, setDropWarning] = useState<string | null>(null);
   const [nameSortOrder, setNameSortOrder] = useState<'asc' | 'desc'>('asc');
   const [quantitySortOrder, setQuantitySortOrder] = useState<'asc' | 'desc'>('desc');
-  const [lastSortType, setLastSortType] = useState<'name' | 'quantity'>('quantity');
+  const [sellPriceSortOrder, setSellPriceSortOrder] = useState<'asc' | 'desc'>('desc');
+  const [totalSortOrder, setTotalSortOrder] = useState<'asc' | 'desc'>('desc');
+  const [lastSortType, setLastSortType] = useState<'name' | 'quantity' | 'sellPrice' | 'total'>('quantity');
 
   // Memoizar las funciones de ordenamiento para evitar recreaciones
   const handleNameSort = useCallback(() => {
@@ -120,6 +138,16 @@ export default function OrrianJewelryBoxPage() {
   const handleQuantitySort = useCallback(() => {
     setQuantitySortOrder(prev => prev === 'asc' ? 'desc' : 'asc');
     setLastSortType('quantity');
+  }, []);
+
+  const handleSellPriceSort = useCallback(() => {
+    setSellPriceSortOrder(prev => prev === 'asc' ? 'desc' : 'asc');
+    setLastSortType('sellPrice');
+  }, []);
+
+  const handleTotalSort = useCallback(() => {
+    setTotalSortOrder(prev => prev === 'asc' ? 'desc' : 'asc');
+    setLastSortType('total');
   }, []);
 
   // Fetch item data and price
@@ -140,12 +168,31 @@ export default function OrrianJewelryBoxPage() {
           const dropItemsResponse = await fetch(`https://api.guildwars2.com/v2/items?ids=${DROP_ITEM_IDS.join(',')}&lang=${lang}`);
           if (dropItemsResponse.ok) {
             const dropItemsData: ItemData[] = await dropItemsResponse.json();
-            const formattedDropItems: DropItem[] = dropItemsData.map(item => ({
-              id: item.id,
-              name: item.name,
-              icon: item.icon,
-              quantity: ITEM_QUANTITIES[item.id] || 0
-            }));
+            // Fetch prices for all drop items
+            const pricesResponse = await fetch(`https://api.guildwars2.com/v2/commerce/prices?ids=${DROP_ITEM_IDS.join(',')}`);
+            let pricesData: PriceData[] = [];
+            
+            if (pricesResponse.ok) {
+              pricesData = await pricesResponse.json();
+            }
+            
+            // Create price map for easy lookup
+            const priceMap = new Map<number, PriceData>();
+            pricesData.forEach(price => {
+              priceMap.set(price.id, price);
+            });
+            
+            const formattedDropItems: DropItem[] = dropItemsData.map(item => {
+              const price = priceMap.get(item.id);
+              return {
+                id: item.id,
+                name: item.name,
+                icon: item.icon,
+                quantity: ITEM_QUANTITIES[item.id] || 0,
+                buyPrice: price?.buys?.unit_price || 0,
+                sellPrice: price?.sells?.unit_price || 0
+              };
+            });
             setDropItems(formattedDropItems);
           } else {
             console.error('Failed to fetch drop items:', dropItemsResponse.status);
@@ -195,8 +242,23 @@ export default function OrrianJewelryBoxPage() {
 
   // Determine which sorted list to use based on last interaction
   const finalSortedItems = useMemo(() => {
-    return lastSortType === 'name' ? sortedDropItemsByName : sortedDropItemsByQuantity;
-  }, [lastSortType, sortedDropItemsByName, sortedDropItemsByQuantity]);
+    if (lastSortType === 'name') return sortedDropItemsByName;
+    if (lastSortType === 'sellPrice') {
+      return [...dropItems].sort((a, b) => {
+        const priceA = a.sellPrice || 0;
+        const priceB = b.sellPrice || 0;
+        return sellPriceSortOrder === 'desc' ? priceB - priceA : priceA - priceB;
+      });
+    }
+    if (lastSortType === 'total') {
+      return [...dropItems].sort((a, b) => {
+        const unitA = a.sellPrice ? a.sellPrice * a.quantity : (FAVOR_VALUES[a.id] ? FAVOR_VALUES[a.id] * a.quantity : (KARMA_VALUES[a.id] || 0));
+        const unitB = b.sellPrice ? b.sellPrice * b.quantity : (FAVOR_VALUES[b.id] ? FAVOR_VALUES[b.id] * b.quantity : (KARMA_VALUES[b.id] || 0));
+        return totalSortOrder === 'desc' ? unitB - unitA : unitA - unitB;
+      });
+    }
+    return sortedDropItemsByQuantity;
+  }, [lastSortType, sortedDropItemsByName, sortedDropItemsByQuantity, dropItems, sellPriceSortOrder, totalSortOrder]);
 
   // Calculate total karma recovered from drops - memoizado
   const totalKarmaRecovered = useMemo(() => {
@@ -208,6 +270,46 @@ export default function OrrianJewelryBoxPage() {
       return total;
     }, 0);
   }, [dropItems]);
+
+  // Total de oro recuperado (en cobre) sumando precio efectivo * cantidad
+  const totalGoldRecoveredCopper = useMemo(() => {
+    return dropItems.reduce((total, item) => {
+      // Solo contamos valores monetarios (sellPrice o favor). Karma no es oro
+      const unit = item.sellPrice || FAVOR_VALUES[item.id] || 0;
+      return total + unit * item.quantity;
+    }, 0);
+  }, [dropItems]);
+
+  // Suma total de cantidades SOLO de ítems cuyo Total Ganado se muestra en monedas (precio o favor)
+  const totalQuantityCoins = useMemo(() => {
+    return dropItems.reduce((sum, item) => {
+      const hasMonetaryTotal = Boolean(item.sellPrice) || Boolean(FAVOR_VALUES[item.id]);
+      return hasMonetaryTotal ? sum + item.quantity : sum;
+    }, 0);
+  }, [dropItems]);
+
+  // Suma del 85% del precio de venta (después de tarifas TP) excluyendo id 39223, multiplicado por cantidad
+  const totalSellPrice85Copper = useMemo(() => {
+    return dropItems.reduce((sum, item) => {
+      if (item.id === 39223) return sum; // excluir Unidentifiable Object (favor)
+      if (!item.sellPrice) return sum;
+      const priceAfterFee = Math.floor(item.sellPrice * 0.85);
+      return sum + priceAfterFee * item.quantity;
+    }, 0);
+  }, [dropItems]);
+
+  // Total de favor (sin 85%) multiplicado por cantidad
+  const totalFavorCopper = useMemo(() => {
+    return dropItems.reduce((sum, item) => {
+      const favor = FAVOR_VALUES[item.id] || 0;
+      return sum + favor * item.quantity;
+    }, 0);
+  }, [dropItems]);
+
+  // Oro recuperado final: 85% del sell price + favor (sin 85%)
+  const totalGoldRecovered85Copper = useMemo(() => {
+    return totalSellPrice85Copper + totalFavorCopper;
+  }, [totalSellPrice85Copper, totalFavorCopper]);
 
   // Memoizar el componente de loading para evitar re-renders
   const LoadingComponent = useMemo(() => (
@@ -319,7 +421,7 @@ export default function OrrianJewelryBoxPage() {
                     className="hidden md:inline-flex items-center gap-2 px-4 py-2 bg-slate-700 text-white rounded-lg hover:bg-slate-600 transition-colors border border-slate-600/50"
                   >
                     <ExternalLink className="h-4 w-4" />
-                    {t('salvagePages.viewWiki', 'View Wiki')}
+                    {t('salvagePages.viewWiki', 'Ver Wiki')}
                   </a>
                 </div>
                 <p className="text-gray-300 mb-4">{itemData.description}</p>
@@ -331,7 +433,7 @@ export default function OrrianJewelryBoxPage() {
                     className="inline-flex items-center gap-2 px-4 py-2 bg-slate-700 text-white rounded-lg hover:bg-slate-600 transition-colors border border-slate-600/50"
                   >
                     <ExternalLink className="h-4 w-4" />
-                    {t('salvagePages.viewWiki', 'View Wiki')}
+                    {t('salvagePages.viewWiki', 'Ver Wiki')}
                   </a>
                 </div>
               </div>
@@ -350,7 +452,14 @@ export default function OrrianJewelryBoxPage() {
           >
             <div className="bg-slate-800/50 border border-slate-600/50 rounded-lg p-6 text-center">
               <p className="text-sm text-gray-400 mb-2">{t('orrianJewelryBoxPage.karmaInicial', 'Karma Inicial')}</p>
-              <p className="text-3xl font-bold text-blue-300">45,500,000</p>
+              <div className="flex items-center justify-center gap-2">
+                <p className="text-3xl font-bold text-blue-300">45,500,000</p>
+                <img 
+                  src="/images/expansions/karma.png" 
+                  alt="Karma"
+                  className="w-8 h-8"
+                />
+              </div>
             </div>
             
             <div className="bg-slate-800/50 border border-slate-600/50 rounded-lg p-6 text-center">
@@ -381,6 +490,18 @@ export default function OrrianJewelryBoxPage() {
                 />
               </div>
             </div>
+
+            <div className="bg-slate-800/50 border border-slate-600/50 rounded-lg p-6 text-center">
+              <p className="text-sm text-gray-400 mb-2">{t('orrianJewelryBoxPage.oroRecuperado', 'Oro Recuperado')}</p>
+              <div className="flex items-center justify-center gap-2">
+                <p className="text-3xl font-bold text-yellow-300">{formatCoins(totalGoldRecovered85Copper)}</p>
+              </div>
+            </div>
+
+            <div className="bg-slate-800/50 border border-slate-600/50 rounded-lg p-6 text-center">
+              <p className="text-sm text-gray-400 mb-2">{t('orrianJewelryBoxPage.ratioOro', '1000 de Karma equivale')}</p>
+              <p className="text-3xl font-bold text-blue-300">{formatCoins(Math.round((totalGoldRecovered85Copper * 1000) / 19407400))}</p>
+            </div>
           </motion.div>
 
           {/* Possible Drops Section */}
@@ -395,13 +516,13 @@ export default function OrrianJewelryBoxPage() {
             </h3>
             
             {/* Table Header with Filter */}
-            <div className="hidden sm:grid grid-cols-2 gap-4 py-3 px-4 bg-slate-700/50 rounded-t-lg border-b border-slate-600/50">
-              <div className="font-semibold text-gray-300 flex items-center">
-                <span>{t('orrianJewelryBoxPage.drop', 'Drop')}</span>
-                <button
-                  onClick={handleNameSort}
-                  className="ml-2 p-1 hover:bg-slate-600/50 rounded transition-colors"
-                >
+            <div className="hidden sm:grid grid-cols-4 gap-5 py-3 px-5 bg-slate-700/50 rounded-t-lg border-b border-slate-600/50">
+                              <div className="font-semibold text-gray-300 flex items-center">
+                  <span className="min-w-0">{t('orrianJewelryBoxPage.drop', 'Objeto')}</span>
+                  <button
+                    onClick={handleNameSort}
+                    className="ml-2 p-1 hover:bg-slate-600/50 rounded transition-colors"
+                  >
                   {nameSortOrder === 'asc' ? (
                     <svg className="w-4 h-4 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
@@ -409,6 +530,23 @@ export default function OrrianJewelryBoxPage() {
                   ) : (
                     <svg className="w-4 h-4 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                    </svg>
+                  )}
+                </button>
+              </div>
+              <div className="font-semibold text-gray-300 text-center">
+                {t('orrianJewelryBoxPage.sellPrice', 'Precio Venta')}
+                <button
+                  onClick={handleSellPriceSort}
+                  className="ml-2 p-1 hover:bg-slate-600/50 rounded transition-colors"
+                >
+                  {sellPriceSortOrder === 'desc' ? (
+                    <svg className="w-4 h-4 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                    </svg>
+                  ) : (
+                    <svg className="w-4 h-4 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
                     </svg>
                   )}
                 </button>
@@ -430,15 +568,35 @@ export default function OrrianJewelryBoxPage() {
                   )}
                 </button>
               </div>
+              <div className="font-semibold text-gray-300 text-center">
+                {t('orrianJewelryBoxPage.totalGanado', 'Total Ganado')}
+                <button
+                  onClick={handleTotalSort}
+                  className="ml-2 p-1 hover:bg-slate-600/50 rounded transition-colors"
+                >
+                  {totalSortOrder === 'desc' ? (
+                    <svg className="w-4 h-4 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                    </svg>
+                  ) : (
+                    <svg className="w-4 h-4 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
+                    </svg>
+                  )}
+                </button>
+              </div>
             </div>
             
+            {/* Mobile Scrollable Table */}
+            <div className="sm:hidden overflow-x-auto">
+            <div className="min-w-[650px]">
             {/* Mobile Header */}
-            <div className="sm:hidden grid grid-cols-2 gap-4 py-3 px-4 bg-slate-700/50 rounded-t-lg border-b border-slate-600/50">
+            <div className="grid [grid-template-columns:2fr_1.2fr_0.8fr_1.2fr] gap-3 py-3 px-6 bg-slate-700/50 rounded-t-lg border-b border-slate-600/50">
               <div className="font-semibold text-gray-300 text-sm flex items-center">
-                <span>{t('orrianJewelryBoxPage.drop', 'Drop')}</span>
+                <span className="min-w-0">{t('orrianJewelryBoxPage.drop', 'Objeto')}</span>
                 <button
                   onClick={handleNameSort}
-                  className="ml-1 p-1 hover:bg-slate-600/50 rounded transition-colors"
+                  className="ml-2 p-1 hover:bg-slate-600/50 rounded transition-colors"
                 >
                   {nameSortOrder === 'asc' ? (
                     <svg className="w-3 h-3 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -451,11 +609,28 @@ export default function OrrianJewelryBoxPage() {
                   )}
                 </button>
               </div>
-              <div className="font-semibold text-gray-300 text-sm flex items-center justify-center">
-                <span>{t('orrianJewelryBoxPage.cantidad', 'Cantidad')}</span>
+              <div className="font-semibold text-gray-300 text-sm text-center">
+                {t('orrianJewelryBoxPage.sellPrice', 'Precio Venta')}
+                <button
+                  onClick={handleSellPriceSort}
+                  className="ml-2 p-1 hover:bg-slate-600/50 rounded transition-colors"
+                >
+                  {sellPriceSortOrder === 'desc' ? (
+                    <svg className="w-3 h-3 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                    </svg>
+                  ) : (
+                    <svg className="w-3 h-3 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
+                    </svg>
+                  )}
+                </button>
+              </div>
+              <div className="font-semibold text-gray-300 text-sm text-center">
+                {t('orrianJewelryBoxPage.cantidad', 'Cantidad')}
                 <button
                   onClick={handleQuantitySort}
-                  className="ml-1 p-1 hover:bg-slate-600/50 rounded transition-colors"
+                  className="ml-2 p-1 hover:bg-slate-600/50 rounded transition-colors"
                 >
                   {quantitySortOrder === 'desc' ? (
                     <svg className="w-3 h-3 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -468,35 +643,94 @@ export default function OrrianJewelryBoxPage() {
                   )}
                 </button>
               </div>
+              <div className="font-semibold text-gray-300 text-sm text-center">
+                {t('orrianJewelryBoxPage.totalGanado', 'Total Ganado')}
+                <button
+                  onClick={handleTotalSort}
+                  className="ml-2 p-1 hover:bg-slate-600/50 rounded transition-colors"
+                >
+                  {totalSortOrder === 'desc' ? (
+                    <svg className="w-3 h-3 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                    </svg>
+                  ) : (
+                    <svg className="w-3 h-3 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
+                    </svg>
+                  )}
+                </button>
+              </div>
             </div>
             
-            <div className="space-y-0">
+            {/* Mobile Rows */}
+            {finalSortedItems.map((item) => (
+              <div key={item.id} className="sm:hidden grid [grid-template-columns:2fr_1.2fr_0.8fr_1.2fr] gap-3 items-center py-3 px-6 hover:bg-slate-700/30 transition-colors">
+                <div className="flex items-center gap-3 min-w-0">
+                  <img 
+                    src={item.icon} 
+                    alt={item.name}
+                    className="w-6 h-6 rounded border border-slate-600/50 flex-shrink-0"
+                  />
+                  <span className="font-medium text-sm truncate">{item.name}</span>
+                </div>
+                <div className="text-center text-xs text-green-400">
+                  {item.sellPrice
+                    ? `${formatCoins(Math.floor(item.sellPrice * 0.85))}`
+                    : (KARMA_VALUES[item.id]
+                        ? `${KARMA_VALUES[item.id].toLocaleString()}`
+                        : (FAVOR_VALUES[item.id]
+                            ? `${formatCoins(FAVOR_VALUES[item.id])}`
+                            : 'N/A'))}
+                </div>
+                <div className="text-center text-xs text-green-400 font-semibold">+{item.quantity.toLocaleString()}</div>
+                <div className="text-center text-xs text-yellow-300">
+                  {(() => {
+                    if (item.sellPrice) return `${formatCoins(Math.floor(item.sellPrice * 0.85) * item.quantity)}`;
+                    if (FAVOR_VALUES[item.id]) return `${formatCoins(FAVOR_VALUES[item.id] * item.quantity)}`;
+                    if (KARMA_VALUES[item.id]) return `${KARMA_VALUES[item.id].toLocaleString()}`;
+                    return 'N/A';
+                  })()}
+                </div>
+              </div>
+            ))}
+            </div>
+            </div>
+            
+            {/* Desktop Rows */}
+            <div className="hidden sm:block space-y-0">
               {finalSortedItems.map((item) => (
                 <div key={item.id}>
-                  {/* Desktop Row */}
-                  <div className="hidden sm:grid grid-cols-2 gap-4 py-3 px-4 hover:bg-slate-700/30 transition-colors">
-                    <div className="flex items-center gap-3">
+                  <div className="grid grid-cols-4 gap-5 py-3 px-5 hover:bg-slate-700/30 transition-colors">
+                    <div className="flex items-center gap-3 min-w-0">
                       <img 
                         src={item.icon} 
                         alt={item.name}
-                        className="w-8 h-8 rounded border border-slate-600/50"
+                        className="w-8 h-8 rounded border border-slate-600/50 flex-shrink-0"
                       />
-                      <span className="font-medium text-sm sm:text-base">{item.name}</span>
+                      <span className="font-medium text-sm sm:text-base truncate">{item.name}</span>
+                    </div>
+                    <div className="text-center">
+                      <span className="text-green-400 font-semibold text-sm sm:text-base">
+                        {item.sellPrice
+                          ? formatCoins(Math.floor(item.sellPrice * 0.85))
+                          : (KARMA_VALUES[item.id]
+                              ? `${KARMA_VALUES[item.id].toLocaleString()}`
+                              : (FAVOR_VALUES[item.id]
+                                  ? formatCoins(FAVOR_VALUES[item.id])
+                                  : 'N/A'))}
+                      </span>
                     </div>
                     <span className="text-green-400 font-semibold text-sm sm:text-base text-center">+{item.quantity.toLocaleString()}</span>
-                  </div>
-                  
-                  {/* Mobile Row */}
-                  <div className="sm:hidden flex justify-between items-center py-3 px-4 hover:bg-slate-700/30 transition-colors">
-                    <div className="flex items-center gap-3">
-                      <img 
-                        src={item.icon} 
-                        alt={item.name}
-                        className="w-6 h-6 rounded border border-slate-600/50"
-                      />
-                      <span className="font-medium text-sm">{item.name}</span>
+                    <div className="text-center">
+                      <span className="text-yellow-300 font-semibold text-sm sm:text-base">
+                        {(() => {
+                          if (item.sellPrice) return formatCoins(Math.floor(item.sellPrice * 0.85) * item.quantity);
+                          if (FAVOR_VALUES[item.id]) return formatCoins(FAVOR_VALUES[item.id] * item.quantity);
+                          if (KARMA_VALUES[item.id]) return `${KARMA_VALUES[item.id].toLocaleString()}`;
+                          return 'N/A';
+                        })()}
+                      </span>
                     </div>
-                    <span className="text-green-400 font-semibold text-sm">+{item.quantity.toLocaleString()}</span>
                   </div>
                 </div>
               ))}
