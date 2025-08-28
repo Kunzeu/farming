@@ -1,72 +1,96 @@
 # True Farming 🎮
 
-Una aplicación web moderna para información de Guild Wars 2 **calculadoras de salvaging**.
+Una aplicación web moderna y completa para optimizar tu experiencia de farming en **Guild Wars 2**, con calculadoras avanzadas, rutas de farming, y herramientas de análisis del mercado.
 
-## ✨ Características
+## ✨ Características Principales
 
-### 🏠 Dashboard Principal
+### 🏠 **Dashboard Inteligente**
 - **Items Populares**: Muestra items populares para farming con precios en tiempo real
-- **Estadísticas**: Precios promedio, márgenes de ganancia y métricas del mercado
-- **Búsqueda**: Filtrado rápido de items por nombre
-- **Acciones Rápidas**: Enlaces directos a todas las secciones
+- **Estadísticas Avanzadas**: Precios promedio, márgenes de ganancia y métricas del mercado
+- **Búsqueda Inteligente**: Filtrado rápido de items por nombre con autocompletado
+- **Acciones Rápidas**: Enlaces directos a todas las secciones principales
 
-### 💰 Trading Post
+### 💰 **Trading Post Analytics**
 - **Precios en Tiempo Real**: Información actualizada del mercado desde la API oficial de GW2
-- **Búsqueda Avanzada**: Filtros por nombre, precio y margen de ganancia
-- **Ordenamiento**: Múltiples criterios de ordenamiento
-- **Estadísticas del Mercado**: Análisis de precios y tendencias
+- **Búsqueda Avanzada**: Filtros por nombre, precio, margen de ganancia y tipo de item
+- **Ordenamiento Inteligente**: Múltiples criterios de ordenamiento personalizables
+- **Análisis de Mercado**: Estadísticas detalladas de precios y tendencias
 
-### 🗺️ Rutas de Farming
-- **Guías Detalladas**: Rutas optimizadas para diferentes materiales
-- **Información de Waypoints**: Coordenadas y descripciones precisas
-- **Estimaciones de Oro**: Ganancias esperadas por hora
-- **Filtros por Dificultad**: Fácil, medio y difícil
+### 🗺️ **Rutas de Farming**
+- **Guías de Farming**: Rutas y estrategias para diferentes materiales
+- **Información de Mapas**: Detalles sobre ubicaciones y materiales disponibles
+- **Estimaciones de Oro**: Cálculos de ganancias esperadas por actividad
+- **Filtros por Tipo**: Organización por tipo de material y dificultad
 
-### 🔧 Calculadoras de Salvaging
+### 🔧 **Calculadoras de Salvaging Avanzadas**
 - **Unidentified Gear**: Calculadoras específicas para Common, Masterwork y Rare
 - **Precios en Tiempo Real**: Actualización automática cada 2 minutos desde GW2 API
 - **Kits Optimizados**: 
   - **Copper-Fed Salvage-o-Matic** para Common Unidentified Gear
   - **Runecrafter's Salvage-o-Matic** para Masterwork Unidentified Gear
   - **Silver-Fed Salvage-o-Matic** para Rare Unidentified Gear
-- **Drop Rates**: Tasas de drop estimadas basadas en datos de la comunidad
-- **Análisis de Rentabilidad**: Cálculo automático de ganancias/pérdidas
+- **Drop Rates Precisos**: Tasas de drop estimadas basadas en datos de la comunidad
+- **Análisis de Rentabilidad**: Cálculo automático de ganancias/pérdidas con ROI
 
-### 📚 Glosario de Conceptos
-- **Conceptos Centralizados**: Recopilación de todas las explicaciones y términos importantes
-- **Búsqueda y Filtros**: Encuentra rápidamente cualquier concepto por categoría o palabra clave
-- **Categorías Organizadas**: Salvaging, Farming, Trading Post, Crafting, Eventos, Festivales y más
-- **Consejos y Enlaces**: Información adicional con tips prácticos y enlaces a recursos externos
+### 📚 **Glosario de Conceptos Centralizado**
+- **Conceptos Organizados**: Recopilación de todas las explicaciones y términos importantes
+- **Búsqueda Inteligente**: Encuentra rápidamente cualquier concepto por categoría o palabra clave
+- **Categorías Estructuradas**: Salvaging, Farming, Trading Post, Crafting, Eventos, Festivales y más
+- **Consejos Prácticos**: Información adicional con tips útiles y enlaces a recursos externos
 - **Navegación Intuitiva**: Enlaces directos desde todas las páginas hacia el glosario
 
-### 📅 Eventos Mundiales
-- **Horarios en Tiempo Real**: Información actualizada de eventos
-- **Filtros por Mapa**: Búsqueda por ubicación específica
-- **Estados de Eventos**: Activo, preparación, completado, etc.
-- **Recompensas**: Lista detallada de recompensas por evento
+### 📅 **Festivales y Eventos**
+- **Festivales Especiales**: Dragon Bash, Halloween, Wintersday, Lunar New Year, Four Winds
+- **Información de Eventos**: Detalles sobre fechas, actividades y recompensas
+- **Navegación por Festival**: Acceso directo a cada festival específico
+- **Contenido Estacional**: Información relevante para cada época del año
 
-### ⚔️ Builds Meta
-- **Builds Optimizadas**: Las mejores builds para cada profesión
-- **Filtros Avanzados**: Por profesión, rol y dificultad
-- **Información Detallada**: Equipo, runas, sigilos y rotaciones
-- **Sistema de Rating**: Evaluaciones de la comunidad
+### ⚔️ **Fractales y Contenido Endgame**
+- **Calculadoras de Fractales**: Análisis detallado de recompensas por tier
+- **Estadísticas Avanzadas**: Valor total ganado, items obtenidos, cofres abiertos
+- **Análisis por Dificultad**: Separación por niveles Initiate, Adept, Expert y Fractal
+- **Optimización de Rutinas**: Recomendaciones para maximizar ganancias
 
-## 🛠️ Tecnologías Utilizadas
+### 🎯 **Calculadoras Especializadas**
+- **Cajas de Joyas Orrianas**: Análisis de rentabilidad y conversión de karma
+- **Rutinas Diarias**: Optimización de actividades diarias para farming
+- **Buyout Calculator**: Análisis de compras masivas y su rentabilidad
+- **Crafting Calculator**: Optimización de crafting y materiales
+- **Research Notes**: Calculadora para notas de investigación
 
-- **Frontend**: Next.js 14 con TypeScript
-- **Styling**: Tailwind CSS
-- **Animaciones**: Framer Motion
-- **Iconos**: Lucide React
+## 🛠️ Stack Tecnológico
+
+### **Frontend**
+- **Framework**: Next.js 14 con App Router
+- **Lenguaje**: TypeScript para type safety
+- **Styling**: Tailwind CSS para diseño responsive
+- **Animaciones**: Framer Motion para transiciones suaves
+- **Iconos**: Lucide React para iconografía consistente
+
+### **Backend & APIs**
 - **APIs**: Guild Wars 2 API oficial
-- **Estado**: React Hooks
-- **Responsive**: Diseño mobile-first
-- **Deployment**: Vercel
+- **Estado**: React Hooks y Context API
+- **Autenticación**: Sistema de autenticación con Discord
+- **Base de Datos**: Sistema de base de datos integrado
 
-## 🚀 Instalación
+### **Características Técnicas**
+- **Responsive**: Diseño mobile-first optimizado
+- **Performance**: Optimización de carga y rendimiento
+- **SEO**: Optimizado para motores de búsqueda
+- **PWA Ready**: Preparado para aplicación web progresiva
+
+## 🚀 Instalación y Configuración
+
+### **Requisitos Previos**
+- Node.js 18+ 
+- npm o yarn
+- Git
+
+### **Pasos de Instalación**
 
 1. **Clonar el repositorio**
    ```bash
-   git clone https://github.com/tu-usuario/gw2-farming-hub.git
+   git clone https://github.com/Kunzeu/gw2-farming-hub.git
    cd gw2-farming-hub
    ```
 
@@ -75,105 +99,209 @@ Una aplicación web moderna para información de Guild Wars 2 **calculadoras de 
    npm install
    ```
 
-3. **Ejecutar en desarrollo**
+3. **Configurar variables de entorno**
+   ```bash
+   cp .env.example .env.local
+   # Editar .env.local con tus configuraciones
+   ```
+
+4. **Ejecutar en desarrollo**
    ```bash
    npm run dev
    ```
 
-4. **Abrir en el navegador**
+5. **Abrir en el navegador**
    ```
    http://localhost:3000
    ```
 
-## 📁 Estructura del Proyecto
+### **Scripts Disponibles**
+```bash
+npm run dev          # Desarrollo local
+npm run build        # Build de producción
+npm run start        # Servidor de producción
+npm run lint         # Linting del código
+npm run type-check   # Verificación de tipos
+```
+
+## 📁 Arquitectura del Proyecto
 
 ```
 gw2-farming-hub/
 ├── src/
 │   ├── app/                    # Páginas de Next.js App Router
+│   │   ├── [locale]/          # Soporte multiidioma
 │   │   ├── page.tsx           # Dashboard principal
-│   │   ├── trading-post/      # Página del Trading Post
+│   │   ├── trading-post/      # Trading Post Analytics
 │   │   ├── farming-routes/    # Rutas de farming
 │   │   ├── salvage/           # Calculadoras de salvaging
-│   │   │   └── unidentified-gear/
-│   │   │       ├── common/    # Common Unidentified Gear
-│   │   │       ├── masterwork/ # Masterwork Unidentified Gear
-│   │   │       └── rare/      # Rare Unidentified Gear
+│   │   │   ├── common/        # Common Unidentified Gear
+│   │   │   ├── masterwork/    # Masterwork Unidentified Gear
+│   │   │   ├── rare/          # Rare Unidentified Gear
+│   │   │   └── research-notes/ # Research Notes
 │   │   ├── glossary/          # Glosario de conceptos
-│   │   ├── events/            # Eventos mundiales
-│   │   └── builds/            # Builds meta
+│   │   ├── festivals/         # Festivales y eventos
+│   │   ├── fractals/          # Calculadoras de fractales
+│   │   ├── orrian-jewelry-box/ # Cajas de joyas orrianas
+│   │   ├── daily-routine/     # Rutinas diarias
+│   │   ├── crafting/          # Calculadora de crafting
+│   │   ├── buyout/            # Calculadora de buyout
+│   │   └── auth/              # Sistema de autenticación
 │   ├── components/            # Componentes reutilizables
 │   │   ├── layout/           # Componentes de layout
 │   │   ├── auth/             # Componentes de autenticación
-│   │   └── ui/               # Componentes de UI
-│   │       ├── GlossaryLink.tsx # Enlace reutilizable al glosario
+│   │   ├── ui/               # Componentes de UI
+│   │   └── debug/            # Componentes de debugging
 │   ├── contexts/             # Contextos de React
+│   │   ├── AuthContext.tsx   # Contexto de autenticación
+│   │   └── I18nContext.tsx   # Contexto de internacionalización
 │   ├── hooks/                # Custom hooks
 │   ├── lib/                  # Utilidades y APIs
-│   └── types/                # Tipos TypeScript
+│   ├── i18n/                 # Internacionalización
+│   │   └── locales/         # Archivos de idiomas
+│   ├── types/                # Tipos TypeScript
+│   └── utils/                # Utilidades generales
 ├── public/                   # Archivos estáticos
+│   ├── images/              # Imágenes del proyecto
+│   └── data/                # Datos estáticos
+├── database/                 # Base de datos
 └── package.json
 ```
 
-## 🔧 APIs Utilizadas
+## 🌐 Soporte Multiidioma
 
-### Guild Wars 2 API
-- **Items**: Información detallada de items
+La aplicación soporta múltiples idiomas:
+- 🇪🇸 **Español** (es) - Idioma principal
+- 🇺🇸 **Inglés** (en) - Idioma secundario
+- 🇩🇪 **Alemán** (de) - Idioma adicional
+- 🇫🇷 **Francés** (fr) - Idioma adicional
+
+## 🔧 APIs y Integraciones
+
+### **Guild Wars 2 API**
+- **Items**: Información detallada de items y sus propiedades
 - **Precios**: Datos del Trading Post en tiempo real
-- **Eventos**: Estados de eventos mundiales
-- **Builds**: Información de builds del juego
+- **Eventos**: Estados de eventos mundiales y festivales
+- **Personajes**: Información de personajes y bancos
+- **Billetera**: Datos de monedas y materiales
 
-### Endpoints Principales
-- `https://api.guildwars2.com/v2/items` - Información de items
-- `https://api.guildwars2.com/v2/commerce/prices` - Precios del Trading Post
-- `https://api.guildwars2.com/v2/events` - Eventos mundiales
+### **Endpoints Principales Utilizados**
+```typescript
+// Items y precios
+GET /v2/items                    # Información de items
+GET /v2/commerce/prices          # Precios del Trading Post
+GET /v2/commerce/listings        # Listings del Trading Post
 
-## 🎨 Características de Diseño
+// Validación
+GET /v2/tokeninfo               # Información del token
+```
 
-- **Tema Oscuro**: Interfaz moderna con tema oscuro
-- **Responsive**: Optimizado para móviles y desktop
-- **Animaciones**: Transiciones suaves con Framer Motion
+## 🎨 Sistema de Diseño
+
+### **Características Visuales**
+- **Tema Oscuro**: Interfaz moderna con tema oscuro elegante
+- **Responsive Design**: Optimizado para todos los dispositivos
+- **Animaciones Suaves**: Transiciones fluidas con Framer Motion
 - **Accesibilidad**: Diseño accesible y fácil de usar
 - **Performance**: Carga rápida y optimizada
-- **UX Moderna**: Navegación intuitiva y feedback visual
 
-## 🔮 Próximas Características
+### **Componentes de UI**
+- **Cards**: Tarjetas informativas con diseño consistente
+- **Tables**: Tablas responsive con ordenamiento y filtros
+- **Modals**: Ventanas modales para información detallada
+- **Navigation**: Navegación intuitiva y responsive
+- **Forms**: Formularios con validación y feedback visual
 
-- [ ] **Sistema de Usuarios**: Cuentas y preferencias personalizadas
-- [ ] **Notificaciones**: Alertas de precios y eventos
-- [ ] **Widgets Personalizables**: Dashboard personalizable
-- [ ] **Modo Offline**: Funcionalidad básica sin conexión
-- [ ] **PWA**: Aplicación web progresiva
-- [ ] **API Backend**: Servidor propio para datos adicionales
-- [ ] **Integración con Discord**: Bot para notificaciones
-- [ ] **Análisis Avanzado**: Gráficos de precios y tendencias
+## 🔮 Roadmap y Próximas Características
+
+### **Corto Plazo (1-2 meses)**
+- [ ] **Sistema de Usuarios Funcional**: Perfiles básicos y preferencias
+- [ ] **Notificaciones Push**: Alertas de precios y eventos importantes
+- [ ] **Widgets Personalizables**: Dashboard completamente personalizable
+- [ ] **Modo Offline**: Funcionalidad básica sin conexión a internet
+- [ ] **Trading Post Analytics**: Análisis avanzado del mercado
+
+### **Mediano Plazo (3-6 meses)**
+- [ ] **PWA Completa**: Aplicación web progresiva con instalación
+- [ ] **API Backend Propia**: Servidor para datos adicionales y análisis
+- [ ] **Integración con Discord**: Bot para notificaciones y comandos
+- [ ] **Análisis Avanzado**: Gráficos de precios y tendencias temporales
+- [ ] **Sistema de Cuentas**: Gestión completa de usuarios y perfiles
+
+### **Largo Plazo (6+ meses)**
 - [ ] **Más Calculadoras**: Salvaging para otros tipos de items
-- [ ] **Historial de Precios**: Gráficos de evolución temporal
+- [ ] **Historial de Precios**: Base de datos histórica de precios
+- [ ] **Machine Learning**: Predicciones de precios y tendencias
+- [ ] **Móvil Nativo**: Aplicaciones móviles nativas
 
-## 🤝 Contribuir
+## 🤝 Contribuir al Proyecto
 
-1. Fork el proyecto
-2. Crea una rama para tu feature (`git checkout -b feature/AmazingFeature`)
-3. Commit tus cambios (`git commit -m 'Add some AmazingFeature'`)
-4. Push a la rama (`git push origin feature/AmazingFeature`)
-5. Abre un Pull Request
+### **Cómo Contribuir**
+
+1. **Fork el proyecto** en GitHub
+2. **Crea una rama** para tu feature (`git checkout -b feature/AmazingFeature`)
+3. **Commit tus cambios** (`git commit -m 'Add some AmazingFeature'`)
+4. **Push a la rama** (`git push origin feature/AmazingFeature`)
+5. **Abre un Pull Request** con descripción detallada
+
+### **Áreas de Contribución**
+- 🐛 **Bug Fixes**: Corrección de errores y problemas
+- ✨ **Nuevas Features**: Implementación de nuevas funcionalidades
+- 📚 **Documentación**: Mejora de documentación y guías
+- 🎨 **UI/UX**: Mejoras en diseño y experiencia de usuario
+- 🧪 **Testing**: Pruebas y testing del código
+- 🌐 **Traducciones**: Nuevos idiomas y mejoras en traducciones
+- 🔧 **Calculadoras**: Nuevas calculadoras y optimizaciones
+
+### **Estándares de Código**
+- **TypeScript**: Uso obligatorio de tipos
+- **ESLint**: Seguir las reglas de linting configuradas
+- **Prettier**: Formateo automático del código
+- **Commits**: Mensajes de commit descriptivos y claros
 
 ## 📝 Licencia
 
-Este proyecto está bajo la Licencia MIT. Ver el archivo `LICENSE` para más detalles.
+Este proyecto está bajo la **Licencia MIT**. Ver el archivo `LICENSE` para más detalles.
 
 ## 🙏 Agradecimientos
 
+### **Desarrolladores y Comunidad**
 - **ArenaNet**: Por proporcionar la API oficial de Guild Wars 2
-- **Comunidad GW2**: Por el feedback y sugerencias
-- **Next.js Team**: Por el framework increíble
-- **Tailwind CSS**: Por el sistema de diseño
-- **GW2 Wiki**: Por los datos de drop rates y información del juego
+- **Comunidad GW2**: Por el feedback constante y sugerencias valiosas
+- **Contribuidores**: Todos los que han contribuido al proyecto
 
-## 📞 Contacto
+### **Tecnologías y Herramientas**
+- **Next.js Team**: Por el framework increíble y App Router
+- **Tailwind CSS**: Por el sistema de diseño utility-first
+- **Framer Motion**: Por las animaciones fluidas y profesionales
+- **GW2 Wiki**: Por los datos de drop rates e información del juego
 
+## 📞 Contacto y Soporte
+
+### **Desarrollador Principal**
 - **GitHub**: [@Kunzeu](https://github.com/kunzeu)
+- **Discord**: Disponible en el servidor de True Farming
+
+### **Canales de Soporte**
+- **Issues**: Reporta bugs y solicita features en GitHub
+- **Discussions**: Participa en discusiones de la comunidad
+- **Wiki**: Documentación detallada del proyecto
 
 ---
 
-**¡Disfruta farming en Guild Wars 2!** 🎮✨
+## 🎯 **¿Por qué True Farming?**
+
+True Farming nace de la necesidad de tener **herramientas centralizadas y profesionales** para optimizar el farming en Guild Wars 2. A diferencia de otras soluciones dispersas, ofrecemos:
+
+- 🎯 **Todo en un lugar**: Todas las herramientas que necesitas en una sola aplicación
+- ⚡ **Tiempo Real**: Datos actualizados constantemente desde la API oficial
+- 📱 **Multiplataforma**: Funciona perfectamente en desktop y móvil
+- 🌐 **Multiidioma**: Soporte completo para la comunidad internacional
+- 🔧 **Mantenido**: Actualizaciones constantes y soporte activo
+- 🎮 **Específico para GW2**: Diseñado específicamente para las necesidades del juego
+
+**¡Optimiza tu farming y maximiza tus ganancias en Guild Wars 2!** 🎮✨
+
+---
+
+*Desarrollado con ❤️ para la comunidad de Guild Wars 2*
