@@ -102,8 +102,6 @@ const CraftingPage = () => {
     // Convertir de cobre a oro (10000 cobre = 1 oro)
     const priceInGold = buyPrice / 10000;
     
-    console.log('Item 24591 - Precio buy en cobre:', buyPrice, 'Precio en oro:', priceInGold);
-    
     return priceInGold;
   }, [itemPrices]);
 
@@ -117,8 +115,6 @@ const CraftingPage = () => {
     // Convertir de cobre a oro (10000 cobre = 1 oro) y multiplicar por 16
     const priceInGold = (buyPrice * 16) / 10000;
     
-    console.log('Item 19701 - Precio buy en cobre:', buyPrice, 'Precio × 16 en oro:', priceInGold);
-    
     return priceInGold;
   }, [itemPrices]);
 
@@ -131,9 +127,7 @@ const CraftingPage = () => {
     
     // Convertir de cobre a oro (10000 cobre = 1 oro) y multiplicar por 0.9
     const priceInGold = (sellPrice * 0.9) / 10000;
-    
-    console.log('Item 24295 - Precio sell en cobre:', sellPrice, 'Precio × 0.9 en oro:', priceInGold);
-    
+        
     return priceInGold;
   }, [itemPrices]);
 
@@ -146,9 +140,7 @@ const CraftingPage = () => {
     
     // Convertir de cobre a oro (10000 cobre = 1 oro) y multiplicar por 4
     const priceInGold = (buyPrice * 8) / 10000;
-    
-    console.log('Item 97102 - Precio buy en cobre:', buyPrice, 'Precio × 4 en oro:', priceInGold);
-    
+        
     return priceInGold;
   }, [itemPrices]);
 
@@ -161,8 +153,6 @@ const CraftingPage = () => {
     
     // Convertir de cobre a oro (10000 cobre = 1 oro) y multiplicar por 2 × 0.9
     const priceInGold = (sellPrice * 4 * 0.9) / 10000;
-    
-    console.log('Item 19721 - Precio sell en cobre:', sellPrice, 'Precio × 2 × 0.9 en oro:', priceInGold);
     
     return priceInGold;
   }, [itemPrices]);
@@ -177,8 +167,6 @@ const CraftingPage = () => {
     // Convertir de cobre a oro (10000 cobre = 1 oro) y multiplicar por 10
     const priceInGold = (buyPrice * 20) / 10000;
     
-    console.log('Item 19701 × 10 - Precio buy en cobre:', buyPrice, 'Precio × 10 en oro:', priceInGold);
-    
     return priceInGold;
   }, [itemPrices]);
 
@@ -190,13 +178,6 @@ const CraftingPage = () => {
     
     // Sumar los 3 valores
     const precioTotal = precio97102 + precio19721 + precio19701x10;
-    
-    console.log('Precios para 97487:', {
-      '97102 × 4 (buy)': precio97102,
-      '19721 × 2 (sell × 0.9)': precio19721,
-      '19701 × 10 (buy)': precio19701x10,
-      'Precio total (suma)': precioTotal
-    });
     
     return precioTotal;
   }, [calculateItem97102Price, calculateItem19721Price, calculateItem19701x10Price]);
@@ -272,8 +253,6 @@ const CraftingPage = () => {
       }
     });
     
-    console.log('Precio por nota más bajo calculado:', lowestPricePerNote);
-    
     return lowestPricePerNote === Infinity ? 0 : lowestPricePerNote;
   }, [itemPrices]);
 
@@ -285,12 +264,7 @@ const CraftingPage = () => {
     // Sumar: precio de 97487 + (precio por nota × 60)
     const precioTotal = precio97487 + (precioPorNota * 60);
     
-    console.log('Cálculo total con notas:', {
-      'Precio 97487': precio97487,
-      'Precio por nota': precioPorNota,
-      'Precio × 60 notas': precioPorNota * 60,
-      'Total final': precioTotal
-    });
+
     
     return precioTotal;
   }, [calculateTotalPriceFor97487, getLowestPricePerNote]);
@@ -302,8 +276,6 @@ const CraftingPage = () => {
     const sellPrice = item.sells?.unit_price || 0;
     const priceInGold = (sellPrice * 0.85) / 10000;
     
-    console.log('Item 97535 - Precio sell en cobre:', sellPrice, 'Precio × 0.85 en oro:', priceInGold);
-    
     return priceInGold;
   }, [itemPrices]);
 
@@ -313,12 +285,6 @@ const CraftingPage = () => {
     const totalFinal = calculateTotalWithNotes();
     const sumaCompleta = sumaTotal + totalFinal;
     
-    console.log('SUMA COMPLETA:', {
-      'Suma Total (24591 + 19701 + 24295)': sumaTotal,
-      'TOTAL FINAL (97487 + 60 notas)': totalFinal,
-      'SUMA COMPLETA': sumaCompleta
-    });
-    
     return sumaCompleta;
   }, [calculateItem24591Price, calculateItem19701Price, calculateItem24295Price, calculateTotalWithNotes]);
 
@@ -327,12 +293,6 @@ const CraftingPage = () => {
     const sumaCompleta = calculateSumaCompleta();
     const precio97535 = calculateItem97535Price();
     const resultadoFinal = precio97535 - sumaCompleta;
-    
-    console.log('RESULTADO FINAL:', {
-      'SUMA COMPLETA': sumaCompleta,
-      'Precio 97535 (sell × 0.85)': precio97535,
-      'RESULTADO FINAL (SUMA COMPLETA - 97535)': resultadoFinal
-    });
     
     return resultadoFinal;
   }, [calculateSumaCompleta, calculateItem97535Price]);
@@ -347,13 +307,7 @@ const CraftingPage = () => {
     
     if (resultadoFinal >= 1) {
       resultadoConDroprate = droprate * resultadoFinal;
-      console.log('RESULTADO CON DROPRATE:', {
-        'Resultado Final': resultadoFinal,
-        'Droprate': droprate,
-        'Resultado × Droprate': resultadoConDroprate
-      });
     } else {
-      console.log('RESULTADO CON DROPRATE: Resultado Final < 1, retornando 0');
     }
     
     return resultadoConDroprate;
@@ -368,12 +322,7 @@ const CraftingPage = () => {
     const profitMaxComunes = 1.1865 + 0.0527 + 0.1279 + 0.0657 + 0.2904; // Suma de los valores de la tabla
     
     const totalProfitMax = profitMaxRaros + profitMaxComunes;
-    
-    console.log('TOTAL PROFITMAX:', {
-      'ProfitMax Raros': profitMaxRaros,
-      'ProfitMax Comunes': profitMaxComunes,
-      'TOTAL PROFITMAX': totalProfitMax
-    });
+
     
     return totalProfitMax;
   }, [calculateResultadoFinalConDroprate]);
@@ -394,16 +343,12 @@ const CraftingPage = () => {
       setLastPriceUpdate(new Date());
       
       // Debug: mostrar qué precios se cargaron
-      console.log('Debug - Precios cargados de la API:', pricesMap);
-      console.log('Debug - IDs buscados:', tableItemIds);
-      console.log('Debug - ¿Tiene 97102?:', !!pricesMap[97102]);
-      console.log('Debug - ¿Tiene 19721?:', !!pricesMap[19721]);
-      console.log('Debug - ¿Tiene 19701?:', !!pricesMap[19701]);
     } catch (error) {
       console.error('Error fetching table item prices:', error);
     } finally {
       setIsLoadingPrices(false);
     }
+    
   }, [tableItemIds]);
 
   // Cargar precios de los items de las tablas al montar el componente y cada 5 minutos
