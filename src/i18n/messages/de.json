@@ -282,7 +282,8 @@
   "halloween.strategies.tp.sellDesc": "Verkaufe bestimmte Gegenstände, wenn ihre Preise Spitzen erreichen.",
   "halloween.strategies.tp.corn": "Handel mit Stück Candy-Corn",
   "halloween.strategies.tp.cornDesc": "Nutze die Preisschwankungen von Stück Candy-Corn.",
-  "fourWinds.zephyrite.description": "Die Zephyrit-Versorgungskisten sind die Hauptkisten dieses Festivals. Alle Rechner und \"Kistenöffnung\"-Daten basieren auf der Analyse dieser spezifischen Kisten.",
+  "fourWinds.zephyrite.name": "Zephyriten-Vorratskiste",
+  "fourWinds.zephyrite.description": "Die {name} sind die Hauptkisten dieses Festivals. Alle Rechner und \"Kistenöffnung\"-Daten basieren auf der Analyse dieser spezifischen Kisten.",
   "fourWinds.zephyrite.wikiLink": "Weitere Informationen im Wiki",
   "fourWinds.quick.expectedPerBox": "Wert pro Kiste (Durchschnitt)",
   "fourWinds.quick.variantWithoutSS": "Ohne SS",
@@ -629,7 +630,7 @@
   "fractals.sections.otherDrops": "Andere Drops",
   "fractals.sections.profits": "Gewinne",
   
-  "fractals.table.name": "Name",
+  "fractals.table.name": "Gegenstand",
   "fractals.table.basePrice": "Basispreis",
   "fractals.table.maxPrice": "Maximalpreis",
   "fractals.table.ratio": "Verhältnis %",

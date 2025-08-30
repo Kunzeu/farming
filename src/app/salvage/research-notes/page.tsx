@@ -137,7 +137,7 @@ export default function ResearchNotesPage() {
       13436: 300,
       13437: 300,
       13435: 300,
-             13438: 75,
+      13438: 75,
       104934: 0,
     };
     return craftingLevels[itemId] || 0;

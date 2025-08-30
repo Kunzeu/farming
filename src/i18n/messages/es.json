@@ -286,7 +286,8 @@
   "fourWinds.obtained.waiting": "Esperando IDs primarios...",
   "fourWinds.obtained.sendIds": "Envíame la lista de IDs y la añadiré.",
   "fourWinds.modal.selectItemsTitle": "Seleccionar ítems a mostrar",
-  "fourWinds.zephyrite.description": "Las Zephyrite Supply Box son las cajas principales de este festival. Todas las calculadoras y datos de \"Apertura de cajas\" están basados en el análisis de estas cajas específicas.",
+  "fourWinds.zephyrite.name": "Caja de suministros cefiritas",
+  "fourWinds.zephyrite.description": "Las {name} son las cajas principales de este festival. Todas las calculadoras y datos de \"Apertura de cajas\" están basados en el análisis de estas cajas específicas.",
   "fourWinds.zephyrite.wikiLink": "Ver más información en la Wiki",
   "fourWinds.quick.expectedPerBox": "Valor por caja (media)",
   "fourWinds.quick.variantWithoutSS": "Sin SS",
@@ -664,7 +665,7 @@
   "fractals.sections.otherDrops": "Otros Drops",
   "fractals.sections.profits": "Profits",
   
-  "fractals.table.name": "Nombre",
+  "fractals.table.name": "Item",
   "fractals.table.basePrice": "Precio Base",
   "fractals.table.maxPrice": "Precio Max",
   "fractals.table.ratio": "Ratio %",

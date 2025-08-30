@@ -153,7 +153,7 @@ const FourWindsPage = () => {
   const [primarySortDirection, setPrimarySortDirection] = useState<'asc' | 'desc'>('asc');
 
   // Estado para Zephyrite Supply Box
-  const [zephyriteBoxName, setZephyriteBoxName] = useState<string>('Zephyrite Supply Box');
+  const [zephyriteBoxName, setZephyriteBoxName] = useState<string>(t('fourWinds.zephyrite.name'));
 
   // Función para guardar datos en localStorage
   const saveCalculatorData = useCallback((data: BoxCalculatorItem[]) => {
@@ -232,17 +232,10 @@ const FourWindsPage = () => {
   }, [saveCalculatorData, lang]);
 
   // Función para obtener el nombre de Zephyrite Supply Box
-  const fetchZephyriteBoxName = useCallback(async () => {
-    try {
-      const response = await fetch(`https://api.guildwars2.com/v2/items/88145?lang=${lang}`);
-      if (response.ok) {
-        const data: Gw2Item = await response.json();
-        setZephyriteBoxName(data.name);
-      }
-    } catch (error) {
-      console.error('Error fetching Zephyrite Supply Box name:', error);
-    }
-  }, [lang]);
+  const fetchZephyriteBoxName = useCallback(() => {
+    // Usar la traducción en lugar de la API
+    setZephyriteBoxName(t('fourWinds.zephyrite.name'));
+  }, [t]);
 
   // Cargar nombres e iconos de los IDs primarios (Apertura de Cajas)
   const fetchPrimaryItems = useCallback(async () => {
@@ -286,7 +279,7 @@ const FourWindsPage = () => {
   useEffect(() => {
     fetchPrimaryItems();
     fetchZephyriteBoxName();
-  }, [fetchPrimaryItems, fetchZephyriteBoxName]);
+  }, [fetchPrimaryItems, fetchZephyriteBoxName, lang]);
 
   // Auto-actualización de ítems obtenidos cada 5 minutos
   useEffect(() => {
@@ -624,12 +617,22 @@ const FourWindsPage = () => {
                   <div className="flex items-start gap-3">
                     <Package className="w-6 h-6 text-blue-400 mt-1 flex-shrink-0" />
                     <div>
-                      <h3 className="text-blue-300 font-semibold mb-2">Zephyrite Supply Box</h3>
+                      <h3 className="text-blue-300 font-semibold mb-2">{zephyriteBoxName}</h3>
                       <p className="text-gray-200 text-sm mb-3">
-                        {t('fourWinds.zephyrite.description')}
+                        {t('fourWinds.zephyrite.description').replace('{name}', zephyriteBoxName)}
                       </p>
                       <a
-                        href={`https://wiki-${lang}.guildwars2.com/wiki/${encodeURIComponent(zephyriteBoxName.replace(/ /g, '_'))}`}
+                        href={(() => {
+                          // Mapear idiomas a las URLs correctas de la wiki
+                          // Para español, usar el nombre en inglés ya que la wiki española no existe
+                          const wikiUrls = {
+                            'en': `https://wiki.guildwars2.com/wiki/${encodeURIComponent(zephyriteBoxName.replace(/ /g, '_'))}`,
+                            'es': `https://wiki.guildwars2.com/wiki/Zephyrite_Supply_Box`,
+                            'de': `https://wiki-de.guildwars2.com/wiki/${encodeURIComponent(zephyriteBoxName.replace(/ /g, '_'))}`,
+                            'fr': `https://wiki-fr.guildwars2.com/wiki/${encodeURIComponent(zephyriteBoxName.replace(/ /g, '_'))}`
+                          };
+                          return wikiUrls[lang as keyof typeof wikiUrls] || wikiUrls['en'];
+                        })()}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="inline-flex items-center gap-2 px-3 py-2 bg-blue-600/80 hover:bg-blue-700/80 text-white rounded text-sm transition-all duration-200 hover:scale-105 border border-blue-500/50"

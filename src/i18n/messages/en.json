@@ -282,7 +282,8 @@
   "halloween.strategies.tp.sellDesc": "Sell specific items when their prices reach peaks.",
   "halloween.strategies.tp.corn": "Candy Corn Trading",
   "halloween.strategies.tp.cornDesc": "Take advantage of Candy Corn price fluctuations.",
-  "fourWinds.zephyrite.description": "The Zephyrite Supply Box are the main boxes of this festival. All calculators and \"Box Opening\" data are based on the analysis of these specific boxes.",
+  "fourWinds.zephyrite.name": "Zephyrite Supply Box",
+  "fourWinds.zephyrite.description": "The {name} are the main boxes of this festival. All calculators and \"Box Opening\" data are based on the analysis of these specific boxes.",
   "fourWinds.zephyrite.wikiLink": "See more information on the Wiki",
   "fourWinds.quick.expectedPerBox": "Value per box (avg)",
   "fourWinds.quick.variantWithoutSS": "Without SS",
@@ -629,7 +630,7 @@
   "fractals.sections.otherDrops": "Other Drops",
   "fractals.sections.profits": "Profits",
   
-  "fractals.table.name": "Name",
+  "fractals.table.name": "Item",
   "fractals.table.basePrice": "Base Price",
   "fractals.table.maxPrice": "Max Price",
   "fractals.table.ratio": "Ratio %",

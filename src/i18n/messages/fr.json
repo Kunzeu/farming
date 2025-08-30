@@ -283,7 +283,8 @@
   "halloween.strategies.tp.sellDesc": "Vendez certains objets lorsque leurs prix atteignent des pics.",
   "halloween.strategies.tp.corn": "Commerce de morceau de bonbon",
   "halloween.strategies.tp.cornDesc": "Profitez des fluctuations de prix du morceau de bonbon.",
-  "fourWinds.zephyrite.description": "Les Boîtes d'approvisionnement des Zéphyrites sont les boîtes principales de ce festival. Toutes les calculatrices et les données d'\"Ouverture de boîtes\" sont basées sur l'analyse de ces boîtes spécifiques.",
+  "fourWinds.zephyrite.name": "Boîte de provisions des Zéphyrites",
+  "fourWinds.zephyrite.description": "Les {name} sont les boîtes principales de ce festival. Toutes les calculatrices et les données d'\"Ouverture de boîtes\" sont basées sur l'analyse de ces boîtes spécifiques.",
   "fourWinds.zephyrite.wikiLink": "Voir plus d'informations sur le Wiki",
   "fourWinds.quick.expectedPerBox": "Valeur par boîte (moyenne)",
   "fourWinds.quick.variantWithoutSS": "Sans SS",
@@ -630,7 +631,7 @@
   "fractals.sections.otherDrops": "Autres Butins",
   "fractals.sections.profits": "Profits",
   
-  "fractals.table.name": "Nom",
+  "fractals.table.name": "Objet",
   "fractals.table.basePrice": "Prix de Base",
   "fractals.table.maxPrice": "Prix Max",
   "fractals.table.ratio": "Ratio %",
