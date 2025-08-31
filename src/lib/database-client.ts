@@ -158,11 +158,14 @@ class DatabaseClientService {
     }
     const data = await response.json();
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    return data.map((user: any) => ({
-      ...user,
-      createdAt: new Date(user.createdAt),
-      updatedAt: new Date(user.updatedAt)
-    }));
+    return data.map((user: any) => {
+      const { password, ...safeUser } = user;
+      return {
+        ...safeUser,
+        createdAt: new Date(safeUser.createdAt),
+        updatedAt: new Date(safeUser.updatedAt)
+      };
+    });
   }
 
   async createUser(user: Omit<User, 'id' | 'createdAt' | 'updatedAt'>): Promise<User> {
@@ -184,10 +187,11 @@ class DatabaseClientService {
     }
     
     const data = await response.json();
+    const { password, ...safeUser } = data;
     return {
-      ...data,
-      createdAt: new Date(data.createdAt),
-      updatedAt: new Date(data.updatedAt)
+      ...safeUser,
+      createdAt: new Date(safeUser.createdAt),
+      updatedAt: new Date(safeUser.updatedAt)
     };
   }
 
@@ -205,10 +209,11 @@ class DatabaseClientService {
     }
     
     const data = await response.json();
+    const { password, ...safeUser } = data;
     return {
-      ...data,
-      createdAt: new Date(data.createdAt),
-      updatedAt: new Date(data.updatedAt)
+      ...safeUser,
+      createdAt: new Date(safeUser.createdAt),
+      updatedAt: new Date(safeUser.updatedAt)
     };
   }
 
@@ -239,10 +244,11 @@ class DatabaseClientService {
     }
     
     const data = await response.json();
+    const { password, ...safeUser } = data;
     return {
-      ...data,
-      createdAt: new Date(data.createdAt),
-      updatedAt: new Date(data.updatedAt)
+      ...safeUser,
+      createdAt: new Date(safeUser.createdAt),
+      updatedAt: new Date(safeUser.updatedAt)
     };
   }
 
@@ -256,10 +262,11 @@ class DatabaseClientService {
     }
     
     const data = await response.json();
+    const { password, ...safeUser } = data;
     return {
-      ...data,
-      createdAt: new Date(data.createdAt),
-      updatedAt: new Date(data.updatedAt)
+      ...safeUser,
+      createdAt: new Date(safeUser.createdAt),
+      updatedAt: new Date(safeUser.updatedAt)
     };
   }
 
@@ -273,14 +280,15 @@ class DatabaseClientService {
     }
     
     const data = await response.json();
+    const { password, ...safeUser } = data;
     return {
-      ...data,
-      createdAt: new Date(data.createdAt),
-      updatedAt: new Date(data.updatedAt)
+      ...safeUser,
+      createdAt: new Date(safeUser.createdAt),
+      updatedAt: new Date(safeUser.updatedAt)
     };
   }
 
-  async getUserById(id: string): Promise<User | null> {
+  async getUserById(id: string): Promise<{ role: string; isActive: boolean } | null> {
     const response = await fetch(`/api/users/${id}`);
     if (!response.ok) {
       if (response.status === 404) {
@@ -291,9 +299,26 @@ class DatabaseClientService {
     
     const data = await response.json();
     return {
-      ...data,
-      createdAt: new Date(data.createdAt),
-      updatedAt: new Date(data.updatedAt)
+      role: data.role,
+      isActive: data.isActive
+    };
+  }
+
+  async getFullUserById(id: string): Promise<User | null> {
+    const response = await fetch(`/api/users/${id}?full=true`);
+    if (!response.ok) {
+      if (response.status === 404) {
+        return null;
+      }
+      throw new Error('Failed to fetch full user by ID');
+    }
+    
+    const data = await response.json();
+    const { password, ...safeUser } = data;
+    return {
+      ...safeUser,
+      createdAt: new Date(safeUser.createdAt),
+      updatedAt: new Date(safeUser.updatedAt)
     };
   }
 

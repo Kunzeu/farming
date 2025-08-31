@@ -498,24 +498,8 @@ const CraftingPage = () => {
     }
   }, [selectedSection, fetchConversionCalculations]);
 
-  // Función para formatear cobre a G S C
-  const formatGoldSilverCopper = (copper: number) => {
-    const sign = copper < 0 ? '-' : '';
-    const absCopper = Math.abs(copper);
-    const gold = Math.floor(absCopper / 10000);
-    const silver = Math.floor((absCopper % 10000) / 100);
-    const copperRemainder = absCopper % 100;
-    
-    // Siempre mostrar las 3 instancias con ceros a la izquierda
-    const goldStr = gold.toString().padStart(2, '0');
-    const silverStr = silver.toString().padStart(2, '0');
-    const copperStr = copperRemainder.toString().padStart(2, '0');
-    
-    return `${sign}${goldStr}G ${silverStr}S ${copperStr}C`;
-  };
-
-  // Función para color de ganancia con gradación progresiva
-  const getProfitColor = (profit: number) => {
+  // Función para color de ganancia con gradación progresiva - OPTIMIZADA
+  const getProfitColor = useCallback((profit: number) => {
     if (profit <= 0) return 'bg-red-600';                    // Pérdida
     
     // Calcular el 50% del profit máximo para gradación
@@ -525,7 +509,36 @@ const CraftingPage = () => {
     if (profit >= fiftyPercent) return 'bg-green-500';        // Top 50%
     if (profit >= fiftyPercent * 0.5) return 'bg-yellow-500'; // 25-50%
     return 'bg-orange-500';                                   // 0-25%
-  };
+  }, [conversionData]);
+
+  // Memoizar los datos de conversión para evitar re-renders
+  const memoizedConversionData = useMemo(() => conversionData, [conversionData]);
+
+  // Memoizar las funciones de cálculo para evitar re-renders
+  const memoizedFormatGoldSilverCopperJSX = useCallback((copper: number) => {
+    const sign = copper < 0 ? '-' : '';
+    const absCopper = Math.abs(copper);
+    const gold = Math.floor(absCopper / 10000);
+    const silver = Math.floor((absCopper % 10000) / 100);
+    const copperRemainder = absCopper % 100;
+    
+    const goldStr = gold.toString().padStart(2, '0');
+    const silverStr = silver.toString().padStart(2, '0');
+    const copperStr = copperRemainder.toString().padStart(2, '0');
+    
+    return (
+      <span style={{ 
+        display: 'inline-flex', 
+        whiteSpace: 'nowrap', 
+        wordBreak: 'keep-all',
+        flexWrap: 'nowrap',
+        alignItems: 'center',
+        gap: '2px'
+      }}>
+        {sign}{goldStr}G {silverStr}S {copperStr}C
+      </span>
+    );
+  }, []);
 
   const materialTiers = [
     {
@@ -596,6 +609,31 @@ const CraftingPage = () => {
   return (
     <>
       <Navigation />
+      <style jsx global>{`
+        .font-display {
+          font-display: swap;
+          font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+          font-weight: 900;
+          text-rendering: optimizeSpeed;
+          letter-spacing: -0.025em;
+        }
+        
+        /* Optimizaciones para mejorar LCP */
+        .text-white.font-black {
+          text-rendering: optimizeSpeed;
+          font-display: swap;
+        }
+        
+        /* Optimizar renderizado de tablas */
+        table {
+          contain: layout style paint;
+        }
+        
+        /* Optimizar animaciones */
+        .motion-div {
+          will-change: transform, opacity;
+        }
+      `}</style>
       <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           {/* Header */}
@@ -697,47 +735,47 @@ const CraftingPage = () => {
             {selectedSection === 'materials' && (
               <div className="space-y-8">
                 <div className="bg-gray-800/50 backdrop-blur-sm border border-gray-700 rounded-lg p-6">
-                                           <h2 className="text-2xl font-bold text-white mb-6 flex items-center">
-                       <Image 
-                         src="/images/expansions/volatile-magic.png" 
-                         alt="Magia Volatil" 
-                         width={24} 
-                         height={24} 
-                         className="mr-3"/>
-                       Magia Volatil
-                     </h2>
-                   
-                   {/* Descripción principal */}
-                   <div className="bg-gray-700/50 rounded-lg p-6 mb-6 border border-gray-600">
-                     <h3 className="text-xl font-bold text-white mb-4 flex items-center">
-                       <Image 
-                         src="/images/expansions/volatile-magic.png" 
-                         alt="Magia Volatil" 
-                         width={20} 
-                         height={20} 
-                         className="mr-3"/>
-                       ¿Qué es la Magia Volatil?
-                     </h3>
-                     <p className="text-gray-300 mb-4">
-                       La Magia Volatil es una divisa almacenada en la cartera y es la divisa principal de la 4.ª temporada del Mundo Viviente. 
-                       Se obtiene principalmente en mapas como Valle de Grothmar, Acantilados de Jahai, y otros mapas de la temporada 4.
-                     </p>
-                   </div>
+                  <h2 className="text-2xl font-bold text-white mb-6 flex items-center">
+                    <Image 
+                      src="/images/expansions/volatile-magic.png" 
+                      alt="Magia Volatil" 
+                      width={24} 
+                      height={24} 
+                      className="mr-3"/>
+                    Magia Volatil
+                  </h2>
+                  
+                  {/* Descripción principal */}
+                  <div className="bg-gray-700/50 rounded-lg p-6 mb-6 border border-gray-600">
+                    <h3 className="text-xl font-bold text-white mb-4 flex items-center">
+                      <Image 
+                        src="/images/expansions/volatile-magic.png" 
+                        alt="Magia Volatil" 
+                        width={20} 
+                        height={20} 
+                        className="mr-3"/>
+                      ¿Qué es la Magia Volatil?
+                    </h3>
+                    <p className="text-gray-300 mb-4">
+                      La Magia Volatil es una divisa almacenada en la cartera y es la divisa principal de la 4.ª temporada del Mundo Viviente. 
+                      Se obtiene principalmente en mapas como Valle de Grothmar, Acantilados de Jahai, y otros mapas de la temporada 4.
+                    </p>
+                  </div>
 
-                   <h3 className="text-xl font-bold text-white mb-6 text-center">
-                     ¿Cómo lo obtengo?
-                   </h3>
-                   <div className="flex justify-center gap-4 mb-8">
-                     <button className="px-6 py-3 bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white font-semibold rounded-lg transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105">
-                       LS4 Meta
-                     </button>
-                     <button className="px-6 py-3 bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white font-semibold rounded-lg transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105">
-                       Jardines
-                     </button>
-                     <button className="px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold rounded-lg transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105">
-                       Otros
-                     </button>
-                   </div>
+                  <h3 className="text-lg sm:text-xl font-bold text-white mb-4 sm:mb-6 text-center">
+                    ¿Cómo lo obtengo?
+                  </h3>
+                  <div className="flex flex-col sm:flex-row justify-center gap-3 sm:gap-4 mb-6 sm:mb-8">
+                    <button className="px-4 sm:px-6 py-2 sm:py-3 bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white font-semibold rounded-lg transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105 text-sm sm:text-base">
+                      LS4 Meta
+                    </button>
+                    <button className="px-4 sm:px-6 py-2 sm:py-3 bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white font-semibold rounded-lg transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105 text-sm sm:text-base">
+                      Jardines
+                    </button>
+                    <button className="px-4 sm:px-6 py-2 sm:py-3 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold rounded-lg transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105 text-sm sm:text-base">
+                      Otros
+                    </button>
+                  </div>
                    
                    <h3 className="text-xl font-bold text-white mb-6 text-center">
                      ¿En qué gastar la magia volátil?
@@ -750,43 +788,43 @@ const CraftingPage = () => {
                    </div>
                    
                    {/* Resumen de ganancias */}
-                   <div className="grid grid-cols-3 gap-4 mb-6">
-                     <div className="bg-gray-700 rounded p-3 border border-gray-600">
-                       <h6 className="text-sm font-bold text-gray-300 mb-2 text-center">Total Caja</h6>
+                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 mb-4 sm:mb-6">
+                     <div className="bg-gray-700 rounded p-2 sm:p-3 border border-gray-600">
+                       <h6 className="text-xs sm:text-sm font-bold text-gray-300 mb-2 text-center">Total Caja</h6>
                        <div className="text-center">
-                         <p className="text-green-400 font-bold text-lg">
-                           {isLoadingPrices ? <Loader2 className="w-4 h-4 animate-spin mx-auto" /> : formatGW2Price(
+                         <p className="text-green-400 font-bold text-sm sm:text-lg">
+                           {isLoadingPrices ? <Loader2 className="w-3 h-3 sm:w-4 sm:h-4 animate-spin mx-auto" /> : formatGW2Price(
                              calculateTableTotal(trofeosRarosIds, 1.0078) + 
                              calculateTableTotal(trofeosComunesIds, 4.99, true)
                            )}
                          </p>
-                         <p className="text-green-400 font-bold text-lg">
+                         <p className="text-green-400 font-bold text-sm sm:text-lg">
                            {isLoadingPrices ? 'Calculando...' : formatGW2Price(calculateTotalProfitMax())}
                          </p>
                        </div>
                      </div>
-                     <div className="bg-gray-700 rounded p-3 border border-gray-600">
-                       <h6 className="text-sm font-bold text-gray-300 mb-2 text-center">Profit Caja</h6>
+                     <div className="bg-gray-700 rounded p-2 sm:p-3 border border-gray-600">
+                       <h6 className="text-xs sm:text-sm font-bold text-gray-300 mb-2 text-center">Profit Caja</h6>
                        <div className="text-center">
-                         <p className="text-yellow-400 font-bold text-lg">
-                           {isLoadingPrices ? <Loader2 className="w-4 h-4 animate-spin mx-auto" /> : formatGW2Price(
+                         <p className="text-yellow-400 font-bold text-sm sm:text-lg">
+                           {isLoadingPrices ? <Loader2 className="w-3 h-3 sm:w-4 sm:h-4 animate-spin mx-auto" /> : formatGW2Price(
                              (calculateTableTotal(trofeosRarosIds, 1.0078) + calculateTableTotal(trofeosComunesIds, 4.99, true)) - 1
                            )}
                          </p>
-                         <p className="text-yellow-400 font-bold text-lg">
+                         <p className="text-yellow-400 font-bold text-sm sm:text-lg">
                            {isLoadingPrices ? 'Calculando...' : formatGW2Price(calculateTotalProfitMax() - 1)} {/* -1 = -10000 cobre */}
                          </p>
                        </div>
                      </div>
-                     <div className="bg-gray-700 rounded p-3 border border-gray-600">
-                       <h6 className="text-sm font-bold text-gray-300 mb-2 text-center">Profit VM</h6>
+                     <div className="bg-gray-700 rounded p-2 sm:p-3 border border-gray-600 sm:col-span-2 lg:col-span-1">
+                       <h6 className="text-xs sm:text-sm font-bold text-gray-300 mb-2 text-center">Profit VM</h6>
                        <div className="text-center">
-                         <p className="text-blue-400 font-bold text-lg">
-                           {isLoadingPrices ? <Loader2 className="w-4 h-4 animate-spin mx-auto" /> : formatGW2Price(
+                         <p className="text-blue-400 font-bold text-sm sm:text-lg">
+                           {isLoadingPrices ? <Loader2 className="w-3 h-3 sm:w-4 sm:h-4 animate-spin mx-auto" /> : formatGW2Price(
                              ((calculateTableTotal(trofeosRarosIds, 1.0078) + calculateTableTotal(trofeosComunesIds, 4.99, true)) - 1) / 250
                            )}
                          </p>
-                         <p className="text-blue-400 font-bold text-lg">
+                         <p className="text-blue-400 font-bold text-sm sm:text-lg">
                            {isLoadingPrices ? 'Calculando...' : formatGW2Price((calculateTotalProfitMax() - 1)/250)} {/* -1 = -10000 cobre */}
                          </p>
                        </div>
@@ -794,10 +832,10 @@ const CraftingPage = () => {
                    </div>
                    
                    {/* Data Source Info */}
-                   <div className="bg-blue-900/20 backdrop-blur-sm border border-blue-700/30 rounded-lg p-4 mb-6 md:mb-8">
-                     <div className="flex items-center gap-3">
-                       <div className="w-3 h-3 bg-blue-400 rounded-full animate-pulse"></div>
-                       <div className="text-blue-300 text-sm sm:text-base">
+                   <div className="bg-blue-900/20 backdrop-blur-sm border border-blue-700/30 rounded-lg p-3 sm:p-4 mb-4 sm:mb-6 md:mb-8">
+                     <div className="flex items-center gap-2 sm:gap-3">
+                       <div className="w-2 h-2 sm:w-3 sm:h-3 bg-blue-400 rounded-full animate-pulse flex-shrink-0"></div>
+                       <div className="text-blue-300 text-xs sm:text-sm md:text-base">
                          <strong>Fuente de Datos:</strong> Análisis basado en{' '}
                          <span className="text-blue-200 font-bold">500k Cargamento de trofeos</span> abiertos
                        </div>
@@ -805,20 +843,20 @@ const CraftingPage = () => {
                    </div>
                    
                    {/* Precios actualizados */}
-                   <div className="bg-green-900/20 backdrop-blur-sm border border-green-700/30 rounded-lg p-4 mb-6 md:mb-8">
-                     <div className="flex items-center justify-between">
-                       <div className="flex items-center gap-3">
-                         <div className="w-3 h-3 bg-green-400 rounded-full animate-pulse"></div>
-                         <div className="text-green-300 text-sm sm:text-base">
+                   <div className="bg-green-900/20 backdrop-blur-sm border border-green-700/30 rounded-lg p-3 sm:p-4 mb-4 sm:mb-6 md:mb-8">
+                     <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                       <div className="flex items-center gap-2 sm:gap-3">
+                         <div className="w-2 h-2 sm:w-3 sm:h-3 bg-green-400 rounded-full animate-pulse flex-shrink-0"></div>
+                         <div className="text-green-300 text-xs sm:text-sm md:text-base">
                            <strong>Precios actualizados:</strong> {lastPriceUpdate ? lastPriceUpdate.toLocaleTimeString('es-ES') : 'Cargando...'}
                          </div>
                        </div>
                        <button
                          onClick={fetchTableItemPrices}
                          disabled={isLoadingPrices}
-                         className="flex items-center gap-2 px-3 py-1 bg-green-600 hover:bg-green-700 disabled:bg-gray-600 text-white text-xs rounded transition-colors duration-200"
+                         className="flex items-center justify-center gap-2 px-2 sm:px-3 py-1 sm:py-2 bg-green-600 hover:bg-green-700 disabled:bg-gray-600 text-white text-xs sm:text-sm rounded transition-colors duration-200 w-full sm:w-auto"
                        >
-                         <RefreshCw className={`w-3 h-3 ${isLoadingPrices ? 'animate-spin' : ''}`} />
+                         <RefreshCw className={`w-3 h-3 sm:w-4 sm:h-4 ${isLoadingPrices ? 'animate-spin' : ''}`} />
                          {isLoadingPrices ? 'Actualizando...' : 'Actualizar'}
                        </button>
                      </div>
@@ -974,107 +1012,127 @@ const CraftingPage = () => {
                  </div>
                    
                    {/* Tabla de datos de trofeos */}
-                   <div className="bg-gray-900/80 backdrop-blur-sm border border-gray-700 rounded-lg p-3 sm:p-4 md:p-6 shadow-2xl mb-6 md:mb-8">
-                     <h5 className="text-lg sm:text-xl font-semibold text-white mb-3 md:mb-4">📊 Análisis de Recompensas por Cargamento de trofeos</h5>
+                   <div className="bg-gray-900/80 backdrop-blur-sm border border-gray-700 rounded-lg p-2 sm:p-4 md:p-6 shadow-2xl mb-4 sm:mb-6 md:mb-8">
+                     <h5 className="text-base sm:text-lg md:text-xl font-semibold text-white mb-3 sm:mb-4 text-center">📊 Análisis de Recompensas por Cargamento de trofeos</h5>
                      
                      {/* Tabla de Trofeos Raros (Droprate 1.0078) */}
-                     <div className="mb-8">
+                     <div className="mb-6 sm:mb-8">
                        <div className="overflow-x-auto">
-                         <table className="w-full text-xs sm:text-sm">
+                         <table className="w-full text-xs sm:text-sm min-w-[400px] sm:min-w-[500px] md:min-w-[600px]">
+                           <thead>
+                             <tr className="border-b border-gray-700 bg-gray-800/60">
+                               <th className="text-left p-2 sm:p-3 text-gray-200 font-semibold text-xs sm:text-sm">Item</th>
+                               <th className="p-1 sm:p-2 md:p-3 text-center text-gray-200 font-semibold text-xs sm:text-sm">Droprate</th>
+                               <th className="p-1 sm:p-2 md:p-3 text-center text-gray-200 font-semibold text-xs sm:text-sm">Precio BASE</th>
+                               <th className="p-1 sm:p-2 md:p-3 text-center text-gray-200 font-semibold text-xs sm:text-sm">Profit Max</th>
+                             </tr>
+                           </thead>
                            <tbody>
-                             <tr className="border-b border-gray-800">
-                               <td className="p-1 sm:p-2 text-center text-gray-300 font-semibold bg-gray-700/30">Item</td>
-                                                                <td className="p-1 sm:p-2 text-center text-gray-300">
-                                   <div className="flex items-center justify-center gap-2">
-                                     <img src="https://render.guildwars2.com/file/1A930A6A7B5B01EAB4CB36E79014C12B500BF6B3/66950.png" alt="Vial de sangre poderosa" className="w-8 h-8" />
-                                   </div>
-                                 </td>
-                                 <td className="p-1 sm:p-2 text-center text-gray-300">
-                                   <div className="flex items-center justify-center gap-2">
-                                     <img src="https://render.guildwars2.com/file/0EE45FBB1E1A004600E9BAA7097830B2DE08587D/66828.png" alt="Hueso antiguo" className="w-8 h-8" />
-                                   </div>
-                                 </td>
-                                 <td className="p-1 sm:p-2 text-center text-gray-300">
-                                   <div className="flex items-center justify-center gap-2">
-                                     <img src="https://render.guildwars2.com/file/043E2BBA270F381870F1B45E7C09C098CAFE3D14/66996.png" alt="Garra despiadada" className="w-8 h-8" />
-                                   </div>
-                                 </td>
-                                 <td className="p-1 sm:p-2 text-center text-gray-300">
-                                   <div className="flex items-center justify-center gap-2">
-                                     <img src="https://render.guildwars2.com/file/F2050EE1A7A43EDCDCB1E971FDA608AD0566E4DA/66998.png" alt="Colmillo feroz" className="w-8 h-8" />
-                                   </div>
-                                 </td>
-                                 <td className="p-1 sm:p-2 text-center text-gray-300">
-                                   <div className="flex items-center justify-center gap-2">
-                                     <img src="https://render.guildwars2.com/file/7061C82F4F9D0C585742F545C40A0F06BE0154DC/66527.png" alt="Escama blindada" className="w-8 h-8" />
-                                   </div>
-                                 </td>
-                                 <td className="p-1 sm:p-2 text-center text-gray-300">
-                                   <div className="flex items-center justify-center gap-2">
-                                     <img src="https://render.guildwars2.com/file/C1ABF9082901FC3CEABC3138CBCCA1DAD5D41812/66955.png" alt="Tótem elaborado" className="w-8 h-8" />
-                                   </div>
-                                 </td>
-                                 <td className="p-1 sm:p-2 text-center text-gray-300">
-                                   <div className="flex items-center justify-center gap-2">
-                                     <img src="https://render.guildwars2.com/file/543EC37900EA2A57E77FA891193A48D66AA224AB/66939.png" alt="Vesícula de veneno poderoso" className="w-8 h-8" />
-                                   </div>
-                                 </td>
-                                 <td className="p-1 sm:p-2 text-center text-gray-300">
-                                   <div className="flex items-center justify-center gap-2">
-                                     <img src="https://render.guildwars2.com/file/080D00670558CD9E580D5662030394B2206E92A6/434537.png" alt="Montón de polvo cristalino" className="w-8 h-8" />
-                                   </div>
-                                 </td>
-                             </tr>
-                             <tr className="border-b border-gray-800">
-                               <td className="p-1 sm:p-2 text-center text-gray-300 font-semibold bg-gray-700/30">Droprate</td>
-                               <td className="p-1 sm:p-2 text-center text-gray-400">1.0078</td>
-                               <td className="p-1 sm:p-2 text-center text-gray-400">1.0078</td>
-                               <td className="p-1 sm:p-2 text-center text-gray-400">1.0078</td>
-                               <td className="p-1 sm:p-2 text-center text-gray-400">1.0078</td>
-                               <td className="p-1 sm:p-2 text-center text-gray-400">1.0078</td>
-                               <td className="p-1 sm:p-2 text-center text-gray-400">1.0078</td>
-                               <td className="p-1 sm:p-2 text-center text-gray-400">1.0078</td>
-                               <td className="p-1 sm:p-2 text-center text-gray-400">1.0078</td>
-                             </tr>
-                             <tr className="border-b border-gray-800">
-                               <td className="p-1 sm:p-2 text-center text-gray-300 font-semibold bg-gray-700/30">PrecioBASE</td>
-                               <td className="p-1 sm:p-2 text-center text-green-400">
-                                 {isLoadingPrices ? <Loader2 className="w-4 h-4 animate-spin mx-auto" /> : formatGW2Price(calculateBasePrice(24295, 1.0078))}
+                             <tr className="border-b border-gray-800 hover:bg-gray-800/50 transition-colors">
+                               <td className="p-2 sm:p-2 text-gray-300">
+                                 <div className="flex items-center gap-1 sm:gap-2">
+                                   <img src="https://render.guildwars2.com/file/1A930A6A7B5B01EAB4CB36E79014C12B500BF6B3/66950.png" alt="Vial de sangre poderosa" className="w-5 h-5 sm:w-6 sm:h-6 md:w-8 md:h-8 flex-shrink-0" />
+                                   <span className="text-xs sm:text-sm truncate">Vial de sangre poderosa</span>
+                                 </div>
                                </td>
-                               <td className="p-1 sm:p-2 text-center text-green-400">
-                                 {isLoadingPrices ? <Loader2 className="w-4 h-4 animate-spin mx-auto" /> : formatGW2Price(calculateBasePrice(24358, 1.0078))}
+                               <td className="p-1 sm:p-1 md:p-2 text-center text-blue-400 font-semibold text-xs sm:text-sm">1.0078</td>
+                               <td className="p-1 sm:p-2 md:p-3 text-center text-green-400 font-semibold text-xs sm:text-sm">
+                                 {isLoadingPrices ? <Loader2 className="w-3 h-3 sm:w-4 sm:h-4 animate-spin mx-auto" /> : formatGW2Price(calculateBasePrice(24295, 1.0078))}
                                </td>
-                               <td className="p-1 sm:p-2 text-center text-green-400">
-                                 {isLoadingPrices ? <Loader2 className="w-4 h-4 animate-spin mx-auto" /> : formatGW2Price(calculateBasePrice(24351, 1.0078))}
-                               </td>
-                               <td className="p-1 sm:p-2 text-center text-green-400">
-                                 {isLoadingPrices ? <Loader2 className="w-4 h-4 animate-spin mx-auto" /> : formatGW2Price(calculateBasePrice(24357, 1.0078))}
-                               </td>
-                               <td className="p-1 sm:p-2 text-center text-green-400">
-                                 {isLoadingPrices ? <Loader2 className="w-4 h-4 animate-spin mx-auto" /> : formatGW2Price(calculateBasePrice(24289, 1.0078))}
-                               </td>
-                               <td className="p-1 sm:p-2 text-center text-green-400">
-                                 {isLoadingPrices ? <Loader2 className="w-4 h-4 animate-spin mx-auto" /> : formatGW2Price(calculateBasePrice(24300, 1.0078))}
-                               </td>
-                               <td className="p-1 sm:p-2 text-center text-green-400">
-                                 {isLoadingPrices ? <Loader2 className="w-4 h-4 animate-spin mx-auto" /> : formatGW2Price(calculateBasePrice(24283, 1.0078))}
-                               </td>
-                               <td className="p-1 sm:p-2 text-center text-green-400">
-                                 {isLoadingPrices ? <Loader2 className="w-4 h-4 animate-spin mx-auto" /> : formatGW2Price(calculateBasePrice(24277, 1.0078))}
-                               </td>
-                             </tr>
-                             <tr>
-                               <td className="p-1 sm:p-2 text-center text-gray-300 font-semibold bg-gray-700/30">ProfitMax</td>
-                               <td className="p-1 sm:p-2 text-center text-green-400">
+                               <td className="p-1 sm:p-2 md:p-3 text-center text-yellow-400 font-semibold text-xs sm:text-sm">
                                  {isLoadingPrices ? 'Calculando...' : formatGW2Price(calculateResultadoFinalConDroprate())}
                                </td>
-                               <td className="p-1 sm:p-2 text-center text-green-400">01G 18S 65C</td>
-                               <td className="p-1 sm:p-2 text-center text-green-400">00G 05S 27C</td>
-                               <td className="p-1 sm:p-2 text-center text-gray-400">00G 00S 00C</td>
-                               <td className="p-1 sm:p-2 text-center text-gray-400">00G 00S 00C</td>
-                               <td className="p-1 sm:p-2 text-center text-green-400">00G 12S 79C</td>
-                               <td className="p-1 sm:p-2 text-center text-green-400">00G 06S 57C</td>
-                               <td className="p-1 sm:p-2 text-center text-green-400">00G 29S 04C</td>
+                             </tr>
+                             <tr className="border-b border-gray-800 hover:bg-gray-800/50 transition-colors">
+                               <td className="p-2 sm:p-2 text-gray-300">
+                                 <div className="flex items-center gap-1 sm:gap-2">
+                                   <img src="https://render.guildwars2.com/file/0EE45FBB1E1A004600E9BAA7097830B2DE08587D/66828.png" alt="Hueso antiguo" className="w-6 h-6 sm:w-8 sm:h-8 flex-shrink-0" />
+                                   <span className="text-xs sm:text-sm truncate">Hueso antiguo</span>
+                                 </div>
+                               </td>
+                               <td className="p-1 sm:p-1 md:p-2 text-center text-blue-400 font-semibold text-xs sm:text-sm">1.0078</td>
+                               <td className="p-1 sm:p-2 md:p-3 text-center text-green-400 font-semibold text-xs sm:text-sm">
+                                 {isLoadingPrices ? <Loader2 className="w-3 h-3 sm:w-4 sm:h-4 animate-spin mx-auto" /> : formatGW2Price(calculateBasePrice(24358, 1.0078))}
+                               </td>
+                               <td className="p-1 sm:p-2 md:p-3 text-center text-yellow-400 font-semibold text-xs sm:text-sm">01G 18S 65C</td>
+                             </tr>
+                             <tr className="border-b border-gray-800 hover:bg-gray-800/50 transition-colors">
+                               <td className="p-2 sm:p-2 text-gray-300">
+                                 <div className="flex items-center gap-1 sm:gap-2">
+                                   <img src="https://render.guildwars2.com/file/043E2BBA270F381870F1B45E7C09C098CAFE3D14/66996.png" alt="Garra despiadada" className="w-6 h-6 sm:w-8 sm:h-8 flex-shrink-0" />
+                                   <span className="text-xs sm:text-sm truncate">Garra despiadada</span>
+                                 </div>
+                               </td>
+                               <td className="p-1 sm:p-1 md:p-2 text-center text-blue-400 font-semibold text-xs sm:text-sm">1.0078</td>
+                               <td className="p-1 sm:p-2 md:p-3 text-center text-green-400 font-semibold text-xs sm:text-sm">
+                                 {isLoadingPrices ? <Loader2 className="w-3 h-3 sm:w-4 sm:h-4 animate-spin mx-auto" /> : formatGW2Price(calculateBasePrice(24351, 1.0078))}
+                               </td>
+                               <td className="p-1 sm:p-2 md:p-3 text-center text-yellow-400 font-semibold text-xs sm:text-sm">00G 05S 27C</td>
+                             </tr>
+                             <tr className="border-b border-gray-800 hover:bg-gray-800/50 transition-colors">
+                               <td className="p-2 sm:p-2 text-gray-300">
+                                 <div className="flex items-center gap-1 sm:gap-2">
+                                   <img src="https://render.guildwars2.com/file/F2050EE1A7A43EDCDCB1E971FDA608AD0566E4DA/66998.png" alt="Colmillo feroz" className="w-6 h-6 sm:w-8 sm:h-8 flex-shrink-0" />
+                                   <span className="text-xs sm:text-sm truncate">Colmillo feroz</span>
+                                 </div>
+                               </td>
+                               <td className="p-1 sm:p-1 md:p-2 text-center text-blue-400 font-semibold text-xs sm:text-sm">1.0078</td>
+                               <td className="p-1 sm:p-2 md:p-3 text-center text-green-400 font-semibold text-xs sm:text-sm">
+                                 {isLoadingPrices ? <Loader2 className="w-3 h-3 sm:w-4 sm:h-4 animate-spin mx-auto" /> : formatGW2Price(calculateBasePrice(24357, 1.0078))}
+                               </td>
+                               <td className="p-1 sm:p-2 md:p-3 text-center text-gray-400 font-semibold text-xs sm:text-sm">00G 00S 00C</td>
+                             </tr>
+                             <tr className="border-b border-gray-800 hover:bg-gray-800/50 transition-colors">
+                               <td className="p-2 sm:p-2 text-gray-300">
+                                 <div className="flex items-center gap-1 sm:gap-2">
+                                   <img src="https://render.guildwars2.com/file/7061C82F4F9D0C585742F545C40A0F06BE0154DC/66527.png" alt="Escama blindada" className="w-6 h-6 sm:w-8 sm:h-8 flex-shrink-0" />
+                                   <span className="text-xs sm:text-sm truncate">Escama blindada</span>
+                                 </div>
+                               </td>
+                               <td className="p-1 sm:p-1 md:p-2 text-center text-blue-400 font-semibold text-xs sm:text-sm">1.0078</td>
+                               <td className="p-1 sm:p-2 md:p-3 text-center text-green-400 font-semibold text-xs sm:text-sm">
+                                 {isLoadingPrices ? <Loader2 className="w-3 h-3 sm:w-4 sm:h-4 animate-spin mx-auto" /> : formatGW2Price(calculateBasePrice(24289, 1.0078))}
+                               </td>
+                               <td className="p-1 sm:p-2 md:p-3 text-center text-gray-400 font-semibold text-xs sm:text-sm">00G 00S 00C</td>
+                             </tr>
+                             <tr className="border-b border-gray-800 hover:bg-gray-800/50 transition-colors">
+                               <td className="p-2 sm:p-2 text-gray-300">
+                                 <div className="flex items-center gap-1 sm:gap-2">
+                                   <img src="https://render.guildwars2.com/file/C1ABF9082901FC3CEABC3138CBCCA1DAD5D41812/66955.png" alt="Tótem elaborado" className="w-6 h-6 sm:w-8 sm:h-8 flex-shrink-0" />
+                                   <span className="text-xs sm:text-sm truncate">Tótem elaborado</span>
+                                 </div>
+                               </td>
+                               <td className="p-1 sm:p-1 md:p-2 text-center text-blue-400 font-semibold text-xs sm:text-sm">1.0078</td>
+                               <td className="p-1 sm:p-2 md:p-3 text-center text-green-400 font-semibold text-xs sm:text-sm">
+                                 {isLoadingPrices ? <Loader2 className="w-3 h-3 sm:w-4 sm:h-4 animate-spin mx-auto" /> : formatGW2Price(calculateBasePrice(24300, 1.0078))}
+                               </td>
+                               <td className="p-1 sm:p-2 md:p-3 text-center text-yellow-400 font-semibold text-xs sm:text-sm">00G 12S 79C</td>
+                             </tr>
+                             <tr className="border-b border-gray-800 hover:bg-gray-800/50 transition-colors">
+                               <td className="p-2 sm:p-2 text-gray-300">
+                                 <div className="flex items-center gap-1 sm:gap-2">
+                                   <img src="https://render.guildwars2.com/file/543EC37900EA2A57E77FA891193A48D66AA224AB/66939.png" alt="Vesícula de veneno poderoso" className="w-6 h-6 sm:w-8 sm:h-8 flex-shrink-0" />
+                                   <span className="text-xs sm:text-sm truncate">Vesícula de veneno poderoso</span>
+                                 </div>
+                               </td>
+                               <td className="p-1 sm:p-1 md:p-2 text-center text-blue-400 font-semibold text-xs sm:text-sm">1.0078</td>
+                               <td className="p-1 sm:p-2 md:p-3 text-center text-green-400 font-semibold text-xs sm:text-sm">
+                                 {isLoadingPrices ? <Loader2 className="w-3 h-3 sm:w-4 sm:h-4 animate-spin mx-auto" /> : formatGW2Price(calculateBasePrice(24283, 1.0078))}
+                               </td>
+                               <td className="p-1 sm:p-2 md:p-3 text-center text-yellow-400 font-semibold text-xs sm:text-sm">00G 06S 57C</td>
+                             </tr>
+                             <tr className="border-b border-gray-800 hover:bg-gray-800/50 transition-colors">
+                               <td className="p-2 sm:p-2 text-gray-300">
+                                 <div className="flex items-center gap-1 sm:gap-2">
+                                   <img src="https://render.guildwars2.com/file/080D00670558CD9E580D5662030394B2206E92A6/434537.png" alt="Montón de polvo cristalino" className="w-6 h-6 sm:w-8 sm:h-8 flex-shrink-0" />
+                                   <span className="text-xs sm:text-sm truncate">Montón de polvo cristalino</span>
+                                 </div>
+                               </td>
+                               <td className="p-1 sm:p-1 md:p-2 text-center text-blue-400 font-semibold text-xs sm:text-sm">1.0078</td>
+                               <td className="p-1 sm:p-2 md:p-3 text-center text-green-400 font-semibold text-xs sm:text-sm">
+                                 {isLoadingPrices ? <Loader2 className="w-3 h-3 sm:w-4 sm:h-4 animate-spin mx-auto" /> : formatGW2Price(calculateBasePrice(24277, 1.0078))}
+                               </td>
+                               <td className="p-1 sm:p-2 md:p-3 text-center text-yellow-400 font-semibold text-xs sm:text-sm">00G 29S 04C</td>
                              </tr>
                            </tbody>
                          </table>
@@ -1082,156 +1140,133 @@ const CraftingPage = () => {
                      </div>
                      
                      {/* Separador visual */}
-                     <div className="my-8 border-t-2 border-gray-600/50"></div>
+                     <div className="my-6 sm:my-8 border-t-2 border-gray-600/50"></div>
                      
                      {/* Tabla de Trofeos Comunes (Droprate 4.99) */}
-                     <div className="mb-8">
+                     <div className="mb-6 sm:mb-8">                    
                        <div className="overflow-x-auto">
-                         <table className="w-full text-xs sm:text-sm">
+                         <table className="w-full text-xs sm:text-sm min-w-[400px] sm:min-w-[500px] md:min-w-[600px]">
+                           <thead>
+                             <tr className="border-b border-gray-700 bg-gray-800/60">
+                               <th className="text-left p-2 sm:p-3 text-gray-200 font-semibold text-xs sm:text-sm">Item</th>
+                               <th className="p-1 sm:p-2 md:p-3 text-center text-gray-200 font-semibold text-xs sm:text-sm">Droprate</th>
+                               <th className="p-1 sm:p-2 md:p-3 text-center text-gray-200 font-semibold text-xs sm:text-sm">Precio BASE</th>
+                               <th className="p-1 sm:p-2 md:p-3 text-center text-gray-200 font-semibold text-xs sm:text-sm">Profit Max</th>
+                             </tr>
+                           </thead>
                            <tbody>
-                             <tr className="border-b border-gray-800">
-                               <td className="p-1 sm:p-2 text-center text-gray-300 font-semibold bg-gray-700/30">Item</td>
-                               <td className="p-1 sm:p-2 text-center text-gray-300">
-                                 <div className="flex items-center justify-center gap-2">
-                                   <img src="https://render.guildwars2.com/file/99AAE49EABF9A2415940FDB83CA1CE5E6E256020/66949.png" alt="Vial de sangre potente" className="w-8 h-8" />
+                             <tr className="border-b border-gray-800 hover:bg-gray-800/50 transition-colors">
+                               <td className="p-2 sm:p-2 text-gray-300">
+                                 <div className="flex items-center gap-1 sm:gap-2">
+                                   <img src="https://render.guildwars2.com/file/99AAE49EABF9A2415940FDB83CA1CE5E6E256020/66949.png" alt="Vial de sangre potente" className="w-6 h-6 sm:w-8 sm:h-8 flex-shrink-0" />
+                                   <span className="text-xs sm:text-sm truncate">Vial de sangre potente</span>
                                  </div>
                                </td>
-                               <td className="p-1 sm:p-2 text-center text-gray-300">
-                                 <div className="flex items-center justify-center gap-2">
-                                   <img src="https://render.guildwars2.com/file/13F077BA5D5C6324CFCB0A2E39050F24A441190B/66987.png" alt="Hueso grande" className="w-8 h-8" />
-                                 </div>
+                               <td className="p-1 sm:p-1 md:p-2 text-center text-blue-400 font-semibold text-xs sm:text-sm">4.99</td>
+                               <td className="p-1 sm:p-2 md:p-3 text-center text-green-400 font-semibold text-xs sm:text-sm">
+                                 {isLoadingPrices ? <Loader2 className="w-3 h-3 sm:w-4 sm:h-4 animate-spin mx-auto" /> : formatGW2Price(calculateBasePriceComunes(24294, 4.99))}
                                </td>
-                               <td className="p-1 sm:p-2 text-center text-gray-300">
-                                 <div className="flex items-center justify-center gap-2">
-                                   <img src="https://render.guildwars2.com/file/3A4D64F4CE2951F358DE0AFCEA6551050FB4B4A7/66420.png" alt="Garra grande" className="w-8 h-8" />
-                                 </div>
-                               </td>
-                               <td className="p-1 sm:p-2 text-center text-gray-300">
-                                 <div className="flex items-center justify-center gap-2">
-                                   <img src="https://render.guildwars2.com/file/DED4F23E44430C2BE1C0D491145A4946FC7D7C6F/223793.png" alt="Colmillo grande" className="w-8 h-8" />
-                                 </div>
-                               </td>
-                               <td className="p-1 sm:p-2 text-center text-gray-300">
-                                 <div className="flex items-center justify-center gap-2">
-                                   <img src="https://render.guildwars2.com/file/F94ECFFF0FA9C321C108DA34E777B27B0AC9D5F8/66944.png" alt="Escama grande" className="w-8 h-8" />
-                                 </div>
-                               </td>
-                               <td className="p-1 sm:p-2 text-center text-gray-300">
-                                 <div className="flex items-center justify-center gap-2">
-                                   <img src="https://render.guildwars2.com/file/4DBC299E4B036A0DD3119A0F06BACA147C03B5C7/66954.png" alt="Tótem intrincado" className="w-8 h-8" />
-                                 </div>
-                               </td>
-                               <td className="p-1 sm:p-2 text-center text-gray-300">
-                                 <div className="flex items-center justify-center gap-2">
-                                   <img src="https://render.guildwars2.com/file/EA6A4C91F561EC5667947AEFE4CA436D0631CBE3/66938.png" alt="Vesícula de veneno potente" className="w-8 h-8" />
-                                 </div>
-                               </td>
-                               <td className="p-1 sm:p-2 text-center text-gray-300">
-                                 <div className="flex items-center justify-center gap-2">
-                                   <img src="https://render.guildwars2.com/file/3501C2BBADF95BE5F14E31484850E851EFCA33CB/434536.png" alt="Montón de polvo incandescente" className="w-8 h-8" />
-                                 </div>
-                               </td>
+                               <td className="p-1 sm:p-2 md:p-3 text-center text-gray-400 font-semibold text-xs sm:text-sm">00G 00S 00C</td>
                              </tr>
-                             <tr className="border-b border-gray-800">
-                               <td className="p-1 sm:p-2 text-center text-gray-300 font-semibold bg-gray-700/30">Droprate</td>
-                               <td className="p-1 sm:p-2 text-center text-gray-400">4.99</td>
-                               <td className="p-1 sm:p-2 text-center text-gray-400">4.99</td>
-                               <td className="p-1 sm:p-2 text-center text-gray-400">4.99</td>
-                               <td className="p-1 sm:p-2 text-center text-gray-400">4.99</td>
-                               <td className="p-1 sm:p-2 text-center text-gray-400">4.99</td>
-                               <td className="p-1 sm:p-2 text-center text-gray-400">4.99</td>
-                               <td className="p-1 sm:p-2 text-center text-gray-400">4.99</td>
-                               <td className="p-1 sm:p-2 text-center text-gray-400">4.99</td>
+                             <tr className="border-b border-gray-800 hover:bg-gray-800/50 transition-colors">
+                               <td className="p-2 sm:p-2 text-gray-300">
+                                 <div className="flex items-center gap-1 sm:gap-2">
+                                   <img src="https://render.guildwars2.com/file/13F077BA5D5C6324CFCB0A2E39050F24A441190B/66987.png" alt="Hueso grande" className="w-6 h-6 sm:w-8 sm:h-8 flex-shrink-0" />
+                                   <span className="text-xs sm:text-sm truncate">Hueso grande</span>
+                                 </div>
+                               </td>
+                               <td className="p-1 sm:p-1 md:p-2 text-center text-blue-400 font-semibold text-xs sm:text-sm">4.99</td>
+                               <td className="p-1 sm:p-2 md:p-3 text-center text-green-400 font-semibold text-xs sm:text-sm">
+                                 {isLoadingPrices ? <Loader2 className="w-3 h-3 sm:w-4 sm:h-4 animate-spin mx-auto" /> : formatGW2Price(calculateBasePriceComunes(24341, 4.99))}
+                               </td>
+                               <td className="p-1 sm:p-2 md:p-3 text-center text-gray-400 font-semibold text-xs sm:text-sm">00G 00S 00C</td>
                              </tr>
-                             <tr className="border-b border-gray-800">
-                               <td className="p-1 sm:p-2 text-center text-gray-300 font-semibold bg-gray-700/30">PrecioBASE</td>
-                               <td className="p-1 sm:p-2 text-center text-green-400">
-                                 {isLoadingPrices ? <Loader2 className="w-4 h-4 animate-spin mx-auto" /> : formatGW2Price(calculateBasePriceComunes(24294, 4.99))}
+                             <tr className="border-b border-gray-800 hover:bg-gray-800/50 transition-colors">
+                               <td className="p-2 sm:p-2 text-gray-300">
+                                 <div className="flex items-center gap-1 sm:gap-2">
+                                   <img src="https://render.guildwars2.com/file/3A4D64F4CE2951F358DE0AFCEA6551050FB4B4A7/66420.png" alt="Garra grande" className="w-6 h-6 sm:w-8 sm:h-8 flex-shrink-0" />
+                                   <span className="text-xs sm:text-sm truncate">Garra grande</span>
+                                 </div>
                                </td>
-                               <td className="p-1 sm:p-2 text-center text-green-400">
-                                 {isLoadingPrices ? <Loader2 className="w-4 h-4 animate-spin mx-auto" /> : formatGW2Price(calculateBasePriceComunes(24341, 4.99))}
+                               <td className="p-1 sm:p-1 md:p-2 text-center text-blue-400 font-semibold text-xs sm:text-sm">4.99</td>
+                               <td className="p-1 sm:p-2 md:p-3 text-center text-green-400 font-semibold text-xs sm:text-sm">
+                                 {isLoadingPrices ? <Loader2 className="w-3 h-3 sm:w-4 sm:h-4 animate-spin mx-auto" /> : formatGW2Price(calculateBasePriceComunes(24350, 4.99))}
                                </td>
-                               <td className="p-1 sm:p-2 text-center text-green-400">
-                                 {isLoadingPrices ? <Loader2 className="w-4 h-4 animate-spin mx-auto" /> : formatGW2Price(calculateBasePriceComunes(24350, 4.99))}
-                               </td>
-                               <td className="p-1 sm:p-2 text-center text-green-400">
-                                 {isLoadingPrices ? <Loader2 className="w-4 h-4 animate-spin mx-auto" /> : formatGW2Price(calculateBasePriceComunes(24356, 4.99))}
-                               </td>
-                               <td className="p-1 sm:p-2 text-center text-green-400">
-                                 {isLoadingPrices ? <Loader2 className="w-4 h-4 animate-spin mx-auto" /> : formatGW2Price(calculateBasePriceComunes(24288, 4.99))}
-                               </td>
-                               <td className="p-1 sm:p-2 text-center text-green-400">
-                                 {isLoadingPrices ? <Loader2 className="w-4 h-4 animate-spin mx-auto" /> : formatGW2Price(calculateBasePriceComunes(24299, 4.99))}
-                               </td>
-                               <td className="p-1 sm:p-2 text-center text-green-400">
-                                 {isLoadingPrices ? <Loader2 className="w-4 h-4 animate-spin mx-auto" /> : formatGW2Price(calculateBasePriceComunes(24282, 4.99))}
-                               </td>
-                               <td className="p-1 sm:p-2 text-center text-green-400">
-                                 {isLoadingPrices ? <Loader2 className="w-4 h-4 animate-spin mx-auto" /> : formatGW2Price(calculateBasePriceComunes(24276, 4.99))}
-                               </td>
+                               <td className="p-1 sm:p-2 md:p-3 text-center text-gray-400 font-semibold text-xs sm:text-sm">00G 00S 00C</td>
                              </tr>
-                             <tr>
-                               <td className="p-1 sm:p-2 text-center text-gray-300 font-semibold bg-gray-700/30">ProfitMax</td>
-                               <td className="p-1 sm:p-2 text-center text-gray-400">00G 00S 00C</td>
-                               <td className="p-1 sm:p-2 text-center text-gray-400">00G 00S 00C</td>
-                               <td className="p-1 sm:p-2 text-center text-gray-400">00G 00S 00C</td>
-                               <td className="p-1 sm:p-2 text-center text-gray-400">00G 00S 00C</td>
-                               <td className="p-1 sm:p-2 text-center text-gray-400">00G 00S 00C</td>
-                               <td className="p-1 sm:p-2 text-center text-gray-400">00G 00S 00C</td>
-                               <td className="p-1 sm:p-2 text-center text-gray-400">00G 00S 00C</td>
-                               <td className="p-1 sm:p-2 text-center text-gray-400">00G 00S 00C</td>
+                             <tr className="border-b border-gray-800 hover:bg-gray-800/50 transition-colors">
+                               <td className="p-2 sm:p-2 text-gray-300">
+                                 <div className="flex items-center gap-1 sm:gap-2">
+                                   <img src="https://render.guildwars2.com/file/DED4F23E44430C2BE1C0D491145A4946FC7D7C6F/223793.png" alt="Colmillo grande" className="w-6 h-6 sm:w-8 sm:h-8 flex-shrink-0" />
+                                   <span className="text-xs sm:text-sm truncate">Colmillo grande</span>
+                                 </div>
+                               </td>
+                               <td className="p-1 sm:p-1 md:p-2 text-center text-blue-400 font-semibold text-xs sm:text-sm">4.99</td>
+                               <td className="p-1 sm:p-2 md:p-3 text-center text-green-400 font-semibold text-xs sm:text-sm">
+                                 {isLoadingPrices ? <Loader2 className="w-3 h-3 sm:w-4 sm:h-4 animate-spin mx-auto" /> : formatGW2Price(calculateBasePriceComunes(24356, 4.99))}
+                               </td>
+                               <td className="p-1 sm:p-2 md:p-3 text-center text-gray-400 font-semibold text-xs sm:text-sm">00G 00S 00C</td>
+                             </tr>
+                             <tr className="border-b border-gray-800 hover:bg-gray-800/50 transition-colors">
+                               <td className="p-2 sm:p-2 text-gray-300">
+                                 <div className="flex items-center gap-1 sm:gap-2">
+                                   <img src="https://render.guildwars2.com/file/F94ECFFF0FA9C321C108DA34E777B27B0AC9D5F8/66944.png" alt="Escama grande" className="w-6 h-6 sm:w-8 sm:h-8 flex-shrink-0" />
+                                   <span className="text-xs sm:text-sm truncate">Escama grande</span>
+                                 </div>
+                               </td>
+                               <td className="p-1 sm:p-1 md:p-2 text-center text-blue-400 font-semibold text-xs sm:text-sm">4.99</td>
+                               <td className="p-1 sm:p-2 md:p-3 text-center text-green-400 font-semibold text-xs sm:text-sm">
+                                 {isLoadingPrices ? <Loader2 className="w-3 h-3 sm:w-4 sm:h-4 animate-spin mx-auto" /> : formatGW2Price(calculateBasePriceComunes(24288, 4.99))}
+                               </td>
+                               <td className="p-1 sm:p-2 md:p-3 text-center text-gray-400 font-semibold text-xs sm:text-sm">00G 00S 00C</td>
+                             </tr>
+                             <tr className="border-b border-gray-800 hover:bg-gray-800/50 transition-colors">
+                               <td className="p-2 sm:p-2 text-gray-300">
+                                 <div className="flex items-center gap-1 sm:gap-2">
+                                   <img src="https://render.guildwars2.com/file/4DBC299E4B036A0DD3119A0F06BACA147C03B5C7/66954.png" alt="Tótem intrincado" className="w-6 h-6 sm:w-8 sm:h-8 flex-shrink-0" />
+                                   <span className="text-xs sm:text-sm truncate">Tótem intrincado</span>
+                                 </div>
+                               </td>
+                               <td className="p-1 sm:p-1 md:p-2 text-center text-blue-400 font-semibold text-xs sm:text-sm">4.99</td>
+                               <td className="p-1 sm:p-2 md:p-3 text-center text-green-400 font-semibold text-xs sm:text-sm">
+                                 {isLoadingPrices ? <Loader2 className="w-3 h-3 sm:w-4 sm:h-4 animate-spin mx-auto" /> : formatGW2Price(calculateBasePriceComunes(24299, 4.99))}
+                               </td>
+                               <td className="p-1 sm:p-2 md:p-3 text-center text-gray-400 font-semibold text-xs sm:text-sm">00G 00S 00C</td>
+                             </tr>
+                             <tr className="border-b border-gray-800 hover:bg-gray-800/50 transition-colors">
+                               <td className="p-2 sm:p-2 text-gray-300">
+                                 <div className="flex items-center gap-1 sm:gap-2">
+                                   <img src="https://render.guildwars2.com/file/EA6A4C91F561EC5667947AEFE4CA436D0631CBE3/66938.png" alt="Vesícula de veneno potente" className="w-6 h-6 sm:w-8 sm:h-8 flex-shrink-0" />
+                                   <span className="text-xs sm:text-sm truncate">Vesícula de veneno potente</span>
+                                 </div>
+                               </td>
+                               <td className="p-1 sm:p-1 md:p-2 text-center text-blue-400 font-semibold text-xs sm:text-sm">4.99</td>
+                               <td className="p-1 sm:p-2 md:p-3 text-center text-green-400 font-semibold text-xs sm:text-sm">
+                                 {isLoadingPrices ? <Loader2 className="w-3 h-3 sm:w-4 sm:h-4 animate-spin mx-auto" /> : formatGW2Price(calculateBasePriceComunes(24282, 4.99))}
+                               </td>
+                               <td className="p-1 sm:p-2 md:p-3 text-center text-gray-400 font-semibold text-xs sm:text-sm">00G 00S 00C</td>
+                             </tr>
+                             <tr className="border-b border-gray-800 hover:bg-gray-800/50 transition-colors">
+                               <td className="p-2 sm:p-2 text-gray-300">
+                                 <div className="flex items-center gap-1 sm:gap-2">
+                                   <img src="https://render.guildwars2.com/file/3501C2BBADF95BE5F14E31484850E851EFCA33CB/434536.png" alt="Montón de polvo incandescente" className="w-6 h-6 sm:w-8 sm:h-8 flex-shrink-0" />
+                                   <span className="text-xs sm:text-sm truncate">Montón de polvo incandescente</span>
+                                 </div>
+                               </td>
+                               <td className="p-1 sm:p-1 md:p-2 text-center text-blue-400 font-semibold text-xs sm:text-sm">4.99</td>
+                               <td className="p-1 sm:p-2 md:p-3 text-center text-green-400 font-semibold text-xs sm:text-sm">
+                                 {isLoadingPrices ? <Loader2 className="w-3 h-3 sm:w-4 sm:h-4 animate-spin mx-auto" /> : formatGW2Price(calculateBasePriceComunes(24276, 4.99))}
+                               </td>
+                               <td className="p-1 sm:p-2 md:p-3 text-center text-gray-400 font-semibold text-xs sm:text-sm">00G 00S 00C</td>
                              </tr>
                            </tbody>
                          </table>
                        </div>
                      </div>
-                     
-
                    </div>
-                   {/* Estrategias de farming */}
-                   <div className="bg-gray-700/50 rounded-lg p-6 mb-6 border border-gray-600">
-                     <h3 className="text-xl font-bold text-white mb-4 flex items-center">
-                       <TrendingUp className="w-5 h-5 mr-3 text-green-400" />
-                       Estrategias de Farming
-                     </h3>
-                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                       <div className="space-y-3">
-                         <div className="flex items-start gap-3">
-                           <div className="w-3 h-3 bg-green-400 rounded-full mt-2 flex-shrink-0"></div>
-                           <div>
-                             <h4 className="text-white font-semibold">Mapas de la Temporada 4</h4>
-                             <p className="text-gray-300 text-sm">Enfócate en Valle de Grothmar, Acantilados de Jahai, y otros mapas de la 4.ª temporada del Mundo Viviente.</p>
-                           </div>
-                         </div>
-                         <div className="flex items-start gap-3">
-                           <div className="w-3 h-3 bg-green-400 rounded-full mt-2 flex-shrink-0"></div>
-                           <div>
-                             <h4 className="text-white font-semibold">Nodos de Recursos</h4>
-                             <p className="text-gray-300 text-sm">Recolecta de nodos de cristal del dragón, cristales de difluorita, y otros nodos especiales (5-25 magia garantizada).</p>
-                           </div>
-                         </div>
-                       </div>
-                       <div className="space-y-3">
-                         <div className="flex items-start gap-3">
-                           <div className="w-3 h-3 bg-green-400 rounded-full mt-2 flex-shrink-0"></div>
-                           <div>
-                             <h4 className="text-white font-semibold">Cofres y Alijos</h4>
-                             <p className="text-gray-300 text-sm">Abre cofres del héroe, alijos de provisiones, y cofres despertados para obtener magia adicional.</p>
-                           </div>
-                         </div>
-                         <div className="flex items-start gap-3">
-                           <div className="w-3 h-3 bg-green-400 rounded-full mt-2 flex-shrink-0"></div>
-                           <div>
-                             <h4 className="text-white font-semibold">Reciclado Inteligente</h4>
-                             <p className="text-gray-300 text-sm">Recicla aparatos de la Inquisa, dispositivos, y mecanismos para obtener magia volátil.</p>
-                           </div>
-                         </div>
-                       </div>
-                     </div>
-                   </div>
-                </div>
-              </div>
-            )}
+                 </div>
+               </div>
+             )}
 
             {/* Strategies Section */}
             {selectedSection === 'strategies' && (
@@ -1346,7 +1381,7 @@ const CraftingPage = () => {
                           </tr>
                         </thead>
                         <tbody>
-                          {conversionData.map((item, index) => (
+                          {memoizedConversionData.map((item, index) => (
                             <motion.tr 
                               key={item.id} 
                               initial={{ opacity: 0, y: 20 }}
@@ -1366,14 +1401,80 @@ const CraftingPage = () => {
                                 )}
                                 {item.name}
                               </td>
-                              <td className="py-3 px-4 text-white whitespace-nowrap min-w-[100px]">{formatGoldSilverCopper(item.precio90)}</td>
-                              <td className="py-3 px-4 text-white whitespace-nowrap min-w-[100px]">{formatGoldSilverCopper(item.precio85)}</td>
-                              <td className="py-3 px-4 text-white whitespace-nowrap min-w-[120px]">{formatGoldSilverCopper(item.costeConv20)}</td>
-                              <td className={`py-3 px-4 text-white font-semibold whitespace-nowrap min-w-[120px] ${getProfitColor(item.profit90)}`}>
-                                {formatGoldSilverCopper(item.profit90)}
+                              <td 
+                                className="py-3 px-4 text-white whitespace-nowrap min-w-[100px]"
+                                style={{ whiteSpace: 'nowrap', wordBreak: 'keep-all', overflow: 'hidden' }}
+                              >
+                                <span style={{ 
+                                  display: 'flex', 
+                                  whiteSpace: 'nowrap', 
+                                  wordBreak: 'keep-all',
+                                  overflow: 'hidden',
+                                  flexWrap: 'nowrap',
+                                  alignItems: 'center'
+                                }}>
+                                  {memoizedFormatGoldSilverCopperJSX(item.precio90)}
+                                </span>
                               </td>
-                              <td className={`py-3 px-4 text-white font-semibold whitespace-nowrap min-w-[120px] ${getProfitColor(item.profit85)}`}>
-                                {formatGoldSilverCopper(item.profit85)}
+                              <td 
+                                className="py-3 px-4 text-white whitespace-nowrap min-w-[100px]"
+                                style={{ whiteSpace: 'nowrap', wordBreak: 'keep-all', overflow: 'hidden' }}
+                              >
+                                <span style={{ 
+                                  display: 'flex', 
+                                  whiteSpace: 'nowrap', 
+                                  wordBreak: 'keep-all',
+                                  overflow: 'hidden',
+                                  flexWrap: 'nowrap',
+                                  alignItems: 'center'
+                                }}>
+                                  {memoizedFormatGoldSilverCopperJSX(item.precio85)}
+                                </span>
+                              </td>
+                              <td 
+                                className="py-3 px-4 text-white whitespace-nowrap min-w-[120px]"
+                                style={{ whiteSpace: 'nowrap', wordBreak: 'keep-all', overflow: 'hidden' }}
+                              >
+                                <span style={{ 
+                                  display: 'flex', 
+                                  whiteSpace: 'nowrap', 
+                                  wordBreak: 'keep-all',
+                                  overflow: 'hidden',
+                                  flexWrap: 'nowrap',
+                                  alignItems: 'center'
+                                }}>
+                                  {memoizedFormatGoldSilverCopperJSX(item.costeConv20)}
+                                </span>
+                              </td>
+                              <td 
+                                className={`py-3 px-4 text-white font-semibold whitespace-nowrap min-w-[120px] ${getProfitColor(item.profit90)}`}
+                                style={{ whiteSpace: 'nowrap', wordBreak: 'keep-all', overflow: 'hidden' }}
+                              >
+                                <span style={{ 
+                                  display: 'flex', 
+                                  whiteSpace: 'nowrap', 
+                                  wordBreak: 'keep-all',
+                                  overflow: 'hidden',
+                                  flexWrap: 'nowrap',
+                                  alignItems: 'center'
+                                }}>
+                                  {memoizedFormatGoldSilverCopperJSX(item.profit90)}
+                                </span>
+                              </td>
+                              <td 
+                                className={`py-3 px-4 text-white font-semibold whitespace-nowrap min-w-[120px] ${getProfitColor(item.profit85)}`}
+                                style={{ whiteSpace: 'nowrap', wordBreak: 'keep-all', overflow: 'hidden' }}
+                              >
+                                <span style={{ 
+                                  display: 'flex', 
+                                  whiteSpace: 'nowrap', 
+                                  wordBreak: 'keep-all',
+                                  overflow: 'hidden',
+                                  flexWrap: 'nowrap',
+                                  alignItems: 'center'
+                                }}>
+                                  {memoizedFormatGoldSilverCopperJSX(item.profit85)}
+                                </span>
                               </td>
                             </motion.tr>
                           ))}

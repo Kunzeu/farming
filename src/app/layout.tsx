@@ -7,8 +7,7 @@ import { I18nProvider } from "@/contexts/I18nContext";
 import RoleChecker from "@/components/RoleChecker";
 import Footer from "@/components/layout/Footer";
 import ScrollToTop from "@/components/ui/ScrollToTop";
-import { Analytics } from "@vercel/analytics/next";
-
+import { Analytics } from '@vercel/analytics/react';
 
 const inter = Inter({ subsets: ["latin"] });
 

@@ -215,7 +215,16 @@ const Navigation = () => {
   };
 
   return (
-    <nav className="bg-gray-900/80 backdrop-blur-sm border-b border-gray-700 sticky top-0 z-50">
+    <>
+      <style jsx global>{`
+        .font-display {
+          font-display: swap;
+          font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+          font-weight: 900;
+          text-rendering: optimizeSpeed;
+        }
+      `}</style>
+      <nav className="bg-gray-900/95 backdrop-blur-md border-b border-gray-700/50 sticky top-0 z-50">
       <div className="max-w-8xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           {/* Logo - Esquina Izquierda */}
@@ -229,7 +238,7 @@ const Navigation = () => {
               />
               <div className="block">
                 <div className="flex flex-col">
-                  <span className="text-white font-black text-base sm:text-lg md:text-xl leading-tight">True Farming</span>
+                  <span className="text-white font-black text-base sm:text-lg md:text-xl leading-tight font-display">True Farming</span>
                   <span className="text-gray-400 text-xs">Guild Wars 2</span>
                 </div>
               </div>
@@ -578,6 +587,7 @@ const Navigation = () => {
         </div>
       </div>
     </nav>
+    </>
   );
 };
 
