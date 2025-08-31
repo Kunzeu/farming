@@ -54,7 +54,7 @@ export async function GET(request: NextRequest) {
     if (email) {
       // Buscar por email (para login)
       const query = `
-        SELECT id, email, username, role, is_active as "isActive",
+        SELECT id, email, username, password, role, is_active as "isActive",
                created_at as "createdAt", updated_at as "updatedAt", discord_id as "discordId"
         FROM users 
         WHERE email = $1
@@ -75,7 +75,7 @@ export async function GET(request: NextRequest) {
     } else if (username) {
       // Buscar por username
       const query = `
-        SELECT id, email, username, role, is_active as "isActive",
+        SELECT id, email, username, password, role, is_active as "isActive",
                created_at as "createdAt", updated_at as "updatedAt", discord_id as "discordId"
         FROM users 
         WHERE username = $1
@@ -96,7 +96,7 @@ export async function GET(request: NextRequest) {
     } else if (discordId) {
       // Buscar por Discord ID
       const query = `
-        SELECT id, email, username, role, is_active as "isActive",
+        SELECT id, email, username, password, role, is_active as "isActive",
                created_at as "createdAt", updated_at as "updatedAt", discord_id as "discordId"
         FROM users 
         WHERE discord_id = $1

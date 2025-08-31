@@ -1,16 +1,18 @@
 // Hook para usar el servicio de base de datos
 import { useEffect, useState } from 'react';
-import { dbClientService, FarmItem, User } from '@/lib/database-client';
+import { getDbService, FarmItem, User } from '@/lib/database-switch';
 
 export function useDatabase() {
-  const [dbService, setDbService] = useState(dbClientService);
-  const [isReady, setIsReady] = useState(true);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const [dbService, setDbService] = useState<any>(null);
+  const [isReady, setIsReady] = useState(false);
 
   useEffect(() => {
     const initDb = async () => {
       try {
-        await dbClientService.init?.(); // Inicializar si tiene método init
-        setDbService(dbClientService);
+        const service = await getDbService();
+        await service.init?.(); // Inicializar si tiene método init
+        setDbService(service);
         setIsReady(true);
       } catch (error) {
         console.error('Error inicializando base de datos:', error);
