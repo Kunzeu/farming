@@ -44,6 +44,87 @@ interface ConversionItem {
   profit85: number; // en cobre
 }
 
+// Componente de imagen optimizada para móvil
+const OptimizedImage = ({ src, alt, className, priority = false }: {
+  src: string;
+  alt: string;
+  className: string;
+  priority?: boolean;
+}) => {
+  const [imageSrc, setImageSrc] = useState<string>('');
+  const [isLoading, setIsLoading] = useState(true);
+  const [hasError, setHasError] = useState(false);
+
+  useEffect(() => {
+    // Si es una imagen local, usarla directamente
+    if (src.startsWith('/images/')) {
+      setImageSrc(src);
+      setIsLoading(false);
+      return;
+    }
+
+    // Si es una imagen externa, intentar cargarla con optimizaciones
+    if (src.startsWith('http')) {
+      // Para móvil, usar lazy loading por defecto
+      const isMobile = window.innerWidth <= 768;
+      if (!isMobile || priority) {
+        setImageSrc(src);
+        setIsLoading(false);
+      } else {
+        // En móvil, cargar solo cuando sea visible
+        setImageSrc(src);
+        setIsLoading(false);
+      }
+    }
+  }, [src, priority]);
+
+  if (isLoading) {
+    return (
+      <div className={`${className} bg-gray-700 animate-pulse rounded`} />
+    );
+  }
+
+  if (hasError) {
+    return (
+      <div className={`${className} bg-gray-600 flex items-center justify-center text-xs text-gray-400`}>
+        ❌
+      </div>
+    );
+  }
+
+  // Para imágenes locales, usar next/image optimizado
+  if (imageSrc.startsWith('/images/')) {
+    return (
+      <Image
+        src={imageSrc}
+        alt={alt}
+        className={className}
+        width={32}
+        height={32}
+        priority={priority}
+        loading={priority ? 'eager' : 'lazy'}
+        quality={85}
+      />
+    );
+  }
+
+  // Para imágenes externas, usar img normal con optimizaciones
+  return (
+    <img
+      src={imageSrc}
+      alt={alt}
+      className={className}
+      loading={priority ? 'eager' : 'lazy'}
+      onError={() => setHasError(true)}
+      style={{
+        width: '32px',
+        height: '32px',
+        objectFit: 'contain'
+      }}
+    />
+  );
+};
+
 const CraftingPage = () => {
   usePageTitle('pageTitles.crafting', 'Crafting Guide');
   const { t, lang } = useI18n();
@@ -736,24 +817,24 @@ const CraftingPage = () => {
               <div className="space-y-8">
                 <div className="bg-gray-800/50 backdrop-blur-sm border border-gray-700 rounded-lg p-6">
                   <h2 className="text-2xl font-bold text-white mb-6 flex items-center">
-                    <Image 
+                    <OptimizedImage 
                       src="/images/expansions/volatile-magic.png" 
                       alt="Magia Volatil" 
-                      width={24} 
-                      height={24} 
-                      className="mr-3"/>
+                      className="mr-3"
+                      priority
+                    />
                     Magia Volatil
                   </h2>
                   
                   {/* Descripción principal */}
                   <div className="bg-gray-700/50 rounded-lg p-6 mb-6 border border-gray-600">
                     <h3 className="text-xl font-bold text-white mb-4 flex items-center">
-                      <Image 
+                      <OptimizedImage 
                         src="/images/expansions/volatile-magic.png" 
                         alt="Magia Volatil" 
-                        width={20} 
-                        height={20} 
-                        className="mr-3"/>
+                        className="mr-3"
+                        priority
+                      />
                       ¿Qué es la Magia Volatil?
                     </h3>
                     <p className="text-gray-300 mb-4">
@@ -1031,7 +1112,12 @@ const CraftingPage = () => {
                              <tr className="border-b border-gray-800 hover:bg-gray-800/50 transition-colors">
                                <td className="p-2 sm:p-2 text-gray-300">
                                  <div className="flex items-center gap-1 sm:gap-2">
-                                   <img src="https://render.guildwars2.com/file/1A930A6A7B5B01EAB4CB36E79014C12B500BF6B3/66950.png" alt="Vial de sangre poderosa" className="w-5 h-5 sm:w-6 sm:h-6 md:w-8 md:h-8 flex-shrink-0" />
+                                   <OptimizedImage 
+                                     src="https://render.guildwars2.com/file/1A930A6A7B5B01EAB4CB36E79014C12B500BF6B3/66950.png" 
+                                     alt="Vial de sangre poderosa" 
+                                     className="w-5 h-5 sm:w-6 sm:h-6 md:w-8 md:h-8 flex-shrink-0"
+                                     priority
+                                   />
                                    <span className="text-xs sm:text-sm truncate">Vial de sangre poderosa</span>
                                  </div>
                                </td>
@@ -1046,7 +1132,12 @@ const CraftingPage = () => {
                              <tr className="border-b border-gray-800 hover:bg-gray-800/50 transition-colors">
                                <td className="p-2 sm:p-2 text-gray-300">
                                  <div className="flex items-center gap-1 sm:gap-2">
-                                   <img src="https://render.guildwars2.com/file/0EE45FBB1E1A004600E9BAA7097830B2DE08587D/66828.png" alt="Hueso antiguo" className="w-6 h-6 sm:w-8 sm:h-8 flex-shrink-0" />
+                                   <OptimizedImage 
+                                     src="https://render.guildwars2.com/file/0EE45FBB1E1A004600E9BAA7097830B2DE08587D/66828.png" 
+                                     alt="Hueso antiguo" 
+                                     className="w-6 h-6 sm:w-8 sm:h-8 flex-shrink-0"
+                                     priority
+                                   />
                                    <span className="text-xs sm:text-sm truncate">Hueso antiguo</span>
                                  </div>
                                </td>
@@ -1059,7 +1150,12 @@ const CraftingPage = () => {
                              <tr className="border-b border-gray-800 hover:bg-gray-800/50 transition-colors">
                                <td className="p-2 sm:p-2 text-gray-300">
                                  <div className="flex items-center gap-1 sm:gap-2">
-                                   <img src="https://render.guildwars2.com/file/043E2BBA270F381870F1B45E7C09C098CAFE3D14/66996.png" alt="Garra despiadada" className="w-6 h-6 sm:w-8 sm:h-8 flex-shrink-0" />
+                                   <OptimizedImage 
+                                     src="https://render.guildwars2.com/file/043E2BBA270F381870F1B45E7C09C098CAFE3D14/66996.png" 
+                                     alt="Garra despiadada" 
+                                     className="w-6 h-6 sm:w-8 sm:h-8 flex-shrink-0"
+                                     priority
+                                   />
                                    <span className="text-xs sm:text-sm truncate">Garra despiadada</span>
                                  </div>
                                </td>
@@ -1072,7 +1168,12 @@ const CraftingPage = () => {
                              <tr className="border-b border-gray-800 hover:bg-gray-800/50 transition-colors">
                                <td className="p-2 sm:p-2 text-gray-300">
                                  <div className="flex items-center gap-1 sm:gap-2">
-                                   <img src="https://render.guildwars2.com/file/F2050EE1A7A43EDCDCB1E971FDA608AD0566E4DA/66998.png" alt="Colmillo feroz" className="w-6 h-6 sm:w-8 sm:h-8 flex-shrink-0" />
+                                   <OptimizedImage 
+                                     src="https://render.guildwars2.com/file/F2050EE1A7A43EDCDCB1E971FDA608AD0566E4DA/66998.png" 
+                                     alt="Colmillo feroz" 
+                                     className="w-6 h-6 sm:w-8 sm:h-8 flex-shrink-0"
+                                     priority
+                                   />
                                    <span className="text-xs sm:text-sm truncate">Colmillo feroz</span>
                                  </div>
                                </td>
@@ -1085,7 +1186,12 @@ const CraftingPage = () => {
                              <tr className="border-b border-gray-800 hover:bg-gray-800/50 transition-colors">
                                <td className="p-2 sm:p-2 text-gray-300">
                                  <div className="flex items-center gap-1 sm:gap-2">
-                                   <img src="https://render.guildwars2.com/file/7061C82F4F9D0C585742F545C40A0F06BE0154DC/66527.png" alt="Escama blindada" className="w-6 h-6 sm:w-8 sm:h-8 flex-shrink-0" />
+                                   <OptimizedImage 
+                                     src="https://render.guildwars2.com/file/7061C82F4F9D0C585742F545C40A0F06BE0154DC/66527.png" 
+                                     alt="Escama blindada" 
+                                     className="w-6 h-6 sm:w-8 sm:h-8 flex-shrink-0"
+                                     priority
+                                   />
                                    <span className="text-xs sm:text-sm truncate">Escama blindada</span>
                                  </div>
                                </td>
@@ -1098,7 +1204,12 @@ const CraftingPage = () => {
                              <tr className="border-b border-gray-800 hover:bg-gray-800/50 transition-colors">
                                <td className="p-2 sm:p-2 text-gray-300">
                                  <div className="flex items-center gap-1 sm:gap-2">
-                                   <img src="https://render.guildwars2.com/file/C1ABF9082901FC3CEABC3138CBCCA1DAD5D41812/66955.png" alt="Tótem elaborado" className="w-6 h-6 sm:w-8 sm:h-8 flex-shrink-0" />
+                                   <OptimizedImage 
+                                     src="https://render.guildwars2.com/file/C1ABF9082901FC3CEABC3138CBCCA1DAD5D41812/66955.png" 
+                                     alt="Tótem elaborado" 
+                                     className="w-6 h-6 sm:w-8 sm:h-8 flex-shrink-0"
+                                     priority
+                                   />
                                    <span className="text-xs sm:text-sm truncate">Tótem elaborado</span>
                                  </div>
                                </td>
@@ -1111,7 +1222,12 @@ const CraftingPage = () => {
                              <tr className="border-b border-gray-800 hover:bg-gray-800/50 transition-colors">
                                <td className="p-2 sm:p-2 text-gray-300">
                                  <div className="flex items-center gap-1 sm:gap-2">
-                                   <img src="https://render.guildwars2.com/file/543EC37900EA2A57E77FA891193A48D66AA224AB/66939.png" alt="Vesícula de veneno poderoso" className="w-6 h-6 sm:w-8 sm:h-8 flex-shrink-0" />
+                                   <OptimizedImage 
+                                     src="https://render.guildwars2.com/file/543EC37900EA2A57E77FA891193A48D66AA224AB/66939.png" 
+                                     alt="Vesícula de veneno poderoso" 
+                                     className="w-6 h-6 sm:w-8 sm:h-8 flex-shrink-0"
+                                     priority
+                                   />
                                    <span className="text-xs sm:text-sm truncate">Vesícula de veneno poderoso</span>
                                  </div>
                                </td>
@@ -1124,7 +1240,12 @@ const CraftingPage = () => {
                              <tr className="border-b border-gray-800 hover:bg-gray-800/50 transition-colors">
                                <td className="p-2 sm:p-2 text-gray-300">
                                  <div className="flex items-center gap-1 sm:gap-2">
-                                   <img src="https://render.guildwars2.com/file/080D00670558CD9E580D5662030394B2206E92A6/434537.png" alt="Montón de polvo cristalino" className="w-6 h-6 sm:w-8 sm:h-8 flex-shrink-0" />
+                                   <OptimizedImage 
+                                     src="https://render.guildwars2.com/file/080D00670558CD9E580D5662030394B2206E92A6/434537.png" 
+                                     alt="Montón de polvo cristalino" 
+                                     className="w-6 h-6 sm:w-8 sm:h-8 flex-shrink-0"
+                                     priority
+                                   />
                                    <span className="text-xs sm:text-sm truncate">Montón de polvo cristalino</span>
                                  </div>
                                </td>
@@ -1158,7 +1279,12 @@ const CraftingPage = () => {
                              <tr className="border-b border-gray-800 hover:bg-gray-800/50 transition-colors">
                                <td className="p-2 sm:p-2 text-gray-300">
                                  <div className="flex items-center gap-1 sm:gap-2">
-                                   <img src="https://render.guildwars2.com/file/99AAE49EABF9A2415940FDB83CA1CE5E6E256020/66949.png" alt="Vial de sangre potente" className="w-6 h-6 sm:w-8 sm:h-8 flex-shrink-0" />
+                                   <OptimizedImage 
+                                     src="https://render.guildwars2.com/file/99AAE49EABF9A2415940FDB83CA1CE5E6E256020/66949.png" 
+                                     alt="Vial de sangre potente" 
+                                     className="w-6 h-6 sm:w-8 sm:h-8 flex-shrink-0"
+                                     priority
+                                   />
                                    <span className="text-xs sm:text-sm truncate">Vial de sangre potente</span>
                                  </div>
                                </td>
@@ -1171,7 +1297,12 @@ const CraftingPage = () => {
                              <tr className="border-b border-gray-800 hover:bg-gray-800/50 transition-colors">
                                <td className="p-2 sm:p-2 text-gray-300">
                                  <div className="flex items-center gap-1 sm:gap-2">
-                                   <img src="https://render.guildwars2.com/file/13F077BA5D5C6324CFCB0A2E39050F24A441190B/66987.png" alt="Hueso grande" className="w-6 h-6 sm:w-8 sm:h-8 flex-shrink-0" />
+                                   <OptimizedImage 
+                                     src="https://render.guildwars2.com/file/13F077BA5D5C6324CFCB0A2E39050F24A441190B/66987.png" 
+                                     alt="Hueso grande" 
+                                     className="w-6 h-6 sm:w-8 sm:h-8 flex-shrink-0"
+                                     priority
+                                   />
                                    <span className="text-xs sm:text-sm truncate">Hueso grande</span>
                                  </div>
                                </td>
@@ -1184,7 +1315,12 @@ const CraftingPage = () => {
                              <tr className="border-b border-gray-800 hover:bg-gray-800/50 transition-colors">
                                <td className="p-2 sm:p-2 text-gray-300">
                                  <div className="flex items-center gap-1 sm:gap-2">
-                                   <img src="https://render.guildwars2.com/file/3A4D64F4CE2951F358DE0AFCEA6551050FB4B4A7/66420.png" alt="Garra grande" className="w-6 h-6 sm:w-8 sm:h-8 flex-shrink-0" />
+                                   <OptimizedImage 
+                                     src="https://render.guildwars2.com/file/3A4D64F4CE2951F358DE0AFCEA6551050FB4B4A7/66420.png" 
+                                     alt="Garra grande" 
+                                     className="w-6 h-6 sm:w-8 sm:h-8 flex-shrink-0"
+                                     priority
+                                   />
                                    <span className="text-xs sm:text-sm truncate">Garra grande</span>
                                  </div>
                                </td>
@@ -1197,7 +1333,12 @@ const CraftingPage = () => {
                              <tr className="border-b border-gray-800 hover:bg-gray-800/50 transition-colors">
                                <td className="p-2 sm:p-2 text-gray-300">
                                  <div className="flex items-center gap-1 sm:gap-2">
-                                   <img src="https://render.guildwars2.com/file/DED4F23E44430C2BE1C0D491145A4946FC7D7C6F/223793.png" alt="Colmillo grande" className="w-6 h-6 sm:w-8 sm:h-8 flex-shrink-0" />
+                                   <OptimizedImage 
+                                     src="https://render.guildwars2.com/file/DED4F23E44430C2BE1C0D491145A4946FC7D7C6F/223793.png" 
+                                     alt="Colmillo grande" 
+                                     className="w-6 h-6 sm:w-8 sm:h-8 flex-shrink-0"
+                                     priority
+                                   />
                                    <span className="text-xs sm:text-sm truncate">Colmillo grande</span>
                                  </div>
                                </td>
@@ -1210,7 +1351,12 @@ const CraftingPage = () => {
                              <tr className="border-b border-gray-800 hover:bg-gray-800/50 transition-colors">
                                <td className="p-2 sm:p-2 text-gray-300">
                                  <div className="flex items-center gap-1 sm:gap-2">
-                                   <img src="https://render.guildwars2.com/file/F94ECFFF0FA9C321C108DA34E777B27B0AC9D5F8/66944.png" alt="Escama grande" className="w-6 h-6 sm:w-8 sm:h-8 flex-shrink-0" />
+                                   <OptimizedImage 
+                                     src="https://render.guildwars2.com/file/F94ECFFF0FA9C321C108DA34E777B27B0AC9D5F8/66944.png" 
+                                     alt="Escama grande" 
+                                     className="w-6 h-6 sm:w-8 sm:h-8 flex-shrink-0"
+                                     priority
+                                   />
                                    <span className="text-xs sm:text-sm truncate">Escama grande</span>
                                  </div>
                                </td>
@@ -1223,7 +1369,12 @@ const CraftingPage = () => {
                              <tr className="border-b border-gray-800 hover:bg-gray-800/50 transition-colors">
                                <td className="p-2 sm:p-2 text-gray-300">
                                  <div className="flex items-center gap-1 sm:gap-2">
-                                   <img src="https://render.guildwars2.com/file/4DBC299E4B036A0DD3119A0F06BACA147C03B5C7/66954.png" alt="Tótem intrincado" className="w-6 h-6 sm:w-8 sm:h-8 flex-shrink-0" />
+                                   <OptimizedImage 
+                                     src="https://render.guildwars2.com/file/4DBC299E4B036A0DD3119A0F06BACA147C03B5C7/66954.png" 
+                                     alt="Tótem intrincado" 
+                                     className="w-6 h-6 sm:w-8 sm:h-8 flex-shrink-0"
+                                     priority
+                                   />
                                    <span className="text-xs sm:text-sm truncate">Tótem intrincado</span>
                                  </div>
                                </td>
@@ -1236,7 +1387,12 @@ const CraftingPage = () => {
                              <tr className="border-b border-gray-800 hover:bg-gray-800/50 transition-colors">
                                <td className="p-2 sm:p-2 text-gray-300">
                                  <div className="flex items-center gap-1 sm:gap-2">
-                                   <img src="https://render.guildwars2.com/file/EA6A4C91F561EC5667947AEFE4CA436D0631CBE3/66938.png" alt="Vesícula de veneno potente" className="w-6 h-6 sm:w-8 sm:h-8 flex-shrink-0" />
+                                   <OptimizedImage 
+                                     src="https://render.guildwars2.com/file/EA6A4C91F561EC5667947AEFE4CA436D0631CBE3/66938.png" 
+                                     alt="Vesícula de veneno potente" 
+                                     className="w-6 h-6 sm:w-8 sm:h-8 flex-shrink-0"
+                                     priority
+                                   />
                                    <span className="text-xs sm:text-sm truncate">Vesícula de veneno potente</span>
                                  </div>
                                </td>
@@ -1249,7 +1405,12 @@ const CraftingPage = () => {
                              <tr className="border-b border-gray-800 hover:bg-gray-800/50 transition-colors">
                                <td className="p-2 sm:p-2 text-gray-300">
                                  <div className="flex items-center gap-1 sm:gap-2">
-                                   <img src="https://render.guildwars2.com/file/3501C2BBADF95BE5F14E31484850E851EFCA33CB/434536.png" alt="Montón de polvo incandescente" className="w-6 h-6 sm:w-8 sm:h-8 flex-shrink-0" />
+                                   <OptimizedImage 
+                                     src="https://render.guildwars2.com/file/3501C2BBADF95BE5F14E31484850E851EFCA33CB/434536.png" 
+                                     alt="Montón de polvo incandescente" 
+                                     className="w-6 h-6 sm:w-8 sm:h-8 flex-shrink-0"
+                                     priority
+                                   />
                                    <span className="text-xs sm:text-sm truncate">Montón de polvo incandescente</span>
                                  </div>
                                </td>
@@ -1391,12 +1552,11 @@ const CraftingPage = () => {
                             >
                               <td className="py-3 px-4 text-white flex items-center">
                                 {item.icon && (
-                                  <Image 
+                                  <OptimizedImage 
                                     src={item.icon} 
                                     alt={item.name} 
                                     className="w-8 h-8 mr-2 rounded"
-                                    width={24}
-                                    height={24}
+                                    priority
                                   />
                                 )}
                                 {item.name}

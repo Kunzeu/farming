@@ -37,9 +37,9 @@ const nextConfig = {
     ],
   },
   
-  // Optimizaciones de compilación
+  // Optimizaciones de compilación (desactivando optimizeCss problemático)
   experimental: {
-    optimizeCss: true,
+    // optimizeCss: true, // Comentado por error de dependencia 'critters'
     optimizePackageImports: ['lucide-react', 'framer-motion'],
   },
   
