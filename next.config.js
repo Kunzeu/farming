@@ -37,9 +37,19 @@ const nextConfig = {
     ],
   },
   
-  // Optimizaciones de compilación (desactivando optimizeCss problemático)
+  // Configuración de Turbopack
+  turbopack: {
+    rules: {
+      '*.svg': {
+        loaders: ['@svgr/webpack'],
+        as: '*.js',
+      },
+    },
+  },
+  
+  // Configuración experimental
   experimental: {
-    // optimizeCss: true, // Comentado por error de dependencia 'critters'
+    // Optimizaciones de paquetes
     optimizePackageImports: ['lucide-react', 'framer-motion'],
   },
   
@@ -79,9 +89,9 @@ const nextConfig = {
     ];
   },
   
-  // Optimizaciones de webpack
+  // Configuración de Webpack solo para producción
   webpack: (config, { dev, isServer }) => {
-    // Optimizaciones solo para producción
+    // Solo aplicar optimizaciones en producción y en el cliente
     if (!dev && !isServer) {
       config.optimization.splitChunks.cacheGroups = {
         ...config.optimization.splitChunks.cacheGroups,
@@ -89,11 +99,45 @@ const nextConfig = {
           test: /[\\/]node_modules[\\/]/,
           name: 'vendors',
           chunks: 'all',
+          priority: 10,
+        },
+        common: {
+          name: 'common',
+          minChunks: 2,
+          chunks: 'all',
+          priority: 5,
         },
       };
+      
+      // Optimización de chunks
+      config.optimization.runtimeChunk = 'single';
     }
     
+    // Configuración para SVG
+    config.module.rules.push({
+      test: /\.svg$/,
+      use: ['@svgr/webpack'],
+    });
+    
     return config;
+  },
+  
+  // Configuración de compilación
+  compiler: {
+    // Eliminar console.log en producción
+    removeConsole: process.env.NODE_ENV === 'production',
+  },
+  
+  // Configuración de TypeScript
+  typescript: {
+    // Ignorar errores de TypeScript durante la compilación
+    ignoreBuildErrors: false,
+  },
+  
+  // Configuración de ESLint
+  eslint: {
+    // Ignorar errores de ESLint durante la compilación
+    ignoreDuringBuilds: false,
   },
 };
 

@@ -16,9 +16,13 @@ import { usePageTitle } from '@/hooks/usePageTitle';
 type AdminSection = 'farms' | 'users' | 'pending-farms';
 
 export default function AdminPanel() {
-  usePageTitle('pageTitles.admin', 'Admin Panel');
   const { dbService } = useDatabase();
   const { user } = useAuth();
+  
+  usePageTitle(
+    user?.role === 'admin' ? 'pageTitles.admin' : 'pageTitles.moderation', 
+    user?.role === 'admin' ? 'Admin Panel' : 'Moderator Panel'
+  );
   const [activeSection, setActiveSection] = useState<AdminSection>('farms');
   const [farms, setFarms] = useState<FarmItem[]>([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -48,7 +52,7 @@ export default function AdminPanel() {
     estimatedGold: '',
     estimatedSpirit: '',
     estimatedRewards: {} as Record<string, string>,
-    expansion: [] as string[],
+    expansion: [] as ('core' | 'hot' | 'pof' | 'eod' | 'soto' | 'jw')[],
     waypoint: '',
     isSolo: false,
     requiresSquad: false,
@@ -107,8 +111,6 @@ export default function AdminPanel() {
     
     return `${cleaned.slice(0, 2)}:${cleaned.slice(2, 4)}:${cleaned.slice(4, 6)}`;
   };
-
-
 
 
 
@@ -334,7 +336,7 @@ export default function AdminPanel() {
         estimatedGold: '',
         estimatedSpirit: '',
         estimatedRewards: {},
-        expansion: [],
+        expansion: [] as ('core' | 'hot' | 'pof' | 'eod' | 'soto' | 'jw')[],
         isSolo: false,
         requiresSquad: false,
         waypoint: '',
@@ -1771,8 +1773,15 @@ export default function AdminPanel() {
             animate={{ opacity: 1, y: 0 }}
             className="text-center mb-8"
           >
-            <h1 className="text-4xl font-bold text-white mb-2">Panel Administrativo</h1>
-            <p className="text-gray-300">Gestiona los farms y usuarios de la aplicación</p>
+            <h1 className="text-4xl font-bold text-white mb-2">
+              {user?.role === 'admin' ? 'Panel de Admin' : 'Panel de Moderación'}
+            </h1>
+            <p className="text-gray-300">
+              {user?.role === 'admin' 
+                ? 'Gestiona los farms y usuarios de la aplicación'
+                : 'Gestiona tus farms y revisa contenido pendiente'
+              }
+            </p>
           </motion.div>
 
           {/* Navigation Tabs */}
