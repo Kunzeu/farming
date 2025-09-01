@@ -131,21 +131,39 @@ const CraftingPage = () => {
   const [selectedSection, setSelectedSection] = useState<string>('overview');
   const [conversionData, setConversionData] = useState<ConversionItem[]>([]);
   const [isLoadingConversions, setIsLoadingConversions] = useState(false);
+  const [isUsingCache, setIsUsingCache] = useState(false);
   const [itemPrices, setItemPrices] = useState<Record<number, Gw2Price>>({});
   const [isLoadingPrices, setIsLoadingPrices] = useState(false);
   const [lastPriceUpdate, setLastPriceUpdate] = useState<Date | null>(null);
+  
+  // Estado para los nombres de los items de las tablas
+  const [tableItemNames, setTableItemNames] = useState<Record<number, string>>({});
+  
+  // Caché para datos de la API
+  const [apiCache, setApiCache] = useState<{
+    prices: Record<number, Gw2Price>;
+    items: Record<number, Gw2Item>;
+    lastUpdate: Date | null;
+  }>({
+    prices: {},
+    items: {},
+    lastUpdate: null
+  });
 
 
   // T6 Materials from the image with their GW2 IDs
   const t6Materials = useMemo(() => [
-    { id: 24295, name: 'Vial of Powerful Blood', t5Id: 24294 },
-    { id: 24358, name: 'Ancient Bone', t5Id: 24341 },
-    { id: 24351, name: 'Vicious Claw', t5Id: 24350 },
-    { id: 24357, name: 'Vicious Fang', t5Id: 24356 },
-    { id: 24289, name: 'Armored Scale', t5Id: 24288 },
-    { id: 24300, name: 'Elaborate Totem', t5Id: 24299 },
-    { id: 24283, name: 'Powerful Venom Sac', t5Id: 24282 },
+    { id: 24295, name: '', t5Id: 24294 }, // Vial of Powerful Blood
+    { id: 24358, name: '', t5Id: 24341 }, // Ancient Bone
+    { id: 24351, name: '', t5Id: 24350 }, // Vicious Claw
+    { id: 24357, name: '', t5Id: 24356 }, // Vicious Fang
+    { id: 24389, name: '', t5Id: 24288 }, // Armored Scale
+    { id: 24300, name: '', t5Id: 24299 }, // Elaborate Totem
+    { id: 24283, name: '', t5Id: 24282 }, // Powerful Venom Sac
   ], []);
+
+  // Estado para materiales T6 con nombres actualizados desde la API
+  const [updatedT6Materials, setUpdatedT6Materials] = useState(t6Materials);
 
   // Materials for T5 to T6 conversion
   const conversionMaterials = useMemo(() => ({
@@ -165,12 +183,12 @@ const CraftingPage = () => {
     24295, 24358, 24351, 24357, 24289, 24300, 24283, 24277,
     // Trofeos Comunes (T5)
     24294, 24341, 24350, 24356, 24288, 24299, 24282, 24276,
-    // Items para cálculos adicionales
-    24591, 19701, 97102, 19721,
+                  // Items para cálculos adicionales
+              24591, 19701, 97102, 19721, 24358, 10804, 19745, 19790, 19732,
     // Items para research notes
     24277, 24351, 24300, 12156, 24473, 19700, 24519, 24511, 24475, 19722, 19729, 19748, 68063,
-    // Item 97535 para cálculo final
-    97535
+    // Items para cálculos finales
+    97535, 95582, 19912
   ], []);
 
   // Función para calcular precio del item 24591 × 1 (buy)
@@ -212,6 +230,32 @@ const CraftingPage = () => {
     return priceInGold;
   }, [itemPrices]);
 
+  // Función para calcular precio del item 24358 × 1 (sell × 0.9)
+  const calculateItem24358Price = useCallback(() => {
+    if (!itemPrices || !itemPrices[24358]) return 0;
+    
+    const item = itemPrices[24358];
+    const sellPrice = item.sells?.unit_price || 0;
+    
+    // Convertir de cobre a oro (10000 cobre = 1 oro) y multiplicar por 0.9
+    const priceInGold = (sellPrice * 0.9) / 10000;
+        
+    return priceInGold;
+  }, [itemPrices]);
+
+  // Función para calcular precio del item 24351 × 5 (sell × 0.9)
+  const calculateItem24351Price = useCallback(() => {
+    if (!itemPrices || !itemPrices[24351]) return 0;
+    
+    const item = itemPrices[24351];
+    const sellPrice = item.sells?.unit_price || 0;
+    
+    // Convertir de cobre a oro (10000 cobre = 1 oro) y multiplicar por 5 × 0.9
+    const priceInGold = (sellPrice * 5 * 0.9) / 10000;
+        
+    return priceInGold;
+  }, [itemPrices]);
+
   // Función para calcular precio del item 97102 × 4 (buy)
   const calculateItem97102Price = useCallback(() => {
     if (!itemPrices || !itemPrices[97102]) return 0;
@@ -236,6 +280,70 @@ const CraftingPage = () => {
     const priceInGold = (sellPrice * 4 * 0.9) / 10000;
     
     return priceInGold;
+  }, [itemPrices]);
+
+  // Función para calcular precio del item 19721 × 5 (sell × 0.9)
+  const calculateItem19721x5Price = useCallback(() => {
+    if (!itemPrices || !itemPrices[19721]) return 0;
+    
+    const item = itemPrices[19721];
+    const sellPrice = item.sells?.unit_price || 0;
+    
+    // Convertir de cobre a oro (10000 cobre = 1 oro) y multiplicar por 5 × 0.9
+    const priceInGold = (sellPrice * 5 * 0.9) / 10000;
+    
+    return priceInGold;
+  }, [itemPrices]);
+
+              // Función para calcular precio del item 10804 × 1 (Gossamer Patch)
+            const calculateItem10804x1Price = useCallback(() => {
+              if (!itemPrices || !itemPrices[10804]) return 0;
+              
+              const item = itemPrices[10804];
+              const buyPrice = item.buys?.unit_price || 0;
+              
+              // Convertir de cobre a oro (10000 cobre = 1 oro) y multiplicar por 1
+              const priceInGold = (buyPrice * 1) / 10000;
+              
+              return priceInGold;
+            }, [itemPrices]);
+
+                      // Función para calcular el precio completo del crafting de Gossamer Patch
+        const calculateGossamerPatchCraftingPrice = useCallback(() => {
+          if (!itemPrices) return 0;
+          
+          // Gossamer Patch se craftea con:
+          // - 25 Spool of Gossamer Thread (ID 19790)
+          // - 30 Hardened Leather Section (ID 19732) 
+          // - 8 Gossamer Scrap (ID 19745)
+          
+          let precioCompleto = 0;
+          
+          // Spool of Gossamer Thread × 25
+          if (itemPrices[19790]) {
+            const gossamerThread = itemPrices[19790];
+            const buyPrice = gossamerThread.buys?.unit_price || 0;
+            precioCompleto += (buyPrice * 25) / 10000; // Convertir de cobre a oro
+          }
+    
+    // Hardened Leather Section × 30
+    if (itemPrices[19732]) {
+      const hardenedLeather = itemPrices[19732];
+      const buyPrice = hardenedLeather.buys?.unit_price || 0;
+      precioCompleto += (buyPrice * 30) / 10000; // Convertir de cobre a oro
+    }
+    
+    // Gossamer Scrap × 8
+    if (itemPrices[19745]) {
+      const gossamerScrap = itemPrices[19745];
+      const buyPrice = gossamerScrap.buys?.unit_price || 0;
+      precioCompleto += (buyPrice * 8) / 10000; // Convertir de cobre a oro
+    }
+    
+    // Dividir entre 5 para obtener el precio por patch (ya que se craftean 5)
+    const precioFinal = precioCompleto;
+    
+    return precioFinal;
   }, [itemPrices]);
 
   // Función para calcular precio del item 19701 × 10 (buy)
@@ -360,6 +468,26 @@ const CraftingPage = () => {
     return priceInGold;
   }, [itemPrices]);
 
+  // Función para calcular el precio de 95582 (sell × 0.85)
+  const calculateItem95582Price = useCallback(() => {
+    if (!itemPrices || !itemPrices[95582]) return 0;
+    const item = itemPrices[95582];
+    const sellPrice = item.sells?.unit_price || 0;
+    const priceInGold = (sellPrice * 0.85) / 10000;
+    
+    return priceInGold;
+  }, [itemPrices]);
+
+  // Función para calcular el precio de 95582 (sell × 0.85)
+  const calculateItem19912Price = useCallback(() => {
+    if (!itemPrices || !itemPrices[19912]) return 0;
+    const item = itemPrices[19912];
+    const sellPrice = item.sells?.unit_price || 0;
+    const priceInGold = (sellPrice * 0.85) / 10000;
+    
+    return priceInGold;
+  }, [itemPrices]);
+
   // Función para calcular la SUMA COMPLETA (Suma Total + TOTAL FINAL)
   const calculateSumaCompleta = useCallback(() => {
     const sumaTotal = calculateItem24591Price() + calculateItem19701Price() + calculateItem24295Price();
@@ -378,6 +506,17 @@ const CraftingPage = () => {
     return resultadoFinal;
   }, [calculateSumaCompleta, calculateItem97535Price]);
 
+  // Función para calcular el RESULTADO FINAL para la tercera sección (SUMA COMPLETA - 95582)
+  const calculateResultadoFinalTerceraSeccion = useCallback(() => {
+    const sumaTotal = calculateItem24591Price() + calculateItem19701Price() + calculateItem24358Price();
+    const totalFinal = calculateTotalWithNotes();
+    const sumaCompleta = sumaTotal + totalFinal;
+    const precio95582 = calculateItem95582Price();
+    const resultadoFinal = precio95582 - sumaCompleta;
+    
+    return resultadoFinal;
+  }, [calculateItem24591Price, calculateItem19701Price, calculateItem24358Price, calculateTotalWithNotes, calculateItem95582Price]);
+
   // Función para calcular el RESULTADO FINAL CON DROPRATE (fórmula de Excel)
   const calculateResultadoFinalConDroprate = useCallback(() => {
     const resultadoFinal = calculateResultadoFinal();
@@ -394,20 +533,82 @@ const CraftingPage = () => {
     return resultadoConDroprate;
   }, [calculateResultadoFinal]);
 
+  // Función para calcular el RESULTADO FINAL CON DROPRATE para la tercera sección (fórmula específica)
+  const calculateResultadoFinalConDroprateTerceraSeccion = useCallback(() => {
+    // Calcular el resultado final de la tercera sección (con 24358)
+    const sumaTotal = calculateItem24591Price() + calculateItem19701Price() + calculateItem24358Price();
+    const totalFinal = calculateTotalWithNotes();
+    const sumaCompleta = sumaTotal + totalFinal;
+    const precio95582 = calculateItem95582Price();
+    const resultadoFinal = precio95582 - sumaCompleta; // Esto es I50
+    
+    // D49 es la cantidad del item 24358, que es 1
+    const cantidad24358 = 1;
+    
+    // VM-UM'!C5 (droprate específico para esta sección)
+    const droprateC5 = 1.0078; // Ajustar este valor según corresponda
+    
+    // Fórmula: =SI(I50>=1,(I50/D49)*C5,"0")
+    let resultadoConDroprate = 0;
+    
+    if (resultadoFinal >= 1) {
+      resultadoConDroprate = (resultadoFinal / cantidad24358) * droprateC5;
+    } else {
+      resultadoConDroprate = 0;
+    }
+    
+    return resultadoConDroprate;
+  }, [calculateItem24591Price, calculateItem19701Price, calculateItem24358Price, calculateTotalWithNotes, calculateItem95582Price]);
+
+  // Función para calcular el RESULTADO FINAL para la cuarta sección (SUMA COMPLETA - 19912)
+  const calculateResultadoFinalCuartaSeccion = useCallback(() => {
+    const sumaTotal = calculateItem19721x5Price() + calculateItem24351Price() + calculateGossamerPatchCraftingPrice();
+    const precio19912 = calculateItem19912Price();
+    const resultadoFinal = precio19912 - sumaTotal;
+    
+    return resultadoFinal;
+  }, [calculateItem19721x5Price, calculateItem24351Price, calculateGossamerPatchCraftingPrice, calculateItem19912Price]);
+
+  // Función para calcular el RESULTADO FINAL CON DROPRATE para la cuarta sección
+  const calculateResultadoFinalConDroprateCuartaSeccion = useCallback(() => {
+    const resultadoFinal = calculateResultadoFinalCuartaSeccion(); // Esto es I92
+    const cantidadFija = 5; // Esto es D90 (número fijo x5)
+    const droprate = 1.0078;
+    
+    let resultadoConDroprate = 0;
+    if (resultadoFinal >= 0) {
+      resultadoConDroprate = (resultadoFinal / cantidadFija) * droprate;
+    } else {
+      resultadoConDroprate = 0;
+    }
+    
+    return resultadoConDroprate;
+  }, [calculateResultadoFinalCuartaSeccion]);
+
   // Función para calcular la suma total de ProfitMax de todas las secciones
   const calculateTotalProfitMax = useCallback(() => {
     // ProfitMax de Raros (primera columna)
     const profitMaxRaros = calculateResultadoFinalConDroprate();
     
-    // ProfitMax de Comunes (valores fijos de la tabla)
-    const profitMaxComunes = 1.1865 + 0.0527 + 0.1279 + 0.0657 + 0.2904; // Suma de los valores de la tabla
+    // ProfitMax de Comunes (valores fijos de la tabla - por ahora 0 hasta que se implementen cálculos dinámicos)
+    const profitMaxComunes = 0.1279 + 0.0657 + 0.2904; // Suma de los valores de la tabla
     
-    const totalProfitMax = profitMaxRaros + profitMaxComunes;
-
+    // ProfitMax de la Tercera Sección (nuevo cálculo)
+    const profitMaxTerceraSeccion = calculateResultadoFinalConDroprateTerceraSeccion();
     
+    // ProfitMax de la Cuarta Sección (nuevo cálculo)
+    const profitMaxCuartaSeccion = calculateResultadoFinalConDroprateCuartaSeccion();
+    
+    // Valor de Total Caja (trofeos raros + comunes)
+    const totalCaja = calculateTableTotal(trofeosRarosIds, 1.0078) + calculateTableTotal(trofeosComunesIds, 4.99, true);
+    
+    const totalProfitMax = profitMaxRaros + profitMaxComunes + profitMaxTerceraSeccion + profitMaxCuartaSeccion + totalCaja;
+  
     return totalProfitMax;
-  }, [calculateResultadoFinalConDroprate]);
+  }, [calculateResultadoFinalConDroprate, calculateResultadoFinalConDroprateTerceraSeccion, calculateResultadoFinalConDroprateCuartaSeccion]);
+    // ProfitMax de Raros (primera columna)    
 
+    
   // Función para obtener precios de los items de las tablas
   const fetchTableItemPrices = useCallback(async () => {
     setIsLoadingPrices(true);
@@ -432,19 +633,38 @@ const CraftingPage = () => {
     
   }, [tableItemIds]);
 
-  // Cargar precios de los items de las tablas al montar el componente y cada 5 minutos
+  // Función para obtener nombres de los items de las tablas
+  const fetchTableItemNames = useCallback(async () => {
+    try {
+      const itemsResponse = await fetch(`https://api.guildwars2.com/v2/items?ids=${tableItemIds.join(',')}&lang=${lang}`);
+      const items = await itemsResponse.json();
+      
+      const namesMap = items.reduce((acc: Record<number, string>, item: Gw2Item) => {
+        acc[item.id] = item.name;
+        return acc;
+      }, {} as Record<number, string>);
+      
+      setTableItemNames(namesMap);
+    } catch (error) {
+      console.error('Error fetching table item names:', error);
+    }
+  }, [tableItemIds, lang]);
+
+  // Cargar precios y nombres de los items de las tablas al montar el componente y cada 5 minutosd
   useEffect(() => {
-    // Cargar precios inmediatamente al montar
+    // Cargar precios y nombres inmediatamente al montar
     fetchTableItemPrices();
+    fetchTableItemNames();
     
-    // Actualizar precios cada 5 minutos
+    // Actualizar precios y nombres cada 5 minutos
     const interval = setInterval(() => {
       fetchTableItemPrices();
+      fetchTableItemNames();
     }, 5 * 60 * 1000); // 5 minutos = 300,000 ms
     
     // Limpiar el intervalo cuando el componente se desmonte
     return () => clearInterval(interval);
-  }, [fetchTableItemPrices]);
+  }, [fetchTableItemPrices, fetchTableItemNames]);
 
   // IDs de items por tabla
   const trofeosRarosIds = useMemo(() => [24295, 24358, 24351, 24357, 24289, 24300, 24283, 24277], []);
@@ -502,13 +722,59 @@ const CraftingPage = () => {
   const fetchConversionCalculations = useCallback(async () => {
     setIsLoadingConversions(true);
     try {
-      // Get prices from GW2 API
-      const pricesResponse = await fetch(`https://api.guildwars2.com/v2/commerce/prices?ids=${allConversionItemIds.join(',')}`);
-      const prices = await pricesResponse.json();
+      // Verificar si tenemos datos en caché y si son recientes (menos de 5 minutos)
+      const now = new Date();
+      const cacheAge = apiCache.lastUpdate ? now.getTime() - apiCache.lastUpdate.getTime() : Infinity;
+      const isCacheValid = cacheAge < 5 * 60 * 1000; // 5 minutos
       
-      // Get item details (names and icons) with language support
-      const itemsResponse = await fetch(`https://api.guildwars2.com/v2/items?ids=${allConversionItemIds.join(',')}&lang=${lang}`);
-      const items = await itemsResponse.json();
+      let prices: Gw2Price[] = [];
+      let items: Gw2Item[] = [];
+      
+      if (isCacheValid && Object.keys(apiCache.prices).length > 0 && Object.keys(apiCache.items).length > 0) {
+        // Usar datos del caché
+        console.log('Usando datos del caché para conversiones');
+        setIsUsingCache(true);
+        prices = Object.values(apiCache.prices);
+        items = Object.values(apiCache.items);
+      } else {
+        // Realizar llamadas a la API
+        console.log('Obteniendo datos frescos de la API para conversiones');
+        setIsUsingCache(false);
+        const [pricesResponse, itemsResponse] = await Promise.all([
+          fetch(`https://api.guildwars2.com/v2/commerce/prices?ids=${allConversionItemIds.join(',')}`),
+          fetch(`https://api.guildwars2.com/v2/items?ids=${allConversionItemIds.join(',')}&lang=${lang}`)
+        ]);
+
+        // Verificar que ambas respuestas sean exitosas
+        if (!pricesResponse.ok) {
+          throw new Error(`Error al obtener precios: ${pricesResponse.status} ${pricesResponse.statusText}`);
+        }
+        if (!itemsResponse.ok) {
+          throw new Error(`Error al obtener items: ${itemsResponse.status} ${itemsResponse.statusText}`);
+        }
+
+        [prices, items] = await Promise.all([
+          pricesResponse.json(),
+          itemsResponse.json()
+        ]);
+        
+        // Actualizar el caché
+        const pricesMap = prices.reduce((acc: Record<number, Gw2Price>, price: Gw2Price) => {
+          acc[price.id] = price;
+          return acc;
+        }, {} as Record<number, Gw2Price>);
+
+        const itemsMap = items.reduce((acc: Record<number, Gw2Item>, item: Gw2Item) => {
+          acc[item.id] = item;
+          return acc;
+        }, {} as Record<number, Gw2Item>);
+
+        setApiCache({
+          prices: pricesMap,
+          items: itemsMap,
+          lastUpdate: now
+        });
+      }
 
       // Create price and item maps
       const pricesMap = prices.reduce((acc: Record<number, Gw2Price>, price: Gw2Price) => {
@@ -520,6 +786,13 @@ const CraftingPage = () => {
         acc[item.id] = item;
         return acc;
       }, {} as Record<number, Gw2Item>);
+
+      // Actualizar los nombres de los materiales T6 con los datos de la API
+      const updatedT6Materials = t6Materials.map(material => ({
+        ...material,
+        name: itemsMap[material.id]?.name || material.name || `Item ${material.id}`
+      }));
+      setUpdatedT6Materials(updatedT6Materials);
 
       // Get prices for comparison
       const ectoplasmPrice = pricesMap[conversionMaterials.ectoplasm]?.sells?.unit_price || 0;
@@ -537,7 +810,7 @@ const CraftingPage = () => {
       // Find the minimum value
       const menorValor = Math.min(valor1, valor2, valor3, valor4);
       
-      const calculatedConversions: ConversionItem[] = t6Materials.map(t6 => {
+      const calculatedConversions: ConversionItem[] = updatedT6Materials.map(t6 => {
         const t5BuyPrice = pricesMap[t6.t5Id]?.buys?.unit_price || 0; // Precio de compra del T5
         const t6SellPrice = pricesMap[t6.id]?.sells?.unit_price || 0;
 
@@ -568,10 +841,20 @@ const CraftingPage = () => {
       setConversionData(calculatedConversions);
     } catch (error) {
       console.error('Error fetching conversion data:', error);
+      
+      // Mostrar mensaje de error más específico al usuario
+      if (error instanceof Error) {
+        console.error('Error details:', error.message);
+        // Aquí podrías agregar un toast o notificación de error
+        // toast.error(`Error al cargar datos: ${error.message}`);
+      }
+      
+      // En caso de error, mantener los datos anteriores si existen
+      // No limpiar el estado para que el usuario no pierda la información
     } finally {
       setIsLoadingConversions(false);
     }
-  }, [allConversionItemIds, conversionMaterials.ectoplasm, conversionMaterials.crystallineDust, t6Materials, lang]);
+  }, [allConversionItemIds, conversionMaterials.ectoplasm, conversionMaterials.crystallineDust, t6Materials, lang, apiCache]);
 
   useEffect(() => {
     if (selectedSection === 'conversions') {
@@ -874,9 +1157,9 @@ const CraftingPage = () => {
                        <h6 className="text-xs sm:text-sm font-bold text-gray-300 mb-2 text-center">Total Caja</h6>
                        <div className="text-center">
                          <p className="text-green-400 font-bold text-sm sm:text-lg">
-                           {isLoadingPrices ? <Loader2 className="w-3 h-3 sm:w-4 sm:h-4 animate-spin mx-auto" /> : formatGW2Price(
-                             calculateTableTotal(trofeosRarosIds, 1.0078) + 
-                             calculateTableTotal(trofeosComunesIds, 4.99, true)
+                           {isLoadingPrices ? <Loader2 className="w-3 h-3 sm:w-4 sm:h-4 animate-spin mx-auto" /> : formatGW2Price                          
+                          (calculateTableTotal(trofeosRarosIds, 1.0078) + 
+                          calculateTableTotal(trofeosComunesIds, 4.99, true)
                            )}
                          </p>
                          <p className="text-green-400 font-bold text-sm sm:text-lg">
@@ -1091,6 +1374,212 @@ const CraftingPage = () => {
                      </div>
                    </div>
                  </div>
+
+                 {/* Tercera sección de cálculos - OCULTA */}
+                 <div className="hidden">
+                   <div className="bg-gradient-to-r from-orange-800/50 to-orange-700/50 backdrop-blur-sm rounded-xl p-4 mb-6 border border-orange-600/50">
+                     <div className="flex items-center gap-3 mb-4">
+                       <div className="w-2 h-2 bg-orange-400 rounded-full"></div>
+                       <h3 className="text-lg font-semibold text-white">🕵️ Sistema Completo de Cálculos - ProfiMax de Raros (TERCERA COPIA)</h3>
+                     </div>
+                     
+                     {/* Primera parte: Items Individuales */}
+                     <div className="mb-4 p-3 bg-blue-900/30 rounded-lg border border-blue-600/30">
+                       <h4 className="text-blue-300 font-semibold mb-3 text-sm">📊 PRIMERA PARTE: Items Individuales</h4>
+                       
+                       {/* Item 24591 Price */}
+                       <div className="flex items-center gap-3 mb-2">
+                         <div className="w-3 h-3 bg-blue-400 rounded-full"></div>
+                         <div className="text-blue-300 text-sm">
+                           <strong>Item 24591 × 1 (buy):</strong> {isLoadingPrices ? 'Calculando...' : formatGW2Price(calculateItem24591Price())}
+                         </div>
+                       </div>
+                       
+                       {/* Item 19701 Price */}
+                       <div className="flex items-center gap-3 mb-2">
+                         <div className="w-3 h-3 bg-cyan-400 rounded-full"></div>
+                         <div className="text-cyan-300 text-sm">
+                           <strong>Item 19701 × 16 (buy):</strong> {isLoadingPrices ? 'Calculando...' : formatGW2Price(calculateItem19701Price())}
+                         </div>
+                       </div>
+                       
+                       {/* Item 24358 Price */}
+                       <div className="flex items-center gap-3 mb-2">
+                         <div className="w-3 h-3 bg-green-400 rounded-full"></div>
+                         <div className="text-green-300 text-sm">
+                           <strong>Item 24358 × 1 (sell × 0.9):</strong> {isLoadingPrices ? 'Calculando...' : formatGW2Price(calculateItem24358Price())}
+                         </div>
+                       </div>
+                       
+                       {/* Suma Total */}
+                       <div className="flex items-center gap-3 mt-3 pt-3 border-t border-blue-600/30">
+                         <div className="w-4 h-4 bg-yellow-400 rounded-full"></div>
+                         <div className="text-yellow-300 text-sm font-bold">
+                           <strong>🏆 SUMA TOTAL (24591 + 19701 + 24358):</strong> {isLoadingPrices ? 'Calculando...' : formatGW2Price(calculateItem24591Price() + calculateItem19701Price() + calculateItem24358Price())}
+                         </div>
+                       </div>
+                     </div>
+                     
+                     {/* Segunda parte: Cálculos para 97487 */}
+                     <div className="mt-3 pt-3 border-t border-orange-700/30">
+                       <div className="text-orange-300 text-sm mb-3 font-semibold">
+                         <strong>🔮 SEGUNDA PARTE: Cálculos para 97487</strong>
+                       </div>
+                       
+                       {/* 97102 × 8 (buy) */}
+                       <div className="flex items-center gap-3 mb-2">
+                         <div className="w-3 h-3 bg-red-400 rounded-full"></div>
+                         <div className="text-red-300 text-sm">
+                           <strong>97102 × 8 (buy):</strong> {isLoadingPrices ? 'Calculando...' : formatGW2Price(calculateItem97102Price())}
+                         </div>
+                       </div>
+                       
+                       {/* 19721 × 4 (sell × 0.9) */}
+                       <div className="flex items-center gap-3 mb-2">
+                         <div className="w-3 h-3 bg-pink-400 rounded-full"></div>
+                         <div className="text-pink-300 text-sm">
+                           <strong>19721 × 4 (sell × 0.9):</strong> {isLoadingPrices ? 'Calculando...' : formatGW2Price(calculateItem19721Price())}
+                         </div>
+                       </div>
+                       
+                       {/* 19701 × 20 (buy) */}
+                       <div className="flex items-center gap-3 mb-2">
+                         <div className="w-3 h-3 bg-indigo-400 rounded-full"></div>
+                         <div className="text-indigo-300 text-sm">
+                           <strong>19701 × 20 (buy):</strong> {isLoadingPrices ? 'Calculando...' : formatGW2Price(calculateItem19701x10Price())}
+                         </div>
+                       </div>
+                       
+                       {/* Precio total para 97487 */}
+                       <div className="flex items-center gap-3 mt-2 pt-2 border-t border-orange-700/20">
+                         <div className="w-3 h-3 bg-orange-400 rounded-full"></div>
+                         <div className="text-orange-300 text-xs">
+                           <strong>💰 Precio total para 97487 (suma):</strong> {isLoadingPrices ? 'Calculando...' : formatGW2Price(calculateTotalPriceFor97487())}
+                         </div>
+                       </div>
+                       
+                       {/* Precio por nota más bajo */}
+                       <div className="flex items-center gap-3 mt-2 pt-2 border-t border-orange-700/20">
+                         <div className="w-2 h-2 bg-purple-400 rounded-full"></div>
+                         <div className="text-purple-300 text-xs">
+                           <strong>📊 Precio por nota más bajo:</strong> {isLoadingPrices ? 'Calculando...' : formatGW2Price(getLowestPricePerNote())}
+                         </div>
+                       </div>
+                       
+                       {/* Total final con 60 notas */}
+                       <div className="flex items-center gap-3 mt-3 pt-3 border-t border-orange-700/30">
+                         <div className="w-4 h-4 bg-yellow-500 rounded-full"></div>
+                         <div className="text-yellow-300 text-xs">
+                           <strong>🎯 TOTAL FINAL (97487 + 60 notas):</strong> {isLoadingPrices ? 'Calculando...' : formatGW2Price(calculateTotalWithNotes())}
+                         </div>
+                       </div>
+                       
+                       {/* SUMA COMPLETA */}
+                       <div className="flex items-center gap-2 mb-2">
+                         <div className="w-4 h-4 bg-green-500 rounded-full"></div>
+                         <div className="text-green-300 text-xs">
+                           <strong>🏆 SUMA COMPLETA (Suma Total + TOTAL FINAL):</strong> {isLoadingPrices ? 'Calculando...' : formatGW2Price(calculateSumaCompleta())}
+                         </div>
+                       </div>
+                       
+                       {/* Item 95582 (sell × 0.85) */}
+                       <div className="flex items-center gap-2 mb-2">
+                         <div className="w-4 h-4 bg-red-500 rounded-full"></div>
+                         <div className="text-red-300 text-xs">
+                           <strong>🔴 Item 95582 (sell × 0.85):</strong> {isLoadingPrices ? 'Calculando...' : formatGW2Price(calculateItem95582Price())}
+                         </div>
+                       </div>
+                       
+                       {/* RESULTADO FINAL */}
+                       <div className="flex items-center gap-2 mb-2">
+                         <div className="w-4 h-4 bg-purple-500 rounded-full"></div>
+                         <div className="text-purple-300 text-xs">
+                           <strong>💎 RESULTADO FINAL (SUMA COMPLETA - 95582):</strong> {isLoadingPrices ? 'Calculando...' : formatGW2Price(calculateResultadoFinalTerceraSeccion())}
+                         </div>
+                       </div>
+                       
+                       {/* RESULTADO FINAL CON DROPRATE */}
+                       <div className="flex items-center gap-2 mb-2">
+                         <div className="w-4 h-4 bg-blue-500 rounded-full"></div>
+                         <div className="text-blue-300 text-xs">
+                           <strong>🚀 RESULTADO FINAL CON DROPRATE (≥1 × 1.0078):</strong> {isLoadingPrices ? 'Calculando...' : formatGW2Price(calculateResultadoFinalConDroprateTerceraSeccion())}
+                         </div>
+                       </div>
+                     </div>
+                   </div>
+                 </div>
+
+                                   {/* Cuarta sección de cálculos - OCULTA */}
+                  <div className="hidden">
+                   <div className="bg-gradient-to-r from-purple-800/50 to-purple-700/50 backdrop-blur-sm rounded-xl p-4 mb-6 border border-purple-600/50">
+                     <div className="flex items-center gap-3 mb-4">
+                       <div className="w-2 h-2 bg-purple-400 rounded-full"></div>
+                       <h3 className="text-lg font-semibold text-white">🕵️ Sistema Completo de Cálculos - ProfiMax de Raros (CUARTA COPIA)</h3>
+                     </div>
+                     
+                     {/* Primera parte: Items Individuales */}
+                     <div className="mb-4 p-3 bg-blue-900/30 rounded-lg border border-blue-600/30">
+                       <h4 className="text-blue-300 font-semibold mb-3 text-sm">📊 PRIMERA PARTE: Items Individuales</h4>
+                       
+                       {/* Item 19721 Price */}
+                       <div className="flex items-center gap-3 mb-2">
+                         <div className="w-3 h-3 bg-cyan-400 rounded-full"></div>
+                         <div className="text-cyan-300 text-sm">
+                           <strong>Item 19721 × 5 (sell × 0.9):</strong> {isLoadingPrices ? 'Calculando...' : formatGW2Price(calculateItem19721x5Price())}
+                         </div>
+                       </div>
+                       
+                       {/* Item 24351 Price */}
+                       <div className="flex items-center gap-3 mb-2">
+                         <div className="w-3 h-3 bg-green-400 rounded-full"></div>
+                         <div className="text-blue-300 text-sm">
+                           <strong>Item 24351 × 5 (sell × 0.9):</strong> {isLoadingPrices ? 'Calculando...' : formatGW2Price(calculateItem24351Price())}
+                         </div>
+                       </div>
+                       
+                        {/* Item 10804 Price (Gossamer Patch) */}
+                        <div className="flex items-center gap-3 mb-2">
+                          <div className="w-3 h-3 bg-purple-400 rounded-full"></div>
+                          <div className="text-purple-300 text-sm">
+                            <strong>Item 10804 × 1 (Gossamer Patch - crafting):</strong> {isLoadingPrices ? 'Calculando...' : formatGW2Price(calculateGossamerPatchCraftingPrice())}
+                            </div>
+                          </div>
+                       
+                       {/* Suma Total */}
+                       <div className="flex items-center gap-3 mt-3 pt-3 border-t border-blue-600/30">
+                         <div className="w-4 h-4 bg-yellow-400 rounded-full"></div>
+                            <div className="text-yellow-300 text-sm font-bold">
+                          <strong>🏆 SUMA TOTAL (19721 + 24351 + 10804):</strong> {isLoadingPrices ? 'Calculando...' : formatGW2Price(calculateItem19721x5Price() + calculateItem24351Price() + calculateGossamerPatchCraftingPrice())}
+                        </div>
+                       </div>
+
+                        {/* Item 95582 (sell × 0.85) */}
+                        <div className="flex items-center gap-2 mb-2">
+                         <div className="w-4 h-4 bg-red-500 rounded-full"></div>
+                         <div className="text-red-300 text-xs">
+                           <strong>🔴 Item 19912 (sell × 0.85):</strong> {isLoadingPrices ? 'Calculando...' : formatGW2Price(calculateItem19912Price())}
+                         </div>
+                       </div>
+
+                                                <div className="flex items-center gap-2 mb-2">
+                           <div className="w-4 h-4 bg-purple-500 rounded-full"></div>
+                           <div className="text-purple-300 text-xs">
+                             <strong>💎 RESULTADO FINAL (19912 - SUMA COMPLETA):</strong> {isLoadingPrices ? 'Calculando...' : formatGW2Price(calculateResultadoFinalCuartaSeccion())}
+                           </div>
+                         </div>
+                         
+                         {/* RESULTADO FINAL CON DROPRATE para la cuarta sección */}
+                         <div className="flex items-center gap-2 mb-2">
+                           <div className="w-4 h-4 bg-indigo-500 rounded-full"></div>
+                           <div className="text-indigo-300 text-xs">
+                             <strong>🚀 RESULTADO FINAL CON DROPRATE (I92/D90 × 1.0078):</strong> {isLoadingPrices ? 'Calculando...' : formatGW2Price(calculateResultadoFinalConDroprateCuartaSeccion())}
+                           </div>
+                         </div>
+                     </div>
+                     
+
+                   </div>
+                 </div>
                    
                    {/* Tabla de datos de trofeos */}
                    <div className="bg-gray-900/80 backdrop-blur-sm border border-gray-700 rounded-lg p-2 sm:p-4 md:p-6 shadow-2xl mb-4 sm:mb-6 md:mb-8">
@@ -1118,7 +1607,7 @@ const CraftingPage = () => {
                                      className="w-5 h-5 sm:w-6 sm:h-6 md:w-8 md:h-8 flex-shrink-0"
                                      priority
                                    />
-                                   <span className="text-xs sm:text-sm truncate">Vial de sangre poderosa</span>
+                                   <span className="text-xs sm:text-sm truncate">{tableItemNames[24295] || 'Vial de sangre poderosa'}</span>
                                  </div>
                                </td>
                                <td className="p-1 sm:p-1 md:p-2 text-center text-blue-400 font-semibold text-xs sm:text-sm">1.0078</td>
@@ -1138,14 +1627,16 @@ const CraftingPage = () => {
                                      className="w-6 h-6 sm:w-8 sm:h-8 flex-shrink-0"
                                      priority
                                    />
-                                   <span className="text-xs sm:text-sm truncate">Hueso antiguo</span>
+                                   <span className="text-xs sm:text-sm truncate">{tableItemNames[24358] || 'Hueso antiguo'}</span>
                                  </div>
                                </td>
                                <td className="p-1 sm:p-1 md:p-2 text-center text-blue-400 font-semibold text-xs sm:text-sm">1.0078</td>
                                <td className="p-1 sm:p-2 md:p-3 text-center text-green-400 font-semibold text-xs sm:text-sm">
                                  {isLoadingPrices ? <Loader2 className="w-3 h-3 sm:w-4 sm:h-4 animate-spin mx-auto" /> : formatGW2Price(calculateBasePrice(24358, 1.0078))}
                                </td>
-                               <td className="p-1 sm:p-2 md:p-3 text-center text-yellow-400 font-semibold text-xs sm:text-sm">01G 18S 65C</td>
+                                  <td className="p-1 sm:p-2 md:p-3 text-center text-yellow-400 font-semibold text-xs sm:text-sm">
+                                  {isLoadingPrices ? 'Calculando...' : formatGW2Price(calculateResultadoFinalConDroprateTerceraSeccion())}
+                                </td>
                              </tr>
                              <tr className="border-b border-gray-800 hover:bg-gray-800/50 transition-colors">
                                <td className="p-2 sm:p-2 text-gray-300">
@@ -1156,14 +1647,14 @@ const CraftingPage = () => {
                                      className="w-6 h-6 sm:w-8 sm:h-8 flex-shrink-0"
                                      priority
                                    />
-                                   <span className="text-xs sm:text-sm truncate">Garra despiadada</span>
+                                   <span className="text-xs sm:text-sm truncate">{tableItemNames[24351] || 'Garra despiadada'}</span>
                                  </div>
                                </td>
                                <td className="p-1 sm:p-1 md:p-2 text-center text-blue-400 font-semibold text-xs sm:text-sm">1.0078</td>
                                <td className="p-1 sm:p-2 md:p-3 text-center text-green-400 font-semibold text-xs sm:text-sm">
                                  {isLoadingPrices ? <Loader2 className="w-3 h-3 sm:w-4 sm:h-4 animate-spin mx-auto" /> : formatGW2Price(calculateBasePrice(24351, 1.0078))}
                                </td>
-                               <td className="p-1 sm:p-2 md:p-3 text-center text-yellow-400 font-semibold text-xs sm:text-sm">00G 05S 27C</td>
+                               <td className="p-1 sm:p-2 md:p-3 text-center text-yellow-400 font-semibold text-xs sm:text-sm">{isLoadingPrices ? 'Calculando...' : formatGW2Price(calculateResultadoFinalConDroprateCuartaSeccion())}</td>
                              </tr>
                              <tr className="border-b border-gray-800 hover:bg-gray-800/50 transition-colors">
                                <td className="p-2 sm:p-2 text-gray-300">
@@ -1174,7 +1665,7 @@ const CraftingPage = () => {
                                      className="w-6 h-6 sm:w-8 sm:h-8 flex-shrink-0"
                                      priority
                                    />
-                                   <span className="text-xs sm:text-sm truncate">Colmillo feroz</span>
+                                   <span className="text-xs sm:text-sm truncate">{tableItemNames[24357] || 'Colmillo feroz'}</span>
                                  </div>
                                </td>
                                <td className="p-1 sm:p-1 md:p-2 text-center text-blue-400 font-semibold text-xs sm:text-sm">1.0078</td>
@@ -1192,7 +1683,7 @@ const CraftingPage = () => {
                                      className="w-6 h-6 sm:w-8 sm:h-8 flex-shrink-0"
                                      priority
                                    />
-                                   <span className="text-xs sm:text-sm truncate">Escama blindada</span>
+                                   <span className="text-xs sm:text-sm truncate">{tableItemNames[24289] || 'Escama blindada'}</span>
                                  </div>
                                </td>
                                <td className="p-1 sm:p-1 md:p-2 text-center text-blue-400 font-semibold text-xs sm:text-sm">1.0078</td>
@@ -1210,7 +1701,7 @@ const CraftingPage = () => {
                                      className="w-6 h-6 sm:w-8 sm:h-8 flex-shrink-0"
                                      priority
                                    />
-                                   <span className="text-xs sm:text-sm truncate">Tótem elaborado</span>
+                                   <span className="text-xs sm:text-sm truncate">{tableItemNames[24300] || 'Tótem elaborado'}</span>
                                  </div>
                                </td>
                                <td className="p-1 sm:p-1 md:p-2 text-center text-blue-400 font-semibold text-xs sm:text-sm">1.0078</td>
@@ -1228,7 +1719,7 @@ const CraftingPage = () => {
                                      className="w-6 h-6 sm:w-8 sm:h-8 flex-shrink-0"
                                      priority
                                    />
-                                   <span className="text-xs sm:text-sm truncate">Vesícula de veneno poderoso</span>
+                                   <span className="text-xs sm:text-sm truncate">{tableItemNames[24283] || 'Vesícula de veneno poderoso'}</span>
                                  </div>
                                </td>
                                <td className="p-1 sm:p-1 md:p-2 text-center text-blue-400 font-semibold text-xs sm:text-sm">1.0078</td>
@@ -1285,7 +1776,7 @@ const CraftingPage = () => {
                                      className="w-6 h-6 sm:w-8 sm:h-8 flex-shrink-0"
                                      priority
                                    />
-                                   <span className="text-xs sm:text-sm truncate">Vial de sangre potente</span>
+                                   <span className="text-xs sm:text-sm truncate">{tableItemNames[24294] || 'Vial de sangre potente'}</span>
                                  </div>
                                </td>
                                <td className="p-1 sm:p-1 md:p-2 text-center text-blue-400 font-semibold text-xs sm:text-sm">4.99</td>
@@ -1303,7 +1794,7 @@ const CraftingPage = () => {
                                      className="w-6 h-6 sm:w-8 sm:h-8 flex-shrink-0"
                                      priority
                                    />
-                                   <span className="text-xs sm:text-sm truncate">Hueso grande</span>
+                                   <span className="text-xs sm:text-sm truncate">{tableItemNames[24341] || 'Hueso grande'}</span>
                                  </div>
                                </td>
                                <td className="p-1 sm:p-1 md:p-2 text-center text-blue-400 font-semibold text-xs sm:text-sm">4.99</td>
@@ -1321,7 +1812,7 @@ const CraftingPage = () => {
                                      className="w-6 h-6 sm:w-8 sm:h-8 flex-shrink-0"
                                      priority
                                    />
-                                   <span className="text-xs sm:text-sm truncate">Garra grande</span>
+                                   <span className="text-xs sm:text-sm truncate">{tableItemNames[24350] || 'Garra grande'}</span>
                                  </div>
                                </td>
                                <td className="p-1 sm:p-1 md:p-2 text-center text-blue-400 font-semibold text-xs sm:text-sm">4.99</td>
@@ -1339,7 +1830,7 @@ const CraftingPage = () => {
                                      className="w-6 h-6 sm:w-8 sm:h-8 flex-shrink-0"
                                      priority
                                    />
-                                   <span className="text-xs sm:text-sm truncate">Colmillo grande</span>
+                                   <span className="text-xs sm:text-sm truncate">{tableItemNames[24356] || 'Colmillo grande'}</span>
                                  </div>
                                </td>
                                <td className="p-1 sm:p-1 md:p-2 text-center text-blue-400 font-semibold text-xs sm:text-sm">4.99</td>
@@ -1357,7 +1848,7 @@ const CraftingPage = () => {
                                      className="w-6 h-6 sm:w-8 sm:h-8 flex-shrink-0"
                                      priority
                                    />
-                                   <span className="text-xs sm:text-sm truncate">Escama grande</span>
+                                   <span className="text-xs sm:text-sm truncate">{tableItemNames[24288] || 'Escama grande'}</span>
                                  </div>
                                </td>
                                <td className="p-1 sm:p-1 md:p-2 text-center text-blue-400 font-semibold text-xs sm:text-sm">4.99</td>
@@ -1375,7 +1866,7 @@ const CraftingPage = () => {
                                      className="w-6 h-6 sm:w-8 sm:h-8 flex-shrink-0"
                                      priority
                                    />
-                                   <span className="text-xs sm:text-sm truncate">Tótem intrincado</span>
+                                   <span className="text-xs sm:text-sm truncate">{tableItemNames[24299] || 'Tótem intrincado'}</span>
                                  </div>
                                </td>
                                <td className="p-1 sm:p-1 md:p-2 text-center text-blue-400 font-semibold text-xs sm:text-sm">4.99</td>
@@ -1393,7 +1884,7 @@ const CraftingPage = () => {
                                      className="w-6 h-6 sm:w-8 sm:h-8 flex-shrink-0"
                                      priority
                                    />
-                                   <span className="text-xs sm:text-sm truncate">Vesícula de veneno potente</span>
+                                   <span className="text-xs sm:text-sm truncate">{tableItemNames[24282] || 'Vesícula de veneno potente'}</span>
                                  </div>
                                </td>
                                <td className="p-1 sm:p-1 md:p-2 text-center text-blue-400 font-semibold text-xs sm:text-sm">4.99</td>
@@ -1411,7 +1902,7 @@ const CraftingPage = () => {
                                      className="w-6 h-6 sm:w-8 sm:h-8 flex-shrink-0"
                                      priority
                                    />
-                                   <span className="text-xs sm:text-sm truncate">Montón de polvo incandescente</span>
+                                   <span className="text-xs sm:text-sm truncate">{tableItemNames[24276] || 'Montón de polvo incandescente'}</span>
                                  </div>
                                </td>
                                <td className="p-1 sm:p-1 md:p-2 text-center text-blue-400 font-semibold text-xs sm:text-sm">4.99</td>
@@ -1513,12 +2004,33 @@ const CraftingPage = () => {
                       className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-600 text-white rounded-lg transition-colors duration-200"
                     >
                       <RefreshCw className={`w-4 h-4 ${isLoadingConversions ? 'animate-spin' : ''}`} />
-                      {isLoadingConversions ? t('craftingPage.updating', 'Updating...') : t('craftingPage.refreshData', 'Refresh Data')}
+                      {isLoadingConversions 
+                        ? (isUsingCache ? t('craftingPage.loadingFromCache', 'Loading from cache...') : t('craftingPage.updating', 'Updating...'))
+                        : t('craftingPage.refreshData', 'Refresh Data')
+                      }
                     </button>
                   </div>
                   <p className="text-gray-400 mb-6">
                     {t('craftingPage.conversionsDesc', 'Calculate the profitability of converting Tier 5 to Tier 6 materials through the Mystic Forge. Prices are updated in real-time from the Guild Wars 2 API.')}
                   </p>
+                  
+                  {/* Indicador de estado del caché */}
+                  {apiCache.lastUpdate && (
+                    <div className="mb-4 p-3 bg-gray-800 rounded-lg border border-gray-600">
+                      <div className="flex items-center gap-2 text-sm">
+                        <div className={`w-2 h-2 rounded-full ${isUsingCache ? 'bg-yellow-500' : 'bg-green-500'}`}></div>
+                        <span className="text-gray-300">
+                          {isUsingCache 
+                            ? t('craftingPage.usingCachedData', 'Using cached data')
+                            : t('craftingPage.usingFreshData', 'Using fresh data from API')
+                          }
+                        </span>
+                        <span className="text-gray-500">
+                          • {t('craftingPage.lastUpdate', 'Last update')}: {apiCache.lastUpdate.toLocaleTimeString()}
+                        </span>
+                      </div>
+                    </div>
+                  )}
                   
 
                   

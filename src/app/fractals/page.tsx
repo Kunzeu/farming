@@ -1082,36 +1082,36 @@ export default function FarmingTrackerPage() {
            <>
              {/* Stats Overview */}
              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-6 mb-6 md:mb-8">
-               <div className="bg-gray-900/80 backdrop-blur-sm border border-gray-700 rounded-lg p-3 sm:p-4 md:p-6 shadow-2xl text-center sm:text-left">
-                 <h3 className="text-sm sm:text-base md:text-lg font-semibold text-gray-300 mb-2">{t('farmingTracker.stats.totalValueGained')}</h3>
-                 <div className="text-xl sm:text-2xl md:text-3xl font-bold text-green-400">
+               <div className="bg-gray-900/80 backdrop-blur-sm border border-gray-700 rounded-lg p-2 sm:p-3 shadow-2xl text-center sm:text-left">
+                 <h3 className="text-xs sm:text-sm font-semibold text-gray-300 mb-1">{t('farmingTracker.stats.totalValueGained')}</h3>
+                 <div className="text-base sm:text-lg font-bold text-green-400">
                    {formatGoldSilverCopper(dungeonChestStats.totalValue)}
                  </div>
-                 <p className="text-xs sm:text-sm text-gray-400 mt-2">{t('farmingTracker.stats.totalValueGained')}</p>
+                 <p className="text-xs text-gray-400 mt-1">{t('farmingTracker.stats.totalValueGained')}</p>
                </div>
                
-               <div className="bg-gray-900/80 backdrop-blur-sm border border-gray-700 rounded-lg p-3 sm:p-4 md:p-6 shadow-2xl text-center sm:text-left">
-                 <h3 className="text-sm sm:text-base md:text-lg font-semibold text-gray-300 mb-2">{t('farmingTracker.stats.itemsGained')}</h3>
-                 <div className="text-xl sm:text-2xl md:text-3xl font-bold text-blue-400">
+               <div className="bg-gray-900/80 backdrop-blur-sm border border-gray-700 rounded-lg p-2 sm:p-3 shadow-2xl text-center sm:text-left">
+                 <h3 className="text-xs sm:text-sm font-semibold text-gray-300 mb-1">{t('farmingTracker.stats.itemsGained')}</h3>
+                 <div className="text-base sm:text-lg font-bold text-blue-400">
                    {dungeonChestStats.totalItems.toLocaleString()}
                  </div>
-                 <p className="text-xs sm:text-sm text-gray-400 mt-2">{t('farmingTracker.stats.totalAmount')}</p>
+                 <p className="text-xs text-gray-400 mt-1">{t('farmingTracker.stats.totalAmount')}</p>
                </div>
                
-               <div className="bg-gray-900/80 backdrop-blur-sm border border-gray-700 rounded-lg p-3 sm:p-4 md:p-6 shadow-2xl text-center sm:text-left">
-                 <h3 className="text-sm sm:text-base md:text-lg font-semibold text-gray-300 mb-2">{t('farmingTracker.stats.chestsOpened')}</h3>
-                 <div className="text-xl sm:text-2xl md:text-3xl font-bold text-purple-400">
+               <div className="bg-gray-900/80 backdrop-blur-sm border border-gray-700 rounded-lg p-2 sm:p-3 shadow-2xl text-center sm:text-left">
+                 <h3 className="text-xs sm:text-sm font-semibold text-gray-300 mb-1">{t('farmingTracker.stats.chestsOpened')}</h3>
+                 <div className="text-base sm:text-lg font-bold text-purple-400">
                    {dungeonChestStats.estimatedChests.toLocaleString()}
                  </div>
-                 <p className="text-xs sm:text-sm text-gray-400 mt-2">{t('farmingTracker.stats.basedOnRelics')}</p>
+                 <p className="text-xs text-gray-400 mt-1">{t('farmingTracker.stats.basedOnRelics')}</p>
                </div>
                
-               <div className="bg-gray-900/80 backdrop-blur-sm border border-gray-700 rounded-lg p-3 sm:p-4 md:p-6 shadow-2xl text-center sm:text-left">
-                 <h3 className="text-sm sm:text-base md:text-lg font-semibold text-gray-300 mb-2">{t('farmingTracker.stats.avgGoldPerChest')}</h3>
-                 <div className="text-xl sm:text-2xl md:text-3xl font-bold text-yellow-400">
+               <div className="bg-gray-900/80 backdrop-blur-sm border border-gray-700 rounded-lg p-2 sm:p-3 shadow-2xl text-center sm:text-left">
+                 <h3 className="text-xs sm:text-sm font-semibold text-gray-300 mb-1">{t('farmingTracker.stats.avgGoldPerChest')}</h3>
+                 <div className="text-base sm:text-lg font-bold text-yellow-400">
                    {formatGoldSilverCopper(Math.round(dungeonChestStats.avgGoldPerChest))}
                  </div>
-                 <p className="text-xs sm:text-sm text-gray-400 mt-2">{t('farmingTracker.stats.avgValuePerChest')}</p>
+                 <p className="text-xs text-gray-400 mt-1">{t('farmingTracker.stats.avgValuePerChest')}</p>
                </div>
              </div>
 
@@ -1341,36 +1341,36 @@ export default function FarmingTrackerPage() {
            <>
              {/* Stats Overview */}
              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-6 mb-6 md:mb-8">
-               <div className="bg-gray-900/80 backdrop-blur-sm border border-gray-700 rounded-lg p-3 sm:p-4 md:p-6 shadow-2xl text-center sm:text-left">
-                 <h3 className="text-sm sm:text-base md:text-lg font-semibold text-gray-300 mb-2">{t('farmingTracker.stats.totalValueGained')}</h3>
-                 <div className="text-xl sm:text-2xl md:text-3xl font-bold text-green-400">
+               <div className="bg-gray-900/80 backdrop-blur-sm border border-gray-700 rounded-lg p-2 sm:p-3 shadow-2xl text-center sm:text-left">
+                 <h3 className="text-xs sm:text-sm font-semibold text-gray-300 mb-1">{t('farmingTracker.stats.totalValueGained')}</h3>
+                 <div className="text-base sm:text-lg font-bold text-green-400">
                    {formatGoldSilverCopper(raidChestStats.totalValue)}
                  </div>
-                 <p className="text-xs sm:text-sm text-gray-400 mt-2">{t('farmingTracker.stats.totalValueGained')}</p>
+                 <p className="text-xs text-gray-400 mt-1">{t('farmingTracker.stats.totalValueGained')}</p>
                </div>
                
-               <div className="bg-gray-900/80 backdrop-blur-sm border border-gray-700 rounded-lg p-3 sm:p-4 md:p-6 shadow-2xl text-center sm:text-left">
-                 <h3 className="text-sm sm:text-base md:text-lg font-semibold text-gray-300 mb-2">{t('farmingTracker.stats.itemsGained')}</h3>
-                 <div className="text-xl sm:text-2xl md:text-3xl font-bold text-blue-400">
+               <div className="bg-gray-900/80 backdrop-blur-sm border border-gray-700 rounded-lg p-2 sm:p-3 shadow-2xl text-center sm:text-left">
+                 <h3 className="text-xs sm:text-sm font-semibold text-gray-300 mb-1">{t('farmingTracker.stats.itemsGained')}</h3>
+                 <div className="text-base sm:text-lg font-bold text-blue-400">
                    {raidChestStats.totalItems.toLocaleString()}
                  </div>
-                 <p className="text-xs sm:text-sm text-gray-400 mt-2">{t('farmingTracker.stats.totalAmount')}</p>
+                 <p className="text-xs text-gray-400 mt-1">{t('farmingTracker.stats.totalAmount')}</p>
                </div>
                
-               <div className="bg-gray-900/80 backdrop-blur-sm border border-gray-700 rounded-lg p-3 sm:p-4 md:p-6 shadow-2xl text-center sm:text-left">
-                 <h3 className="text-sm sm:text-base md:text-lg font-semibold text-gray-300 mb-2">{t('farmingTracker.stats.chestsOpened')}</h3>
-                 <div className="text-xl sm:text-2xl md:text-3xl font-bold text-purple-400">
+               <div className="bg-gray-900/80 backdrop-blur-sm border border-gray-700 rounded-lg p-2 sm:p-3 shadow-2xl text-center sm:text-left">
+                 <h3 className="text-xs sm:text-sm font-semibold text-gray-300 mb-1">{t('farmingTracker.stats.chestsOpened')}</h3>
+                 <div className="text-base sm:text-lg font-bold text-purple-400">
                    {raidChestStats.estimatedChests.toLocaleString()}
                  </div>
-                 <p className="text-xs sm:text-sm text-gray-400 mt-2">{t('farmingTracker.stats.basedOnRelics')}</p>
+                 <p className="text-xs text-gray-400 mt-1">{t('farmingTracker.stats.basedOnRelics')}</p>
                </div>
                
-               <div className="bg-gray-900/80 backdrop-blur-sm border border-gray-700 rounded-lg p-3 sm:p-4 md:p-6 shadow-2xl text-center sm:text-left">
-                 <h3 className="text-sm sm:text-base md:text-lg font-semibold text-gray-300 mb-2">{t('farmingTracker.stats.avgGoldPerChest')}</h3>
-                 <div className="text-2xl sm:text-3xl md:text-4xl font-bold text-yellow-400">
+               <div className="bg-gray-900/80 backdrop-blur-sm border border-gray-700 rounded-lg p-2 sm:p-3 shadow-2xl text-center sm:text-left">
+                 <h3 className="text-xs sm:text-sm font-semibold text-gray-300 mb-1">{t('farmingTracker.stats.avgGoldPerChest')}</h3>
+                 <div className="text-base sm:text-lg font-bold text-yellow-400">
                    {formatGoldSilverCopper(Math.round(raidChestStats.avgGoldPerChest))}
                  </div>
-                 <p className="text-xs sm:text-sm text-gray-400 mt-2">{t('farmingTracker.stats.avgValuePerChest')}</p>
+                 <p className="text-xs text-gray-400 mt-1">{t('farmingTracker.stats.avgValuePerChest')}</p>
                </div>
              </div>
 
@@ -1600,36 +1600,36 @@ export default function FarmingTrackerPage() {
            <>
              {/* Stats Overview */}
              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-6 mb-6 md:mb-8">
-               <div className="bg-gray-900/80 backdrop-blur-sm border border-gray-700 rounded-lg p-3 sm:p-4 md:p-6 shadow-2xl text-center sm:text-left">
-                 <h3 className="text-sm sm:text-base md:text-lg font-semibold text-gray-300 mb-2">{t('farmingTracker.stats.totalValueGained')}</h3>
-                 <div className="text-xl sm:text-2xl md:text-3xl font-bold text-green-400">
+               <div className="bg-gray-900/80 backdrop-blur-sm border border-gray-700 rounded-lg p-2 sm:p-3 shadow-2xl text-center sm:text-left">
+                 <h3 className="text-xs sm:text-sm font-semibold text-gray-300 mb-1">{t('farmingTracker.stats.totalValueGained')}</h3>
+                 <div className="text-base sm:text-lg font-bold text-green-400">
                    {formatGoldSilverCopper(strikeChestStats.totalValue)}
                  </div>
-                 <p className="text-xs sm:text-sm text-gray-400 mt-2">{t('farmingTracker.stats.totalValueGained')}</p>
+                 <p className="text-xs text-gray-400 mt-1">{t('farmingTracker.stats.totalValueGained')}</p>
                </div>
                
-               <div className="bg-gray-900/80 backdrop-blur-sm border border-gray-700 rounded-lg p-3 sm:p-4 md:p-6 shadow-2xl text-center sm:text-left">
-                 <h3 className="text-sm sm:text-base md:text-lg font-semibold text-gray-300 mb-2">{t('farmingTracker.stats.itemsGained')}</h3>
-                 <div className="text-xl sm:text-2xl md:text-3xl font-bold text-blue-400">
+               <div className="bg-gray-900/80 backdrop-blur-sm border border-gray-700 rounded-lg p-2 sm:p-3 shadow-2xl text-center sm:text-left">
+                 <h3 className="text-xs sm:text-sm font-semibold text-gray-300 mb-1">{t('farmingTracker.stats.itemsGained')}</h3>
+                 <div className="text-base sm:text-lg font-bold text-blue-400">
                    {strikeChestStats.totalItems.toLocaleString()}
                  </div>
-                 <p className="text-xs sm:text-sm text-gray-400 mt-2">{t('farmingTracker.stats.totalAmount')}</p>
+                 <p className="text-xs text-gray-400 mt-1">{t('farmingTracker.stats.totalAmount')}</p>
                </div>
                
-               <div className="bg-gray-900/80 backdrop-blur-sm border border-gray-700 rounded-lg p-3 sm:p-4 md:p-6 shadow-2xl text-center sm:text-left">
-                 <h3 className="text-sm sm:text-base md:text-lg font-semibold text-gray-300 mb-2">{t('farmingTracker.stats.chestsOpened')}</h3>
-                 <div className="text-xl sm:text-2xl md:text-3xl font-bold text-purple-400">
+               <div className="bg-gray-900/80 backdrop-blur-sm border border-gray-700 rounded-lg p-2 sm:p-3 shadow-2xl text-center sm:text-left">
+                 <h3 className="text-xs sm:text-sm font-semibold text-gray-300 mb-1">{t('farmingTracker.stats.chestsOpened')}</h3>
+                 <div className="text-base sm:text-lg font-bold text-purple-400">
                    {strikeChestStats.estimatedChests.toLocaleString()}
                  </div>
-                 <p className="text-xs sm:text-sm text-gray-400 mt-2">{t('farmingTracker.stats.basedOnRelics')}</p>
+                 <p className="text-xs text-gray-400 mt-1">{t('farmingTracker.stats.basedOnRelics')}</p>
                </div>
                
-               <div className="bg-gray-900/80 backdrop-blur-sm border border-gray-700 rounded-lg p-3 sm:p-4 md:p-6 shadow-2xl text-center sm:text-left">
-                 <h3 className="text-sm sm:text-base md:text-lg font-semibold text-gray-300 mb-2">{t('farmingTracker.stats.avgGoldPerChest')}</h3>
-                 <div className="text-xl sm:text-2xl md:text-3xl font-bold text-yellow-400">
+               <div className="bg-gray-900/80 backdrop-blur-sm border border-gray-700 rounded-lg p-2 sm:p-3 shadow-2xl text-center sm:text-left">
+                 <h3 className="text-xs sm:text-sm font-semibold text-gray-300 mb-1">{t('farmingTracker.stats.avgGoldPerChest')}</h3>
+                 <div className="text-base sm:text-lg font-bold text-yellow-400">
                    {formatGoldSilverCopper(Math.round(strikeChestStats.avgGoldPerChest))}
                  </div>
-                 <p className="text-xs sm:text-sm text-gray-400 mt-2">{t('farmingTracker.stats.avgValuePerChest')}</p>
+                 <p className="text-xs text-gray-400 mt-1">{t('farmingTracker.stats.avgValuePerChest')}</p>
                </div>
              </div>
 
@@ -1859,38 +1859,38 @@ export default function FarmingTrackerPage() {
            <>
              {/* Stats Overview */}
              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-6 mb-6 md:mb-8">
-               <div className="bg-gray-900/80 backdrop-blur-sm border border-gray-700 rounded-lg p-3 sm:p-4 md:p-6 shadow-2xl text-center sm:text-left">
-                 <h3 className="text-sm sm:text-base md:text-lg font-semibold text-gray-300 mb-2">{t('farmingTracker.stats.totalValueGained')}</h3>
-                 <div className="text-xl sm:text-2xl md:text-3xl font-bold text-green-400">
+               <div className="bg-gray-900/80 backdrop-blur-sm border border-gray-700 rounded-lg p-2 sm:p-3 shadow-2xl text-center sm:text-left">
+                 <h3 className="text-xs sm:text-sm font-semibold text-gray-300 mb-1">{t('farmingTracker.stats.totalValueGained')}</h3>
+                 <div className="text-base sm:text-lg font-bold text-green-400">
                    {formatGoldSilverCopper(stats.totalValue)}
                  </div>
-                 <p className="text-xs sm:text-sm text-gray-400 mt-2">
+                 <p className="text-xs text-gray-400 mt-1">
                    {t('farmingTracker.stats.totalValueGained')}
                  </p>
                </div>
                
-               <div className="bg-gray-900/80 backdrop-blur-sm border border-gray-700 rounded-lg p-3 sm:p-4 md:p-6 shadow-2xl text-center sm:text-left">
-                 <h3 className="text-sm sm:text-base md:text-lg font-semibold text-gray-300 mb-2">{t('farmingTracker.stats.itemsGained')}</h3>
-                 <div className="text-xl sm:text-2xl md:text-3xl font-bold text-blue-400">
+               <div className="bg-gray-900/80 backdrop-blur-sm border border-gray-700 rounded-lg p-2 sm:p-3 shadow-2xl text-center sm:text-left">
+                 <h3 className="text-xs sm:text-sm font-semibold text-gray-300 mb-1">{t('farmingTracker.stats.itemsGained')}</h3>
+                 <div className="text-base sm:text-lg font-bold text-blue-400">
                    {stats.totalItems.toLocaleString()}
                  </div>
-                 <p className="text-xs sm:text-sm text-gray-400 mt-2">{t('farmingTracker.stats.totalAmount')}</p>
+                 <p className="text-xs text-gray-400 mt-1">{t('farmingTracker.stats.totalAmount')}</p>
                </div>
                
-               <div className="bg-gray-900/80 backdrop-blur-sm border border-gray-700 rounded-lg p-3 sm:p-4 md:p-6 shadow-2xl text-center sm:text-left">
-                 <h3 className="text-sm sm:text-base md:text-lg font-semibold text-gray-300 mb-2">{t('farmingTracker.stats.chestsOpened')}</h3>
-                 <div className="text-xl sm:text-2xl md:text-3xl font-bold text-purple-400">
+               <div className="bg-gray-900/80 backdrop-blur-sm border border-gray-700 rounded-lg p-2 sm:p-3 shadow-2xl text-center sm:text-left">
+                 <h3 className="text-xs sm:text-sm font-semibold text-gray-300 mb-1">{t('farmingTracker.stats.chestsOpened')}</h3>
+                 <div className="text-base sm:text-lg font-bold text-purple-400">
                    {stats.estimatedChests.toLocaleString()}
                  </div>
-                 <p className="text-sm text-gray-400 mt-2">{t('farmingTracker.stats.basedOnRelics')}</p>
+                 <p className="text-xs text-gray-400 mt-1">{t('farmingTracker.stats.basedOnRelics')}</p>
                </div>
                
-               <div className="bg-gray-900/80 backdrop-blur-sm border border-gray-700 rounded-lg p-3 sm:p-4 md:p-6 shadow-2xl text-center sm:text-left">
-                 <h3 className="text-sm sm:text-base md:text-lg font-semibold text-gray-300 mb-2">{t('farmingTracker.stats.avgGoldPerChest')}</h3>
-                 <div className="text-xl sm:text-2xl md:text-3xl font-bold text-yellow-400">
+               <div className="bg-gray-900/80 backdrop-blur-sm border border-gray-700 rounded-lg p-2 sm:p-3 shadow-2xl text-center sm:text-left">
+                 <h3 className="text-xs sm:text-sm font-semibold text-gray-300 mb-1">{t('farmingTracker.stats.avgGoldPerChest')}</h3>
+                 <div className="text-base sm:text-lg font-bold text-yellow-400">
                    {formatGoldSilverCopper(Math.round(stats.avgGoldPerChest))}
                  </div>
-                 <p className="text-sm text-gray-400 mt-2">{t('farmingTracker.stats.avgValuePerChest')}</p>
+                 <p className="text-xs text-gray-400 mt-1">{t('farmingTracker.stats.avgValuePerChest')}</p>
                </div>
              </div>
 
