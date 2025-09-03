@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import Navigation from '@/components/layout/Navigation';
 import Image from 'next/image';
-import Link from 'next/link';
+
 import { 
   BookOpen, 
   TrendingUp, 
@@ -296,18 +296,7 @@ const CraftingPage = () => {
     return priceInGold;
   }, [itemPrices]);
 
-              // Función para calcular precio del item 10804 × 1 (Gossamer Patch)
-            const calculateItem10804x1Price = useCallback(() => {
-              if (!itemPrices || !itemPrices[10804]) return 0;
-              
-              const item = itemPrices[10804];
-              const buyPrice = item.buys?.unit_price || 0;
-              
-              // Convertir de cobre a oro (10000 cobre = 1 oro) y multiplicar por 1
-              const priceInGold = (buyPrice * 1) / 10000;
-              
-              return priceInGold;
-            }, [itemPrices]);
+
 
                       // Función para calcular el precio completo del crafting de Gossamer Patch
         const calculateGossamerPatchCraftingPrice = useCallback(() => {
@@ -563,15 +552,7 @@ const CraftingPage = () => {
     return priceInGold;
   }, [itemPrices]);
 
-  // Función para calcular precio del item 24277 × 1 (Pile of Crystalline Dust - sell × 0.9)
-  const calculateItem24277Price = useCallback(() => {
-    if (!itemPrices || !itemPrices[24277]) return 0;
-    const item = itemPrices[24277];
-    const sellPrice = item.sells?.unit_price || 0;
-    const priceInGold = (sellPrice * 0.9) / 10000;
-    
-    return priceInGold;
-  }, [itemPrices]);
+
 
   // Función para calcular precio del item 48917 (Toxic Tuning Crystal - sell × 0.85)
   const calculateItem48917Price = useCallback(() => {
@@ -1109,44 +1090,7 @@ const CraftingPage = () => {
     );
   }, []);
 
-  const materialTiers = [
-    {
-      tier: 'T1',
-      name: t('craftingPage.tiers.basic', 'Basic'),
-      materials: ['Copper', 'Green Wood', 'Rawhide Leather', 'Linen'],
-      color: 'from-gray-400 to-gray-600'
-    },
-    {
-      tier: 'T2',
-      name: t('craftingPage.tiers.fine', 'Fine'),
-      materials: ['Bronze', 'Soft Wood', 'Thin Leather', 'Jute'],
-      color: 'from-green-400 to-green-600'
-    },
-    {
-      tier: 'T3',
-      name: t('craftingPage.tiers.masterwork', 'Masterwork'),
-      materials: ['Iron', 'Seasoned Wood', 'Coarse Leather', 'Wool'],
-      color: 'from-blue-400 to-blue-600'
-    },
-    {
-      tier: 'T4',
-      name: t('craftingPage.tiers.rare', 'Rare'),
-      materials: ['Steel', 'Hard Wood', 'Rugged Leather', 'Cotton'],
-      color: 'from-purple-400 to-purple-600'
-    },
-    {
-      tier: 'T5',
-      name: t('craftingPage.tiers.exotic', 'Exotic'),
-      materials: ['Mithril', 'Ancient Wood', 'Hardened Leather', 'Silk'],
-      color: 'from-orange-400 to-orange-600'
-    },
-    {
-      tier: 'T6',
-      name: t('craftingPage.tiers.ascended', 'Ascended'),
-      materials: ['Orichalcum', 'Elder Wood', 'Tempered Leather', 'Gossamer'],
-      color: 'from-red-400 to-red-600'
-    }
-  ];
+
 
   const craftingTips = [
     {
@@ -1855,7 +1799,7 @@ const CraftingPage = () => {
                          <div className="flex items-center gap-2 mb-2">
                            <div className="w-4 h-4 bg-indigo-500 rounded-full"></div>
                            <div className="text-indigo-300 text-xs">
-                             <strong>🚀 RESULTADO FINAL CON DROPRATE (SI I36&gt;=1, (I36/D34)×G5, "0"):</strong> {isLoadingPrices ? t('craftingPage.calculating', 'Calculando...') : formatGW2Price(calculateResultadoFinalConDroprateQuintaSeccion())}
+                             <strong>🚀 RESULTADO FINAL CON DROPRATE (SI I36&gt;=1, (I36/D34)×G5, &quot;0&quot;):</strong> {isLoadingPrices ? t('craftingPage.calculating', 'Calculando...') : formatGW2Price(calculateResultadoFinalConDroprateQuintaSeccion())}
                            </div>
                          </div>
                      </div>
@@ -1930,7 +1874,7 @@ const CraftingPage = () => {
                          <div className="flex items-center gap-2 mb-2">
                            <div className="w-4 h-4 bg-indigo-500 rounded-full"></div>
                            <div className="text-indigo-300 text-xs">
-                             <strong>🚀 RESULTADO FINAL CON DROPRATE (SI S64&gt;=1, I5×(S64/3), "0"):</strong> {isLoadingPrices ? t('craftingPage.calculating', 'Calculando...') : formatGW2Price(calculateResultadoFinalConDroprateSeptimaSeccion())}
+                             <strong>🚀 RESULTADO FINAL CON DROPRATE (SI S64&gt;=1, I5×(S64/3), &quot;0&quot;):</strong> {isLoadingPrices ? t('craftingPage.calculating', 'Calculando...') : formatGW2Price(calculateResultadoFinalConDroprateSeptimaSeccion())}
                            </div>
                          </div>
                      </div>
