@@ -1210,6 +1210,7 @@ const CraftingPage = () => {
               { id: 'overview', label: t('craftingPage.overview', 'Overview'), icon: Info },
               { id: 'conversions', label: t('craftingPage.conversions', 'Conversions'), icon: RefreshCw },
               { id: 'materials', label: t('craftingPage.volatileMagic', 'Magia Volatil'), icon: Package },
+              { id: 'unbound', label: t('craftingPage.unboundMagic', 'Magia Liberada'), icon: Package },
               { id: 'strategies', label: t('craftingPage.strategies', 'Strategies'), icon: TrendingUp },
             ].map((tab) => (
               <button
@@ -2361,9 +2362,7 @@ const CraftingPage = () => {
                         </div>
                       </div>
                     </div>
-                  )}
-
-                  
+                  )}                  
 
                   {isLoadingConversions ? (
                     <div className="flex justify-center items-center h-48">
@@ -2484,6 +2483,142 @@ const CraftingPage = () => {
                       </table>
                     </div>
                   )}
+                </div>
+              </div>
+            )}
+
+            {/* Unbound Magic Section */}
+            {selectedSection === 'unbound' && (
+              <div className="space-y-8">
+                <div className="bg-gray-800/50 backdrop-blur-sm border border-gray-700 rounded-lg p-6">
+                  <h2 className="text-2xl font-bold text-white mb-6 flex items-center">
+                    <OptimizedImage 
+                      src="/images/expansions/unbound-magic.png" 
+                      alt={t('craftingPage.unboundMagic', 'Magia Liberada')} 
+                      className="mr-3"
+                      priority
+                    />
+                    {t('craftingPage.unboundMagic', 'Magia Liberada')}
+                  </h2>
+                  
+                  {/* Descripción principal */}
+                  <div className="bg-gray-700/50 rounded-lg p-6 mb-6 border border-gray-600">
+                    <h3 className="text-xl font-bold text-white mb-4 flex items-center">
+                      <OptimizedImage 
+                        src="/images/expansions/unbound-magic.png" 
+                        alt={t('craftingPage.unboundMagic', 'Magia Liberada')} 
+                        className="mr-3"
+                        priority
+                      />
+                      {t('craftingPage.whatIsUnboundMagic', '¿Qué es la Magia Liberada?')}
+                    </h3>
+                    <p className="text-gray-300 mb-4">
+                      {t('craftingPage.unboundMagicDesc', 'La Magia Liberada es una divisa almacenada en la cartera y es la divisa principal de la 3.ª temporada del Mundo Viviente.')}
+                    </p>
+                  </div>
+
+                  <h3 className="text-lg sm:text-xl font-bold text-white mb-4 sm:mb-6 text-center">
+                    {t('craftingPage.howToGet', '¿Cómo lo obtengo?')}
+                  </h3>
+                  <div className="flex flex-col sm:flex-row justify-center gap-3 sm:gap-4 mb-6 sm:mb-8">
+                    <button className="px-4 sm:px-6 py-2 sm:py-3 bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white font-semibold rounded-lg transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105 text-sm sm:text-base">
+                      {t('craftingPage.ls3Meta', 'LS3 Meta')}
+                    </button>
+                    <button className="px-4 sm:px-6 py-2 sm:py-3 bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white font-semibold rounded-lg transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105 text-sm sm:text-base">
+                      {t('craftingPage.gardens', 'Jardines')}
+                    </button>
+                    <button className="px-4 sm:px-6 py-2 sm:py-3 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold rounded-lg transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105 text-sm sm:text-base">
+                      {t('craftingPage.others', 'Otros')}
+                    </button>
+                  </div>
+                   
+                  <h3 className="text-xl font-bold text-white mb-6 text-center">
+                    {t('craftingPage.whatToSpendUnbound', '¿En qué gastar la magia liberada?')}
+                  </h3>
+                  
+                  <div className="text-center mb-6">
+                    <h4 className="text-lg font-semibold text-white">
+                      {t('craftingPage.trophyBoxes', 'Cargamento de trofeos')}
+                    </h4>
+                  </div>
+                  
+                  {/* Resumen de ganancias */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 mb-4 sm:mb-6">
+                    <div className="bg-gray-700 rounded p-2 sm:p-3 border border-gray-600">
+                      <h6 className="text-xs font-bold text-gray-300 mb-2 text-center">{t('craftingPage.table.totalBox', 'Total Caja')}</h6>
+                      <div className="text-center">
+                        <p className="text-green-400 font-bold text-sm sm:text-lg">
+                          {t('craftingPage.table.min', 'Min')}: {isLoadingPrices ? <Loader2 className="w-3 h-3 sm:w-4 sm:h-4 animate-spin mx-auto" /> : formatGW2Price(0)}
+                        </p>
+                        <p className="text-green-400 font-bold text-sm sm:text-lg">
+                          {t('craftingPage.table.max', 'Max')}: {isLoadingPrices ? t('craftingPage.calculating', 'Calculando...') : formatGW2Price(0)}
+                        </p>
+                      </div>
+                    </div>
+                    <div className="bg-gray-700 rounded p-2 sm:p-3 border border-gray-600">
+                      <h6 className="text-xs font-bold text-gray-300 mb-2 text-center">{t('craftingPage.table.profitBox', 'Profit Caja')}</h6>
+                      <div className="text-center">
+                        <p className="text-yellow-400 font-bold text-sm sm:text-lg">
+                          {t('craftingPage.table.min', 'Min')}: {isLoadingPrices ? <Loader2 className="w-3 h-3 sm:w-4 sm:h-4 animate-spin mx-auto" /> : formatGW2Price(0)}
+                        </p>
+                        <p className="text-yellow-400 font-bold text-sm sm:text-lg">
+                          {t('craftingPage.table.max', 'Max')}: {isLoadingPrices ? t('craftingPage.calculating', 'Calculando...') : formatGW2Price(0)}
+                        </p>
+                      </div>
+                    </div>
+                    <div className="bg-gray-700 rounded p-2 sm:p-3 border border-gray-600 sm:col-span-2 lg:col-span-1">
+                      <h6 className="text-xs font-bold text-gray-300 mb-2 text-center">{t('craftingPage.table.profitUM', 'Profit UM')}</h6>
+                      <div className="text-center">
+                        <p className="text-blue-400 font-bold text-sm sm:text-lg">
+                          {t('craftingPage.table.min', 'Min')}: {isLoadingPrices ? <Loader2 className="w-3 h-3 sm:w-4 sm:h-4 animate-spin mx-auto" /> : formatGW2Price(0)}
+                        </p>
+                        <p className="text-blue-400 font-bold text-sm sm:text-lg">
+                          {t('craftingPage.table.max', 'Max')}: {isLoadingPrices ? t('craftingPage.calculating', 'Calculando...') : formatGW2Price(0)}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  {/* Data Source Info */}
+                  <div className="bg-blue-900/20 backdrop-blur-sm border border-blue-700/30 rounded-lg p-3 sm:p-4 mb-4 sm:mb-6 md:mb-8">
+                    <div className="flex items-center gap-2 sm:gap-3">
+                      <div className="w-2 h-2 sm:w-3 sm:h-3 bg-blue-400 rounded-full animate-pulse flex-shrink-0"></div>
+                      <div className="text-blue-300 text-xs md:text-base">
+                        <strong>{t('craftingPage.table.dataSource', 'Fuente de Datos')}:</strong> {t('craftingPage.table.basedOn', 'Análisis basado en')}{' '}
+                        <span className="text-blue-200 font-bold">400k {t('craftingPage.table.trophyBoxes', 'Cargamento de trofeos')}</span> {t('craftingPage.table.opened', 'abiertos')}
+                      </div>
+                    </div>
+                  </div>
+                  
+                  {/* Precios actualizados */}
+                  <div className="bg-green-900/20 backdrop-blur-sm border border-green-700/30 rounded-lg p-3 sm:p-4 mb-4 sm:mb-6 md:mb-8">
+                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                      <div className="flex items-center gap-2 sm:gap-3">
+                        <div className="w-2 h-2 sm:w-3 sm:h-3 bg-green-400 rounded-full animate-pulse flex-shrink-0"></div>
+                        <div className="text-green-300 text-xs md:text-base">
+                          <strong>{t('craftingPage.pricesUpdated', 'Precios actualizados:')}</strong> {lastPriceUpdate ? lastPriceUpdate.toLocaleTimeString('es-ES') : t('craftingPage.loading', 'Cargando...')}
+                        </div>
+                      </div>
+                      <button
+                        onClick={fetchTableItemPrices}
+                        disabled={isLoadingPrices}
+                        className="flex items-center justify-center gap-2 px-2 sm:px-3 py-1 sm:py-2 bg-green-600 hover:bg-green-700 disabled:bg-gray-600 text-white text-xs rounded transition-colors duration-200 w-full sm:w-auto"
+                      >
+                        <RefreshCw className={`w-3 h-3 sm:w-4 sm:h-4 ${isLoadingPrices ? 'animate-spin' : ''}`} />
+                        {isLoadingPrices ? t('craftingPage.updating', 'Actualizando...') : t('craftingPage.refresh', 'Actualizar')}
+                      </button>
+                    </div>
+                  </div>
+                  
+                  {/* Tabla de items - Placeholder */}
+                  <div className="bg-gray-800/30 rounded-lg p-4 border border-gray-600">
+                    <h4 className="text-lg font-semibold text-white mb-4 text-center">
+                      {t('craftingPage.table.itemsTable', 'Tabla de Items')}
+                    </h4>
+                    <div className="text-center text-gray-400">
+                      <p>{t('craftingPage.comingSoon', 'Próximamente...')}</p>
+                    </div>
+                  </div>
                 </div>
               </div>
             )}
