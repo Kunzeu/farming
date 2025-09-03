@@ -150,7 +150,7 @@ export default function HomePage() {
   ];
 
   // Función para reconstruir iconos desde los datos guardados
-  const reconstructCardWithIcon = (savedCard: any): DashboardCard => {
+  const reconstructCardWithIcon = (savedCard: Omit<DashboardCard, 'icon'>): DashboardCard => {
     const iconMap: Record<string, React.ReactNode> = {
       "farms": <Route className="w-8 h-8" />,
       "dailyRoutine": <Clock className="w-8 h-8" />,
@@ -187,7 +187,7 @@ export default function HomePage() {
       setDashboardCards(initialCards);
       setOriginalCards(initialCards);
     }
-  }, []);
+  }, [initialCards]);
 
   // Guardar configuración en localStorage
   const saveDashboardConfig = (cards: DashboardCard[]) => {
@@ -256,6 +256,7 @@ export default function HomePage() {
   };
 
   // Funciones de drag and drop
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handleDragStart = (e: any, index: number) => {
     setDraggedIndex(index);
     if (e.dataTransfer) {
@@ -263,6 +264,7 @@ export default function HomePage() {
     }
   };
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handleDragOver = (e: any) => {
     e.preventDefault();
     if (e.dataTransfer) {
@@ -270,6 +272,7 @@ export default function HomePage() {
     }
   };
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handleDrop = (e: any, dropIndex: number) => {
     e.preventDefault();
     if (draggedIndex !== null && draggedIndex !== dropIndex) {
