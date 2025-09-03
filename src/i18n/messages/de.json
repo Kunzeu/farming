@@ -572,6 +572,8 @@
   "craftingPage.totalFinalFormat": "GESAMT FINAL ({id} + {notes} Notizen)",
   "craftingPage.finalResultFormat": "ENDERGEBNIS (VOLLSTÄNDIGE SUMME - {id})",
   "craftingPage.finalResultWithDroprateFormat": "ENDERGEBNIS MIT DROPRATE (≥1 × 1.0078)",
+  "craftingPage.pricesUpdated": "Preise aktualisiert:",
+  "craftingPage.loading": "Laden...",
 
   "salvageCommon.title": "Nicht identifizierte Ausrüstung - Edel",
   "salvageCommon.description": "Berechne, wie viel Gold du durch Öffnen und Zerlegen von edler nicht identifizierter Ausrüstung verdienst",

@@ -465,6 +465,8 @@
   "craftingPage.totalFinalFormat": "TOTAL FINAL ({id} + {notes} notas)",
   "craftingPage.finalResultFormat": "RESULTADO FINAL (SUMA COMPLETA - {id})",
   "craftingPage.finalResultWithDroprateFormat": "RESULTADO FINAL CON DROPRATE (≥1 × 1.0078)",
+  "craftingPage.pricesUpdated": "Precios actualizados:",
+  "craftingPage.loading": "Cargando...",
 
   "glossaryPage.title": "Glosario de GW2",
   "glossaryPage.subtitle": "Guía completa de conceptos y términos importantes para ganar oro en Guild Wars 2",

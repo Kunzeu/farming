@@ -907,7 +907,7 @@ const CraftingPage = () => {
     return total;
   }, [calculateBasePrice, calculateBasePriceComunes]);
 
-  const fetchConversionCalculations = useCallback(async () => {
+  const fetchConversionCalculations = useCallback(async (forceRefresh = false) => {
     setIsLoadingConversions(true);
     try {
       // Verificar si tenemos datos en caché y si son recientes (menos de 5 minutos)
@@ -922,13 +922,14 @@ const CraftingPage = () => {
         cacheLang: apiCache.lang,
         currentLang: lang,
         hasPrices: Object.keys(apiCache.prices).length > 0,
-        hasItems: Object.keys(apiCache.items).length > 0
+        hasItems: Object.keys(apiCache.items).length > 0,
+        forceRefresh: forceRefresh
       });
       
       let prices: Gw2Price[] = [];
       let items: Gw2Item[] = [];
       
-      if (isCacheValid && Object.keys(apiCache.prices).length > 0 && Object.keys(apiCache.items).length > 0) {
+      if (!forceRefresh && isCacheValid && Object.keys(apiCache.prices).length > 0 && Object.keys(apiCache.items).length > 0) {
         // Usar datos del caché
         console.log('Usando datos del caché para conversiones');
         prices = Object.values(apiCache.prices);
@@ -1064,7 +1065,7 @@ const CraftingPage = () => {
 
   useEffect(() => {
     if (selectedSection === 'conversions') {
-      fetchConversionCalculations();
+      fetchConversionCalculations(false); // No forzar actualización en carga automática
     }
   }, [selectedSection, fetchConversionCalculations]);
 
@@ -2335,7 +2336,7 @@ const CraftingPage = () => {
                       </h2>
                     </div>
                     <button
-                      onClick={fetchConversionCalculations}
+                      onClick={() => fetchConversionCalculations(true)}
                       disabled={isLoadingConversions}
                       className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-600 text-white rounded-lg transition-colors duration-200"
                     >
@@ -2350,8 +2351,17 @@ const CraftingPage = () => {
                     {t('craftingPage.conversionsDesc', 'Calculate the profitability of converting Tier 5 to Tier 6 materials through the Mystic Forge. Prices are updated in real-time from the Guild Wars 2 API.')}
                   </p>
                   
-
-                  
+                  {/* Precios actualizados */}
+                  {apiCache.lastUpdate && (
+                    <div className="bg-green-900/20 backdrop-blur-sm border border-green-700/30 rounded-lg p-3 sm:p-4 mb-4 sm:mb-6">
+                      <div className="flex items-center gap-2 sm:gap-3">
+                        <div className="w-2 h-2 sm:w-3 sm:h-3 bg-green-400 rounded-full animate-pulse flex-shrink-0"></div>
+                        <div className="text-green-300 text-xs md:text-base">
+                          <strong>{t('craftingPage.pricesUpdated', 'Precios actualizados:')}</strong> {apiCache.lastUpdate.toLocaleTimeString()}
+                        </div>
+                      </div>
+                    </div>
+                  )}
 
                   
 

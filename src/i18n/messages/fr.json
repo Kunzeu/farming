@@ -573,6 +573,8 @@
   "craftingPage.totalFinalFormat": "TOTAL FINAL ({id} + {notes} notes)",
   "craftingPage.finalResultFormat": "RÉSULTAT FINAL (SOMME COMPLÈTE - {id})",
   "craftingPage.finalResultWithDroprateFormat": "RÉSULTAT FINAL AVEC TAUX DE BUTIN (≥1 × 1.0078)",
+  "craftingPage.pricesUpdated": "Prix mis à jour :",
+  "craftingPage.loading": "Chargement...",
 
   "salvageCommon.title": "Équipement non identifié - Raffiné",
   "salvageCommon.description": "Calculez combien d'or vous gagnez en ouvrant et recyclant une Pièce d'équipement non identifié (Raffiné)",

@@ -572,6 +572,8 @@
   "craftingPage.totalFinalFormat": "TOTAL FINAL ({id} + {notes} notes)",
   "craftingPage.finalResultFormat": "FINAL RESULT (COMPLETE SUM - {id})",
   "craftingPage.finalResultWithDroprateFormat": "FINAL RESULT WITH DROPRATE (≥1 × 1.0078)",
+  "craftingPage.pricesUpdated": "Prices updated:",
+  "craftingPage.loading": "Loading...",
 
   "salvageCommon.title": "Unidentified Gear - Common",
   "salvageCommon.description": "Calculate how much gold you earn by opening and salvaging Piece of Common Unidentified Gear",
