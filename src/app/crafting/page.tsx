@@ -131,7 +131,7 @@ const CraftingPage = () => {
   const [selectedSection, setSelectedSection] = useState<string>('overview');
   const [conversionData, setConversionData] = useState<ConversionItem[]>([]);
   const [isLoadingConversions, setIsLoadingConversions] = useState(false);
-  const [isUsingCache, setIsUsingCache] = useState(false);
+
   const [itemPrices, setItemPrices] = useState<Record<number, Gw2Price>>({});
   const [isLoadingPrices, setIsLoadingPrices] = useState(false);
   const [lastPriceUpdate, setLastPriceUpdate] = useState<Date | null>(null);
@@ -144,10 +144,12 @@ const CraftingPage = () => {
     prices: Record<number, Gw2Price>;
     items: Record<number, Gw2Item>;
     lastUpdate: Date | null;
+    lang: string;
   }>({
     prices: {},
     items: {},
-    lastUpdate: null
+    lastUpdate: null,
+    lang: ''
   });
 
 
@@ -157,7 +159,7 @@ const CraftingPage = () => {
     { id: 24358, name: '', t5Id: 24341 }, // Ancient Bone
     { id: 24351, name: '', t5Id: 24350 }, // Vicious Claw
     { id: 24357, name: '', t5Id: 24356 }, // Vicious Fang
-    { id: 24389, name: '', t5Id: 24288 }, // Armored Scale
+    { id: 24289, name: '', t5Id: 24288 }, // Armored Scale
     { id: 24300, name: '', t5Id: 24299 }, // Elaborate Totem
     { id: 24283, name: '', t5Id: 24282 }, // Powerful Venom Sac
   ], []);
@@ -909,9 +911,19 @@ const CraftingPage = () => {
     setIsLoadingConversions(true);
     try {
       // Verificar si tenemos datos en caché y si son recientes (menos de 5 minutos)
+      // También verificar que el caché sea para el idioma actual
       const now = new Date();
       const cacheAge = apiCache.lastUpdate ? now.getTime() - apiCache.lastUpdate.getTime() : Infinity;
-      const isCacheValid = cacheAge < 5 * 60 * 1000; // 5 minutos
+      const isCacheValid = cacheAge < 5 * 60 * 1000 && apiCache.lang === lang; // 5 minutos y mismo idioma
+      
+      console.log('Cache validation:', {
+        cacheAge: cacheAge,
+        isCacheValid: isCacheValid,
+        cacheLang: apiCache.lang,
+        currentLang: lang,
+        hasPrices: Object.keys(apiCache.prices).length > 0,
+        hasItems: Object.keys(apiCache.items).length > 0
+      });
       
       let prices: Gw2Price[] = [];
       let items: Gw2Item[] = [];
@@ -919,13 +931,12 @@ const CraftingPage = () => {
       if (isCacheValid && Object.keys(apiCache.prices).length > 0 && Object.keys(apiCache.items).length > 0) {
         // Usar datos del caché
         console.log('Usando datos del caché para conversiones');
-        setIsUsingCache(true);
         prices = Object.values(apiCache.prices);
         items = Object.values(apiCache.items);
       } else {
         // Realizar llamadas a la API
         console.log('Obteniendo datos frescos de la API para conversiones');
-        setIsUsingCache(false);
+        console.log('IDs enviados a la API:', allConversionItemIds);
         const [pricesResponse, itemsResponse] = await Promise.all([
           fetch(`https://api.guildwars2.com/v2/commerce/prices?ids=${allConversionItemIds.join(',')}`),
           fetch(`https://api.guildwars2.com/v2/items?ids=${allConversionItemIds.join(',')}&lang=${lang}`)
@@ -949,6 +960,14 @@ const CraftingPage = () => {
           acc[price.id] = price;
           return acc;
         }, {} as Record<number, Gw2Price>);
+        
+        console.log('Precios obtenidos de la API:', Object.keys(pricesMap).map(id => parseInt(id)).sort((a, b) => a - b));
+        console.log('¿Está el item 24289 en los precios?', !!pricesMap[24289]);
+        if (pricesMap[24289]) {
+          console.log('Precio del item 24289:', pricesMap[24289]);
+        } else {
+          console.log('Item 24289 no encontrado en los precios de la API');
+        }
 
         const itemsMap = items.reduce((acc: Record<number, Gw2Item>, item: Gw2Item) => {
           acc[item.id] = item;
@@ -958,7 +977,8 @@ const CraftingPage = () => {
         setApiCache({
           prices: pricesMap,
           items: itemsMap,
-          lastUpdate: now
+          lastUpdate: now,
+          lang: lang
         });
       }
 
@@ -1014,7 +1034,7 @@ const CraftingPage = () => {
 
         return {
           id: t6.id,
-          name: itemInfo?.name || t6.name,
+          name: itemInfo?.name || `Item ${t6.id}`,
           icon: itemInfo?.icon || '',
           precio90: Math.ceil(t6SellPrice * 0.90),
           precio85: Math.ceil(t6SellPrice * 0.85),
@@ -1047,6 +1067,16 @@ const CraftingPage = () => {
       fetchConversionCalculations();
     }
   }, [selectedSection, fetchConversionCalculations]);
+
+  // Limpiar caché cuando cambie el idioma
+  useEffect(() => {
+    setApiCache({
+      prices: {},
+      items: {},
+      lastUpdate: null,
+      lang: ''
+    });
+  }, [lang]);
 
   // Función para color de ganancia con gradación progresiva - OPTIMIZADA
   const getProfitColor = useCallback((profit: number) => {
@@ -2311,7 +2341,7 @@ const CraftingPage = () => {
                     >
                       <RefreshCw className={`w-4 h-4 ${isLoadingConversions ? 'animate-spin' : ''}`} />
                       {isLoadingConversions 
-                        ? (isUsingCache ? t('craftingPage.loadingFromCache', 'Loading from cache...') : t('craftingPage.updating', 'Updating...'))
+                        ? t('craftingPage.updating', 'Updating...')
                         : t('craftingPage.refreshData', 'Refresh Data')
                       }
                     </button>
@@ -2320,23 +2350,7 @@ const CraftingPage = () => {
                     {t('craftingPage.conversionsDesc', 'Calculate the profitability of converting Tier 5 to Tier 6 materials through the Mystic Forge. Prices are updated in real-time from the Guild Wars 2 API.')}
                   </p>
                   
-                  {/* Indicador de estado del caché */}
-                  {apiCache.lastUpdate && (
-                    <div className="mb-4 p-3 bg-gray-800 rounded-lg border border-gray-600">
-                      <div className="flex items-center gap-2 text-sm">
-                        <div className={`w-2 h-2 rounded-full ${isUsingCache ? 'bg-yellow-500' : 'bg-green-500'}`}></div>
-                        <span className="text-gray-300">
-                          {isUsingCache 
-                            ? t('craftingPage.usingCachedData', 'Using cached data')
-                            : t('craftingPage.usingFreshData', 'Using fresh data from API')
-                          }
-                        </span>
-                        <span className="text-gray-500">
-                          • {t('craftingPage.lastUpdate', 'Last update')}: {apiCache.lastUpdate.toLocaleTimeString()}
-                        </span>
-                      </div>
-                    </div>
-                  )}
+
                   
 
                   
