@@ -184,11 +184,12 @@ const CraftingPage = () => {
     // Trofeos Comunes (T5)
     24294, 24341, 24350, 24356, 24288, 24299, 24282, 24276,
                   // Items para cálculos adicionales
+    89271, 89103,
               24591, 19701, 97102, 19721, 24358, 10804, 19745, 19790, 19732,
     // Items para research notes
     24277, 24351, 24300, 12156, 24473, 19700, 24519, 24511, 24475, 19722, 19729, 19748, 68063,
     // Items para cálculos finales
-    97535, 95582, 19912
+    97535, 95582, 19912, 24836, 24806, 48917, 7839, 48884, 46735
   ], []);
 
   // Función para calcular precio del item 24591 × 1 (buy)
@@ -488,6 +489,203 @@ const CraftingPage = () => {
     return priceInGold;
   }, [itemPrices]);
 
+  // Función para calcular precio del item 89271 × 8 (sell × 0.9)
+  const calculateItem89271x8Price = useCallback(() => {
+    if (!itemPrices || !itemPrices[89271]) return 0;
+    
+    const item = itemPrices[89271];
+    const sellPrice = item.sells?.unit_price || 0;
+    const priceInGold = (sellPrice * 0.9 * 8) / 10000;
+    
+    return priceInGold;
+  }, [itemPrices]);
+
+  // Función para calcular precio del item 24300 × 5 (sell × 0.9)
+  const calculateItem24300x5Price = useCallback(() => {
+    if (!itemPrices || !itemPrices[24300]) return 0;
+    
+    const item = itemPrices[24300];
+    const sellPrice = item.sells?.unit_price || 0;
+    const priceInGold = (sellPrice * 0.9 * 5) / 10000;
+    
+    return priceInGold;
+  }, [itemPrices]);
+
+  // Función para calcular precio del item 24283 × 5 (sell × 0.9)
+  const calculateItem24283x5Price = useCallback(() => {
+    if (!itemPrices || !itemPrices[24283]) return 0;
+    
+    const item = itemPrices[24283];
+    const sellPrice = item.sells?.unit_price || 0;
+    const priceInGold = (sellPrice * 0.9 * 5) / 10000;
+    
+    return priceInGold;
+  }, [itemPrices]);
+
+  // Función para calcular precio del item 89103 × 2 (buy)
+  const calculateItem89103x2Price = useCallback(() => {
+    if (!itemPrices || !itemPrices[89103]) return 0;
+    
+    const item = itemPrices[89103];
+    const buyPrice = item.buys?.unit_price || 0;
+    const priceInGold = (buyPrice * 2) / 10000;
+    
+    return priceInGold;
+  }, [itemPrices]);
+
+  // Función para calcular el precio de 24836 (sell × 0.85)
+  const calculateItem24836Price = useCallback(() => {
+    if (!itemPrices || !itemPrices[24836]) return 0;
+    const item = itemPrices[24836];
+    const sellPrice = item.sells?.unit_price || 0;
+    const priceInGold = (sellPrice * 0.85) / 10000;
+    
+    return priceInGold;
+  }, [itemPrices]);
+
+  // Función para calcular el precio de 24806 (sell × 0.85)
+  const calculateItem24806Price = useCallback(() => {
+    if (!itemPrices || !itemPrices[24806]) return 0;
+    const item = itemPrices[24806];
+    const sellPrice = item.sells?.unit_price || 0;
+    const priceInGold = (sellPrice * 0.85) / 10000;
+    
+    return priceInGold;
+  }, [itemPrices]);
+
+  // Función para calcular precio del item 24277 × 3 (Pile of Crystalline Dust - sell × 0.9)
+  const calculateItem24277x3Price = useCallback(() => {
+    if (!itemPrices || !itemPrices[24277]) return 0;
+    const item = itemPrices[24277];
+    const sellPrice = item.sells?.unit_price || 0;
+    const priceInGold = (sellPrice * 0.9 * 3) / 10000;
+    
+    return priceInGold;
+  }, [itemPrices]);
+
+  // Función para calcular precio del item 24277 × 1 (Pile of Crystalline Dust - sell × 0.9)
+  const calculateItem24277Price = useCallback(() => {
+    if (!itemPrices || !itemPrices[24277]) return 0;
+    const item = itemPrices[24277];
+    const sellPrice = item.sells?.unit_price || 0;
+    const priceInGold = (sellPrice * 0.9) / 10000;
+    
+    return priceInGold;
+  }, [itemPrices]);
+
+  // Función para calcular precio del item 48917 (Toxic Tuning Crystal - sell × 0.85)
+  const calculateItem48917Price = useCallback(() => {
+    // Intentar primero con 48917, luego con 7839 como fallback
+    let item = itemPrices?.[48917];
+    let itemId = 48917;
+    
+    if (!item) {
+      item = itemPrices?.[7839];
+      itemId = 7839;
+    }
+    
+    if (!item) {
+      return 0;
+    }
+    
+    const sellPrice = item.sells?.unit_price || 0;
+    const priceInGold = (sellPrice * 0.85) / 10000;
+    
+    return priceInGold;
+  }, [itemPrices]);
+
+  // Función para calcular precio del item 48884 × 5 (Pristine Toxic Spore Sample - sell × 0.9)
+  const calculateItem48884x5Price = useCallback(() => {
+    if (!itemPrices || !itemPrices[48884]) return 0;
+    const item = itemPrices[48884];
+    const sellPrice = item.sells?.unit_price || 0;
+    const priceInGold = (sellPrice * 0.9 * 5) / 10000;
+    
+    return priceInGold;
+  }, [itemPrices]);
+
+  // Función para calcular precio del item 46735 × 100 (Empyreal Fragment - precio 0)
+  const calculateItem46735x100Price = useCallback(() => {
+    // Empyreal Fragment tiene precio 0 según la información proporcionada
+    return 0;
+  }, []);
+
+  // Función para calcular el RESULTADO FINAL para la quinta sección (24836 - SUMA COMPLETA)
+  const calculateResultadoFinalQuintaSeccion = useCallback(() => {
+    const sumaTotal = calculateItem19721x5Price() + calculateItem24300x5Price() + calculateItem89271x8Price() + calculateItem89103x2Price();
+    const precio24836 = calculateItem24836Price();
+    const resultadoFinal = precio24836 - sumaTotal;
+    
+    return resultadoFinal;
+  }, [calculateItem19721x5Price, calculateItem24300x5Price, calculateItem89271x8Price, calculateItem89103x2Price, calculateItem24836Price]);
+
+  // Función para calcular el RESULTADO FINAL CON DROPRATE para la quinta sección
+  // Fórmula Excel: =SI('Crafting 2'!I36>=1,('Crafting 2'!I36/'Crafting 2'!D34)*G5,"0")
+  const calculateResultadoFinalConDroprateQuintaSeccion = useCallback(() => {
+    const resultadoFinal = calculateResultadoFinalQuintaSeccion(); // Esto es I36
+    const cantidadFija = 5; // Esto es D34 (número fijo x5)
+    const droprate = 1.0078; // Esto es G5
+    
+    // Aplicar la fórmula condicional: SI(I36>=1, (I36/D34)*G5, "0")
+    if (resultadoFinal >= 0) {
+      const resultadoConDroprate = (resultadoFinal / cantidadFija) * droprate;
+      return resultadoConDroprate;
+    } else {
+      return 0; // Si I36 < 1, retornar 0
+    }
+  }, [calculateResultadoFinalQuintaSeccion]);
+
+  // Función para calcular el RESULTADO FINAL para la sexta sección (24806 - SUMA COMPLETA)
+  const calculateResultadoFinalSextaSeccion = useCallback(() => {
+    const sumaTotal = calculateItem19721x5Price() + calculateItem24283x5Price() + calculateItem89271x8Price() + calculateItem89103x2Price();
+    const precio24806 = calculateItem24806Price();
+    const resultadoFinal = precio24806 - sumaTotal;
+    
+    return resultadoFinal;
+  }, [calculateItem19721x5Price, calculateItem24283x5Price, calculateItem89271x8Price, calculateItem89103x2Price, calculateItem24806Price]);
+
+  // Función para calcular el RESULTADO FINAL CON DROPRATE para la sexta sección
+  // Fórmula Excel: =SI('Crafting 2'!I43>=1,('Crafting 2'!I43/'Crafting 2'!D41)*H5,"0")
+  const calculateResultadoFinalConDroprateSextaSeccion = useCallback(() => {
+    const resultadoFinal = calculateResultadoFinalSextaSeccion(); // Esto es I43
+    const cantidadFija = 5; // Esto es D41 (número fijo x5)
+    const droprate = 1.0078; // Esto es H5
+    
+    // Aplicar la fórmula condicional: SI(I43>=1, (I43/D41)*H5, "0")
+    if (resultadoFinal >= 0) {
+      const resultadoConDroprate = (resultadoFinal / cantidadFija) * droprate;
+      return resultadoConDroprate;
+    } else {
+      return 0; // Si I43 < 1, retornar 0
+    }
+  }, [calculateResultadoFinalSextaSeccion]);
+
+  // Función para calcular el RESULTADO FINAL para la séptima sección ((48917 × 5) - SUMA TOTAL ÷ 5)
+  const calculateResultadoFinalSeptimaSeccion = useCallback(() => {
+    const sumaTotal = calculateItem24277x3Price() + calculateItem48884x5Price() + calculateItem46735x100Price();
+    const sumaTotalPorUnidad = sumaTotal / 5; // Dividir entre 5
+    const precio48917x5 = calculateItem48917Price() * 5; // Precio unitario × 5
+    const resultadoFinal = precio48917x5 - sumaTotalPorUnidad; // (48917 × 5) - (SUMA TOTAL ÷ 5)
+    
+    return resultadoFinal;
+  }, [calculateItem24277x3Price, calculateItem48884x5Price, calculateItem46735x100Price, calculateItem48917Price]);
+
+  // Función para calcular el RESULTADO FINAL CON DROPRATE para la séptima sección
+  // Fórmula Excel: =SI('Crafting 1'!S64>=1,I5*('Crafting 1'!S64/3),"0")
+  const calculateResultadoFinalConDroprateSeptimaSeccion = useCallback(() => {
+    const resultadoFinal = calculateResultadoFinalSeptimaSeccion(); // Esto es S64
+    const cantidadFija = 3; // Esto es 3 (número fijo)
+    const droprate = 1.0078; // Esto es I5
+    
+    // Aplicar la fórmula condicional: SI(S64>=1, I5*(S64/3), "0")
+    if (resultadoFinal >= 0) {
+      const resultadoConDroprate = droprate * (resultadoFinal / cantidadFija);
+      return resultadoConDroprate;
+    } else {
+      return 0; // Si S64 < 1, retornar 0
+    }
+  }, [calculateResultadoFinalSeptimaSeccion]);
+
   // Función para calcular la SUMA COMPLETA (Suma Total + TOTAL FINAL)
   const calculateSumaCompleta = useCallback(() => {
     const sumaTotal = calculateItem24591Price() + calculateItem19701Price() + calculateItem24295Price();
@@ -590,22 +788,29 @@ const CraftingPage = () => {
     // ProfitMax de Raros (primera columna)
     const profitMaxRaros = calculateResultadoFinalConDroprate();
     
-    // ProfitMax de Comunes (valores fijos de la tabla - por ahora 0 hasta que se implementen cálculos dinámicos)
-    const profitMaxComunes = 0.1279 + 0.0657 + 0.2904; // Suma de los valores de la tabla
-    
+    // ProfitMax de Comunes (valores fijos de la tabla - por ahora 0 hasta que se implementen cálculos dinámicos)    
     // ProfitMax de la Tercera Sección (nuevo cálculo)
     const profitMaxTerceraSeccion = calculateResultadoFinalConDroprateTerceraSeccion();
     
     // ProfitMax de la Cuarta Sección (nuevo cálculo)
     const profitMaxCuartaSeccion = calculateResultadoFinalConDroprateCuartaSeccion();
     
+    // ProfitMax de la Quinta Sección (nuevo cálculo)
+    const profitMaxQuintaSeccion = calculateResultadoFinalConDroprateQuintaSeccion();
+    
+    // ProfitMax de la Sexta Sección (nuevo cálculo)
+    const profitMaxSextaSeccion = calculateResultadoFinalConDroprateSextaSeccion();
+    
+    // ProfitMax de la Séptima Sección (nuevo cálculo)
+    const profitMaxSeptimaSeccion = calculateResultadoFinalConDroprateSeptimaSeccion();
+    
     // Valor de Total Caja (trofeos raros + comunes)
     const totalCaja = calculateTableTotal(trofeosRarosIds, 1.0078) + calculateTableTotal(trofeosComunesIds, 4.99, true);
     
-    const totalProfitMax = profitMaxRaros + profitMaxComunes + profitMaxTerceraSeccion + profitMaxCuartaSeccion + totalCaja;
+    const totalProfitMax = profitMaxRaros  + profitMaxTerceraSeccion + profitMaxCuartaSeccion + profitMaxQuintaSeccion + profitMaxSextaSeccion + profitMaxSeptimaSeccion + totalCaja;
   
     return totalProfitMax;
-  }, [calculateResultadoFinalConDroprate, calculateResultadoFinalConDroprateTerceraSeccion, calculateResultadoFinalConDroprateCuartaSeccion]);
+  }, [calculateResultadoFinalConDroprate, calculateResultadoFinalConDroprateTerceraSeccion, calculateResultadoFinalConDroprateCuartaSeccion, calculateResultadoFinalConDroprateQuintaSeccion, calculateResultadoFinalConDroprateSextaSeccion, calculateResultadoFinalConDroprateSeptimaSeccion]);
     // ProfitMax de Raros (primera columna)    
 
     
@@ -1028,9 +1233,9 @@ const CraftingPage = () => {
           >
             {[
               { id: 'overview', label: t('craftingPage.overview', 'Overview'), icon: Info },
-                            { id: 'materials', label: 'Magia Volatil', icon: Package },
+              { id: 'conversions', label: t('craftingPage.conversions', 'Conversions'), icon: RefreshCw },
+              { id: 'materials', label: t('craftingPage.volatileMagic', 'Magia Volatil'), icon: Package },
               { id: 'strategies', label: t('craftingPage.strategies', 'Strategies'), icon: TrendingUp },
-              { id: 'conversions', label: t('craftingPage.conversions', 'Conversions'), icon: RefreshCw }
             ].map((tab) => (
               <button
                 key={tab.id}
@@ -1102,11 +1307,11 @@ const CraftingPage = () => {
                   <h2 className="text-2xl font-bold text-white mb-6 flex items-center">
                     <OptimizedImage 
                       src="/images/expansions/volatile-magic.png" 
-                      alt="Magia Volatil" 
+                      alt={t('craftingPage.volatileMagic', 'Magia Volatil')} 
                       className="mr-3"
                       priority
                     />
-                    Magia Volatil
+                    {t('craftingPage.volatileMagic', 'Magia Volatil')}
                   </h2>
                   
                   {/* Descripción principal */}
@@ -1114,82 +1319,80 @@ const CraftingPage = () => {
                     <h3 className="text-xl font-bold text-white mb-4 flex items-center">
                       <OptimizedImage 
                         src="/images/expansions/volatile-magic.png" 
-                        alt="Magia Volatil" 
+                        alt={t('craftingPage.volatileMagic', 'Magia Volatil')} 
                         className="mr-3"
                         priority
                       />
-                      ¿Qué es la Magia Volatil?
+                      {t('craftingPage.whatIsVolatileMagic', '¿Qué es la Magia Volatil?')}
                     </h3>
                     <p className="text-gray-300 mb-4">
-                      La Magia Volatil es una divisa almacenada en la cartera y es la divisa principal de la 4.ª temporada del Mundo Viviente. 
-                      Se obtiene principalmente en mapas como Valle de Grothmar, Acantilados de Jahai, y otros mapas de la temporada 4.
-                    </p>
+                      {t('craftingPage.volatileMagicDesc', 'La Magia Volatil es una divisa almacenada en la cartera y es la divisa principal de la 4.ª temporada del Mundo Viviente.')}</p>
                   </div>
 
                   <h3 className="text-lg sm:text-xl font-bold text-white mb-4 sm:mb-6 text-center">
-                    ¿Cómo lo obtengo?
+                    {t('craftingPage.howToGet', '¿Cómo lo obtengo?')}
                   </h3>
                   <div className="flex flex-col sm:flex-row justify-center gap-3 sm:gap-4 mb-6 sm:mb-8">
                     <button className="px-4 sm:px-6 py-2 sm:py-3 bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white font-semibold rounded-lg transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105 text-sm sm:text-base">
-                      LS4 Meta
+                      {t('craftingPage.ls4Meta', 'LS4 Meta')}
                     </button>
                     <button className="px-4 sm:px-6 py-2 sm:py-3 bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white font-semibold rounded-lg transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105 text-sm sm:text-base">
-                      Jardines
+                      {t('craftingPage.gardens', 'Jardines')}
                     </button>
                     <button className="px-4 sm:px-6 py-2 sm:py-3 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold rounded-lg transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105 text-sm sm:text-base">
-                      Otros
+                      {t('craftingPage.others', 'Otros')}
                     </button>
                   </div>
                    
                    <h3 className="text-xl font-bold text-white mb-6 text-center">
-                     ¿En qué gastar la magia volátil?
+                     {t('craftingPage.whatToSpend', '¿En qué gastar la magia volátil?')}
                    </h3>
                    
                    <div className="text-center mb-6">
                      <h4 className="text-lg font-semibold text-white">
-                       Cargamento de trofeos
+                       {t('craftingPage.trophyBoxes', 'Cargamento de trofeos')}
                      </h4>
                    </div>
                    
                    {/* Resumen de ganancias */}
                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 mb-4 sm:mb-6">
                      <div className="bg-gray-700 rounded p-2 sm:p-3 border border-gray-600">
-                       <h6 className="text-xs sm:text-sm font-bold text-gray-300 mb-2 text-center">Total Caja</h6>
+                       <h6 className="text-xs font-bold text-gray-300 mb-2 text-center">{t('craftingPage.table.totalBox', 'Total Caja')}</h6>
                        <div className="text-center">
                          <p className="text-green-400 font-bold text-sm sm:text-lg">
-                           {isLoadingPrices ? <Loader2 className="w-3 h-3 sm:w-4 sm:h-4 animate-spin mx-auto" /> : formatGW2Price                          
+                           {t('craftingPage.table.min', 'Min')}: {isLoadingPrices ? <Loader2 className="w-3 h-3 sm:w-4 sm:h-4 animate-spin mx-auto" /> : formatGW2Price                          
                           (calculateTableTotal(trofeosRarosIds, 1.0078) + 
                           calculateTableTotal(trofeosComunesIds, 4.99, true)
                            )}
                          </p>
                          <p className="text-green-400 font-bold text-sm sm:text-lg">
-                           {isLoadingPrices ? 'Calculando...' : formatGW2Price(calculateTotalProfitMax())}
+                           {t('craftingPage.table.max', 'Max')}: {isLoadingPrices ? t('craftingPage.calculating', 'Calculando...') : formatGW2Price(calculateTotalProfitMax())}
                          </p>
                        </div>
                      </div>
                      <div className="bg-gray-700 rounded p-2 sm:p-3 border border-gray-600">
-                       <h6 className="text-xs sm:text-sm font-bold text-gray-300 mb-2 text-center">Profit Caja</h6>
+                       <h6 className="text-xs font-bold text-gray-300 mb-2 text-center">{t('craftingPage.table.profitBox', 'Profit Caja')}</h6>
                        <div className="text-center">
                          <p className="text-yellow-400 font-bold text-sm sm:text-lg">
-                           {isLoadingPrices ? <Loader2 className="w-3 h-3 sm:w-4 sm:h-4 animate-spin mx-auto" /> : formatGW2Price(
+                           {t('craftingPage.table.min', 'Min')}: {isLoadingPrices ? <Loader2 className="w-3 h-3 sm:w-4 sm:h-4 animate-spin mx-auto" /> : formatGW2Price(
                              (calculateTableTotal(trofeosRarosIds, 1.0078) + calculateTableTotal(trofeosComunesIds, 4.99, true)) - 1
                            )}
                          </p>
                          <p className="text-yellow-400 font-bold text-sm sm:text-lg">
-                           {isLoadingPrices ? 'Calculando...' : formatGW2Price(calculateTotalProfitMax() - 1)} {/* -1 = -10000 cobre */}
+                           {t('craftingPage.table.max', 'Max')}: {isLoadingPrices ? t('craftingPage.calculating', 'Calculando...') : formatGW2Price(calculateTotalProfitMax() - 1)} {/* -1 = -10000 cobre */}
                          </p>
                        </div>
                      </div>
                      <div className="bg-gray-700 rounded p-2 sm:p-3 border border-gray-600 sm:col-span-2 lg:col-span-1">
-                       <h6 className="text-xs sm:text-sm font-bold text-gray-300 mb-2 text-center">Profit VM</h6>
+                       <h6 className="text-xs font-bold text-gray-300 mb-2 text-center">{t('craftingPage.table.profitVM', 'Profit VM')}</h6>
                        <div className="text-center">
                          <p className="text-blue-400 font-bold text-sm sm:text-lg">
-                           {isLoadingPrices ? <Loader2 className="w-3 h-3 sm:w-4 sm:h-4 animate-spin mx-auto" /> : formatGW2Price(
+                           {t('craftingPage.table.min', 'Min')}: {isLoadingPrices ? <Loader2 className="w-3 h-3 sm:w-4 sm:h-4 animate-spin mx-auto" /> : formatGW2Price(
                              ((calculateTableTotal(trofeosRarosIds, 1.0078) + calculateTableTotal(trofeosComunesIds, 4.99, true)) - 1) / 250
                            )}
                          </p>
                          <p className="text-blue-400 font-bold text-sm sm:text-lg">
-                           {isLoadingPrices ? 'Calculando...' : formatGW2Price((calculateTotalProfitMax() - 1)/250)} {/* -1 = -10000 cobre */}
+                           {t('craftingPage.table.max', 'Max')}: {isLoadingPrices ? t('craftingPage.calculating', 'Calculando...') : formatGW2Price((calculateTotalProfitMax() - 1)/250)} {/* -1 = -10000 cobre */}
                          </p>
                        </div>
                      </div>
@@ -1199,9 +1402,9 @@ const CraftingPage = () => {
                    <div className="bg-blue-900/20 backdrop-blur-sm border border-blue-700/30 rounded-lg p-3 sm:p-4 mb-4 sm:mb-6 md:mb-8">
                      <div className="flex items-center gap-2 sm:gap-3">
                        <div className="w-2 h-2 sm:w-3 sm:h-3 bg-blue-400 rounded-full animate-pulse flex-shrink-0"></div>
-                       <div className="text-blue-300 text-xs sm:text-sm md:text-base">
-                         <strong>Fuente de Datos:</strong> Análisis basado en{' '}
-                         <span className="text-blue-200 font-bold">500k Cargamento de trofeos</span> abiertos
+                       <div className="text-blue-300 text-xs md:text-base">
+                         <strong>{t('craftingPage.table.dataSource', 'Fuente de Datos')}:</strong> {t('craftingPage.table.basedOn', 'Análisis basado en')}{' '}
+                         <span className="text-blue-200 font-bold">500k {t('craftingPage.table.trophyBoxes', 'Cargamento de trofeos')}</span> {t('craftingPage.table.opened', 'abiertos')}
                        </div>
                      </div>
                    </div>
@@ -1211,14 +1414,14 @@ const CraftingPage = () => {
                      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                        <div className="flex items-center gap-2 sm:gap-3">
                          <div className="w-2 h-2 sm:w-3 sm:h-3 bg-green-400 rounded-full animate-pulse flex-shrink-0"></div>
-                         <div className="text-green-300 text-xs sm:text-sm md:text-base">
+                         <div className="text-green-300 text-xs md:text-base">
                            <strong>Precios actualizados:</strong> {lastPriceUpdate ? lastPriceUpdate.toLocaleTimeString('es-ES') : 'Cargando...'}
                          </div>
                        </div>
                        <button
                          onClick={fetchTableItemPrices}
                          disabled={isLoadingPrices}
-                         className="flex items-center justify-center gap-2 px-2 sm:px-3 py-1 sm:py-2 bg-green-600 hover:bg-green-700 disabled:bg-gray-600 text-white text-xs sm:text-sm rounded transition-colors duration-200 w-full sm:w-auto"
+                         className="flex items-center justify-center gap-2 px-2 sm:px-3 py-1 sm:py-2 bg-green-600 hover:bg-green-700 disabled:bg-gray-600 text-white text-xs rounded transition-colors duration-200 w-full sm:w-auto"
                        >
                          <RefreshCw className={`w-3 h-3 sm:w-4 sm:h-4 ${isLoadingPrices ? 'animate-spin' : ''}`} />
                          {isLoadingPrices ? 'Actualizando...' : 'Actualizar'}
@@ -1240,7 +1443,7 @@ const CraftingPage = () => {
                              <div className="flex items-center gap-3 mb-2">
                                <div className="w-3 h-3 bg-blue-400 rounded-full"></div>
                                <div className="text-blue-300 text-sm">
-                                 <strong>Item 24591 × 1 (buy):</strong> {isLoadingPrices ? 'Calculando...' : formatGW2Price(calculateItem24591Price())}
+                                 <strong>Item 24591 × 1 (buy):</strong> {isLoadingPrices ? t('craftingPage.calculating', 'Calculando...') : formatGW2Price(calculateItem24591Price())}
                                </div>
                              </div>
                              
@@ -1248,7 +1451,7 @@ const CraftingPage = () => {
                              <div className="flex items-center gap-3 mb-2">
                                <div className="w-3 h-3 bg-cyan-400 rounded-full"></div>
                                <div className="text-cyan-300 text-sm">
-                                 <strong>Item 19701 × 16 (buy):</strong> {isLoadingPrices ? 'Calculando...' : formatGW2Price(calculateItem19701Price())}
+                                 <strong>Item 19701 × 16 (buy):</strong> {isLoadingPrices ? t('craftingPage.calculating', 'Calculando...') : formatGW2Price(calculateItem19701Price())}
                                </div>
                              </div>
                              
@@ -1256,7 +1459,7 @@ const CraftingPage = () => {
                              <div className="flex items-center gap-3 mb-2">
                                <div className="w-3 h-3 bg-green-400 rounded-full"></div>
                                <div className="text-green-300 text-sm">
-                                 <strong>Item 24295 × 1 (sell × 0.9):</strong> {isLoadingPrices ? 'Calculando...' : formatGW2Price(calculateItem24295Price())}
+                                 <strong>Item 24295 × 1 (sell × 0.9):</strong> {isLoadingPrices ? t('craftingPage.calculating', 'Calculando...') : formatGW2Price(calculateItem24295Price())}
                                </div>
                              </div>
                              
@@ -1264,7 +1467,7 @@ const CraftingPage = () => {
                              <div className="flex items-center gap-3 mt-3 pt-3 border-t border-blue-600/30">
                                <div className="w-4 h-4 bg-yellow-400 rounded-full"></div>
                                <div className="text-yellow-300 text-sm font-bold">
-                                 <strong>🏆 SUMA TOTAL (24591 + 19701 + 24295):</strong> {isLoadingPrices ? 'Calculando...' : formatGW2Price(calculateItem24591Price() + calculateItem19701Price() + calculateItem24295Price())}
+                                 <strong>🏆 SUMA TOTAL (24591 + 19701 + 24295):</strong> {isLoadingPrices ? t('craftingPage.calculating', 'Calculando...') : formatGW2Price(calculateItem24591Price() + calculateItem19701Price() + calculateItem24295Price())}
                                </div>
                              </div>
                            </div>
@@ -1279,7 +1482,7 @@ const CraftingPage = () => {
                              <div className="flex items-center gap-3 mb-2">
                                <div className="w-3 h-3 bg-red-400 rounded-full"></div>
                                <div className="text-red-300 text-sm">
-                                 <strong>97102 × 8 (buy):</strong> {isLoadingPrices ? 'Calculando...' : formatGW2Price(calculateItem97102Price())}
+                                 <strong>97102 × 8 (buy):</strong> {isLoadingPrices ? t('craftingPage.calculating', 'Calculando...') : formatGW2Price(calculateItem97102Price())}
                                </div>
                              </div>
                          
@@ -1287,7 +1490,7 @@ const CraftingPage = () => {
                              <div className="flex items-center gap-3 mb-2">
                                <div className="w-3 h-3 bg-pink-400 rounded-full"></div>
                                <div className="text-pink-300 text-sm">
-                                 <strong>19721 × 4 (sell × 0.9):</strong> {isLoadingPrices ? 'Calculando...' : formatGW2Price(calculateItem19721Price())}
+                                 <strong>19721 × 4 (sell × 0.9):</strong> {isLoadingPrices ? t('craftingPage.calculating', 'Calculando...') : formatGW2Price(calculateItem19721Price())}
                                </div>
                              </div>
                          
@@ -1295,7 +1498,7 @@ const CraftingPage = () => {
                              <div className="flex items-center gap-3 mb-2">
                                <div className="w-3 h-3 bg-indigo-400 rounded-full"></div>
                                <div className="text-indigo-300 text-sm">
-                                 <strong>19701 × 20 (buy):</strong> {isLoadingPrices ? 'Calculando...' : formatGW2Price(calculateItem19701x10Price())}
+                                 <strong>19701 × 20 (buy):</strong> {isLoadingPrices ? t('craftingPage.calculating', 'Calculando...') : formatGW2Price(calculateItem19701x10Price())}
                                </div>
                              </div>
                          
@@ -1303,7 +1506,7 @@ const CraftingPage = () => {
                          <div className="flex items-center gap-3 mt-2 pt-2 border-t border-green-700/20">
                            <div className="w-3 h-3 bg-orange-400 rounded-full"></div>
                            <div className="text-orange-300 text-xs">
-                             <strong>💰 Precio total para 97487 (suma):</strong> {isLoadingPrices ? 'Calculando...' : formatGW2Price(calculateTotalPriceFor97487())}
+                             <strong>💰 Precio total para 97487 (suma):</strong> {isLoadingPrices ? t('craftingPage.calculating', 'Calculando...') : formatGW2Price(calculateTotalPriceFor97487())}
                            </div>
                          </div>
                          
@@ -1311,7 +1514,7 @@ const CraftingPage = () => {
                          <div className="flex items-center gap-3 mt-2 pt-2 border-t border-green-700/20">
                            <div className="w-2 h-2 bg-purple-400 rounded-full"></div>
                            <div className="text-purple-300 text-xs">
-                             <strong>📊 Precio por nota más bajo:</strong> {isLoadingPrices ? 'Calculando...' : formatGW2Price(getLowestPricePerNote())}
+                             <strong>📊 {t('craftingPage.lowestPricePerNote', 'Precio por nota más bajo')}:</strong> {isLoadingPrices ? t('craftingPage.calculating', 'Calculando...') : formatGW2Price(getLowestPricePerNote())}
                            </div>
                          </div>
                          
@@ -1319,7 +1522,7 @@ const CraftingPage = () => {
                          <div className="flex items-center gap-3 mt-3 pt-3 border-t border-green-700/30">
                                                           <div className="w-4 h-4 bg-yellow-500 rounded-full"></div>
                            <div className="text-yellow-300 text-xs">
-                             <strong>🎯 TOTAL FINAL (97487 + 60 notas):</strong> {isLoadingPrices ? 'Calculando...' : formatGW2Price(calculateTotalWithNotes())}
+                             <strong>🎯 TOTAL FINAL (97487 + 60 notas):</strong> {isLoadingPrices ? t('craftingPage.calculating', 'Calculando...') : formatGW2Price(calculateTotalWithNotes())}
                            </div>
                          </div>
                          
@@ -1327,7 +1530,7 @@ const CraftingPage = () => {
                          <div className="flex items-center gap-2 mb-2">
                            <div className="w-4 h-4 bg-green-500 rounded-full"></div>
                            <div className="text-green-300 text-xs">
-                             <strong>🏆 SUMA COMPLETA (Suma Total + TOTAL FINAL):</strong> {isLoadingPrices ? 'Calculando...' : formatGW2Price(calculateSumaCompleta())}
+                             <strong>🏆 {t('craftingPage.completeSum', 'SUMA COMPLETA (Suma Total + TOTAL FINAL)')}:</strong> {isLoadingPrices ? t('craftingPage.calculating', 'Calculando...') : formatGW2Price(calculateSumaCompleta())}
                            </div>
                          </div>
                          
@@ -1335,7 +1538,7 @@ const CraftingPage = () => {
                          <div className="flex items-center gap-2 mb-2">
                            <div className="w-4 h-4 bg-red-500 rounded-full"></div>
                            <div className="text-red-300 text-xs">
-                             <strong>🔴 Item 97535 (sell × 0.85):</strong> {isLoadingPrices ? 'Calculando...' : formatGW2Price(calculateItem97535Price())}
+                             <strong>🔴 Item 97535 (sell × 0.85):</strong> {isLoadingPrices ? t('craftingPage.calculating', 'Calculando...') : formatGW2Price(calculateItem97535Price())}
                            </div>
                          </div>
                          
@@ -1343,7 +1546,7 @@ const CraftingPage = () => {
                          <div className="flex items-center gap-2 mb-2">
                            <div className="w-4 h-4 bg-purple-500 rounded-full"></div>
                            <div className="text-purple-300 text-xs">
-                             <strong>💎 RESULTADO FINAL (SUMA COMPLETA - 97535):</strong> {isLoadingPrices ? 'Calculando...' : formatGW2Price(calculateResultadoFinal())}
+                             <strong>💎 RESULTADO FINAL (SUMA COMPLETA - 97535):</strong> {isLoadingPrices ? t('craftingPage.calculating', 'Calculando...') : formatGW2Price(calculateResultadoFinal())}
                            </div>
                          </div>
                          
@@ -1351,7 +1554,7 @@ const CraftingPage = () => {
                          <div className="flex items-center gap-2 mb-2">
                            <div className="w-4 h-4 bg-blue-500 rounded-full"></div>
                            <div className="text-blue-300 text-xs">
-                             <strong>🚀 RESULTADO FINAL CON DROPRATE (≥1 × 1.0078):</strong> {isLoadingPrices ? 'Calculando...' : formatGW2Price(calculateResultadoFinalConDroprate())}
+                             <strong>🚀 {t('craftingPage.finalResultWithDroprateFormat', 'RESULTADO FINAL CON DROPRATE (≥1 × 1.0078)')}:</strong> {isLoadingPrices ? t('craftingPage.calculating', 'Calculando...') : formatGW2Price(calculateResultadoFinalConDroprate())}
                            </div>
                          </div>
                        </div>
@@ -1364,12 +1567,12 @@ const CraftingPage = () => {
                    <div className="bg-gradient-to-r from-blue-800/50 to-blue-700/50 backdrop-blur-sm rounded-xl p-4 mb-6 border border-blue-600/50">
                      <div className="flex items-center gap-3 mb-4">
                        <div className="w-2 h-2 bg-blue-400 rounded-full"></div>
-                       <h3 className="text-lg font-semibold text-white">🚀 RESULTADO FINAL CON DROPRATE</h3>
+                       <h3 className="text-lg font-semibold text-white">🚀 {t('craftingPage.finalResultWithDroprate', 'RESULTADO FINAL CON DROPRATE')}</h3>
                      </div>
                      <div className="flex items-center gap-3">
                        <div className="w-5 h-5 bg-blue-500 rounded-full"></div>
                        <div className="text-blue-300 text-lg font-bold">
-                         <strong>🚀 RESULTADO FINAL CON DROPRATE (≥1 × 1.0078):</strong> {isLoadingPrices ? 'Calculando...' : formatGW2Price(calculateResultadoFinalConDroprate())}
+                         <strong>🚀 RESULTADO FINAL CON DROPRATE (≥1 × 1.0078):</strong> {isLoadingPrices ? t('craftingPage.calculating', 'Calculando...') : formatGW2Price(calculateResultadoFinalConDroprate())}
                        </div>
                      </div>
                    </div>
@@ -1391,7 +1594,7 @@ const CraftingPage = () => {
                        <div className="flex items-center gap-3 mb-2">
                          <div className="w-3 h-3 bg-blue-400 rounded-full"></div>
                          <div className="text-blue-300 text-sm">
-                           <strong>Item 24591 × 1 (buy):</strong> {isLoadingPrices ? 'Calculando...' : formatGW2Price(calculateItem24591Price())}
+                           <strong>Item 24591 × 1 (buy):</strong> {isLoadingPrices ? t('craftingPage.calculating', 'Calculando...') : formatGW2Price(calculateItem24591Price())}
                          </div>
                        </div>
                        
@@ -1399,7 +1602,7 @@ const CraftingPage = () => {
                        <div className="flex items-center gap-3 mb-2">
                          <div className="w-3 h-3 bg-cyan-400 rounded-full"></div>
                          <div className="text-cyan-300 text-sm">
-                           <strong>Item 19701 × 16 (buy):</strong> {isLoadingPrices ? 'Calculando...' : formatGW2Price(calculateItem19701Price())}
+                           <strong>Item 19701 × 16 (buy):</strong> {isLoadingPrices ? t('craftingPage.calculating', 'Calculando...') : formatGW2Price(calculateItem19701Price())}
                          </div>
                        </div>
                        
@@ -1407,7 +1610,7 @@ const CraftingPage = () => {
                        <div className="flex items-center gap-3 mb-2">
                          <div className="w-3 h-3 bg-green-400 rounded-full"></div>
                          <div className="text-green-300 text-sm">
-                           <strong>Item 24358 × 1 (sell × 0.9):</strong> {isLoadingPrices ? 'Calculando...' : formatGW2Price(calculateItem24358Price())}
+                           <strong>Item 24358 × 1 (sell × 0.9):</strong> {isLoadingPrices ? t('craftingPage.calculating', 'Calculando...') : formatGW2Price(calculateItem24358Price())}
                          </div>
                        </div>
                        
@@ -1415,7 +1618,7 @@ const CraftingPage = () => {
                        <div className="flex items-center gap-3 mt-3 pt-3 border-t border-blue-600/30">
                          <div className="w-4 h-4 bg-yellow-400 rounded-full"></div>
                          <div className="text-yellow-300 text-sm font-bold">
-                           <strong>🏆 SUMA TOTAL (24591 + 19701 + 24358):</strong> {isLoadingPrices ? 'Calculando...' : formatGW2Price(calculateItem24591Price() + calculateItem19701Price() + calculateItem24358Price())}
+                           <strong>🏆 SUMA TOTAL (24591 + 19701 + 24358):</strong> {isLoadingPrices ? t('craftingPage.calculating', 'Calculando...') : formatGW2Price(calculateItem24591Price() + calculateItem19701Price() + calculateItem24358Price())}
                          </div>
                        </div>
                      </div>
@@ -1430,7 +1633,7 @@ const CraftingPage = () => {
                        <div className="flex items-center gap-3 mb-2">
                          <div className="w-3 h-3 bg-red-400 rounded-full"></div>
                          <div className="text-red-300 text-sm">
-                           <strong>97102 × 8 (buy):</strong> {isLoadingPrices ? 'Calculando...' : formatGW2Price(calculateItem97102Price())}
+                           <strong>97102 × 8 (buy):</strong> {isLoadingPrices ? t('craftingPage.calculating', 'Calculando...') : formatGW2Price(calculateItem97102Price())}
                          </div>
                        </div>
                        
@@ -1438,7 +1641,7 @@ const CraftingPage = () => {
                        <div className="flex items-center gap-3 mb-2">
                          <div className="w-3 h-3 bg-pink-400 rounded-full"></div>
                          <div className="text-pink-300 text-sm">
-                           <strong>19721 × 4 (sell × 0.9):</strong> {isLoadingPrices ? 'Calculando...' : formatGW2Price(calculateItem19721Price())}
+                           <strong>19721 × 4 (sell × 0.9):</strong> {isLoadingPrices ? t('craftingPage.calculating', 'Calculando...') : formatGW2Price(calculateItem19721Price())}
                          </div>
                        </div>
                        
@@ -1446,7 +1649,7 @@ const CraftingPage = () => {
                        <div className="flex items-center gap-3 mb-2">
                          <div className="w-3 h-3 bg-indigo-400 rounded-full"></div>
                          <div className="text-indigo-300 text-sm">
-                           <strong>19701 × 20 (buy):</strong> {isLoadingPrices ? 'Calculando...' : formatGW2Price(calculateItem19701x10Price())}
+                           <strong>19701 × 20 (buy):</strong> {isLoadingPrices ? t('craftingPage.calculating', 'Calculando...') : formatGW2Price(calculateItem19701x10Price())}
                          </div>
                        </div>
                        
@@ -1454,7 +1657,7 @@ const CraftingPage = () => {
                        <div className="flex items-center gap-3 mt-2 pt-2 border-t border-orange-700/20">
                          <div className="w-3 h-3 bg-orange-400 rounded-full"></div>
                          <div className="text-orange-300 text-xs">
-                           <strong>💰 Precio total para 97487 (suma):</strong> {isLoadingPrices ? 'Calculando...' : formatGW2Price(calculateTotalPriceFor97487())}
+                           <strong>💰 Precio total para 97487 (suma):</strong> {isLoadingPrices ? t('craftingPage.calculating', 'Calculando...') : formatGW2Price(calculateTotalPriceFor97487())}
                          </div>
                        </div>
                        
@@ -1462,7 +1665,7 @@ const CraftingPage = () => {
                        <div className="flex items-center gap-3 mt-2 pt-2 border-t border-orange-700/20">
                          <div className="w-2 h-2 bg-purple-400 rounded-full"></div>
                          <div className="text-purple-300 text-xs">
-                           <strong>📊 Precio por nota más bajo:</strong> {isLoadingPrices ? 'Calculando...' : formatGW2Price(getLowestPricePerNote())}
+                           <strong>📊 Precio por nota más bajo:</strong> {isLoadingPrices ? t('craftingPage.calculating', 'Calculando...') : formatGW2Price(getLowestPricePerNote())}
                          </div>
                        </div>
                        
@@ -1470,7 +1673,7 @@ const CraftingPage = () => {
                        <div className="flex items-center gap-3 mt-3 pt-3 border-t border-orange-700/30">
                          <div className="w-4 h-4 bg-yellow-500 rounded-full"></div>
                          <div className="text-yellow-300 text-xs">
-                           <strong>🎯 TOTAL FINAL (97487 + 60 notas):</strong> {isLoadingPrices ? 'Calculando...' : formatGW2Price(calculateTotalWithNotes())}
+                           <strong>🎯 TOTAL FINAL (97487 + 60 notas):</strong> {isLoadingPrices ? t('craftingPage.calculating', 'Calculando...') : formatGW2Price(calculateTotalWithNotes())}
                          </div>
                        </div>
                        
@@ -1478,7 +1681,7 @@ const CraftingPage = () => {
                        <div className="flex items-center gap-2 mb-2">
                          <div className="w-4 h-4 bg-green-500 rounded-full"></div>
                          <div className="text-green-300 text-xs">
-                           <strong>🏆 SUMA COMPLETA (Suma Total + TOTAL FINAL):</strong> {isLoadingPrices ? 'Calculando...' : formatGW2Price(calculateSumaCompleta())}
+                           <strong>🏆 SUMA COMPLETA (Suma Total + TOTAL FINAL):</strong> {isLoadingPrices ? t('craftingPage.calculating', 'Calculando...') : formatGW2Price(calculateSumaCompleta())}
                          </div>
                        </div>
                        
@@ -1486,7 +1689,7 @@ const CraftingPage = () => {
                        <div className="flex items-center gap-2 mb-2">
                          <div className="w-4 h-4 bg-red-500 rounded-full"></div>
                          <div className="text-red-300 text-xs">
-                           <strong>🔴 Item 95582 (sell × 0.85):</strong> {isLoadingPrices ? 'Calculando...' : formatGW2Price(calculateItem95582Price())}
+                           <strong>🔴 Item 95582 (sell × 0.85):</strong> {isLoadingPrices ? t('craftingPage.calculating', 'Calculando...') : formatGW2Price(calculateItem95582Price())}
                          </div>
                        </div>
                        
@@ -1494,7 +1697,7 @@ const CraftingPage = () => {
                        <div className="flex items-center gap-2 mb-2">
                          <div className="w-4 h-4 bg-purple-500 rounded-full"></div>
                          <div className="text-purple-300 text-xs">
-                           <strong>💎 RESULTADO FINAL (SUMA COMPLETA - 95582):</strong> {isLoadingPrices ? 'Calculando...' : formatGW2Price(calculateResultadoFinalTerceraSeccion())}
+                           <strong>💎 RESULTADO FINAL (SUMA COMPLETA - 95582):</strong> {isLoadingPrices ? t('craftingPage.calculating', 'Calculando...') : formatGW2Price(calculateResultadoFinalTerceraSeccion())}
                          </div>
                        </div>
                        
@@ -1502,7 +1705,7 @@ const CraftingPage = () => {
                        <div className="flex items-center gap-2 mb-2">
                          <div className="w-4 h-4 bg-blue-500 rounded-full"></div>
                          <div className="text-blue-300 text-xs">
-                           <strong>🚀 RESULTADO FINAL CON DROPRATE (≥1 × 1.0078):</strong> {isLoadingPrices ? 'Calculando...' : formatGW2Price(calculateResultadoFinalConDroprateTerceraSeccion())}
+                           <strong>🚀 {t('craftingPage.finalResultWithDroprateFormat', 'RESULTADO FINAL CON DROPRATE (≥1 × 1.0078)')}:</strong> {isLoadingPrices ? t('craftingPage.calculating', 'Calculando...') : formatGW2Price(calculateResultadoFinalConDroprateTerceraSeccion())}
                          </div>
                        </div>
                      </div>
@@ -1525,7 +1728,7 @@ const CraftingPage = () => {
                        <div className="flex items-center gap-3 mb-2">
                          <div className="w-3 h-3 bg-cyan-400 rounded-full"></div>
                          <div className="text-cyan-300 text-sm">
-                           <strong>Item 19721 × 5 (sell × 0.9):</strong> {isLoadingPrices ? 'Calculando...' : formatGW2Price(calculateItem19721x5Price())}
+                           <strong>Item 19721 × 5 (sell × 0.9):</strong> {isLoadingPrices ? t('craftingPage.calculating', 'Calculando...') : formatGW2Price(calculateItem19721x5Price())}
                          </div>
                        </div>
                        
@@ -1533,7 +1736,7 @@ const CraftingPage = () => {
                        <div className="flex items-center gap-3 mb-2">
                          <div className="w-3 h-3 bg-green-400 rounded-full"></div>
                          <div className="text-blue-300 text-sm">
-                           <strong>Item 24351 × 5 (sell × 0.9):</strong> {isLoadingPrices ? 'Calculando...' : formatGW2Price(calculateItem24351Price())}
+                           <strong>Item 24351 × 5 (sell × 0.9):</strong> {isLoadingPrices ? t('craftingPage.calculating', 'Calculando...') : formatGW2Price(calculateItem24351Price())}
                          </div>
                        </div>
                        
@@ -1541,7 +1744,7 @@ const CraftingPage = () => {
                         <div className="flex items-center gap-3 mb-2">
                           <div className="w-3 h-3 bg-purple-400 rounded-full"></div>
                           <div className="text-purple-300 text-sm">
-                            <strong>Item 10804 × 1 (Gossamer Patch - crafting):</strong> {isLoadingPrices ? 'Calculando...' : formatGW2Price(calculateGossamerPatchCraftingPrice())}
+                            <strong>Item 10804 × 1 (Gossamer Patch - crafting):</strong> {isLoadingPrices ? t('craftingPage.calculating', 'Calculando...') : formatGW2Price(calculateGossamerPatchCraftingPrice())}
                             </div>
                           </div>
                        
@@ -1549,7 +1752,7 @@ const CraftingPage = () => {
                        <div className="flex items-center gap-3 mt-3 pt-3 border-t border-blue-600/30">
                          <div className="w-4 h-4 bg-yellow-400 rounded-full"></div>
                             <div className="text-yellow-300 text-sm font-bold">
-                          <strong>🏆 SUMA TOTAL (19721 + 24351 + 10804):</strong> {isLoadingPrices ? 'Calculando...' : formatGW2Price(calculateItem19721x5Price() + calculateItem24351Price() + calculateGossamerPatchCraftingPrice())}
+                          <strong>🏆 SUMA TOTAL (19721 + 24351 + 10804):</strong> {isLoadingPrices ? t('craftingPage.calculating', 'Calculando...') : formatGW2Price(calculateItem19721x5Price() + calculateItem24351Price() + calculateGossamerPatchCraftingPrice())}
                         </div>
                        </div>
 
@@ -1557,14 +1760,14 @@ const CraftingPage = () => {
                         <div className="flex items-center gap-2 mb-2">
                          <div className="w-4 h-4 bg-red-500 rounded-full"></div>
                          <div className="text-red-300 text-xs">
-                           <strong>🔴 Item 19912 (sell × 0.85):</strong> {isLoadingPrices ? 'Calculando...' : formatGW2Price(calculateItem19912Price())}
+                           <strong>🔴 Item 19912 (sell × 0.85):</strong> {isLoadingPrices ? t('craftingPage.calculating', 'Calculando...') : formatGW2Price(calculateItem19912Price())}
                          </div>
                        </div>
-
+                        {/* RESULTADO FINAL */}
                                                 <div className="flex items-center gap-2 mb-2">
                            <div className="w-4 h-4 bg-purple-500 rounded-full"></div>
                            <div className="text-purple-300 text-xs">
-                             <strong>💎 RESULTADO FINAL (19912 - SUMA COMPLETA):</strong> {isLoadingPrices ? 'Calculando...' : formatGW2Price(calculateResultadoFinalCuartaSeccion())}
+                             <strong>💎 RESULTADO FINAL (SUMA COMPLETA - 19912):</strong> {isLoadingPrices ? t('craftingPage.calculating', 'Calculando...') : formatGW2Price(calculateResultadoFinalCuartaSeccion())}
                            </div>
                          </div>
                          
@@ -1572,7 +1775,7 @@ const CraftingPage = () => {
                          <div className="flex items-center gap-2 mb-2">
                            <div className="w-4 h-4 bg-indigo-500 rounded-full"></div>
                            <div className="text-indigo-300 text-xs">
-                             <strong>🚀 RESULTADO FINAL CON DROPRATE (I92/D90 × 1.0078):</strong> {isLoadingPrices ? 'Calculando...' : formatGW2Price(calculateResultadoFinalConDroprateCuartaSeccion())}
+                             <strong>🚀 RESULTADO FINAL CON DROPRATE (I92/D90 × 1.0078):</strong> {isLoadingPrices ? t('craftingPage.calculating', 'Calculando...') : formatGW2Price(calculateResultadoFinalConDroprateCuartaSeccion())}
                            </div>
                          </div>
                      </div>
@@ -1580,21 +1783,174 @@ const CraftingPage = () => {
 
                    </div>
                  </div>
+                  {/* Quinta sección de cálculos - OCULTA (REPLICA 2) */}
+                  <div className="hidden">
+                   <div className="bg-gradient-to-r from-purple-800/50 to-purple-700/50 backdrop-blur-sm rounded-xl p-4 mb-6 border border-purple-600/50">
+                     <div className="flex items-center gap-3 mb-4">
+                       <div className="w-2 h-2 bg-purple-400 rounded-full"></div>
+                                               <h3 className="text-lg font-semibold text-white">🕵️ Sistema Completo de Cálculos - ProfiMax de Raros (QUINTA COPIA 2)</h3>
+                      </div>
+                      
+                      {/* Primera parte: Items Individuales */}
+                      <div className="mb-4 p-3 bg-blue-900/30 rounded-lg border border-blue-600/30">
+                        <h4 className="text-blue-300 font-semibold mb-3 text-sm">📊 PRIMERA PARTE: Items Individuales</h4>
+                        
+                        {/* Item 19721 Price */}
+                        <div className="flex items-center gap-3 mb-2">
+                          <div className="w-3 h-3 bg-cyan-400 rounded-full"></div>
+                          <div className="text-cyan-300 text-sm">
+                            <strong>Item 19721 × 5 (sell × 0.9):</strong> {isLoadingPrices ? t('craftingPage.calculating', 'Calculando...') : formatGW2Price(calculateItem19721x5Price())}
+                          </div>
+                        </div>
+                        
+                        {/* Item 24300 Price */}
+                        <div className="flex items-center gap-3 mb-2">
+                          <div className="w-3 h-3 bg-green-400 rounded-full"></div>
+                          <div className="text-blue-300 text-sm">
+                            <strong>Item 24300 × 5 (sell × 0.9):</strong> {isLoadingPrices ? t('craftingPage.calculating', 'Calculando...') : formatGW2Price(calculateItem24300x5Price())}
+                          </div>
+                        </div>
+                        
+                        {/* Item 89271 Price */}
+                        <div className="flex items-center gap-3 mb-2">
+                          <div className="w-3 h-3 bg-purple-400 rounded-full"></div>
+                          <div className="text-purple-300 text-sm">
+                            <strong>Item 89271 × 8 (sell × 0.9):</strong> {isLoadingPrices ? t('craftingPage.calculating', 'Calculando...') : formatGW2Price(calculateItem89271x8Price())}
+                            </div>
+                          </div>
+                        
+                        {/* Item 89103 Price */}
+                        <div className="flex items-center gap-3 mb-2">
+                          <div className="w-3 h-3 bg-orange-400 rounded-full"></div>
+                          <div className="text-orange-300 text-sm">
+                            <strong>Item 89103 × 2 (buy):</strong> {isLoadingPrices ? t('craftingPage.calculating', 'Calculando...') : formatGW2Price(calculateItem89103x2Price())}
+                            </div>
+                          </div>
+                       
+                       {/* Suma Total */}
+                       <div className="flex items-center gap-3 mt-3 pt-3 border-t border-blue-600/30">
+                         <div className="w-4 h-4 bg-yellow-400 rounded-full"></div>
+                            <div className="text-yellow-300 text-sm font-bold">
+                          <strong>🏆 SUMA TOTAL (19721 + 24300 + 89271 + 89103):</strong> {isLoadingPrices ? t('craftingPage.calculating', 'Calculando...') : formatGW2Price(calculateItem19721x5Price() + calculateItem24300x5Price() + calculateItem89271x8Price() + calculateItem89103x2Price())}
+                        </div>
+                       </div>
+
+                        {/* Item 24836 (sell × 0.85) */}
+                        <div className="flex items-center gap-2 mb-2">
+                         <div className="w-4 h-4 bg-red-500 rounded-full"></div>
+                         <div className="text-red-300 text-xs">
+                           <strong>🔴 Item 24836 (sell × 0.85):</strong> {isLoadingPrices ? t('craftingPage.calculating', 'Calculando...') : formatGW2Price(calculateItem24836Price())}
+                         </div>
+                       </div>
+
+                         {/* RESULTADO FINAL */}
+                         <div className="flex items-center gap-2 mb-2">
+                           <div className="w-4 h-4 bg-purple-500 rounded-full"></div>
+                           <div className="text-purple-300 text-xs">
+                             <strong>💎 RESULTADO FINAL (SUMA COMPLETA - 24836):</strong> {isLoadingPrices ? t('craftingPage.calculating', 'Calculando...') : formatGW2Price(calculateResultadoFinalQuintaSeccion())}
+                           </div>
+                         </div>
+                         
+                         {/* RESULTADO FINAL CON DROPRATE para la quinta sección */}
+                         <div className="flex items-center gap-2 mb-2">
+                           <div className="w-4 h-4 bg-indigo-500 rounded-full"></div>
+                           <div className="text-indigo-300 text-xs">
+                             <strong>🚀 RESULTADO FINAL CON DROPRATE (SI I36&gt;=1, (I36/D34)×G5, "0"):</strong> {isLoadingPrices ? t('craftingPage.calculating', 'Calculando...') : formatGW2Price(calculateResultadoFinalConDroprateQuintaSeccion())}
+                           </div>
+                         </div>
+                     </div>
+                     
+
+                   </div>
+                 </div>
+                  
+                  {/* Sexta sección de cálculos - ELIMINADA (REPLICA 3) */}
+
+                  {/* Séptima sección de cálculos - OCULTA (REPLICA 4) */}
+                  <div className="hidden">
+                   <div className="bg-gradient-to-r from-purple-800/50 to-purple-700/50 backdrop-blur-sm rounded-xl p-4 mb-6 border border-purple-600/50">
+                     <div className="flex items-center gap-3 mb-4">
+                       <div className="w-2 h-2 bg-purple-400 rounded-full"></div>
+                                                 <h3 className="text-lg font-semibold text-white">🕵️ Sistema Completo de Cálculos - ProfiMax de Raros (SÉPTIMA COPIA 4)</h3>
+                        </div>
+                        
+                        {/* Primera parte: Items Individuales - Toxic Tuning Crystal */}
+                        <div className="mb-4 p-3 bg-blue-900/30 rounded-lg border border-blue-600/30">
+                          <h4 className="text-blue-300 font-semibold mb-3 text-sm">📊 PRIMERA PARTE: Ingredientes Toxic Tuning Crystal</h4>
+                          
+                          {/* Item 24277 Price (Pile of Crystalline Dust) */}
+                          <div className="flex items-center gap-3 mb-2">
+                            <div className="w-3 h-3 bg-cyan-400 rounded-full"></div>
+                            <div className="text-cyan-300 text-sm">
+                              <strong>Pile of Crystalline Dust (24277) × 3 (sell × 0.9):</strong> {isLoadingPrices ? t('craftingPage.calculating', 'Calculando...') : formatGW2Price(calculateItem24277x3Price())}
+                            </div>
+                          </div>
+                          
+                          {/* Item 48884 Price (Pristine Toxic Spore Sample) */}
+                          <div className="flex items-center gap-3 mb-2">
+                            <div className="w-3 h-3 bg-green-400 rounded-full"></div>
+                            <div className="text-green-300 text-sm">
+                              <strong>Pristine Toxic Spore Sample (48884) × 5 (sell × 0.9):</strong> {isLoadingPrices ? t('craftingPage.calculating', 'Calculando...') : formatGW2Price(calculateItem48884x5Price())}
+                            </div>
+                          </div>
+                        
+                        {/* Item 46735 Price (Empyreal Fragment) */}
+                        <div className="flex items-center gap-3 mb-2">
+                          <div className="w-3 h-3 bg-purple-400 rounded-full"></div>
+                          <div className="text-purple-300 text-sm">
+                            <strong>Empyreal Fragment (46735) × 100 (precio 0):</strong> {isLoadingPrices ? t('craftingPage.calculating', 'Calculando...') : formatGW2Price(calculateItem46735x100Price())}
+                            </div>
+                          </div>
+                       
+                       {/* Suma Total */}
+                       <div className="flex items-center gap-3 mt-3 pt-3 border-t border-blue-600/30">
+                         <div className="w-4 h-4 bg-yellow-400 rounded-full"></div>
+                            <div className="text-yellow-300 text-sm font-bold">
+                          <strong>🏆 SUMA TOTAL (24277×3 + 48884×5 + 46735×100) ÷ 5:</strong> {isLoadingPrices ? t('craftingPage.calculating', 'Calculando...') : formatGW2Price((calculateItem24277x3Price() + calculateItem48884x5Price() + calculateItem46735x100Price()) / 5)}
+                        </div>
+                       </div>
+
+                        {/* Item 48917 (Toxic Tuning Crystal - sell × 0.85) */}
+                        <div className="flex items-center gap-2 mb-2">
+                         <div className="w-4 h-4 bg-red-500 rounded-full"></div>
+                         <div className="text-red-300 text-xs">
+                           <strong>🔴 Toxic Tuning Crystal (48917) (sell × 0.85):</strong> {isLoadingPrices ? t('craftingPage.calculating', 'Calculando...') : formatGW2Price(calculateItem48917Price())}
+                         </div>
+                       </div>
+
+                         {/* RESULTADO FINAL */}
+                         <div className="flex items-center gap-2 mb-2">
+                           <div className="w-4 h-4 bg-purple-500 rounded-full"></div>
+                           <div className="text-purple-300 text-xs">
+                             <strong>💎 RESULTADO FINAL (48917 × 5):</strong> {isLoadingPrices ? t('craftingPage.calculating', 'Calculando...') : formatGW2Price(calculateResultadoFinalSeptimaSeccion())}
+                           </div>
+                         </div>
+                         
+                         {/* RESULTADO FINAL CON DROPRATE para la séptima sección */}
+                         <div className="flex items-center gap-2 mb-2">
+                           <div className="w-4 h-4 bg-indigo-500 rounded-full"></div>
+                           <div className="text-indigo-300 text-xs">
+                             <strong>🚀 RESULTADO FINAL CON DROPRATE (SI S64&gt;=1, I5×(S64/3), "0"):</strong> {isLoadingPrices ? t('craftingPage.calculating', 'Calculando...') : formatGW2Price(calculateResultadoFinalConDroprateSeptimaSeccion())}
+                           </div>
+                         </div>
+                     </div>
+                   </div>
+                 </div>
                    
                    {/* Tabla de datos de trofeos */}
                    <div className="bg-gray-900/80 backdrop-blur-sm border border-gray-700 rounded-lg p-2 sm:p-4 md:p-6 shadow-2xl mb-4 sm:mb-6 md:mb-8">
-                     <h5 className="text-base sm:text-lg md:text-xl font-semibold text-white mb-3 sm:mb-4 text-center">📊 Análisis de Recompensas por Cargamento de trofeos</h5>
+                     <h5 className="text-base sm:text-lg md:text-xl font-semibold text-white mb-3 sm:mb-4 text-center">📊 {t('craftingPage.analysisRewards', 'Análisis de Recompensas por Cargamento de trofeos')}</h5>
                      
-                     {/* Tabla de Trofeos Raros (Droprate 1.0078) */}
+                     {/* Tabla de {t('craftingPage.table.rareTrophies', 'Trofeos Raros')} (Droprate 1.0078) */}
                      <div className="mb-6 sm:mb-8">
                        <div className="overflow-x-auto">
-                         <table className="w-full text-xs sm:text-sm min-w-[400px] sm:min-w-[500px] md:min-w-[600px]">
+                         <table className="w-full text-xs min-w-[400px] sm:min-w-[500px] md:min-w-[600px]">
                            <thead>
                              <tr className="border-b border-gray-700 bg-gray-800/60">
-                               <th className="text-left p-2 sm:p-3 text-gray-200 font-semibold text-xs sm:text-sm">Item</th>
-                               <th className="p-1 sm:p-2 md:p-3 text-center text-gray-200 font-semibold text-xs sm:text-sm">Droprate</th>
-                               <th className="p-1 sm:p-2 md:p-3 text-center text-gray-200 font-semibold text-xs sm:text-sm">Precio BASE</th>
-                               <th className="p-1 sm:p-2 md:p-3 text-center text-gray-200 font-semibold text-xs sm:text-sm">Profit Max</th>
+                               <th className="text-left p-2 sm:p-3 text-gray-200 font-semibold text-xs">{t('craftingPage.table.item', 'Item')}</th>
+                               <th className="p-1 sm:p-2 md:p-3 text-center text-gray-200 font-semibold text-xs">{t('craftingPage.table.droprate', 'Droprate')}</th>
+                               <th className="p-1 sm:p-2 md:p-3 text-center text-gray-200 font-semibold text-xs">{t('craftingPage.table.basePrice', 'Precio BASE')}</th>
+                               <th className="p-1 sm:p-2 md:p-3 text-center text-gray-200 font-semibold text-xs">{t('craftingPage.table.profitMax', 'Profit Max')}</th>
                              </tr>
                            </thead>
                            <tbody>
@@ -1607,15 +1963,15 @@ const CraftingPage = () => {
                                      className="w-5 h-5 sm:w-6 sm:h-6 md:w-8 md:h-8 flex-shrink-0"
                                      priority
                                    />
-                                   <span className="text-xs sm:text-sm truncate">{tableItemNames[24295] || 'Vial de sangre poderosa'}</span>
+                                   <span className="text-xs truncate">{tableItemNames[24295] || 'Vial de sangre poderosa'}</span>
                                  </div>
                                </td>
-                               <td className="p-1 sm:p-1 md:p-2 text-center text-blue-400 font-semibold text-xs sm:text-sm">1.0078</td>
-                               <td className="p-1 sm:p-2 md:p-3 text-center text-green-400 font-semibold text-xs sm:text-sm">
+                               <td className="p-1 sm:p-1 md:p-2 text-center text-blue-400 font-semibold text-xs">1.0078</td>
+                               <td className="p-1 sm:p-2 md:p-3 text-center text-green-400 font-semibold text-xs whitespace-nowrap">
                                  {isLoadingPrices ? <Loader2 className="w-3 h-3 sm:w-4 sm:h-4 animate-spin mx-auto" /> : formatGW2Price(calculateBasePrice(24295, 1.0078))}
                                </td>
-                               <td className="p-1 sm:p-2 md:p-3 text-center text-yellow-400 font-semibold text-xs sm:text-sm">
-                                 {isLoadingPrices ? 'Calculando...' : formatGW2Price(calculateResultadoFinalConDroprate())}
+                               <td className="p-1 sm:p-2 md:p-3 text-center text-yellow-400 font-semibold text-xs whitespace-nowrap">
+                                 {isLoadingPrices ? t('craftingPage.calculating', 'Calculando...') : formatGW2Price(calculateResultadoFinalConDroprate())}
                                </td>
                              </tr>
                              <tr className="border-b border-gray-800 hover:bg-gray-800/50 transition-colors">
@@ -1627,15 +1983,15 @@ const CraftingPage = () => {
                                      className="w-6 h-6 sm:w-8 sm:h-8 flex-shrink-0"
                                      priority
                                    />
-                                   <span className="text-xs sm:text-sm truncate">{tableItemNames[24358] || 'Hueso antiguo'}</span>
+                                   <span className="text-xs truncate">{tableItemNames[24358] || 'Hueso antiguo'}</span>
                                  </div>
                                </td>
-                               <td className="p-1 sm:p-1 md:p-2 text-center text-blue-400 font-semibold text-xs sm:text-sm">1.0078</td>
-                               <td className="p-1 sm:p-2 md:p-3 text-center text-green-400 font-semibold text-xs sm:text-sm">
+                               <td className="p-1 sm:p-1 md:p-2 text-center text-blue-400 font-semibold text-xs">1.0078</td>
+                               <td className="p-1 sm:p-2 md:p-3 text-center text-green-400 font-semibold text-xs whitespace-nowrap">
                                  {isLoadingPrices ? <Loader2 className="w-3 h-3 sm:w-4 sm:h-4 animate-spin mx-auto" /> : formatGW2Price(calculateBasePrice(24358, 1.0078))}
                                </td>
-                                  <td className="p-1 sm:p-2 md:p-3 text-center text-yellow-400 font-semibold text-xs sm:text-sm">
-                                  {isLoadingPrices ? 'Calculando...' : formatGW2Price(calculateResultadoFinalConDroprateTerceraSeccion())}
+                                  <td className="p-1 sm:p-2 md:p-3 text-center text-yellow-400 font-semibold text-xs whitespace-nowrap">
+                                  {isLoadingPrices ? t('craftingPage.calculating', 'Calculando...') : formatGW2Price(calculateResultadoFinalConDroprateTerceraSeccion())}
                                 </td>
                              </tr>
                              <tr className="border-b border-gray-800 hover:bg-gray-800/50 transition-colors">
@@ -1647,14 +2003,14 @@ const CraftingPage = () => {
                                      className="w-6 h-6 sm:w-8 sm:h-8 flex-shrink-0"
                                      priority
                                    />
-                                   <span className="text-xs sm:text-sm truncate">{tableItemNames[24351] || 'Garra despiadada'}</span>
+                                   <span className="text-xs truncate">{tableItemNames[24351] || 'Garra despiadada'}</span>
                                  </div>
                                </td>
-                               <td className="p-1 sm:p-1 md:p-2 text-center text-blue-400 font-semibold text-xs sm:text-sm">1.0078</td>
-                               <td className="p-1 sm:p-2 md:p-3 text-center text-green-400 font-semibold text-xs sm:text-sm">
+                               <td className="p-1 sm:p-1 md:p-2 text-center text-blue-400 font-semibold text-xs">1.0078</td>
+                               <td className="p-1 sm:p-2 md:p-3 text-center text-green-400 font-semibold text-xs whitespace-nowrap">
                                  {isLoadingPrices ? <Loader2 className="w-3 h-3 sm:w-4 sm:h-4 animate-spin mx-auto" /> : formatGW2Price(calculateBasePrice(24351, 1.0078))}
                                </td>
-                               <td className="p-1 sm:p-2 md:p-3 text-center text-yellow-400 font-semibold text-xs sm:text-sm">{isLoadingPrices ? 'Calculando...' : formatGW2Price(calculateResultadoFinalConDroprateCuartaSeccion())}</td>
+                               <td className="p-1 sm:p-2 md:p-3 text-center text-yellow-400 font-semibold text-xs whitespace-nowrap">{isLoadingPrices ? t('craftingPage.calculating', 'Calculando...') : formatGW2Price(calculateResultadoFinalConDroprateCuartaSeccion())}</td>
                              </tr>
                              <tr className="border-b border-gray-800 hover:bg-gray-800/50 transition-colors">
                                <td className="p-2 sm:p-2 text-gray-300">
@@ -1665,14 +2021,14 @@ const CraftingPage = () => {
                                      className="w-6 h-6 sm:w-8 sm:h-8 flex-shrink-0"
                                      priority
                                    />
-                                   <span className="text-xs sm:text-sm truncate">{tableItemNames[24357] || 'Colmillo feroz'}</span>
+                                   <span className="text-xs truncate">{tableItemNames[24357] || 'Colmillo feroz'}</span>
                                  </div>
                                </td>
-                               <td className="p-1 sm:p-1 md:p-2 text-center text-blue-400 font-semibold text-xs sm:text-sm">1.0078</td>
-                               <td className="p-1 sm:p-2 md:p-3 text-center text-green-400 font-semibold text-xs sm:text-sm">
+                               <td className="p-1 sm:p-1 md:p-2 text-center text-blue-400 font-semibold text-xs">1.0078</td>
+                               <td className="p-1 sm:p-2 md:p-3 text-center text-green-400 font-semibold text-xs whitespace-nowrap">
                                  {isLoadingPrices ? <Loader2 className="w-3 h-3 sm:w-4 sm:h-4 animate-spin mx-auto" /> : formatGW2Price(calculateBasePrice(24357, 1.0078))}
                                </td>
-                               <td className="p-1 sm:p-2 md:p-3 text-center text-gray-400 font-semibold text-xs sm:text-sm">00G 00S 00C</td>
+                               <td className="p-1 sm:p-2 md:p-3 text-center text-gray-400 font-semibold text-xs whitespace-nowrap">00G 00S 00C</td>
                              </tr>
                              <tr className="border-b border-gray-800 hover:bg-gray-800/50 transition-colors">
                                <td className="p-2 sm:p-2 text-gray-300">
@@ -1683,14 +2039,14 @@ const CraftingPage = () => {
                                      className="w-6 h-6 sm:w-8 sm:h-8 flex-shrink-0"
                                      priority
                                    />
-                                   <span className="text-xs sm:text-sm truncate">{tableItemNames[24289] || 'Escama blindada'}</span>
+                                   <span className="text-xs truncate">{tableItemNames[24289] || 'Escama blindada'}</span>
                                  </div>
                                </td>
-                               <td className="p-1 sm:p-1 md:p-2 text-center text-blue-400 font-semibold text-xs sm:text-sm">1.0078</td>
-                               <td className="p-1 sm:p-2 md:p-3 text-center text-green-400 font-semibold text-xs sm:text-sm">
+                               <td className="p-1 sm:p-1 md:p-2 text-center text-blue-400 font-semibold text-xs">1.0078</td>
+                               <td className="p-1 sm:p-2 md:p-3 text-center text-green-400 font-semibold text-xs whitespace-nowrap">
                                  {isLoadingPrices ? <Loader2 className="w-3 h-3 sm:w-4 sm:h-4 animate-spin mx-auto" /> : formatGW2Price(calculateBasePrice(24289, 1.0078))}
                                </td>
-                               <td className="p-1 sm:p-2 md:p-3 text-center text-gray-400 font-semibold text-xs sm:text-sm">00G 00S 00C</td>
+                               <td className="p-1 sm:p-2 md:p-3 text-center text-gray-400 font-semibold text-xs whitespace-nowrap">00G 00S 00C</td>
                              </tr>
                              <tr className="border-b border-gray-800 hover:bg-gray-800/50 transition-colors">
                                <td className="p-2 sm:p-2 text-gray-300">
@@ -1701,14 +2057,16 @@ const CraftingPage = () => {
                                      className="w-6 h-6 sm:w-8 sm:h-8 flex-shrink-0"
                                      priority
                                    />
-                                   <span className="text-xs sm:text-sm truncate">{tableItemNames[24300] || 'Tótem elaborado'}</span>
+                                   <span className="text-xs truncate">{tableItemNames[24300] || 'Tótem elaborado'}</span>
                                  </div>
                                </td>
-                               <td className="p-1 sm:p-1 md:p-2 text-center text-blue-400 font-semibold text-xs sm:text-sm">1.0078</td>
-                               <td className="p-1 sm:p-2 md:p-3 text-center text-green-400 font-semibold text-xs sm:text-sm">
+                               <td className="p-1 sm:p-1 md:p-2 text-center text-blue-400 font-semibold text-xs">1.0078</td>
+                               <td className="p-1 sm:p-2 md:p-3 text-center text-green-400 font-semibold text-xs whitespace-nowrap">
                                  {isLoadingPrices ? <Loader2 className="w-3 h-3 sm:w-4 sm:h-4 animate-spin mx-auto" /> : formatGW2Price(calculateBasePrice(24300, 1.0078))}
                                </td>
-                               <td className="p-1 sm:p-2 md:p-3 text-center text-yellow-400 font-semibold text-xs sm:text-sm">00G 12S 79C</td>
+                               <td className="p-1 sm:p-2 md:p-3 text-center text-yellow-400 font-semibold text-xs whitespace-nowrap">
+                                 {isLoadingPrices ? <Loader2 className="w-3 h-3 sm:w-4 sm:h-4 animate-spin mx-auto" /> : formatGW2Price(calculateResultadoFinalConDroprateQuintaSeccion())}
+                               </td>
                              </tr>
                              <tr className="border-b border-gray-800 hover:bg-gray-800/50 transition-colors">
                                <td className="p-2 sm:p-2 text-gray-300">
@@ -1719,14 +2077,16 @@ const CraftingPage = () => {
                                      className="w-6 h-6 sm:w-8 sm:h-8 flex-shrink-0"
                                      priority
                                    />
-                                   <span className="text-xs sm:text-sm truncate">{tableItemNames[24283] || 'Vesícula de veneno poderoso'}</span>
+                                   <span className="text-xs truncate">{tableItemNames[24283] || 'Vesícula de veneno poderoso'}</span>
                                  </div>
                                </td>
-                               <td className="p-1 sm:p-1 md:p-2 text-center text-blue-400 font-semibold text-xs sm:text-sm">1.0078</td>
-                               <td className="p-1 sm:p-2 md:p-3 text-center text-green-400 font-semibold text-xs sm:text-sm">
+                               <td className="p-1 sm:p-1 md:p-2 text-center text-blue-400 font-semibold text-xs">1.0078</td>
+                               <td className="p-1 sm:p-2 md:p-3 text-center text-green-400 font-semibold text-xs whitespace-nowrap">
                                  {isLoadingPrices ? <Loader2 className="w-3 h-3 sm:w-4 sm:h-4 animate-spin mx-auto" /> : formatGW2Price(calculateBasePrice(24283, 1.0078))}
                                </td>
-                               <td className="p-1 sm:p-2 md:p-3 text-center text-yellow-400 font-semibold text-xs sm:text-sm">00G 06S 57C</td>
+                               <td className="p-1 sm:p-2 md:p-3 text-center text-yellow-400 font-semibold text-xs whitespace-nowrap">
+                                 {isLoadingPrices ? <Loader2 className="w-3 h-3 sm:w-4 sm:h-4 animate-spin mx-auto" /> : formatGW2Price(calculateResultadoFinalConDroprateSextaSeccion())}
+                               </td>
                              </tr>
                              <tr className="border-b border-gray-800 hover:bg-gray-800/50 transition-colors">
                                <td className="p-2 sm:p-2 text-gray-300">
@@ -1737,14 +2097,16 @@ const CraftingPage = () => {
                                      className="w-6 h-6 sm:w-8 sm:h-8 flex-shrink-0"
                                      priority
                                    />
-                                   <span className="text-xs sm:text-sm truncate">Montón de polvo cristalino</span>
+                                   <span className="text-xs truncate">{tableItemNames[24277] || 'Montón de polvo cristalino'}</span>
                                  </div>
                                </td>
-                               <td className="p-1 sm:p-1 md:p-2 text-center text-blue-400 font-semibold text-xs sm:text-sm">1.0078</td>
-                               <td className="p-1 sm:p-2 md:p-3 text-center text-green-400 font-semibold text-xs sm:text-sm">
+                               <td className="p-1 sm:p-1 md:p-2 text-center text-blue-400 font-semibold text-xs">1.0078</td>
+                               <td className="p-1 sm:p-2 md:p-3 text-center text-green-400 font-semibold text-xs whitespace-nowrap">
                                  {isLoadingPrices ? <Loader2 className="w-3 h-3 sm:w-4 sm:h-4 animate-spin mx-auto" /> : formatGW2Price(calculateBasePrice(24277, 1.0078))}
                                </td>
-                               <td className="p-1 sm:p-2 md:p-3 text-center text-yellow-400 font-semibold text-xs sm:text-sm">00G 29S 04C</td>
+                               <td className="p-1 sm:p-2 md:p-3 text-center text-yellow-400 font-semibold text-xs whitespace-nowrap">
+                                 {isLoadingPrices ? <Loader2 className="w-3 h-3 sm:w-4 sm:h-4 animate-spin mx-auto" /> : formatGW2Price(calculateResultadoFinalConDroprateSeptimaSeccion())}
+                               </td>
                              </tr>
                            </tbody>
                          </table>
@@ -1754,16 +2116,16 @@ const CraftingPage = () => {
                      {/* Separador visual */}
                      <div className="my-6 sm:my-8 border-t-2 border-gray-600/50"></div>
                      
-                     {/* Tabla de Trofeos Comunes (Droprate 4.99) */}
+                     {/* Tabla de {t('craftingPage.table.commonTrophies', 'Trofeos Comunes')} (Droprate 4.99) */}
                      <div className="mb-6 sm:mb-8">                    
                        <div className="overflow-x-auto">
-                         <table className="w-full text-xs sm:text-sm min-w-[400px] sm:min-w-[500px] md:min-w-[600px]">
+                         <table className="w-full text-xs min-w-[400px] sm:min-w-[500px] md:min-w-[600px]">
                            <thead>
                              <tr className="border-b border-gray-700 bg-gray-800/60">
-                               <th className="text-left p-2 sm:p-3 text-gray-200 font-semibold text-xs sm:text-sm">Item</th>
-                               <th className="p-1 sm:p-2 md:p-3 text-center text-gray-200 font-semibold text-xs sm:text-sm">Droprate</th>
-                               <th className="p-1 sm:p-2 md:p-3 text-center text-gray-200 font-semibold text-xs sm:text-sm">Precio BASE</th>
-                               <th className="p-1 sm:p-2 md:p-3 text-center text-gray-200 font-semibold text-xs sm:text-sm">Profit Max</th>
+                               <th className="text-left p-2 sm:p-3 text-gray-200 font-semibold text-xs">{t('craftingPage.table.item', 'Item')}</th>
+                               <th className="p-1 sm:p-2 md:p-3 text-center text-gray-200 font-semibold text-xs">{t('craftingPage.table.droprate', 'Droprate')}</th>
+                               <th className="p-1 sm:p-2 md:p-3 text-center text-gray-200 font-semibold text-xs">{t('craftingPage.table.basePrice', 'Precio BASE')}</th>
+                               <th className="p-1 sm:p-2 md:p-3 text-center text-gray-200 font-semibold text-xs">{t('craftingPage.table.profitMax', 'Profit Max')}</th>
                              </tr>
                            </thead>
                            <tbody>
@@ -1776,14 +2138,14 @@ const CraftingPage = () => {
                                      className="w-6 h-6 sm:w-8 sm:h-8 flex-shrink-0"
                                      priority
                                    />
-                                   <span className="text-xs sm:text-sm truncate">{tableItemNames[24294] || 'Vial de sangre potente'}</span>
+                                   <span className="text-xs truncate">{tableItemNames[24294] || 'Vial de sangre potente'}</span>
                                  </div>
                                </td>
-                               <td className="p-1 sm:p-1 md:p-2 text-center text-blue-400 font-semibold text-xs sm:text-sm">4.99</td>
-                               <td className="p-1 sm:p-2 md:p-3 text-center text-green-400 font-semibold text-xs sm:text-sm">
+                               <td className="p-1 sm:p-1 md:p-2 text-center text-blue-400 font-semibold text-xs">4.99</td>
+                               <td className="p-1 sm:p-2 md:p-3 text-center text-green-400 font-semibold text-xs whitespace-nowrap">
                                  {isLoadingPrices ? <Loader2 className="w-3 h-3 sm:w-4 sm:h-4 animate-spin mx-auto" /> : formatGW2Price(calculateBasePriceComunes(24294, 4.99))}
                                </td>
-                               <td className="p-1 sm:p-2 md:p-3 text-center text-gray-400 font-semibold text-xs sm:text-sm">00G 00S 00C</td>
+                               <td className="p-1 sm:p-2 md:p-3 text-center text-gray-400 font-semibold text-xs whitespace-nowrap">00G 00S 00C</td>
                              </tr>
                              <tr className="border-b border-gray-800 hover:bg-gray-800/50 transition-colors">
                                <td className="p-2 sm:p-2 text-gray-300">
@@ -1794,14 +2156,14 @@ const CraftingPage = () => {
                                      className="w-6 h-6 sm:w-8 sm:h-8 flex-shrink-0"
                                      priority
                                    />
-                                   <span className="text-xs sm:text-sm truncate">{tableItemNames[24341] || 'Hueso grande'}</span>
+                                   <span className="text-xs truncate">{tableItemNames[24341] || 'Hueso grande'}</span>
                                  </div>
                                </td>
-                               <td className="p-1 sm:p-1 md:p-2 text-center text-blue-400 font-semibold text-xs sm:text-sm">4.99</td>
-                               <td className="p-1 sm:p-2 md:p-3 text-center text-green-400 font-semibold text-xs sm:text-sm">
+                               <td className="p-1 sm:p-1 md:p-2 text-center text-blue-400 font-semibold text-xs">4.99</td>
+                               <td className="p-1 sm:p-2 md:p-3 text-center text-green-400 font-semibold text-xs whitespace-nowrap">
                                  {isLoadingPrices ? <Loader2 className="w-3 h-3 sm:w-4 sm:h-4 animate-spin mx-auto" /> : formatGW2Price(calculateBasePriceComunes(24341, 4.99))}
                                </td>
-                               <td className="p-1 sm:p-2 md:p-3 text-center text-gray-400 font-semibold text-xs sm:text-sm">00G 00S 00C</td>
+                               <td className="p-1 sm:p-2 md:p-3 text-center text-gray-400 font-semibold text-xs whitespace-nowrap">00G 00S 00C</td>
                              </tr>
                              <tr className="border-b border-gray-800 hover:bg-gray-800/50 transition-colors">
                                <td className="p-2 sm:p-2 text-gray-300">
@@ -1812,14 +2174,14 @@ const CraftingPage = () => {
                                      className="w-6 h-6 sm:w-8 sm:h-8 flex-shrink-0"
                                      priority
                                    />
-                                   <span className="text-xs sm:text-sm truncate">{tableItemNames[24350] || 'Garra grande'}</span>
+                                   <span className="text-xs truncate">{tableItemNames[24350] || 'Garra grande'}</span>
                                  </div>
                                </td>
-                               <td className="p-1 sm:p-1 md:p-2 text-center text-blue-400 font-semibold text-xs sm:text-sm">4.99</td>
-                               <td className="p-1 sm:p-2 md:p-3 text-center text-green-400 font-semibold text-xs sm:text-sm">
+                               <td className="p-1 sm:p-1 md:p-2 text-center text-blue-400 font-semibold text-xs">4.99</td>
+                               <td className="p-1 sm:p-2 md:p-3 text-center text-green-400 font-semibold text-xs whitespace-nowrap">
                                  {isLoadingPrices ? <Loader2 className="w-3 h-3 sm:w-4 sm:h-4 animate-spin mx-auto" /> : formatGW2Price(calculateBasePriceComunes(24350, 4.99))}
                                </td>
-                               <td className="p-1 sm:p-2 md:p-3 text-center text-gray-400 font-semibold text-xs sm:text-sm">00G 00S 00C</td>
+                               <td className="p-1 sm:p-2 md:p-3 text-center text-gray-400 font-semibold text-xs whitespace-nowrap">00G 00S 00C</td>
                              </tr>
                              <tr className="border-b border-gray-800 hover:bg-gray-800/50 transition-colors">
                                <td className="p-2 sm:p-2 text-gray-300">
@@ -1830,14 +2192,14 @@ const CraftingPage = () => {
                                      className="w-6 h-6 sm:w-8 sm:h-8 flex-shrink-0"
                                      priority
                                    />
-                                   <span className="text-xs sm:text-sm truncate">{tableItemNames[24356] || 'Colmillo grande'}</span>
+                                   <span className="text-xs truncate">{tableItemNames[24356] || 'Colmillo grande'}</span>
                                  </div>
                                </td>
-                               <td className="p-1 sm:p-1 md:p-2 text-center text-blue-400 font-semibold text-xs sm:text-sm">4.99</td>
-                               <td className="p-1 sm:p-2 md:p-3 text-center text-green-400 font-semibold text-xs sm:text-sm">
+                               <td className="p-1 sm:p-1 md:p-2 text-center text-blue-400 font-semibold text-xs">4.99</td>
+                               <td className="p-1 sm:p-2 md:p-3 text-center text-green-400 font-semibold text-xs whitespace-nowrap">
                                  {isLoadingPrices ? <Loader2 className="w-3 h-3 sm:w-4 sm:h-4 animate-spin mx-auto" /> : formatGW2Price(calculateBasePriceComunes(24356, 4.99))}
                                </td>
-                               <td className="p-1 sm:p-2 md:p-3 text-center text-gray-400 font-semibold text-xs sm:text-sm">00G 00S 00C</td>
+                               <td className="p-1 sm:p-2 md:p-3 text-center text-gray-400 font-semibold text-xs whitespace-nowrap">00G 00S 00C</td>
                              </tr>
                              <tr className="border-b border-gray-800 hover:bg-gray-800/50 transition-colors">
                                <td className="p-2 sm:p-2 text-gray-300">
@@ -1848,14 +2210,14 @@ const CraftingPage = () => {
                                      className="w-6 h-6 sm:w-8 sm:h-8 flex-shrink-0"
                                      priority
                                    />
-                                   <span className="text-xs sm:text-sm truncate">{tableItemNames[24288] || 'Escama grande'}</span>
+                                   <span className="text-xs truncate">{tableItemNames[24288] || 'Escama grande'}</span>
                                  </div>
                                </td>
-                               <td className="p-1 sm:p-1 md:p-2 text-center text-blue-400 font-semibold text-xs sm:text-sm">4.99</td>
-                               <td className="p-1 sm:p-2 md:p-3 text-center text-green-400 font-semibold text-xs sm:text-sm">
+                               <td className="p-1 sm:p-1 md:p-2 text-center text-blue-400 font-semibold text-xs">4.99</td>
+                               <td className="p-1 sm:p-2 md:p-3 text-center text-green-400 font-semibold text-xs whitespace-nowrap">
                                  {isLoadingPrices ? <Loader2 className="w-3 h-3 sm:w-4 sm:h-4 animate-spin mx-auto" /> : formatGW2Price(calculateBasePriceComunes(24288, 4.99))}
                                </td>
-                               <td className="p-1 sm:p-2 md:p-3 text-center text-gray-400 font-semibold text-xs sm:text-sm">00G 00S 00C</td>
+                               <td className="p-1 sm:p-2 md:p-3 text-center text-gray-400 font-semibold text-xs whitespace-nowrap">00G 00S 00C</td>
                              </tr>
                              <tr className="border-b border-gray-800 hover:bg-gray-800/50 transition-colors">
                                <td className="p-2 sm:p-2 text-gray-300">
@@ -1866,14 +2228,14 @@ const CraftingPage = () => {
                                      className="w-6 h-6 sm:w-8 sm:h-8 flex-shrink-0"
                                      priority
                                    />
-                                   <span className="text-xs sm:text-sm truncate">{tableItemNames[24299] || 'Tótem intrincado'}</span>
+                                   <span className="text-xs truncate">{tableItemNames[24299] || 'Tótem intrincado'}</span>
                                  </div>
                                </td>
-                               <td className="p-1 sm:p-1 md:p-2 text-center text-blue-400 font-semibold text-xs sm:text-sm">4.99</td>
-                               <td className="p-1 sm:p-2 md:p-3 text-center text-green-400 font-semibold text-xs sm:text-sm">
+                               <td className="p-1 sm:p-1 md:p-2 text-center text-blue-400 font-semibold text-xs">4.99</td>
+                               <td className="p-1 sm:p-2 md:p-3 text-center text-green-400 font-semibold text-xs whitespace-nowrap">
                                  {isLoadingPrices ? <Loader2 className="w-3 h-3 sm:w-4 sm:h-4 animate-spin mx-auto" /> : formatGW2Price(calculateBasePriceComunes(24299, 4.99))}
                                </td>
-                               <td className="p-1 sm:p-2 md:p-3 text-center text-gray-400 font-semibold text-xs sm:text-sm">00G 00S 00C</td>
+                               <td className="p-1 sm:p-2 md:p-3 text-center text-gray-400 font-semibold text-xs whitespace-nowrap">00G 00S 00C</td>
                              </tr>
                              <tr className="border-b border-gray-800 hover:bg-gray-800/50 transition-colors">
                                <td className="p-2 sm:p-2 text-gray-300">
@@ -1884,14 +2246,14 @@ const CraftingPage = () => {
                                      className="w-6 h-6 sm:w-8 sm:h-8 flex-shrink-0"
                                      priority
                                    />
-                                   <span className="text-xs sm:text-sm truncate">{tableItemNames[24282] || 'Vesícula de veneno potente'}</span>
+                                   <span className="text-xs truncate">{tableItemNames[24282] || 'Vesícula de veneno potente'}</span>
                                  </div>
                                </td>
-                               <td className="p-1 sm:p-1 md:p-2 text-center text-blue-400 font-semibold text-xs sm:text-sm">4.99</td>
-                               <td className="p-1 sm:p-2 md:p-3 text-center text-green-400 font-semibold text-xs sm:text-sm">
+                               <td className="p-1 sm:p-1 md:p-2 text-center text-blue-400 font-semibold text-xs">4.99</td>
+                               <td className="p-1 sm:p-2 md:p-3 text-center text-green-400 font-semibold text-xs whitespace-nowrap">
                                  {isLoadingPrices ? <Loader2 className="w-3 h-3 sm:w-4 sm:h-4 animate-spin mx-auto" /> : formatGW2Price(calculateBasePriceComunes(24282, 4.99))}
                                </td>
-                               <td className="p-1 sm:p-2 md:p-3 text-center text-gray-400 font-semibold text-xs sm:text-sm">00G 00S 00C</td>
+                               <td className="p-1 sm:p-2 md:p-3 text-center text-gray-400 font-semibold text-xs whitespace-nowrap">00G 00S 00C</td>
                              </tr>
                              <tr className="border-b border-gray-800 hover:bg-gray-800/50 transition-colors">
                                <td className="p-2 sm:p-2 text-gray-300">
@@ -1902,14 +2264,14 @@ const CraftingPage = () => {
                                      className="w-6 h-6 sm:w-8 sm:h-8 flex-shrink-0"
                                      priority
                                    />
-                                   <span className="text-xs sm:text-sm truncate">{tableItemNames[24276] || 'Montón de polvo incandescente'}</span>
+                                   <span className="text-xs truncate">{tableItemNames[24276] || 'Montón de polvo incandescente'}</span>
                                  </div>
                                </td>
-                               <td className="p-1 sm:p-1 md:p-2 text-center text-blue-400 font-semibold text-xs sm:text-sm">4.99</td>
-                               <td className="p-1 sm:p-2 md:p-3 text-center text-green-400 font-semibold text-xs sm:text-sm">
+                               <td className="p-1 sm:p-1 md:p-2 text-center text-blue-400 font-semibold text-xs">4.99</td>
+                               <td className="p-1 sm:p-2 md:p-3 text-center text-green-400 font-semibold text-xs whitespace-nowrap">
                                  {isLoadingPrices ? <Loader2 className="w-3 h-3 sm:w-4 sm:h-4 animate-spin mx-auto" /> : formatGW2Price(calculateBasePriceComunes(24276, 4.99))}
                                </td>
-                               <td className="p-1 sm:p-2 md:p-3 text-center text-gray-400 font-semibold text-xs sm:text-sm">00G 00S 00C</td>
+                               <td className="p-1 sm:p-2 md:p-3 text-center text-gray-400 font-semibold text-xs whitespace-nowrap">00G 00S 00C</td>
                              </tr>
                            </tbody>
                          </table>
