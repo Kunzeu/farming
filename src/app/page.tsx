@@ -105,17 +105,6 @@ const initialCards: DashboardCard[] = [
     order: 5
   },
   {
-    id: "buyout",
-    title: "dashboard.buyout.title",
-    description: "dashboard.buyout.description",
-    href: "/buyout",
-    icon: <Package className="w-8 h-8" />,
-    color: "from-yellow-500 to-yellow-600",
-    delay: 0.7,
-    visible: false,
-    order: 6
-  },
-  {
     id: "glossary",
     title: "dashboard.glossary.title",
     description: "dashboard.glossary.description",
@@ -158,7 +147,6 @@ export default function HomePage() {
       "crafting": <Hammer className="w-8 h-8" />,
       "festivals": <Gift className="w-8 h-8" />,
       "farmingTracker": <BarChart3 className="w-8 h-8" />,
-      "buyout": <Package className="w-8 h-8" />,
       "glossary": <BookOpen className="w-8 h-8" />,
       "orrianJewelry": <Gift className="w-8 h-8" />
     };

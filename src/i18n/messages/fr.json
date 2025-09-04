@@ -587,7 +587,7 @@
 
   "dashboard.customize": "Personnaliser le Tableau de Bord",
   "dashboard.editMode": "Mode Édition",
-  "dashboard.saveChanges": "Enregistrer les Modifications",
+  "dashboard.saveChanges": "Enregistrer",
   "dashboard.cancel": "Annuler",
   "dashboard.reset": "Réinitialiser",
   "dashboard.dragToReorder": "Glisser pour réorganiser",

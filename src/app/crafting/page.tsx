@@ -139,6 +139,9 @@ const CraftingPage = () => {
   // Estado para los nombres de los items de las tablas
   const [tableItemNames, setTableItemNames] = useState<Record<number, string>>({});
   
+  // Estado para los iconos de los items de las tablas
+  const [tableItemIcons, setTableItemIcons] = useState<Record<number, string>>({});
+  
   // Caché para datos de la API
   const [apiCache, setApiCache] = useState<{
     prices: Record<number, Gw2Price>;
@@ -191,7 +194,15 @@ const CraftingPage = () => {
     // Items para research notes
     24277, 24351, 24300, 12156, 24473, 19700, 24519, 24511, 24475, 19722, 19729, 19748, 68063,
     // Items para cálculos finales
-    97535, 95582, 19912, 24836, 24806, 48917, 7839, 48884, 46735
+    97535, 95582, 19912, 24836, 24806, 48917, 7839, 48884, 46735,
+    // Items para Magia Liberada
+    79186,
+    // Items adicionales para UM (según nueva imagen)
+    19721, 24370, 68063, 76179, 70957, 19675, 37897, 48884,
+    // Lodestones y otros items de UM
+    24305, 24310, 24315, 24320, 24325, 24330, 70842, 68942, 24335, 72504, 76491, 75654, 72315, 74988,
+    // Item para Cargamento de trofeos
+    85725
   ], []);
 
   // Función para calcular precio del item 24591 × 1 (buy)
@@ -794,6 +805,11 @@ const CraftingPage = () => {
   
     return totalProfitMax;
   }, [calculateResultadoFinalConDroprate, calculateResultadoFinalConDroprateTerceraSeccion, calculateResultadoFinalConDroprateCuartaSeccion, calculateResultadoFinalConDroprateQuintaSeccion, calculateResultadoFinalConDroprateSextaSeccion, calculateResultadoFinalConDroprateSeptimaSeccion]);
+
+  // IDs de items para Magia Liberada (LS3)
+  const trofeosRarosUMIds = useMemo(() => [24295, 24358, 24351, 24357, 24289, 24300, 24283, 24277], []); // Mismos T6
+  const trofeosComunesUMIds = useMemo(() => [24294, 24341, 24350, 24356, 24288, 24299, 24282, 24276], []); // Mismos T5
+
     // ProfitMax de Raros (primera columna)    
 
     
@@ -832,7 +848,13 @@ const CraftingPage = () => {
         return acc;
       }, {} as Record<number, string>);
       
+      const iconsMap = items.reduce((acc: Record<number, string>, item: Gw2Item) => {
+        acc[item.id] = item.icon;
+        return acc;
+      }, {} as Record<number, string>);
+      
       setTableItemNames(namesMap);
+      setTableItemIcons(iconsMap);
     } catch (error) {
       console.error('Error fetching table item names:', error);
     }
@@ -877,6 +899,109 @@ const CraftingPage = () => {
     const basePrice = (price.sells.unit_price * 0.9 * droprate) / 10000; // 10000 cobre = 1 oro
     return basePrice;
   }, [itemPrices]);
+
+  // Funciones para calcular ProfitMax específicos de Magia Liberada (basados en la nueva imagen)
+  const calculateUMProfitMax = useCallback((itemId: number) => {
+    // Valores fijos de ProfitMax según la imagen
+    const profitMaxValues: Record<number, number> = {
+      24295: 11466, // 01G 14S 66C
+      24358: 5288,  // 00G 52S 88C
+      24351: 653,   // 00G 06S 53C
+      24357: 0,     // 0
+      24289: 0,     // 0
+      24300: 514,   // 00G 05S 14C
+      24283: 233,   // 00G 02S 33C
+      24277: 1257,  // 00G 12S 57C
+      19721: 5057,  // 00G 50S 57C
+      24370: 0,     // 0
+      68063: 0,     // 0
+      76179: 223,   // 00G 02S 23C
+      70957: 205,   // 00G 02S 05C
+      19675: 2530,     // 0 (Mystic Clover)
+      37897: 0,     // 0
+      48884: 140,   // 00G 01S 40C
+      24305: 742,   // 00G 07S 42C
+      24310: 785,   // 00G 07S 85C
+      24315: 37,    // 00G 00S 37C
+      24320: 492,   // 00G 04S 92C
+      24325: 0,     // 0
+      24330: 876,   // 00G 08S 76C
+      70842: 0,     // 0
+      68942: 876,   // 00G 08S 76C
+      24335: 1477,  // 00G 14S 77C
+      72504: 3780,  // 00G 37S 80C
+      76491: 0,     // 0
+      75654: 0,     // 0
+      72315: 0,     // 0
+      74988: 0      // 0
+    };
+    
+    // Convertir de cobre a oro (dividir por 10000)
+    const valueInCopper = profitMaxValues[itemId] || 0;
+    return valueInCopper / 10000;
+  }, []);
+
+  // Función para obtener droprates específicos de Magia Liberada
+  const getUMDroprate = useCallback((itemId: number) => {
+    const droprates: Record<number, number> = {
+      24295: 0.436,   // Vial of Powerful Blood
+      24358: 0.436,   // Ancient Bone
+      24351: 0.436,   // Vicious Claw
+      24357: 0.436,   // Vicious Fang
+      24289: 0.436,   // Armored Scale
+      24300: 0.436,   // Elaborate Totem
+      24283: 0.436,   // Powerful Venom Sac
+      24277: 0.436,   // Pile of Crystalline Dust
+      19721: 0.2375,  // Glob of Ectoplasm
+      24370: 0.01625, // Giant Eye
+      68063: 0.04125, // Amalgamated Gemstone
+      76179: 0.01625, // Freshwater Pearl
+      70957: 0.01625, // Maguuma Lily
+      19675: 0.0375, // Mystic Clover
+      37897: 0.6,     // Karka Shell
+      48884: 0.5,     // Pristine Toxic Spore Sample
+      24305: 0.063125, // Charged Lodestone
+      24310: 0.063125, // Onyx Lodestone
+      24315: 0.063125, // Molten Lodestone
+      24320: 0.063125, // Glacial Lodestone
+      24325: 0.063125, // Destroyer Lodestone
+      24330: 0.063125, // Crystal Lodestone
+      70842: 0.063125, // Mordrem Lodestone
+      68942: 0.063125, // Evergreen Lodestone
+      24335: 0.1025,   // Pile of Putrid Essence
+      72504: 0.01625,  // Moonstone Orb
+      76491: 0.01625,  // Black Diamond
+      75654: 0.01625,  // Ebony Orb
+      72315: 0.01625,  // Maguuma Burl
+      74988: 0.01625   // Flax Blossom
+    };
+    
+    return droprates[itemId] || 0;
+  }, []);
+
+  // Función para calcular la suma total de ProfitMax para Magia Liberada
+  const calculateTotalProfitMaxUM = useCallback(() => {
+    // Para Magia Liberada calculamos usando los valores específicos de UM
+    // Sumar todos los ProfitMax de los items individuales de magia liberada
+    const allUMItemIds = [
+      // Trofeos raros (T6)
+      24295, 24358, 24351, 24357, 24289, 24300, 24283, 24277,
+      // Trofeos comunes (T5) 
+      24294, 24341, 24350, 24356, 24288, 24299, 24282, 24276,
+      // Otros items de UM
+      19721, 24370, 68063, 76179, 70957, 19675, 37897, 48884
+    ];
+    
+    // Calcular la suma de todos los ProfitMax de UM
+    const totalProfitMaxUM = allUMItemIds.reduce((total, itemId) => {
+      return total + calculateUMProfitMax(itemId);
+    }, 0);
+    
+    // Valor de Total Caja para UM (trofeos raros + comunes)
+    const totalCajaUM = calculateTableTotal(trofeosRarosUMIds, 1.0078) + calculateTableTotal(trofeosComunesUMIds, 4.99, true);
+    
+    return totalProfitMaxUM + totalCajaUM;
+  }, [calculateUMProfitMax, trofeosRarosUMIds, trofeosComunesUMIds]);
 
   // Función para formatear precio en formato GW2
   const formatGW2Price = useCallback((priceInGold: number) => {
@@ -1915,7 +2040,7 @@ const CraftingPage = () => {
                    
                    {/* Tabla de datos de trofeos */}
                    <div className="bg-gray-900/80 backdrop-blur-sm border border-gray-700 rounded-lg p-2 sm:p-4 md:p-6 shadow-2xl mb-4 sm:mb-6 md:mb-8">
-                     <h5 className="text-base sm:text-lg md:text-xl font-semibold text-white mb-3 sm:mb-4 text-center">📊 {t('craftingPage.analysisRewards', 'Análisis de Recompensas por Cargamento de trofeos')}</h5>
+                     <h5 className="text-base sm:text-lg md:text-xl font-semibold text-white mb-3 sm:mb-4 text-center">📊 {t('craftingPage.analysisRewards', 'Análisis de Recompensas por')} {tableItemNames[85725] || 'Item 85725'}</h5>
                      
                      {/* Tabla de {t('craftingPage.table.rareTrophies', 'Trofeos Raros')} (Droprate 1.0078) */}
                      <div className="mb-6 sm:mb-8">
@@ -2517,20 +2642,6 @@ const CraftingPage = () => {
                     </p>
                   </div>
 
-                  <h3 className="text-lg sm:text-xl font-bold text-white mb-4 sm:mb-6 text-center">
-                    {t('craftingPage.howToGet', '¿Cómo lo obtengo?')}
-                  </h3>
-                  <div className="flex flex-col sm:flex-row justify-center gap-3 sm:gap-4 mb-6 sm:mb-8">
-                    <button className="px-4 sm:px-6 py-2 sm:py-3 bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white font-semibold rounded-lg transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105 text-sm sm:text-base">
-                      {t('craftingPage.ls3Meta', 'LS3 Meta')}
-                    </button>
-                    <button className="px-4 sm:px-6 py-2 sm:py-3 bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white font-semibold rounded-lg transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105 text-sm sm:text-base">
-                      {t('craftingPage.gardens', 'Jardines')}
-                    </button>
-                    <button className="px-4 sm:px-6 py-2 sm:py-3 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold rounded-lg transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105 text-sm sm:text-base">
-                      {t('craftingPage.others', 'Otros')}
-                    </button>
-                  </div>
                    
                   <h3 className="text-xl font-bold text-white mb-6 text-center">
                     {t('craftingPage.whatToSpendUnbound', '¿En qué gastar la magia liberada?')}
@@ -2538,7 +2649,7 @@ const CraftingPage = () => {
                   
                   <div className="text-center mb-6">
                     <h4 className="text-lg font-semibold text-white">
-                      {t('craftingPage.trophyBoxes', 'Cargamento de trofeos')}
+                      {tableItemNames[79186] || 'Item 79186'}
                     </h4>
                   </div>
                   
@@ -2548,10 +2659,10 @@ const CraftingPage = () => {
                       <h6 className="text-xs font-bold text-gray-300 mb-2 text-center">{t('craftingPage.table.totalBox', 'Total Caja')}</h6>
                       <div className="text-center">
                         <p className="text-green-400 font-bold text-sm sm:text-lg">
-                          {t('craftingPage.table.min', 'Min')}: {isLoadingPrices ? <Loader2 className="w-3 h-3 sm:w-4 sm:h-4 animate-spin mx-auto" /> : formatGW2Price(0)}
+                          {t('craftingPage.table.min', 'Min')}: {isLoadingPrices ? <Loader2 className="w-3 h-3 sm:w-4 sm:h-4 animate-spin mx-auto" /> : formatGW2Price(calculateTableTotal(trofeosRarosUMIds, 1.0078) + calculateTableTotal(trofeosComunesUMIds, 4.99, true))}
                         </p>
                         <p className="text-green-400 font-bold text-sm sm:text-lg">
-                          {t('craftingPage.table.max', 'Max')}: {isLoadingPrices ? t('craftingPage.calculating', 'Calculando...') : formatGW2Price(0)}
+                          {t('craftingPage.table.max', 'Max')}: {isLoadingPrices ? t('craftingPage.calculating', 'Calculando...') : formatGW2Price(calculateTotalProfitMaxUM())}
                         </p>
                       </div>
                     </div>
@@ -2559,10 +2670,10 @@ const CraftingPage = () => {
                       <h6 className="text-xs font-bold text-gray-300 mb-2 text-center">{t('craftingPage.table.profitBox', 'Profit Caja')}</h6>
                       <div className="text-center">
                         <p className="text-yellow-400 font-bold text-sm sm:text-lg">
-                          {t('craftingPage.table.min', 'Min')}: {isLoadingPrices ? <Loader2 className="w-3 h-3 sm:w-4 sm:h-4 animate-spin mx-auto" /> : formatGW2Price(0)}
+                          {t('craftingPage.table.min', 'Min')}: {isLoadingPrices ? <Loader2 className="w-3 h-3 sm:w-4 sm:h-4 animate-spin mx-auto" /> : formatGW2Price((calculateTableTotal(trofeosRarosUMIds, 1.0078) + calculateTableTotal(trofeosComunesUMIds, 4.99, true)) - 1)}
                         </p>
                         <p className="text-yellow-400 font-bold text-sm sm:text-lg">
-                          {t('craftingPage.table.max', 'Max')}: {isLoadingPrices ? t('craftingPage.calculating', 'Calculando...') : formatGW2Price(0)}
+                          {t('craftingPage.table.max', 'Max')}: {isLoadingPrices ? t('craftingPage.calculating', 'Calculando...') : formatGW2Price(calculateTotalProfitMaxUM() - 1)}
                         </p>
                       </div>
                     </div>
@@ -2570,10 +2681,10 @@ const CraftingPage = () => {
                       <h6 className="text-xs font-bold text-gray-300 mb-2 text-center">{t('craftingPage.table.profitUM', 'Profit UM')}</h6>
                       <div className="text-center">
                         <p className="text-blue-400 font-bold text-sm sm:text-lg">
-                          {t('craftingPage.table.min', 'Min')}: {isLoadingPrices ? <Loader2 className="w-3 h-3 sm:w-4 sm:h-4 animate-spin mx-auto" /> : formatGW2Price(0)}
+                          {t('craftingPage.table.min', 'Min')}: {isLoadingPrices ? <Loader2 className="w-3 h-3 sm:w-4 sm:h-4 animate-spin mx-auto" /> : formatGW2Price(((calculateTableTotal(trofeosRarosUMIds, 1.0078) + calculateTableTotal(trofeosComunesUMIds, 4.99, true)) - 1) / 250)}
                         </p>
                         <p className="text-blue-400 font-bold text-sm sm:text-lg">
-                          {t('craftingPage.table.max', 'Max')}: {isLoadingPrices ? t('craftingPage.calculating', 'Calculando...') : formatGW2Price(0)}
+                          {t('craftingPage.table.max', 'Max')}: {isLoadingPrices ? t('craftingPage.calculating', 'Calculando...') : formatGW2Price((calculateTotalProfitMaxUM() - 1) / 250)}
                         </p>
                       </div>
                     </div>
@@ -2585,7 +2696,7 @@ const CraftingPage = () => {
                       <div className="w-2 h-2 sm:w-3 sm:h-3 bg-blue-400 rounded-full animate-pulse flex-shrink-0"></div>
                       <div className="text-blue-300 text-xs md:text-base">
                         <strong>{t('craftingPage.table.dataSource', 'Fuente de Datos')}:</strong> {t('craftingPage.table.basedOn', 'Análisis basado en')}{' '}
-                        <span className="text-blue-200 font-bold">400k {t('craftingPage.table.trophyBoxes', 'Cargamento de trofeos')}</span> {t('craftingPage.table.opened', 'abiertos')}
+                        <span className="text-blue-200 font-bold">400k {tableItemNames[79186] || 'Item 79186'}</span> {t('craftingPage.table.opened', 'abiertos')}
                       </div>
                     </div>
                   </div>
@@ -2610,13 +2721,803 @@ const CraftingPage = () => {
                     </div>
                   </div>
                   
-                  {/* Tabla de items - Placeholder */}
-                  <div className="bg-gray-800/30 rounded-lg p-4 border border-gray-600">
-                    <h4 className="text-lg font-semibold text-white mb-4 text-center">
-                      {t('craftingPage.table.itemsTable', 'Tabla de Items')}
-                    </h4>
-                    <div className="text-center text-gray-400">
-                      <p>{t('craftingPage.comingSoon', 'Próximamente...')}</p>
+                  {/* Tabla de datos de trofeos para Magia Liberada */}
+                  <div className="bg-gray-900/80 backdrop-blur-sm border border-gray-700 rounded-lg p-2 sm:p-4 md:p-6 shadow-2xl mb-4 sm:mb-6 md:mb-8">
+                    <h5 className="text-base sm:text-lg md:text-xl font-semibold text-white mb-3 sm:mb-4 text-center">📊 {t('craftingPage.analysisRewards', 'Análisis de Recompensas por')} {tableItemNames[79186] || 'Item 79186'}</h5>
+                    
+                    {/* Tabla de Trofeos Raros (Droprate 1.0078) */}
+                    <div className="mb-6 sm:mb-8">
+                      <div className="overflow-x-auto">
+                        <table className="w-full text-xs min-w-[400px] sm:min-w-[500px] md:min-w-[600px]">
+                          <thead>
+                            <tr className="border-b border-gray-700 bg-gray-800/60">
+                              <th className="text-left p-2 sm:p-3 text-gray-200 font-semibold text-xs">{t('craftingPage.table.item', 'Item')}</th>
+                              <th className="p-1 sm:p-2 md:p-3 text-center text-gray-200 font-semibold text-xs">{t('craftingPage.table.droprate', 'Droprate')}</th>
+                              <th className="p-1 sm:p-2 md:p-3 text-center text-gray-200 font-semibold text-xs">{t('craftingPage.table.basePrice', 'Precio BASE')}</th>
+                              <th className="p-1 sm:p-2 md:p-3 text-center text-gray-200 font-semibold text-xs">{t('craftingPage.table.profitMax', 'Profit Max')}</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            <tr className="border-b border-gray-800 hover:bg-gray-800/50 transition-colors">
+                              <td className="p-2 sm:p-2 text-gray-300">
+                                <div className="flex items-center gap-1 sm:gap-2">
+                                  <OptimizedImage 
+                                    src="https://render.guildwars2.com/file/1A930A6A7B5B01EAB4CB36E79014C12B500BF6B3/66950.png" 
+                                    alt="Vial de sangre poderosa" 
+                                    className="w-5 h-5 sm:w-6 sm:h-6 md:w-8 md:h-8 flex-shrink-0"
+                                    priority
+                                  />
+                                  <span className="text-xs truncate">{tableItemNames[24295] || 'Vial de sangre poderosa'}</span>
+                                </div>
+                              </td>
+                              <td className="p-1 sm:p-1 md:p-2 text-center text-blue-400 font-semibold text-xs">{getUMDroprate(24295)}</td>
+                              <td className="p-1 sm:p-2 md:p-3 text-center text-green-400 font-semibold text-xs whitespace-nowrap">
+                                {isLoadingPrices ? <Loader2 className="w-3 h-3 sm:w-4 sm:h-4 animate-spin mx-auto" /> : formatGW2Price(calculateBasePrice(24295, getUMDroprate(24295)))}
+                              </td>
+                              <td className="p-1 sm:p-2 md:p-3 text-center text-yellow-400 font-semibold text-xs whitespace-nowrap">
+                                {isLoadingPrices ? t('craftingPage.calculating', 'Calculando...') : formatGW2Price(calculateUMProfitMax(24295))}
+                              </td>
+                            </tr>
+                            <tr className="border-b border-gray-800 hover:bg-gray-800/50 transition-colors">
+                              <td className="p-2 sm:p-2 text-gray-300">
+                                <div className="flex items-center gap-1 sm:gap-2">
+                                  <OptimizedImage 
+                                    src="https://render.guildwars2.com/file/0EE45FBB1E1A004600E9BAA7097830B2DE08587D/66828.png" 
+                                    alt="Hueso antiguo" 
+                                    className="w-6 h-6 sm:w-8 sm:h-8 flex-shrink-0"
+                                    priority
+                                  />
+                                  <span className="text-xs truncate">{tableItemNames[24358] || 'Hueso antiguo'}</span>
+                                </div>
+                              </td>
+                              <td className="p-1 sm:p-1 md:p-2 text-center text-blue-400 font-semibold text-xs">{getUMDroprate(24358)}</td>
+                              <td className="p-1 sm:p-2 md:p-3 text-center text-green-400 font-semibold text-xs whitespace-nowrap">
+                                {isLoadingPrices ? <Loader2 className="w-3 h-3 sm:w-4 sm:h-4 animate-spin mx-auto" /> : formatGW2Price(calculateBasePrice(24358, getUMDroprate(24358)))}
+                              </td>
+                              <td className="p-1 sm:p-2 md:p-3 text-center text-yellow-400 font-semibold text-xs whitespace-nowrap">
+                                {isLoadingPrices ? t('craftingPage.calculating', 'Calculando...') : formatGW2Price(calculateUMProfitMax(24358))}
+                              </td>
+                            </tr>
+                            <tr className="border-b border-gray-800 hover:bg-gray-800/50 transition-colors">
+                              <td className="p-2 sm:p-2 text-gray-300">
+                                <div className="flex items-center gap-1 sm:gap-2">
+                                  <OptimizedImage 
+                                    src="https://render.guildwars2.com/file/043E2BBA270F381870F1B45E7C09C098CAFE3D14/66996.png" 
+                                    alt="Garra despiadada" 
+                                    className="w-6 h-6 sm:w-8 sm:h-8 flex-shrink-0"
+                                    priority
+                                  />
+                                  <span className="text-xs truncate">{tableItemNames[24351] || 'Garra despiadada'}</span>
+                                </div>
+                              </td>
+                              <td className="p-1 sm:p-1 md:p-2 text-center text-blue-400 font-semibold text-xs">{getUMDroprate(24351)}</td>
+                              <td className="p-1 sm:p-2 md:p-3 text-center text-green-400 font-semibold text-xs whitespace-nowrap">
+                                {isLoadingPrices ? <Loader2 className="w-3 h-3 sm:w-4 sm:h-4 animate-spin mx-auto" /> : formatGW2Price(calculateBasePrice(24351, getUMDroprate(24351)))}
+                              </td>
+                              <td className="p-1 sm:p-2 md:p-3 text-center text-yellow-400 font-semibold text-xs whitespace-nowrap">{isLoadingPrices ? t('craftingPage.calculating', 'Calculando...') : formatGW2Price(calculateUMProfitMax(24351))}</td>
+                            </tr>
+                            <tr className="border-b border-gray-800 hover:bg-gray-800/50 transition-colors">
+                              <td className="p-2 sm:p-2 text-gray-300">
+                                <div className="flex items-center gap-1 sm:gap-2">
+                                  <OptimizedImage 
+                                    src="https://render.guildwars2.com/file/F2050EE1A7A43EDCDCB1E971FDA608AD0566E4DA/66998.png" 
+                                    alt="Colmillo feroz" 
+                                    className="w-6 h-6 sm:w-8 sm:h-8 flex-shrink-0"
+                                    priority
+                                  />
+                                  <span className="text-xs truncate">{tableItemNames[24357] || 'Colmillo feroz'}</span>
+                                </div>
+                              </td>
+                              <td className="p-1 sm:p-1 md:p-2 text-center text-blue-400 font-semibold text-xs">{getUMDroprate(24357)}</td>
+                              <td className="p-1 sm:p-2 md:p-3 text-center text-green-400 font-semibold text-xs whitespace-nowrap">
+                                {isLoadingPrices ? <Loader2 className="w-3 h-3 sm:w-4 sm:h-4 animate-spin mx-auto" /> : formatGW2Price(calculateBasePrice(24357, getUMDroprate(24357)))}
+                              </td>
+                              <td className="p-1 sm:p-2 md:p-3 text-center text-yellow-400 font-semibold text-xs whitespace-nowrap">{isLoadingPrices ? t('craftingPage.calculating', 'Calculando...') : formatGW2Price(calculateUMProfitMax(24357))}</td>
+                            </tr>
+                            <tr className="border-b border-gray-800 hover:bg-gray-800/50 transition-colors">
+                              <td className="p-2 sm:p-2 text-gray-300">
+                                <div className="flex items-center gap-1 sm:gap-2">
+                                  <OptimizedImage 
+                                    src="https://render.guildwars2.com/file/7061C82F4F9D0C585742F545C40A0F06BE0154DC/66527.png" 
+                                    alt="Escama blindada" 
+                                    className="w-6 h-6 sm:w-8 sm:h-8 flex-shrink-0"
+                                    priority
+                                  />
+                                  <span className="text-xs truncate">{tableItemNames[24289] || 'Escama blindada'}</span>
+                                </div>
+                              </td>
+                              <td className="p-1 sm:p-1 md:p-2 text-center text-blue-400 font-semibold text-xs">{getUMDroprate(24289)}</td>
+                              <td className="p-1 sm:p-2 md:p-3 text-center text-green-400 font-semibold text-xs whitespace-nowrap">
+                                {isLoadingPrices ? <Loader2 className="w-3 h-3 sm:w-4 sm:h-4 animate-spin mx-auto" /> : formatGW2Price(calculateBasePrice(24289, getUMDroprate(24289)))}
+                              </td>
+                              <td className="p-1 sm:p-2 md:p-3 text-center text-yellow-400 font-semibold text-xs whitespace-nowrap">{isLoadingPrices ? t('craftingPage.calculating', 'Calculando...') : formatGW2Price(calculateUMProfitMax(24289))}</td>
+                            </tr>
+                            <tr className="border-b border-gray-800 hover:bg-gray-800/50 transition-colors">
+                              <td className="p-2 sm:p-2 text-gray-300">
+                                <div className="flex items-center gap-1 sm:gap-2">
+                                  <OptimizedImage 
+                                    src="https://render.guildwars2.com/file/C1ABF9082901FC3CEABC3138CBCCA1DAD5D41812/66955.png" 
+                                    alt="Tótem elaborado" 
+                                    className="w-6 h-6 sm:w-8 sm:h-8 flex-shrink-0"
+                                    priority
+                                  />
+                                  <span className="text-xs truncate">{tableItemNames[24300] || 'Tótem elaborado'}</span>
+                                </div>
+                              </td>
+                              <td className="p-1 sm:p-1 md:p-2 text-center text-blue-400 font-semibold text-xs">{getUMDroprate(24300)}</td>
+                              <td className="p-1 sm:p-2 md:p-3 text-center text-green-400 font-semibold text-xs whitespace-nowrap">
+                                {isLoadingPrices ? <Loader2 className="w-3 h-3 sm:w-4 sm:h-4 animate-spin mx-auto" /> : formatGW2Price(calculateBasePrice(24300, getUMDroprate(24300)))}
+                              </td>
+                              <td className="p-1 sm:p-2 md:p-3 text-center text-yellow-400 font-semibold text-xs whitespace-nowrap">
+                                {isLoadingPrices ? <Loader2 className="w-3 h-3 sm:w-4 sm:h-4 animate-spin mx-auto" /> : formatGW2Price(calculateUMProfitMax(24300))}
+                              </td>
+                            </tr>
+                            <tr className="border-b border-gray-800 hover:bg-gray-800/50 transition-colors">
+                              <td className="p-2 sm:p-2 text-gray-300">
+                                <div className="flex items-center gap-1 sm:gap-2">
+                                  <OptimizedImage 
+                                    src="https://render.guildwars2.com/file/543EC37900EA2A57E77FA891193A48D66AA224AB/66939.png" 
+                                    alt="Vesícula de veneno poderoso" 
+                                    className="w-6 h-6 sm:w-8 sm:h-8 flex-shrink-0"
+                                    priority
+                                  />
+                                  <span className="text-xs truncate">{tableItemNames[24283] || 'Vesícula de veneno poderoso'}</span>
+                                </div>
+                              </td>
+                              <td className="p-1 sm:p-1 md:p-2 text-center text-blue-400 font-semibold text-xs">{getUMDroprate(24283)}</td>
+                              <td className="p-1 sm:p-2 md:p-3 text-center text-green-400 font-semibold text-xs whitespace-nowrap">
+                                {isLoadingPrices ? <Loader2 className="w-3 h-3 sm:w-4 sm:h-4 animate-spin mx-auto" /> : formatGW2Price(calculateBasePrice(24283, getUMDroprate(24283)))}
+                              </td>
+                              <td className="p-1 sm:p-2 md:p-3 text-center text-yellow-400 font-semibold text-xs whitespace-nowrap">
+                                {isLoadingPrices ? <Loader2 className="w-3 h-3 sm:w-4 sm:h-4 animate-spin mx-auto" /> : formatGW2Price(calculateUMProfitMax(24283))}
+                              </td>
+                            </tr>
+                            <tr className="border-b border-gray-800 hover:bg-gray-800/50 transition-colors">
+                              <td className="p-2 sm:p-2 text-gray-300">
+                                <div className="flex items-center gap-1 sm:gap-2">
+                                  <OptimizedImage 
+                                    src="https://render.guildwars2.com/file/080D00670558CD9E580D5662030394B2206E92A6/434537.png" 
+                                    alt="Montón de polvo cristalino" 
+                                    className="w-6 h-6 sm:w-8 sm:h-8 flex-shrink-0"
+                                    priority
+                                  />
+                                  <span className="text-xs truncate">{tableItemNames[24277] || 'Montón de polvo cristalino'}</span>
+                                </div>
+                              </td>
+                              <td className="p-1 sm:p-1 md:p-2 text-center text-blue-400 font-semibold text-xs">{getUMDroprate(24277)}</td>
+                              <td className="p-1 sm:p-2 md:p-3 text-center text-green-400 font-semibold text-xs whitespace-nowrap">
+                                {isLoadingPrices ? <Loader2 className="w-3 h-3 sm:w-4 sm:h-4 animate-spin mx-auto" /> : formatGW2Price(calculateBasePrice(24277, getUMDroprate(24277)))}
+                              </td>
+                              <td className="p-1 sm:p-2 md:p-3 text-center text-yellow-400 font-semibold text-xs whitespace-nowrap">
+                                {isLoadingPrices ? <Loader2 className="w-3 h-3 sm:w-4 sm:h-4 animate-spin mx-auto" /> : formatGW2Price(calculateUMProfitMax(24277))}
+                              </td>
+                            </tr>
+                            <tr className="border-b border-gray-800 hover:bg-gray-800/50 transition-colors">
+                              <td className="p-2 sm:p-2 text-gray-300">
+                                <div className="flex items-center gap-1 sm:gap-2">
+                                  <OptimizedImage 
+                                    src={tableItemIcons[19721] || "https://render.guildwars2.com/file/6B604A6F7A5A4A4A4A4A4A4A4A4A4A4A4A4A4A4A/66950.png"} 
+                                    alt="Glob of Ectoplasm" 
+                                    className="w-5 h-5 sm:w-6 sm:h-6 md:w-8 md:h-8 flex-shrink-0"
+                                    priority
+                                  />
+                                  <span className="text-xs truncate">{tableItemNames[19721] || 'Glob of Ectoplasm'}</span>
+                                </div>
+                              </td>
+                              <td className="p-1 sm:p-1 md:p-2 text-center text-blue-400 font-semibold text-xs">{getUMDroprate(19721)}</td>
+                              <td className="p-1 sm:p-2 md:p-3 text-center text-green-400 font-semibold text-xs whitespace-nowrap">
+                                {isLoadingPrices ? <Loader2 className="w-3 h-3 sm:w-4 sm:h-4 animate-spin mx-auto" /> : formatGW2Price(calculateBasePrice(19721, getUMDroprate(19721)))}
+                              </td>
+                              <td className="p-1 sm:p-2 md:p-3 text-center text-yellow-400 font-semibold text-xs whitespace-nowrap">
+                                {isLoadingPrices ? t('craftingPage.calculating', 'Calculando...') : formatGW2Price(calculateUMProfitMax(19721))}
+                              </td>
+                            </tr>
+                            <tr className="border-b border-gray-800 hover:bg-gray-800/50 transition-colors">
+                              <td className="p-2 sm:p-2 text-gray-300">
+                                <div className="flex items-center gap-1 sm:gap-2">
+                                  <OptimizedImage 
+                                    src={tableItemIcons[24370] || "https://render.guildwars2.com/file/6B604A6F7A5A4A4A4A4A4A4A4A4A4A4A4A4A4A4A/66950.png"} 
+                                    alt="Giant Eye" 
+                                    className="w-5 h-5 sm:w-6 sm:h-6 md:w-8 md:h-8 flex-shrink-0"
+                                    priority
+                                  />
+                                  <span className="text-xs truncate">{tableItemNames[24370] || 'Giant Eye'}</span>
+                                </div>
+                              </td>
+                              <td className="p-1 sm:p-1 md:p-2 text-center text-blue-400 font-semibold text-xs">{getUMDroprate(24370)}</td>
+                              <td className="p-1 sm:p-2 md:p-3 text-center text-green-400 font-semibold text-xs whitespace-nowrap">
+                                {isLoadingPrices ? <Loader2 className="w-3 h-3 sm:w-4 sm:h-4 animate-spin mx-auto" /> : formatGW2Price(calculateBasePrice(24370, getUMDroprate(24370)))}
+                              </td>
+                              <td className="p-1 sm:p-2 md:p-3 text-center text-yellow-400 font-semibold text-xs whitespace-nowrap">
+                                {isLoadingPrices ? t('craftingPage.calculating', 'Calculando...') : formatGW2Price(calculateUMProfitMax(24370))}
+                              </td>
+                            </tr>
+                            <tr className="border-b border-gray-800 hover:bg-gray-800/50 transition-colors">
+                              <td className="p-2 sm:p-2 text-gray-300">
+                                <div className="flex items-center gap-1 sm:gap-2">
+                                  <OptimizedImage 
+                                    src={tableItemIcons[68063] || "https://render.guildwars2.com/file/6B604A6F7A5A4A4A4A4A4A4A4A4A4A4A4A4A4A4A/66950.png"} 
+                                    alt="Amalgamated Gemstone" 
+                                    className="w-5 h-5 sm:w-6 sm:h-6 md:w-8 md:h-8 flex-shrink-0"
+                                    priority
+                                  />
+                                  <span className="text-xs truncate">{tableItemNames[68063] || 'Amalgamated Gemstone'}</span>
+                                </div>
+                              </td>
+                              <td className="p-1 sm:p-1 md:p-2 text-center text-blue-400 font-semibold text-xs">{getUMDroprate(68063)}</td>
+                              <td className="p-1 sm:p-2 md:p-3 text-center text-green-400 font-semibold text-xs whitespace-nowrap">
+                                {isLoadingPrices ? <Loader2 className="w-3 h-3 sm:w-4 sm:h-4 animate-spin mx-auto" /> : formatGW2Price(calculateBasePrice(68063, getUMDroprate(68063)))}
+                              </td>
+                              <td className="p-1 sm:p-2 md:p-3 text-center text-yellow-400 font-semibold text-xs whitespace-nowrap">
+                                {isLoadingPrices ? t('craftingPage.calculating', 'Calculando...') : formatGW2Price(calculateUMProfitMax(68063))}
+                              </td>
+                            </tr>
+                            <tr className="border-b border-gray-800 hover:bg-gray-800/50 transition-colors">
+                              <td className="p-2 sm:p-2 text-gray-300">
+                                <div className="flex items-center gap-1 sm:gap-2">
+                                  <OptimizedImage 
+                                    src={tableItemIcons[76179] || "https://render.guildwars2.com/file/6B604A6F7A5A4A4A4A4A4A4A4A4A4A4A4A4A4A4A/66950.png"} 
+                                    alt="Freshwater Pearl" 
+                                    className="w-5 h-5 sm:w-6 sm:h-6 md:w-8 md:h-8 flex-shrink-0"
+                                    priority
+                                  />
+                                  <span className="text-xs truncate">{tableItemNames[76179] || 'Freshwater Pearl'}</span>
+                                </div>
+                              </td>
+                              <td className="p-1 sm:p-1 md:p-2 text-center text-blue-400 font-semibold text-xs">{getUMDroprate(76179)}</td>
+                              <td className="p-1 sm:p-2 md:p-3 text-center text-green-400 font-semibold text-xs whitespace-nowrap">
+                                {isLoadingPrices ? <Loader2 className="w-3 h-3 sm:w-4 sm:h-4 animate-spin mx-auto" /> : formatGW2Price(calculateBasePrice(76179, getUMDroprate(76179)))}
+                              </td>
+                              <td className="p-1 sm:p-2 md:p-3 text-center text-yellow-400 font-semibold text-xs whitespace-nowrap">
+                                {isLoadingPrices ? t('craftingPage.calculating', 'Calculando...') : formatGW2Price(calculateUMProfitMax(76179))}
+                              </td>
+                            </tr>
+                            <tr className="border-b border-gray-800 hover:bg-gray-800/50 transition-colors">
+                              <td className="p-2 sm:p-2 text-gray-300">
+                                <div className="flex items-center gap-1 sm:gap-2">
+                                  <OptimizedImage 
+                                    src={tableItemIcons[70957] || "https://render.guildwars2.com/file/6B604A6F7A5A4A4A4A4A4A4A4A4A4A4A4A4A4A4A/66950.png"} 
+                                    alt="Maguuma Lily" 
+                                    className="w-5 h-5 sm:w-6 sm:h-6 md:w-8 md:h-8 flex-shrink-0"
+                                    priority
+                                  />
+                                  <span className="text-xs truncate">{tableItemNames[70957] || 'Maguuma Lily'}</span>
+                                </div>
+                              </td>
+                              <td className="p-1 sm:p-1 md:p-2 text-center text-blue-400 font-semibold text-xs">{getUMDroprate(70957)}</td>
+                              <td className="p-1 sm:p-2 md:p-3 text-center text-green-400 font-semibold text-xs whitespace-nowrap">
+                                {isLoadingPrices ? <Loader2 className="w-3 h-3 sm:w-4 sm:h-4 animate-spin mx-auto" /> : formatGW2Price(calculateBasePrice(70957, getUMDroprate(70957)))}
+                              </td>
+                              <td className="p-1 sm:p-2 md:p-3 text-center text-yellow-400 font-semibold text-xs whitespace-nowrap">
+                                {isLoadingPrices ? t('craftingPage.calculating', 'Calculando...') : formatGW2Price(calculateUMProfitMax(70957))}
+                              </td>
+                            </tr>
+                            
+                            <tr className="border-b border-gray-800 hover:bg-gray-800/50 transition-colors">
+                              <td className="p-2 sm:p-2 text-gray-300">
+                                <div className="flex items-center gap-1 sm:gap-2">
+                                  <OptimizedImage 
+                                    src={tableItemIcons[19675] || "https://render.guildwars2.com/file/6B604A6F7A5A4A4A4A4A4A4A4A4A4A4A4A4A4A4A/66950.png"} 
+                                    alt="Mystic Clover" 
+                                    className="w-5 h-5 sm:w-6 sm:h-6 md:w-8 md:h-8 flex-shrink-0"
+                                    priority
+                                  />
+                                  <span className="text-xs truncate">{tableItemNames[19675] || 'Mystic Clover'}</span>
+                                </div>
+                              </td>
+                              <td className="p-1 sm:p-1 md:p-2 text-center text-blue-400 font-semibold text-xs">{getUMDroprate(19675)}</td>
+                              <td className="p-1 sm:p-2 md:p-3 text-center text-green-400 font-semibold text-xs whitespace-nowrap">
+                                {isLoadingPrices ? <Loader2 className="w-3 h-3 sm:w-4 sm:h-4 animate-spin mx-auto" /> : formatGW2Price(calculateBasePrice(19675, getUMDroprate(19675)))}
+                              </td>
+                              <td className="p-1 sm:p-2 md:p-3 text-center text-yellow-400 font-semibold text-xs whitespace-nowrap">
+                                {isLoadingPrices ? t('craftingPage.calculating', 'Calculando...') : formatGW2Price(calculateUMProfitMax(19675))}
+                              </td>
+                            </tr>
+                            
+                            <tr className="border-b border-gray-800 hover:bg-gray-800/50 transition-colors">
+                              <td className="p-2 sm:p-2 text-gray-300">
+                                <div className="flex items-center gap-1 sm:gap-2">
+                                  <OptimizedImage 
+                                    src={tableItemIcons[37897] || "https://render.guildwars2.com/file/6B604A6F7A5A4A4A4A4A4A4A4A4A4A4A4A4A4A4A/66950.png"} 
+                                    alt="Karka Shell" 
+                                    className="w-5 h-5 sm:w-6 sm:h-6 md:w-8 md:h-8 flex-shrink-0"
+                                    priority
+                                  />
+                                  <span className="text-xs truncate">{tableItemNames[37897] || 'Karka Shell'}</span>
+                                </div>
+                              </td>
+                              <td className="p-1 sm:p-1 md:p-2 text-center text-blue-400 font-semibold text-xs">{getUMDroprate(37897)}</td>
+                              <td className="p-1 sm:p-2 md:p-3 text-center text-green-400 font-semibold text-xs whitespace-nowrap">
+                                {isLoadingPrices ? <Loader2 className="w-3 h-3 sm:w-4 sm:h-4 animate-spin mx-auto" /> : formatGW2Price(calculateBasePrice(37897, getUMDroprate(37897)))}
+                              </td>
+                              <td className="p-1 sm:p-2 md:p-3 text-center text-yellow-400 font-semibold text-xs whitespace-nowrap">
+                                {isLoadingPrices ? t('craftingPage.calculating', 'Calculando...') : formatGW2Price(calculateUMProfitMax(37897))}
+                              </td>
+                            </tr>
+                            <tr className="border-b border-gray-800 hover:bg-gray-800/50 transition-colors">
+                              <td className="p-2 sm:p-2 text-gray-300">
+                                <div className="flex items-center gap-1 sm:gap-2">
+                                  <OptimizedImage 
+                                    src={tableItemIcons[48884] || "https://render.guildwars2.com/file/6B604A6F7A5A4A4A4A4A4A4A4A4A4A4A4A4A4A4A/66950.png"} 
+                                    alt="Pristine Toxic Spore Sample" 
+                                    className="w-5 h-5 sm:w-6 sm:h-6 md:w-8 md:h-8 flex-shrink-0"
+                                    priority
+                                  />
+                                  <span className="text-xs truncate">{tableItemNames[48884] || 'Pristine Toxic Spore Sample'}</span>
+                                </div>
+                              </td>
+                              <td className="p-1 sm:p-1 md:p-2 text-center text-blue-400 font-semibold text-xs">{getUMDroprate(48884)}</td>
+                              <td className="p-1 sm:p-2 md:p-3 text-center text-green-400 font-semibold text-xs whitespace-nowrap">
+                                {isLoadingPrices ? <Loader2 className="w-3 h-3 sm:w-4 sm:h-4 animate-spin mx-auto" /> : formatGW2Price(calculateBasePrice(48884, getUMDroprate(48884)))}
+                              </td>
+                              <td className="p-1 sm:p-2 md:p-3 text-center text-yellow-400 font-semibold text-xs whitespace-nowrap">
+                                {isLoadingPrices ? t('craftingPage.calculating', 'Calculando...') : formatGW2Price(calculateUMProfitMax(48884))}
+                              </td>
+                            </tr>
+                            
+                            {/* Lodestones - Fila 3 */}
+                            <tr className="border-b border-gray-800 hover:bg-gray-800/50 transition-colors">
+                              <td className="p-2 sm:p-2 text-gray-300">
+                                <div className="flex items-center gap-1 sm:gap-2">
+                                  <OptimizedImage 
+                                    src={tableItemIcons[24305] || "https://render.guildwars2.com/file/6B604A6F7A5A4A4A4A4A4A4A4A4A4A4A4A4A4A4A/66950.png"} 
+                                    alt="Charged Lodestone" 
+                                    className="w-5 h-5 sm:w-6 sm:h-6 md:w-8 md:h-8 flex-shrink-0"
+                                    priority
+                                  />
+                                  <span className="text-xs truncate">{tableItemNames[24305] || 'Charged Lodestone'}</span>
+                                </div>
+                              </td>
+                              <td className="p-1 sm:p-1 md:p-2 text-center text-blue-400 font-semibold text-xs">{getUMDroprate(24305)}</td>
+                              <td className="p-1 sm:p-2 md:p-3 text-center text-green-400 font-semibold text-xs whitespace-nowrap">
+                                {isLoadingPrices ? <Loader2 className="w-3 h-3 sm:w-4 sm:h-4 animate-spin mx-auto" /> : formatGW2Price(calculateBasePrice(24305, getUMDroprate(24305)))}
+                              </td>
+                              <td className="p-1 sm:p-2 md:p-3 text-center text-yellow-400 font-semibold text-xs whitespace-nowrap">
+                                {isLoadingPrices ? t('craftingPage.calculating', 'Calculando...') : formatGW2Price(calculateUMProfitMax(24305))}
+                              </td>
+                            </tr>
+                            
+                            <tr className="border-b border-gray-800 hover:bg-gray-800/50 transition-colors">
+                              <td className="p-2 sm:p-2 text-gray-300">
+                                <div className="flex items-center gap-1 sm:gap-2">
+                                  <OptimizedImage 
+                                    src={tableItemIcons[24310] || "https://render.guildwars2.com/file/6B604A6F7A5A4A4A4A4A4A4A4A4A4A4A4A4A4A4A/66950.png"} 
+                                    alt="Onyx Lodestone" 
+                                    className="w-5 h-5 sm:w-6 sm:h-6 md:w-8 md:h-8 flex-shrink-0"
+                                    priority
+                                  />
+                                  <span className="text-xs truncate">{tableItemNames[24310] || 'Onyx Lodestone'}</span>
+                                </div>
+                              </td>
+                              <td className="p-1 sm:p-1 md:p-2 text-center text-blue-400 font-semibold text-xs">{getUMDroprate(24310)}</td>
+                              <td className="p-1 sm:p-2 md:p-3 text-center text-green-400 font-semibold text-xs whitespace-nowrap">
+                                {isLoadingPrices ? <Loader2 className="w-3 h-3 sm:w-4 sm:h-4 animate-spin mx-auto" /> : formatGW2Price(calculateBasePrice(24310, getUMDroprate(24310)))}
+                              </td>
+                              <td className="p-1 sm:p-2 md:p-3 text-center text-yellow-400 font-semibold text-xs whitespace-nowrap">
+                                {isLoadingPrices ? t('craftingPage.calculating', 'Calculando...') : formatGW2Price(calculateUMProfitMax(24310))}
+                              </td>
+                            </tr>
+                            
+                            <tr className="border-b border-gray-800 hover:bg-gray-800/50 transition-colors">
+                              <td className="p-2 sm:p-2 text-gray-300">
+                                <div className="flex items-center gap-1 sm:gap-2">
+                                  <OptimizedImage 
+                                    src={tableItemIcons[24315] || "https://render.guildwars2.com/file/6B604A6F7A5A4A4A4A4A4A4A4A4A4A4A4A4A4A4A/66950.png"} 
+                                    alt="Molten Lodestone" 
+                                    className="w-5 h-5 sm:w-6 sm:h-6 md:w-8 md:h-8 flex-shrink-0"
+                                    priority
+                                  />
+                                  <span className="text-xs truncate">{tableItemNames[24315] || 'Molten Lodestone'}</span>
+                                </div>
+                              </td>
+                              <td className="p-1 sm:p-1 md:p-2 text-center text-blue-400 font-semibold text-xs">{getUMDroprate(24315)}</td>
+                              <td className="p-1 sm:p-2 md:p-3 text-center text-green-400 font-semibold text-xs whitespace-nowrap">
+                                {isLoadingPrices ? <Loader2 className="w-3 h-3 sm:w-4 sm:h-4 animate-spin mx-auto" /> : formatGW2Price(calculateBasePrice(24315, getUMDroprate(24315)))}
+                              </td>
+                              <td className="p-1 sm:p-2 md:p-3 text-center text-yellow-400 font-semibold text-xs whitespace-nowrap">
+                                {isLoadingPrices ? t('craftingPage.calculating', 'Calculando...') : formatGW2Price(calculateUMProfitMax(24315))}
+                              </td>
+                            </tr>
+                            
+                            <tr className="border-b border-gray-800 hover:bg-gray-800/50 transition-colors">
+                              <td className="p-2 sm:p-2 text-gray-300">
+                                <div className="flex items-center gap-1 sm:gap-2">
+                                  <OptimizedImage 
+                                    src={tableItemIcons[24320] || "https://render.guildwars2.com/file/6B604A6F7A5A4A4A4A4A4A4A4A4A4A4A4A4A4A4A/66950.png"} 
+                                    alt="Glacial Lodestone" 
+                                    className="w-5 h-5 sm:w-6 sm:h-6 md:w-8 md:h-8 flex-shrink-0"
+                                    priority
+                                  />
+                                  <span className="text-xs truncate">{tableItemNames[24320] || 'Glacial Lodestone'}</span>
+                                </div>
+                              </td>
+                              <td className="p-1 sm:p-1 md:p-2 text-center text-blue-400 font-semibold text-xs">{getUMDroprate(24320)}</td>
+                              <td className="p-1 sm:p-2 md:p-3 text-center text-green-400 font-semibold text-xs whitespace-nowrap">
+                                {isLoadingPrices ? <Loader2 className="w-3 h-3 sm:w-4 sm:h-4 animate-spin mx-auto" /> : formatGW2Price(calculateBasePrice(24320, getUMDroprate(24320)))}
+                              </td>
+                              <td className="p-1 sm:p-2 md:p-3 text-center text-yellow-400 font-semibold text-xs whitespace-nowrap">
+                                {isLoadingPrices ? t('craftingPage.calculating', 'Calculando...') : formatGW2Price(calculateUMProfitMax(24320))}
+                              </td>
+                            </tr>
+                            
+                            <tr className="border-b border-gray-800 hover:bg-gray-800/50 transition-colors">
+                              <td className="p-2 sm:p-2 text-gray-300">
+                                <div className="flex items-center gap-1 sm:gap-2">
+                                  <OptimizedImage 
+                                    src={tableItemIcons[24325] || "https://render.guildwars2.com/file/6B604A6F7A5A4A4A4A4A4A4A4A4A4A4A4A4A4A4A/66950.png"} 
+                                    alt="Destroyer Lodestone" 
+                                    className="w-5 h-5 sm:w-6 sm:h-6 md:w-8 md:h-8 flex-shrink-0"
+                                    priority
+                                  />
+                                  <span className="text-xs truncate">{tableItemNames[24325] || 'Destroyer Lodestone'}</span>
+                                </div>
+                              </td>
+                              <td className="p-1 sm:p-1 md:p-2 text-center text-blue-400 font-semibold text-xs">{getUMDroprate(24325)}</td>
+                              <td className="p-1 sm:p-2 md:p-3 text-center text-green-400 font-semibold text-xs whitespace-nowrap">
+                                {isLoadingPrices ? <Loader2 className="w-3 h-3 sm:w-4 sm:h-4 animate-spin mx-auto" /> : formatGW2Price(calculateBasePrice(24325, getUMDroprate(24325)))}
+                              </td>
+                              <td className="p-1 sm:p-2 md:p-3 text-center text-yellow-400 font-semibold text-xs whitespace-nowrap">
+                                {isLoadingPrices ? t('craftingPage.calculating', 'Calculando...') : formatGW2Price(calculateUMProfitMax(24325))}
+                              </td>
+                            </tr>
+                            
+                            <tr className="border-b border-gray-800 hover:bg-gray-800/50 transition-colors">
+                              <td className="p-2 sm:p-2 text-gray-300">
+                                <div className="flex items-center gap-1 sm:gap-2">
+                                  <OptimizedImage 
+                                    src={tableItemIcons[24330] || "https://render.guildwars2.com/file/6B604A6F7A5A4A4A4A4A4A4A4A4A4A4A4A4A4A4A/66950.png"} 
+                                    alt="Crystal Lodestone" 
+                                    className="w-5 h-5 sm:w-6 sm:h-6 md:w-8 md:h-8 flex-shrink-0"
+                                    priority
+                                  />
+                                  <span className="text-xs truncate">{tableItemNames[24330] || 'Crystal Lodestone'}</span>
+                                </div>
+                              </td>
+                              <td className="p-1 sm:p-1 md:p-2 text-center text-blue-400 font-semibold text-xs">{getUMDroprate(24330)}</td>
+                              <td className="p-1 sm:p-2 md:p-3 text-center text-green-400 font-semibold text-xs whitespace-nowrap">
+                                {isLoadingPrices ? <Loader2 className="w-3 h-3 sm:w-4 sm:h-4 animate-spin mx-auto" /> : formatGW2Price(calculateBasePrice(24330, getUMDroprate(24330)))}
+                              </td>
+                              <td className="p-1 sm:p-2 md:p-3 text-center text-yellow-400 font-semibold text-xs whitespace-nowrap">
+                                {isLoadingPrices ? t('craftingPage.calculating', 'Calculando...') : formatGW2Price(calculateUMProfitMax(24330))}
+                              </td>
+                            </tr>
+                            
+                            <tr className="border-b border-gray-800 hover:bg-gray-800/50 transition-colors">
+                              <td className="p-2 sm:p-2 text-gray-300">
+                                <div className="flex items-center gap-1 sm:gap-2">
+                                  <OptimizedImage 
+                                    src={tableItemIcons[70842] || "https://render.guildwars2.com/file/6B604A6F7A5A4A4A4A4A4A4A4A4A4A4A4A4A4A4A/66950.png"} 
+                                    alt="Mordrem Lodestone" 
+                                    className="w-5 h-5 sm:w-6 sm:h-6 md:w-8 md:h-8 flex-shrink-0"
+                                    priority
+                                  />
+                                  <span className="text-xs truncate">{tableItemNames[70842] || 'Mordrem Lodestone'}</span>
+                                </div>
+                              </td>
+                              <td className="p-1 sm:p-1 md:p-2 text-center text-blue-400 font-semibold text-xs">{getUMDroprate(70842)}</td>
+                              <td className="p-1 sm:p-2 md:p-3 text-center text-green-400 font-semibold text-xs whitespace-nowrap">
+                                {isLoadingPrices ? <Loader2 className="w-3 h-3 sm:w-4 sm:h-4 animate-spin mx-auto" /> : formatGW2Price(calculateBasePrice(70842, getUMDroprate(70842)))}
+                              </td>
+                              <td className="p-1 sm:p-2 md:p-3 text-center text-yellow-400 font-semibold text-xs whitespace-nowrap">
+                                {isLoadingPrices ? t('craftingPage.calculating', 'Calculando...') : formatGW2Price(calculateUMProfitMax(70842))}
+                              </td>
+                            </tr>
+                            
+                            <tr className="border-b border-gray-800 hover:bg-gray-800/50 transition-colors">
+                              <td className="p-2 sm:p-2 text-gray-300">
+                                <div className="flex items-center gap-1 sm:gap-2">
+                                  <OptimizedImage 
+                                    src={tableItemIcons[68942] || "https://render.guildwars2.com/file/6B604A6F7A5A4A4A4A4A4A4A4A4A4A4A4A4A4A4A/66950.png"} 
+                                    alt="Evergreen Lodestone" 
+                                    className="w-5 h-5 sm:w-6 sm:h-6 md:w-8 md:h-8 flex-shrink-0"
+                                    priority
+                                  />
+                                  <span className="text-xs truncate">{tableItemNames[68942] || 'Evergreen Lodestone'}</span>
+                                </div>
+                              </td>
+                              <td className="p-1 sm:p-1 md:p-2 text-center text-blue-400 font-semibold text-xs">{getUMDroprate(68942)}</td>
+                              <td className="p-1 sm:p-2 md:p-3 text-center text-green-400 font-semibold text-xs whitespace-nowrap">
+                                {isLoadingPrices ? <Loader2 className="w-3 h-3 sm:w-4 sm:h-4 animate-spin mx-auto" /> : formatGW2Price(calculateBasePrice(68942, getUMDroprate(68942)))}
+                              </td>
+                              <td className="p-1 sm:p-2 md:p-3 text-center text-yellow-400 font-semibold text-xs whitespace-nowrap">
+                                {isLoadingPrices ? t('craftingPage.calculating', 'Calculando...') : formatGW2Price(calculateUMProfitMax(68942))}
+                              </td>
+                            </tr>
+                            
+                            {/* Fila 4 - Items adicionales */}
+                            <tr className="border-b border-gray-800 hover:bg-gray-800/50 transition-colors">
+                              <td className="p-2 sm:p-2 text-gray-300">
+                                <div className="flex items-center gap-1 sm:gap-2">
+                                  <OptimizedImage 
+                                    src={tableItemIcons[24335] || "https://render.guildwars2.com/file/6B604A6F7A5A4A4A4A4A4A4A4A4A4A4A4A4A4A4A/66950.png"} 
+                                    alt="Pile of Putrid Essence" 
+                                    className="w-5 h-5 sm:w-6 sm:h-6 md:w-8 md:h-8 flex-shrink-0"
+                                    priority
+                                  />
+                                  <span className="text-xs truncate">{tableItemNames[24335] || 'Pile of Putrid Essence'}</span>
+                                </div>
+                              </td>
+                              <td className="p-1 sm:p-1 md:p-2 text-center text-blue-400 font-semibold text-xs">{getUMDroprate(24335)}</td>
+                              <td className="p-1 sm:p-2 md:p-3 text-center text-green-400 font-semibold text-xs whitespace-nowrap">
+                                {isLoadingPrices ? <Loader2 className="w-3 h-3 sm:w-4 sm:h-4 animate-spin mx-auto" /> : formatGW2Price(calculateBasePrice(24335, getUMDroprate(24335)))}
+                              </td>
+                              <td className="p-1 sm:p-2 md:p-3 text-center text-yellow-400 font-semibold text-xs whitespace-nowrap">
+                                {isLoadingPrices ? t('craftingPage.calculating', 'Calculando...') : formatGW2Price(calculateUMProfitMax(24335))}
+                              </td>
+                            </tr>
+                            
+                            <tr className="border-b border-gray-800 hover:bg-gray-800/50 transition-colors">
+                              <td className="p-2 sm:p-2 text-gray-300">
+                                <div className="flex items-center gap-1 sm:gap-2">
+                                  <OptimizedImage 
+                                    src={tableItemIcons[72504] || "https://render.guildwars2.com/file/6B604A6F7A5A4A4A4A4A4A4A4A4A4A4A4A4A4A4A/66950.png"} 
+                                    alt="Moonstone Orb" 
+                                    className="w-5 h-5 sm:w-6 sm:h-6 md:w-8 md:h-8 flex-shrink-0"
+                                    priority
+                                  />
+                                  <span className="text-xs truncate">{tableItemNames[72504] || 'Moonstone Orb'}</span>
+                                </div>
+                              </td>
+                              <td className="p-1 sm:p-1 md:p-2 text-center text-blue-400 font-semibold text-xs">{getUMDroprate(72504)}</td>
+                              <td className="p-1 sm:p-2 md:p-3 text-center text-green-400 font-semibold text-xs whitespace-nowrap">
+                                {isLoadingPrices ? <Loader2 className="w-3 h-3 sm:w-4 sm:h-4 animate-spin mx-auto" /> : formatGW2Price(calculateBasePrice(72504, getUMDroprate(72504)))}
+                              </td>
+                              <td className="p-1 sm:p-2 md:p-3 text-center text-yellow-400 font-semibold text-xs whitespace-nowrap">
+                                {isLoadingPrices ? t('craftingPage.calculating', 'Calculando...') : formatGW2Price(calculateUMProfitMax(72504))}
+                              </td>
+                            </tr>
+                            
+                            <tr className="border-b border-gray-800 hover:bg-gray-800/50 transition-colors">
+                              <td className="p-2 sm:p-2 text-gray-300">
+                                <div className="flex items-center gap-1 sm:gap-2">
+                                  <OptimizedImage 
+                                    src={tableItemIcons[76491] || "https://render.guildwars2.com/file/6B604A6F7A5A4A4A4A4A4A4A4A4A4A4A4A4A4A4A/66950.png"} 
+                                    alt="Black Diamond" 
+                                    className="w-5 h-5 sm:w-6 sm:h-6 md:w-8 md:h-8 flex-shrink-0"
+                                    priority
+                                  />
+                                  <span className="text-xs truncate">{tableItemNames[76491] || 'Black Diamond'}</span>
+                                </div>
+                              </td>
+                              <td className="p-1 sm:p-1 md:p-2 text-center text-blue-400 font-semibold text-xs">{getUMDroprate(76491)}</td>
+                              <td className="p-1 sm:p-2 md:p-3 text-center text-green-400 font-semibold text-xs whitespace-nowrap">
+                                {isLoadingPrices ? <Loader2 className="w-3 h-3 sm:w-4 sm:h-4 animate-spin mx-auto" /> : formatGW2Price(calculateBasePrice(76491, getUMDroprate(76491)))}
+                              </td>
+                              <td className="p-1 sm:p-2 md:p-3 text-center text-yellow-400 font-semibold text-xs whitespace-nowrap">
+                                {isLoadingPrices ? t('craftingPage.calculating', 'Calculando...') : formatGW2Price(calculateUMProfitMax(76491))}
+                              </td>
+                            </tr>
+                            
+                            <tr className="border-b border-gray-800 hover:bg-gray-800/50 transition-colors">
+                              <td className="p-2 sm:p-2 text-gray-300">
+                                <div className="flex items-center gap-1 sm:gap-2">
+                                  <OptimizedImage 
+                                    src={tableItemIcons[75654] || "https://render.guildwars2.com/file/6B604A6F7A5A4A4A4A4A4A4A4A4A4A4A4A4A4A4A/66950.png"} 
+                                    alt="Ebony Orb" 
+                                    className="w-5 h-5 sm:w-6 sm:h-6 md:w-8 md:h-8 flex-shrink-0"
+                                    priority
+                                  />
+                                  <span className="text-xs truncate">{tableItemNames[75654] || 'Ebony Orb'}</span>
+                                </div>
+                              </td>
+                              <td className="p-1 sm:p-1 md:p-2 text-center text-blue-400 font-semibold text-xs">{getUMDroprate(75654)}</td>
+                              <td className="p-1 sm:p-2 md:p-3 text-center text-green-400 font-semibold text-xs whitespace-nowrap">
+                                {isLoadingPrices ? <Loader2 className="w-3 h-3 sm:w-4 sm:h-4 animate-spin mx-auto" /> : formatGW2Price(calculateBasePrice(75654, getUMDroprate(75654)))}
+                              </td>
+                              <td className="p-1 sm:p-2 md:p-3 text-center text-yellow-400 font-semibold text-xs whitespace-nowrap">
+                                {isLoadingPrices ? t('craftingPage.calculating', 'Calculando...') : formatGW2Price(calculateUMProfitMax(75654))}
+                              </td>
+                            </tr>
+                            
+                            <tr className="border-b border-gray-800 hover:bg-gray-800/50 transition-colors">
+                              <td className="p-2 sm:p-2 text-gray-300">
+                                <div className="flex items-center gap-1 sm:gap-2">
+                                  <OptimizedImage 
+                                    src={tableItemIcons[72315] || "https://render.guildwars2.com/file/6B604A6F7A5A4A4A4A4A4A4A4A4A4A4A4A4A4A4A/66950.png"} 
+                                    alt="Maguuma Burl" 
+                                    className="w-5 h-5 sm:w-6 sm:h-6 md:w-8 md:h-8 flex-shrink-0"
+                                    priority
+                                  />
+                                  <span className="text-xs truncate">{tableItemNames[72315] || 'Maguuma Burl'}</span>
+                                </div>
+                              </td>
+                              <td className="p-1 sm:p-1 md:p-2 text-center text-blue-400 font-semibold text-xs">{getUMDroprate(72315)}</td>
+                              <td className="p-1 sm:p-2 md:p-3 text-center text-green-400 font-semibold text-xs whitespace-nowrap">
+                                {isLoadingPrices ? <Loader2 className="w-3 h-3 sm:w-4 sm:h-4 animate-spin mx-auto" /> : formatGW2Price(calculateBasePrice(72315, getUMDroprate(72315)))}
+                              </td>
+                              <td className="p-1 sm:p-2 md:p-3 text-center text-yellow-400 font-semibold text-xs whitespace-nowrap">
+                                {isLoadingPrices ? t('craftingPage.calculating', 'Calculando...') : formatGW2Price(calculateUMProfitMax(72315))}
+                              </td>
+                            </tr>
+                            
+                            <tr className="border-b border-gray-800 hover:bg-gray-800/50 transition-colors">
+                              <td className="p-2 sm:p-2 text-gray-300">
+                                <div className="flex items-center gap-1 sm:gap-2">
+                                  <OptimizedImage 
+                                    src={tableItemIcons[74988] || "https://render.guildwars2.com/file/6B604A6F7A5A4A4A4A4A4A4A4A4A4A4A4A4A4A4A/66950.png"} 
+                                    alt="Flax Blossom" 
+                                    className="w-5 h-5 sm:w-6 sm:h-6 md:w-8 md:h-8 flex-shrink-0"
+                                    priority
+                                  />
+                                  <span className="text-xs truncate">{tableItemNames[74988] || 'Flax Blossom'}</span>
+                                </div>
+                              </td>
+                              <td className="p-1 sm:p-1 md:p-2 text-center text-blue-400 font-semibold text-xs">{getUMDroprate(74988)}</td>
+                              <td className="p-1 sm:p-2 md:p-3 text-center text-green-400 font-semibold text-xs whitespace-nowrap">
+                                {isLoadingPrices ? <Loader2 className="w-3 h-3 sm:w-4 sm:h-4 animate-spin mx-auto" /> : formatGW2Price(calculateBasePrice(74988, getUMDroprate(74988)))}
+                              </td>
+                              <td className="p-1 sm:p-2 md:p-3 text-center text-yellow-400 font-semibold text-xs whitespace-nowrap">
+                                {isLoadingPrices ? t('craftingPage.calculating', 'Calculando...') : formatGW2Price(calculateUMProfitMax(74988))}
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                    
+                    {/* Separador visual */}
+                    <div className="my-6 sm:my-8 border-t-2 border-gray-600/50"></div>
+                    
+                    {/* Tabla de Trofeos Comunes (Droprate 4.99) */}
+                    <div className="mb-6 sm:mb-8">                    
+                      <div className="overflow-x-auto">
+                        <table className="w-full text-xs min-w-[400px] sm:min-w-[500px] md:min-w-[600px]">
+                          <thead>
+                            <tr className="border-b border-gray-700 bg-gray-800/60">
+                              <th className="text-left p-2 sm:p-3 text-gray-200 font-semibold text-xs">{t('craftingPage.table.item', 'Item')}</th>
+                              <th className="p-1 sm:p-2 md:p-3 text-center text-gray-200 font-semibold text-xs">{t('craftingPage.table.droprate', 'Droprate')}</th>
+                              <th className="p-1 sm:p-2 md:p-3 text-center text-gray-200 font-semibold text-xs">{t('craftingPage.table.basePrice', 'Precio BASE')}</th>
+                              <th className="p-1 sm:p-2 md:p-3 text-center text-gray-200 font-semibold text-xs">{t('craftingPage.table.profitMax', 'Profit Max')}</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            <tr className="border-b border-gray-800 hover:bg-gray-800/50 transition-colors">
+                              <td className="p-2 sm:p-2 text-gray-300">
+                                <div className="flex items-center gap-1 sm:gap-2">
+                                  <OptimizedImage 
+                                    src="https://render.guildwars2.com/file/99AAE49EABF9A2415940FDB83CA1CE5E6E256020/66949.png" 
+                                    alt="Vial de sangre potente" 
+                                    className="w-6 h-6 sm:w-8 sm:h-8 flex-shrink-0"
+                                    priority
+                                  />
+                                  <span className="text-xs truncate">{tableItemNames[24294] || 'Vial de sangre potente'}</span>
+                                </div>
+                              </td>
+                              <td className="p-1 sm:p-1 md:p-2 text-center text-blue-400 font-semibold text-xs">4.99</td>
+                              <td className="p-1 sm:p-2 md:p-3 text-center text-green-400 font-semibold text-xs whitespace-nowrap">
+                                {isLoadingPrices ? <Loader2 className="w-3 h-3 sm:w-4 sm:h-4 animate-spin mx-auto" /> : formatGW2Price(calculateBasePriceComunes(24294, 4.99))}
+                              </td>
+                              <td className="p-1 sm:p-2 md:p-3 text-center text-gray-400 font-semibold text-xs whitespace-nowrap">00G 00S 00C</td>
+                            </tr>
+                            <tr className="border-b border-gray-800 hover:bg-gray-800/50 transition-colors">
+                              <td className="p-2 sm:p-2 text-gray-300">
+                                <div className="flex items-center gap-1 sm:gap-2">
+                                  <OptimizedImage 
+                                    src="https://render.guildwars2.com/file/13F077BA5D5C6324CFCB0A2E39050F24A441190B/66987.png" 
+                                    alt="Hueso grande" 
+                                    className="w-6 h-6 sm:w-8 sm:h-8 flex-shrink-0"
+                                    priority
+                                  />
+                                  <span className="text-xs truncate">{tableItemNames[24341] || 'Hueso grande'}</span>
+                                </div>
+                              </td>
+                              <td className="p-1 sm:p-1 md:p-2 text-center text-blue-400 font-semibold text-xs">4.99</td>
+                              <td className="p-1 sm:p-2 md:p-3 text-center text-green-400 font-semibold text-xs whitespace-nowrap">
+                                {isLoadingPrices ? <Loader2 className="w-3 h-3 sm:w-4 sm:h-4 animate-spin mx-auto" /> : formatGW2Price(calculateBasePriceComunes(24341, 4.99))}
+                              </td>
+                              <td className="p-1 sm:p-2 md:p-3 text-center text-gray-400 font-semibold text-xs whitespace-nowrap">00G 00S 00C</td>
+                            </tr>
+                            <tr className="border-b border-gray-800 hover:bg-gray-800/50 transition-colors">
+                              <td className="p-2 sm:p-2 text-gray-300">
+                                <div className="flex items-center gap-1 sm:gap-2">
+                                  <OptimizedImage 
+                                    src="https://render.guildwars2.com/file/3A4D64F4CE2951F358DE0AFCEA6551050FB4B4A7/66420.png" 
+                                    alt="Garra grande" 
+                                    className="w-6 h-6 sm:w-8 sm:h-8 flex-shrink-0"
+                                    priority
+                                  />
+                                  <span className="text-xs truncate">{tableItemNames[24350] || 'Garra grande'}</span>
+                                </div>
+                              </td>
+                              <td className="p-1 sm:p-1 md:p-2 text-center text-blue-400 font-semibold text-xs">4.99</td>
+                              <td className="p-1 sm:p-2 md:p-3 text-center text-green-400 font-semibold text-xs whitespace-nowrap">
+                                {isLoadingPrices ? <Loader2 className="w-3 h-3 sm:w-4 sm:h-4 animate-spin mx-auto" /> : formatGW2Price(calculateBasePriceComunes(24350, 4.99))}
+                              </td>
+                              <td className="p-1 sm:p-2 md:p-3 text-center text-gray-400 font-semibold text-xs whitespace-nowrap">00G 00S 00C</td>
+                            </tr>
+                            <tr className="border-b border-gray-800 hover:bg-gray-800/50 transition-colors">
+                              <td className="p-2 sm:p-2 text-gray-300">
+                                <div className="flex items-center gap-1 sm:gap-2">
+                                  <OptimizedImage 
+                                    src="https://render.guildwars2.com/file/DED4F23E44430C2BE1C0D491145A4946FC7D7C6F/223793.png" 
+                                    alt="Colmillo grande" 
+                                    className="w-6 h-6 sm:w-8 sm:h-8 flex-shrink-0"
+                                    priority
+                                  />
+                                  <span className="text-xs truncate">{tableItemNames[24356] || 'Colmillo grande'}</span>
+                                </div>
+                              </td>
+                              <td className="p-1 sm:p-1 md:p-2 text-center text-blue-400 font-semibold text-xs">4.99</td>
+                              <td className="p-1 sm:p-2 md:p-3 text-center text-green-400 font-semibold text-xs whitespace-nowrap">
+                                {isLoadingPrices ? <Loader2 className="w-3 h-3 sm:w-4 sm:h-4 animate-spin mx-auto" /> : formatGW2Price(calculateBasePriceComunes(24356, 4.99))}
+                              </td>
+                              <td className="p-1 sm:p-2 md:p-3 text-center text-gray-400 font-semibold text-xs whitespace-nowrap">00G 00S 00C</td>
+                            </tr>
+                            <tr className="border-b border-gray-800 hover:bg-gray-800/50 transition-colors">
+                              <td className="p-2 sm:p-2 text-gray-300">
+                                <div className="flex items-center gap-1 sm:gap-2">
+                                  <OptimizedImage 
+                                    src="https://render.guildwars2.com/file/F94ECFFF0FA9C321C108DA34E777B27B0AC9D5F8/66944.png" 
+                                    alt="Escama grande" 
+                                    className="w-6 h-6 sm:w-8 sm:h-8 flex-shrink-0"
+                                    priority
+                                  />
+                                  <span className="text-xs truncate">{tableItemNames[24288] || 'Escama grande'}</span>
+                                </div>
+                              </td>
+                              <td className="p-1 sm:p-1 md:p-2 text-center text-blue-400 font-semibold text-xs">4.99</td>
+                              <td className="p-1 sm:p-2 md:p-3 text-center text-green-400 font-semibold text-xs whitespace-nowrap">
+                                {isLoadingPrices ? <Loader2 className="w-3 h-3 sm:w-4 sm:h-4 animate-spin mx-auto" /> : formatGW2Price(calculateBasePriceComunes(24288, 4.99))}
+                              </td>
+                              <td className="p-1 sm:p-2 md:p-3 text-center text-gray-400 font-semibold text-xs whitespace-nowrap">00G 00S 00C</td>
+                            </tr>
+                            <tr className="border-b border-gray-800 hover:bg-gray-800/50 transition-colors">
+                              <td className="p-2 sm:p-2 text-gray-300">
+                                <div className="flex items-center gap-1 sm:gap-2">
+                                  <OptimizedImage 
+                                    src="https://render.guildwars2.com/file/4DBC299E4B036A0DD3119A0F06BACA147C03B5C7/66954.png" 
+                                    alt="Tótem intrincado" 
+                                    className="w-6 h-6 sm:w-8 sm:h-8 flex-shrink-0"
+                                    priority
+                                  />
+                                  <span className="text-xs truncate">{tableItemNames[24299] || 'Tótem intrincado'}</span>
+                                </div>
+                              </td>
+                              <td className="p-1 sm:p-1 md:p-2 text-center text-blue-400 font-semibold text-xs">4.99</td>
+                              <td className="p-1 sm:p-2 md:p-3 text-center text-green-400 font-semibold text-xs whitespace-nowrap">
+                                {isLoadingPrices ? <Loader2 className="w-3 h-3 sm:w-4 sm:h-4 animate-spin mx-auto" /> : formatGW2Price(calculateBasePriceComunes(24299, 4.99))}
+                              </td>
+                              <td className="p-1 sm:p-2 md:p-3 text-center text-gray-400 font-semibold text-xs whitespace-nowrap">00G 00S 00C</td>
+                            </tr>
+                            <tr className="border-b border-gray-800 hover:bg-gray-800/50 transition-colors">
+                              <td className="p-2 sm:p-2 text-gray-300">
+                                <div className="flex items-center gap-1 sm:gap-2">
+                                  <OptimizedImage 
+                                    src="https://render.guildwars2.com/file/EA6A4C91F561EC5667947AEFE4CA436D0631CBE3/66938.png" 
+                                    alt="Vesícula de veneno potente" 
+                                    className="w-6 h-6 sm:w-8 sm:h-8 flex-shrink-0"
+                                    priority
+                                  />
+                                  <span className="text-xs truncate">{tableItemNames[24282] || 'Vesícula de veneno potente'}</span>
+                                </div>
+                              </td>
+                              <td className="p-1 sm:p-1 md:p-2 text-center text-blue-400 font-semibold text-xs">4.99</td>
+                              <td className="p-1 sm:p-2 md:p-3 text-center text-green-400 font-semibold text-xs whitespace-nowrap">
+                                {isLoadingPrices ? <Loader2 className="w-3 h-3 sm:w-4 sm:h-4 animate-spin mx-auto" /> : formatGW2Price(calculateBasePriceComunes(24282, 4.99))}
+                              </td>
+                              <td className="p-1 sm:p-2 md:p-3 text-center text-gray-400 font-semibold text-xs whitespace-nowrap">00G 00S 00C</td>
+                            </tr>
+                            <tr className="border-b border-gray-800 hover:bg-gray-800/50 transition-colors">
+                              <td className="p-2 sm:p-2 text-gray-300">
+                                <div className="flex items-center gap-1 sm:gap-2">
+                                  <OptimizedImage 
+                                    src="https://render.guildwars2.com/file/3501C2BBADF95BE5F14E31484850E851EFCA33CB/434536.png" 
+                                    alt="Montón de polvo incandescente" 
+                                    className="w-6 h-6 sm:w-8 sm:h-8 flex-shrink-0"
+                                    priority
+                                  />
+                                  <span className="text-xs truncate">{tableItemNames[24276] || 'Montón de polvo incandescente'}</span>
+                                </div>
+                              </td>
+                              <td className="p-1 sm:p-1 md:p-2 text-center text-blue-400 font-semibold text-xs">4.99</td>
+                              <td className="p-1 sm:p-2 md:p-3 text-center text-green-400 font-semibold text-xs whitespace-nowrap">
+                                {isLoadingPrices ? <Loader2 className="w-3 h-3 sm:w-4 sm:h-4 animate-spin mx-auto" /> : formatGW2Price(calculateBasePriceComunes(24276, 4.99))}
+                              </td>
+                              <td className="p-1 sm:p-2 md:p-3 text-center text-gray-400 font-semibold text-xs whitespace-nowrap">00G 00S 00C</td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
                     </div>
                   </div>
                 </div>
