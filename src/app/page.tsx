@@ -22,7 +22,7 @@ import {
 } from 'lucide-react'
 import { usePageTitle } from '@/hooks/usePageTitle'
 import { useI18n } from '@/contexts/I18nContext'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 
 interface DashboardCard {
   id: string
@@ -36,6 +36,109 @@ interface DashboardCard {
   order: number
 }
 
+// Configuración inicial de las tarjetas - movida fuera del componente para evitar recreación
+const initialCards: DashboardCard[] = [
+  {
+    id: "farms",
+    title: "dashboard.farms.title",
+    description: "dashboard.farms.description",
+    href: "/farming-routes",
+    icon: <Route className="w-8 h-8" />,
+    color: "from-blue-500 to-blue-600",
+    delay: 0.1,
+    visible: true,
+    order: 0
+  },
+  {
+    id: "dailyRoutine",
+    title: "dashboard.dailyRoutine.title",
+    description: "dashboard.dailyRoutine.description",
+    href: "/daily-routine",
+    icon: <Clock className="w-8 h-8" />,
+    color: "from-green-500 to-green-600",
+    delay: 0.2,
+    visible: true,
+    order: 1
+  },
+  {
+    id: "salvaging",
+    title: "dashboard.salvaging.title",
+    description: "dashboard.salvaging.description",
+    href: "/salvage",
+    icon: <Package className="w-8 h-8" />,
+    color: "from-orange-500 to-orange-600",
+    delay: 0.3,
+    visible: true,
+    order: 2
+  },
+  {
+    id: "crafting",
+    title: "dashboard.crafting.title",
+    description: "dashboard.crafting.description",
+    href: "/crafting",
+    icon: <Hammer className="w-8 h-8" />,
+    color: "from-purple-500 to-purple-600",
+    delay: 0.4,
+    visible: true,
+    order: 3
+  },
+  {
+    id: "festivals",
+    title: "dashboard.festivals.title",
+    description: "dashboard.festivals.description",
+    href: "/festivals",
+    icon: <Gift className="w-8 h-8" />,
+    color: "from-pink-500 to-pink-600",
+    delay: 0.5,
+    visible: true,
+    order: 4
+  },
+  {
+    id: "farmingTracker",
+    title: "dashboard.farmingTracker.title",
+    description: "dashboard.farmingTracker.description",
+    href: "/fractals",
+    icon: <BarChart3 className="w-8 h-8" />,
+    color: "from-indigo-500 to-indigo-600",
+    delay: 0.6,
+    visible: true,
+    order: 5
+  },
+  {
+    id: "buyout",
+    title: "dashboard.buyout.title",
+    description: "dashboard.buyout.description",
+    href: "/buyout",
+    icon: <Package className="w-8 h-8" />,
+    color: "from-yellow-500 to-yellow-600",
+    delay: 0.7,
+    visible: false,
+    order: 6
+  },
+  {
+    id: "glossary",
+    title: "dashboard.glossary.title",
+    description: "dashboard.glossary.description",
+    href: "/glossary",
+    icon: <BookOpen className="w-8 h-8" />,
+    color: "from-teal-500 to-teal-600",
+    delay: 0.8,
+    visible: false,
+    order: 7
+  },
+  {
+    id: "orrianJewelry",
+    title: "dashboard.orrianJewelry.title",
+    description: "dashboard.orrianJewelry.description",
+    href: "/orrian-jewelry-box",
+    icon: <Gift className="w-8 h-8" />,
+    color: "from-rose-500 to-rose-600",
+    delay: 0.9,
+    visible: false,
+    order: 8
+  }
+];
+
 export default function HomePage() {
   usePageTitle('pageTitles.home', 'Home');
   const { t } = useI18n();
@@ -45,109 +148,6 @@ export default function HomePage() {
   const [dashboardCards, setDashboardCards] = useState<DashboardCard[]>([]);
   const [originalCards, setOriginalCards] = useState<DashboardCard[]>([]);
   const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
-  
-  // Configuración inicial de las tarjetas
-  const initialCards: DashboardCard[] = [
-    {
-      id: "farms",
-      title: "dashboard.farms.title",
-      description: "dashboard.farms.description",
-      href: "/farming-routes",
-      icon: <Route className="w-8 h-8" />,
-      color: "from-blue-500 to-blue-600",
-      delay: 0.1,
-      visible: true,
-      order: 0
-    },
-    {
-      id: "dailyRoutine",
-      title: "dashboard.dailyRoutine.title",
-      description: "dashboard.dailyRoutine.description",
-      href: "/daily-routine",
-      icon: <Clock className="w-8 h-8" />,
-      color: "from-green-500 to-green-600",
-      delay: 0.2,
-      visible: true,
-      order: 1
-    },
-    {
-      id: "salvaging",
-      title: "dashboard.salvaging.title",
-      description: "dashboard.salvaging.description",
-      href: "/salvage",
-      icon: <Package className="w-8 h-8" />,
-      color: "from-orange-500 to-orange-600",
-      delay: 0.3,
-      visible: true,
-      order: 2
-    },
-    {
-      id: "crafting",
-      title: "dashboard.crafting.title",
-      description: "dashboard.crafting.description",
-      href: "/crafting",
-      icon: <Hammer className="w-8 h-8" />,
-      color: "from-purple-500 to-purple-600",
-      delay: 0.4,
-      visible: true,
-      order: 3
-    },
-    {
-      id: "festivals",
-      title: "dashboard.festivals.title",
-      description: "dashboard.festivals.description",
-      href: "/festivals",
-      icon: <Gift className="w-8 h-8" />,
-      color: "from-pink-500 to-pink-600",
-      delay: 0.5,
-      visible: true,
-      order: 4
-    },
-    {
-      id: "farmingTracker",
-      title: "dashboard.farmingTracker.title",
-      description: "dashboard.farmingTracker.description",
-      href: "/fractals",
-      icon: <BarChart3 className="w-8 h-8" />,
-      color: "from-indigo-500 to-indigo-600",
-      delay: 0.6,
-      visible: true,
-      order: 5
-    },
-    {
-      id: "buyout",
-      title: "dashboard.buyout.title",
-      description: "dashboard.buyout.description",
-      href: "/buyout",
-      icon: <Package className="w-8 h-8" />,
-      color: "from-yellow-500 to-yellow-600",
-      delay: 0.7,
-      visible: false,
-      order: 6
-    },
-    {
-      id: "glossary",
-      title: "dashboard.glossary.title",
-      description: "dashboard.glossary.description",
-      href: "/glossary",
-      icon: <BookOpen className="w-8 h-8" />,
-      color: "from-teal-500 to-teal-600",
-      delay: 0.8,
-      visible: false,
-      order: 7
-    },
-    {
-      id: "orrianJewelry",
-      title: "dashboard.orrianJewelry.title",
-      description: "dashboard.orrianJewelry.description",
-      href: "/orrian-jewelry-box",
-      icon: <Gift className="w-8 h-8" />,
-      color: "from-rose-500 to-rose-600",
-      delay: 0.9,
-      visible: false,
-      order: 8
-    }
-  ];
 
   // Función para reconstruir iconos desde los datos guardados
   const reconstructCardWithIcon = (savedCard: Omit<DashboardCard, 'icon'>): DashboardCard => {
@@ -187,7 +187,7 @@ export default function HomePage() {
       setDashboardCards(initialCards);
       setOriginalCards(initialCards);
     }
-  }, [initialCards]);
+  }, []); // Array de dependencias vacío ya que initialCards es ahora una constante
 
   // Guardar configuración en localStorage
   const saveDashboardConfig = (cards: DashboardCard[]) => {
