@@ -883,7 +883,13 @@ const CraftingPage = () => {
   // Función para calcular precio base: sell * 0.9 * droprate (para trofeos raros)
   const calculateBasePrice = useCallback((itemId: number, droprate: number) => {
     const price = itemPrices[itemId];
-    if (!price || !price.sells || !price.sells.unit_price) return 0;
+    if (!price || !price.sells || !price.sells.unit_price) {
+      // Para items que no tienen precio de mercado, usar precio fijo
+      if (itemId === 19675) { // Mystic Clover
+        return 2530 / 10000; // 00G 25S 30C convertido a oro
+      }
+      return 0;
+    }
     
     // sell * 0.9 * droprate (convertir de cobre a oro)
     const basePrice = (price.sells.unit_price * 0.9 * droprate) / 10000; // 10000 cobre = 1 oro
@@ -917,7 +923,7 @@ const CraftingPage = () => {
       68063: 0,     // 0
       76179: 223,   // 00G 02S 23C
       70957: 205,   // 00G 02S 05C
-      19675: 2530,     // 0 (Mystic Clover)
+      19675: 0,  // 00G 25S 30C (Mystic Clover)
       37897: 0,     // 0
       48884: 140,   // 00G 01S 40C
       24305: 742,   // 00G 07S 42C
@@ -979,17 +985,105 @@ const CraftingPage = () => {
     return droprates[itemId] || 0;
   }, []);
 
+  // Funciones para calcular ProfitMax individuales de trofeos raros de Magia Liberada
+  const calculateUMProfitMax24295 = useCallback(() => {
+    const resultadoFinal = calculateResultadoFinal();
+    const droprate = 0.436;
+    const cantidad = 1;
+    return resultadoFinal >= 1 ? (resultadoFinal / cantidad) * droprate : 0;
+  }, [calculateResultadoFinal]);
+
+  const calculateUMProfitMax24358 = useCallback(() => {
+    const resultadoFinal = calculateResultadoFinalTerceraSeccion();
+    const droprate = 0.436;
+    const cantidad = 1;
+    return resultadoFinal >= 1 ? (resultadoFinal / cantidad) * droprate : 0;
+  }, [calculateResultadoFinalTerceraSeccion]);
+
+  const calculateUMProfitMax24351 = useCallback(() => {
+    const resultadoFinal = calculateResultadoFinalCuartaSeccion();
+    const droprate = 0.436;
+    const cantidad = 5;
+    return resultadoFinal >= 0 ? (resultadoFinal / cantidad) * droprate:1;
+  }, [calculateResultadoFinalCuartaSeccion]);
+
+  const calculateUMProfitMax24357 = useCallback(() => {
+    const resultadoFinal = calculateResultadoFinalQuintaSeccion();
+    const droprate = 0.436;
+    return resultadoFinal >= 1 ? droprate * resultadoFinal : 0;
+  }, [calculateResultadoFinalQuintaSeccion]);
+
+  const calculateUMProfitMax24289 = useCallback(() => {
+    const resultadoFinal = calculateResultadoFinalSextaSeccion();
+    const droprate = 0.436;
+    return resultadoFinal >= 1 ? droprate * resultadoFinal : 0;
+  }, [calculateResultadoFinalSextaSeccion]);
+
+  const calculateUMProfitMax24300 = useCallback(() => {
+    const resultadoFinal = calculateResultadoFinalQuintaSeccion(); // Esto es I36
+    const cantidadFija = 7; // Esto es D34 (número fijo x5)
+    const droprate = 0.436; // Droprate para magia liberada
+    
+    // Aplicar la fórmula condicional: SI(I36>=1, (I36/D34)*0.496, "0")
+    if (resultadoFinal >= 0) {
+      const resultadoConDroprate = (resultadoFinal / cantidadFija) * droprate;
+      return resultadoConDroprate;
+    } else {
+      return 0; // Si I36 < 1, retornar 0
+    }
+  }, [calculateResultadoFinalQuintaSeccion]);
+
+  const calculateUMProfitMax24283 = useCallback(() => {
+    const resultadoFinal = calculateResultadoFinalSextaSeccion(); // Esto es I43
+    const cantidadFija = 9; // Esto es D41 (número fijo x5)
+    const droprate = 0.436; // Droprate para magia liberada
+    
+    // Aplicar la fórmula condicional: SI(I43>=1, (I43/D41)*0.436, "0")
+    if (resultadoFinal >= 0) {
+      const resultadoConDroprate = (resultadoFinal / cantidadFija) * droprate;
+      return resultadoConDroprate;
+    } else {
+      return 0; // Si I43 < 1, retornar 0
+    }
+  }, [calculateResultadoFinalSextaSeccion]);
+
+  const calculateUMProfitMax24277 = useCallback(() => {
+    const resultadoFinal = calculateResultadoFinalSeptimaSeccion();
+    const droprate = 0.436;
+    const cantidad = 3;
+    return resultadoFinal >= 0 ? (resultadoFinal / cantidad) * droprate : 0;
+  }, [calculateResultadoFinalSeptimaSeccion]);
+
+  // Función para calcular el RESULTADO FINAL CON DROPRATE para Magia Liberada (similar a VM)
+  const calculateResultadoFinalConDroprateUM = useCallback(() => {
+    const resultadoFinal = calculateResultadoFinal();
+    const droprate = 0.436; // Droprate específico para UM
+    
+    // Fórmula: SI(resultadoFinal >= 1, droprate * resultadoFinal, 0)
+    let resultadoConDroprate = 1;
+    
+    if (resultadoFinal >= 1) {
+      resultadoConDroprate = droprate * resultadoFinal;
+    } else {
+      resultadoConDroprate = 1;
+    }
+    
+    return resultadoConDroprate;
+  }, [calculateResultadoFinal]);
+
   // Función para calcular la suma total de ProfitMax para Magia Liberada
   const calculateTotalProfitMaxUM = useCallback(() => {
-    // Para Magia Liberada calculamos usando los valores específicos de UM
+    // ProfitMax de Raros para UM (usando la misma lógica que VM pero con droprate 0.436)
+    const profitMaxRarosUM = calculateResultadoFinalConDroprateUM();
+    
     // Sumar todos los ProfitMax de los items individuales de magia liberada
     const allUMItemIds = [
       // Trofeos raros (T6)
       24295, 24358, 24351, 24357, 24289, 24300, 24283, 24277,
-      // Trofeos comunes (T5) 
-      24294, 24341, 24350, 24356, 24288, 24299, 24282, 24276,
       // Otros items de UM
-      19721, 24370, 68063, 76179, 70957, 19675, 37897, 48884
+      19721, 24370, 68063, 76179, 70957, 19675, 37897, 48884,
+      // Lodestones y otros items de UM
+      24305, 24310, 24315, 24320, 24325, 24330, 70842, 68942, 24335, 72504, 76491, 75654, 72315, 74988
     ];
     
     // Calcular la suma de todos los ProfitMax de UM
@@ -997,11 +1091,31 @@ const CraftingPage = () => {
       return total + calculateUMProfitMax(itemId);
     }, 0);
     
-    // Valor de Total Caja para UM (trofeos raros + comunes)
-    const totalCajaUM = calculateTableTotal(trofeosRarosUMIds, 1.0078) + calculateTableTotal(trofeosComunesUMIds, 4.99, true);
+    // Valor de Total Caja para UM (sumar todos los items de la tabla)
+    const totalCajaUM = allUMItemIds.reduce((total, itemId) => {
+      const droprate = getUMDroprate(itemId);
+      return total + calculateBasePrice(itemId, droprate);
+    }, 0);
     
-    return totalProfitMaxUM + totalCajaUM;
-  }, [calculateUMProfitMax, trofeosRarosUMIds, trofeosComunesUMIds]);
+    return profitMaxRarosUM + totalProfitMaxUM + totalCajaUM;
+  }, [calculateResultadoFinalConDroprateUM, calculateUMProfitMax, getUMDroprate, calculateBasePrice]);
+
+  // Función para calcular el total de PrecioBASE de todos los items de UM
+  const calculateTotalUMBasePrice = useCallback(() => {
+    const allUMItemIds = [
+      // Trofeos raros (T6)
+      24295, 24358, 24351, 24357, 24289, 24300, 24283, 24277,
+      // Otros items de UM
+      19721, 24370, 68063, 76179, 70957, 19675, 37897, 48884,
+      // Lodestones y otros items de UM
+      24305, 24310, 24315, 24320, 24325, 24330, 70842, 68942, 24335, 72504, 76491, 75654, 72315, 74988
+    ];
+    
+    return allUMItemIds.reduce((total, itemId) => {
+      const droprate = getUMDroprate(itemId);
+      return total + calculateBasePrice(itemId, droprate);
+    }, 0);
+  }, [getUMDroprate, calculateBasePrice]);
 
   // Función para formatear precio en formato GW2
   const formatGW2Price = useCallback((priceInGold: number) => {
@@ -2659,7 +2773,7 @@ const CraftingPage = () => {
                       <h6 className="text-xs font-bold text-gray-300 mb-2 text-center">{t('craftingPage.table.totalBox', 'Total Caja')}</h6>
                       <div className="text-center">
                         <p className="text-green-400 font-bold text-sm sm:text-lg">
-                          {t('craftingPage.table.min', 'Min')}: {isLoadingPrices ? <Loader2 className="w-3 h-3 sm:w-4 sm:h-4 animate-spin mx-auto" /> : formatGW2Price(calculateTableTotal(trofeosRarosUMIds, 1.0078) + calculateTableTotal(trofeosComunesUMIds, 4.99, true))}
+                          {t('craftingPage.table.min', 'Min')}: {isLoadingPrices ? <Loader2 className="w-3 h-3 sm:w-4 sm:h-4 animate-spin mx-auto" /> : formatGW2Price(calculateTotalUMBasePrice())}
                         </p>
                         <p className="text-green-400 font-bold text-sm sm:text-lg">
                           {t('craftingPage.table.max', 'Max')}: {isLoadingPrices ? t('craftingPage.calculating', 'Calculando...') : formatGW2Price(calculateTotalProfitMaxUM())}
@@ -2670,7 +2784,7 @@ const CraftingPage = () => {
                       <h6 className="text-xs font-bold text-gray-300 mb-2 text-center">{t('craftingPage.table.profitBox', 'Profit Caja')}</h6>
                       <div className="text-center">
                         <p className="text-yellow-400 font-bold text-sm sm:text-lg">
-                          {t('craftingPage.table.min', 'Min')}: {isLoadingPrices ? <Loader2 className="w-3 h-3 sm:w-4 sm:h-4 animate-spin mx-auto" /> : formatGW2Price((calculateTableTotal(trofeosRarosUMIds, 1.0078) + calculateTableTotal(trofeosComunesUMIds, 4.99, true)) - 1)}
+                          {t('craftingPage.table.min', 'Min')}: {isLoadingPrices ? <Loader2 className="w-3 h-3 sm:w-4 sm:h-4 animate-spin mx-auto" /> : formatGW2Price(calculateTotalUMBasePrice() - 1)}
                         </p>
                         <p className="text-yellow-400 font-bold text-sm sm:text-lg">
                           {t('craftingPage.table.max', 'Max')}: {isLoadingPrices ? t('craftingPage.calculating', 'Calculando...') : formatGW2Price(calculateTotalProfitMaxUM() - 1)}
@@ -2681,7 +2795,7 @@ const CraftingPage = () => {
                       <h6 className="text-xs font-bold text-gray-300 mb-2 text-center">{t('craftingPage.table.profitUM', 'Profit UM')}</h6>
                       <div className="text-center">
                         <p className="text-blue-400 font-bold text-sm sm:text-lg">
-                          {t('craftingPage.table.min', 'Min')}: {isLoadingPrices ? <Loader2 className="w-3 h-3 sm:w-4 sm:h-4 animate-spin mx-auto" /> : formatGW2Price(((calculateTableTotal(trofeosRarosUMIds, 1.0078) + calculateTableTotal(trofeosComunesUMIds, 4.99, true)) - 1) / 250)}
+                          {t('craftingPage.table.min', 'Min')}: {isLoadingPrices ? <Loader2 className="w-3 h-3 sm:w-4 sm:h-4 animate-spin mx-auto" /> : formatGW2Price((calculateTotalUMBasePrice() - 1) / 250)}
                         </p>
                         <p className="text-blue-400 font-bold text-sm sm:text-lg">
                           {t('craftingPage.table.max', 'Max')}: {isLoadingPrices ? t('craftingPage.calculating', 'Calculando...') : formatGW2Price((calculateTotalProfitMaxUM() - 1) / 250)}
@@ -2755,7 +2869,7 @@ const CraftingPage = () => {
                                 {isLoadingPrices ? <Loader2 className="w-3 h-3 sm:w-4 sm:h-4 animate-spin mx-auto" /> : formatGW2Price(calculateBasePrice(24295, getUMDroprate(24295)))}
                               </td>
                               <td className="p-1 sm:p-2 md:p-3 text-center text-yellow-400 font-semibold text-xs whitespace-nowrap">
-                                {isLoadingPrices ? t('craftingPage.calculating', 'Calculando...') : formatGW2Price(calculateUMProfitMax(24295))}
+                                {isLoadingPrices ? t('craftingPage.calculating', 'Calculando...') : formatGW2Price(calculateUMProfitMax24295())}
                               </td>
                             </tr>
                             <tr className="border-b border-gray-800 hover:bg-gray-800/50 transition-colors">
@@ -2775,7 +2889,7 @@ const CraftingPage = () => {
                                 {isLoadingPrices ? <Loader2 className="w-3 h-3 sm:w-4 sm:h-4 animate-spin mx-auto" /> : formatGW2Price(calculateBasePrice(24358, getUMDroprate(24358)))}
                               </td>
                               <td className="p-1 sm:p-2 md:p-3 text-center text-yellow-400 font-semibold text-xs whitespace-nowrap">
-                                {isLoadingPrices ? t('craftingPage.calculating', 'Calculando...') : formatGW2Price(calculateUMProfitMax(24358))}
+                                {isLoadingPrices ? t('craftingPage.calculating', 'Calculando...') : formatGW2Price(calculateUMProfitMax24358())}
                               </td>
                             </tr>
                             <tr className="border-b border-gray-800 hover:bg-gray-800/50 transition-colors">
@@ -2794,7 +2908,7 @@ const CraftingPage = () => {
                               <td className="p-1 sm:p-2 md:p-3 text-center text-green-400 font-semibold text-xs whitespace-nowrap">
                                 {isLoadingPrices ? <Loader2 className="w-3 h-3 sm:w-4 sm:h-4 animate-spin mx-auto" /> : formatGW2Price(calculateBasePrice(24351, getUMDroprate(24351)))}
                               </td>
-                              <td className="p-1 sm:p-2 md:p-3 text-center text-yellow-400 font-semibold text-xs whitespace-nowrap">{isLoadingPrices ? t('craftingPage.calculating', 'Calculando...') : formatGW2Price(calculateUMProfitMax(24351))}</td>
+                              <td className="p-1 sm:p-2 md:p-3 text-center text-yellow-400 font-semibold text-xs whitespace-nowrap">{isLoadingPrices ? t('craftingPage.calculating', 'Calculando...') : formatGW2Price(calculateUMProfitMax24351())}</td>
                             </tr>
                             <tr className="border-b border-gray-800 hover:bg-gray-800/50 transition-colors">
                               <td className="p-2 sm:p-2 text-gray-300">
@@ -2812,7 +2926,7 @@ const CraftingPage = () => {
                               <td className="p-1 sm:p-2 md:p-3 text-center text-green-400 font-semibold text-xs whitespace-nowrap">
                                 {isLoadingPrices ? <Loader2 className="w-3 h-3 sm:w-4 sm:h-4 animate-spin mx-auto" /> : formatGW2Price(calculateBasePrice(24357, getUMDroprate(24357)))}
                               </td>
-                              <td className="p-1 sm:p-2 md:p-3 text-center text-yellow-400 font-semibold text-xs whitespace-nowrap">{isLoadingPrices ? t('craftingPage.calculating', 'Calculando...') : formatGW2Price(calculateUMProfitMax(24357))}</td>
+                              <td className="p-1 sm:p-2 md:p-3 text-center text-yellow-400 font-semibold text-xs whitespace-nowrap">{isLoadingPrices ? t('craftingPage.calculating', 'Calculando...') : formatGW2Price(calculateUMProfitMax24357())}</td>
                             </tr>
                             <tr className="border-b border-gray-800 hover:bg-gray-800/50 transition-colors">
                               <td className="p-2 sm:p-2 text-gray-300">
@@ -2830,7 +2944,7 @@ const CraftingPage = () => {
                               <td className="p-1 sm:p-2 md:p-3 text-center text-green-400 font-semibold text-xs whitespace-nowrap">
                                 {isLoadingPrices ? <Loader2 className="w-3 h-3 sm:w-4 sm:h-4 animate-spin mx-auto" /> : formatGW2Price(calculateBasePrice(24289, getUMDroprate(24289)))}
                               </td>
-                              <td className="p-1 sm:p-2 md:p-3 text-center text-yellow-400 font-semibold text-xs whitespace-nowrap">{isLoadingPrices ? t('craftingPage.calculating', 'Calculando...') : formatGW2Price(calculateUMProfitMax(24289))}</td>
+                              <td className="p-1 sm:p-2 md:p-3 text-center text-yellow-400 font-semibold text-xs whitespace-nowrap">{isLoadingPrices ? t('craftingPage.calculating', 'Calculando...') : formatGW2Price(calculateUMProfitMax24289())}</td>
                             </tr>
                             <tr className="border-b border-gray-800 hover:bg-gray-800/50 transition-colors">
                               <td className="p-2 sm:p-2 text-gray-300">
@@ -2849,7 +2963,7 @@ const CraftingPage = () => {
                                 {isLoadingPrices ? <Loader2 className="w-3 h-3 sm:w-4 sm:h-4 animate-spin mx-auto" /> : formatGW2Price(calculateBasePrice(24300, getUMDroprate(24300)))}
                               </td>
                               <td className="p-1 sm:p-2 md:p-3 text-center text-yellow-400 font-semibold text-xs whitespace-nowrap">
-                                {isLoadingPrices ? <Loader2 className="w-3 h-3 sm:w-4 sm:h-4 animate-spin mx-auto" /> : formatGW2Price(calculateUMProfitMax(24300))}
+                                {isLoadingPrices ? <Loader2 className="w-3 h-3 sm:w-4 sm:h-4 animate-spin mx-auto" /> : formatGW2Price(calculateUMProfitMax24300())}
                               </td>
                             </tr>
                             <tr className="border-b border-gray-800 hover:bg-gray-800/50 transition-colors">
@@ -2869,7 +2983,7 @@ const CraftingPage = () => {
                                 {isLoadingPrices ? <Loader2 className="w-3 h-3 sm:w-4 sm:h-4 animate-spin mx-auto" /> : formatGW2Price(calculateBasePrice(24283, getUMDroprate(24283)))}
                               </td>
                               <td className="p-1 sm:p-2 md:p-3 text-center text-yellow-400 font-semibold text-xs whitespace-nowrap">
-                                {isLoadingPrices ? <Loader2 className="w-3 h-3 sm:w-4 sm:h-4 animate-spin mx-auto" /> : formatGW2Price(calculateUMProfitMax(24283))}
+                                {isLoadingPrices ? <Loader2 className="w-3 h-3 sm:w-4 sm:h-4 animate-spin mx-auto" /> : formatGW2Price(calculateUMProfitMax24283())}
                               </td>
                             </tr>
                             <tr className="border-b border-gray-800 hover:bg-gray-800/50 transition-colors">
@@ -2889,7 +3003,7 @@ const CraftingPage = () => {
                                 {isLoadingPrices ? <Loader2 className="w-3 h-3 sm:w-4 sm:h-4 animate-spin mx-auto" /> : formatGW2Price(calculateBasePrice(24277, getUMDroprate(24277)))}
                               </td>
                               <td className="p-1 sm:p-2 md:p-3 text-center text-yellow-400 font-semibold text-xs whitespace-nowrap">
-                                {isLoadingPrices ? <Loader2 className="w-3 h-3 sm:w-4 sm:h-4 animate-spin mx-auto" /> : formatGW2Price(calculateUMProfitMax(24277))}
+                                {isLoadingPrices ? <Loader2 className="w-3 h-3 sm:w-4 sm:h-4 animate-spin mx-auto" /> : formatGW2Price(calculateUMProfitMax24277())}
                               </td>
                             </tr>
                             <tr className="border-b border-gray-800 hover:bg-gray-800/50 transition-colors">
@@ -3358,167 +3472,6 @@ const CraftingPage = () => {
                     {/* Separador visual */}
                     <div className="my-6 sm:my-8 border-t-2 border-gray-600/50"></div>
                     
-                    {/* Tabla de Trofeos Comunes (Droprate 4.99) */}
-                    <div className="mb-6 sm:mb-8">                    
-                      <div className="overflow-x-auto">
-                        <table className="w-full text-xs min-w-[400px] sm:min-w-[500px] md:min-w-[600px]">
-                          <thead>
-                            <tr className="border-b border-gray-700 bg-gray-800/60">
-                              <th className="text-left p-2 sm:p-3 text-gray-200 font-semibold text-xs">{t('craftingPage.table.item', 'Item')}</th>
-                              <th className="p-1 sm:p-2 md:p-3 text-center text-gray-200 font-semibold text-xs">{t('craftingPage.table.droprate', 'Droprate')}</th>
-                              <th className="p-1 sm:p-2 md:p-3 text-center text-gray-200 font-semibold text-xs">{t('craftingPage.table.basePrice', 'Precio BASE')}</th>
-                              <th className="p-1 sm:p-2 md:p-3 text-center text-gray-200 font-semibold text-xs">{t('craftingPage.table.profitMax', 'Profit Max')}</th>
-                            </tr>
-                          </thead>
-                          <tbody>
-                            <tr className="border-b border-gray-800 hover:bg-gray-800/50 transition-colors">
-                              <td className="p-2 sm:p-2 text-gray-300">
-                                <div className="flex items-center gap-1 sm:gap-2">
-                                  <OptimizedImage 
-                                    src="https://render.guildwars2.com/file/99AAE49EABF9A2415940FDB83CA1CE5E6E256020/66949.png" 
-                                    alt="Vial de sangre potente" 
-                                    className="w-6 h-6 sm:w-8 sm:h-8 flex-shrink-0"
-                                    priority
-                                  />
-                                  <span className="text-xs truncate">{tableItemNames[24294] || 'Vial de sangre potente'}</span>
-                                </div>
-                              </td>
-                              <td className="p-1 sm:p-1 md:p-2 text-center text-blue-400 font-semibold text-xs">4.99</td>
-                              <td className="p-1 sm:p-2 md:p-3 text-center text-green-400 font-semibold text-xs whitespace-nowrap">
-                                {isLoadingPrices ? <Loader2 className="w-3 h-3 sm:w-4 sm:h-4 animate-spin mx-auto" /> : formatGW2Price(calculateBasePriceComunes(24294, 4.99))}
-                              </td>
-                              <td className="p-1 sm:p-2 md:p-3 text-center text-gray-400 font-semibold text-xs whitespace-nowrap">00G 00S 00C</td>
-                            </tr>
-                            <tr className="border-b border-gray-800 hover:bg-gray-800/50 transition-colors">
-                              <td className="p-2 sm:p-2 text-gray-300">
-                                <div className="flex items-center gap-1 sm:gap-2">
-                                  <OptimizedImage 
-                                    src="https://render.guildwars2.com/file/13F077BA5D5C6324CFCB0A2E39050F24A441190B/66987.png" 
-                                    alt="Hueso grande" 
-                                    className="w-6 h-6 sm:w-8 sm:h-8 flex-shrink-0"
-                                    priority
-                                  />
-                                  <span className="text-xs truncate">{tableItemNames[24341] || 'Hueso grande'}</span>
-                                </div>
-                              </td>
-                              <td className="p-1 sm:p-1 md:p-2 text-center text-blue-400 font-semibold text-xs">4.99</td>
-                              <td className="p-1 sm:p-2 md:p-3 text-center text-green-400 font-semibold text-xs whitespace-nowrap">
-                                {isLoadingPrices ? <Loader2 className="w-3 h-3 sm:w-4 sm:h-4 animate-spin mx-auto" /> : formatGW2Price(calculateBasePriceComunes(24341, 4.99))}
-                              </td>
-                              <td className="p-1 sm:p-2 md:p-3 text-center text-gray-400 font-semibold text-xs whitespace-nowrap">00G 00S 00C</td>
-                            </tr>
-                            <tr className="border-b border-gray-800 hover:bg-gray-800/50 transition-colors">
-                              <td className="p-2 sm:p-2 text-gray-300">
-                                <div className="flex items-center gap-1 sm:gap-2">
-                                  <OptimizedImage 
-                                    src="https://render.guildwars2.com/file/3A4D64F4CE2951F358DE0AFCEA6551050FB4B4A7/66420.png" 
-                                    alt="Garra grande" 
-                                    className="w-6 h-6 sm:w-8 sm:h-8 flex-shrink-0"
-                                    priority
-                                  />
-                                  <span className="text-xs truncate">{tableItemNames[24350] || 'Garra grande'}</span>
-                                </div>
-                              </td>
-                              <td className="p-1 sm:p-1 md:p-2 text-center text-blue-400 font-semibold text-xs">4.99</td>
-                              <td className="p-1 sm:p-2 md:p-3 text-center text-green-400 font-semibold text-xs whitespace-nowrap">
-                                {isLoadingPrices ? <Loader2 className="w-3 h-3 sm:w-4 sm:h-4 animate-spin mx-auto" /> : formatGW2Price(calculateBasePriceComunes(24350, 4.99))}
-                              </td>
-                              <td className="p-1 sm:p-2 md:p-3 text-center text-gray-400 font-semibold text-xs whitespace-nowrap">00G 00S 00C</td>
-                            </tr>
-                            <tr className="border-b border-gray-800 hover:bg-gray-800/50 transition-colors">
-                              <td className="p-2 sm:p-2 text-gray-300">
-                                <div className="flex items-center gap-1 sm:gap-2">
-                                  <OptimizedImage 
-                                    src="https://render.guildwars2.com/file/DED4F23E44430C2BE1C0D491145A4946FC7D7C6F/223793.png" 
-                                    alt="Colmillo grande" 
-                                    className="w-6 h-6 sm:w-8 sm:h-8 flex-shrink-0"
-                                    priority
-                                  />
-                                  <span className="text-xs truncate">{tableItemNames[24356] || 'Colmillo grande'}</span>
-                                </div>
-                              </td>
-                              <td className="p-1 sm:p-1 md:p-2 text-center text-blue-400 font-semibold text-xs">4.99</td>
-                              <td className="p-1 sm:p-2 md:p-3 text-center text-green-400 font-semibold text-xs whitespace-nowrap">
-                                {isLoadingPrices ? <Loader2 className="w-3 h-3 sm:w-4 sm:h-4 animate-spin mx-auto" /> : formatGW2Price(calculateBasePriceComunes(24356, 4.99))}
-                              </td>
-                              <td className="p-1 sm:p-2 md:p-3 text-center text-gray-400 font-semibold text-xs whitespace-nowrap">00G 00S 00C</td>
-                            </tr>
-                            <tr className="border-b border-gray-800 hover:bg-gray-800/50 transition-colors">
-                              <td className="p-2 sm:p-2 text-gray-300">
-                                <div className="flex items-center gap-1 sm:gap-2">
-                                  <OptimizedImage 
-                                    src="https://render.guildwars2.com/file/F94ECFFF0FA9C321C108DA34E777B27B0AC9D5F8/66944.png" 
-                                    alt="Escama grande" 
-                                    className="w-6 h-6 sm:w-8 sm:h-8 flex-shrink-0"
-                                    priority
-                                  />
-                                  <span className="text-xs truncate">{tableItemNames[24288] || 'Escama grande'}</span>
-                                </div>
-                              </td>
-                              <td className="p-1 sm:p-1 md:p-2 text-center text-blue-400 font-semibold text-xs">4.99</td>
-                              <td className="p-1 sm:p-2 md:p-3 text-center text-green-400 font-semibold text-xs whitespace-nowrap">
-                                {isLoadingPrices ? <Loader2 className="w-3 h-3 sm:w-4 sm:h-4 animate-spin mx-auto" /> : formatGW2Price(calculateBasePriceComunes(24288, 4.99))}
-                              </td>
-                              <td className="p-1 sm:p-2 md:p-3 text-center text-gray-400 font-semibold text-xs whitespace-nowrap">00G 00S 00C</td>
-                            </tr>
-                            <tr className="border-b border-gray-800 hover:bg-gray-800/50 transition-colors">
-                              <td className="p-2 sm:p-2 text-gray-300">
-                                <div className="flex items-center gap-1 sm:gap-2">
-                                  <OptimizedImage 
-                                    src="https://render.guildwars2.com/file/4DBC299E4B036A0DD3119A0F06BACA147C03B5C7/66954.png" 
-                                    alt="Tótem intrincado" 
-                                    className="w-6 h-6 sm:w-8 sm:h-8 flex-shrink-0"
-                                    priority
-                                  />
-                                  <span className="text-xs truncate">{tableItemNames[24299] || 'Tótem intrincado'}</span>
-                                </div>
-                              </td>
-                              <td className="p-1 sm:p-1 md:p-2 text-center text-blue-400 font-semibold text-xs">4.99</td>
-                              <td className="p-1 sm:p-2 md:p-3 text-center text-green-400 font-semibold text-xs whitespace-nowrap">
-                                {isLoadingPrices ? <Loader2 className="w-3 h-3 sm:w-4 sm:h-4 animate-spin mx-auto" /> : formatGW2Price(calculateBasePriceComunes(24299, 4.99))}
-                              </td>
-                              <td className="p-1 sm:p-2 md:p-3 text-center text-gray-400 font-semibold text-xs whitespace-nowrap">00G 00S 00C</td>
-                            </tr>
-                            <tr className="border-b border-gray-800 hover:bg-gray-800/50 transition-colors">
-                              <td className="p-2 sm:p-2 text-gray-300">
-                                <div className="flex items-center gap-1 sm:gap-2">
-                                  <OptimizedImage 
-                                    src="https://render.guildwars2.com/file/EA6A4C91F561EC5667947AEFE4CA436D0631CBE3/66938.png" 
-                                    alt="Vesícula de veneno potente" 
-                                    className="w-6 h-6 sm:w-8 sm:h-8 flex-shrink-0"
-                                    priority
-                                  />
-                                  <span className="text-xs truncate">{tableItemNames[24282] || 'Vesícula de veneno potente'}</span>
-                                </div>
-                              </td>
-                              <td className="p-1 sm:p-1 md:p-2 text-center text-blue-400 font-semibold text-xs">4.99</td>
-                              <td className="p-1 sm:p-2 md:p-3 text-center text-green-400 font-semibold text-xs whitespace-nowrap">
-                                {isLoadingPrices ? <Loader2 className="w-3 h-3 sm:w-4 sm:h-4 animate-spin mx-auto" /> : formatGW2Price(calculateBasePriceComunes(24282, 4.99))}
-                              </td>
-                              <td className="p-1 sm:p-2 md:p-3 text-center text-gray-400 font-semibold text-xs whitespace-nowrap">00G 00S 00C</td>
-                            </tr>
-                            <tr className="border-b border-gray-800 hover:bg-gray-800/50 transition-colors">
-                              <td className="p-2 sm:p-2 text-gray-300">
-                                <div className="flex items-center gap-1 sm:gap-2">
-                                  <OptimizedImage 
-                                    src="https://render.guildwars2.com/file/3501C2BBADF95BE5F14E31484850E851EFCA33CB/434536.png" 
-                                    alt="Montón de polvo incandescente" 
-                                    className="w-6 h-6 sm:w-8 sm:h-8 flex-shrink-0"
-                                    priority
-                                  />
-                                  <span className="text-xs truncate">{tableItemNames[24276] || 'Montón de polvo incandescente'}</span>
-                                </div>
-                              </td>
-                              <td className="p-1 sm:p-1 md:p-2 text-center text-blue-400 font-semibold text-xs">4.99</td>
-                              <td className="p-1 sm:p-2 md:p-3 text-center text-green-400 font-semibold text-xs whitespace-nowrap">
-                                {isLoadingPrices ? <Loader2 className="w-3 h-3 sm:w-4 sm:h-4 animate-spin mx-auto" /> : formatGW2Price(calculateBasePriceComunes(24276, 4.99))}
-                              </td>
-                              <td className="p-1 sm:p-2 md:p-3 text-center text-gray-400 font-semibold text-xs whitespace-nowrap">00G 00S 00C</td>
-                            </tr>
-                          </tbody>
-                        </table>
-                      </div>
-                    </div>
                   </div>
                 </div>
               </div>
