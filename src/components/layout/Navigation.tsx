@@ -200,7 +200,7 @@ const Navigation = () => {
   ];
 
   const toolsItems = [
-    { href: '/crafting', label: t('nav.crafting', 'Crafting'), icon: FileText },
+    { href: '/trophy', label: t('dashboard.trophy.title', 'Trophy'), icon: FileText },
     { href: '/festivals', label: t('nav.festivals', 'Festivals'), icon: Calendar },
     { href: '/fractals', label: t('dashboard.farmingTracker.title', 'Fractals'), icon: Map },
     { href: '/glossary', label: t('nav.glossary', 'Glossary'), icon: BookOpen },

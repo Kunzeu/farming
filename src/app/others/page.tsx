@@ -132,7 +132,7 @@ const OtrosPage = () => {
             className="text-center mb-12"
           >
             <div className="flex items-center justify-center mb-4">
-              <Link href="/crafting" className="mr-4 p-2 bg-gray-700 rounded-lg hover:bg-gray-600 transition-colors">
+              <Link href="/trophy" className="mr-4 p-2 bg-gray-700 rounded-lg hover:bg-gray-600 transition-colors">
                 <ArrowLeft className="w-6 h-6 text-white" />
               </Link>
               <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-cyan-600 rounded-full flex items-center justify-center shadow-lg">

@@ -72,11 +72,11 @@ const initialCards: DashboardCard[] = [
     order: 2
   },
   {
-    id: "crafting",
-    title: "dashboard.crafting.title",
-    description: "dashboard.crafting.description",
-    href: "/crafting",
-    icon: <Hammer className="w-8 h-8" />,
+    id: "trophy",
+    title: "dashboard.trophy.title",
+    description: "dashboard.trophy.description",
+    href: "/trophy",
+    icon: <BarChart3 className="w-8 h-8" />,
     color: "from-purple-500 to-purple-600",
     delay: 0.4,
     visible: true,
@@ -126,6 +126,7 @@ const initialCards: DashboardCard[] = [
     visible: false,
     order: 8
   }
+  
 ];
 
 export default function HomePage() {
@@ -144,7 +145,7 @@ export default function HomePage() {
       "farms": <Route className="w-8 h-8" />,
       "dailyRoutine": <Clock className="w-8 h-8" />,
       "salvaging": <Package className="w-8 h-8" />,
-      "crafting": <Hammer className="w-8 h-8" />,
+      "trophy": <Hammer className="w-8 h-8" />,
       "festivals": <Gift className="w-8 h-8" />,
       "farmingTracker": <BarChart3 className="w-8 h-8" />,
       "glossary": <BookOpen className="w-8 h-8" />,

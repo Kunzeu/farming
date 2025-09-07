@@ -15,6 +15,7 @@ import {
   AlertCircle,
   BarChart3,
   Zap,
+  Star,
   Loader2
 } from 'lucide-react';
 import GlossaryLink from '@/components/ui/GlossaryLink';
@@ -126,7 +127,7 @@ const OptimizedImage = ({ src, alt, className, priority = false }: {
 };
 
 const CraftingPage = () => {
-  usePageTitle('pageTitles.crafting', 'Crafting Guide');
+  usePageTitle('dashboard.trophy.title', 'Trofeo');
   const { t, lang } = useI18n();
   const [selectedSection, setSelectedSection] = useState<string>('overview');
   const [conversionData, setConversionData] = useState<ConversionItem[]>([]);
@@ -194,7 +195,7 @@ const CraftingPage = () => {
       // Items para research notes
       12156, 24473, 19700, 24519, 24511, 24475, 19722, 19729, 19748, 68063,
       // Items para cálculos finales
-      97535, 95582, 19912, 24836, 24806, 48917, 7839, 48884, 46735,
+      97535, 95582, 19912, 24836, 24806, 48917, 7839, 48884, 46735, 24821,
       // Items para Magia Liberada
       79186,
       // Items adicionales para UM (según nueva imagen)
@@ -564,6 +565,71 @@ const CraftingPage = () => {
     
     return priceInGold;
   }, [itemPrices]);
+
+  // Funciones para el crafting del item 24289 (Escama blindada)
+  // Ingrediente 1: 89271 x4 (buy)
+  const calculateItem89271x4Price24289 = useCallback(() => {
+    if (!itemPrices || !itemPrices[89271]) return 0;
+    const item = itemPrices[89271];
+    const buyPrice = item.buys?.unit_price || 0;
+    const priceInGold = (buyPrice * 4) / 10000;
+    
+    return priceInGold;
+  }, [itemPrices]);
+
+  // Ingrediente 2: 24289 x5 (buy) - Este es el item que estamos craftando, así que usamos el precio base
+  const calculateItem24289x5Price = useCallback(() => {
+    if (!itemPrices || !itemPrices[24289]) return 0;
+    const item = itemPrices[24289];
+    const buyPrice = item.buys?.unit_price || 0;
+    const priceInGold = (buyPrice * 5) / 10000;
+    
+    return priceInGold;
+  }, [itemPrices]);
+
+  // Ingrediente 3: 89258 x3 (buy)
+  const calculateItem89258x3Price24289 = useCallback(() => {
+    if (!itemPrices || !itemPrices[89258]) return 0;
+    const item = itemPrices[89258];
+    const buyPrice = item.buys?.unit_price || 0;
+    const priceInGold = (buyPrice * 3) / 10000;
+    
+    return priceInGold;
+  }, [itemPrices]);
+
+  // Ingrediente 4: 19721 x5 (sell × 0.9)
+  const calculateItem19721x5Price24289 = useCallback(() => {
+    if (!itemPrices || !itemPrices[19721]) return 0;
+    const item = itemPrices[19721];
+    const sellPrice = item.sells?.unit_price || 0;
+    const priceInGold = (sellPrice * 5 * 0.9) / 10000;
+    
+    return priceInGold;
+  }, [itemPrices]);
+
+  // Resultado: 24821 (sell × 0.85)
+  const calculateItem24821Price = useCallback(() => {
+    if (!itemPrices || !itemPrices[24821]) return 0;
+    const item = itemPrices[24821];
+    const sellPrice = item.sells?.unit_price || 0;
+    const priceInGold = (sellPrice * 0.85) / 10000;
+    
+    return priceInGold;
+  }, [itemPrices]);
+
+  // Suma total de ingredientes para 24289
+  const calculateSumaTotalSeccion24289 = useCallback(() => {
+    return calculateItem89271x4Price24289() + calculateItem24289x5Price() + calculateItem89258x3Price24289() + calculateItem19721x5Price24289();
+  }, [calculateItem89271x4Price24289, calculateItem24289x5Price, calculateItem89258x3Price24289, calculateItem19721x5Price24289]);
+
+  // Resultado final para 24289
+  const calculateResultadoFinalSeccion24289 = useCallback(() => {
+    const sumaTotal = calculateSumaTotalSeccion24289();
+    const precio24821 = calculateItem24821Price();
+    const resultadoFinal = precio24821 - sumaTotal;
+    
+    return resultadoFinal;
+  }, [calculateSumaTotalSeccion24289, calculateItem24821Price]);
 
   // Función para calcular precio del item 24277 × 3 (Pile of Crystalline Dust - sell × 0.9)
   const calculateItem24277x3Price = useCallback(() => {
@@ -1082,7 +1148,7 @@ const CraftingPage = () => {
     
     // Aplicar fórmula de droprate para VM: SI(S57>=0, (S57/5)*1.0078, "0")
     // S57 = resultadoFinal, N55 = 5 (multiplicador), droprate VM = 1.0078
-    if (resultadoFinal >= 0) {
+    if (resultadoFinal >= 1) {
       return (resultadoFinal / 5) * 1.0078;
     } else {
       return 0;
@@ -1090,22 +1156,49 @@ const CraftingPage = () => {
   }, [itemPrices]);
 
   // Función para calcular ProfitMax específicos de VM (Volatile Magic)
+  const calculateVMProfitMax24289 = useCallback(() => {
+    const resultadoFinal = calculateResultadoFinalSeccion24289(); // I22
+    const cantidadFija = 5; // D20
+    const droprate = 1.0078; // F5 (droprate de VM)
+    
+    // Aplicar la fórmula condicional: SI(I22>=1, (I22/D20)*F5, "0")
+    if (resultadoFinal >= 1) {
+      const resultadoConDroprate = (resultadoFinal / cantidadFija) * droprate;
+      return resultadoConDroprate;
+    } else {
+      return 0; // Si I22 < 1, retornar 0
+    }
+  }, [calculateResultadoFinalSeccion24289]);
+
   const calculateVMProfitMax = useCallback((itemId: number) => {
     // Para el item 24357, usar el cálculo dinámico específico para VM
     if (itemId === 24357) {
       return calculateVMProfitMax24357();
     }
     
+    // Para el item 24289, usar el cálculo dinámico específico para VM
+    if (itemId === 24289) {
+      return calculateVMProfitMax24289();
+    }
+    
     // Para otros items, usar el precio base con droprate de VM
     const droprate = 1.0078; // Droprate estándar de VM
     return calculateBasePrice(itemId, droprate);
-  }, [calculateVMProfitMax24357, calculateBasePrice]);
+  }, [calculateVMProfitMax24357, calculateVMProfitMax24289, calculateBasePrice]);
 
   const calculateUMProfitMax24289 = useCallback(() => {
-    const resultadoFinal = calculateResultadoFinalSextaSeccion();
-    const droprate = 0.436;
-    return resultadoFinal >= 1 ? droprate * resultadoFinal : 0;
-  }, [calculateResultadoFinalSextaSeccion]);
+    const resultadoFinal = calculateResultadoFinalSeccion24289(); // I22
+    const cantidadFija = 5; // D20
+    const droprate = 0.436; // F5
+    
+    // Aplicar la fórmula condicional: SI(I22>=1, (I22/D20)*F5, "0")
+    if (resultadoFinal >= 1) {
+      const resultadoConDroprate = (resultadoFinal / cantidadFija) * droprate;
+      return resultadoConDroprate;
+    } else {
+      return 0; // Si I22 < 1, retornar 0
+    }
+  }, [calculateResultadoFinalSeccion24289]);
 
   const calculateUMProfitMax24300 = useCallback(() => {
     const resultadoFinal = calculateResultadoFinalQuintaSeccion(); // Esto es I36
@@ -1898,8 +1991,8 @@ const CraftingPage = () => {
         // Para el item 24357, usar la función específica de VM si el droprate es 1.0078
         if (itemId === 24357 && droprate === 1.0078) {
           total += calculateVMProfitMax24357();
-        } else {
-          total += calculateBasePrice(itemId, droprate);
+      } else {
+        total += calculateBasePrice(itemId, droprate);
         }
       }
     });
@@ -2188,10 +2281,10 @@ const CraftingPage = () => {
               </div>
             </div>
             <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">
-              {t('craftingPage.title', 'Crafting Guide')}
+              {t('craftingPage.t6Analysis', 'Análisis de Materiales T6')}
             </h1>
             <p className="text-xl text-gray-300 max-w-3xl mx-auto">
-              {t('craftingPage.subtitle', 'Everything you need to know about crafting in Guild Wars 2. From professions to profit strategies.')}
+              {t('craftingPage.t6AnalysisDesc', 'Esta calculadora analiza la rentabilidad de convertir materiales de Tier 5 a Tier 6, así como el valor de la Magia Volátil y Magia Liberada. Los datos se basan en análisis de 500k {trophyBoxes} y 400k {magicBoxes} abiertos.').replace('{trophyBoxes}', tableItemNames[85725] || 'Cargamento de trofeos').replace('{magicBoxes}', tableItemNames[79186] || 'Lote retorcido por la magia')}
             </p>
           </motion.div>
 
@@ -2236,34 +2329,67 @@ const CraftingPage = () => {
                 <div className="bg-gray-800/50 backdrop-blur-sm border border-gray-700 rounded-lg p-6">
                   <h2 className="text-2xl font-bold text-white mb-4 flex items-center">
                     <Info className="w-8 h-8 mr-3 text-blue-400" />
-                    {t('craftingPage.whatIsCrafting', 'What is Crafting?')}
+                    {t('craftingPage.t6Analysis', 'Análisis de Materiales T6')}
                   </h2>
                                       <p className="text-gray-300 mb-4">
-                      {t('craftingPage.whatIsCraftingDesc', 'Crafting in Guild Wars 2 is a way to create objects, weapons, armor, and consumables. It\'s an excellent way to earn gold and obtain items for your character.')}
-                    </p>
-                  <div className="text-center mb-4">
-                                          <GlossaryLink>
-                        {t('craftingPage.learnMoreGlossary', 'Learn more crafting concepts in the Glossary')}
-                      </GlossaryLink>
+                    {t('craftingPage.t6AnalysisDesc', 'Esta calculadora analiza la rentabilidad de convertir materiales de Nivel 5 a Nivel 6, así como el valor de la Magia Volátil y Magia Liberada. Los datos se basan en análisis de 500k {trophyBoxes} y 400k {magicBoxes} abiertos.').replace('{trophyBoxes}', tableItemNames[85725] || 'Cargamento de trofeos').replace('{magicBoxes}', tableItemNames[79186] || 'Lote retorcido por la magia')}
+                  </p>
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                    <div className="bg-gradient-to-r from-green-800/30 to-green-700/30 rounded-lg p-4 border border-green-600/30">
+                      <h3 className="text-green-300 font-semibold mb-2 flex items-center">
+                        <Package className="w-5 h-5 mr-2" />
+                        {t('craftingPage.t6Conversions', 'Conversiones T6')}
+                      </h3>
+                      <p className="text-gray-300 text-sm">
+                        {t('craftingPage.t6ConversionsDesc', 'Conversiones rentables de materiales T5 a T6 usando la Forja Mística con análisis de droprate preciso')}
+                      </p>
                   </div>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="bg-gray-700/50 rounded-lg p-4">
-                      <h3 className="text-white font-semibold mb-2">{t('craftingPage.craftingBenefits', 'Crafting Benefits')}</h3>
-                      <ul className="text-gray-300 text-sm space-y-1">
-                        <li>• {t('craftingPage.benefits.createItems', 'Create items for personal use')}</li>
-                        <li>• {t('craftingPage.benefits.sellItems', 'Sell items on the Trading Post')}</li>
-                        <li>• {t('craftingPage.benefits.completeCollections', 'Complete collections and achievements')}</li>
-                        <li>• {t('craftingPage.benefits.gainExperience', 'Gain level experience')}</li>
-                      </ul>
+                    <div className="bg-gradient-to-r from-blue-800/30 to-blue-700/30 rounded-lg p-4 border border-blue-600/30">
+                      <h3 className="text-blue-300 font-semibold mb-2 flex items-center">
+                        <Zap className="w-5 h-5 mr-2" />
+                        {t('craftingPage.volatileMagic', 'Magia Volátil')}
+                      </h3>
+                      <p className="text-gray-300 text-sm">
+                        {t('craftingPage.volatileMagicAnalysis', 'Análisis de valor de la Magia Volátil basado en 500k de {trophyBoxes} abiertos').replace('{trophyBoxes}', tableItemNames[85725] || 'Cargamento de trofeos')}
+                      </p>
                     </div>
-                    <div className="bg-gray-700/50 rounded-lg p-4">
-                      <h3 className="text-white font-semibold mb-2">{t('craftingPage.basicTips', 'Basic Tips')}</h3>
-                      <ul className="text-gray-300 text-sm space-y-1">
-                        <li>• {t('craftingPage.tips.startProfession', 'Start with a profession you like')}</li>
-                        <li>• {t('craftingPage.tips.buyMaterials', 'Buy materials when they\'re cheap')}</li>
-                        <li>• {t('craftingPage.tips.checkPrices', 'Check prices before crafting')}</li>
-                        <li>• {t('craftingPage.tips.useProfitCalculators', 'Use profit calculators')}</li>
-                      </ul>
+                    <div className="bg-gradient-to-r from-purple-800/30 to-purple-700/30 rounded-lg p-4 border border-purple-600/30">
+                      <h3 className="text-purple-300 font-semibold mb-2 flex items-center">
+                        <Star className="w-5 h-5 mr-2" />
+                        {t('craftingPage.unboundMagic', 'Magia Liberada')}
+                      </h3>
+                      <p className="text-gray-300 text-sm">
+                        {t('craftingPage.unboundMagicAnalysis', 'Análisis de valor de la Magia Liberada basado en 400k de {magicBoxes} abiertos').replace('{magicBoxes}', tableItemNames[79186] || 'Lote retorcido por la magia')}
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="bg-blue-900/20 backdrop-blur-sm border border-blue-700/30 rounded-lg p-4">
+                    <h3 className="text-blue-300 font-semibold mb-3 flex items-center">
+                      <BarChart3 className="w-5 h-5 mr-2" />
+                      {t('craftingPage.analysisData', 'Datos de Análisis')}
+                    </h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                      <div>
+                        <p className="text-gray-300 mb-2">
+                          <span className="text-blue-200 font-semibold">{t('craftingPage.analysisDataDesc', '500k {trophyBoxes} analizados').replace('{trophyBoxes}', tableItemNames[85725] || 'Cargamento de trofeos')}</span>
+                        </p>
+                        <p className="text-gray-300 mb-2">
+                          <span className="text-purple-200 font-semibold">{t('craftingPage.analysisDataDesc2', '400k {magicBoxes} analizados').replace('{magicBoxes}', tableItemNames[79186] || 'Lote retorcido por la magia')}</span>
+                        </p>
+                        <p className="text-gray-400 text-xs">
+                          {t('craftingPage.dataProvided', 'Datos proporcionados por Vortus43')}
+                        </p>
+                      </div>
+                      <div>
+                        <p className="text-gray-300 mb-2">
+                          <span className="text-blue-200 font-semibold">{t('craftingPage.realTimePrices', 'Precios en tiempo real')}</span> {t('craftingPage.fromGW2API', 'desde la API de GW2')}
+                        </p>
+                        <p className="text-gray-400 text-xs">
+                          {t('craftingPage.autoUpdate', 'Actualización automática cada 5 minutos')}
+                        </p>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -2376,7 +2502,9 @@ const CraftingPage = () => {
                        <div className="w-2 h-2 sm:w-3 sm:h-3 bg-blue-400 rounded-full animate-pulse flex-shrink-0"></div>
                        <div className="text-blue-300 text-xs md:text-base">
                          <strong>{t('craftingPage.table.dataSource', 'Fuente de Datos')}:</strong> {t('craftingPage.table.basedOn', 'Análisis basado en')}{' '}
-                         <span className="text-blue-200 font-bold">500k {t('craftingPage.table.trophyBoxes', 'Cargamento de trofeos')}</span> {t('craftingPage.table.opened', 'abiertos')}
+                         <span className="text-blue-200 font-bold">500k {tableItemNames[85725] || 'Cargamento de trofeos'}</span> {t('craftingPage.table.opened', 'abiertos')}
+                         <br />
+                         <span className="text-blue-400 text-xs">{t('craftingPage.table.dataCredit', 'Datacredit: Vortus43')}</span>
                        </div>
                      </div>
                    </div>
@@ -3258,43 +3386,71 @@ const CraftingPage = () => {
                 <div className="bg-gray-800/50 backdrop-blur-sm border border-gray-700 rounded-lg p-6">
                   <h2 className="text-2xl font-bold text-white mb-6 flex items-center">
                     <TrendingUp className="w-8 h-8 mr-3 text-green-400" />
-                    {t('craftingPage.profitStrategies', 'Profit Strategies')}
+                    {t('craftingPage.profitabilityStrategies', 'Estrategias de Rentabilidad')}
                   </h2>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    {craftingTips.map((tip, index) => (
-                      <div key={index} className="bg-gray-700/50 rounded-lg p-4 border border-gray-600">
+                    <div className="bg-gradient-to-r from-green-800/30 to-green-700/30 rounded-lg p-4 border border-green-600/30">
                         <div className="flex items-center gap-3 mb-3">
-                          <div className={`w-10 h-10 bg-gray-600 rounded-lg flex items-center justify-center`}>
-                            <tip.icon className={`w-5 h-5 ${tip.color}`} />
+                        <div className="w-10 h-10 bg-green-600 rounded-lg flex items-center justify-center">
+                          <TrendingUp className="w-5 h-5 text-green-300" />
                           </div>
-                          <h3 className="text-white font-semibold">{tip.title}</h3>
+                        <h3 className="text-white font-semibold">Conversiones Rentables</h3>
                         </div>
-                        <p className="text-gray-300 text-sm">{tip.description}</p>
+                      <p className="text-gray-300 text-sm">Convierte materiales T5 a T6 cuando la diferencia de precio sea favorable. Usa la tabla de conversiones para identificar oportunidades.</p>
                       </div>
-                    ))}
+                    
+                    <div className="bg-gradient-to-r from-blue-800/30 to-blue-700/30 rounded-lg p-4 border border-blue-600/30">
+                      <div className="flex items-center gap-3 mb-3">
+                        <div className="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center">
+                          <Zap className="w-5 h-5 text-blue-300" />
+                  </div>
+                        <h3 className="text-white font-semibold">Magia Volátil</h3>
+                      </div>
+                      <p className="text-gray-300 text-sm">{t('craftingPage.volatileMagicStrategy', 'Gasta tu Magia Liberada en {trophyBoxes}, esto te ayudará a maximizar ganancias.').replace('{trophyBoxes}', tableItemNames[85725] || 'Cargamento de trofeos')}</p>
+                </div>
+
+                    <div className="bg-gradient-to-r from-purple-800/30 to-purple-700/30 rounded-lg p-4 border border-purple-600/30">
+                      <div className="flex items-center gap-3 mb-3">
+                        <div className="w-10 h-10 bg-purple-600 rounded-lg flex items-center justify-center">
+                          <Star className="w-5 h-5 text-purple-300" />
+                        </div>
+                        <h3 className="text-white font-semibold">Magia Liberada</h3>
+                      </div>
+                      <p className="text-gray-300 text-sm">{t('craftingPage.unboundMagicStrategy', 'Gasta tu Magia Liberada en {magicBoxes}, esto te ayudará a maximizar ganancias.').replace('{magicBoxes}', tableItemNames[79186] || 'Lote retorcido por la magia')}</p>
+                    </div>
+                    
+                    <div className="bg-gradient-to-r from-yellow-800/30 to-yellow-700/30 rounded-lg p-4 border border-yellow-600/30">
+                      <div className="flex items-center gap-3 mb-3">
+                        <div className="w-10 h-10 bg-yellow-600 rounded-lg flex items-center justify-center">
+                          <BarChart3 className="w-5 h-5 text-yellow-300" />
+                        </div>
+                        <h3 className="text-white font-semibold">Análisis de Datos</h3>
+                      </div>
+                      <p className="text-gray-300 text-sm">Los datos se actualizan en tiempo real. Monitorea los cambios de precios para tomar decisiones informadas.</p>
+                    </div>
                   </div>
                 </div>
 
-                {/* Advanced Tips */}
+                {/* Consejos Avanzados */}
                 <div className="bg-gray-800/30 backdrop-blur-sm border border-gray-700 rounded-lg p-6">
                   <h3 className="text-xl font-bold text-white mb-4 flex items-center">
                     <AlertCircle className="w-5 h-5 mr-3 text-yellow-400" />
-                    Advanced Tips
+                    Consejos Avanzados
                   </h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div className="space-y-3">
                       <div className="flex items-start gap-3">
                         <div className="w-2 h-2 bg-yellow-400 rounded-full mt-2 flex-shrink-0"></div>
                         <div>
-                          <h4 className="text-white font-semibold">Market Analysis</h4>
-                          <p className="text-gray-300 text-sm">Monitor Trading Post prices to identify profitable crafting opportunities.</p>
+                          <h4 className="text-white font-semibold">{t('craftingPage.droprateAnalysis', 'Análisis de Droprates')}</h4>
+                          <p className="text-gray-300 text-sm">{t('craftingPage.droprateAnalysisDesc', 'Los droprates están calculados con precisión basados en 500k {trophyBoxes} y 400k {magicBoxes} analizados. Confía en los datos para tomar decisiones.').replace('{trophyBoxes}', tableItemNames[85725] || 'Cargamento de trofeos').replace('{magicBoxes}', tableItemNames[79186] || 'Lote retorcido por la magia')}</p>
                         </div>
                       </div>
                       <div className="flex items-start gap-3">
                         <div className="w-2 h-2 bg-yellow-400 rounded-full mt-2 flex-shrink-0"></div>
                         <div>
-                          <h4 className="text-white font-semibold">Purchase Timing</h4>
-                          <p className="text-gray-300 text-sm">Buy materials when prices are low, especially after events.</p>
+                          <h4 className="text-white font-semibold">Timing de Conversiones</h4>
+                          <p className="text-gray-300 text-sm">Convierte materiales cuando los precios T6 estén altos y los T5 bajos para maximizar ganancias.</p>
                         </div>
                       </div>
                     </div>
@@ -3302,15 +3458,15 @@ const CraftingPage = () => {
                       <div className="flex items-start gap-3">
                         <div className="w-2 h-2 bg-yellow-400 rounded-full mt-2 flex-shrink-0"></div>
                         <div>
-                          <h4 className="text-white font-semibold">Profitable Conversions</h4>
-                          <p className="text-gray-300 text-sm">Convert lower tier materials to higher tier when the price difference is favorable.</p>
+                          <h4 className="text-white font-semibold">{t('craftingPage.currencyOptimization', 'Optimización de Divisas')}</h4>
+                          <p className="text-gray-300 text-sm">{t('craftingPage.currencyOptimizationDesc', 'Prioriza conversiones T6 con mayor Profit Max. Usa {trophyBoxes} para Magia Volátil y {magicBoxes} para Magia Liberada.').replace('{trophyBoxes}', tableItemNames[85725] || 'Cargamento de trofeos').replace('{magicBoxes}', tableItemNames[79186] || 'Lote retorcido por la magia')}</p>
                         </div>
                       </div>
                       <div className="flex items-start gap-3">
                         <div className="w-2 h-2 bg-yellow-400 rounded-full mt-2 flex-shrink-0"></div>
                         <div>
-                          <h4 className="text-white font-semibold">Specialization</h4>
-                          <p className="text-gray-300 text-sm">Focus on one or two professions to maximize your efficiency and profits.</p>
+                          <h4 className="text-white font-semibold">{t('craftingPage.continuousMonitoring', 'Monitoreo Continuo')}</h4>
+                          <p className="text-gray-300 text-sm">{t('craftingPage.continuousMonitoringDesc', 'Los precios cambian constantemente. Revisa regularmente las tablas para identificar nuevas oportunidades.')}</p>
                         </div>
                       </div>
                     </div>
@@ -4324,6 +4480,96 @@ const CraftingPage = () => {
                     </div>
                   </div>
 
+                  {/* Sección Crafting Item 24289 (Escama blindada) - OCULTA */}
+                  <div className="bg-gradient-to-r from-cyan-800/50 to-cyan-700/50 backdrop-blur-sm rounded-xl p-4 mb-6 border border-cyan-600/50 hidden">
+                    <div className="flex items-center gap-3 mb-4">
+                      <div className="w-2 h-2 bg-cyan-400 rounded-full"></div>
+                      <h3 className="text-lg font-semibold text-white">🛡️ Crafting Item 24289 (Escama blindada)</h3>
+                    </div>
+                    
+                    <div className="mb-4 p-3 bg-cyan-900/30 rounded-lg border border-cyan-600/30">
+                      <h4 className="text-cyan-300 font-semibold mb-3 text-sm">📊 INGREDIENTES</h4>
+                      
+                      {/* Ingrediente 1: 89271 x4 buy */}
+                      <div className="flex items-center gap-3 mb-2">
+                        <div className="w-3 h-3 bg-cyan-400 rounded-full"></div>
+                        <div className="text-cyan-300 text-sm">
+                          <strong>89271 x4 (buy):</strong> {isLoadingPrices ? t('craftingPage.calculating', 'Calculando...') : formatGW2Price(calculateItem89271x4Price24289())}
+                        </div>
+                      </div>
+                      
+                      {/* Ingrediente 2: 24289 x5 buy */}
+                      <div className="flex items-center gap-3 mb-2">
+                        <div className="w-3 h-3 bg-cyan-400 rounded-full"></div>
+                        <div className="text-cyan-300 text-sm">
+                          <strong>24289 x5 (buy):</strong> {isLoadingPrices ? t('craftingPage.calculating', 'Calculando...') : formatGW2Price(calculateItem24289x5Price())}
+                        </div>
+                      </div>
+                      
+                      {/* Ingrediente 3: 89258 x3 buy */}
+                      <div className="flex items-center gap-3 mb-2">
+                        <div className="w-3 h-3 bg-cyan-400 rounded-full"></div>
+                        <div className="text-cyan-300 text-sm">
+                          <strong>89258 x3 (buy):</strong> {isLoadingPrices ? t('craftingPage.calculating', 'Calculando...') : formatGW2Price(calculateItem89258x3Price24289())}
+                        </div>
+                      </div>
+                      
+                      {/* Ingrediente 4: 19721 x5 sell *0.9 */}
+                      <div className="flex items-center gap-3 mb-2">
+                        <div className="w-3 h-3 bg-cyan-400 rounded-full"></div>
+                        <div className="text-cyan-300 text-sm">
+                          <strong>19721 x5 (sell *0.9):</strong> {isLoadingPrices ? t('craftingPage.calculating', 'Calculando...') : formatGW2Price(calculateItem19721x5Price24289())}
+                        </div>
+                      </div>
+                      
+                      {/* Suma Total */}
+                      <div className="flex items-center gap-3 mb-2">
+                        <div className="w-3 h-3 bg-blue-400 rounded-full"></div>
+                        <div className="text-blue-300 text-sm">
+                          <strong>SUMA TOTAL:</strong> {isLoadingPrices ? t('craftingPage.calculating', 'Calculando...') : formatGW2Price(calculateSumaTotalSeccion24289())}
+                        </div>
+                      </div>
+                      
+                      {/* Item Resultado: 24821 sell *0.85 */}
+                      <div className="flex items-center gap-3 mt-3">
+                        <div className="w-3 h-3 bg-red-400 rounded-full"></div>
+                        <div className="text-red-300 text-sm">
+                          <strong>24821 (sell *0.85):</strong> {isLoadingPrices ? t('craftingPage.calculating', 'Calculando...') : formatGW2Price(calculateItem24821Price())}
+                        </div>
+                      </div>
+                      
+                      {/* RESULTADO FINAL */}
+                      <div className="flex items-center gap-3 mt-3 pt-3 border-t border-cyan-600/30">
+                        <div className="w-4 h-4 bg-cyan-500 rounded-full"></div>
+                        <div className="text-cyan-300 text-sm font-bold">
+                          <strong>💎 RESULTADO FINAL:</strong> {isLoadingPrices ? t('craftingPage.calculating', 'Calculando...') : formatGW2Price(calculateResultadoFinalSeccion24289())}
+                        </div>
+                      </div>
+                      
+                      {/* RESULTADO FINAL CON DROPRATE UM */}
+                      <div className="flex items-center gap-3 mt-3 pt-3 border-t border-cyan-600/30">
+                        <div className="w-4 h-4 bg-yellow-400 rounded-full"></div>
+                        <div className="text-yellow-300 text-sm font-bold">
+                          <strong>🚀 RESULTADO FINAL CON DROPRATE UM:</strong> {isLoadingPrices ? t('craftingPage.calculating', 'Calculando...') : formatGW2Price(calculateUMProfitMax24289())}
+                        </div>
+                      </div>
+                      <div className="text-cyan-400 text-xs ml-6 mb-2">
+                        Fórmula: SI(I22{'>'}=1, (I22/D20)*F5, &quot;0&quot;) donde I22=Resultado Final, D20=5, F5=0.436
+                      </div>
+                      
+                      {/* RESULTADO FINAL CON DROPRATE VM */}
+                      <div className="flex items-center gap-3 mt-3 pt-3 border-t border-cyan-600/30">
+                        <div className="w-4 h-4 bg-green-400 rounded-full"></div>
+                        <div className="text-green-300 text-sm font-bold">
+                          <strong>🌟 RESULTADO FINAL CON DROPRATE VM:</strong> {isLoadingPrices ? t('craftingPage.calculating', 'Calculando...') : formatGW2Price(calculateVMProfitMax24289())}
+                        </div>
+                      </div>
+                      <div className="text-cyan-400 text-xs ml-6 mb-2">
+                        Fórmula: SI(I22{'>'}=1, (I22/D20)*F5, &quot;0&quot;) donde I22=Resultado Final, D20=5, F5=1.0078
+                      </div>
+                    </div>
+                  </div>
+
                   {/* Nueva Sección 7 - OCULTA */}
                   <div className="bg-gradient-to-r from-emerald-800/50 to-emerald-700/50 backdrop-blur-sm rounded-xl p-4 mb-6 border border-emerald-600/50 hidden">
                     <div className="flex items-center gap-3 mb-4">
@@ -4678,7 +4924,9 @@ const CraftingPage = () => {
                       <div className="w-2 h-2 sm:w-3 sm:h-3 bg-blue-400 rounded-full animate-pulse flex-shrink-0"></div>
                       <div className="text-blue-300 text-xs md:text-base">
                         <strong>{t('craftingPage.table.dataSource', 'Fuente de Datos')}:</strong> {t('craftingPage.table.basedOn', 'Análisis basado en')}{' '}
-                        <span className="text-blue-200 font-bold">400k {tableItemNames[79186] || 'Item 79186'}</span> {t('craftingPage.table.opened', 'abiertos')}
+                        <span className="text-blue-200 font-bold">500k {tableItemNames[79186] || 'Lote retorcido por la magia'}</span> {t('craftingPage.table.opened', 'abiertos')}
+                        <br />
+                        <span className="text-blue-400 text-xs">{t('craftingPage.table.dataCredit', 'Datacredit: Vortus43')}</span>
                       </div>
                     </div>
                   </div>
