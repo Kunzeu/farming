@@ -477,7 +477,7 @@
   "craftingPage.table.itemsTable": "Tabla de Items",
   "craftingPage.comingSoon": "Próximamente...",
   "craftingPage.refresh": "Actualizar",
-  "craftingPage.t6Analysis": "Análisis de Materiales T6",
+  "craftingPage.t6Analysis": "Análisis de Trofeos",
   "craftingPage.t6AnalysisDesc": "Esta calculadora analiza la rentabilidad de convertir materiales de Tier 5 a Tier 6, así como el valor de la Magia Volátil y Magia Liberada. Los datos se basan en análisis de 500k {trophyBoxes} y 400k {magicBoxes} abiertos.",
   "craftingPage.t6ConversionsDesc": "Conversiones rentables de materiales T5 a T6 usando la Forja Mística con análisis de droprate preciso",
   "craftingPage.volatileMagicAnalysis": "Análisis de valor de la Magia Volátil basado en 500k de {trophyBoxes} abiertos",

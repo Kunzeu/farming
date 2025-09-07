@@ -27,6 +27,8 @@ function loadEnvFile() {
 const envVars = loadEnvFile();
 const databaseUrl = envVars.DATABASE_URL || process.env.DATABASE_URL;
 
+// Logs de debug removidos
+
 const pool = new Pool({
   connectionString: databaseUrl,
   ssl: {
@@ -54,7 +56,7 @@ export async function GET(request: NextRequest) {
     if (email) {
       // Buscar por email (para login)
       const query = `
-        SELECT id, email, username, role, is_active as "isActive",
+        SELECT id, email, username, password, role, is_active as "isActive",
                created_at as "createdAt", updated_at as "updatedAt", discord_id as "discordId"
         FROM users 
         WHERE email = $1

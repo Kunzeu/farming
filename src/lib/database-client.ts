@@ -244,11 +244,11 @@ class DatabaseClientService {
     }
     
     const data = await response.json();
-    const { password, ...safeUser } = data;
+    // Para login, necesitamos la contraseña, así que no la ocultamos
     return {
-      ...safeUser,
-      createdAt: new Date(safeUser.createdAt),
-      updatedAt: new Date(safeUser.updatedAt)
+      ...data,
+      createdAt: new Date(data.createdAt),
+      updatedAt: new Date(data.updatedAt)
     };
   }
 
