@@ -22,6 +22,8 @@ import {
 } from 'lucide-react'
 import { usePageTitle } from '@/hooks/usePageTitle'
 import { useI18n } from '@/contexts/I18nContext'
+import { useDashboardPreferences } from '@/hooks/useDashboardPreferences'
+import DashboardSettings from '@/components/DashboardSettings'
 import { useState, useEffect, useMemo } from 'react'
 
 interface DashboardCard {
@@ -132,12 +134,14 @@ const initialCards: DashboardCard[] = [
 export default function HomePage() {
   usePageTitle('pageTitles.home', 'Home');
   const { t } = useI18n();
+  const { preferences, isLoading } = useDashboardPreferences();
   
   // Estados para personalización
   const [isEditMode, setIsEditMode] = useState(false);
   const [dashboardCards, setDashboardCards] = useState<DashboardCard[]>([]);
   const [originalCards, setOriginalCards] = useState<DashboardCard[]>([]);
   const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
+  const [showSettings, setShowSettings] = useState(false);
 
   // Función para reconstruir iconos desde los datos guardados
   const reconstructCardWithIcon = (savedCard: Omit<DashboardCard, 'icon'>): DashboardCard => {
@@ -158,25 +162,29 @@ export default function HomePage() {
     };
   };
 
-  // Cargar configuración guardada al inicializar
+  // Cargar configuración basada en preferencias del usuario
   useEffect(() => {
-    const savedConfig = localStorage.getItem('dashboard-config');
-    if (savedConfig) {
-      try {
-        const parsedConfig = JSON.parse(savedConfig);
-        const reconstructedCards = parsedConfig.map(reconstructCardWithIcon);
-        setDashboardCards(reconstructedCards);
-        setOriginalCards(reconstructedCards);
-      } catch (error) {
-        console.error('Error loading dashboard config:', error);
-        setDashboardCards(initialCards);
-        setOriginalCards(initialCards);
-      }
-    } else {
-      setDashboardCards(initialCards);
-      setOriginalCards(initialCards);
-    }
-  }, []); // Array de dependencias vacío ya que initialCards es ahora una constante
+    if (isLoading) return;
+
+    // Filtrar tarjetas basado en preferencias del usuario
+    const filteredCards = initialCards.filter(card => 
+      !preferences.hiddenCards.includes(card.id)
+    );
+
+    // Ordenar basado en preferencias del usuario
+    const orderedCards = preferences.cardOrder
+      .map(cardId => filteredCards.find(card => card.id === cardId))
+      .filter(Boolean) as DashboardCard[];
+
+    // Agregar tarjetas que no están en el orden personalizado
+    const remainingCards = filteredCards.filter(card => 
+      !preferences.cardOrder.includes(card.id)
+    );
+
+    const finalCards = [...orderedCards, ...remainingCards];
+    setDashboardCards(finalCards);
+    setOriginalCards(finalCards);
+  }, [preferences, isLoading]);
 
   // Guardar configuración en localStorage
   const saveDashboardConfig = (cards: DashboardCard[]) => {
@@ -465,13 +473,22 @@ export default function HomePage() {
                     </button>
                   </>
                 ) : (
-                  <button
-                    onClick={toggleEditMode}
-                    className="flex items-center gap-2 px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg transition-colors duration-200"
-                  >
-                    <Settings className="w-4 h-4" />
-                    {t('dashboard.customize', 'Personalizar Dashboard')}
-                  </button>
+                  <div className="flex gap-2">
+                    <button
+                      onClick={toggleEditMode}
+                      className="flex items-center gap-2 px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg transition-colors duration-200"
+                    >
+                      <Settings className="w-4 h-4" />
+                      {t('dashboard.customize', 'Personalizar Dashboard')}
+                    </button>
+                    <button
+                      onClick={() => setShowSettings(true)}
+                      className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors duration-200"
+                    >
+                      <Settings className="w-4 h-4" />
+                      Configuración Avanzada
+                    </button>
+                  </div>
                 )}
               </div>
             </div>
@@ -546,6 +563,12 @@ export default function HomePage() {
           </div>
         </section>
       </div>
+      
+      {/* Modal de configuración avanzada */}
+      <DashboardSettings 
+        isOpen={showSettings} 
+        onClose={() => setShowSettings(false)} 
+      />
     </div>
   )
 } 

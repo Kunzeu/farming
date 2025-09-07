@@ -2284,7 +2284,7 @@ const CraftingPage = () => {
               {t('craftingPage.t6Analysis', 'Análisis de Materiales T6')}
             </h1>
             <p className="text-xl text-gray-300 max-w-3xl mx-auto">
-              {t('craftingPage.t6AnalysisDesc', 'Esta calculadora analiza la rentabilidad de convertir materiales de Tier 5 a Tier 6, así como el valor de la Magia Volátil y Magia Liberada. Los datos se basan en análisis de 500k {trophyBoxes} y 400k {magicBoxes} abiertos.').replace('{trophyBoxes}', tableItemNames[85725] || 'Cargamento de trofeos').replace('{magicBoxes}', tableItemNames[79186] || 'Lote retorcido por la magia')}
+              {t('craftingPage.t6AnalysisSubtitle', 'Calculadora avanzada para maximizar el profit de conversiones de materiales y análisis de magia')}
             </p>
           </motion.div>
 

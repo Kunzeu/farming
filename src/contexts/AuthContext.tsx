@@ -79,6 +79,7 @@ interface AuthContextType extends AuthState {
   logout: () => void;
   clearError: () => void;
   hasPermission: (role: 'admin' | 'moderator' | 'user') => boolean;
+  updateUser: (updates: Partial<User>) => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -386,6 +387,36 @@ function AuthProviderInternal({ children }: { children: ReactNode }) {
     return false;
   }, [state.user]);
 
+  // Función para actualizar usuario
+  const updateUser = useCallback(async (updates: Partial<User>) => {
+    if (!state.user) return;
+
+    try {
+      const { getDbService } = await import('@/lib/database-switch');
+      const dbService = await getDbService();
+
+      // Actualizar en la base de datos
+      const updatedUser = await dbService.updateUser(state.user.id, updates);
+
+      // Actualizar en el contexto
+      const newUser = {
+        ...state.user,
+        ...updatedUser
+      };
+
+      // Guardar en localStorage
+      localStorage.setItem('gw2_user', JSON.stringify(newUser));
+
+      dispatch({
+        type: 'AUTH_SUCCESS',
+        payload: { user: newUser, token: state.token || '' }
+      });
+    } catch (error) {
+      console.error('Error updating user:', error);
+      throw error;
+    }
+  }, [state.user, state.token]);
+
   const value: AuthContextType = {
     ...state,
     login,
@@ -394,6 +425,7 @@ function AuthProviderInternal({ children }: { children: ReactNode }) {
     logout,
     clearError,
     hasPermission,
+    updateUser,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
@@ -431,6 +463,7 @@ export function useAuth() {
         logout: () => {},
         clearError: () => {},
         hasPermission: () => false,
+        updateUser: async () => {},
       };
     }
     throw new Error('useAuth debe ser usado dentro de un AuthProvider');

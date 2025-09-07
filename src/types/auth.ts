@@ -24,6 +24,12 @@ export interface UserPreferences {
   };
   favoriteItems?: string[];
   favoriteRoutes?: string[];
+  dashboard?: {
+    layout?: 'grid' | 'list';
+    cardOrder?: string[];
+    hiddenCards?: string[];
+    cardSizes?: Record<string, 'small' | 'medium' | 'large'>;
+  };
 }
 
 export interface AuthState {
