@@ -190,7 +190,7 @@ const CraftingPage = () => {
       // Trofeos Comunes (T5)
       24294, 24341, 24350, 24356, 24288, 24299, 24282, 24276,
       // Items para cálculos adicionales
-      89271, 89103, 24591, 19701, 97102, 19721, 10804, 19745, 19790, 19732, 24868,
+      89271, 89103, 24591, 19701, 97102, 19721, 10804, 19745, 19790, 19732, 24868, 24315, 89182, 24609, 24320, 89216, 24839, 24325, 24800, 24330, 89258, 100527, 89098, 74326,
       // Items para research notes
       12156, 24473, 19700, 24519, 24511, 24475, 19722, 19729, 19748, 68063,
       // Items para cálculos finales
@@ -206,7 +206,7 @@ const CraftingPage = () => {
       // Items para nuevo item 24824
       89182, 24824, 89258, 74202, 74978,
       // Lodestones y otros items de UM
-      24305, 24310, 24315, 24320, 24325, 24330, 70842, 68942, 24335, 72504, 76491, 75654, 72315, 74988,
+      24305, 24310, 24315, 24320, 24325, 24330, 70842, 68942, 24335, 72504, 76491, 75654, 72315, 74988, 24762, 100429, 24815,
       // Item para Cargamento de trofeos
       85725
     ];
@@ -781,7 +781,6 @@ const CraftingPage = () => {
     if (resultadoFinal >= 0) {
       resultadoConDroprate = (resultadoFinal / cantidadFija) * droprate;
     } else {
-      resultadoConDroprate = 0;
     }
     
     return resultadoConDroprate;
@@ -1018,14 +1017,89 @@ const CraftingPage = () => {
     const resultadoFinal = calculateResultadoFinalCuartaSeccion();
     const droprate = 0.436;
     const cantidad = 5;
-    return resultadoFinal >= 0 ? (resultadoFinal / cantidad) * droprate:1;
+    return resultadoFinal >= 0 ? (resultadoFinal / cantidad) * droprate : 0;
   }, [calculateResultadoFinalCuartaSeccion]);
 
   const calculateUMProfitMax24357 = useCallback(() => {
-    const resultadoFinal = calculateResultadoFinalQuintaSeccion();
-    const droprate = 0.436;
-    return resultadoFinal >= 1 ? droprate * resultadoFinal : 0;
-  }, [calculateResultadoFinalQuintaSeccion]);
+    // Cálculo directo para evitar problemas de scope
+    const price89271 = itemPrices[89271];
+    const price24357 = itemPrices[24357];
+    const price89216 = itemPrices[89216];
+    const price19721 = itemPrices[19721];
+    const price24815 = itemPrices[24815];
+    
+    if (!price89271 || !price24357 || !price89216 || !price19721 || !price24815) return 0;
+    
+    // Calcular ingredientes
+    const item89271x12 = (price89271.buys.unit_price * 12) / 10000; // buy * 12
+    const item24357x5 = (price24357.buys.unit_price * 5) / 10000; // buy * 5
+    const item89216x1 = (price89216.buys.unit_price * 1) / 10000; // buy * 1
+    const item19721x5 = (price19721.sells.unit_price * 5 * 0.9) / 10000; // sell * 5 * 0.9
+    
+    // Calcular suma total
+    const sumaTotal = item89271x12 + item24357x5 + item89216x1 + item19721x5;
+    
+    // Calcular item resultado
+    const item24815 = (price24815.sells.unit_price * 0.85) / 10000; // sell * 0.85
+    
+    // Calcular resultado final
+    const resultadoFinal = item24815 - sumaTotal;
+    
+    // Aplicar nueva fórmula de droprate: SI(S57>=1, (S57/N55)*0.436, "0")
+    // S57 = resultadoFinal, N55 = 5 (multiplicador)
+    if (resultadoFinal >= 0) {
+      return (resultadoFinal / 5) * 0.436;
+    } else {
+      return 0;
+    }
+  }, [itemPrices]);
+
+  // Función para calcular el VMProfitMax del item 24357 (Colmillo feroz) para VM
+  const calculateVMProfitMax24357 = useCallback(() => {
+    // Cálculo directo para evitar problemas de scope (igual que UM pero con droprate VM)
+    const price89271 = itemPrices[89271];
+    const price24357 = itemPrices[24357];
+    const price89216 = itemPrices[89216];
+    const price19721 = itemPrices[19721];
+    const price24815 = itemPrices[24815];
+    
+    if (!price89271 || !price24357 || !price89216 || !price19721 || !price24815) return 0;
+    
+    // Calcular ingredientes
+    const item89271x12 = (price89271.buys.unit_price * 12) / 10000; // buy * 12
+    const item24357x5 = (price24357.buys.unit_price * 5) / 10000; // buy * 5
+    const item89216x1 = (price89216.buys.unit_price * 1) / 10000; // buy * 1
+    const item19721x5 = (price19721.sells.unit_price * 5 * 0.9) / 10000; // sell * 5 * 0.9
+    
+    // Calcular suma total
+    const sumaTotal = item89271x12 + item24357x5 + item89216x1 + item19721x5;
+    
+    // Calcular item resultado
+    const item24815 = (price24815.sells.unit_price * 0.85) / 10000; // sell * 0.85
+    
+    // Calcular resultado final
+    const resultadoFinal = item24815 - sumaTotal;
+    
+    // Aplicar fórmula de droprate para VM: SI(S57>=0, (S57/5)*1.0078, "0")
+    // S57 = resultadoFinal, N55 = 5 (multiplicador), droprate VM = 1.0078
+    if (resultadoFinal >= 0) {
+      return (resultadoFinal / 5) * 1.0078;
+    } else {
+      return 0;
+    }
+  }, [itemPrices]);
+
+  // Función para calcular ProfitMax específicos de VM (Volatile Magic)
+  const calculateVMProfitMax = useCallback((itemId: number) => {
+    // Para el item 24357, usar el cálculo dinámico específico para VM
+    if (itemId === 24357) {
+      return calculateVMProfitMax24357();
+    }
+    
+    // Para otros items, usar el precio base con droprate de VM
+    const droprate = 1.0078; // Droprate estándar de VM
+    return calculateBasePrice(itemId, droprate);
+  }, [calculateVMProfitMax24357, calculateBasePrice]);
 
   const calculateUMProfitMax24289 = useCallback(() => {
     const resultadoFinal = calculateResultadoFinalSextaSeccion();
@@ -1035,11 +1109,11 @@ const CraftingPage = () => {
 
   const calculateUMProfitMax24300 = useCallback(() => {
     const resultadoFinal = calculateResultadoFinalQuintaSeccion(); // Esto es I36
-    const cantidadFija = 5; // Esto es D34 (número fijo x5)
+    const cantidadFija = 5 // Esto es D34 (número fijo x8)
     const droprate = 0.436; // Droprate para magia liberada
     
     // Aplicar la fórmula condicional: SI(I36>=1, (I36/D34)*0.496, "0")
-    if (resultadoFinal >= 0) {
+    if (resultadoFinal >=0) {
       const resultadoConDroprate = (resultadoFinal / cantidadFija) * droprate;
       return resultadoConDroprate;
     } else {
@@ -1056,8 +1130,6 @@ const CraftingPage = () => {
     if (resultadoFinal >= 0) {
       const resultadoConDroprate = (resultadoFinal / cantidadFija) * droprate;
       return resultadoConDroprate;
-    } else {
-      return 0; // Si I43 < 1, retornar 0
     }
   }, [calculateResultadoFinalSextaSeccion]);
 
@@ -1170,6 +1242,52 @@ const CraftingPage = () => {
     return (price.buys.unit_price * 12) / 10000; // buy * 12, 10000 cobre = 1 oro
   }, [itemPrices]);
 
+  // Funciones para Nueva Sección 24357
+  const calculateItem24357x5Price = useCallback(() => {
+    const price = itemPrices[24357];
+    if (!price) return 0;
+    return (price.buys.unit_price * 5) / 10000; // buy * 5
+  }, [itemPrices]);
+
+  const calculateItem89216x1Price24357 = useCallback(() => {
+    const price = itemPrices[89216];
+    if (!price) return 0;
+    return (price.buys.unit_price * 1) / 10000; // buy * 1
+  }, [itemPrices]);
+
+  const calculateItem19721x5Price24357 = useCallback(() => {
+    const price = itemPrices[19721];
+    if (!price) return 0;
+    return (price.sells.unit_price * 5 * 0.9) / 10000; // sell * 5 * 0.9
+  }, [itemPrices]);
+
+  const calculateItem24815Price = useCallback(() => {
+    const price = itemPrices[24815];
+    if (!price) return 0;
+    return (price.sells.unit_price * 0.85) / 10000; // sell * 0.85
+  }, [itemPrices]);
+
+  const calculateSumaTotalSeccion24357 = useCallback(() => {
+    return calculateItem89271x12Price() + calculateItem24357x5Price() + calculateItem89216x1Price24357() + calculateItem19721x5Price24357();
+  }, [calculateItem89271x12Price, calculateItem24357x5Price, calculateItem89216x1Price24357, calculateItem19721x5Price24357]);
+
+  const calculateResultadoFinalSeccion24357 = useCallback(() => {
+    return calculateItem24815Price() - calculateSumaTotalSeccion24357();
+  }, [calculateItem24815Price, calculateSumaTotalSeccion24357]);
+
+  const calculateResultadoFinalConDroprateSeccion24357 = useCallback(() => {
+    const resultadoFinal = calculateResultadoFinalSeccion24357();
+    const droprate = 0.436; // Droprate fijo para UM
+    
+    // Aplicar la fórmula condicional: SI(resultadoFinal>=1, (resultadoFinal*0.436), "0")
+    if (resultadoFinal >= 1) {
+      return droprate * resultadoFinal;
+    } else {
+      return 0;
+    }
+  }, [calculateResultadoFinalSeccion24357]);
+
+
   const calculateItem89258x1Price = useCallback(() => {
     const price = itemPrices[89258];
     if (!price) return 0;
@@ -1187,6 +1305,46 @@ const CraftingPage = () => {
     if (!price) return 0;
     return (price.buys.unit_price * 5) / 10000; // buy * 5, 10000 cobre = 1 oro
   }, [itemPrices]);
+
+  // Función para calcular precio del item 89271 × 10 (buy)
+  const calculateItem89271x10Price = useCallback(() => {
+    const price = itemPrices[89271];
+    if (!price) return 0;
+    return (price.buys.unit_price * 10) / 10000; // buy * 10, 10000 cobre = 1 oro
+  }, [itemPrices]);
+
+  // Función para calcular precio del item 24315 × 1 (buy)
+  const calculateItem24315x1Price = useCallback(() => {
+    const price = itemPrices[24315];
+    if (!price) return 0;
+    return (price.buys.unit_price * 1) / 10000; // buy * 1, 10000 cobre = 1 oro
+  }, [itemPrices]);
+
+  // Función para calcular precio del item 89182 × 2 (buy)
+  const calculateItem89182x2Price = useCallback(() => {
+    const price = itemPrices[89182];
+    if (!price) return 0;
+    return (price.buys.unit_price * 2) / 10000; // buy * 2, 10000 cobre = 1 oro
+  }, [itemPrices]);
+
+  // Función para calcular suma total de ingredientes de la nueva sección
+  const calculateSumaTotalNuevaSeccion = useCallback(() => {
+    return calculateItem89271x10Price() + calculateItem24315x1Price() + calculateItem89182x2Price() + calculateItem19721x10Price();
+  }, [calculateItem89271x10Price, calculateItem24315x1Price, calculateItem89182x2Price, calculateItem19721x10Price]);
+
+  // Función para calcular precio del item 24609 (sell × 0.85)
+  const calculateItem24609Price = useCallback(() => {
+    const price = itemPrices[24609];
+    if (!price) return 0;
+    return (price.sells.unit_price * 0.85) / 10000; // sell * 0.85, 10000 cobre = 1 oro
+  }, [itemPrices]);
+
+  // Función para calcular resultado final de la nueva sección
+  const calculateResultadoFinalNuevaSeccion = useCallback(() => {
+    return calculateItem24609Price() - calculateSumaTotalNuevaSeccion();
+  }, [calculateItem24609Price, calculateSumaTotalNuevaSeccion]);
+
+
 
   const calculateItem74202x10Price = useCallback(() => {
     const price = itemPrices[74202];
@@ -1304,13 +1462,269 @@ const CraftingPage = () => {
     const droprate = 0.5; // I30 = 0.5
 
     // Aplicar la fórmula condicional: SI(S8>=1, I30*(S8/100), "0")
-    if (resultadoFinal >= 1) {
+    if (resultadoFinal >= 0) {
       const resultadoConDroprate = droprate * (resultadoFinal / 100);
       return resultadoConDroprate;
     } else {
       return 0; // Si S8 < 1, retornar 0
     }
   }, [calculateResultadoFinal24824]);
+
+     // Función para calcular resultado final con droprate de la nueva sección
+     const calculateResultadoFinalConDroprateNuevaSeccion = useCallback(() => {
+       const resultadoFinal = calculateResultadoFinalNuevaSeccion(); // S15
+       const droprate = 0.063125; // D36 = 0.063125
+       
+       // Aplicar la fórmula condicional: SI(S15>=1, (S15*D36), "0")
+       if (resultadoFinal >= 0) {
+         return resultadoFinal * droprate;
+       } else {
+         return 0;
+       }
+     }, [calculateResultadoFinalNuevaSeccion]);
+
+  // Funciones para la Sección Rápida
+  const calculateItem89271x4Price = useCallback(() => {
+    const price = itemPrices[89271];
+    if (!price) return 0;
+    return (price.buys.unit_price * 4) / 10000; // buy * 4
+  }, [itemPrices]);
+
+  const calculateItem24320x1Price = useCallback(() => {
+    const price = itemPrices[24320];
+    if (!price) return 0;
+    return (price.buys.unit_price * 1) / 10000; // buy * 1
+  }, [itemPrices]);
+
+  const calculateItem89216x3Price = useCallback(() => {
+    const price = itemPrices[89216];
+    if (!price) return 0;
+    return (price.buys.unit_price * 3) / 10000; // buy * 3
+  }, [itemPrices]);
+
+  const calculateItem24839Price = useCallback(() => {
+    const price = itemPrices[24839];
+    if (!price) return 0;
+    return (price.sells.unit_price * 0.85) / 10000; // sell * 0.85
+  }, [itemPrices]);
+
+  const calculateSumaTotalSeccionRapida = useCallback(() => {
+    return calculateItem89271x4Price() + calculateItem24320x1Price() + calculateItem89216x3Price() + calculateItem19721x5Price();
+  }, [calculateItem89271x4Price, calculateItem24320x1Price, calculateItem89216x3Price, calculateItem19721x5Price]);
+
+  const calculateResultadoFinalSeccionRapida = useCallback(() => {
+    return calculateItem24839Price() - calculateSumaTotalSeccionRapida();
+  }, [calculateItem24839Price, calculateSumaTotalSeccionRapida]);
+
+  const calculateResultadoFinalConDroprateSeccionRapida = useCallback(() => {
+    const resultadoFinal = calculateResultadoFinalSeccionRapida(); // I64
+    const droprate = 0.063125; // Droprate fijo
+    
+    // Aplicar la fórmula condicional: SI(I64>=1, I64*0.063125, "0")
+    if (resultadoFinal >= 1) {
+      return resultadoFinal * droprate;
+    } else {
+      return 0;
+    }
+  }, [calculateResultadoFinalSeccionRapida]);
+
+  // Funciones para la Nueva Sección 2
+  const calculateItem24325x1Price = useCallback(() => {
+    const price = itemPrices[24325];
+    if (!price) return 0;
+    return (price.buys.unit_price * 1) / 10000; // buy * 1
+  }, [itemPrices]);
+
+  const calculateItem89103x1Price = useCallback(() => {
+    const price = itemPrices[89103];
+    if (!price) return 0;
+    return (price.buys.unit_price * 1) / 10000; // buy * 1
+  }, [itemPrices]);
+
+  const calculateItem19721x5Price2 = useCallback(() => {
+    const price = itemPrices[19721];
+    if (!price) return 0;
+    return (price.sells.unit_price * 0.9 * 5) / 10000; // sell * 0.9 * 5
+  }, [itemPrices]);
+
+  const calculateItem24800Price = useCallback(() => {
+    const price = itemPrices[24800];
+    if (!price) return 0;
+    return (price.sells.unit_price * 0.85) / 10000; // sell * 0.85
+  }, [itemPrices]);
+
+  const calculateSumaTotalNuevaSeccion2 = useCallback(() => {
+    return calculateItem89271x12Price() + calculateItem24325x1Price() + calculateItem89103x1Price() + calculateItem19721x5Price2();
+  }, [calculateItem89271x12Price, calculateItem24325x1Price, calculateItem89103x1Price, calculateItem19721x5Price2]);
+
+  const calculateResultadoFinalNuevaSeccion2 = useCallback(() => {
+    return calculateItem24800Price() - calculateSumaTotalNuevaSeccion2();
+  }, [calculateItem24800Price, calculateSumaTotalNuevaSeccion2]);
+
+  const calculateResultadoFinalConDroprateNuevaSeccion2 = useCallback(() => {
+    const resultadoFinal = calculateResultadoFinalNuevaSeccion2(); // I29
+    const droprate = 0.063125; // Droprate fijo
+    
+    // Aplicar la fórmula condicional: SI(I29>=1, I29*0.063125, "0")
+    if (resultadoFinal >= 1) {
+      return resultadoFinal * droprate;
+    } else {
+      return 0;
+    }
+  }, [calculateResultadoFinalNuevaSeccion2]);
+
+  // Funciones para la Nueva Sección 3
+  const calculateItem24330x3Price = useCallback(() => {
+    const price = itemPrices[24330];
+    if (!price) return 0;
+    return (price.buys.unit_price * 3) / 10000; // buy * 3
+  }, [itemPrices]);
+
+  const calculateItem89258x3Price = useCallback(() => {
+    const price = itemPrices[89258];
+    if (!price) return 0;
+    return (price.buys.unit_price * 3) / 10000; // buy * 3
+  }, [itemPrices]);
+
+  const calculateItem100527Price = useCallback(() => {
+    const price = itemPrices[100527];
+    if (!price) return 0;
+    return (price.sells.unit_price * 0.85) / 10000; // sell * 0.85
+  }, [itemPrices]);
+
+  const calculateSumaTotalNuevaSeccion3 = useCallback(() => {
+    return calculateItem89271x48Price() + calculateItem24330x3Price() + calculateItem89258x3Price() + calculateItem19721x15Price();
+  }, [calculateItem89271x48Price, calculateItem24330x3Price, calculateItem89258x3Price, calculateItem19721x15Price]);
+
+  const calculateResultadoFinalNuevaSeccion3 = useCallback(() => {
+    return calculateItem100527Price() - calculateSumaTotalNuevaSeccion3();
+  }, [calculateItem100527Price, calculateSumaTotalNuevaSeccion3]);
+
+  const calculateResultadoFinalConDroprateNuevaSeccion3 = useCallback(() => {
+    const resultadoFinal = calculateResultadoFinalNuevaSeccion3(); // I71
+    const divisor = 1; // D69 = 1 (asumiendo que es 1, ajusta si es diferente)
+    const droprate = 0.063125; // Droprate fijo
+    
+    // Aplicar la fórmula condicional: SI(I71>=1, (I71/D69)*0.063125, "0")
+    if (resultadoFinal >= 1) {
+      return (resultadoFinal / divisor) * droprate;
+    } else {
+      return 0;
+    }
+  }, [calculateResultadoFinalNuevaSeccion3]);
+
+  // Funciones para la Nueva Sección 4
+  const calculateItem89098x1Price = useCallback(() => {
+    const price = itemPrices[89098];
+    if (!price) return 0;
+    return (price.buys.unit_price * 1) / 10000; // buy * 1
+  }, [itemPrices]);
+
+  const calculateItem74326Price = useCallback(() => {
+    const price = itemPrices[74326];
+    if (!price) return 0;
+    return (price.sells.unit_price * 0.85) / 10000; // sell * 0.85
+  }, [itemPrices]);
+
+  const calculateSumaTotalNuevaSeccion4 = useCallback(() => {
+    return calculateItem89271x15Price() + calculateItem68942x1Price() + calculateItem89098x1Price() + calculateItem19721x10Price();
+  }, [calculateItem89271x15Price, calculateItem68942x1Price, calculateItem89098x1Price, calculateItem19721x10Price]);
+
+  const calculateResultadoFinalNuevaSeccion4 = useCallback(() => {
+    return calculateItem74326Price() - calculateSumaTotalNuevaSeccion4();
+  }, [calculateItem74326Price, calculateSumaTotalNuevaSeccion4]);
+
+  const calculateResultadoFinalConDroprateNuevaSeccion4 = useCallback(() => {
+    const resultadoFinal = calculateResultadoFinalNuevaSeccion4(); // I8
+    const droprate = 0.063125; // Droprate fijo
+    
+    // Aplicar la fórmula condicional: SI(I8>=1, (0.063125*I8), "0")
+    if (resultadoFinal >= 1) {
+      return droprate * resultadoFinal;
+    } else {
+      return 0;
+    }
+  }, [calculateResultadoFinalNuevaSeccion4]);
+
+  // Funciones para Nueva Sección 5
+  const calculateItem24335x1Price = useCallback(() => {
+    const price = itemPrices[24335];
+    if (!price) return 0;
+    return (price.buys.unit_price * 1) / 10000; // buy * 1
+  }, [itemPrices]);
+
+  const calculateItem24762Price = useCallback(() => {
+    const price = itemPrices[24762];
+    if (!price) return 0;
+    return (price.sells.unit_price * 0.85) / 10000; // sell * 0.85
+  }, [itemPrices]);
+
+  const calculateSumaTotalNuevaSeccion5 = useCallback(() => {
+    return calculateItem89271x12Price() + calculateItem24335x1Price() + calculateItem89103x1Price() + calculateItem19721x5Price();
+  }, [calculateItem89271x12Price, calculateItem24335x1Price, calculateItem89103x1Price, calculateItem19721x5Price]);
+
+  const calculateResultadoFinalNuevaSeccion5 = useCallback(() => {
+    return calculateItem24762Price() - calculateSumaTotalNuevaSeccion5();
+  }, [calculateItem24762Price, calculateSumaTotalNuevaSeccion5]);
+
+  const calculateResultadoFinalConDroprateNuevaSeccion5 = useCallback(() => {
+    const resultadoFinal = calculateResultadoFinalNuevaSeccion5();
+    const droprate = 0.1025; // Droprate fijo
+    
+    // Aplicar la fórmula condicional: SI(resultadoFinal>0, (0.1025*resultadoFinal), "0")
+    if (resultadoFinal > 0) {
+      return droprate * resultadoFinal;
+    } else {
+      return 0;
+    }
+  }, [calculateResultadoFinalNuevaSeccion5]);
+
+  // Funciones para Nueva Sección 6
+  const calculateItem72504x15Price = useCallback(() => {
+    const price = itemPrices[72504];
+    if (!price) return 0;
+    return (price.buys.unit_price * 15) / 10000; // buy * 15
+  }, [itemPrices]);
+
+  const calculateItem100429Price = useCallback(() => {
+    const price = itemPrices[100429];
+    if (!price) return 0;
+    return (price.sells.unit_price * 0.85) / 10000; // sell * 0.85
+  }, [itemPrices]);
+
+  const calculateSumaTotalNuevaSeccion6 = useCallback(() => {
+    return calculateItem89271x48Price() + calculateItem72504x15Price() + calculateItem89103x3Price() + calculateItem19721x15Price();
+  }, [calculateItem89271x48Price, calculateItem72504x15Price, calculateItem89103x3Price, calculateItem19721x15Price]);
+
+  const calculateResultadoFinalNuevaSeccion6 = useCallback(() => {
+    return calculateItem100429Price() - calculateSumaTotalNuevaSeccion6();
+  }, [calculateItem100429Price, calculateSumaTotalNuevaSeccion6]);
+
+  const calculateResultadoFinalConDroprateNuevaSeccion6 = useCallback(() => {
+    const resultadoFinal = calculateResultadoFinalNuevaSeccion6();
+    const droprate = 0.01625; // Droprate fijo (C42)
+    
+    // Aplicar la fórmula condicional: SI(resultadoFinal>=1, (resultadoFinal*0.063125), "0")
+    if (resultadoFinal >= 1) {
+      return droprate * resultadoFinal;
+    } else {
+      return 0;
+    }
+  }, [calculateResultadoFinalNuevaSeccion6]);
+
+  // Función para calcular ProfitMax de 19721 usando Nueva Sección 4
+  const calculateResultadoFinalConDroprate19721 = useCallback(() => {
+    const resultadoFinal = calculateResultadoFinalNuevaSeccion4(); // Q3
+    const droprate = 0.2375; // Droprate fijo
+    
+    // Aplicar la fórmula condicional: SI(Q3>=1, Q3*0.2375, "0")
+    if (resultadoFinal >= 1) {
+      return droprate * resultadoFinal;
+    } else {
+      return 0;
+    }
+  }, [calculateResultadoFinalNuevaSeccion4]);
+
 
   // Funciones para calcular ProfitMax específicos de Magia Liberada (basados en la nueva imagen)
   const calculateUMProfitMax = useCallback((itemId: number) => {
@@ -1330,23 +1744,41 @@ const CraftingPage = () => {
     if (itemId === 24310) {
       return calculateResultadoFinalConDroprate24868();
     }
+    if (itemId === 24315) {
+      return calculateResultadoFinalConDroprateNuevaSeccion();
+    }
+    if (itemId === 24320) {
+      return calculateResultadoFinalConDroprateSeccionRapida();
+    }
+    if (itemId === 24325) {
+      return calculateResultadoFinalConDroprateNuevaSeccion2();
+    }
+    if (itemId === 24330) {
+      return calculateResultadoFinalConDroprateNuevaSeccion3();
+    }
+    if (itemId === 68942) {
+      return calculateResultadoFinalConDroprateNuevaSeccion4();
+    }
+    if (itemId === 24335) {
+      return calculateResultadoFinalConDroprateNuevaSeccion5();
+    }
+    if (itemId === 72504) {
+      return calculateResultadoFinalConDroprateNuevaSeccion6();
+    }
+    if (itemId === 19721) {
+      return calculateResultadoFinalConDroprate19721();
+    }
+    if (itemId === 24357) {
+      return calculateUMProfitMax24357();
+    }
 
       
     // Valores fijos de ProfitMax según la imagen para otros items
     const profitMaxValues: Record<number, number> = {
-      19721: 3418,  // 00G 50S 57C
       24370: 0,     // 0
       68063: 0,     // 0
-      19675: 0,  // 00G 25S 30C (Mystic Clover)
       37897: 0,     // 0
-      24315: 120,    // 00G 00S 37C
-      24320: 601,   // 00G 04S 92C
-      24325: 0,     // 0
-      24330: 675,   // 00G 08S 76C
       70842: 0,     // 0
-      68942: 907,   // 00G 08S 76C
-      24335: 666,  // 00G 14S 77C
-      72504: 2060,  // 00G 37S 80C
       76491: 0,     // 0
       75654: 0,     // 0
       72315: 0,     // 0
@@ -1435,18 +1867,25 @@ const CraftingPage = () => {
 
   // Función para formatear precio en formato GW2
   const formatGW2Price = useCallback((priceInGold: number) => {
-    if (priceInGold === 0 || priceInGold < 0.0001) return '00G 00S 00C';
+    if (priceInGold === 0) return '00G 00S 00C';
     
-    const gold = Math.floor(priceInGold);
-    const silver = Math.floor((priceInGold - gold) * 100);
-    const copper = Math.floor(((priceInGold - gold) * 100 - silver) * 100);
+    // Manejar valores negativos
+    const isNegative = priceInGold < 0;
+    const absPrice = Math.abs(priceInGold);
+    
+    if (absPrice < 0.0001) return '00G 00S 00C';
+    
+    const gold = Math.floor(absPrice);
+    const silver = Math.floor((absPrice - gold) * 100);
+    const copper = Math.floor(((absPrice - gold) * 100 - silver) * 100);
     
     // Siempre mostrar formato completo con ceros
     const formattedGold = gold.toString().padStart(2, '0');
     const formattedSilver = silver.toString().padStart(2, '0');
     const formattedCopper = copper.toString().padStart(2, '0');
     
-    return `${formattedGold}G ${formattedSilver}S ${formattedCopper}C`;
+    const sign = isNegative ? '-' : '';
+    return `${sign}${formattedGold}G ${formattedSilver}S ${formattedCopper}C`;
   }, []);
 
   // Función para calcular el total de PrecioBASE de una tabla
@@ -1456,11 +1895,16 @@ const CraftingPage = () => {
       if (isComunes) {
         total += calculateBasePriceComunes(itemId, droprate);
       } else {
-        total += calculateBasePrice(itemId, droprate);
+        // Para el item 24357, usar la función específica de VM si el droprate es 1.0078
+        if (itemId === 24357 && droprate === 1.0078) {
+          total += calculateVMProfitMax24357();
+        } else {
+          total += calculateBasePrice(itemId, droprate);
+        }
       }
     });
     return total;
-  }, [calculateBasePrice, calculateBasePriceComunes]);
+  }, [calculateBasePrice, calculateBasePriceComunes, calculateVMProfitMax24357]);
 
   const fetchConversionCalculations = useCallback(async (forceRefresh = false) => {
     setIsLoadingConversions(true);
@@ -2554,7 +2998,7 @@ const CraftingPage = () => {
                                <td className="p-1 sm:p-2 md:p-3 text-center text-green-400 font-semibold text-xs whitespace-nowrap">
                                  {isLoadingPrices ? <Loader2 className="w-3 h-3 sm:w-4 sm:h-4 animate-spin mx-auto" /> : formatGW2Price(calculateBasePrice(24357, 1.0078))}
                                </td>
-                               <td className="p-1 sm:p-2 md:p-3 text-center text-gray-400 font-semibold text-xs whitespace-nowrap">00G 00S 00C</td>
+                               <td className="p-1 sm:p-2 md:p-3 text-center text-yellow-400 font-semibold text-xs whitespace-nowrap">{isLoadingPrices ? t('craftingPage.calculating', 'Calculando...') : formatGW2Price(calculateVMProfitMax24357())}</td>
                              </tr>
                              <tr className="border-b border-gray-800 hover:bg-gray-800/50 transition-colors">
                                <td className="p-2 sm:p-2 text-gray-300">
@@ -3139,7 +3583,7 @@ const CraftingPage = () => {
                       <div className="flex items-center gap-3 mt-3">
                         <div className="w-4 h-4 bg-indigo-500 rounded-full"></div>
                         <div className="text-indigo-300 text-sm font-bold">
-                          <strong>🚀 RESULTADO FINAL CON DROPRATE (SI S29&gt;=1, (S29/N27)*E30, "0"):</strong> {isLoadingPrices ? t('craftingPage.calculating', 'Calculando...') : formatGW2Price(calculateResultadoFinalConDroprate76179())}
+                          <strong>🚀 RESULTADO FINAL CON DROPRATE (SI S29&gt;=1, (S29/N27)*E30, &quot;0&quot;):</strong> {isLoadingPrices ? t('craftingPage.calculating', 'Calculando...') : formatGW2Price(calculateResultadoFinalConDroprate76179())}
                         </div>
                       </div>
                     </div>
@@ -3217,7 +3661,7 @@ const CraftingPage = () => {
                       <div className="flex items-center gap-3 mt-3">
                         <div className="w-4 h-4 bg-indigo-500 rounded-full"></div>
                         <div className="text-indigo-300 text-sm font-bold">
-                          <strong>🚀 RESULTADO FINAL CON DROPRATE (SI I22&gt;=1, (I22/D20)*F30, "0"):</strong> {isLoadingPrices ? t('craftingPage.calculating', 'Calculando...') : formatGW2Price(calculateResultadoFinalConDroprate70957())}
+                          <strong>🚀 RESULTADO FINAL CON DROPRATE (SI I22&gt;=1, (I22/D20)*F30, &quot;0&quot;):</strong> {isLoadingPrices ? t('craftingPage.calculating', 'Calculando...') : formatGW2Price(calculateResultadoFinalConDroprate70957())}
                         </div>
                       </div>
                     </div>
@@ -3229,6 +3673,7 @@ const CraftingPage = () => {
                       <div className="w-2 h-2 bg-purple-400 rounded-full"></div>
                       <h3 className="text-lg font-semibold text-white">⚡ Sistema de Cálculos Item 48911</h3>
                     </div>
+
                     
                     {/* Primera parte: Ingredientes para nuevo item */}
                     <div className="mb-4 p-3 bg-purple-900/30 rounded-lg border border-purple-600/30">
@@ -3294,7 +3739,7 @@ const CraftingPage = () => {
                       <div className="flex items-center gap-3 mt-3">
                         <div className="w-4 h-4 bg-indigo-500 rounded-full"></div>
                         <div className="text-indigo-300 text-sm font-bold">
-                          <strong>🚀 RESULTADO FINAL CON DROPRATE (SI S8&gt;=1, I30*(S8/100), "0"):</strong> {isLoadingPrices ? t('craftingPage.calculating', 'Calculando...') : formatGW2Price(calculateResultadoFinalConDroprate24824())}
+                          <strong>🚀 RESULTADO FINAL CON DROPRATE (SI S8&gt;=1, I30*(S8/100), &quot;0&quot;):</strong> {isLoadingPrices ? t('craftingPage.calculating', 'Calculando...') : formatGW2Price(calculateResultadoFinalConDroprate24824())}
                         </div>
                       </div>
                     </div>
@@ -3347,8 +3792,679 @@ const CraftingPage = () => {
                     </div>
                   </div>
 
-                  {/* Nueva Sección de Cálculos Item s - VISIBLE */}
-                  <div className="bg-gradient-to-r from-cyan-800/50 to-cyan-700/50 backdrop-blur-sm rounded-xl p-4 mb-6 border border-cyan-600/50">
+                  {/* Nueva Sección Visible - OCULTA */}
+                  <div className="bg-gradient-to-r from-green-800/50 to-blue-700/50 backdrop-blur-sm rounded-xl p-4 mb-6 border border-green-600/50 hidden">
+                    <div className="flex items-center gap-3 mb-4">
+                      <div className="w-2 h-2 bg-green-400 rounded-full"></div>
+                      <h3 className="text-lg font-semibold text-white">🆕 Nueva Sección de Análisis</h3>
+                    </div>
+                    
+                    <div className="mb-4 p-3 bg-green-900/30 rounded-lg border border-green-600/30">
+                      <h4 className="text-green-300 font-semibold mb-3 text-sm">📊 INGREDIENTES DEL ITEM</h4>
+                      
+                      {/* Item 89271 × 10 (buy) */}
+                      <div className="flex items-center gap-3 mb-2">
+                        <div className="w-3 h-3 bg-green-400 rounded-full"></div>
+                        <div className="text-green-300 text-sm">
+                          <strong>Item 89271 × 10 (buy):</strong> {isLoadingPrices ? t('craftingPage.calculating', 'Calculando...') : formatGW2Price(calculateItem89271x10Price())}
+                        </div>
+                      </div>
+                      
+                      {/* Item 24315 × 1 (buy) */}
+                      <div className="flex items-center gap-3 mb-2">
+                        <div className="w-3 h-3 bg-green-400 rounded-full"></div>
+                        <div className="text-green-300 text-sm">
+                          <strong>Item 24315 × 1 (buy):</strong> {isLoadingPrices ? t('craftingPage.calculating', 'Calculando...') : formatGW2Price(calculateItem24315x1Price())}
+                        </div>
+                      </div>
+                      
+                      {/* Item 89182 × 2 (buy) */}
+                      <div className="flex items-center gap-3 mb-2">
+                        <div className="w-3 h-3 bg-green-400 rounded-full"></div>
+                        <div className="text-green-300 text-sm">
+                          <strong>Item 89182 × 2 (buy):</strong> {isLoadingPrices ? t('craftingPage.calculating', 'Calculando...') : formatGW2Price(calculateItem89182x2Price())}
+                        </div>
+                      </div>
+                      
+                      {/* Item 19721 × 10 (sell × 0.9) */}
+                      <div className="flex items-center gap-3 mb-2">
+                        <div className="w-3 h-3 bg-green-400 rounded-full"></div>
+                        <div className="text-green-300 text-sm">
+                          <strong>Item 19721 × 10 (sell × 0.9):</strong> {isLoadingPrices ? t('craftingPage.calculating', 'Calculando...') : formatGW2Price(calculateItem19721x10Price())}
+                        </div>
+                      </div>
+                      
+                      {/* Suma Total */}
+                      <div className="flex items-center gap-3 mb-2">
+                        <div className="w-3 h-3 bg-blue-400 rounded-full"></div>
+                        <div className="text-blue-300 text-sm">
+                          <strong>SUMA TOTAL:</strong> {isLoadingPrices ? t('craftingPage.calculating', 'Calculando...') : formatGW2Price(calculateSumaTotalNuevaSeccion())}
+                        </div>
+                      </div>
+                      
+                      {/* Item Resultado */}
+                      <div className="flex items-center gap-3 mt-3">
+                        <div className="w-3 h-3 bg-red-400 rounded-full"></div>
+                        <div className="text-red-300 text-sm">
+                          <strong>Item 24609 (sell × 0.85):</strong> {isLoadingPrices ? t('craftingPage.calculating', 'Calculando...') : formatGW2Price(calculateItem24609Price())}
+                        </div>
+                      </div>
+                      
+                      {/* RESULTADO FINAL */}
+                      <div className="flex items-center gap-3 mt-3 pt-3 border-t border-green-600/30">
+                        <div className="w-4 h-4 bg-green-500 rounded-full"></div>
+                        <div className="text-green-300 text-sm font-bold">
+                          <strong>💎 RESULTADO FINAL:</strong> {isLoadingPrices ? t('craftingPage.calculating', 'Calculando...') : formatGW2Price(calculateResultadoFinalNuevaSeccion())}
+                        </div>
+                      </div>
+                      
+                      {/* RESULTADO FINAL CON DROPRATE */}
+                      <div className="flex items-center gap-3 mt-3 pt-3 border-t border-green-600/30">
+                        <div className="w-4 h-4 bg-yellow-400 rounded-full"></div>
+                        <div className="text-yellow-300 text-sm font-bold">
+                          <strong>🚀 RESULTADO FINAL CON DROPRATE:</strong> {isLoadingPrices ? t('craftingPage.calculating', 'Calculando...') : formatGW2Price(calculateResultadoFinalConDroprateNuevaSeccion())}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Nueva Sección Rápida - OCULTA */}
+                  <div className="bg-gradient-to-r from-purple-800/50 to-purple-700/50 backdrop-blur-sm rounded-xl p-4 mb-6 border border-purple-600/50 hidden">
+                    <div className="flex items-center gap-3 mb-4">
+                      <div className="w-2 h-2 bg-purple-400 rounded-full"></div>
+                      <h3 className="text-lg font-semibold text-white">⚡ Sección Rápida</h3>
+                    </div>
+                    
+                    <div className="mb-4 p-3 bg-purple-900/30 rounded-lg border border-purple-600/30">
+                      <h4 className="text-purple-300 font-semibold mb-3 text-sm">📊 INGREDIENTES</h4>
+                      
+                      {/* Item 89271 × 4 (buy) */}
+                      <div className="flex items-center gap-3 mb-2">
+                        <div className="w-3 h-3 bg-purple-400 rounded-full"></div>
+                        <div className="text-purple-300 text-sm">
+                          <strong>Item 89271 × 4 (buy):</strong> {isLoadingPrices ? t('craftingPage.calculating', 'Calculando...') : formatGW2Price(calculateItem89271x4Price())}
+                        </div>
+                      </div>
+                      
+                      {/* Item 24320 × 1 (buy) */}
+                      <div className="flex items-center gap-3 mb-2">
+                        <div className="w-3 h-3 bg-purple-400 rounded-full"></div>
+                        <div className="text-purple-300 text-sm">
+                          <strong>Item 24320 × 1 (buy):</strong> {isLoadingPrices ? t('craftingPage.calculating', 'Calculando...') : formatGW2Price(calculateItem24320x1Price())}
+                        </div>
+                      </div>
+                      
+                      {/* Item 89216 × 3 (buy) */}
+                      <div className="flex items-center gap-3 mb-2">
+                        <div className="w-3 h-3 bg-purple-400 rounded-full"></div>
+                        <div className="text-purple-300 text-sm">
+                          <strong>Item 89216 × 3 (buy):</strong> {isLoadingPrices ? t('craftingPage.calculating', 'Calculando...') : formatGW2Price(calculateItem89216x3Price())}
+                        </div>
+                      </div>
+                      
+                      {/* Item 19721 × 5 (sell × 0.9) */}
+                      <div className="flex items-center gap-3 mb-2">
+                        <div className="w-3 h-3 bg-purple-400 rounded-full"></div>
+                        <div className="text-purple-300 text-sm">
+                          <strong>Item 19721 × 5 (sell × 0.9):</strong> {isLoadingPrices ? t('craftingPage.calculating', 'Calculando...') : formatGW2Price(calculateItem19721x5Price())}
+                        </div>
+                      </div>                    
+                      
+                      {/* Suma Total */}
+                      <div className="flex items-center gap-3 mb-2">
+                        <div className="w-3 h-3 bg-blue-400 rounded-full"></div>
+                        <div className="text-blue-300 text-sm">
+                          <strong>SUMA TOTAL:</strong> {isLoadingPrices ? t('craftingPage.calculating', 'Calculando...') : formatGW2Price(calculateSumaTotalSeccionRapida())}
+                        </div>
+                      </div>
+                      
+                      {/* Item Resultado */}
+                      <div className="flex items-center gap-3 mt-3">
+                        <div className="w-3 h-3 bg-red-400 rounded-full"></div>
+                        <div className="text-red-300 text-sm">
+                          <strong>Item 24839 (sell × 0.85):</strong> {isLoadingPrices ? t('craftingPage.calculating', 'Calculando...') : formatGW2Price(calculateItem24839Price())}
+                        </div>
+                      </div>
+                      
+                      {/* RESULTADO FINAL */}
+                      <div className="flex items-center gap-3 mt-3 pt-3 border-t border-purple-600/30">
+                        <div className="w-4 h-4 bg-purple-500 rounded-full"></div>
+                        <div className="text-purple-300 text-sm font-bold">
+                          <strong>💎 RESULTADO FINAL:</strong> {isLoadingPrices ? t('craftingPage.calculating', 'Calculando...') : formatGW2Price(calculateResultadoFinalSeccionRapida())}
+                        </div>
+                      </div>
+                      
+                      {/* RESULTADO FINAL CON DROPRATE */}
+                      <div className="flex items-center gap-3 mt-3 pt-3 border-t border-purple-600/30">
+                        <div className="w-4 h-4 bg-yellow-400 rounded-full"></div>
+                        <div className="text-yellow-300 text-sm font-bold">
+                          <strong>🚀 RESULTADO FINAL CON DROPRATE:</strong> {isLoadingPrices ? t('craftingPage.calculating', 'Calculando...') : formatGW2Price(calculateResultadoFinalConDroprateSeccionRapida())}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Nueva Sección 2 - OCULTA */}
+                  <div className="bg-gradient-to-r from-orange-800/50 to-orange-700/50 backdrop-blur-sm rounded-xl p-4 mb-6 border border-orange-600/50 hidden">
+                    <div className="flex items-center gap-3 mb-4">
+                      <div className="w-2 h-2 bg-orange-400 rounded-full"></div>
+                      <h3 className="text-lg font-semibold text-white">🔥 Nueva Sección 2</h3>
+                    </div>
+                    
+                    <div className="mb-4 p-3 bg-orange-900/30 rounded-lg border border-orange-600/30">
+                      <h4 className="text-orange-300 font-semibold mb-3 text-sm">📊 INGREDIENTES</h4>
+                      
+                      {/* Item 89271 × 12 (buy) */}
+                      <div className="flex items-center gap-3 mb-2">
+                        <div className="w-3 h-3 bg-orange-400 rounded-full"></div>
+                        <div className="text-orange-300 text-sm">
+                          <strong>Item 89271 × 12 (buy):</strong> {isLoadingPrices ? t('craftingPage.calculating', 'Calculando...') : formatGW2Price(calculateItem89271x12Price())}
+                        </div>
+                      </div>
+                      
+                      {/* Item 24325 × 1 (buy) */}
+                      <div className="flex items-center gap-3 mb-2">
+                        <div className="w-3 h-3 bg-orange-400 rounded-full"></div>
+                        <div className="text-orange-300 text-sm">
+                          <strong>Item 24325 × 1 (buy):</strong> {isLoadingPrices ? t('craftingPage.calculating', 'Calculando...') : formatGW2Price(calculateItem24325x1Price())}
+                        </div>
+                      </div>
+                      
+                      {/* Item 89103 × 1 (buy) */}
+                      <div className="flex items-center gap-3 mb-2">
+                        <div className="w-3 h-3 bg-orange-400 rounded-full"></div>
+                        <div className="text-orange-300 text-sm">
+                          <strong>Item 89103 × 1 (buy):</strong> {isLoadingPrices ? t('craftingPage.calculating', 'Calculando...') : formatGW2Price(calculateItem89103x1Price())}
+                        </div>
+                      </div>
+                      
+                      {/* Item 19721 × 5 (sell × 0.9) */}
+                      <div className="flex items-center gap-3 mb-2">
+                        <div className="w-3 h-3 bg-orange-400 rounded-full"></div>
+                        <div className="text-orange-300 text-sm">
+                          <strong>Item 19721 × 5 (sell × 0.9):</strong> {isLoadingPrices ? t('craftingPage.calculating', 'Calculando...') : formatGW2Price(calculateItem19721x5Price2())}
+                        </div>
+                      </div>
+                      
+                      {/* Suma Total */}
+                      <div className="flex items-center gap-3 mb-2">
+                        <div className="w-3 h-3 bg-blue-400 rounded-full"></div>
+                        <div className="text-blue-300 text-sm">
+                          <strong>SUMA TOTAL:</strong> {isLoadingPrices ? t('craftingPage.calculating', 'Calculando...') : formatGW2Price(calculateSumaTotalNuevaSeccion2())}
+                        </div>
+                      </div>
+                      
+                      {/* Item Resultado */}
+                      <div className="flex items-center gap-3 mt-3">
+                        <div className="w-3 h-3 bg-red-400 rounded-full"></div>
+                        <div className="text-red-300 text-sm">
+                          <strong>Item 24800 (sell × 0.85):</strong> {isLoadingPrices ? t('craftingPage.calculating', 'Calculando...') : formatGW2Price(calculateItem24800Price())}
+                        </div>
+                      </div>
+                      
+                      {/* RESULTADO FINAL */}
+                      <div className="flex items-center gap-3 mt-3 pt-3 border-t border-orange-600/30">
+                        <div className="w-4 h-4 bg-orange-500 rounded-full"></div>
+                        <div className="text-orange-300 text-sm font-bold">
+                          <strong>💎 RESULTADO FINAL:</strong> {isLoadingPrices ? t('craftingPage.calculating', 'Calculando...') : formatGW2Price(calculateResultadoFinalNuevaSeccion2())}
+                        </div>
+                      </div>
+                      
+                      {/* RESULTADO FINAL CON DROPRATE */}
+                      <div className="flex items-center gap-3 mt-3 pt-3 border-t border-orange-600/30">
+                        <div className="w-4 h-4 bg-yellow-400 rounded-full"></div>
+                        <div className="text-yellow-300 text-sm font-bold">
+                          <strong>🚀 RESULTADO FINAL CON DROPRATE:</strong> {isLoadingPrices ? t('craftingPage.calculating', 'Calculando...') : formatGW2Price(calculateResultadoFinalConDroprateNuevaSeccion2())}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Nueva Sección 3 - OCULTA */}
+                  <div className="bg-gradient-to-r from-pink-800/50 to-pink-700/50 backdrop-blur-sm rounded-xl p-4 mb-6 border border-pink-600/50 hidden">
+                    <div className="flex items-center gap-3 mb-4">
+                      <div className="w-2 h-2 bg-pink-400 rounded-full"></div>
+                      <h3 className="text-lg font-semibold text-white">💖 Nueva Sección 3</h3>
+                    </div>
+                    
+                    <div className="mb-4 p-3 bg-pink-900/30 rounded-lg border border-pink-600/30">
+                      <h4 className="text-pink-300 font-semibold mb-3 text-sm">📊 INGREDIENTES</h4>
+                      
+                      {/* Item 89271 × 48 (buy) */}
+                      <div className="flex items-center gap-3 mb-2">
+                        <div className="w-3 h-3 bg-pink-400 rounded-full"></div>
+                        <div className="text-pink-300 text-sm">
+                          <strong>Item 89271 × 48 (buy):</strong> {isLoadingPrices ? t('craftingPage.calculating', 'Calculando...') : formatGW2Price(calculateItem89271x48Price())}
+                        </div>
+                      </div>
+                      
+                      {/* Item 24330 × 3 (buy) */}
+                      <div className="flex items-center gap-3 mb-2">
+                        <div className="w-3 h-3 bg-pink-400 rounded-full"></div>
+                        <div className="text-pink-300 text-sm">
+                          <strong>Item 24330 × 3 (buy):</strong> {isLoadingPrices ? t('craftingPage.calculating', 'Calculando...') : formatGW2Price(calculateItem24330x3Price())}
+                        </div>
+                      </div>
+                      
+                      {/* Item 89258 × 3 (buy) */}
+                      <div className="flex items-center gap-3 mb-2">
+                        <div className="w-3 h-3 bg-pink-400 rounded-full"></div>
+                        <div className="text-pink-300 text-sm">
+                          <strong>Item 89258 × 3 (buy):</strong> {isLoadingPrices ? t('craftingPage.calculating', 'Calculando...') : formatGW2Price(calculateItem89258x3Price())}
+                        </div>
+                      </div>
+                      
+                      {/* Item 19721 × 15 (sell × 0.9) */}
+                      <div className="flex items-center gap-3 mb-2">
+                        <div className="w-3 h-3 bg-pink-400 rounded-full"></div>
+                        <div className="text-pink-300 text-sm">
+                          <strong>Item 19721 × 15 (sell × 0.9):</strong> {isLoadingPrices ? t('craftingPage.calculating', 'Calculando...') : formatGW2Price(calculateItem19721x15Price())}
+                        </div>
+                      </div>
+                      
+                      {/* Suma Total */}
+                      <div className="flex items-center gap-3 mb-2">
+                        <div className="w-3 h-3 bg-blue-400 rounded-full"></div>
+                        <div className="text-blue-300 text-sm">
+                          <strong>SUMA TOTAL:</strong> {isLoadingPrices ? t('craftingPage.calculating', 'Calculando...') : formatGW2Price(calculateSumaTotalNuevaSeccion3())}
+                        </div>
+                      </div>
+                      
+                      {/* Item Resultado */}
+                      <div className="flex items-center gap-3 mt-3">
+                        <div className="w-3 h-3 bg-red-400 rounded-full"></div>
+                        <div className="text-red-300 text-sm">
+                          <strong>Item 100527 (sell × 0.85):</strong> {isLoadingPrices ? t('craftingPage.calculating', 'Calculando...') : formatGW2Price(calculateItem100527Price())}
+                        </div>
+                      </div>
+                      
+                      {/* RESULTADO FINAL */}
+                      <div className="flex items-center gap-3 mt-3 pt-3 border-t border-pink-600/30">
+                        <div className="w-4 h-4 bg-pink-500 rounded-full"></div>
+                        <div className="text-pink-300 text-sm font-bold">
+                          <strong>💎 RESULTADO FINAL:</strong> {isLoadingPrices ? t('craftingPage.calculating', 'Calculando...') : formatGW2Price(calculateResultadoFinalNuevaSeccion3())}
+                        </div>
+                      </div>
+                      
+                      {/* RESULTADO FINAL CON DROPRATE */}
+                      <div className="flex items-center gap-3 mt-3 pt-3 border-t border-pink-600/30">
+                        <div className="w-4 h-4 bg-yellow-400 rounded-full"></div>
+                        <div className="text-yellow-300 text-sm font-bold">
+                          <strong>🚀 RESULTADO FINAL CON DROPRATE:</strong> {isLoadingPrices ? t('craftingPage.calculating', 'Calculando...') : formatGW2Price(calculateResultadoFinalConDroprateNuevaSeccion3())}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Nueva Sección 4 - OCULTA */}
+                  <div className="bg-gradient-to-r from-indigo-800/50 to-indigo-700/50 backdrop-blur-sm rounded-xl p-4 mb-6 border border-indigo-600/50 hidden">
+                    <div className="flex items-center gap-3 mb-4">
+                      <div className="w-2 h-2 bg-indigo-400 rounded-full"></div>
+                      <h3 className="text-lg font-semibold text-white">💙 Nueva Sección 4</h3>
+                    </div>
+                    
+                    <div className="mb-4 p-3 bg-indigo-900/30 rounded-lg border border-indigo-600/30">
+                      <h4 className="text-indigo-300 font-semibold mb-3 text-sm">📊 INGREDIENTES</h4>
+                      
+                      {/* Item 89271 × 15 (buy) */}
+                      <div className="flex items-center gap-3 mb-2">
+                        <div className="w-3 h-3 bg-indigo-400 rounded-full"></div>
+                        <div className="text-indigo-300 text-sm">
+                          <strong>Item 89271 × 15 (buy):</strong> {isLoadingPrices ? t('craftingPage.calculating', 'Calculando...') : formatGW2Price(calculateItem89271x15Price())}
+                        </div>
+                      </div>
+                      
+                      {/* Item 68942 × 1 (buy) */}
+                      <div className="flex items-center gap-3 mb-2">
+                        <div className="w-3 h-3 bg-indigo-400 rounded-full"></div>
+                        <div className="text-indigo-300 text-sm">
+                          <strong>Item 68942 × 1 (buy):</strong> {isLoadingPrices ? t('craftingPage.calculating', 'Calculando...') : formatGW2Price(calculateItem68942x1Price())}
+                        </div>
+                      </div>
+                      
+                      {/* Item 89098 × 1 (buy) */}
+                      <div className="flex items-center gap-3 mb-2">
+                        <div className="w-3 h-3 bg-indigo-400 rounded-full"></div>
+                        <div className="text-indigo-300 text-sm">
+                          <strong>Item 89098 × 1 (buy):</strong> {isLoadingPrices ? t('craftingPage.calculating', 'Calculando...') : formatGW2Price(calculateItem89098x1Price())}
+                        </div>
+                      </div>
+                      
+                      {/* Item 19721 × 10 (sell × 0.9) */}
+                      <div className="flex items-center gap-3 mb-2">
+                        <div className="w-3 h-3 bg-indigo-400 rounded-full"></div>
+                        <div className="text-indigo-300 text-sm">
+                          <strong>Item 19721 × 10 (sell × 0.9):</strong> {isLoadingPrices ? t('craftingPage.calculating', 'Calculando...') : formatGW2Price(calculateItem19721x10Price())}
+                        </div>
+                      </div>
+                      
+                      {/* Suma Total */}
+                      <div className="flex items-center gap-3 mb-2">
+                        <div className="w-3 h-3 bg-blue-400 rounded-full"></div>
+                        <div className="text-blue-300 text-sm">
+                          <strong>SUMA TOTAL:</strong> {isLoadingPrices ? t('craftingPage.calculating', 'Calculando...') : formatGW2Price(calculateSumaTotalNuevaSeccion4())}
+                        </div>
+                      </div>
+                      
+                      {/* Item Resultado */}
+                      <div className="flex items-center gap-3 mt-3">
+                        <div className="w-3 h-3 bg-red-400 rounded-full"></div>
+                        <div className="text-red-300 text-sm">
+                          <strong>Item 74326 (sell × 0.85):</strong> {isLoadingPrices ? t('craftingPage.calculating', 'Calculando...') : formatGW2Price(calculateItem74326Price())}
+                        </div>
+                      </div>
+                      
+                      {/* RESULTADO FINAL */}
+                      <div className="flex items-center gap-3 mt-3 pt-3 border-t border-indigo-600/30">
+                        <div className="w-4 h-4 bg-indigo-500 rounded-full"></div>
+                        <div className="text-indigo-300 text-sm font-bold">
+                          <strong>💎 RESULTADO FINAL:</strong> {isLoadingPrices ? t('craftingPage.calculating', 'Calculando...') : formatGW2Price(calculateResultadoFinalNuevaSeccion4())}
+                        </div>
+                      </div>
+                      
+                      {/* RESULTADO FINAL CON DROPRATE */}
+                      <div className="flex items-center gap-3 mt-3 pt-3 border-t border-indigo-600/30">
+                        <div className="w-4 h-4 bg-yellow-400 rounded-full"></div>
+                        <div className="text-yellow-300 text-sm font-bold">
+                          <strong>🚀 RESULTADO FINAL CON DROPRATE:</strong> {isLoadingPrices ? t('craftingPage.calculating', 'Calculando...') : formatGW2Price(calculateResultadoFinalConDroprateNuevaSeccion4())}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Nueva Sección 5 - OCULTA */}
+                  <div className="bg-gradient-to-r from-teal-800/50 to-teal-700/50 backdrop-blur-sm rounded-xl p-4 mb-6 border border-teal-600/50 hidden">
+                    <div className="flex items-center gap-3 mb-4">
+                      <div className="w-2 h-2 bg-teal-400 rounded-full"></div>
+                      <h3 className="text-lg font-semibold text-white">🌊 Nueva Sección 5</h3>
+                    </div>
+                    
+                    <div className="mb-4 p-3 bg-teal-900/30 rounded-lg border border-teal-600/30">
+                      <h4 className="text-teal-300 font-semibold mb-3 text-sm">📊 INGREDIENTES</h4>
+                      
+                      {/* Ingrediente 1: 89271 x12 buy */}
+                      <div className="flex items-center gap-3 mb-2">
+                        <div className="w-3 h-3 bg-teal-400 rounded-full"></div>
+                        <div className="text-teal-300 text-sm">
+                          <strong>89271 x12 (buy):</strong> {isLoadingPrices ? t('craftingPage.calculating', 'Calculando...') : formatGW2Price(calculateItem89271x12Price())}
+                        </div>
+                      </div>
+                      
+                      {/* Ingrediente 2: 24335 x1 buy */}
+                      <div className="flex items-center gap-3 mb-2">
+                        <div className="w-3 h-3 bg-teal-400 rounded-full"></div>
+                        <div className="text-teal-300 text-sm">
+                          <strong>24335 x1 (buy):</strong> {isLoadingPrices ? t('craftingPage.calculating', 'Calculando...') : formatGW2Price(calculateItem24335x1Price())}
+                        </div>
+                      </div>
+                      
+                      {/* Ingrediente 3: 89103 x1 buy */}
+                      <div className="flex items-center gap-3 mb-2">
+                        <div className="w-3 h-3 bg-teal-400 rounded-full"></div>
+                        <div className="text-teal-300 text-sm">
+                          <strong>89103 x1 (buy):</strong> {isLoadingPrices ? t('craftingPage.calculating', 'Calculando...') : formatGW2Price(calculateItem89103x1Price())}
+                        </div>
+                      </div>
+                      
+                      {/* Ingrediente 4: 19721 x5 sell *0.9 */}
+                      <div className="flex items-center gap-3 mb-2">
+                        <div className="w-3 h-3 bg-teal-400 rounded-full"></div>
+                        <div className="text-teal-300 text-sm">
+                          <strong>19721 x5 (sell *0.9):</strong> {isLoadingPrices ? t('craftingPage.calculating', 'Calculando...') : formatGW2Price(calculateItem19721x5Price())}
+                        </div>
+                      </div>
+                      
+                      {/* Suma Total */}
+                      <div className="flex items-center gap-3 mb-2">
+                        <div className="w-3 h-3 bg-blue-400 rounded-full"></div>
+                        <div className="text-blue-300 text-sm">
+                          <strong>SUMA TOTAL:</strong> {isLoadingPrices ? t('craftingPage.calculating', 'Calculando...') : formatGW2Price(calculateSumaTotalNuevaSeccion5())}
+                        </div>
+                      </div>
+                      
+                      {/* Item Resultado: 24762 sell *0.85 */}
+                      <div className="flex items-center gap-3 mt-3">
+                        <div className="w-3 h-3 bg-red-400 rounded-full"></div>
+                        <div className="text-red-300 text-sm">
+                          <strong>24762 (sell *0.85):</strong> {isLoadingPrices ? t('craftingPage.calculating', 'Calculando...') : formatGW2Price(calculateItem24762Price())}
+                        </div>
+                      </div>
+                      
+                      {/* RESULTADO FINAL */}
+                      <div className="flex items-center gap-3 mt-3 pt-3 border-t border-teal-600/30">
+                        <div className="w-4 h-4 bg-teal-500 rounded-full"></div>
+                        <div className="text-teal-300 text-sm font-bold">
+                          <strong>💎 RESULTADO FINAL:</strong> {isLoadingPrices ? t('craftingPage.calculating', 'Calculando...') : formatGW2Price(calculateResultadoFinalNuevaSeccion5())}
+                        </div>
+                      </div>
+                      
+                      {/* RESULTADO FINAL CON DROPRATE */}
+                      <div className="flex items-center gap-3 mt-3 pt-3 border-t border-teal-600/30">
+                        <div className="w-4 h-4 bg-yellow-400 rounded-full"></div>
+                        <div className="text-yellow-300 text-sm font-bold">
+                          <strong>🚀 RESULTADO FINAL CON DROPRATE:</strong> {isLoadingPrices ? t('craftingPage.calculating', 'Calculando...') : formatGW2Price(calculateResultadoFinalConDroprateNuevaSeccion5())}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Nueva Sección 6 - OCULTA */}
+                  <div className="bg-gradient-to-r from-rose-800/50 to-rose-700/50 backdrop-blur-sm rounded-xl p-4 mb-6 border border-rose-600/50 hidden">
+                    <div className="flex items-center gap-3 mb-4">
+                      <div className="w-2 h-2 bg-rose-400 rounded-full"></div>
+                      <h3 className="text-lg font-semibold text-white">🌹 Nueva Sección 6</h3>
+                    </div>
+                    
+                    <div className="mb-4 p-3 bg-rose-900/30 rounded-lg border border-rose-600/30">
+                      <h4 className="text-rose-300 font-semibold mb-3 text-sm">📊 INGREDIENTES</h4>
+                      
+                      {/* Ingrediente 1: 89271 x48 buy */}
+                      <div className="flex items-center gap-3 mb-2">
+                        <div className="w-3 h-3 bg-rose-400 rounded-full"></div>
+                        <div className="text-rose-300 text-sm">
+                          <strong>89271 x48 (buy):</strong> {isLoadingPrices ? t('craftingPage.calculating', 'Calculando...') : formatGW2Price(calculateItem89271x48Price())}
+                        </div>
+                      </div>
+                      
+                      {/* Ingrediente 2: 72504 x15 buy */}
+                      <div className="flex items-center gap-3 mb-2">
+                        <div className="w-3 h-3 bg-rose-400 rounded-full"></div>
+                        <div className="text-rose-300 text-sm">
+                          <strong>72504 x15 (buy):</strong> {isLoadingPrices ? t('craftingPage.calculating', 'Calculando...') : formatGW2Price(calculateItem72504x15Price())}
+                        </div>
+                      </div>
+                      
+                      {/* Ingrediente 3: 89103 x3 buy */}
+                      <div className="flex items-center gap-3 mb-2">
+                        <div className="w-3 h-3 bg-rose-400 rounded-full"></div>
+                        <div className="text-rose-300 text-sm">
+                          <strong>89103 x3 (buy):</strong> {isLoadingPrices ? t('craftingPage.calculating', 'Calculando...') : formatGW2Price(calculateItem89103x3Price())}
+                        </div>
+                      </div>
+                      
+                      {/* Ingrediente 4: 19721 x15 sell *0.9 */}
+                      <div className="flex items-center gap-3 mb-2">
+                        <div className="w-3 h-3 bg-rose-400 rounded-full"></div>
+                        <div className="text-rose-300 text-sm">
+                          <strong>19721 x15 (sell *0.9):</strong> {isLoadingPrices ? t('craftingPage.calculating', 'Calculando...') : formatGW2Price(calculateItem19721x15Price())}
+                        </div>
+                      </div>
+                      
+                      {/* Suma Total */}
+                      <div className="flex items-center gap-3 mb-2">
+                        <div className="w-3 h-3 bg-blue-400 rounded-full"></div>
+                        <div className="text-blue-300 text-sm">
+                          <strong>SUMA TOTAL:</strong> {isLoadingPrices ? t('craftingPage.calculating', 'Calculando...') : formatGW2Price(calculateSumaTotalNuevaSeccion6())}
+                        </div>
+                      </div>
+                      
+                      {/* Item Resultado: 100429 sell *0.85 */}
+                      <div className="flex items-center gap-3 mt-3">
+                        <div className="w-3 h-3 bg-red-400 rounded-full"></div>
+                        <div className="text-red-300 text-sm">
+                          <strong>100429 (sell *0.85):</strong> {isLoadingPrices ? t('craftingPage.calculating', 'Calculando...') : formatGW2Price(calculateItem100429Price())}
+                        </div>
+                      </div>
+                      
+                      {/* RESULTADO FINAL */}
+                      <div className="flex items-center gap-3 mt-3 pt-3 border-t border-rose-600/30">
+                        <div className="w-4 h-4 bg-rose-500 rounded-full"></div>
+                        <div className="text-rose-300 text-sm font-bold">
+                          <strong>💎 RESULTADO FINAL:</strong> {isLoadingPrices ? t('craftingPage.calculating', 'Calculando...') : formatGW2Price(calculateResultadoFinalNuevaSeccion6())}
+                        </div>
+                      </div>
+                      
+                      {/* RESULTADO FINAL CON DROPRATE */}
+                      <div className="flex items-center gap-3 mt-3 pt-3 border-t border-rose-600/30">
+                        <div className="w-4 h-4 bg-yellow-400 rounded-full"></div>
+                        <div className="text-yellow-300 text-sm font-bold">
+                          <strong>🚀 RESULTADO FINAL CON DROPRATE:</strong> {isLoadingPrices ? t('craftingPage.calculating', 'Calculando...') : formatGW2Price(calculateResultadoFinalConDroprateNuevaSeccion6())}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Nueva Sección 7 - OCULTA */}
+                  <div className="bg-gradient-to-r from-emerald-800/50 to-emerald-700/50 backdrop-blur-sm rounded-xl p-4 mb-6 border border-emerald-600/50 hidden">
+                    <div className="flex items-center gap-3 mb-4">
+                      <div className="w-2 h-2 bg-emerald-400 rounded-full"></div>
+                      <h3 className="text-lg font-semibold text-white">💚 Nueva Sección 7</h3>
+                    </div>
+                    
+                    <div className="mb-4 p-3 bg-emerald-900/30 rounded-lg border border-emerald-600/30">
+                      <h4 className="text-emerald-300 font-semibold mb-3 text-sm">📊 INGREDIENTES</h4>
+                      
+                      {/* Placeholder para ingredientes */}
+                      <div className="flex items-center gap-3 mb-2">
+                        <div className="w-3 h-3 bg-emerald-400 rounded-full"></div>
+                        <div className="text-emerald-300 text-sm">
+                          <strong>Ingrediente 1:</strong> {isLoadingPrices ? t('craftingPage.calculating', 'Calculando...') : '0.00 G'}
+                        </div>
+                      </div>
+                      
+                      {/* Suma Total */}
+                      <div className="flex items-center gap-3 mb-2">
+                        <div className="w-3 h-3 bg-blue-400 rounded-full"></div>
+                        <div className="text-blue-300 text-sm">
+                          <strong>SUMA TOTAL:</strong> {isLoadingPrices ? t('craftingPage.calculating', 'Calculando...') : '0.00 G'}
+                        </div>
+                      </div>
+                      
+                      {/* Item Resultado */}
+                      <div className="flex items-center gap-3 mt-3">
+                        <div className="w-3 h-3 bg-red-400 rounded-full"></div>
+                        <div className="text-red-300 text-sm">
+                          <strong>Item Resultado:</strong> {isLoadingPrices ? t('craftingPage.calculating', 'Calculando...') : '0.00 G'}
+                        </div>
+                      </div>
+                      
+                      {/* RESULTADO FINAL */}
+                      <div className="flex items-center gap-3 mt-3 pt-3 border-t border-emerald-600/30">
+                        <div className="w-4 h-4 bg-emerald-500 rounded-full"></div>
+                        <div className="text-emerald-300 text-sm font-bold">
+                          <strong>💎 RESULTADO FINAL:</strong> {isLoadingPrices ? t('craftingPage.calculating', 'Calculando...') : '0.00 G'}
+                        </div>
+                      </div>
+                      
+                      {/* RESULTADO FINAL CON DROPRATE */}
+                      <div className="flex items-center gap-3 mt-3 pt-3 border-t border-emerald-600/30">
+                        <div className="w-4 h-4 bg-yellow-400 rounded-full"></div>
+                        <div className="text-yellow-300 text-sm font-bold">
+                          <strong>🚀 RESULTADO FINAL CON DROPRATE:</strong> {isLoadingPrices ? t('craftingPage.calculating', 'Calculando...') : '0.00 G'}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Sección Crafting Item 24357 - OCULTA */}
+                  <div className="bg-gradient-to-r from-amber-800/50 to-amber-700/50 backdrop-blur-sm rounded-xl p-4 mb-6 border border-amber-600/50 hidden">
+                    <div className="flex items-center gap-3 mb-4">
+                      <div className="w-2 h-2 bg-amber-400 rounded-full"></div>
+                      <h3 className="text-lg font-semibold text-white">⚔️ Crafting Item 24357 (Colmillo feroz)</h3>
+                    </div>
+                    
+                    <div className="mb-4 p-3 bg-amber-900/30 rounded-lg border border-amber-600/30">
+                      <h4 className="text-amber-300 font-semibold mb-3 text-sm">📊 INGREDIENTES</h4>
+                      
+                      {/* Ingrediente 1: 89271 x12 buy */}
+                      <div className="flex items-center gap-3 mb-2">
+                        <div className="w-3 h-3 bg-amber-400 rounded-full"></div>
+                        <div className="text-amber-300 text-sm">
+                          <strong>89271 x12 (buy):</strong> {isLoadingPrices ? t('craftingPage.calculating', 'Calculando...') : formatGW2Price((itemPrices[89271]?.buys?.unit_price || 0) * 12 / 10000)}
+                        </div>
+                      </div>
+                      
+                      {/* Ingrediente 2: 24357 x5 buy */}
+                      <div className="flex items-center gap-3 mb-2">
+                        <div className="w-3 h-3 bg-amber-400 rounded-full"></div>
+                        <div className="text-amber-300 text-sm">
+                          <strong>24357 x5 (buy):</strong> {isLoadingPrices ? t('craftingPage.calculating', 'Calculando...') : formatGW2Price((itemPrices[24357]?.buys?.unit_price || 0) * 5 / 10000)}
+                        </div>
+                      </div>
+                      
+                      {/* Ingrediente 3: 89216 x1 buy */}
+                      <div className="flex items-center gap-3 mb-2">
+                        <div className="w-3 h-3 bg-amber-400 rounded-full"></div>
+                        <div className="text-amber-300 text-sm">
+                          <strong>89216 x1 (buy):</strong> {isLoadingPrices ? t('craftingPage.calculating', 'Calculando...') : formatGW2Price((itemPrices[89216]?.buys?.unit_price || 0) * 1 / 10000)}
+                        </div>
+                      </div>
+                      
+                      {/* Ingrediente 4: 19721 x5 sell *0.9 */}
+                      <div className="flex items-center gap-3 mb-2">
+                        <div className="w-3 h-3 bg-amber-400 rounded-full"></div>
+                        <div className="text-amber-300 text-sm">
+                          <strong>19721 x5 (sell *0.9):</strong> {isLoadingPrices ? t('craftingPage.calculating', 'Calculando...') : formatGW2Price((itemPrices[19721]?.sells?.unit_price || 0) * 5 * 0.9 / 10000)}
+                        </div>
+                      </div>
+                      
+                      {/* Suma Total */}
+                      <div className="flex items-center gap-3 mb-2">
+                        <div className="w-3 h-3 bg-blue-400 rounded-full"></div>
+                        <div className="text-blue-300 text-sm">
+                          <strong>SUMA TOTAL:</strong> {isLoadingPrices ? t('craftingPage.calculating', 'Calculando...') : formatGW2Price(
+                            ((itemPrices[89271]?.buys?.unit_price || 0) * 12 / 10000) +
+                            ((itemPrices[24357]?.buys?.unit_price || 0) * 5 / 10000) +
+                            ((itemPrices[89216]?.buys?.unit_price || 0) * 1 / 10000) +
+                            ((itemPrices[19721]?.sells?.unit_price || 0) * 5 * 0.9 / 10000)
+                          )}
+                        </div>
+                      </div>
+                      
+                      {/* Item Resultado: 24815 sell *0.85 */}
+                      <div className="flex items-center gap-3 mt-3">
+                        <div className="w-3 h-3 bg-red-400 rounded-full"></div>
+                        <div className="text-red-300 text-sm">
+                          <strong>24815 (sell *0.85):</strong> {isLoadingPrices ? t('craftingPage.calculating', 'Calculando...') : formatGW2Price((itemPrices[24815]?.sells?.unit_price || 0) * 0.85 / 10000)}
+                        </div>
+                      </div>
+                      
+                      {/* RESULTADO FINAL */}
+                      <div className="flex items-center gap-3 mt-3 pt-3 border-t border-amber-600/30">
+                        <div className="w-4 h-4 bg-amber-500 rounded-full"></div>
+                        <div className="text-amber-300 text-sm font-bold">
+                          <strong>💎 RESULTADO FINAL:</strong> {isLoadingPrices ? t('craftingPage.calculating', 'Calculando...') : formatGW2Price(
+                            ((itemPrices[24815]?.sells?.unit_price || 0) * 0.85 / 10000) - 
+                            (((itemPrices[89271]?.buys?.unit_price || 0) * 12 / 10000) +
+                             ((itemPrices[24357]?.buys?.unit_price || 0) * 5 / 10000) +
+                             ((itemPrices[89216]?.buys?.unit_price || 0) * 1 / 10000) +
+                             ((itemPrices[19721]?.sells?.unit_price || 0) * 5 * 0.9 / 10000))
+                          )}
+                        </div>
+                      </div>
+                      
+                      {/* RESULTADO FINAL CON DROPRATE */}
+                      <div className="flex items-center gap-3 mt-3 pt-3 border-t border-amber-600/30">
+                        <div className="w-4 h-4 bg-yellow-400 rounded-full"></div>
+                        <div className="text-yellow-300 text-sm font-bold">
+                          <strong>🚀 RESULTADO FINAL CON DROPRATE:</strong> {isLoadingPrices ? t('craftingPage.calculating', 'Calculando...') : formatGW2Price(calculateUMProfitMax24357())}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Nueva Sección de Cálculos Item s - OCULTA */}
+                  <div className="bg-gradient-to-r from-cyan-800/50 to-cyan-700/50 backdrop-blur-sm rounded-xl p-4 mb-6 border border-cyan-600/50 hidden">
                     <div className="flex items-center gap-3 mb-4">
                       <div className="w-2 h-2 bg-cyan-400 rounded-full"></div>
                       <h3 className="text-lg font-semibold text-white">🔬 Análisis Destallado Item 48911</h3>
@@ -3396,7 +4512,7 @@ const CraftingPage = () => {
                         <div className="text-blue-300 text-sm">
                           <strong>SUMA (89271x5 + 24310×1 + 89182×3 + 19721×5):</strong> {isLoadingPrices ? t('craftingPage.calculating', 'Calculando...') : formatGW2Price(calculateItem89271x5Price() + calculateItem24310x1Price() + calculateItem89182x3Price() + calculateItem19721x10Price())}
                         </div>
-                      </div>                                        
+                      </div>
                       
                       {/* Item 74978 (sell × 0.85) */}
                       <div className="flex items-center gap-3 mt-3">
@@ -3418,10 +4534,11 @@ const CraftingPage = () => {
                       <div className="flex items-center gap-3 mt-3 pt-3 border-t border-purple-600/30">
                         <div className="w-4 h-4 bg-yellow-400 rounded-full"></div>
                         <div className="text-yellow-300 text-sm font-bold">
-                          <strong>🚀 RESULTADO FINAL CON DROPRATE (SI I15&gt;=1, C36*I15, "0"):</strong> {isLoadingPrices ? t('craftingPage.calculating', 'Calculando...') : formatGW2Price(calculateResultadoFinalConDroprate24868())}
+                          <strong>🚀 RESULTADO FINAL CON DROPRATE (SI I15&gt;=1, C36*I15, &quot;0&quot;):</strong> {isLoadingPrices ? t('craftingPage.calculating', 'Calculando...') : formatGW2Price(calculateResultadoFinalConDroprate24868())}
                         </div>
                       </div>
                     </div>
+                    
                     
                     
                     {/* Primera parte: Ingredientes para nuevo item */}
@@ -3478,15 +4595,15 @@ const CraftingPage = () => {
                       <div className="flex items-center gap-3 mt-3 pt-3 border-t border-cyan-600/30">
                         <div className="w-4 h-4 bg-yellow-400 rounded-full"></div>
                         <div className="text-yellow-300 text-sm font-bold">
-                          <strong>🚀 RESULTADO FINAL CON DROPRATE (SI S8&gt;=1, I30*(S8/100), "0"):</strong> {isLoadingPrices ? t('craftingPage.calculating', 'Calculando...') : formatGW2Price(calculateResultadoFinalConDroprate24824())}
+                          <strong>🚀 RESULTADO FINAL CON DROPRATE (SI S8&gt;=1, I30*(S8/100), &quot;0&quot;):</strong> {isLoadingPrices ? t('craftingPage.calculating', 'Calculando...') : formatGW2Price(calculateResultadoFinalConDroprate24824())}
                         </div>
                       </div>
                     </div>
                     </div>
                   </div>
 
-                  {/* Sección de Valores Separados de UM */}
-                  <div className="bg-gradient-to-r from-green-800/50 to-green-700/50 backdrop-blur-sm rounded-xl p-4 mb-6 border border-green-600/50">
+                  {/* Sección de Valores Separados de UM - OCULTA */}
+                  <div className="bg-gradient-to-r from-green-800/50 to-green-700/50 backdrop-blur-sm rounded-xl p-4 mb-6 border border-green-600/50 hidden">
                     <div className="flex items-center gap-3 mb-4">
                       <div className="w-2 h-2 bg-green-400 rounded-full"></div>
                       <h3 className="text-lg font-semibold text-white">📊 Desglose de ProfitMax UM</h3>
@@ -3734,7 +4851,7 @@ const CraftingPage = () => {
                                 {isLoadingPrices ? <Loader2 className="w-3 h-3 sm:w-4 sm:h-4 animate-spin mx-auto" /> : formatGW2Price(calculateBasePrice(24283, getUMDroprate(24283)))}
                               </td>
                               <td className="p-1 sm:p-2 md:p-3 text-center text-yellow-400 font-semibold text-xs whitespace-nowrap">
-                                {isLoadingPrices ? <Loader2 className="w-3 h-3 sm:w-4 sm:h-4 animate-spin mx-auto" /> : formatGW2Price(calculateUMProfitMax24283())}
+                                {isLoadingPrices ? <Loader2 className="w-3 h-3 sm:w-4 sm:h-4 animate-spin mx-auto" /> : formatGW2Price(calculateUMProfitMax24283() || 0)}
                               </td>
                             </tr>
                             <tr className="border-b border-gray-800 hover:bg-gray-800/50 transition-colors">
