@@ -1,0 +1,33 @@
+{
+  "name": "True Farming - Guild Wars 2 Farming Hub",
+  "short_name": "True Farming",
+  "description": "Your platform to optimize farming in Guild Wars 2",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#1a1a1a",
+  "theme_color": "#c1272d",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/images/icons/icon.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/images/icons/icon1.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/images/icons/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ],
+  "categories": ["games", "entertainment", "utilities"],
+  "lang": "en",
+  "dir": "ltr"
+}
