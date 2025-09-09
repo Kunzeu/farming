@@ -23,7 +23,6 @@ import {
 import { usePageTitle } from '@/hooks/usePageTitle'
 import { useI18n } from '@/contexts/I18nContext'
 import { useDashboardPreferences } from '@/hooks/useDashboardPreferences'
-import DashboardSettings from '@/components/DashboardSettings'
 import { useState, useEffect, useMemo } from 'react'
 
 interface DashboardCard {
@@ -141,7 +140,6 @@ export default function HomePage() {
   const [dashboardCards, setDashboardCards] = useState<DashboardCard[]>([]);
   const [originalCards, setOriginalCards] = useState<DashboardCard[]>([]);
   const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
-  const [showSettings, setShowSettings] = useState(false);
 
   // Función para reconstruir iconos desde los datos guardados
   const reconstructCardWithIcon = (savedCard: Omit<DashboardCard, 'icon'>): DashboardCard => {
@@ -472,24 +470,15 @@ export default function HomePage() {
                       {t('dashboard.cancel', 'Cancelar')}
                     </button>
                   </>
-                ) : (
-                  <div className="flex gap-2">
-                    <button
-                      onClick={toggleEditMode}
-                      className="flex items-center gap-2 px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg transition-colors duration-200"
-                    >
-                      <Settings className="w-4 h-4" />
-                      {t('dashboard.customize', 'Personalizar Dashboard')}
-                    </button>
-                    <button
-                      onClick={() => setShowSettings(true)}
-                      className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors duration-200"
-                    >
-                      <Settings className="w-4 h-4" />
-                      Configuración Avanzada
-                    </button>
-                  </div>
-                )}
+                 ) : (
+                   <button
+                     onClick={toggleEditMode}
+                     className="flex items-center gap-2 px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg transition-colors duration-200"
+                   >
+                     <Settings className="w-4 h-4" />
+                     {t('dashboard.customize', 'Personalizar Dashboard')}
+                   </button>
+                 )}
               </div>
             </div>
             
@@ -563,12 +552,6 @@ export default function HomePage() {
           </div>
         </section>
       </div>
-      
-      {/* Modal de configuración avanzada */}
-      <DashboardSettings 
-        isOpen={showSettings} 
-        onClose={() => setShowSettings(false)} 
-      />
     </div>
   )
 } 

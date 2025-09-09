@@ -196,25 +196,36 @@ class DatabaseClientService {
   }
 
   async updateUser(id: string, updates: Partial<User>): Promise<User> {
-    const response = await fetch(`/api/users/${id}`, {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(updates),
-    });
-    
-    if (!response.ok) {
-      throw new Error('Failed to update user');
+    try {
+      const response = await fetch(`/api/users/${id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(updates),
+      });
+      
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        console.error('Update user error:', {
+          status: response.status,
+          statusText: response.statusText,
+          error: errorData
+        });
+        throw new Error(`Failed to update user: ${response.status} ${response.statusText}`);
+      }
+      
+      const data = await response.json();
+      const { password, ...safeUser } = data;
+      return {
+        ...safeUser,
+        createdAt: new Date(safeUser.createdAt),
+        updatedAt: new Date(safeUser.updatedAt)
+      };
+    } catch (error) {
+      console.error('Database client updateUser error:', error);
+      throw error;
     }
-    
-    const data = await response.json();
-    const { password, ...safeUser } = data;
-    return {
-      ...safeUser,
-      createdAt: new Date(safeUser.createdAt),
-      updatedAt: new Date(safeUser.updatedAt)
-    };
   }
 
   async deleteUser(id: string): Promise<{ farmsDeleted: number; farmsPreserved: number; userRole: string }> {

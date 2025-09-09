@@ -11,18 +11,19 @@ interface DashboardSettingsProps {
 }
 
 const availableCards = [
-  { id: 'trophy', name: 'Análisis de Trofeos' },
-  { id: 'farming-routes', name: 'Rutas de Farming' },
-  { id: 'daily-routine', name: 'Rutina Diaria' },
-  { id: 'fractals', name: 'Fractales' },
-  { id: 'ls4-meta', name: 'LS4 Meta' },
-  { id: 'garden', name: 'Jardín' },
+  { id: 'farms', name: 'Rutas de Farming' },
+  { id: 'dailyRoutine', name: 'Rutina Diaria' },
   { id: 'salvaging', name: 'Reciclaje' },
+  { id: 'trophy', name: 'Análisis de Trofeos' },
   { id: 'festivals', name: 'Festivales' },
+  { id: 'farmingTracker', name: 'Fractales' },
+  { id: 'glossary', name: 'Glosario' },
+  { id: 'orrianJewelry', name: 'Caja de Joyas Orrianas' },
+  { id: 'garden', name: 'Jardín' },
+  { id: 'ls4Meta', name: 'LS4 Meta' },
   { id: 'buyout', name: 'Compra' },
-  { id: 'orrian-jewelry-box', name: 'Caja de Joyas Orrianas' },
   { id: 'others', name: 'Otros' },
-  { id: 'glossary', name: 'Glosario' }
+  { id: 'profile', name: 'Perfil' }
 ];
 
 export default function DashboardSettings({ isOpen, onClose }: DashboardSettingsProps) {
