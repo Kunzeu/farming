@@ -373,7 +373,7 @@ export default function GiftOfMasteryPage() {
                   <ShoppingCart className={`w-4 h-4 mr-3 ${
                     activeSection === 'comprador-detallado' ? 'text-blue-400' : 'text-gray-400 group-hover:text-blue-400'
                   }`} />
-                  <span className="font-medium">Comprador</span>
+                  <span className="font-medium">{t('giftOfMasteryPage.sections.buyer')}</span>
                   {activeSection === 'comprador-detallado' && <ArrowRight className="w-3 h-3 ml-auto text-blue-400" />}
                 </button>
                 
@@ -388,7 +388,7 @@ export default function GiftOfMasteryPage() {
                   <Wrench className={`w-4 h-4 mr-3 ${
                     activeSection === 'vendedor-detallado' ? 'text-green-400' : 'text-gray-400 group-hover:text-green-400'
                   }`} />
-                  <span className="font-medium">Vendedor</span>
+                  <span className="font-medium">{t('giftOfMasteryPage.sections.seller')}</span>
                   {activeSection === 'vendedor-detallado' && <ArrowRight className="w-3 h-3 ml-auto text-green-400" />}
                 </button>
                 
@@ -403,7 +403,7 @@ export default function GiftOfMasteryPage() {
                   <Zap className={`w-4 h-4 mr-3 ${
                     activeSection === 'proceso-detallado' ? 'text-purple-400' : 'text-gray-400 group-hover:text-purple-400'
                   }`} />
-                  <span className="font-medium">Proceso</span>
+                  <span className="font-medium">{t('giftOfMasteryPage.sections.process')}</span>
                   {activeSection === 'proceso-detallado' && <ArrowRight className="w-3 h-3 ml-auto text-purple-400" />}
                 </button>
                 
@@ -419,7 +419,7 @@ export default function GiftOfMasteryPage() {
                   <MessageCircle className={`w-4 h-4 mr-3 ${
                     activeSection === 'discord-detallado' ? 'text-indigo-400' : 'text-gray-400 group-hover:text-indigo-400'
                   }`} />
-                  <span className="font-medium">Discord</span>
+                  <span className="font-medium">{t('giftOfMasteryPage.sections.discord')}</span>
                   {activeSection === 'discord-detallado' && <ArrowRight className="w-3 h-3 ml-auto text-indigo-400" />}
                 </button>
                 
@@ -434,7 +434,7 @@ export default function GiftOfMasteryPage() {
                   <Lightbulb className={`w-4 h-4 mr-3 ${
                     activeSection === 'consejos-detallado' ? 'text-pink-400' : 'text-gray-400 group-hover:text-pink-400'
                   }`} />
-                  <span className="font-medium">Consejos</span>
+                  <span className="font-medium">{t('giftOfMasteryPage.sections.tips')}</span>
                   {activeSection === 'consejos-detallado' && <ArrowRight className="w-3 h-3 ml-auto text-pink-400" />}
                 </button>
               </nav>
@@ -455,7 +455,7 @@ export default function GiftOfMasteryPage() {
           {mobileMenuOpen && (
             <div className="lg:hidden fixed inset-0 bg-black/50 z-40 animate-in fade-in duration-200" onClick={() => setMobileMenuOpen(false)}>
               <div className="absolute top-1/2 right-20 transform -translate-y-1/2 bg-slate-800 border border-slate-700 rounded-2xl p-4 shadow-xl min-w-[200px] max-w-[90vw] animate-in slide-in-from-right-4 duration-300">
-                <h3 className="text-white font-bold text-lg mb-3">Menú</h3>
+                <h3 className="text-white font-bold text-lg mb-3">{t('giftOfMasteryPage.menu.title')}</h3>
                 <nav className="space-y-2">
                   <button 
                     onClick={() => handleScrollTo('comprador-detallado')} 
@@ -465,7 +465,7 @@ export default function GiftOfMasteryPage() {
                         : 'text-gray-300 hover:text-white hover:bg-slate-700/40'
                     }`}
                   >
-                    Comprador
+                    {t('giftOfMasteryPage.sections.buyer')}
                   </button>
                   <button 
                     onClick={() => handleScrollTo('vendedor-detallado')} 
@@ -475,7 +475,7 @@ export default function GiftOfMasteryPage() {
                         : 'text-gray-300 hover:text-white hover:bg-slate-700/40'
                     }`}
                   >
-                    Vendedor
+                    {t('giftOfMasteryPage.sections.seller')}
                   </button>
                   <button 
                     onClick={() => handleScrollTo('proceso-detallado')} 
@@ -485,7 +485,7 @@ export default function GiftOfMasteryPage() {
                         : 'text-gray-300 hover:text-white hover:bg-slate-700/40'
                     }`}
                   >
-                    Proceso
+                    {t('giftOfMasteryPage.sections.process')}
                   </button>
                   <button 
                     onClick={() => handleScrollTo('discord-detallado')} 
@@ -495,7 +495,7 @@ export default function GiftOfMasteryPage() {
                         : 'text-gray-300 hover:text-white hover:bg-slate-700/40'
                     }`}
                   >
-                    Discord
+                    {t('giftOfMasteryPage.sections.discord')}
                   </button>
                   <button 
                     onClick={() => handleScrollTo('consejos-detallado')} 
@@ -505,7 +505,7 @@ export default function GiftOfMasteryPage() {
                         : 'text-gray-300 hover:text-white hover:bg-slate-700/40'
                     }`}
                   >
-                    Consejos
+                    {t('giftOfMasteryPage.sections.tips')}
                   </button>
                 </nav>
               </div>
@@ -584,7 +584,7 @@ export default function GiftOfMasteryPage() {
           className="mb-12"
         >
           <div className="bg-slate-800/50 backdrop-blur-sm border border-slate-700/50 rounded-2xl p-6 shadow-lg">
-            <h2 className="text-xl font-bold text-white mb-4 text-center">📋 Índice de la Guía</h2>
+            <h2 className="text-xl font-bold text-white mb-4 text-center">📋 {t('giftOfMasteryPage.sections.guideIndex')}</h2>
             
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-1 sm:gap-2 justify-items-center">
               <button 
@@ -604,7 +604,7 @@ export default function GiftOfMasteryPage() {
                   activeSection === 'comprador-detallado' 
                     ? 'text-blue-300' 
                     : 'text-white'
-                }`}>Comprador</span>
+                }`}>{t('giftOfMasteryPage.sections.buyer')}</span>
               </button>
 
               <button 
@@ -624,7 +624,7 @@ export default function GiftOfMasteryPage() {
                   activeSection === 'vendedor-detallado' 
                     ? 'text-green-300' 
                     : 'text-white'
-                }`}>Vendedor</span>
+                }`}>{t('giftOfMasteryPage.sections.seller')}</span>
               </button>
 
               <button 
@@ -644,7 +644,7 @@ export default function GiftOfMasteryPage() {
                   activeSection === 'proceso-detallado' 
                     ? 'text-purple-300' 
                     : 'text-white'
-                }`}>Proceso</span>
+                }`}>{t('giftOfMasteryPage.sections.process')}</span>
               </button>
 
               <button 
@@ -664,7 +664,7 @@ export default function GiftOfMasteryPage() {
                   activeSection === 'discord-detallado' 
                     ? 'text-indigo-300' 
                     : 'text-white'
-                }`}>Discord</span>
+                }`}>{t('giftOfMasteryPage.sections.discord')}</span>
               </button>
 
               <button 
@@ -684,7 +684,7 @@ export default function GiftOfMasteryPage() {
                   activeSection === 'consejos-detallado' 
                     ? 'text-pink-300' 
                     : 'text-white'
-                }`}>Consejos</span>
+                }`}>{t('giftOfMasteryPage.sections.tips')}</span>
               </button>
             </div>
           </div>
@@ -703,12 +703,12 @@ export default function GiftOfMasteryPage() {
               <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-blue-600 rounded-full flex items-center justify-center mr-4">
                 <Info className="w-6 h-6 text-white" />
               </div>
-              <h2 className="text-2xl font-bold text-white">¿Qué necesita el comprador?</h2>
+              <h2 className="text-2xl font-bold text-white">{t('giftOfMasteryPage.buyer.title')}</h2>
             </div>
             
             <div className="bg-slate-800/50 rounded-xl p-6 border border-slate-600/50">
               <p className="text-gray-300 mb-6 leading-relaxed">
-                Cuando quieres pagar a otro jugador por su <span className="text-yellow-400 font-semibold">Don del Dominio</span> necesitarás prácticamente todo lo que se pueda pagar a la hora de hacer una legendaria. Aquí dejo una lista de que objetos comprar para que tengáis en cuenta lo necesario:
+                {t('giftOfMasteryPage.buyer.description').replace('{itemName}', item ? item.name : 'Don del Dominio')}
               </p>
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -716,11 +716,11 @@ export default function GiftOfMasteryPage() {
                   <MaterialItem 
                     materialKey="ectoplasm" 
                     quantity={481} 
-                    note="231 de estos solo si el vendedor NO incluye tréboles místicos" 
+                    note={t('giftOfMasteryPage.buyer.ectoplasmNote')} 
                   />
                   
                   <div className="space-y-2">
-                    <span className="text-white font-semibold">250 de cada T6:</span>
+                    <span className="text-white font-semibold">{t('giftOfMasteryPage.buyer.t6Materials')}</span>
                     <div className="ml-4 space-y-1">
                       <MaterialItem materialKey="t6Totem" quantity={250} />
                       <MaterialItem materialKey="t6Bone" quantity={250} />
@@ -736,7 +736,7 @@ export default function GiftOfMasteryPage() {
                   <MaterialItem 
                     materialKey="mysticCoin" 
                     quantity={231} 
-                    note="Solo si el vendedor NO incluye sus tréboles" 
+                    note={t('giftOfMasteryPage.notes.clovers')} 
                   />
                 </div>
                 
@@ -744,7 +744,7 @@ export default function GiftOfMasteryPage() {
                   <MaterialItem 
                     materialKey="runicStone" 
                     quantity={100} 
-                    note="Para las Piedras Rúnicas Heladas" 
+                    note={t('giftOfMasteryPage.notes.runicStones')} 
                   />
                   
                   <div className="flex items-start space-x-3">
@@ -758,8 +758,8 @@ export default function GiftOfMasteryPage() {
                       />
                     </div>
                     <div>
-                      <span className="text-white font-semibold">Dones requeridos</span>
-                      <p className="text-gray-400 text-sm">(Metal/Energía/Madera & El específico de cada uno)</p>
+                      <span className="text-white font-semibold">{t('giftOfMasteryPage.buyer.requiredGifts')}</span>
+                      <p className="text-gray-400 text-sm">{t('giftOfMasteryPage.buyer.requiredGiftsDesc')}</p>
                     </div>
                   </div>
                   
@@ -775,8 +775,8 @@ export default function GiftOfMasteryPage() {
                         />
                       </div>
                       <div>
-                        <span className="text-white font-semibold">1 Sello del arma</span>
-                        <p className="text-gray-400 text-sm">(Sello específico de la legendaria)</p>
+                        <span className="text-white font-semibold">{t('giftOfMasteryPage.buyer.weaponSeal')}</span>
+                        <p className="text-gray-400 text-sm">{t('giftOfMasteryPage.buyer.weaponSealDesc')}</p>
                       </div>
                     </div>
                     
@@ -791,8 +791,8 @@ export default function GiftOfMasteryPage() {
                         />
                       </div>
                       <div>
-                        <span className="text-white font-semibold">1 Precursora</span>
-                        <p className="text-gray-400 text-sm">(El arma precursora correspondiente)</p>
+                        <span className="text-white font-semibold">{t('giftOfMasteryPage.buyer.precursor')}</span>
+                        <p className="text-gray-400 text-sm">{t('giftOfMasteryPage.buyer.precursorDesc')}</p>
                       </div>
                     </div>
                   </div>
@@ -807,12 +807,12 @@ export default function GiftOfMasteryPage() {
               <div className="w-12 h-12 bg-gradient-to-r from-green-500 to-green-600 rounded-full flex items-center justify-center mr-4">
                 <Hammer className="w-6 h-6 text-white" />
               </div>
-              <h2 className="text-2xl font-bold text-white">¿Qué necesita el vendedor?</h2>
+              <h2 className="text-2xl font-bold text-white">{t('giftOfMasteryPage.seller.title')}</h2>
             </div>
             
             <div className="bg-slate-800/50 rounded-xl p-6 border border-slate-600/50">
               <p className="text-gray-300 mb-6 leading-relaxed">
-                En el caso de que seas el vendedor, tendrás que tener todo esto preparado:
+                {t('giftOfMasteryPage.seller.description')}
               </p>
               
               <div className="space-y-4">
@@ -831,13 +831,13 @@ export default function GiftOfMasteryPage() {
                     <MaterialItem 
                       materialKey="obsidianShard" 
                       quantity={481} 
-                      note="231 solo si NO vas a poner tus tréboles" 
+                      note={t('giftOfMasteryPage.seller.obsidianNote')} 
                     />
                     
                     <MaterialItem 
                       materialKey="spiritShard" 
                       quantity={340} 
-                      note="140 solo si NO vas a poner tus tréboles" 
+                      note={t('giftOfMasteryPage.seller.spiritShardNote')} 
                     />
                   </div>
                   
@@ -845,7 +845,7 @@ export default function GiftOfMasteryPage() {
                     <MaterialItem 
                       materialKey="customIcon" 
                       quantity={500} 
-                      note="monedas de mazmorra" 
+                      note={t('giftOfMasteryPage.seller.dungeonCoins')} 
                     />
                     
                     <div className="flex items-start space-x-3">
@@ -859,23 +859,23 @@ export default function GiftOfMasteryPage() {
                         />
                       </div>
                       <div>
-                        <span className="text-white font-semibold">Artesanías al 400</span>
-                        <p className="text-gray-400 text-sm">(Las que necesite cada arma)</p>
+                        <span className="text-white font-semibold">{t('giftOfMasteryPage.seller.crafting400')}</span>
+                        <p className="text-gray-400 text-sm">{t('giftOfMasteryPage.seller.crafting400Desc')}</p>
                       </div>
                     </div>
                     
                     <div className="flex items-start space-x-3">
                       <span className="text-green-400 font-bold text-lg">7.</span>
                       <div>
-                        <span className="text-white font-semibold">Recetas de los dones</span>
-                        <p className="text-gray-400 text-sm">(Son 2 por legendaria, 10 oros cada receta en Miyani)</p>
+                        <span className="text-white font-semibold">{t('giftOfMasteryPage.seller.giftRecipes')}</span>
+                        <p className="text-gray-400 text-sm">{t('giftOfMasteryPage.seller.giftRecipesDesc')}</p>
                       </div>
                     </div>
                     
                     <MaterialItem 
                       materialKey="mysticClover" 
                       quantity={77} 
-                      note="Estos se pagan a parte como extra" 
+                      note={t('giftOfMasteryPage.notes.extra')} 
                     />
                   </div>
                 </div>
@@ -889,44 +889,51 @@ export default function GiftOfMasteryPage() {
               <div className="w-12 h-12 bg-gradient-to-r from-purple-500 to-purple-600 rounded-full flex items-center justify-center mr-4">
                 <Zap className="w-6 h-6 text-white" />
               </div>
-              <h2 className="text-2xl font-bold text-white">¿Cómo se lleva a cabo el proceso?</h2>
+              <h2 className="text-2xl font-bold text-white">{t('giftOfMasteryPage.process.title')}</h2>
             </div>
             
             <div className="bg-slate-800/50 rounded-xl p-6 border border-slate-600/50">
               <p className="text-gray-300 mb-6 leading-relaxed">
-                Una vez estéis los dos en grupo y preparados para ello llevaremos un proceso muy sencillo:
+                {t('giftOfMasteryPage.process.description')}
               </p>
               
               <div className="space-y-4">
                 <div className="flex items-start space-x-4">
                   <span className="text-purple-400 font-bold text-lg">1.</span>
-                  <p className="text-gray-300">El vendedor linkeará por chat todos los objetos para ver que tiene todo.</p>
+                  <p className="text-gray-300">{t('giftOfMasteryPage.process.step1')}</p>
                 </div>
                 
                 <div className="flex items-start space-x-4">
                   <span className="text-purple-400 font-bold text-lg">2.</span>
-                  <p className="text-gray-300">El comprador le mandará los materiales al vendedor, ya sea don por don o todos de golpe.</p>
+                  <p className="text-gray-300">{t('giftOfMasteryPage.process.step2')}</p>
                 </div>
                 
                 <div className="flex items-start space-x-4">
                   <span className="text-purple-400 font-bold text-lg">3.</span>
-                  <p className="text-gray-300">El vendedor creará la legendaria que se le pida con estos siguiendo una guía de creación de legendarias, recomiendo la wikipedia de Guild Wars 2</p>
+                  <p 
+                    className="text-gray-300"
+                    dangerouslySetInnerHTML={{
+                      __html: t('giftOfMasteryPage.process.step3').replace('{wikiLink}', 
+                        `<a href="${t('giftOfMasteryPage.wiki.url')}" target="_blank" rel="noopener noreferrer" class="text-blue-400 hover:text-blue-300 underline">${t('giftOfMasteryPage.wiki.link')}</a>`
+                      )
+                    }}
+                  />
                 </div>
                 
                 <div className="flex items-start space-x-4">
                   <span className="text-purple-400 font-bold text-lg">4.</span>
-                  <p className="text-gray-300">Una vez esté la legendaria hecha, se enviará al comprador</p>
+                  <p className="text-gray-300">{t('giftOfMasteryPage.process.step4')}</p>
                 </div>
                 
                 <div className="flex items-start space-x-4">
                   <span className="text-purple-400 font-bold text-lg">5.</span>
-                  <p className="text-gray-300">Cuando comprador reciba la legendaria, este mandará el pago acordado por este GOM</p>
+                  <p className="text-gray-300">{t('giftOfMasteryPage.process.step5')}</p>
                 </div>
               </div>
               
               <div className="mt-6 p-4 bg-yellow-900/20 border border-yellow-500/30 rounded-lg">
                 <p className="text-yellow-200 text-sm">
-                  <strong>Nota importante:</strong> Un punto muy importante es la creación de tréboles místicos. Cuando se manda las 231 monedas y 231 ectos al vendedor, este tendrá que tirar a forja hasta que salgan los 77 tréboles. Si sobrasen monedas y ectoplasmas se los quedaría igual que TODO lo que salga en la forja. Si NO llegase, tendría que poner los que faltan de su bolsillo.
+                  <strong>{t('giftOfMasteryPage.process.noteTitle')}</strong> {t('giftOfMasteryPage.process.note')}
                 </p>
               </div>
             </div>
@@ -940,12 +947,12 @@ export default function GiftOfMasteryPage() {
                 <div className="w-12 h-12 bg-gradient-to-r from-yellow-500 to-yellow-600 rounded-full flex items-center justify-center mr-4">
                   <Gem className="w-6 h-6 text-white" />
                 </div>
-                <h2 className="text-2xl font-bold text-white">💰 Precio Actual</h2>
+                <h2 className="text-2xl font-bold text-white">{t('giftOfMasteryPage.price.title')}</h2>
               </div>
               
               <div className="bg-slate-800/50 rounded-xl p-6 border border-slate-600/50 text-center">
-                <div className="text-4xl font-bold text-yellow-400 mb-2">450 oros</div>
-                <p className="text-gray-300 text-sm">(Se irá actualizando cada vez que cambie)</p>
+                <div className="text-4xl font-bold text-yellow-400 mb-2">{t('giftOfMasteryPage.price.current')}</div>
+                <p className="text-gray-300 text-sm">{t('giftOfMasteryPage.price.updateNote')}</p>
               </div>
             </div>
 
@@ -955,14 +962,14 @@ export default function GiftOfMasteryPage() {
                 <div className="w-12 h-12 bg-gradient-to-r from-indigo-500 to-indigo-600 rounded-full flex items-center justify-center mr-4">
                   <Star className="w-6 h-6 text-white" />
                 </div>
-                <h2 className="text-2xl font-bold text-white">💬 Donde comprar/vender GOMs</h2>
+                <h2 className="text-2xl font-bold text-white">{t('giftOfMasteryPage.discord.title')}</h2>
               </div>
               
               <div className="bg-slate-800/50 rounded-xl p-6 border border-slate-600/50">
                 <p className="text-gray-300 mb-4">
-                  Si tenéis pensado comprar o vender vuestros dones del dominio os recomiendo sin duda el discord de Overflow Trading Company.
+                  {t('giftOfMasteryPage.discord.description')}
                 </p>
-                <p className="text-gray-400 text-sm">Un servidor de discord dedicado al trading con más de 20,000 miembros</p>
+                <p className="text-gray-400 text-sm">{t('giftOfMasteryPage.discord.subtitle')}</p>
                 <div className="text-center">
                   <a
                     href="https://discord.gg/gw2overflow"
@@ -970,9 +977,9 @@ export default function GiftOfMasteryPage() {
                     rel="noopener noreferrer"
                     className="text-2xl font-bold text-indigo-400 mb-2 hover:text-indigo-300 transition-colors inline-block cursor-pointer"
                   >
-                    Overflow Trading Company
+                    {t('giftOfMasteryPage.discord.serverName')}
                   </a>
-                  <p className="text-indigo-300 text-xs mt-2">👆 Haz clic aquí para unirte</p>
+                  <p className="text-indigo-300 text-xs mt-2">{t('giftOfMasteryPage.discord.clickToJoin')}</p>
                 </div>
               </div>
             </div>
@@ -984,45 +991,45 @@ export default function GiftOfMasteryPage() {
               <div className="w-12 h-12 bg-gradient-to-r from-pink-500 to-pink-600 rounded-full flex items-center justify-center mr-4">
                 <Crown className="w-6 h-6 text-white" />
               </div>
-              <h2 className="text-2xl font-bold text-white">💡 Consejos</h2>
+              <h2 className="text-2xl font-bold text-white">{t('giftOfMasteryPage.tips.title')}</h2>
             </div>
             
             <div className="bg-slate-800/50 rounded-xl p-6 border border-slate-600/50">
               <p className="text-gray-300 mb-6 leading-relaxed">
-                Por último me gustaría daros unos pocos de consejos para llevar el trade lo mejor posible:
+                {t('giftOfMasteryPage.tips.description')}
               </p>
               
               <div className="space-y-6">
                 <div className="border-l-4 border-pink-500 pl-4">
-                  <h3 className="text-lg font-semibold text-white mb-2">1. Contrato en Chat</h3>
+                  <h3 className="text-lg font-semibold text-white mb-2">{t('giftOfMasteryPage.tips.contract.title')}</h3>
                   <p className="text-gray-300 text-sm mb-2">
-                    Antes de hacer el trade, haced un &quot;contrato&quot; en el chat de equipo. Esto es una prueba para que Arenanet esté más abierta a interceder en caso de haber un timo.
+                    {t('giftOfMasteryPage.tips.contract.description')}
                   </p>
                   <div className="bg-slate-700/50 p-3 rounded text-xs text-gray-300 font-mono">
-                    Hola nombre.1234 vamos a hacer LEGENDARIA con tu Don del Dominio a cambio de X oro. Te mandaré los materiales y cuando la tengas me la mandas y te mando el pago. De acuerdo?
+                    {t('giftOfMasteryPage.tips.contract.example')}
                   </div>
                   <p className="text-gray-400 text-xs mt-2">
-                    El otro jugador tendrá que poner &quot;Si&quot; &quot;Okey&quot; &quot;Ok&quot; &quot;Vale&quot; o cualquier cosa afirmativa. Luego haremos captura de pantalla.
+                    {t('giftOfMasteryPage.tips.contract.response')}
                   </p>
                 </div>
                 
                 <div className="border-l-4 border-pink-500 pl-4">
-                  <h3 className="text-lg font-semibold text-white mb-2">2. Capturas de Pantalla</h3>
+                  <h3 className="text-lg font-semibold text-white mb-2">{t('giftOfMasteryPage.tips.screenshots.title')}</h3>
                   <p className="text-gray-300 text-sm">
-                    Siempre captura de pantalla cuando vayamos a enviar los correos (antes de darle al botón). Esto es para asegurarte de que tienes una prueba y por si te confundes enviando a quien no es o si mandas mal los materiales poder revisar.
+                    {t('giftOfMasteryPage.tips.screenshots.description')}
                   </p>
                 </div>
                 
                 <div className="border-l-4 border-pink-500 pl-4">
-                  <h3 className="text-lg font-semibold text-white mb-2">3. Orden de Pago</h3>
+                  <h3 className="text-lg font-semibold text-white mb-2">{t('giftOfMasteryPage.tips.paymentOrder.title')}</h3>
                   <p className="text-gray-300 text-sm">
-                    Siempre se paga después de recibir la legendaria, en caso de ser por Overflow se podría aceptar que se mande el pago primero si el comprador no tiene reputación y el vendedor si.
+                    {t('giftOfMasteryPage.tips.paymentOrder.description')}
                   </p>
                 </div>
               </div>
               
               <div className="mt-6 text-center">
-                <p className="text-pink-400 font-semibold">¡Mucha suerte con la venta y compra de GOMs!</p>
+                <p className="text-pink-400 font-semibold">{t('giftOfMasteryPage.tips.goodLuck')}</p>
               </div>
             </div>
           </div>
@@ -1039,7 +1046,7 @@ export default function GiftOfMasteryPage() {
           <div className="relative w-full max-w-4xl cursor-pointer group" onClick={() => setImageModalOpen(true)}>
             <Image
               src="/thumbnails/opciones-1-1024x576.webp"
-              alt="Guía completa de Gift of Mastery - Cómo vender GOMs"
+              alt={t('giftOfMasteryPage.thumbnail.alt')}
               width={1024}
               height={576}
               className="rounded-lg shadow-2xl border border-gray-700/50 transition-transform duration-300 group-hover:scale-105"
@@ -1073,7 +1080,7 @@ export default function GiftOfMasteryPage() {
             <div className="relative">
               <Image
                 src="/thumbnails/opciones-1-1024x576.webp"
-                alt="Guía completa de Gift of Mastery - Cómo vender GOMs"
+                alt={t('giftOfMasteryPage.thumbnail.alt')}
                 width={1024}
                 height={576}
                 className="w-full h-auto rounded-lg shadow-2xl"
