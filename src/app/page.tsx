@@ -395,6 +395,7 @@ export default function HomePage() {
               height={420}
               priority
               unoptimized
+              style={{ width: "auto", height: "auto" }}
               className="max-w-[260px] md:max-w-sm lg:max-w-md h-auto drop-shadow-2xl"
             />
           </div>

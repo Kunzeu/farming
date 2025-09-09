@@ -2,7 +2,7 @@
 
 import { motion } from 'framer-motion'
 import { useState, useEffect } from 'react'
-import { Award, Star, Crown, Gem, Hammer, ExternalLink, Loader2, Info, Zap } from 'lucide-react'
+import { Award, Star, Crown, Gem, Hammer, ExternalLink, Loader2, Info, Zap, Menu, X, ShoppingCart, Wrench, ArrowRight, DollarSign, MessageCircle, Lightbulb } from 'lucide-react'
 import { usePageTitle } from '@/hooks/usePageTitle'
 import { useI18n } from '@/contexts/I18nContext'
 import Navigation from '@/components/layout/Navigation'
@@ -63,6 +63,9 @@ export default function GiftOfMasteryPage() {
   const [materials, setMaterials] = useState<Record<string, GiftOfMasteryItem>>({})
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const [activeSection, setActiveSection] = useState<string>('')
+  const [imageModalOpen, setImageModalOpen] = useState(false)
 
   // Mapear códigos de idioma de nuestra app a códigos de la API de GW2
   const getGW2LangCode = (lang: string) => {
@@ -157,6 +160,68 @@ export default function GiftOfMasteryPage() {
 
     fetchData()
   }, [lang])
+
+  // Scrollspy effect
+  useEffect(() => {
+    const sections = [
+      'comprador-detallado',
+      'vendedor-detallado', 
+      'proceso-detallado',
+      'discord-detallado',
+      'consejos-detallado'
+    ]
+
+    const handleScroll = () => {
+      const scrollPosition = window.scrollY + 100 // Offset para activar antes
+
+      for (const sectionId of sections) {
+        const element = document.getElementById(sectionId)
+        if (element) {
+          const { offsetTop, offsetHeight } = element
+          if (scrollPosition >= offsetTop && scrollPosition < offsetTop + offsetHeight) {
+            setActiveSection(sectionId)
+            break
+          }
+        }
+      }
+    }
+
+    window.addEventListener('scroll', handleScroll)
+    handleScroll() // Llamar una vez al cargar
+
+    return () => window.removeEventListener('scroll', handleScroll)
+  }, [])
+
+  // Handle Escape key for image modal
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape' && imageModalOpen) {
+        setImageModalOpen(false)
+      }
+    }
+
+    if (imageModalOpen) {
+      document.addEventListener('keydown', handleKeyDown)
+      return () => document.removeEventListener('keydown', handleKeyDown)
+    }
+  }, [imageModalOpen])
+
+  const handleScrollTo = (sectionId: string) => {
+    const el = document.getElementById(sectionId)
+    if (el) {
+      // Scroll suave con offset para el header
+      const headerOffset = 80
+      const elementPosition = el.getBoundingClientRect().top
+      const offsetPosition = elementPosition + window.pageYOffset - headerOffset
+
+      window.scrollTo({
+        top: offsetPosition,
+        behavior: 'smooth'
+      })
+      
+      setMobileMenuOpen(false) // Cerrar menú móvil al hacer clic
+    }
+  }
 
   const getRarityColor = (rarity: string) => {
     switch (rarity.toLowerCase()) {
@@ -285,9 +350,170 @@ export default function GiftOfMasteryPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 to-slate-800 flex flex-col">
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 to-slate-800 flex flex-col" style={{ scrollBehavior: 'smooth' }}>
       <Navigation />
       <div className="container mx-auto px-4 py-8 flex-1">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+          {/* Sidebar sticky - Desktop Only */}
+          <aside className="hidden lg:block lg:col-span-3">
+            <div className="sticky top-24 bg-slate-800/50 backdrop-blur-sm border border-slate-700/50 rounded-2xl p-6 shadow-lg">
+              <div className="flex items-center mb-6">
+                <Award className="w-5 h-5 text-yellow-400 mr-2" />
+                <h3 className="text-white font-bold text-lg">Guía GOM</h3>
+              </div>
+              <nav className="space-y-1">
+                <button 
+                  onClick={() => handleScrollTo('comprador-detallado')} 
+                  className={`w-full flex items-center px-3 py-3 rounded-lg transition-all duration-200 group ${
+                    activeSection === 'comprador-detallado' 
+                      ? 'text-blue-400 bg-blue-900/30 border-l-4 border-blue-400 shadow-md' 
+                      : 'text-gray-300 hover:text-white hover:bg-slate-700/40 hover:translate-x-1'
+                  }`}
+                >
+                  <ShoppingCart className={`w-4 h-4 mr-3 ${
+                    activeSection === 'comprador-detallado' ? 'text-blue-400' : 'text-gray-400 group-hover:text-blue-400'
+                  }`} />
+                  <span className="font-medium">Comprador</span>
+                  {activeSection === 'comprador-detallado' && <ArrowRight className="w-3 h-3 ml-auto text-blue-400" />}
+                </button>
+                
+                <button 
+                  onClick={() => handleScrollTo('vendedor-detallado')} 
+                  className={`w-full flex items-center px-3 py-3 rounded-lg transition-all duration-200 group ${
+                    activeSection === 'vendedor-detallado' 
+                      ? 'text-green-400 bg-green-900/30 border-l-4 border-green-400 shadow-md' 
+                      : 'text-gray-300 hover:text-white hover:bg-slate-700/40 hover:translate-x-1'
+                  }`}
+                >
+                  <Wrench className={`w-4 h-4 mr-3 ${
+                    activeSection === 'vendedor-detallado' ? 'text-green-400' : 'text-gray-400 group-hover:text-green-400'
+                  }`} />
+                  <span className="font-medium">Vendedor</span>
+                  {activeSection === 'vendedor-detallado' && <ArrowRight className="w-3 h-3 ml-auto text-green-400" />}
+                </button>
+                
+                <button 
+                  onClick={() => handleScrollTo('proceso-detallado')} 
+                  className={`w-full flex items-center px-3 py-3 rounded-lg transition-all duration-200 group ${
+                    activeSection === 'proceso-detallado' 
+                      ? 'text-purple-400 bg-purple-900/30 border-l-4 border-purple-400 shadow-md' 
+                      : 'text-gray-300 hover:text-white hover:bg-slate-700/40 hover:translate-x-1'
+                  }`}
+                >
+                  <Zap className={`w-4 h-4 mr-3 ${
+                    activeSection === 'proceso-detallado' ? 'text-purple-400' : 'text-gray-400 group-hover:text-purple-400'
+                  }`} />
+                  <span className="font-medium">Proceso</span>
+                  {activeSection === 'proceso-detallado' && <ArrowRight className="w-3 h-3 ml-auto text-purple-400" />}
+                </button>
+                
+                
+                <button 
+                  onClick={() => handleScrollTo('discord-detallado')} 
+                  className={`w-full flex items-center px-3 py-3 rounded-lg transition-all duration-200 group ${
+                    activeSection === 'discord-detallado' 
+                      ? 'text-indigo-400 bg-indigo-900/30 border-l-4 border-indigo-400 shadow-md' 
+                      : 'text-gray-300 hover:text-white hover:bg-slate-700/40 hover:translate-x-1'
+                  }`}
+                >
+                  <MessageCircle className={`w-4 h-4 mr-3 ${
+                    activeSection === 'discord-detallado' ? 'text-indigo-400' : 'text-gray-400 group-hover:text-indigo-400'
+                  }`} />
+                  <span className="font-medium">Discord</span>
+                  {activeSection === 'discord-detallado' && <ArrowRight className="w-3 h-3 ml-auto text-indigo-400" />}
+                </button>
+                
+                <button 
+                  onClick={() => handleScrollTo('consejos-detallado')} 
+                  className={`w-full flex items-center px-3 py-3 rounded-lg transition-all duration-200 group ${
+                    activeSection === 'consejos-detallado' 
+                      ? 'text-pink-400 bg-pink-900/30 border-l-4 border-pink-400 shadow-md' 
+                      : 'text-gray-300 hover:text-white hover:bg-slate-700/40 hover:translate-x-1'
+                  }`}
+                >
+                  <Lightbulb className={`w-4 h-4 mr-3 ${
+                    activeSection === 'consejos-detallado' ? 'text-pink-400' : 'text-gray-400 group-hover:text-pink-400'
+                  }`} />
+                  <span className="font-medium">Consejos</span>
+                  {activeSection === 'consejos-detallado' && <ArrowRight className="w-3 h-3 ml-auto text-pink-400" />}
+                </button>
+              </nav>
+            </div>
+          </aside>
+
+          {/* FAB - Floating Action Button - Solo en móvil */}
+          <div className="lg:hidden fixed bottom-1/2 right-6 transform -translate-y-1/2 z-50">
+            <button
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              className="w-14 h-14 bg-yellow-600 hover:bg-yellow-700 text-white rounded-full shadow-lg flex items-center justify-center transition-all duration-300 hover:scale-110 active:scale-95 ring-2 ring-yellow-400/20 hover:ring-yellow-400/40"
+            >
+              {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+            </button>
+          </div>
+
+          {/* Mobile Menu Panel - Solo en móvil */}
+          {mobileMenuOpen && (
+            <div className="lg:hidden fixed inset-0 bg-black/50 z-40 animate-in fade-in duration-200" onClick={() => setMobileMenuOpen(false)}>
+              <div className="absolute top-1/2 right-20 transform -translate-y-1/2 bg-slate-800 border border-slate-700 rounded-2xl p-4 shadow-xl min-w-[200px] max-w-[90vw] animate-in slide-in-from-right-4 duration-300">
+                <h3 className="text-white font-bold text-lg mb-3">Menú</h3>
+                <nav className="space-y-2">
+                  <button 
+                    onClick={() => handleScrollTo('comprador-detallado')} 
+                    className={`w-full text-left px-3 py-2 rounded-lg transition-colors ${
+                      activeSection === 'comprador-detallado' 
+                        ? 'text-blue-400 bg-blue-900/30 border-l-4 border-blue-400' 
+                        : 'text-gray-300 hover:text-white hover:bg-slate-700/40'
+                    }`}
+                  >
+                    Comprador
+                  </button>
+                  <button 
+                    onClick={() => handleScrollTo('vendedor-detallado')} 
+                    className={`w-full text-left px-3 py-2 rounded-lg transition-colors ${
+                      activeSection === 'vendedor-detallado' 
+                        ? 'text-green-400 bg-green-900/30 border-l-4 border-green-400' 
+                        : 'text-gray-300 hover:text-white hover:bg-slate-700/40'
+                    }`}
+                  >
+                    Vendedor
+                  </button>
+                  <button 
+                    onClick={() => handleScrollTo('proceso-detallado')} 
+                    className={`w-full text-left px-3 py-2 rounded-lg transition-colors ${
+                      activeSection === 'proceso-detallado' 
+                        ? 'text-purple-400 bg-purple-900/30 border-l-4 border-purple-400' 
+                        : 'text-gray-300 hover:text-white hover:bg-slate-700/40'
+                    }`}
+                  >
+                    Proceso
+                  </button>
+                  <button 
+                    onClick={() => handleScrollTo('discord-detallado')} 
+                    className={`w-full text-left px-3 py-2 rounded-lg transition-colors ${
+                      activeSection === 'discord-detallado' 
+                        ? 'text-indigo-400 bg-indigo-900/30 border-l-4 border-indigo-400' 
+                        : 'text-gray-300 hover:text-white hover:bg-slate-700/40'
+                    }`}
+                  >
+                    Discord
+                  </button>
+                  <button 
+                    onClick={() => handleScrollTo('consejos-detallado')} 
+                    className={`w-full text-left px-3 py-2 rounded-lg transition-colors ${
+                      activeSection === 'consejos-detallado' 
+                        ? 'text-pink-400 bg-pink-900/30 border-l-4 border-pink-400' 
+                        : 'text-gray-300 hover:text-white hover:bg-slate-700/40'
+                    }`}
+                  >
+                    Consejos
+                  </button>
+                </nav>
+              </div>
+            </div>
+          )}
+
+          {/* Main content - Responsive */}
+          <div className="w-full lg:col-span-9">
         {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -333,16 +559,6 @@ export default function GiftOfMasteryPage() {
                     {item.name}
                   </h2>
                 </div>
-                <div className="flex flex-wrap items-center justify-center lg:justify-start space-x-4 mb-6">
-                  <span className={`px-4 py-2 rounded-full text-sm font-semibold bg-gradient-to-r ${getRarityColor(item.rarity)} text-white`}>
-                    {item.rarity}
-                  </span>
-                  <span className="text-gray-300">Level {item.level}</span>
-                  <span className="text-gray-300">{item.type}</span>
-                </div>
-                <p className="text-lg text-gray-300 mb-6 leading-relaxed">
-                  {item.description}
-                </p>
                 <div className="flex justify-center lg:justify-start">
                   <a
                     href={getWikiUrl(lang, item.name)}
@@ -367,117 +583,109 @@ export default function GiftOfMasteryPage() {
           transition={{ duration: 0.6, delay: 0.4 }}
           className="mb-12"
         >
-          <div className="bg-slate-800/50 backdrop-blur-sm border border-slate-700/50 rounded-2xl p-8 shadow-lg">
-            <h2 className="text-2xl font-bold text-white mb-8 text-center">📋 Guía Completa de GOMs</h2>
+          <div className="bg-slate-800/50 backdrop-blur-sm border border-slate-700/50 rounded-2xl p-6 shadow-lg">
+            <h2 className="text-xl font-bold text-white mb-4 text-center">📋 Índice de la Guía</h2>
             
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {/* Comprador Card */}
-              <div 
-                onClick={() => document.getElementById('comprador-detallado')?.scrollIntoView({ behavior: 'smooth' })}
-                className="bg-gradient-to-br from-blue-900/30 to-blue-800/20 border border-blue-500/30 rounded-xl p-6 hover:scale-105 transition-transform cursor-pointer"
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-1 sm:gap-2 justify-items-center">
+              <button 
+                onClick={() => handleScrollTo('comprador-detallado')}
+                className={`flex flex-col items-center p-2 rounded-lg transition-colors group ${
+                  activeSection === 'comprador-detallado'
+                    ? 'bg-blue-900/40 border-2 border-blue-400 shadow-lg shadow-blue-900/20'
+                    : 'bg-blue-900/20 border border-blue-500/30 hover:bg-blue-900/40'
+                }`}
               >
-                <div className="flex items-center mb-4">
-                  <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-blue-600 rounded-full flex items-center justify-center mr-3">
-                    <Info className="w-5 h-5 text-white" />
-                  </div>
-                  <h3 className="text-lg font-bold text-white">Comprador</h3>
-                </div>
-                <p className="text-gray-300 text-sm">Materiales necesarios para adquirir un GOM</p>
-                <div className="mt-3 text-xs text-gray-400">
-                  • 481 Ectoplasmas • 250 T6 • 231 Monedas místicas • 100 oros • Materiales específicos
-                </div>
-              </div>
+                <Info className={`w-4 h-4 mb-1 ${
+                  activeSection === 'comprador-detallado' 
+                    ? 'text-blue-300' 
+                    : 'text-blue-400 group-hover:text-blue-300'
+                }`} />
+                <span className={`font-semibold text-xs ${
+                  activeSection === 'comprador-detallado' 
+                    ? 'text-blue-300' 
+                    : 'text-white'
+                }`}>Comprador</span>
+              </button>
 
-              {/* Vendedor Card */}
-              <div 
-                onClick={() => document.getElementById('vendedor-detallado')?.scrollIntoView({ behavior: 'smooth' })}
-                className="bg-gradient-to-br from-green-900/30 to-green-800/20 border border-green-500/30 rounded-xl p-6 hover:scale-105 transition-transform cursor-pointer"
+              <button 
+                onClick={() => handleScrollTo('vendedor-detallado')}
+                className={`flex flex-col items-center p-2 rounded-lg transition-colors group ${
+                  activeSection === 'vendedor-detallado'
+                    ? 'bg-green-900/40 border-2 border-green-400 shadow-lg shadow-green-900/20'
+                    : 'bg-green-900/20 border border-green-500/30 hover:bg-green-900/40'
+                }`}
               >
-                <div className="flex items-center mb-4">
-                  <div className="w-10 h-10 bg-gradient-to-r from-green-500 to-green-600 rounded-full flex items-center justify-center mr-3">
-                    <Hammer className="w-5 h-5 text-white" />
-                  </div>
-                  <h3 className="text-lg font-bold text-white"> Vendedor</h3>
-                </div>
-                <p className="text-gray-300 text-sm">Requisitos para vender un GOM</p>
-                <div className="mt-3 text-xs text-gray-400">
-                  • 1 Don Exploración • 1 Don Batalla • 481 Obsidiana • 340 Espirituales • Artesanías 400
-                </div>
-              </div>
+                <Hammer className={`w-4 h-4 mb-1 ${
+                  activeSection === 'vendedor-detallado' 
+                    ? 'text-green-300' 
+                    : 'text-green-400 group-hover:text-green-300'
+                }`} />
+                <span className={`font-semibold text-xs ${
+                  activeSection === 'vendedor-detallado' 
+                    ? 'text-green-300' 
+                    : 'text-white'
+                }`}>Vendedor</span>
+              </button>
 
-              {/* Proceso Card */}
-              <div 
-                onClick={() => document.getElementById('proceso-detallado')?.scrollIntoView({ behavior: 'smooth' })}
-                className="bg-gradient-to-br from-purple-900/30 to-purple-800/20 border border-purple-500/30 rounded-xl p-6 hover:scale-105 transition-transform cursor-pointer"
+              <button 
+                onClick={() => handleScrollTo('proceso-detallado')}
+                className={`flex flex-col items-center p-2 rounded-lg transition-colors group ${
+                  activeSection === 'proceso-detallado'
+                    ? 'bg-purple-900/40 border-2 border-purple-400 shadow-lg shadow-purple-900/20'
+                    : 'bg-purple-900/20 border border-purple-500/30 hover:bg-purple-900/40'
+                }`}
               >
-                <div className="flex items-center mb-4">
-                  <div className="w-10 h-10 bg-gradient-to-r from-purple-500 to-purple-600 rounded-full flex items-center justify-center mr-3">
-                    <Zap className="w-5 h-5 text-white" />
-                  </div>
-                  <h3 className="text-lg font-bold text-white">Proceso</h3>
-                </div>
-                <p className="text-gray-300 text-sm">Pasos del proceso de compra/venta</p>
-                <div className="mt-3 text-xs text-gray-400">
-                  • Linkear objetos • Enviar materiales • Crear legendaria • Enviar y pagar
-                </div>
-              </div>
+                <Zap className={`w-4 h-4 mb-1 ${
+                  activeSection === 'proceso-detallado' 
+                    ? 'text-purple-300' 
+                    : 'text-purple-400 group-hover:text-purple-300'
+                }`} />
+                <span className={`font-semibold text-xs ${
+                  activeSection === 'proceso-detallado' 
+                    ? 'text-purple-300' 
+                    : 'text-white'
+                }`}>Proceso</span>
+              </button>
 
-              {/* Precio Card */}
-              <div 
-                onClick={() => document.getElementById('precio-detallado')?.scrollIntoView({ behavior: 'smooth' })}
-                className="bg-gradient-to-br from-yellow-900/30 to-yellow-800/20 border border-yellow-500/30 rounded-xl p-6 hover:scale-105 transition-transform cursor-pointer"
+              <button 
+                onClick={() => handleScrollTo('discord-detallado')}
+                className={`flex flex-col items-center p-2 rounded-lg transition-colors group ${
+                  activeSection === 'discord-detallado'
+                    ? 'bg-indigo-900/40 border-2 border-indigo-400 shadow-lg shadow-indigo-900/20'
+                    : 'bg-indigo-900/20 border border-indigo-500/30 hover:bg-indigo-900/40'
+                }`}
               >
-                <div className="flex items-center mb-4">
-                  <div className="w-10 h-10 bg-gradient-to-r from-yellow-500 to-yellow-600 rounded-full flex items-center justify-center mr-3">
-                    <Gem className="w-5 h-5 text-white" />
-                  </div>
-                  <h3 className="text-lg font-bold text-white">Precio</h3>
-                </div>
-                <p className="text-gray-300 text-sm">Precio actual del GOM</p>
-                <div className="mt-3 text-lg font-bold text-yellow-400">
-                  450 oros
-                </div>
-              </div>
+                <Star className={`w-4 h-4 mb-1 ${
+                  activeSection === 'discord-detallado' 
+                    ? 'text-indigo-300' 
+                    : 'text-indigo-400 group-hover:text-indigo-300'
+                }`} />
+                <span className={`font-semibold text-xs ${
+                  activeSection === 'discord-detallado' 
+                    ? 'text-indigo-300' 
+                    : 'text-white'
+                }`}>Discord</span>
+              </button>
 
-              {/* Discord Card */}
-              <div 
-                onClick={() => document.getElementById('discord-detallado')?.scrollIntoView({ behavior: 'smooth' })}
-                className="bg-gradient-to-br from-indigo-900/30 to-indigo-800/20 border border-indigo-500/30 rounded-xl p-6 hover:scale-105 transition-transform cursor-pointer"
+              <button 
+                onClick={() => handleScrollTo('consejos-detallado')}
+                className={`flex flex-col items-center p-2 rounded-lg transition-colors group ${
+                  activeSection === 'consejos-detallado'
+                    ? 'bg-pink-900/40 border-2 border-pink-400 shadow-lg shadow-pink-900/20'
+                    : 'bg-pink-900/20 border border-pink-500/30 hover:bg-pink-900/40'
+                }`}
               >
-                <div className="flex items-center mb-4">
-                  <div className="w-10 h-10 bg-gradient-to-r from-indigo-500 to-indigo-600 rounded-full flex items-center justify-center mr-3">
-                    <Star className="w-5 h-5 text-white" />
-                  </div>
-                  <h3 className="text-lg font-bold text-white">Discord</h3>
-                </div>
-                <p className="text-gray-300 text-sm">Plataforma recomendada</p>
-                <div className="mt-3 text-xs text-gray-400">
-                  Overflow Trading Company - 20,000+ miembros
-                </div>
-              </div>
-
-              {/* Consejos Card */}
-              <div 
-                onClick={() => document.getElementById('consejos-detallado')?.scrollIntoView({ behavior: 'smooth' })}
-                className="bg-gradient-to-br from-pink-900/30 to-pink-800/20 border border-pink-500/30 rounded-xl p-6 hover:scale-105 transition-transform cursor-pointer"
-              >
-                <div className="flex items-center mb-4">
-                  <div className="w-10 h-10 bg-gradient-to-r from-pink-500 to-pink-600 rounded-full flex items-center justify-center mr-3">
-                    <Crown className="w-5 h-5 text-white" />
-                  </div>
-                  <h3 className="text-lg font-bold text-white">Consejos</h3>
-                </div>
-                <p className="text-gray-300 text-sm">Mejores prácticas para trading</p>
-                <div className="mt-3 text-xs text-gray-400">
-                  • Contrato en chat • Capturas de pantalla • Pago después de recibir
-                </div>
-              </div>
-            </div>
-
-            <div className="mt-8 text-center">
-              <p className="text-gray-400 text-sm">
-                Haz clic en cualquier tarjeta para ver información detallada
-              </p>
+                <Crown className={`w-4 h-4 mb-1 ${
+                  activeSection === 'consejos-detallado' 
+                    ? 'text-pink-300' 
+                    : 'text-pink-400 group-hover:text-pink-300'
+                }`} />
+                <span className={`font-semibold text-xs ${
+                  activeSection === 'consejos-detallado' 
+                    ? 'text-pink-300' 
+                    : 'text-white'
+                }`}>Consejos</span>
+              </button>
             </div>
           </div>
         </motion.div>
@@ -540,18 +748,52 @@ export default function GiftOfMasteryPage() {
                   />
                   
                   <div className="flex items-start space-x-3">
-                    <span className="text-yellow-400 font-bold text-lg">•</span>
+                    <div className="flex-shrink-0 w-6 h-6 relative">
+                      <Image
+                        src="https://render.guildwars2.com/file/FADDF94DAD6721344F300405E725AC2624330339/455802.png"
+                        alt="Materiales específicos"
+                        fill
+                        sizes="24px"
+                        className="object-contain"
+                      />
+                    </div>
                     <div>
-                      <span className="text-white font-semibold">Materiales específicos</span>
+                      <span className="text-white font-semibold">Dones requeridos</span>
                       <p className="text-gray-400 text-sm">(Metal/Energía/Madera & El específico de cada uno)</p>
                     </div>
                   </div>
                   
-                  <div className="flex items-start space-x-3">
-                    <span className="text-yellow-400 font-bold text-lg">•</span>
-                    <div>
-                      <span className="text-white font-semibold">Sello del arma + Precursora</span>
-                      <p className="text-gray-400 text-sm">(El arma precursora correspondiente)</p>
+                  <div className="space-y-2">
+                    <div className="flex items-start space-x-3">
+                      <div className="flex-shrink-0 w-6 h-6 relative">
+                        <Image
+                          src="https://render.guildwars2.com/file/4B0EFF29FD064E5E93E4F8616BE309A451450AED/220661.png"
+                          alt="Sello del arma"
+                          fill
+                          sizes="24px"
+                          className="object-contain"
+                        />
+                      </div>
+                      <div>
+                        <span className="text-white font-semibold">1 Sello del arma</span>
+                        <p className="text-gray-400 text-sm">(Sello específico de la legendaria)</p>
+                      </div>
+                    </div>
+                    
+                    <div className="flex items-start space-x-3">
+                      <div className="flex-shrink-0 w-6 h-6 relative">
+                        <Image
+                          src="/images/icons/raw.webp"
+                          alt="Precursora"
+                          fill
+                          sizes="24px"
+                          className="object-contain"
+                        />
+                      </div>
+                      <div>
+                        <span className="text-white font-semibold">1 Precursora</span>
+                        <p className="text-gray-400 text-sm">(El arma precursora correspondiente)</p>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -607,9 +849,19 @@ export default function GiftOfMasteryPage() {
                     />
                     
                     <div className="flex items-start space-x-3">
-                      <span className="text-green-400 font-bold text-lg">6.</span>
-                      <span className="text-white font-semibold">Artesanías al 400</span>
-                      <p className="text-gray-400 text-sm">(Las que necesite cada arma)</p>
+                      <div className="flex-shrink-0 w-6 h-6 relative">
+                        <Image
+                          src="/images/icons/Crafting_icon.png"
+                          alt="Artesanías al 400"
+                          fill
+                          sizes="24px"
+                          className="object-contain"
+                        />
+                      </div>
+                      <div>
+                        <span className="text-white font-semibold">Artesanías al 400</span>
+                        <p className="text-gray-400 text-sm">(Las que necesite cada arma)</p>
+                      </div>
                     </div>
                     
                     <div className="flex items-start space-x-3">
@@ -776,42 +1028,61 @@ export default function GiftOfMasteryPage() {
           </div>
         </motion.div>
 
-        {/* Additional Information */}
+        
+        {/* Thumbnail Image */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.8 }}
-          className="bg-slate-800/50 backdrop-blur-sm border border-slate-700/50 rounded-2xl p-8 shadow-lg"
+          className="mt-12 flex justify-center"
         >
-          <h2 className="text-3xl font-bold text-white mb-6 text-center">
-            {item ? `${item.name} - Información Adicional` : 'Información Adicional'}
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            <div className="text-center">
-              <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-yellow-500 to-orange-600 rounded-full mb-4">
-                <Info className="w-8 h-8 text-white" />
+          <div className="relative w-full max-w-4xl cursor-pointer group" onClick={() => setImageModalOpen(true)}>
+            <Image
+              src="/thumbnails/opciones-1-1024x576.webp"
+              alt="Guía completa de Gift of Mastery - Cómo vender GOMs"
+              width={1024}
+              height={576}
+              className="rounded-lg shadow-2xl border border-gray-700/50 transition-transform duration-300 group-hover:scale-105"
+              priority
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent rounded-lg"></div>
+            <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+              <div className="bg-black/50 backdrop-blur-sm rounded-full p-3">
+                <ExternalLink className="w-8 h-8 text-white" />
               </div>
-              <h3 className="text-xl font-semibold text-white mb-2">
-                Acerca del Item
-              </h3>
-              <p className="text-gray-300">
-                {item ? item.description : 'Un don que se utiliza para crear armas legendarias. Se fabrica combinando estos elementos en la Forja Mística: • 1 esquirla de hematites • 250 esquirlas de obsidiana • 1 don de la exploración • 1 don de la batalla'}
-              </p>
-            </div>
-            <div className="text-center">
-              <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-purple-500 to-blue-600 rounded-full mb-4">
-                <Star className="w-8 h-8 text-white" />
-              </div>
-              <h3 className="text-xl font-semibold text-white mb-2">
-                Significado
-              </h3>
-              <p className="text-gray-300">
-                Este item representa no solo habilidad técnica, sino también la dedicación a la comunidad y el deseo de compartir conocimiento.
-              </p>
             </div>
           </div>
         </motion.div>
+          </div>
+        </div>
       </div>
+
+      {/* Image Modal */}
+      {imageModalOpen && (
+        <div 
+          className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+          onClick={() => setImageModalOpen(false)}
+        >
+          <div className="relative max-w-6xl max-h-[90vh] w-full">
+            <button
+              onClick={() => setImageModalOpen(false)}
+              className="absolute -top-12 right-0 text-white hover:text-gray-300 transition-colors duration-200 z-10"
+            >
+              <X className="w-8 h-8" />
+            </button>
+            <div className="relative">
+              <Image
+                src="/thumbnails/opciones-1-1024x576.webp"
+                alt="Guía completa de Gift of Mastery - Cómo vender GOMs"
+                width={1024}
+                height={576}
+                className="w-full h-auto rounded-lg shadow-2xl"
+                priority
+              />
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
