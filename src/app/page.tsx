@@ -18,11 +18,13 @@ import {
   Eye,
   EyeOff,
   GripVertical,
-  BookOpen
+  BookOpen,
+  Award
 } from 'lucide-react'
 import { usePageTitle } from '@/hooks/usePageTitle'
 import { useI18n } from '@/contexts/I18nContext'
 import { useDashboardPreferences } from '@/hooks/useDashboardPreferences'
+import DashboardSettings from '@/components/DashboardSettings'
 import { useState, useEffect, useMemo } from 'react'
 
 interface DashboardCard {
@@ -126,6 +128,17 @@ const initialCards: DashboardCard[] = [
     delay: 0.9,
     visible: false,
     order: 8
+  },
+  {
+    id: "giftOfMastery",
+    title: "dashboard.giftOfMastery.title",
+    description: "dashboard.giftOfMastery.description",
+    href: "/gift-of-mastery",
+    icon: <Award className="w-8 h-8" />,
+    color: "from-yellow-500 to-orange-600",
+    delay: 1.0,
+    visible: true,
+    order: 9
   }
   
 ];
@@ -140,6 +153,7 @@ export default function HomePage() {
   const [dashboardCards, setDashboardCards] = useState<DashboardCard[]>([]);
   const [originalCards, setOriginalCards] = useState<DashboardCard[]>([]);
   const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
+  const [showSettings, setShowSettings] = useState(false);
 
   // Función para reconstruir iconos desde los datos guardados
   const reconstructCardWithIcon = (savedCard: Omit<DashboardCard, 'icon'>): DashboardCard => {
@@ -151,7 +165,8 @@ export default function HomePage() {
       "festivals": <Gift className="w-8 h-8" />,
       "farmingTracker": <BarChart3 className="w-8 h-8" />,
       "glossary": <BookOpen className="w-8 h-8" />,
-      "orrianJewelry": <Gift className="w-8 h-8" />
+      "orrianJewelry": <Gift className="w-8 h-8" />,
+      "giftOfMastery": <Award className="w-8 h-8" />
     };
 
     return {
@@ -470,15 +485,24 @@ export default function HomePage() {
                       {t('dashboard.cancel', 'Cancelar')}
                     </button>
                   </>
-                 ) : (
-                   <button
-                     onClick={toggleEditMode}
-                     className="flex items-center gap-2 px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg transition-colors duration-200"
-                   >
-                     <Settings className="w-4 h-4" />
-                     {t('dashboard.customize', 'Personalizar Dashboard')}
-                   </button>
-                 )}
+                ) : (
+                  <div className="flex gap-2">
+                    <button
+                      onClick={toggleEditMode}
+                      className="flex items-center gap-2 px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg transition-colors duration-200"
+                    >
+                      <Settings className="w-4 h-4" />
+                      {t('dashboard.customize', 'Personalizar Dashboard')}
+                    </button>
+                    <button
+                      onClick={() => setShowSettings(true)}
+                      className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors duration-200"
+                    >
+                      <Settings className="w-4 h-4" />
+                      Configuración Avanzada
+                    </button>
+                  </div>
+                )}
               </div>
             </div>
             
@@ -552,6 +576,12 @@ export default function HomePage() {
           </div>
         </section>
       </div>
+      
+      {/* Modal de configuración avanzada */}
+      <DashboardSettings 
+        isOpen={showSettings} 
+        onClose={() => setShowSettings(false)} 
+      />
     </div>
   )
 } 

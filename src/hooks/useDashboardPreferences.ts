@@ -22,6 +22,7 @@ const defaultPreferences: DashboardPreferences = {
     'festivals',
     'buyout',
     'orrian-jewelry-box',
+    'giftOfMastery',
     'others',
     'glossary'
   ],

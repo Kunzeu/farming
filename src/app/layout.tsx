@@ -13,6 +13,7 @@ import { Analytics } from "@vercel/analytics/next";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
+  metadataBase: new URL(process.env.NEXT_PUBLIC_BASE_URL || 'https://truefarming.com'),
   title: "True Farming",
   description: "Your platform to optimize farming in Guild Wars 2",
   keywords: ["Guild Wars 2", "farming", "gold", "materials", "gaming", "MMORPG"],
