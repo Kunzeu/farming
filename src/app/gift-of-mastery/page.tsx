@@ -590,6 +590,7 @@ export default function GiftOfMasteryPage() {
                 <p className="text-gray-300 mb-4">
                   Si tenéis pensado comprar o vender vuestros dones del dominio os recomiendo sin duda el discord de Overflow Trading Company.
                 </p>
+                <p className="text-gray-400 text-sm">Un servidor de discord dedicado al trading con más de 20,000 miembros</p>
                 <div className="text-center">
                   <a
                     href="https://discord.gg/gw2overflow"
@@ -599,7 +600,6 @@ export default function GiftOfMasteryPage() {
                   >
                     Overflow Trading Company
                   </a>
-                  <p className="text-gray-400 text-sm">Un servidor de discord dedicado al trading con más de 20,000 miembros</p>
                   <p className="text-indigo-300 text-xs mt-2">👆 Haz clic aquí para unirte</p>
                 </div>
               </div>
@@ -624,13 +624,13 @@ export default function GiftOfMasteryPage() {
                 <div className="border-l-4 border-pink-500 pl-4">
                   <h3 className="text-lg font-semibold text-white mb-2">1. Contrato en Chat</h3>
                   <p className="text-gray-300 text-sm mb-2">
-                    Antes de hacer el trade, haced un "contrato" en el chat de equipo. Esto es una prueba para que Arenanet esté más abierta a interceder en caso de haber un timo.
+                    Antes de hacer el trade, haced un &quot;contrato&quot; en el chat de equipo. Esto es una prueba para que Arenanet esté más abierta a interceder en caso de haber un timo.
                   </p>
                   <div className="bg-slate-700/50 p-3 rounded text-xs text-gray-300 font-mono">
                     Hola nombre.1234 vamos a hacer LEGENDARIA con tu Don del Dominio a cambio de X oro. Te mandaré los materiales y cuando la tengas me la mandas y te mando el pago. De acuerdo?
                   </div>
                   <p className="text-gray-400 text-xs mt-2">
-                    El otro jugador tendrá que poner "Si" "Okey" "Ok" "Vale" o cualquier cosa afirmativa. Luego haremos captura de pantalla.
+                    El otro jugador tendrá que poner &quot;Si&quot; &quot;Okey&quot; &quot;Ok&quot; &quot;Vale&quot; o cualquier cosa afirmativa. Luego haremos captura de pantalla.
                   </p>
                 </div>
                 
