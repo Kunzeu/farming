@@ -26,11 +26,41 @@ interface GiftOfMasteryItem {
   }
 }
 
+// IDs de los items mencionados en la guía
+const ITEM_IDS = {
+  // Materiales del comprador
+  ectoplasm: 19721,
+  t6Bone: 24358,
+  t6Totem: 24300,
+  t6Blood: 24295,
+  t6Dust: 24277,
+  t6Claw: 24351,
+  t6Fang: 24357,
+  t6Venom: 24283,
+  t6Scale: 24289,
+  mysticCoin: 19976,
+  
+  // Materiales del vendedor
+  giftOfExploration: 19677,
+  giftOfBattle: 19678,
+  obsidianShard: 19925,
+  spiritShard: 69910,
+  mysticClover: 19675,
+  
+  // Materiales específicos
+  runicStone: 19676,
+  customIcon: 'https://render.guildwars2.com/file/37CCE672250A3170B71760949C4C9C9B186517B1/619327.png',
+  
+  // Materiales específicos
+  giftOfMastery: 19674
+}
+
 export default function GiftOfMasteryPage() {
   usePageTitle('giftOfMasteryPage.title', 'Gift of Mastery - GOM')
   const { t, lang } = useI18n()
   
   const [item, setItem] = useState<GiftOfMasteryItem | null>(null)
+  const [materials, setMaterials] = useState<Record<string, GiftOfMasteryItem>>({})
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
@@ -63,30 +93,69 @@ export default function GiftOfMasteryPage() {
     return `https://${wikiDomain}/wiki/${itemName.replace(/\s+/g, '_')}`
   }
 
+  // Función para obtener materiales de la API
+  const fetchMaterials = async (lang: string) => {
+    try {
+      const gw2Lang = getGW2LangCode(lang)
+      const itemIds = Object.values(ITEM_IDS).join(',')
+      
+      const response = await fetch(`https://api.guildwars2.com/v2/items?ids=${itemIds}&lang=${gw2Lang}`)
+      
+      if (!response.ok) {
+        throw new Error(`Failed to fetch materials: ${response.status}`)
+      }
+      
+      const items = await response.json()
+      
+      const materialsMap: Record<string, GiftOfMasteryItem> = {}
+      
+      if (Array.isArray(items)) {
+        items.forEach((item: GiftOfMasteryItem) => {
+          // Encontrar la clave correspondiente al ID
+          const key = Object.keys(ITEM_IDS).find(k => ITEM_IDS[k as keyof typeof ITEM_IDS] === item.id)
+          if (key) {
+            materialsMap[key] = item
+          }
+        })
+      }
+      setMaterials(materialsMap)
+    } catch (error) {
+      console.error('Error fetching materials:', error)
+      // Establecer un estado vacío para evitar que se quede cargando
+      setMaterials({})
+    }
+  }
+
   useEffect(() => {
-    const fetchItem = async () => {
+    const fetchData = async () => {
       try {
         setLoading(true)
         setError(null)
 
         const gw2Lang = getGW2LangCode(lang)
-        const response = await fetch(`https://api.guildwars2.com/v2/items/19674?lang=${gw2Lang}`)
         
-        if (!response.ok) {
+        // Obtener el item principal primero
+        const itemResponse = await fetch(`https://api.guildwars2.com/v2/items/19674?lang=${gw2Lang}`)
+        
+        if (!itemResponse.ok) {
           throw new Error('Failed to fetch item from GW2 API')
         }
 
-        const data = await response.json()
+        const data = await itemResponse.json()
         setItem(data)
+        
+        // Luego obtener los materiales (sin bloquear la carga principal)
+        fetchMaterials(lang)
+        
       } catch (err) {
-        console.error('Error fetching Gift of Mastery item:', err)
+        console.error('Error fetching data:', err)
         setError(err instanceof Error ? err.message : 'Unknown error')
       } finally {
         setLoading(false)
       }
     }
 
-    fetchItem()
+    fetchData()
   }, [lang])
 
   const getRarityColor = (rarity: string) => {
@@ -106,6 +175,62 @@ export default function GiftOfMasteryPage() {
       default:
         return 'from-gray-400 to-gray-600'
     }
+  }
+
+  // Componente para mostrar un material con su icono y nombre
+  const MaterialItem = ({ materialKey, quantity, note }: { materialKey: string, quantity: number, note?: string }) => {
+    const material = materials[materialKey]
+    
+    // Si es un icono personalizado (URL directa)
+    if (materialKey === 'customIcon') {
+      return (
+        <div className="flex items-start space-x-3">
+          <div className="flex-shrink-0 w-6 h-6 relative">
+            <Image
+              src="https://render.guildwars2.com/file/37CCE672250A3170B71760949C4C9C9B186517B1/619327.png"
+              alt="Icono personalizado"
+              fill
+              sizes="24px"
+              className="object-contain"
+            />
+          </div>
+          <div>
+            <span className="text-white font-semibold">{quantity} Material personalizado</span>
+            {note && <p className="text-gray-400 text-sm">({note})</p>}
+          </div>
+        </div>
+      )
+    }
+    
+    if (!material) {
+      return (
+        <div className="flex items-start space-x-3">
+          <span className="text-yellow-400 font-bold text-lg">•</span>
+          <div>
+            <span className="text-white font-semibold">Cargando...</span>
+            {note && <p className="text-gray-400 text-sm">({note})</p>}
+          </div>
+        </div>
+      )
+    }
+
+    return (
+      <div className="flex items-start space-x-3">
+        <div className="flex-shrink-0 w-6 h-6 relative">
+          <Image
+            src={material.icon}
+            alt={material.name}
+            fill
+            sizes="24px"
+            className="object-contain"
+          />
+        </div>
+        <div>
+          <span className="text-white font-semibold">{quantity} {material.name}</span>
+          {note && <p className="text-gray-400 text-sm">({note})</p>}
+        </div>
+      </div>
+    )
   }
 
   const formatVendorValue = (value: number) => {
@@ -380,39 +505,39 @@ export default function GiftOfMasteryPage() {
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-3">
-                  <div className="flex items-start space-x-3">
-                    <span className="text-yellow-400 font-bold text-lg">•</span>
-                    <div>
-                      <span className="text-white font-semibold">481 Pegotes de Ectoplasma</span>
-                      <p className="text-gray-400 text-sm">(231 de estos solo si el vendedor NO incluye tréboles místicos)</p>
+                  <MaterialItem 
+                    materialKey="ectoplasm" 
+                    quantity={481} 
+                    note="231 de estos solo si el vendedor NO incluye tréboles místicos" 
+                  />
+                  
+                  <div className="space-y-2">
+                    <span className="text-white font-semibold">250 de cada T6:</span>
+                    <div className="ml-4 space-y-1">
+                      <MaterialItem materialKey="t6Totem" quantity={250} />
+                      <MaterialItem materialKey="t6Bone" quantity={250} />
+                      <MaterialItem materialKey="t6Blood" quantity={250} />
+                      <MaterialItem materialKey="t6Dust" quantity={250} />
+                      <MaterialItem materialKey="t6Claw" quantity={250} />
+                      <MaterialItem materialKey="t6Fang" quantity={250} />
+                      <MaterialItem materialKey="t6Scale" quantity={250} />
+                      <MaterialItem materialKey="t6Venom" quantity={250} />
                     </div>
                   </div>
                   
-                  <div className="flex items-start space-x-3">
-                    <span className="text-yellow-400 font-bold text-lg">•</span>
-                    <div>
-                      <span className="text-white font-semibold">250 de cada T6</span>
-                      <p className="text-gray-400 text-sm">(Tótems, Huesos, Sangres, Polvos, Garras, Colmillos, Escamas, Vesículas de veneno)</p>
-                    </div>
-                  </div>
-                  
-                  <div className="flex items-start space-x-3">
-                    <span className="text-yellow-400 font-bold text-lg">•</span>
-                    <div>
-                      <span className="text-white font-semibold">231 monedas místicas</span>
-                      <p className="text-gray-400 text-sm">(Solo si el vendedor NO incluye sus tréboles)</p>
-                    </div>
-                  </div>
+                  <MaterialItem 
+                    materialKey="mysticCoin" 
+                    quantity={231} 
+                    note="Solo si el vendedor NO incluye sus tréboles" 
+                  />
                 </div>
                 
                 <div className="space-y-3">
-                  <div className="flex items-start space-x-3">
-                    <span className="text-yellow-400 font-bold text-lg">•</span>
-                    <div>
-                      <span className="text-white font-semibold">100 oros</span>
-                      <p className="text-gray-400 text-sm">(Para las Piedras Rúnicas Heladas)</p>
-                    </div>
-                  </div>
+                  <MaterialItem 
+                    materialKey="runicStone" 
+                    quantity={100} 
+                    note="Para las Piedras Rúnicas Heladas" 
+                  />
                   
                   <div className="flex items-start space-x-3">
                     <span className="text-yellow-400 font-bold text-lg">•</span>
@@ -451,38 +576,35 @@ export default function GiftOfMasteryPage() {
               <div className="space-y-4">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-3">
-                    <div className="flex items-start space-x-3">
-                      <span className="text-green-400 font-bold text-lg">1.</span>
-                      <span className="text-white font-semibold">1 Don de Exploración</span>
-                    </div>
+                    <MaterialItem 
+                      materialKey="giftOfExploration" 
+                      quantity={1} 
+                    />
                     
-                    <div className="flex items-start space-x-3">
-                      <span className="text-green-400 font-bold text-lg">2.</span>
-                      <span className="text-white font-semibold">1 Don de Batalla</span>
-                    </div>
+                    <MaterialItem 
+                      materialKey="giftOfBattle" 
+                      quantity={1} 
+                    />
                     
-                    <div className="flex items-start space-x-3">
-                      <span className="text-green-400 font-bold text-lg">3.</span>
-                      <div>
-                        <span className="text-white font-semibold">481 Esquirlas de Obsidiana</span>
-                        <p className="text-gray-400 text-sm">(231 solo si NO vas a poner tus tréboles)</p>
-                      </div>
-                    </div>
+                    <MaterialItem 
+                      materialKey="obsidianShard" 
+                      quantity={481} 
+                      note="231 solo si NO vas a poner tus tréboles" 
+                    />
                     
-                    <div className="flex items-start space-x-3">
-                      <span className="text-green-400 font-bold text-lg">4.</span>
-                      <div>
-                        <span className="text-white font-semibold">340 Esquirlas Espirituales</span>
-                        <p className="text-gray-400 text-sm">(140 solo si NO vas a poner tus tréboles)</p>
-                      </div>
-                    </div>
+                    <MaterialItem 
+                      materialKey="spiritShard" 
+                      quantity={340} 
+                      note="140 solo si NO vas a poner tus tréboles" 
+                    />
                   </div>
                   
                   <div className="space-y-3">
-                    <div className="flex items-start space-x-3">
-                      <span className="text-green-400 font-bold text-lg">5.</span>
-                      <span className="text-white font-semibold">500 monedas de mazmorra</span>
-                    </div>
+                    <MaterialItem 
+                      materialKey="customIcon" 
+                      quantity={500} 
+                      note="monedas de mazmorra" 
+                    />
                     
                     <div className="flex items-start space-x-3">
                       <span className="text-green-400 font-bold text-lg">6.</span>
@@ -498,13 +620,11 @@ export default function GiftOfMasteryPage() {
                       </div>
                     </div>
                     
-                    <div className="flex items-start space-x-3">
-                      <span className="text-purple-400 font-bold text-lg">OPCIONAL:</span>
-                      <div>
-                        <span className="text-white font-semibold">77 Tréboles Místicos</span>
-                        <p className="text-gray-400 text-sm">(Estos se pagan a parte como extra)</p>
-                      </div>
-                    </div>
+                    <MaterialItem 
+                      materialKey="mysticClover" 
+                      quantity={77} 
+                      note="Estos se pagan a parte como extra" 
+                    />
                   </div>
                 </div>
               </div>
