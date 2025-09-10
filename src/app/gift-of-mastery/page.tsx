@@ -2,7 +2,7 @@
 
 import { motion } from 'framer-motion'
 import { useState, useEffect } from 'react'
-import { Award, Star, Crown, Gem, Hammer, ExternalLink, Loader2, Info, Zap, Menu, X, ShoppingCart, Wrench, ArrowRight, DollarSign, MessageCircle, Lightbulb } from 'lucide-react'
+import { Award, Star, Crown, Gem, Hammer, ExternalLink, Loader2, Info, Zap, Menu, X, ShoppingCart, Wrench, ArrowRight, DollarSign, MessageCircle, Lightbulb, ChevronLeft, ChevronRight } from 'lucide-react'
 import { usePageTitle } from '@/hooks/usePageTitle'
 import { useI18n } from '@/contexts/I18nContext'
 import Navigation from '@/components/layout/Navigation'
@@ -66,6 +66,24 @@ export default function GiftOfMasteryPage() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [activeSection, setActiveSection] = useState<string>('')
   const [imageModalOpen, setImageModalOpen] = useState(false)
+  const [currentImageIndex, setCurrentImageIndex] = useState(0)
+  
+  // Array de imágenes disponibles
+  const images = [
+    {
+      src: "/thumbnails/weapons-table-1024x576.png", 
+      alt: "Tabla de armas legendarias con profesiones y mazmorras"
+    }
+  ]
+
+  // Funciones para navegar entre imágenes
+  const nextImage = () => {
+    setCurrentImageIndex((prev) => (prev + 1) % images.length)
+  }
+
+  const prevImage = () => {
+    setCurrentImageIndex((prev) => (prev - 1 + images.length) % images.length)
+  }
 
   // Mapear códigos de idioma de nuestra app a códigos de la API de GW2
   const getGW2LangCode = (lang: string) => {
@@ -445,9 +463,9 @@ export default function GiftOfMasteryPage() {
           <div className="lg:hidden fixed bottom-1/2 right-6 transform -translate-y-1/2 z-50">
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="w-14 h-14 bg-yellow-600 hover:bg-yellow-700 text-white rounded-full shadow-lg flex items-center justify-center transition-all duration-300 hover:scale-110 active:scale-95 ring-2 ring-yellow-400/20 hover:ring-yellow-400/40"
+              className="w-14 h-14 bg-blue-900 hover:bg-blue-800 text-white rounded-full shadow-lg shadow-blue-900/20 flex items-center justify-center transition-all duration-300 hover:scale-110 active:scale-95"
             >
-              {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+              {mobileMenuOpen ? <X className="w-8 h-8" /> : <img src="/images/icons/index.png" alt="Menu" className="w-8 h-8" />}
             </button>
           </div>
 
@@ -1036,26 +1054,62 @@ export default function GiftOfMasteryPage() {
         </motion.div>
 
         
-        {/* Thumbnail Image */}
+        {/* Thumbnail Image with Navigation */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.8 }}
           className="mt-12 flex justify-center"
         >
-          <div className="relative w-full max-w-4xl cursor-pointer group" onClick={() => setImageModalOpen(true)}>
-            <Image
-              src="/thumbnails/opciones-1-1024x576.webp"
-              alt={t('giftOfMasteryPage.thumbnail.alt')}
-              width={1024}
-              height={576}
-              className="rounded-lg shadow-2xl border border-gray-700/50 transition-transform duration-300 group-hover:scale-105"
-              priority
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent rounded-lg"></div>
-            <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-              <div className="bg-black/50 backdrop-blur-sm rounded-full p-3">
-                <ExternalLink className="w-8 h-8 text-white" />
+          <div className="relative w-full max-w-4xl">
+            {/* Navigation Buttons */}
+            <div className="flex justify-between items-center mb-4">
+              <button
+                onClick={prevImage}
+                className="flex items-center justify-center w-10 h-10 bg-black/80 hover:bg-black text-white rounded-full transition-all duration-300 hover:scale-110"
+                disabled={images.length <= 1}
+              >
+                <ChevronLeft className="w-6 h-6" />
+              </button>
+              
+              <div className="flex space-x-2">
+                {images.map((_, index) => (
+                  <button
+                    key={index}
+                    onClick={() => setCurrentImageIndex(index)}
+                    className={`w-3 h-3 rounded-full transition-all duration-300 ${
+                      index === currentImageIndex 
+                        ? 'bg-yellow-500 scale-125' 
+                        : 'bg-gray-600 hover:bg-gray-500'
+                    }`}
+                  />
+                ))}
+              </div>
+              
+              <button
+                onClick={nextImage}
+                className="flex items-center justify-center w-10 h-10 bg-black/80 hover:bg-black text-white rounded-full transition-all duration-300 hover:scale-110"
+                disabled={images.length <= 1}
+              >
+                <ChevronRight className="w-6 h-6" />
+              </button>
+            </div>
+
+            {/* Image Container */}
+            <div className="relative w-full cursor-pointer group" onClick={() => setImageModalOpen(true)}>
+              <Image
+                src={images[currentImageIndex].src}
+                alt={images[currentImageIndex].alt}
+                width={1024}
+                height={576}
+                className="rounded-lg shadow-2xl border border-gray-700/50 transition-transform duration-300 group-hover:scale-105"
+                priority
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent rounded-lg"></div>
+              <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                <div className="bg-black/50 backdrop-blur-sm rounded-full p-3">
+                  <ExternalLink className="w-8 h-8 text-white" />
+                </div>
               </div>
             </div>
           </div>
@@ -1079,8 +1133,8 @@ export default function GiftOfMasteryPage() {
             </button>
             <div className="relative">
               <Image
-                src="/thumbnails/opciones-1-1024x576.webp"
-                alt={t('giftOfMasteryPage.thumbnail.alt')}
+                src={images[currentImageIndex].src}
+                alt={images[currentImageIndex].alt}
                 width={1024}
                 height={576}
                 className="w-full h-auto rounded-lg shadow-2xl"
