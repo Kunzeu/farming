@@ -52,11 +52,63 @@ const ITEM_IDS = {
   customIcon: 'https://render.guildwars2.com/file/37CCE672250A3170B71760949C4C9C9B186517B1/619327.png',
   
   // Materiales específicos
-  giftOfMastery: 19674
+  giftOfJadeMastery: 96033,
+  gloryShards: 70820,
+  battleMemories: 71581,
+  stabilizingMatrices: 73248,
+  adventureTale: 96151,
+  lanternInsignia: 97790,
+  supremePaper: 71148,
+  deldrimorIngot: 46736,
+  spiritualWood: 46738,
+  thermocatalyticReagents: 46747,
+  pureJadeFragments: 97102,
+  jadeRunicStones: 96722,
+  ancientGrayAmber: 96347,
+  ancientInvocationStones: 96978,
+  dragonMagnetiteStone: 92687,
+  
+  // Materiales T5
+  t5Blood: 24294,
+  t5Bone: 24341,
+  t5Claw: 24350,
+  t5Scale: 24356,
+  t5Fang: 24288,
+  t5Totem: 24299,
+  t5Venom: 24282,
+  t5Dust: 24276,
+  
+  // Materiales T4
+  t4Blood: 24293,
+  t4Bone: 24345,
+  t4Claw: 24348,
+  t4Dust: 24275,
+  t4Fang: 24355,
+  t4Scale: 24287,
+  t4Totem: 24363,
+  t4Venom: 24281,
+  
+  // Materiales T3
+  t3Blood: 24292,
+  t3Bone: 24344,
+  t3Claw: 24349,
+  t3Dust: 24274,
+  t3Fang: 24354,
+  t3Scale: 24286,
+  t3Totem: 24298,
+  t3Venom: 24280,
+  
+  // Materiales del vendedor
+  giftOfCantha: 97096,
+  jadeEmpressBlessing: 97829,
+  exoticLuckEssence: 45178,
+  hematiteShard: 20797,
+  darkEnergyBall: 71994,
+  researchNotes: 96052,
 }
 
-export default function GiftOfMasteryPage() {
-  usePageTitle('giftOfMasteryPage.title', 'Gift of Mastery')
+export default function GiftOfJadeMasteryPage() {
+  usePageTitle('giftOfJadeMasteryPage.title', 'Gift of Jade Mastery')
   const { t, lang } = useI18n()
   
   const [item, setItem] = useState<GiftOfMasteryItem | null>(null)
@@ -71,11 +123,7 @@ export default function GiftOfMasteryPage() {
   // Array de imágenes disponibles
   const images = [
     {
-      src: "/thumbnails/weapons-table-1024x576.png", 
-      alt: "Tabla de armas legendarias con profesiones y mazmorras"
-    },
-    {
-      src: "/thumbnails/legendariaw-1024x576.webp", 
+      src: "/thumbnails/leg32.webp", 
       alt: "Arma Legendaria de Guild Wars 2"
     }
   ]
@@ -112,7 +160,7 @@ export default function GiftOfMasteryPage() {
     
     // Para las wikis inglesas (es y en), usar siempre el nombre en inglés
     if (lang === 'es' || lang === 'en') {
-      return `https://${wikiDomain}/wiki/Gift_of_Mastery`
+      return `https://${wikiDomain}/wiki/Gift_of_Jade_Mastery`
     }
     
     return `https://${wikiDomain}/wiki/${itemName.replace(/\s+/g, '_')}`
@@ -160,7 +208,7 @@ export default function GiftOfMasteryPage() {
         const gw2Lang = getGW2LangCode(lang)
         
         // Obtener el item principal primero
-        const itemResponse = await fetch(`https://api.guildwars2.com/v2/items/19674?lang=${gw2Lang}`)
+        const itemResponse = await fetch(`https://api.guildwars2.com/v2/items/96033?lang=${gw2Lang}`)
         
         if (!itemResponse.ok) {
           throw new Error('Failed to fetch item from GW2 API')
@@ -275,14 +323,14 @@ export default function GiftOfMasteryPage() {
           <div className="flex-shrink-0 w-6 h-6 relative">
             <Image
               src="https://render.guildwars2.com/file/37CCE672250A3170B71760949C4C9C9B186517B1/619327.png"
-              alt="Icono personalizado"
+              alt={t('giftOfJadeMasteryPage.materialItem.customIconAlt')}
               fill
               sizes="24px"
               className="object-contain"
             />
           </div>
           <div>
-            <span className="text-white font-semibold">{quantity} Material personalizado</span>
+            <span className="text-white font-semibold">{quantity} {t('giftOfJadeMasteryPage.materialItem.customMaterial')}</span>
             {note && <p className="text-gray-400 text-sm">({note})</p>}
           </div>
         </div>
@@ -294,7 +342,7 @@ export default function GiftOfMasteryPage() {
         <div className="flex items-start space-x-3">
           <span className="text-yellow-400 font-bold text-lg">•</span>
           <div>
-            <span className="text-white font-semibold">Cargando...</span>
+            <span className="text-white font-semibold">{t('giftOfJadeMasteryPage.materialItem.loading')}</span>
             {note && <p className="text-gray-400 text-sm">({note})</p>}
           </div>
         </div>
@@ -342,7 +390,7 @@ export default function GiftOfMasteryPage() {
         <div className="flex-1 flex items-center justify-center">
           <div className="text-center">
             <Loader2 className="w-12 h-12 animate-spin text-yellow-600 mx-auto mb-4" />
-            <p className="text-lg text-gray-300">{t('giftOfMasteryPage.loading')}</p>
+            <p className="text-lg text-gray-300">{t('giftOfJadeMasteryPage.loading')}</p>
           </div>
         </div>
       </div>
@@ -356,14 +404,14 @@ export default function GiftOfMasteryPage() {
         <div className="flex-1 flex items-center justify-center">
           <div className="text-center">
             <div className="bg-red-900/20 border border-red-500/50 text-red-300 px-4 py-3 rounded mb-4">
-              <p className="font-bold">{t('giftOfMasteryPage.error.title')}</p>
+              <p className="font-bold">{t('giftOfJadeMasteryPage.error.title')}</p>
               <p>{error}</p>
             </div>
             <button 
               onClick={() => window.location.reload()}
               className="px-6 py-2 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700 transition-colors"
             >
-              {t('giftOfMasteryPage.error.retry')}
+              {t('giftOfJadeMasteryPage.error.retry')}
             </button>
           </div>
         </div>
@@ -462,7 +510,7 @@ export default function GiftOfMasteryPage() {
             </div>
           </aside>
 
-          {/* FAB - Floating Action Button - Solo en móvil */}
+           {/* FAB - Floating Action Button - Solo en móvil */}
           <div className="lg:hidden fixed bottom-1/2 right-6 transform -translate-y-1/2 z-50">
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
@@ -470,10 +518,10 @@ export default function GiftOfMasteryPage() {
             >
               {mobileMenuOpen ? <X className="w-8 h-8" /> : <img src="/images/icons/index.png" alt="Menu" className="w-8 h-8" />}
             </button>
-          </div>
+          </div>  
 
-          {/* Mobile Menu Panel - Solo en móvil */}
-          {mobileMenuOpen && (
+           {/* Mobile Menu Panel - Solo en móvil */}
+           {mobileMenuOpen && (
             <div className="lg:hidden fixed inset-0 bg-black/50 z-40 animate-in fade-in duration-200" onClick={() => setMobileMenuOpen(false)}>
               <div className="absolute top-1/2 right-20 transform -translate-y-1/2 bg-slate-800 border border-slate-700 rounded-2xl p-4 shadow-xl min-w-[200px] max-w-[250px] w-auto animate-in slide-in-from-right-4 duration-300">
                 <h3 className="text-white font-bold text-lg mb-3">{t('giftOfMasteryPage.menu.title')}</h3>
@@ -505,10 +553,10 @@ export default function GiftOfMasteryPage() {
                         ? 'text-purple-400 bg-purple-900/30 border-l-4 border-purple-400' 
                         : 'text-gray-300 hover:text-white hover:bg-slate-700/40'
                     }`}
-                  >
-                    {t('giftOfMasteryPage.sections.process')}
-                  </button>
-                  <button 
+                   >
+                     {t('giftOfMasteryPage.sections.process')}
+                   </button>
+                   <button
                     onClick={() => handleScrollTo('discord-detallado')} 
                     className={`w-full text-left px-3 py-2 rounded-lg transition-colors ${
                       activeSection === 'discord-detallado' 
@@ -548,7 +596,7 @@ export default function GiftOfMasteryPage() {
             </div>
           </div>
           <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">
-            {item ? `${item.name}` : t('giftOfMasteryPage.title')}
+            {item ? `${item.name}` : t('giftOfJadeMasteryPage.title')}
           </h1>
 
         </motion.div>
@@ -588,7 +636,7 @@ export default function GiftOfMasteryPage() {
                     className="inline-flex items-center px-6 py-3 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700 transition-colors"
                   >
                     <ExternalLink className="w-4 h-4 mr-2" />
-                    {t('giftOfMasteryPage.itemInfo.viewWiki')}
+                    {t('giftOfJadeMasteryPage.itemInfo.viewWiki')}
                   </a>
                 </div>
               </div>
@@ -605,7 +653,7 @@ export default function GiftOfMasteryPage() {
           className="mb-12"
         >
           <div className="bg-slate-800/50 backdrop-blur-sm border border-slate-700/50 rounded-2xl p-6 shadow-lg">
-            <h2 className="text-xl font-bold text-white mb-4 text-center">📋 {t('giftOfMasteryPage.sections.guideIndex')}</h2>
+            <h2 className="text-xl font-bold text-white mb-4 text-center">📋 {t('giftOfJadeMasteryPage.sections.guideIndex')}</h2>
             
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-1 sm:gap-2 justify-items-center">
               <button 
@@ -625,7 +673,7 @@ export default function GiftOfMasteryPage() {
                   activeSection === 'comprador-detallado' 
                     ? 'text-blue-300' 
                     : 'text-white'
-                }`}>{t('giftOfMasteryPage.sections.buyer')}</span>
+                }`}>{t('giftOfJadeMasteryPage.sections.buyer')}</span>
               </button>
 
               <button 
@@ -645,7 +693,7 @@ export default function GiftOfMasteryPage() {
                   activeSection === 'vendedor-detallado' 
                     ? 'text-green-300' 
                     : 'text-white'
-                }`}>{t('giftOfMasteryPage.sections.seller')}</span>
+                }`}>{t('giftOfJadeMasteryPage.sections.seller')}</span>
               </button>
 
               <button 
@@ -665,7 +713,7 @@ export default function GiftOfMasteryPage() {
                   activeSection === 'proceso-detallado' 
                     ? 'text-purple-300' 
                     : 'text-white'
-                }`}>{t('giftOfMasteryPage.sections.process')}</span>
+                }`}>{t('giftOfJadeMasteryPage.sections.process')}</span>
               </button>
 
               <button 
@@ -685,7 +733,7 @@ export default function GiftOfMasteryPage() {
                   activeSection === 'discord-detallado' 
                     ? 'text-indigo-300' 
                     : 'text-white'
-                }`}>{t('giftOfMasteryPage.sections.discord')}</span>
+                }`}>{t('giftOfJadeMasteryPage.sections.discord')}</span>
               </button>
 
               <button 
@@ -705,7 +753,7 @@ export default function GiftOfMasteryPage() {
                   activeSection === 'consejos-detallado' 
                     ? 'text-pink-300' 
                     : 'text-white'
-                }`}>{t('giftOfMasteryPage.sections.tips')}</span>
+                }`}>{t('giftOfJadeMasteryPage.sections.tips')}</span>
               </button>
             </div>
           </div>
@@ -724,107 +772,206 @@ export default function GiftOfMasteryPage() {
               <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-blue-600 rounded-full flex items-center justify-center mr-4">
                 <Info className="w-6 h-6 text-white" />
               </div>
-              <h2 className="text-2xl font-bold text-white">{t('giftOfMasteryPage.buyer.title')}</h2>
+              <h2 className="text-2xl font-bold text-white">{t('giftOfJadeMasteryPage.buyer.title')}</h2>
             </div>
             
             <div className="bg-slate-800/50 rounded-xl p-6 border border-slate-600/50">
               <p className="text-gray-300 mb-6 leading-relaxed">
-                {t('giftOfMasteryPage.buyer.description').replace('{itemName}', item ? item.name : 'Don del Dominio')}
+                {t('giftOfJadeMasteryPage.buyer.description').replace('{itemName}', item ? item.name : 'Don del Dominio de Jade')}
               </p>
               
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-3">
-                  <MaterialItem 
-                    materialKey="ectoplasm" 
-                    quantity={481} 
-                    note={t('giftOfMasteryPage.buyer.ectoplasmNote')} 
-                  />
-                  
-                  <div className="space-y-2">
-                    <span className="text-white font-semibold">{t('giftOfMasteryPage.buyer.t6Materials')}</span>
-                    <div className="ml-4 space-y-1">
-                      <MaterialItem materialKey="t6Totem" quantity={250} />
-                      <MaterialItem materialKey="t6Bone" quantity={250} />
-                      <MaterialItem materialKey="t6Blood" quantity={250} />
-                      <MaterialItem materialKey="t6Dust" quantity={250} />
-                      <MaterialItem materialKey="t6Claw" quantity={250} />
-                      <MaterialItem materialKey="t6Fang" quantity={250} />
-                      <MaterialItem materialKey="t6Scale" quantity={250} />
-                      <MaterialItem materialKey="t6Venom" quantity={250} />
-                    </div>
-                  </div>
-                  
-                  <MaterialItem 
-                    materialKey="mysticCoin" 
-                    quantity={231} 
-                    note={t('giftOfMasteryPage.notes.clovers')} 
-                  />
-                </div>
-                
-                <div className="space-y-3">
-                  <div className="flex items-center space-x-3">
-                    <div className="flex-shrink-0 w-6 h-6 relative">
-                      <Image
-                        src="/images/expansions/Gold.png"
-                        alt="Oro"
-                        fill
-                        sizes="24px"
-                        className="object-contain"
-                      />
-                    </div>
-                    <div>
-                      <span className="text-white font-semibold">100g</span>
-                      <p className="text-gray-400 text-sm">{t('giftOfMasteryPage.notes.runicStones')}</p>
-                    </div>
-                  </div>
-                  
-                  <div className="flex items-start space-x-3">
-                    <div className="flex-shrink-0 w-6 h-6 relative">
-                      <Image
-                        src="https://render.guildwars2.com/file/FADDF94DAD6721344F300405E725AC2624330339/455802.png"
-                        alt="Materiales específicos"
-                        fill
-                        sizes="24px"
-                        className="object-contain"
-                      />
-                    </div>
-                    <div>
-                      <span className="text-white font-semibold">{t('giftOfMasteryPage.buyer.requiredGifts')}</span>
-                      <p className="text-gray-400 text-sm">{t('giftOfMasteryPage.buyer.requiredGiftsDesc')}</p>
-                    </div>
-                  </div>
-                  
-                  <div className="space-y-2">
-                    <div className="flex items-start space-x-3">
-                      <div className="flex-shrink-0 w-6 h-6 relative">
-                        <Image
-                          src="https://render.guildwars2.com/file/4B0EFF29FD064E5E93E4F8616BE309A451450AED/220661.png"
-                          alt="Sello del arma"
-                          fill
-                          sizes="24px"
-                          className="object-contain"
-                        />
-                      </div>
-                      <div>
-                        <span className="text-white font-semibold">{t('giftOfMasteryPage.buyer.weaponSeal')}</span>
-                        <p className="text-gray-400 text-sm">{t('giftOfMasteryPage.buyer.weaponSealDesc')}</p>
-                      </div>
-                    </div>
-                    
+              <div className="space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="space-y-3">
                     <div className="flex items-start space-x-3">
                       <div className="flex-shrink-0 w-6 h-6 relative">
                         <Image
                           src="/images/icons/raw.webp"
-                          alt="Precursora"
+                          alt={t('giftOfJadeMasteryPage.materialItem.precursorWeapon')}
                           fill
                           sizes="24px"
                           className="object-contain"
                         />
                       </div>
                       <div>
-                        <span className="text-white font-semibold">{t('giftOfMasteryPage.buyer.precursor')}</span>
-                        <p className="text-gray-400 text-sm">{t('giftOfMasteryPage.buyer.precursorDesc')}</p>
+                        <span className="text-white font-semibold">{t('giftOfJadeMasteryPage.buyer.precursorWeapon')}</span>
+                        <p className="text-gray-400 text-sm">{t('giftOfJadeMasteryPage.buyer.precursorWeaponDesc')}</p>
                       </div>
+                    </div>
+                    
+                    <MaterialItem 
+                      materialKey="gloryShards" 
+                      quantity={250} 
+                    />
+                    
+                    <MaterialItem 
+                      materialKey="battleMemories" 
+                      quantity={250} 
+                    />
+                    
+                    <MaterialItem 
+                      materialKey="stabilizingMatrices" 
+                      quantity={75} 
+                    />
+                  </div>
+                  
+                  <div className="space-y-3">
+                    <MaterialItem 
+                      materialKey="mysticCoin" 
+                      quantity={115} 
+                    />
+                    
+                    <MaterialItem 
+                      materialKey="ectoplasm" 
+                      quantity={115} 
+                    />
+                    
+                    <MaterialItem 
+                      materialKey="dragonMagnetiteStone" 
+                      quantity={5} 
+                    />
+                    
+                    <MaterialItem 
+                      materialKey="lanternInsignia" 
+                      quantity={10} 
+                    />
+                  </div>
+                </div>
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="space-y-3">
+                    <MaterialItem 
+                      materialKey="adventureTale" 
+                      quantity={10} 
+                    />
+                    
+                    <MaterialItem 
+                      materialKey="supremePaper" 
+                      quantity={1} 
+                    />
+                    
+                    <div className="space-y-2">
+                      <div className="flex items-center space-x-3">
+                        <div className="flex-shrink-0 w-6 h-6 relative">
+                          {materials.spiritualWood?.icon ? (
+                            <Image
+                              src={materials.spiritualWood.icon}
+                              alt={t('giftOfJadeMasteryPage.materialItem.spiritualWood')}
+                              fill
+                              sizes="24px"
+                              className="object-contain"
+                            />
+                          ) : (
+                            <span className="text-yellow-400 font-bold text-lg">•</span>
+                          )}
+                        </div>
+                        <span className="text-white font-semibold">2 {materials.spiritualWood?.name || '46738'}</span>
+                        <span className="text-gray-400 text-sm">{t('giftOfJadeMasteryPage.materialItem.or')}</span>
+                      </div>
+                      <div className="flex items-center space-x-3">
+                        <div className="flex-shrink-0 w-6 h-6 relative">
+                          {materials.deldrimorIngot?.icon ? (
+                            <Image
+                              src={materials.deldrimorIngot.icon}
+                              alt={t('giftOfJadeMasteryPage.materialItem.deldrimorIngot')}
+                              fill
+                              sizes="24px"
+                              className="object-contain"
+                            />
+                          ) : (
+                            <span className="text-yellow-400 font-bold text-lg">•</span>
+                          )}
+                        </div>
+                        <span className="text-white font-semibold">3 {materials.deldrimorIngot?.name || '46736'}</span>
+                      </div>
+                    </div>
+                    
+                    <MaterialItem 
+                      materialKey="thermocatalyticReagents" 
+                      quantity={300} 
+                    />
+                  </div>
+                  
+                  <div className="space-y-3">
+                    <MaterialItem 
+                      materialKey="pureJadeFragments" 
+                      quantity={200} 
+                    />
+                    
+                    <MaterialItem 
+                      materialKey="jadeRunicStones" 
+                      quantity={100} 
+                    />
+                    
+                    <MaterialItem 
+                      materialKey="ancientGrayAmber" 
+                      quantity={100} 
+                    />
+                    
+                    <MaterialItem 
+                      materialKey="ancientInvocationStones" 
+                      quantity={100} 
+                    />
+                  </div>
+                </div>
+                
+                <div className="space-y-4">
+                  <div className="bg-slate-700/30 rounded-lg p-4 border border-slate-600/50">
+                    <h4 className="text-white font-semibold mb-4 flex items-center">
+                      <span className="text-yellow-400 font-bold text-lg mr-2">•</span>
+                      {t('giftOfJadeMasteryPage.materialItem.t6Materials')}
+                    </h4>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                      <MaterialItem materialKey="t6Claw" quantity={100} />
+                      <MaterialItem materialKey="t6Blood" quantity={100} />
+                      <MaterialItem materialKey="t6Fang" quantity={100} />
+                      <MaterialItem materialKey="t6Scale" quantity={100} />
+                      <MaterialItem materialKey="t6Totem" quantity={100} />
+                      <MaterialItem materialKey="t6Bone" quantity={100} />
+                      <MaterialItem materialKey="t6Venom" quantity={100} />
+                      <MaterialItem materialKey="t6Dust" quantity={105} note={t('giftOfJadeMasteryPage.materialItem.extraNote')} />
+                    </div>
+                  </div>
+                  
+                  <div className="bg-slate-700/30 rounded-lg p-4 border border-slate-600/50">
+                    <h4 className="text-white font-semibold mb-4 flex items-center">
+                      <span className="text-yellow-400 font-bold text-lg mr-2">•</span>
+                      {t('giftOfJadeMasteryPage.materialItem.t5Materials')}
+                    </h4>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                      <MaterialItem materialKey="t5Claw" quantity={250} />
+                      <MaterialItem materialKey="t5Blood" quantity={250} />
+                      <MaterialItem materialKey="t5Fang" quantity={250} />
+                      <MaterialItem materialKey="t5Scale" quantity={250} />
+                      <MaterialItem materialKey="t5Totem" quantity={250} />
+                      <MaterialItem materialKey="t5Bone" quantity={250} />
+                      <MaterialItem materialKey="t5Venom" quantity={250} />
+                      <MaterialItem materialKey="t5Dust" quantity={250} />
+                    </div>
+                  </div>
+                  
+                  <div className="bg-slate-700/30 rounded-lg p-4 border border-slate-600/50">
+                    <h4 className="text-white font-semibold mb-4 flex items-center">
+                      <span className="text-yellow-400 font-bold text-lg mr-2">•</span>
+                      {t('giftOfJadeMasteryPage.materialItem.t3Materials')} y {t('giftOfJadeMasteryPage.materialItem.t4Materials')} (50 de cada)
+                    </h4>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                      <MaterialItem materialKey="t4Blood" quantity={50} />
+                      <MaterialItem materialKey="t3Blood" quantity={50} />
+                      <MaterialItem materialKey="t4Bone" quantity={50} />
+                      <MaterialItem materialKey="t3Bone" quantity={50} />
+                      <MaterialItem materialKey="t3Claw" quantity={50} />
+                      <MaterialItem materialKey="t4Claw" quantity={50} />
+                      <MaterialItem materialKey="t4Dust" quantity={50} />
+                      <MaterialItem materialKey="t3Dust" quantity={50} />
+                      <MaterialItem materialKey="t4Fang" quantity={50} />
+                      <MaterialItem materialKey="t3Fang" quantity={50} />
+                      <MaterialItem materialKey="t4Scale" quantity={50} />
+                      <MaterialItem materialKey="t3Scale" quantity={50} />
+                      <MaterialItem materialKey="t4Totem" quantity={50} />
+                      <MaterialItem materialKey="t3Totem" quantity={50} />
+                      <MaterialItem materialKey="t4Venom" quantity={50} />
+                      <MaterialItem materialKey="t3Venom" quantity={50} />
                     </div>
                   </div>
                 </div>
@@ -838,111 +985,167 @@ export default function GiftOfMasteryPage() {
               <div className="w-12 h-12 bg-gradient-to-r from-green-500 to-green-600 rounded-full flex items-center justify-center mr-4">
                 <Hammer className="w-6 h-6 text-white" />
               </div>
-              <h2 className="text-2xl font-bold text-white">{t('giftOfMasteryPage.seller.title')}</h2>
+              <h2 className="text-2xl font-bold text-white">{t('giftOfJadeMasteryPage.seller.title')}</h2>
             </div>
             
             <div className="bg-slate-800/50 rounded-xl p-6 border border-slate-600/50">
               <p className="text-gray-300 mb-6 leading-relaxed">
-                {t('giftOfMasteryPage.seller.description')}
+                {t('giftOfJadeMasteryPage.seller.description')}
               </p>
               
-              <div className="space-y-4">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="space-y-3">
-                    <div className="flex items-start space-x-3">
-                      <span className="text-green-400 font-bold text-lg">1.</span>
-                      <div className="flex-1">
-                        <MaterialItem 
-                          materialKey="giftOfExploration" 
-                          quantity={1} 
-                        />
+              <div className="space-y-6">
+                {/* Requisitos del Vendedor */}
+                <div className="bg-green-900/20 border border-green-500/30 rounded-lg p-4">
+                 
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-3">
+                      <div className="flex items-start space-x-3">
+                        <span className="text-green-400 font-bold text-lg">1.</span>
+                        <div className="flex-1">
+                          <MaterialItem materialKey="giftOfCantha" quantity={1} />
+                        </div>
+                      </div>
+                      
+                      <div className="flex items-start space-x-3">
+                        <span className="text-green-400 font-bold text-lg">2.</span>
+                        <div className="flex-1">
+                          <MaterialItem materialKey="jadeEmpressBlessing" quantity={5} />
+                        </div>
+                      </div>
+                      
+                      <div className="flex items-start space-x-3">
+                        <span className="text-green-400 font-bold text-lg">3.</span>
+                        <div className="flex-1">
+                          <MaterialItem materialKey="exoticLuckEssence" quantity={250} />
+                        </div>
+                      </div>
+                      
+                      <div className="flex items-start space-x-3">
+                        <span className="text-green-400 font-bold text-lg">4.</span>
+                        <div className="flex-1">
+                          <MaterialItem materialKey="hematiteShard" quantity={1} />
+                        </div>
+                      </div>
+                      
+                      <div className="flex items-start space-x-3">
+                        <span className="text-green-400 font-bold text-lg">5.</span>
+                        <div className="flex-1">
+                          <MaterialItem materialKey="giftOfBattle" quantity={1} />
+                        </div>
                       </div>
                     </div>
                     
-                    <div className="flex items-start space-x-3">
-                      <span className="text-green-400 font-bold text-lg">2.</span>
-                      <div className="flex-1">
-                        <MaterialItem 
-                          materialKey="giftOfBattle" 
-                          quantity={1} 
-                        />
+                    <div className="space-y-3">
+                      <div className="flex items-start space-x-3">
+                        <span className="text-green-400 font-bold text-lg">6.</span>
+                        <div className="flex-1">
+                          <MaterialItem materialKey="darkEnergyBall" quantity={1} />
+                        </div>
                       </div>
-                    </div>
-                    
-                    <div className="flex items-start space-x-3">
-                      <span className="text-green-400 font-bold text-lg">3.</span>
-                      <div className="flex-1">
-                        <MaterialItem 
-                          materialKey="obsidianShard" 
-                          quantity={481} 
-                          note={t('giftOfMasteryPage.seller.obsidianNote')} 
-                        />
+                      
+                      <div className="flex items-start space-x-3">
+                        <span className="text-green-400 font-bold text-lg">7.</span>
+                        <div className="flex-1">
+                          <MaterialItem materialKey="spiritShard" quantity={70} />
+                        </div>
                       </div>
-                    </div>
-                    
-                    <div className="flex items-start space-x-3">
-                      <span className="text-green-400 font-bold text-lg">4.</span>
-                      <div className="flex-1">
-                        <MaterialItem 
-                          materialKey="spiritShard" 
-                          quantity={340} 
-                          note={t('giftOfMasteryPage.seller.spiritShardNote')} 
-                        />
+                      
+                      <div className="flex items-start space-x-3">
+                        <span className="text-green-400 font-bold text-lg">8.</span>
+                        <div className="flex-1">
+                          <MaterialItem materialKey="obsidianShard" quantity={115} />
+                        </div>
+                      </div>
+                      
+                      <div className="flex items-start space-x-3">
+                        <span className="text-green-400 font-bold text-lg">9.</span>
+                        <div className="flex items-center space-x-3">
+                          <div className="flex items-center space-x-2">
+                            <img 
+                              src="https://wiki.guildwars2.com/images/4/46/Weaponsmith_tango_icon_20px.png" 
+                              alt={t('giftOfJadeMasteryPage.seller.weaponsmith')} 
+                              className="w-5 h-5"
+                            />
+                            <span className="text-white font-semibold">/</span>
+                            <img 
+                              src="https://wiki.guildwars2.com/images/b/b7/Artificer_tango_icon_20px.png" 
+                              alt={t('giftOfJadeMasteryPage.seller.artificer')} 
+                              className="w-5 h-5"
+                            />
+                            <span className="text-white font-semibold">/</span>
+                            <img 
+                              src="https://wiki.guildwars2.com/images/f/f3/Huntsman_tango_icon_20px.png" 
+                              alt={t('giftOfJadeMasteryPage.seller.huntsman')} 
+                              className="w-5 h-5"
+                            />
+                          </div>
+                          <span className="text-white font-semibold">al 500</span>
+                        </div>
+                      </div>
+                      
+                      <div className="flex items-start space-x-3">
+                        <span className="text-green-400 font-bold text-lg">10.</span>
+                        <div className="flex-1">
+                          <MaterialItem materialKey="researchNotes" quantity={2500} />
+                        </div>
                       </div>
                     </div>
                   </div>
                   
-                  <div className="space-y-3">
-                    <div className="flex items-start space-x-3">
-                      <span className="text-green-400 font-bold text-lg">5.</span>
-                      <div className="flex-1">
-                        <MaterialItem 
-                          materialKey="customIcon" 
-                          quantity={500} 
-                          note={t('giftOfMasteryPage.seller.dungeonCoins')} 
-                        />
-                      </div>
-                    </div>
-                    
-                    <div className="flex items-start space-x-3">
-                      <span className="text-green-400 font-bold text-lg">6.</span>
-                      <div className="flex items-center space-x-3">
-                        <div className="flex-shrink-0 w-6 h-6 relative">
-                          <Image
-                            src="/images/icons/Crafting_icon.png"
-                            alt="Artesanías al 400"
-                            fill
-                            sizes="24px"
-                            className="object-contain"
-                          />
+                  <div className="mt-4 pt-4 border-t border-green-500/30">
+                      <div className="flex items-start space-x-3">
+                        <span className="text-green-400 font-bold text-lg">11.</span>
+                        <div className="flex-1">
+                          <div className="flex items-center space-x-2 mb-2">
+                            <img 
+                              src="https://wiki.guildwars2.com/images/b/b7/Mastery_point_%28Central_Tyria%29.png" 
+                              alt="Mastery Point" 
+                              className="w-5 h-5"
+                            />
+                            <span className="text-white font-semibold">{t('giftOfJadeMasteryPage.seller.masteryTitle')}</span>
+                          </div>
+                          <div className="bg-blue-900/20 border border-blue-500/30 rounded-lg p-3">
+                            <p className="text-blue-200 text-sm mb-2">
+                              <strong>{t('giftOfJadeMasteryPage.seller.masteryRequirements')}</strong>
+                            </p>
+                            <div className="space-y-1 text-xs text-blue-100">
+                              <div className="flex justify-between">
+                                <span>• {t('giftOfJadeMasteryPage.seller.reveredAntiquarian')}</span>
+                                <span className="text-blue-300">1 {t('giftOfJadeMasteryPage.seller.masteryPoints')}</span>
+                              </div>
+                              <div className="flex justify-between">
+                                <span>• {t('giftOfJadeMasteryPage.seller.magisterOfLegends')}</span>
+                                <span className="text-blue-300">3 {t('giftOfJadeMasteryPage.seller.masteryPoints')}</span>
+                              </div>
+                              <div className="flex justify-between">
+                                <span>• {t('giftOfJadeMasteryPage.seller.historianOfArmaments')}</span>
+                                <span className="text-blue-300">6 {t('giftOfJadeMasteryPage.seller.masteryPoints')}</span>
+                              </div>
+                              <div className="flex justify-between">
+                                <span>• {t('giftOfJadeMasteryPage.seller.scholarOfSecrets')}</span>
+                                <span className="text-blue-300">9 {t('giftOfJadeMasteryPage.seller.masteryPoints')}</span>
+                              </div>
+                              <div className="border-t border-blue-500/30 pt-1 mt-2">
+                                <div className="flex justify-between font-semibold">
+                                  <span>{t('giftOfJadeMasteryPage.seller.totalMasteryPoints')}</span>
+                                  <span className="text-blue-300">{t('giftOfJadeMasteryPage.seller.totalMasteryPointsValue')}</span>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
                         </div>
-                        <div>
-                          <span className="text-white font-semibold">{t('giftOfMasteryPage.seller.crafting400')}</span>
-                          <p className="text-gray-400 text-sm">{t('giftOfMasteryPage.seller.crafting400Desc')}</p>
-                        </div>
                       </div>
-                    </div>
-                    
-                    <div className="flex items-start space-x-3">
-                      <span className="text-green-400 font-bold text-lg">7.</span>
-                      <div>
-                        <span className="text-white font-semibold">{t('giftOfMasteryPage.seller.giftRecipes')}</span>
-                        <p className="text-gray-400 text-sm">{t('giftOfMasteryPage.seller.giftRecipesDesc')}</p>
-                      </div>
-                    </div>
                   </div>
-                </div>
-                
-                <div className="mt-4 p-3 bg-yellow-900/20 border border-yellow-500/30 rounded-lg">
-                  <div className="flex items-start space-x-3">
-                    <span className="text-yellow-400 font-bold text-lg">OPCIONAL:</span>
-                    <div className="flex-1">
-                      <MaterialItem 
-                        materialKey="mysticClover" 
-                        quantity={77} 
-                        note={t('giftOfMasteryPage.notes.extra')} 
-                      />
-                    </div>
+                  
+                  <div className="mt-4 p-3 bg-yellow-900/20 border border-yellow-500/30 rounded-lg">
+                      <div className="flex items-start space-x-3">
+                        <span className="text-yellow-400 font-bold text-lg">{t('giftOfJadeMasteryPage.seller.optional')}</span>
+                        <div className="flex-1">
+                          <MaterialItem materialKey="mysticClover" quantity={38} />
+                          <p className="text-yellow-200 text-sm mt-1">{t('giftOfJadeMasteryPage.seller.optionalNote')}</p>
+                        </div>
+                      </div>
                   </div>
                 </div>
               </div>
@@ -955,53 +1158,49 @@ export default function GiftOfMasteryPage() {
               <div className="w-12 h-12 bg-gradient-to-r from-purple-500 to-purple-600 rounded-full flex items-center justify-center mr-4">
                 <Zap className="w-6 h-6 text-white" />
               </div>
-              <h2 className="text-2xl font-bold text-white">{t('giftOfMasteryPage.process.title')}</h2>
+              <h2 className="text-2xl font-bold text-white">{t('giftOfJadeMasteryPage.process.title')}</h2>
             </div>
             
             <div className="bg-slate-800/50 rounded-xl p-6 border border-slate-600/50">
               <p className="text-gray-300 mb-6 leading-relaxed">
-                {t('giftOfMasteryPage.process.description')}
+                {t('giftOfJadeMasteryPage.process.description')}
               </p>
               
               <div className="space-y-4">
                 <div className="flex items-start space-x-4">
                   <span className="text-purple-400 font-bold text-lg">1.</span>
-                  <p className="text-gray-300">{t('giftOfMasteryPage.process.step1')}</p>
+                  <p className="text-gray-300">{t('giftOfJadeMasteryPage.process.step1Text')}</p>
                 </div>
                 
                 <div className="flex items-start space-x-4">
                   <span className="text-purple-400 font-bold text-lg">2.</span>
-                  <p className="text-gray-300">{t('giftOfMasteryPage.process.step2')}</p>
+                  <p className="text-gray-300">{t('giftOfJadeMasteryPage.process.step2Text')}</p>
                 </div>
                 
                 <div className="flex items-start space-x-4">
                   <span className="text-purple-400 font-bold text-lg">3.</span>
-                  <p 
-                    className="text-gray-300"
-                    dangerouslySetInnerHTML={{
-                      __html: t('giftOfMasteryPage.process.step3').replace('{wikiLink}', 
-                        `<a href="${t('giftOfMasteryPage.wiki.url')}" target="_blank" rel="noopener noreferrer" class="text-blue-400 hover:text-blue-300 underline">${t('giftOfMasteryPage.wiki.link')}</a>`
-                      )
-                    }}
-                  />
+                  <p className="text-gray-300">
+                    {t('giftOfJadeMasteryPage.process.step3Text')}
+                    <a href="https://wiki.guildwars2.com/wiki/Legendary_weapon" target="_blank" rel="noopener noreferrer" className="text-blue-400 hover:text-blue-300 underline"> {t('giftOfJadeMasteryPage.wiki.link')}</a> 
+                  </p>
                 </div>
                 
                 <div className="flex items-start space-x-4">
                   <span className="text-purple-400 font-bold text-lg">4.</span>
-                  <p className="text-gray-300">{t('giftOfMasteryPage.process.step4')}</p>
+                  <p className="text-gray-300">{t('giftOfJadeMasteryPage.process.step4Text')}</p>
                 </div>
                 
                 <div className="flex items-start space-x-4">
                   <span className="text-purple-400 font-bold text-lg">5.</span>
-                  <p className="text-gray-300">{t('giftOfMasteryPage.process.step5')}</p>
+                  <p className="text-gray-300">{t('giftOfJadeMasteryPage.process.step5Text')}</p>
                 </div>
               </div>
               
               <div className="mt-6 p-4 bg-yellow-900/20 border border-yellow-500/30 rounded-lg">
                 <p className="text-yellow-200 text-sm">
-                  <strong>{t('giftOfMasteryPage.process.noteTitle')}</strong> {t('giftOfMasteryPage.process.note')}
+                  <strong>{t('giftOfJadeMasteryPage.process.noteTitle')}</strong> {t('giftOfJadeMasteryPage.process.noteText')}
                 </p>
-              </div>
+              </div>  
             </div>
           </div>
 
@@ -1017,7 +1216,7 @@ export default function GiftOfMasteryPage() {
               </div>
               
               <div className="bg-slate-800/50 rounded-xl p-6 border border-slate-600/50 text-center">
-                <div className="text-4xl font-bold text-yellow-400 mb-2">{t('giftOfMasteryPage.price.current')}</div>
+                <div className="text-4xl font-bold text-yellow-400 mb-2">{t('giftOfJadeMasteryPage.price.currentPrice')}</div>
                 <p className="text-gray-300 text-sm">{t('giftOfMasteryPage.price.updateNote')}</p>
               </div>
             </div>
@@ -1062,14 +1261,14 @@ export default function GiftOfMasteryPage() {
             
             <div className="bg-slate-800/50 rounded-xl p-6 border border-slate-600/50">
               <p className="text-gray-300 mb-6 leading-relaxed">
-                {t('giftOfMasteryPage.tips.description')}
+              {t('giftOfMasteryPage.tips.description')}
               </p>
               
               <div className="space-y-6">
                 <div className="border-l-4 border-pink-500 pl-4">
-                  <h3 className="text-lg font-semibold text-white mb-2">{t('giftOfMasteryPage.tips.contract.title')}</h3>
-                  <p className="text-gray-300 text-sm mb-2">
-                    {t('giftOfMasteryPage.tips.contract.description')}
+                <h3 className="text-lg font-semibold text-white mb-2">{t('giftOfMasteryPage.tips.contract.title')}</h3>
+                <p className="text-gray-300 text-sm mb-2">
+                  {t('giftOfMasteryPage.tips.contract.description')}
                   </p>
                   <div className="bg-slate-700/50 p-3 rounded text-xs text-gray-300 font-mono">
                     {t('giftOfMasteryPage.tips.contract.example')}
@@ -1095,7 +1294,7 @@ export default function GiftOfMasteryPage() {
               </div>
               
               <div className="mt-6 text-center">
-                <p className="text-pink-400 font-semibold">{t('giftOfMasteryPage.tips.goodLuck')}</p>
+                <p className="text-pink-400 font-semibold">{t('giftOfJadeMasteryPage.tips.goodLuck')}</p>
               </div>
             </div>
           </div>

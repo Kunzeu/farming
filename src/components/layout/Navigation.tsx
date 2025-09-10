@@ -21,7 +21,8 @@ import {
   Crown,
   ShoppingCart,
   Star,
-  FileText
+  FileText,
+  Award
 } from 'lucide-react';
 import LanguageSwitcher from '@/components/ui/LanguageSwitcher';
 import { useI18n } from '@/contexts/I18nContext';
@@ -204,6 +205,8 @@ const Navigation = () => {
     { href: '/festivals', label: t('nav.festivals', 'Festivals'), icon: Calendar },
     { href: '/fractals', label: t('dashboard.farmingTracker.title', 'Fractals'), icon: Map },
     { href: '/glossary', label: t('nav.glossary', 'Glossary'), icon: BookOpen },
+    { href: '/gift-of-mastery', label: t('nav.giftOfMastery', 'Gift of Mastery'), icon: Award },
+    { href: '/gift-of-jade-mastery', label: t('nav.giftOfJadeMastery', 'Gift of Jade Mastery'), icon: Award },
     // Solo mostrar Buyout Calculator para admins puros
     ...(user?.role === 'admin' ? [{ href: '/buyout', label: 'Buyout Calculator', icon: ShoppingCart }] : []),
   ];

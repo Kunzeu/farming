@@ -139,6 +139,17 @@ const initialCards: DashboardCard[] = [
     delay: 1.0,
     visible: true,
     order: 9
+  },
+  {
+    id: "giftOfJadeMastery",
+    title: "dashboard.giftOfJadeMastery.title",
+    description: "dashboard.giftOfJadeMastery.description",
+    href: "/gift-of-jade-mastery",
+    icon: <Gift className="w-8 h-8" />,
+    color: "from-cyan-500 to-blue-600",
+    delay: 1.1,
+    visible: true,
+    order: 10
   }
   
 ];
