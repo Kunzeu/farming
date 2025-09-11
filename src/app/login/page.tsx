@@ -10,15 +10,16 @@ import {
   Shield, 
   TrendingUp, 
   Users, 
-  Star,
   ArrowLeft,
   Home
 } from 'lucide-react';
 import { usePageTitle } from '@/hooks/usePageTitle';
+import { useI18n } from '@/contexts/I18nContext';
 
 export default function LoginPage() {
   const { isAuthenticated, isLoading } = useAuth();
   const router = useRouter();
+  const { t } = useI18n();
   usePageTitle('pageTitles.login', 'Login');
 
   useEffect(() => {
@@ -46,7 +47,7 @@ export default function LoginPage() {
         href="/"
         className="absolute top-6 left-6 z-10 flex items-center gap-2 px-4 py-2 bg-gray-800/80 hover:bg-gray-700/80 backdrop-blur-sm text-white rounded-lg transition-all duration-200 hover:scale-105">
         <ArrowLeft className="w-4 h-4" />
-        <span className="hidden sm:inline">Back to Home</span>
+        <span className="hidden sm:inline">{t('auth.backToHome', 'Back to Home')}</span>
         <Home className="w-4 h-4 sm:hidden" />
       </Link>
 
@@ -67,7 +68,7 @@ export default function LoginPage() {
               True Farming
             </h1>
             <p className="text-xl text-blue-200">
-              Your information hub for Guild Wars 2
+              {t('auth.loginSubtitle', 'Your information hub for Guild Wars 2')}
             </p>
           </motion.div>
 
@@ -82,10 +83,10 @@ export default function LoginPage() {
               </div>
               <div>
                 <h3 className="text-white font-semibold mb-2">
-                  Real-Time Prices
+                  {t('dashboard.tradingPost.title', 'Real-Time Prices')}
                 </h3>
                 <p className="text-blue-200 text-sm">
-                  Access up-to-date Trading Post prices and market analysis.
+                  {t('dashboard.tradingPost.description', 'Access up-to-date Trading Post prices and market analysis.')}
                 </p>
               </div>
             </div>
@@ -96,10 +97,10 @@ export default function LoginPage() {
               </div>
               <div>
                 <h3 className="text-white font-semibold mb-2">
-                  Optimized Routes
+                  {t('dashboard.farms.title', 'Optimized Routes')}
                 </h3>
                 <p className="text-blue-200 text-sm">
-                  Discover the best farming routes to maximize your profits.
+                  {t('dashboard.farms.description', 'Discover the best farming routes to maximize your profits.')}
                 </p>
               </div>
             </div>
@@ -110,27 +111,14 @@ export default function LoginPage() {
               </div>
               <div>
                 <h3 className="text-white font-semibold mb-2">
-                  Active Community
+                  {t('dashboard.community.title', 'Active Community')}
                 </h3>
                 <p className="text-blue-200 text-sm">
-                  Connect with other players and share farming strategies.
+                  {t('dashboard.community.description', 'Connect with other players and share farming strategies.')}
                 </p>
               </div>
             </div>
 
-            <div className="flex items-start gap-4">
-              <div className="flex-shrink-0">
-                <Star className="w-8 h-8 text-yellow-400" />
-              </div>
-              <div>
-                <h3 className="text-white font-semibold mb-2">
-                  Meta Builds
-                </h3>
-                <p className="text-blue-200 text-sm">
-                  Access the best builds for all professions.
-                </p>
-              </div>
-            </div>
           </motion.div>
 
           <motion.div
@@ -139,7 +127,7 @@ export default function LoginPage() {
             transition={{ delay: 0.6 }}
             className="mt-12 text-center">
             <p className="text-gray-300 text-center">
-              Join thousands of players who already trust True Farming
+              {t('auth.trustMessage', 'Join thousands of players who already trust True Farming')}
             </p>
           </motion.div>
         </div>

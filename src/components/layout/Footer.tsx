@@ -1,13 +1,16 @@
 'use client';
 
+import Link from 'next/link';
 import { useI18n } from '@/contexts/I18nContext';
+import { useCookieConsent } from '@/contexts/CookieConsentContext';
 import { motion } from 'framer-motion';
 import { 
   ExternalLink, 
   Heart, 
   Coffee,
   Zap,
-  Bot
+  Bot,
+  Settings
 } from 'lucide-react';
 
 
@@ -37,6 +40,7 @@ const DiscordIcon = ({ className }: { className?: string }) => (
 
 export default function Footer() {
   const { t } = useI18n();
+  const { showSettings } = useCookieConsent();
 
   return (
     <footer className="bg-gradient-to-r from-slate-900 via-gray-900 to-slate-900 border-t border-gray-700/50 mt-auto relative overflow-hidden">
@@ -135,9 +139,51 @@ export default function Footer() {
           </motion.div>
         </div>
 
-        {/* Copyright y disclaimers */}
+        {/* Legal Links */}
         <motion.div 
           className="border-t border-gray-700/50 mt-6 pt-4"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.6, delay: 0.2 }}
+        >
+          <div className="flex flex-wrap justify-center gap-6 mb-4">
+            <Link 
+              href="/privacy-policy" 
+              className="text-xs text-gray-400 hover:text-white transition-colors"
+            >
+              {t('footer.privacyPolicy', 'Privacy Policy')}
+            </Link>
+            <Link 
+              href="/terms-of-service" 
+              className="text-xs text-gray-400 hover:text-white transition-colors"
+            >
+              {t('footer.termsOfService', 'Terms of Service')}
+            </Link>
+            <Link 
+              href="/cookie-policy" 
+              className="text-xs text-gray-400 hover:text-white transition-colors"
+            >
+              {t('footer.cookiePolicy', 'Cookie Policy')}
+            </Link>
+            <button
+              onClick={showSettings}
+              className="text-xs text-gray-400 hover:text-white transition-colors flex items-center gap-1"
+            >
+              <Settings className="w-3 h-3" />
+              {t('footer.cookieSettings', 'Cookie Settings')}
+            </button>
+            <Link 
+              href="/data-management" 
+              className="text-xs text-gray-400 hover:text-white transition-colors"
+            >
+              {t('footer.dataManagement', 'Data Management')}
+            </Link>
+          </div>
+        </motion.div>
+
+        {/* Copyright y disclaimers */}
+        <motion.div 
+          className="border-t border-gray-700/50 pt-4"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.6, delay: 0.3 }}

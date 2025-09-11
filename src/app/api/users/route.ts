@@ -3,6 +3,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { Pool } from 'pg';
 import fs from 'fs';
 import path from 'path';
+import { hashPassword } from '@/lib/server/password-utils';
 
 // Cargar variables de entorno desde .env
 function loadEnvFile() {
@@ -204,6 +205,9 @@ export async function POST(request: NextRequest) {
     
     const id = crypto.randomUUID();
     
+    // Hash the password before storing
+    const hashedPassword = await hashPassword(body.password);
+    
     const query = `
       INSERT INTO users (id, email, username, password, role, is_active, discord_id)
       VALUES ($1, $2, $3, $4, $5, $6, $7)
@@ -211,7 +215,7 @@ export async function POST(request: NextRequest) {
                 created_at as "createdAt", updated_at as "updatedAt", discord_id as "discordId"
     `;
     
-    const values = [id, body.email, body.username, body.password, body.role, body.isActive, body.discordId];
+    const values = [id, body.email, body.username, hashedPassword, body.role, body.isActive, body.discordId];
     
     const result = await pool.query(query, values);
     const row = result.rows[0];

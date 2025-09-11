@@ -3,6 +3,7 @@
 import { createContext, useContext, useReducer, useEffect, ReactNode, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { AuthState, User, LoginCredentials, RegisterCredentials } from '@/types/auth';
+import { validatePasswordStrength } from '@/lib/password-utils';
 
 
 // Estado inicial
@@ -120,51 +121,52 @@ function AuthProviderInternal({ children }: { children: ReactNode }) {
     dispatch({ type: 'AUTH_START' });
 
     try {
-      // Autenticar con la base de datos
-      const { getDbService } = await import('@/lib/database-switch');
-      const dbService = await getDbService();
+      // Call login API
+      const response = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(credentials),
+      });
 
-      // Buscar usuario por email
-      const dbUser = await dbService.getUserByEmail(credentials.email);
-      
-      if (dbUser && dbUser.password === credentials.password && dbUser.isActive) {
-        // Usuario encontrado en la base de datos
-        const user: User = {
-          id: dbUser.id,
-          username: dbUser.username,
-          email: dbUser.email,
-          role: dbUser.role,
-          isActive: dbUser.isActive,
-          joinDate: dbUser.createdAt?.toISOString(),
-          lastLogin: new Date().toISOString(),
-          isAdmin: dbUser.role === 'admin',
-          preferences: {
-            theme: 'dark',
-            language: 'es',
-            notifications: {
-              priceAlerts: true,
-              eventReminders: true,
-              buildUpdates: false
-            }
-          }
-        };
+      const data = await response.json();
 
-        const token = 'jwt_token_' + Date.now();
-
-        // Guardar en localStorage
-        localStorage.setItem('gw2_token', token);
-        localStorage.setItem('gw2_user', JSON.stringify(user));
-
-        dispatch({
-          type: 'AUTH_SUCCESS',
-          payload: { user, token }
-        });
-
-        return;
+      if (!response.ok) {
+        throw new Error(data.error || 'Login failed');
       }
 
-      // If user not found or invalid credentials
-      throw new Error('Invalid credentials');
+      // Create user object
+      const user: User = {
+        id: data.user.id,
+        username: data.user.username,
+        email: data.user.email,
+        role: data.user.role,
+        isActive: data.user.isActive,
+        joinDate: data.user.createdAt ? (typeof data.user.createdAt === 'string' ? data.user.createdAt : data.user.createdAt.toISOString()) : new Date().toISOString(),
+        lastLogin: new Date().toISOString(),
+        isAdmin: data.user.role === 'admin',
+        preferences: {
+          theme: 'dark',
+          language: 'es',
+          notifications: {
+            priceAlerts: true,
+            eventReminders: true,
+            buildUpdates: false
+          }
+        }
+      };
+
+      const token = 'jwt_token_' + Date.now();
+
+      // Guardar en localStorage
+      localStorage.setItem('gw2_token', token);
+      localStorage.setItem('gw2_user', JSON.stringify(user));
+
+      dispatch({
+        type: 'AUTH_SUCCESS',
+        payload: { user, token }
+      });
 
     } catch (error) {
       dispatch({
@@ -187,8 +189,10 @@ function AuthProviderInternal({ children }: { children: ReactNode }) {
         throw new Error('Passwords do not match');
       }
 
-      if (credentials.password.length < 6) {
-        throw new Error('Password must be at least 6 characters long');
+      // Validate password strength
+      const passwordValidation = validatePasswordStrength(credentials.password);
+      if (!passwordValidation.isValid) {
+        throw new Error(passwordValidation.errors.join(', '));
       }
 
       // Verificar si es el primer usuario para hacerlo admin
@@ -205,7 +209,7 @@ function AuthProviderInternal({ children }: { children: ReactNode }) {
       const createdUser = await dbService.createUser({
         email: credentials.email,
         username: credentials.username,
-        password: credentials.password,
+        password: credentials.password, // Will be hashed server-side
         role: isFirstUser ? 'admin' : 'user',
         isActive: true
       });

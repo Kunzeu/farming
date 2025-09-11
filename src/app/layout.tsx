@@ -4,9 +4,12 @@ import "./globals.css";
 // PrimeReact styles removed to avoid lightningcss build issues on Vercel
 import { AuthProvider } from "@/contexts/AuthContext";
 import { I18nProvider } from "@/contexts/I18nContext";
+import { CookieConsentProvider } from "@/contexts/CookieConsentContext";
 import RoleChecker from "@/components/RoleChecker";
 import Footer from "@/components/layout/Footer";
 import ScrollToTop from "@/components/ui/ScrollToTop";
+import CookieBanner from "@/components/ui/CookieBanner";
+import CookieSettingsModal from "@/components/ui/CookieSettingsModal";
 import { Analytics } from "@vercel/analytics/next";
 
 
@@ -43,7 +46,7 @@ export const metadata: Metadata = {
         url: '/images/icons/icon.png',
         width: 1200,
         height: 630,
-        alt: 'True Farming Logo',
+        alt: 'True Farming - Guild Wars 2 Farming Hub',
       },
     ],
   },
@@ -94,6 +97,21 @@ export default function RootLayout({
         <meta name="google-site-verification" content="your-google-verification-code" />
         <meta name="msapplication-TileColor" content="#c1272d" />
         <meta name="msapplication-TileImage" content="/images/icons/icon.png" />
+          
+        {/* Open Graph Meta Tags */}
+        <meta property="og:image" content="/images/icons/icon.png" />
+        <meta property="og:image:width" content="1200" />
+        <meta property="og:image:height" content="630" />
+        <meta property="og:image:type" content="image/png" />
+        <meta property="og:image:alt" content="True Farming - Guild Wars 2 Farming Hub" />
+        
+        {/* Twitter Card Meta Tags */}
+        <meta name="twitter:image" content="/images/icons/icon.png" />
+        <meta name="twitter:image:alt" content="True Farming - Guild Wars 2 Farming Hub" />
+        
+        {/* Additional Meta Tags */}
+        <meta name="image" content="/images/icons/icon.png" />
+        <meta name="thumbnail" content="/images/icons/icon.png" />
         <meta name="theme-color" content="#c1272d" />
         <link rel="canonical" href="https://truefarming.com" />
         <link rel="alternate" hrefLang="en" href="https://truefarming.com" />
@@ -102,19 +120,23 @@ export default function RootLayout({
         <link rel="alternate" hrefLang="de" href="https://truefarming.com/de" />
       </head>
       <body className={inter.className}>
-        <AuthProvider>
-          <I18nProvider>
-            <div className="min-h-screen bg-gradient-to-br from-slate-900 to-slate-800 flex flex-col">
-              <RoleChecker />
-              <div className="flex-1">
-                {children}
+        <CookieConsentProvider>
+          <AuthProvider>
+            <I18nProvider>
+              <div className="min-h-screen bg-gradient-to-br from-slate-900 to-slate-800 flex flex-col">
+                <RoleChecker />
+                <div className="flex-1">
+                  {children}
+                </div>
+                <Footer />
+                <ScrollToTop />
+                <CookieBanner />
+                <CookieSettingsModal />
+                <Analytics />
               </div>
-              <Footer />
-              <ScrollToTop />
-              <Analytics />
-            </div>
-          </I18nProvider>
-        </AuthProvider>
+            </I18nProvider>
+          </AuthProvider>
+        </CookieConsentProvider>
       </body>
     </html>
   );
