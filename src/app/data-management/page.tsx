@@ -154,7 +154,7 @@ export default function DataManagementPage() {
               className="flex items-center gap-2 text-gray-300 hover:text-white transition-colors"
             >
               <ArrowLeft className="w-5 h-5" />
-              <span>Back to Home</span>
+              <span>{t('auth.backToHome')}</span>
             </Link>
           </div>
           <motion.div

@@ -4,9 +4,11 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { X, Shield, BarChart3, Target, Info, Check } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { useCookieConsent, CookiePreferences } from '@/contexts/CookieConsentContext';
+import { useI18n } from '@/contexts/I18nContext';
 
 export default function CookieSettingsModal() {
   const { isSettingsOpen, hideSettings, preferences, savePreferences } = useCookieConsent();
+  const { t } = useI18n();
   const [localPreferences, setLocalPreferences] = useState<CookiePreferences>(preferences);
 
   useEffect(() => {
@@ -66,7 +68,7 @@ export default function CookieSettingsModal() {
         >
           {/* Header */}
           <div className="flex items-center justify-between p-6 border-b border-slate-700">
-            <h2 className="text-2xl font-bold text-white">Cookie Settings</h2>
+            <h2 className="text-2xl font-bold text-white">{t('cookieSettings.title')}</h2>
             <button
               onClick={hideSettings}
               className="p-2 text-gray-400 hover:text-white hover:bg-slate-700 rounded-lg transition-colors"
@@ -78,7 +80,7 @@ export default function CookieSettingsModal() {
           {/* Content */}
           <div className="p-6 space-y-6">
             <p className="text-gray-300 leading-relaxed">
-              We use different types of cookies to provide and improve our services. You can customize your preferences below.
+              {t('cookieSettings.description')}
             </p>
 
             {/* Essential Cookies */}
@@ -87,21 +89,18 @@ export default function CookieSettingsModal() {
                 <Shield className="w-6 h-6 text-green-400 flex-shrink-0 mt-1" />
                 <div className="flex-1">
                   <div className="flex items-center justify-between mb-2">
-                    <h3 className="text-lg font-semibold text-green-300">Essential Cookies</h3>
+                    <h3 className="text-lg font-semibold text-green-300">{t('cookieSettings.essential.title')}</h3>
                     <div className="flex items-center gap-2 text-green-400">
                       <Check className="w-4 h-4" />
-                      <span className="text-sm font-medium">Always Active</span>
+                      <span className="text-sm font-medium">{t('cookieSettings.essential.alwaysActive')}</span>
                     </div>
                   </div>
                   <p className="text-gray-300 text-sm mb-2">
-                    These cookies are necessary for the website to function properly and cannot be disabled.
+                    {t('cookieSettings.essential.description')}
                   </p>
-                  <ul className="text-gray-300 text-sm space-y-1">
-                    <li>• Authentication and login status</li>
-                    <li>• Security and fraud prevention</li>
-                    <li>• User preferences and settings</li>
-                    <li>• Session management</li>
-                  </ul>
+                  <p className="text-gray-300 text-sm">
+                    {t('cookieSettings.essential.features')}
+                  </p>
                 </div>
               </div>
             </div>
@@ -112,7 +111,7 @@ export default function CookieSettingsModal() {
                 <BarChart3 className="w-6 h-6 text-blue-400 flex-shrink-0 mt-1" />
                 <div className="flex-1">
                   <div className="flex items-center justify-between mb-2">
-                    <h3 className="text-lg font-semibold text-blue-300">Analytics Cookies</h3>
+                    <h3 className="text-lg font-semibold text-blue-300">{t('cookieSettings.analytics.title')}</h3>
                     <label className="relative inline-flex items-center cursor-pointer">
                       <input
                         type="checkbox"
@@ -124,14 +123,11 @@ export default function CookieSettingsModal() {
                     </label>
                   </div>
                   <p className="text-gray-300 text-sm mb-2">
-                    These cookies help us understand how visitors use our website so we can improve it.
+                    {t('cookieSettings.analytics.description')}
                   </p>
-                  <ul className="text-gray-300 text-sm space-y-1">
-                    <li>• Page views and user interactions</li>
-                    <li>• Website performance monitoring</li>
-                    <li>• Error tracking and debugging</li>
-                    <li>• Usage patterns and popular features</li>
-                  </ul>
+                  <p className="text-gray-300 text-sm">
+                    {t('cookieSettings.analytics.features')}
+                  </p>
                 </div>
               </div>
             </div>
@@ -142,7 +138,7 @@ export default function CookieSettingsModal() {
                 <Target className="w-6 h-6 text-purple-400 flex-shrink-0 mt-1" />
                 <div className="flex-1">
                   <div className="flex items-center justify-between mb-2">
-                    <h3 className="text-lg font-semibold text-purple-300">Advertising Cookies</h3>
+                    <h3 className="text-lg font-semibold text-purple-300">{t('cookieSettings.advertising.title')}</h3>
                     <label className="relative inline-flex items-center cursor-pointer">
                       <input
                         type="checkbox"
@@ -154,14 +150,11 @@ export default function CookieSettingsModal() {
                     </label>
                   </div>
                   <p className="text-gray-300 text-sm mb-2">
-                    These cookies are used to display relevant advertisements and measure their effectiveness.
+                    {t('cookieSettings.advertising.description')}
                   </p>
-                  <ul className="text-gray-300 text-sm space-y-1">
-                    <li>• Personalized ad content</li>
-                    <li>• Ad performance measurement</li>
-                    <li>• Frequency capping</li>
-                    <li>• Retargeting campaigns</li>
-                  </ul>
+                  <p className="text-gray-300 text-sm">
+                    {t('cookieSettings.advertising.features')}
+                  </p>
                 </div>
               </div>
             </div>
@@ -170,10 +163,9 @@ export default function CookieSettingsModal() {
             <div className="bg-slate-700/50 rounded-lg p-4 flex items-start gap-3">
               <Info className="w-5 h-5 text-blue-400 flex-shrink-0 mt-0.5" />
               <div className="text-sm text-gray-300">
-                <p className="font-medium mb-1">Your choices matter</p>
+                <p className="font-medium mb-1">{t('cookieSettings.info.title')}</p>
                 <p>
-                  You can change your cookie preferences at any time. Some features may not work properly 
-                  if you disable certain types of cookies.
+                  {t('cookieSettings.info.description')}
                 </p>
               </div>
             </div>
@@ -185,19 +177,19 @@ export default function CookieSettingsModal() {
               onClick={handleRejectAll}
               className="px-4 py-2 text-sm font-medium text-gray-300 hover:text-white bg-slate-700 hover:bg-slate-600 rounded-lg transition-colors"
             >
-              Reject All
+              {t('cookieBanner.rejectAll')}
             </button>
             <button
               onClick={handleAcceptAll}
               className="px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-500 rounded-lg transition-colors"
             >
-              Accept All
+              {t('cookieBanner.acceptAll')}
             </button>
             <button
               onClick={handleSave}
               className="px-6 py-2 text-sm font-medium text-white bg-green-600 hover:bg-green-500 rounded-lg transition-colors flex-1 sm:flex-none"
             >
-              Save Preferences
+              {t('cookieSettings.savePreferences')}
             </button>
           </div>
         </motion.div>

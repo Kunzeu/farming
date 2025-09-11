@@ -3,10 +3,12 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { Cookie, Settings, X, Check, AlertCircle } from 'lucide-react';
 import { useCookieConsent } from '@/contexts/CookieConsentContext';
+import { useI18n } from '@/contexts/I18nContext';
 import Link from 'next/link';
 
 export default function CookieBanner() {
   const { showBanner, acceptAll, rejectAll, showSettings } = useCookieConsent();
+  const { t } = useI18n();
 
   if (!showBanner) return null;
 
@@ -27,24 +29,23 @@ export default function CookieBanner() {
               </div>
               <div className="flex-1">
                 <h3 className="text-lg font-semibold text-white mb-2">
-                  We use cookies to enhance your experience
+                  {t('cookieBanner.title')}
                 </h3>
                 <p className="text-gray-300 text-sm leading-relaxed">
-                  We use essential cookies to make our site work, analytics cookies to understand how you use our site, 
-                  and advertising cookies to show you relevant content. You can choose which cookies to accept.
+                  {t('cookieBanner.description')}
                 </p>
                 <div className="mt-3">
                   <Link 
                     href="/privacy-policy" 
                     className="text-blue-400 hover:text-blue-300 text-sm mr-4"
                   >
-                    Privacy Policy
+                    {t('cookieBanner.privacyPolicy')}
                   </Link>
                   <Link 
                     href="/cookie-policy" 
                     className="text-blue-400 hover:text-blue-300 text-sm"
                   >
-                    Cookie Policy
+                    {t('cookieBanner.cookiePolicy')}
                   </Link>
                 </div>
               </div>
@@ -56,21 +57,21 @@ export default function CookieBanner() {
                 onClick={rejectAll}
                 className="px-4 py-2 text-sm font-medium text-gray-300 hover:text-white bg-slate-700/50 hover:bg-slate-700 rounded-lg transition-colors"
               >
-                Reject All
+                {t('cookieBanner.rejectAll')}
               </button>
               <button
                 onClick={showSettings}
                 className="px-4 py-2 text-sm font-medium text-white bg-slate-600 hover:bg-slate-500 rounded-lg transition-colors flex items-center gap-2"
               >
                 <Settings className="w-4 h-4" />
-                Customize
+                {t('cookieBanner.customize')}
               </button>
               <button
                 onClick={acceptAll}
                 className="px-6 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-500 rounded-lg transition-colors flex items-center gap-2"
               >
                 <Check className="w-4 h-4" />
-                Accept All
+                {t('cookieBanner.acceptAll')}
               </button>
             </div>
           </div>
