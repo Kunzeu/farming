@@ -1271,7 +1271,7 @@ export default function GiftOfJadeMasteryPage() {
                   {t('giftOfMasteryPage.tips.contract.description')}
                   </p>
                   <div className="bg-slate-700/50 p-3 rounded text-xs text-gray-300 font-mono">
-                    {t('giftOfMasteryPage.tips.contract.example')}
+                    {t('giftOfJadeMasteryPage.tips.contract.example')}
                   </div>
                   <p className="text-gray-400 text-xs mt-2">
                     {t('giftOfMasteryPage.tips.contract.response')}
