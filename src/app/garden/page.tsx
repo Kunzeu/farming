@@ -12,14 +12,12 @@ import {
   Star,
   Zap,
   ArrowLeft,
-  MapPin,
   Coins
 } from 'lucide-react';
 import { useI18n } from '@/contexts/I18nContext';
 import Link from 'next/link';
 
 const JardinesPage = () => {
-  const { t } = useI18n();
   const [selectedGarden, setSelectedGarden] = useState<string>('home');
 
   const gardens = [

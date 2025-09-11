@@ -50,7 +50,7 @@ export default function TermsOfServicePage() {
                 Agreement to Terms
               </h2>
               <p className="text-gray-300 leading-relaxed">
-                Welcome to True Farming! These Terms of Service ("Terms") govern your use of our website and services 
+                Welcome to True Farming! These Terms of Service (&quot;Terms&quot;) govern your use of our website and services 
                 related to Guild Wars 2 farming optimization. By accessing or using our services, you agree to be bound by these Terms.
               </p>
             </section>
@@ -163,7 +163,7 @@ export default function TermsOfServicePage() {
               <h3 className="text-xl font-semibold text-white mb-3">Fair Use</h3>
               <p className="text-gray-300 leading-relaxed">
                 Our use of Guild Wars 2 content is for educational and informational purposes under fair use principles. 
-                We respect ArenaNet's intellectual property rights and use only publicly available data.
+                We respect ArenaNet&apos;s intellectual property rights and use only publicly available data.
               </p>
             </section>
 
@@ -182,7 +182,7 @@ export default function TermsOfServicePage() {
               <div className="bg-yellow-900/20 border border-yellow-500/30 rounded-lg p-4 mb-4">
                 <p className="text-yellow-200 font-semibold mb-2">Important Disclaimers:</p>
                 <ul className="list-disc list-inside text-yellow-200 space-y-1 ml-4">
-                  <li>Our services are provided "as is" without warranties of any kind</li>
+                  <li>Our services are provided &quot;as is&quot; without warranties of any kind</li>
                   <li>We do not guarantee the accuracy of market data or calculations</li>
                   <li>Gaming strategies and farming routes are suggestions only</li>
                   <li>We are not responsible for any losses or damages resulting from use of our services</li>

@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { ArrowLeft, Download, Trash2, Eye, Shield, Database, User, Mail, Calendar, Settings } from 'lucide-react';
+import { ArrowLeft, Download, Trash2, Eye, Shield, Database, User, Settings } from 'lucide-react';
 import Link from 'next/link';
 import { useAuth } from '@/contexts/AuthContext';
 import { usePageTitle } from '@/hooks/usePageTitle';

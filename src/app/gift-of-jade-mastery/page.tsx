@@ -2,7 +2,7 @@
 
 import { motion } from 'framer-motion'
 import { useState, useEffect } from 'react'
-import { Award, Star, Crown, Gem, Hammer, ExternalLink, Loader2, Info, Zap, Menu, X, ShoppingCart, Wrench, ArrowRight, DollarSign, MessageCircle, Lightbulb, ChevronLeft, ChevronRight } from 'lucide-react'
+import { Award, Star, Crown, Gem, Hammer, ExternalLink, Loader2, Info, Zap, X, ShoppingCart, Wrench, ArrowRight, MessageCircle, Lightbulb, ChevronLeft, ChevronRight } from 'lucide-react'
 import { usePageTitle } from '@/hooks/usePageTitle'
 import { useI18n } from '@/contexts/I18nContext'
 import Navigation from '@/components/layout/Navigation'
