@@ -9,7 +9,6 @@ import RoleChecker from "@/components/RoleChecker";
 import Footer from "@/components/layout/Footer";
 import ScrollToTop from "@/components/ui/ScrollToTop";
 import CookieBanner from "@/components/ui/CookieBanner";
-import CookieSettingsModal from "@/components/ui/CookieSettingsModal";
 import { Analytics } from "@vercel/analytics/next";
 
 
@@ -131,7 +130,6 @@ export default function RootLayout({
                 <Footer />
                 <ScrollToTop />
                 <CookieBanner />
-                <CookieSettingsModal />
                 <Analytics />
               </div>
             </I18nProvider>
