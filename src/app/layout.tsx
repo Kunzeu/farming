@@ -93,7 +93,7 @@ export default function RootLayout({
       <head>
         <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2746156864243335"
         crossOrigin="anonymous"></script>
-        <meta name="google-site-verification" content="your-google-verification-code" />
+        <meta name="google-site-verification" content="6QMoVlJ1hD8y5DCBubEKA5qv_oLb3O4EVRB8OS03LZU"/>
         <meta name="msapplication-TileColor" content="#c1272d" />
         <meta name="msapplication-TileImage" content="/images/icons/icon.png" />
           

@@ -31,8 +31,8 @@ import { useI18n } from '@/contexts/I18nContext';
 const Navigation = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
-  const [isToolsMenuOpen, setIsToolsMenuOpen] = useState(true); // Por defecto abierto
-  const [isMobileToolsOpen, setIsMobileToolsOpen] = useState(true); // Por defecto abierto
+  const [isToolsMenuOpen, setIsToolsMenuOpen] = useState(false); 
+  const [isMobileToolsOpen, setIsMobileToolsOpen] = useState(false);
   const [isMobileUserOpen, setIsMobileUserOpen] = useState(false);
   const { user, isAuthenticated, isLoading, logout } = useAuth();
   const toolsMenuRef = useRef<HTMLDivElement>(null);
