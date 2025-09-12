@@ -1,7 +1,7 @@
 'use client';
 
 import { motion, AnimatePresence } from 'framer-motion';
-import { Cookie, X, Check, AlertCircle } from 'lucide-react';
+import { Cookie, X, Check } from 'lucide-react';
 import { useCookieConsent } from '@/contexts/CookieConsentContext';
 import { useI18n } from '@/contexts/I18nContext';
 import Link from 'next/link';

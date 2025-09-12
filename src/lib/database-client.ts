@@ -159,7 +159,7 @@ class DatabaseClientService {
     const data = await response.json();
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     return data.map((user: any) => {
-      const { password, ...safeUser } = user;
+      const { password: _, ...safeUser } = user;
       return {
         ...safeUser,
         createdAt: new Date(safeUser.createdAt),
@@ -187,7 +187,7 @@ class DatabaseClientService {
     }
     
     const data = await response.json();
-    const { password, ...safeUser } = data;
+    const { password: _, ...safeUser } = data;
     return {
       ...safeUser,
       createdAt: new Date(safeUser.createdAt),
@@ -273,7 +273,7 @@ class DatabaseClientService {
     }
     
     const data = await response.json();
-    const { password, ...safeUser } = data;
+    const { password: _, ...safeUser } = data;
     return {
       ...safeUser,
       createdAt: new Date(safeUser.createdAt),
@@ -291,7 +291,7 @@ class DatabaseClientService {
     }
     
     const data = await response.json();
-    const { password, ...safeUser } = data;
+    const { password: _, ...safeUser } = data;
     return {
       ...safeUser,
       createdAt: new Date(safeUser.createdAt),
@@ -325,7 +325,7 @@ class DatabaseClientService {
     }
     
     const data = await response.json();
-    const { password, ...safeUser } = data;
+    const { password: _, ...safeUser } = data;
     return {
       ...safeUser,
       createdAt: new Date(safeUser.createdAt),
