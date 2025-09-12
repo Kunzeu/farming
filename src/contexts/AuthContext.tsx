@@ -268,6 +268,8 @@ function AuthProviderInternal({ children }: { children: ReactNode }) {
     dispatch({ type: 'AUTH_START' });
 
     try {
+      console.log('Starting Discord login with code:', code.substring(0, 10) + '...');
+      
       // Intercambiar el código por un token de acceso
       const tokenResponse = await fetch('/api/auth/discord/token', {
         method: 'POST',
@@ -278,10 +280,13 @@ function AuthProviderInternal({ children }: { children: ReactNode }) {
       });
 
       if (!tokenResponse.ok) {
-        throw new Error('Error al obtener token de Discord');
+        const errorData = await tokenResponse.json();
+        console.error('Discord token error:', errorData);
+        throw new Error(errorData.error || 'Error al obtener token de Discord');
       }
 
       const { access_token } = await tokenResponse.json();
+      console.log('Discord token obtained successfully');
 
       // Obtener información del usuario de Discord
       const userResponse = await fetch('https://discord.com/api/users/@me', {
@@ -291,10 +296,13 @@ function AuthProviderInternal({ children }: { children: ReactNode }) {
       });
 
       if (!userResponse.ok) {
+        const errorData = await userResponse.text();
+        console.error('Discord user info error:', errorData);
         throw new Error('Error al obtener información del usuario');
       }
 
       const discordUser = await userResponse.json();
+      console.log('Discord user info obtained:', { id: discordUser.id, username: discordUser.username, email: discordUser.email });
   
 
       // Buscar o crear usuario en la base de datos
@@ -302,11 +310,12 @@ function AuthProviderInternal({ children }: { children: ReactNode }) {
       const dbService = await getDbService();
 
       // Buscar usuario existente por Discord ID
+      console.log('Searching for user with Discord ID:', discordUser.id);
       let dbUser = await dbService.getUserByDiscordId(discordUser.id);
       
 
       if (!dbUser) {
-        
+        console.log('User not found, creating new user...');
         // Crear nuevo usuario
         const createdUser = await dbService.createUser({
           email: discordUser.email,
@@ -316,9 +325,11 @@ function AuthProviderInternal({ children }: { children: ReactNode }) {
           isActive: true,
         });
         
-        
+        console.log('User created successfully:', createdUser.id);
         // Usar el usuario recién creado
         dbUser = createdUser;
+      } else {
+        console.log('Existing user found:', dbUser.id);
       }
 
       if (!dbUser) {

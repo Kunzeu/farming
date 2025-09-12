@@ -16,14 +16,18 @@ function DiscordCallbackContent() {
     const code = searchParams.get('code');
     const error = searchParams.get('error');
 
+    console.log('Discord callback received:', { code: !!code, error });
+
     if (error) {
+      console.error('Discord OAuth error:', error);
       setStatus('error');
-      setMessage('Error en la autenticación de Discord');
+      setMessage(`Error en la autenticación de Discord: ${error}`);
       setTimeout(() => router.push('/login'), 3000);
       return;
     }
 
     if (!code) {
+      console.error('No authorization code received');
       setStatus('error');
       setMessage('Código de autorización no encontrado');
       setTimeout(() => router.push('/login'), 3000);
@@ -31,6 +35,7 @@ function DiscordCallbackContent() {
     }
 
     try {
+      console.log('Starting Discord authentication...');
       // Llamar a la función de login con Discord
       await loginWithDiscord(code);
       setStatus('success');
@@ -39,7 +44,7 @@ function DiscordCallbackContent() {
     } catch (error) {
       console.error('Error en Discord callback:', error);
       setStatus('error');
-      setMessage('Error al procesar la autenticación');
+      setMessage(`Error al procesar la autenticación: ${error instanceof Error ? error.message : 'Error desconocido'}`);
       setTimeout(() => router.push('/login'), 3000);
     }
   }, [searchParams, loginWithDiscord, router]);

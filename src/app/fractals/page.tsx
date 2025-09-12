@@ -2088,7 +2088,7 @@ export default function FarmingTrackerPage() {
                  <div className="w-3 h-3 bg-blue-400 rounded-full animate-pulse"></div>
                  <div className="text-blue-300 text-sm sm:text-base">
                    <strong>{t('fractals.dataSource.label')}</strong> {t('fractals.dataSource.description')}{' '}
-                   <span className="text-blue-200 font-bold">1.1M {t('fractals.dataSource.boxes')}</span> {t('fractals.dataSource.opened')}
+                   <span className="text-blue-200 font-bold">1M {t('fractals.dataSource.boxes')}</span> {t('fractals.dataSource.opened')}
                  </div>
                </div>
              </div>

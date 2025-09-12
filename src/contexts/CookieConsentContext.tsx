@@ -15,9 +15,6 @@ export interface CookieConsentContextType {
   acceptAll: () => void;
   rejectAll: () => void;
   savePreferences: (preferences: CookiePreferences) => void;
-  showSettings: () => void;
-  hideSettings: () => void;
-  isSettingsOpen: boolean;
 }
 
 const CookieConsentContext = createContext<CookieConsentContextType | undefined>(undefined);
@@ -35,7 +32,6 @@ export function CookieConsentProvider({ children }: { children: ReactNode }) {
   const [hasConsented, setHasConsented] = useState(false);
   const [preferences, setPreferences] = useState<CookiePreferences>(defaultPreferences);
   const [showBanner, setShowBanner] = useState(false);
-  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
 
   // Load consent status and preferences on mount
   useEffect(() => {
@@ -104,7 +100,6 @@ export function CookieConsentProvider({ children }: { children: ReactNode }) {
     setPreferences(newPreferences);
     setHasConsented(true);
     setShowBanner(false);
-    setIsSettingsOpen(false);
     
     localStorage.setItem(COOKIE_CONSENT_KEY, 'true');
     localStorage.setItem(COOKIE_PREFERENCES_KEY, JSON.stringify(newPreferences));
@@ -120,7 +115,6 @@ export function CookieConsentProvider({ children }: { children: ReactNode }) {
     setPreferences(newPreferences);
     setHasConsented(true);
     setShowBanner(false);
-    setIsSettingsOpen(false);
     
     localStorage.setItem(COOKIE_CONSENT_KEY, 'true');
     localStorage.setItem(COOKIE_PREFERENCES_KEY, JSON.stringify(newPreferences));
@@ -136,19 +130,11 @@ export function CookieConsentProvider({ children }: { children: ReactNode }) {
     setPreferences(finalPreferences);
     setHasConsented(true);
     setShowBanner(false);
-    setIsSettingsOpen(false);
     
     localStorage.setItem(COOKIE_CONSENT_KEY, 'true');
     localStorage.setItem(COOKIE_PREFERENCES_KEY, JSON.stringify(finalPreferences));
   };
 
-  const showSettings = () => {
-    setIsSettingsOpen(true);
-  };
-
-  const hideSettings = () => {
-    setIsSettingsOpen(false);
-  };
 
   const value: CookieConsentContextType = {
     hasConsented,
@@ -157,9 +143,6 @@ export function CookieConsentProvider({ children }: { children: ReactNode }) {
     acceptAll,
     rejectAll,
     savePreferences,
-    showSettings,
-    hideSettings,
-    isSettingsOpen,
   };
 
   return (

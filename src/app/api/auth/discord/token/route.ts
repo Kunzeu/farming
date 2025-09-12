@@ -5,6 +5,7 @@ export async function POST(request: NextRequest) {
     const { code } = await request.json();
 
     if (!code) {
+      console.error('No authorization code provided');
       return NextResponse.json(
         { error: 'Código de autorización requerido' },
         { status: 400 }
@@ -16,11 +17,18 @@ export async function POST(request: NextRequest) {
     const clientSecret = process.env.DISCORD_CLIENT_SECRET;
     const redirectUri = process.env.DISCORD_REDIRECT_URI;
 
-
-
+    console.log('Discord OAuth Config:', {
+      clientId: clientId ? `Set (${clientId.substring(0, 10)}...)` : 'Missing',
+      clientSecret: clientSecret ? 'Set' : 'Missing',
+      redirectUri: redirectUri || 'Missing'
+    });
 
     if (!clientId || !clientSecret || !redirectUri) {
-      console.error('Missing Discord OAuth environment variables');
+      console.error('Missing Discord OAuth environment variables:', {
+        clientId: !!clientId,
+        clientSecret: !!clientSecret,
+        redirectUri: !!redirectUri
+      });
       return NextResponse.json(
         { error: 'Configuración de Discord OAuth incompleta' },
         { status: 500 }

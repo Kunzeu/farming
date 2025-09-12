@@ -1,13 +1,13 @@
 'use client';
 
 import { motion, AnimatePresence } from 'framer-motion';
-import { Cookie, Settings, X, Check, AlertCircle } from 'lucide-react';
+import { Cookie, X, Check, AlertCircle } from 'lucide-react';
 import { useCookieConsent } from '@/contexts/CookieConsentContext';
 import { useI18n } from '@/contexts/I18nContext';
 import Link from 'next/link';
 
 export default function CookieBanner() {
-  const { showBanner, acceptAll, rejectAll, showSettings } = useCookieConsent();
+  const { showBanner, acceptAll, rejectAll } = useCookieConsent();
   const { t } = useI18n();
 
   if (!showBanner) return null;
@@ -51,24 +51,18 @@ export default function CookieBanner() {
               </div>
             </div>
 
-            {/* Action buttons */}
+            {/* Action buttons - Simplified version */}
             <div className="flex flex-col sm:flex-row gap-3 w-full lg:w-auto">
               <button
                 onClick={rejectAll}
-                className="px-4 py-2 text-sm font-medium text-gray-300 hover:text-white bg-slate-700/50 hover:bg-slate-700 rounded-lg transition-colors"
+                className="px-6 py-2 text-sm font-medium text-gray-300 hover:text-white bg-slate-700/50 hover:bg-slate-700 rounded-lg transition-colors flex items-center justify-center gap-2"
               >
+                <X className="w-4 h-4" />
                 {t('cookieBanner.rejectAll')}
               </button>
               <button
-                onClick={showSettings}
-                className="px-4 py-2 text-sm font-medium text-white bg-slate-600 hover:bg-slate-500 rounded-lg transition-colors flex items-center gap-2"
-              >
-                <Settings className="w-4 h-4" />
-                {t('cookieBanner.customize')}
-              </button>
-              <button
                 onClick={acceptAll}
-                className="px-6 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-500 rounded-lg transition-colors flex items-center gap-2"
+                className="px-6 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-500 rounded-lg transition-colors flex items-center justify-center gap-2"
               >
                 <Check className="w-4 h-4" />
                 {t('cookieBanner.acceptAll')}

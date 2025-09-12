@@ -173,6 +173,20 @@ export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
     
+    // Validar campos requeridos
+    if (!body.email || !body.username) {
+      return NextResponse.json({ 
+        error: 'Email y username son requeridos' 
+      }, { status: 400 });
+    }
+    
+    // Para usuarios regulares (no Discord), validar contraseña
+    if (!body.discordId && !body.password) {
+      return NextResponse.json({ 
+        error: 'Contraseña es requerida para usuarios regulares' 
+      }, { status: 400 });
+    }
+    
     // Validar que email, username y discordId sean únicos
     const checkQuery = `
       SELECT email, username, discord_id FROM users 
@@ -205,8 +219,11 @@ export async function POST(request: NextRequest) {
     
     const id = crypto.randomUUID();
     
-    // Hash the password before storing
-    const hashedPassword = await hashPassword(body.password);
+    // Hash the password before storing (only if password is provided)
+    let hashedPassword = null;
+    if (body.password) {
+      hashedPassword = await hashPassword(body.password);
+    }
     
     const query = `
       INSERT INTO users (id, email, username, password, role, is_active, discord_id)
@@ -216,6 +233,16 @@ export async function POST(request: NextRequest) {
     `;
     
     const values = [id, body.email, body.username, hashedPassword, body.role, body.isActive, body.discordId];
+    
+    console.log('Creating user with values:', {
+      id: id.substring(0, 8) + '...',
+      email: body.email,
+      username: body.username,
+      hasPassword: !!hashedPassword,
+      role: body.role,
+      isActive: body.isActive,
+      discordId: body.discordId
+    });
     
     const result = await pool.query(query, values);
     const row = result.rows[0];
