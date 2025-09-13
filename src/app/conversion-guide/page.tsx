@@ -93,7 +93,7 @@ export default function ConversionGuidePage() {
         const icons: Record<number, string> = {};
         const names: Record<number, string> = {};
         
-        items.forEach((item: any) => {
+        items.forEach((item: { id: number; icon?: string; name?: string }) => {
           if (item.icon) {
             icons[item.id] = item.icon;
           }

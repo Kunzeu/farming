@@ -5,7 +5,10 @@ import { useEffect } from 'react';
 // Declarar tipos para AdSense
 declare global {
   interface Window {
-    adsbygoogle: any[];
+    adsbygoogle: Array<{
+      google_ad_client: string;
+      enable_page_level_ads: boolean;
+    }>;
   }
 }
 
