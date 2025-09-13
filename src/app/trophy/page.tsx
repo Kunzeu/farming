@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import Navigation from '@/components/layout/Navigation';
 import Image from 'next/image';
+import Link from 'next/link';
 
 import { 
   BookOpen, 
@@ -2168,6 +2169,26 @@ const CraftingPage = () => {
     });
   }, [lang]);
 
+  // Manejar hash de la URL para navegación directa a secciones
+  useEffect(() => {
+    const handleHashChange = () => {
+      const hash = window.location.hash.substring(1); // Remover el #
+      if (hash && ['overview', 'conversions', 'materials', 'unbound', 'strategies'].includes(hash)) {
+        setSelectedSection(hash);
+      }
+    };
+
+    // Verificar hash inicial
+    handleHashChange();
+
+    // Escuchar cambios en el hash
+    window.addEventListener('hashchange', handleHashChange);
+    
+    return () => {
+      window.removeEventListener('hashchange', handleHashChange);
+    };
+  }, []);
+
   // Función para color de ganancia con gradación progresiva - OPTIMIZADA
   const getProfitColor = useCallback((profit: number) => {
     if (profit <= 0) return 'bg-red-600';                    // Pérdida
@@ -3501,6 +3522,17 @@ const CraftingPage = () => {
                   <p className="text-gray-400 mb-6">
                     {t('craftingPage.conversionsDesc', 'Calculate the profitability of converting Tier 5 to Tier 6 materials through the Mystic Forge. Prices are updated in real-time from the Guild Wars 2 API.')}
                   </p>
+                  
+                  {/* Botón de guía de conversiones */}
+                  <div className="mb-6 flex justify-center">
+                    <Link
+                      href="/conversion-guide"
+                      className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white font-bold py-3 px-6 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 flex items-center gap-2"
+                    >
+                      <BookOpen className="w-5 h-5" />
+                      COMO HACER CONVERSIONES DE T6 + VENTA DE ESQUIRLAS ESPIRITUALES
+                    </Link>
+                  </div>
                   
                   {/* Precios actualizados */}
                   {apiCache.lastUpdate && (

@@ -27,6 +27,7 @@ import { useDashboardPreferences } from '@/hooks/useDashboardPreferences'
 import DashboardSettings from '@/components/DashboardSettings'
 import { useState, useEffect, useMemo } from 'react'
 
+
 interface DashboardCard {
   id: string
   title: string
@@ -587,6 +588,7 @@ export default function HomePage() {
             ))}
           </div>
         </section>
+
       </div>
       
       {/* Modal de configuración avanzada */}

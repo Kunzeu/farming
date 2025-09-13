@@ -953,7 +953,7 @@ export default function GiftOfJadeMasteryPage() {
                   <div className="bg-slate-700/30 rounded-lg p-4 border border-slate-600/50">
                     <h4 className="text-white font-semibold mb-4 flex items-center">
                       <span className="text-yellow-400 font-bold text-lg mr-2">•</span>
-                      {t('giftOfJadeMasteryPage.materialItem.t3Materials')} y {t('giftOfJadeMasteryPage.materialItem.t4Materials')} (50 de cada)
+                      {t('giftOfJadeMasteryPage.materialItem.t3Materials')} y {t('giftOfJadeMasteryPage.materialItem.t4Materials')}
                     </h4>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                       <MaterialItem materialKey="t4Blood" quantity={50} />
