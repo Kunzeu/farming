@@ -1423,6 +1423,11 @@
   "conversionGuidePage.images.inventorySetup": "Inventar-Einrichtung für Verkäufer",
   "conversionGuidePage.images.philosopherStones": "Steine der Weisen an der Mystischen Schmiede",
   "conversionGuidePage.images.menu": "Menü",
-  "conversionGuidePage.images.gold": "Gold"
+  "conversionGuidePage.images.gold": "Gold",
+
+  "error404.title": "Seite nicht gefunden",
+  "error404.subtitle": "Wir arbeiten an diesem Bereich",
+  "error404.description": "Dieser Bereich ist in Entwicklung. Kommen Sie bald zurück, um die neuen Funktionen zu sehen!",
+  "error404.backHome": "Zurück zur Startseite"
 }
 

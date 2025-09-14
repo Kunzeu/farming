@@ -1454,6 +1454,11 @@
   "conversionGuidePage.images.inventorySetup": "Configuración de inventario para vendedores",
   "conversionGuidePage.images.philosopherStones": "Piedras filosofales en la Forja Mística",
   "conversionGuidePage.images.menu": "Menú",
-  "conversionGuidePage.images.gold": "Oro"
+  "conversionGuidePage.images.gold": "Oro",
+
+  "error404.title": "Página no encontrada",
+  "error404.subtitle": "Estamos trabajando en este apartado",
+  "error404.description": "Esta sección está en desarrollo. ¡Vuelve pronto para ver las nuevas funcionalidades!",
+  "error404.backHome": "Volver al inicio"
 }
 

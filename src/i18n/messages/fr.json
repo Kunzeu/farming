@@ -1415,6 +1415,11 @@
   "conversionGuidePage.images.inventorySetup": "Configuration d'inventaire pour les vendeurs",
   "conversionGuidePage.images.philosopherStones": "Pierres philosophales à la Forge Mystique",
   "conversionGuidePage.images.menu": "Menu",
-  "conversionGuidePage.images.gold": "Or"
+  "conversionGuidePage.images.gold": "Or",
+
+  "error404.title": "Page non trouvée",
+  "error404.subtitle": "Nous travaillons sur cette section",
+  "error404.description": "Cette section est en développement. Revenez bientôt pour voir les nouvelles fonctionnalités !",
+  "error404.backHome": "Retour à l'accueil"
 }
 

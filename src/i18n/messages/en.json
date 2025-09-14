@@ -1421,6 +1421,11 @@
   "conversionGuidePage.images.inventorySetup": "Inventory setup for sellers",
   "conversionGuidePage.images.philosopherStones": "Philosopher's stones at the Mystic Forge",
   "conversionGuidePage.images.menu": "Menu",
-  "conversionGuidePage.images.gold": "Gold"
+  "conversionGuidePage.images.gold": "Gold",
+
+  "error404.title": "Page not found",
+  "error404.subtitle": "We are working on this section",
+  "error404.description": "This section is under development. Come back soon to see the new features!",
+  "error404.backHome": "Back to home"
 }
 

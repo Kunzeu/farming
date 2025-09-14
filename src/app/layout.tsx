@@ -75,7 +75,6 @@ export const metadata: Metadata = {
       },
     ],
   },
-  manifest: '/manifest.json',
   other: {
     'msapplication-TileColor': '#c1272d',
     'msapplication-config': '/browserconfig.xml',
