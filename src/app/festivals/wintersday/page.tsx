@@ -3,7 +3,6 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import Navigation from '@/components/layout/Navigation';
-import AdSenseDisabler from '@/components/AdSenseDisabler';
 import { Info, Calculator, TrendingUp, ArrowLeft } from 'lucide-react';
 import { usePageTitle } from '@/hooks/usePageTitle';
 import { useI18n } from '@/contexts/I18nContext';
@@ -23,7 +22,6 @@ const WintersdayPage = () => {
         backgroundAttachment: 'fixed'
       }}
     >
-      <AdSenseDisabler disabled={true} />
       {/* Overlay oscuro para mejorar la legibilidad */}
       <div className="absolute inset-0 bg-black/40"></div>
       

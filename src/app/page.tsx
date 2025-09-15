@@ -19,7 +19,8 @@ import {
   EyeOff,
   GripVertical,
   BookOpen,
-  Award
+  Award,
+  TreePine
 } from 'lucide-react'
 import { usePageTitle } from '@/hooks/usePageTitle'
 import { useI18n } from '@/contexts/I18nContext'
@@ -151,6 +152,17 @@ const initialCards: DashboardCard[] = [
     delay: 1.1,
     visible: true,
     order: 10
+  },
+  {
+    id: "garden",
+    title: "dashboard.garden.title",
+    description: "dashboard.garden.description",
+    href: "/garden",
+    icon: <TreePine className="w-8 h-8" />,
+    color: "from-emerald-500 to-green-600",
+    delay: 1.2,
+    visible: true,
+    order: 11
   }
   
 ];
@@ -178,7 +190,9 @@ export default function HomePage() {
       "farmingTracker": <BarChart3 className="w-8 h-8" />,
       "glossary": <BookOpen className="w-8 h-8" />,
       "orrianJewelry": <Gift className="w-8 h-8" />,
-      "giftOfMastery": <Award className="w-8 h-8" />
+      "giftOfMastery": <Award className="w-8 h-8" />,
+      "giftOfJadeMastery": <Gift className="w-8 h-8" />,
+      "garden": <TreePine className="w-8 h-8" />
     };
 
     return {

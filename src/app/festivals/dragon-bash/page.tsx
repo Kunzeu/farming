@@ -3,7 +3,6 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import Navigation from '@/components/layout/Navigation';
-import AdSenseDisabler from '@/components/AdSenseDisabler';
 import { Info, Calculator, TrendingUp, ArrowLeft } from 'lucide-react';
 import { usePageTitle } from '@/hooks/usePageTitle';
 import { useI18n } from '@/contexts/I18nContext';
@@ -23,7 +22,6 @@ const DragonBashPage = () => {
         backgroundAttachment: 'fixed'
       }}
     >
-      <AdSenseDisabler disabled={true} />
       <Navigation />
       <div className="max-w-[95%] mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="text-center mb-8">

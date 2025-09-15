@@ -2173,8 +2173,12 @@ const CraftingPage = () => {
   useEffect(() => {
     const handleHashChange = () => {
       const hash = window.location.hash.substring(1); // Remover el #
-      if (hash && ['overview', 'conversions', 'materials', 'unbound', 'strategies'].includes(hash)) {
-        setSelectedSection(hash);
+      if (hash && ['overview', 'conversions', 'materials', 'unbound', 'strategies', 'volatile-magic'].includes(hash)) {
+        if (hash === 'volatile-magic') {
+          setSelectedSection('materials');
+        } else {
+          setSelectedSection(hash);
+        }
       }
     };
 
@@ -2452,15 +2456,15 @@ const CraftingPage = () => {
                     {t('craftingPage.howToGet', '¿Cómo lo obtengo?')}
                   </h3>
                   <div className="flex flex-col sm:flex-row justify-center gap-3 sm:gap-4 mb-6 sm:mb-8">
-                    <button className="px-4 sm:px-6 py-2 sm:py-3 bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white font-semibold rounded-lg transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105 text-sm sm:text-base">
+                    <Link href="/ls4-meta" className="px-4 sm:px-6 py-2 sm:py-3 bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white font-semibold rounded-lg transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105 text-sm sm:text-base text-center">
                       {t('craftingPage.ls4Meta', 'LS4 Meta')}
-                    </button>
-                    <button className="px-4 sm:px-6 py-2 sm:py-3 bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white font-semibold rounded-lg transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105 text-sm sm:text-base">
+                    </Link>
+                    <Link href="/garden" className="px-4 sm:px-6 py-2 sm:py-3 bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white font-semibold rounded-lg transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105 text-sm sm:text-base text-center">
                       {t('craftingPage.gardens', 'Jardines')}
-                    </button>
-                    <button className="px-4 sm:px-6 py-2 sm:py-3 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold rounded-lg transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105 text-sm sm:text-base">
+                    </Link>
+                    <Link href="/others" className="px-4 sm:px-6 py-2 sm:py-3 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold rounded-lg transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105 text-sm sm:text-base text-center">
                       {t('craftingPage.others', 'Otros')}
-                    </button>
+                    </Link>
                   </div>
                    
                    <h3 className="text-xl font-bold text-white mb-6 text-center">
