@@ -920,7 +920,7 @@ const JardinesPage = () => {
                 </motion.div>
               </section>
 
-              {/* Sección de Ubicaciones */}
+              {/* Sección de Ubicaciones de Jardines */}
               <section id="locations" className="mt-8 mb-16">
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
