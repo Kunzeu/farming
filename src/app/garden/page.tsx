@@ -134,7 +134,7 @@ const JardinesPage = () => {
         const maps = await response.json();
         
         const mapDataObj: Record<number, {name: string, region_name: string}> = {};
-        maps.forEach((map: any) => {
+        maps.forEach((map: {id: number, name: string, region_name: string}) => {
           mapDataObj[map.id] = {
             name: map.name,
             region_name: map.region_name
