@@ -943,13 +943,10 @@ const JardinesPage = () => {
                     {/* Fields of Ruin */}
                     <div className="bg-slate-800/50 backdrop-blur-sm border border-slate-700/50 rounded-xl p-6 hover:border-emerald-500/50 transition-all duration-200">
                       <div className="space-y-4">
-                        <Image
-                          src="/images/garden/Tyria-1-565x1024.webp"
+                        <img
+                          src="https://gw2-farming-hub.vercel.app/images/garden/Tyria-1-565x1024.webp"
                           alt="Fields of Ruin Garden Location"
-                          width={564}
-                          height={1024}
                           className="w-full h-64 object-contain rounded-lg bg-slate-700/50"
-                          unoptimized
                         />
                         
                         {/* 1. Nombre del mapa */}
@@ -1011,13 +1008,10 @@ const JardinesPage = () => {
                     <div className="bg-slate-800/50 backdrop-blur-sm border border-slate-700/50 rounded-xl p-6 hover:border-emerald-500/50 transition-all duration-200">
                       <div className="space-y-4">
                         <div className="bg-slate-700/50 rounded-lg p-4">
-                          <Image
-                            src="/images/garden/Tyria-2.webp"
+                          <img
+                            src="https://gw2-farming-hub.vercel.app/images/garden/Tyria-2.webp"
                             alt="Kessex Hills Garden Location"
-                            width={400}
-                            height={200}
                             className="w-full h-64 object-contain rounded-lg mb-4 bg-slate-700/50"
-                            unoptimized
                           />
                           
                           {/* 1. Nombre del mapa */}
