@@ -944,7 +944,7 @@ const JardinesPage = () => {
                     <div className="bg-slate-800/50 backdrop-blur-sm border border-slate-700/50 rounded-xl p-6 hover:border-emerald-500/50 transition-all duration-200">
                       <div className="space-y-4">
                           <Image
-                             src="/images/garden/Tyria1.webp"
+                             src="/images/garden/k6OYz1.png"
                             alt="Fields of Ruin Garden Location"
                             width={564}
                             height={1024}
