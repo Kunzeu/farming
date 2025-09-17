@@ -943,14 +943,14 @@ const JardinesPage = () => {
                     {/* Fields of Ruin */}
                     <div className="bg-slate-800/50 backdrop-blur-sm border border-slate-700/50 rounded-xl p-6 hover:border-emerald-500/50 transition-all duration-200">
                       <div className="space-y-4">
-                          <Image
-                             src="/images/garden/k6OYz1.png"
-                            alt="Fields of Ruin Garden Location"
-                            width={564}
-                            height={1024}
-                            className="w-full h-64 object-contain rounded-lg bg-slate-700/50"
-                            unoptimized
-                          />
+                           <Image
+                             src="/images/garden/test.png"
+                             alt="Fields of Ruin Garden Location"
+                             width={564}
+                             height={1024}
+                             className="w-full h-64 object-contain rounded-lg bg-slate-700/50"
+                             unoptimized
+                           />
                         
                         {/* 1. Nombre del mapa */}
                         <h3 className="text-xl font-bold text-white mb-3 flex items-center">
