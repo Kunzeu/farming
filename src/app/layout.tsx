@@ -96,20 +96,7 @@ export default function RootLayout({
         <meta name="msapplication-TileColor" content="#c1272d" />
         <meta name="msapplication-TileImage" content="/images/icons/icon.png" />
           
-        {/* Open Graph Meta Tags */}
-        <meta property="og:image" content="/images/icons/icon.png" />
-        <meta property="og:image:width" content="1200" />
-        <meta property="og:image:height" content="630" />
-        <meta property="og:image:type" content="image/png" />
-        <meta property="og:image:alt" content="True Farming - Guild Wars 2 Farming Hub" />
-        
-        {/* Twitter Card Meta Tags */}
-        <meta name="twitter:image" content="/images/icons/icon.png" />
-        <meta name="twitter:image:alt" content="True Farming - Guild Wars 2 Farming Hub" />
-        
-        {/* Additional Meta Tags */}
-        <meta name="image" content="/images/icons/icon.png" />
-        <meta name="thumbnail" content="/images/icons/icon.png" />
+        {/* Meta tags are automatically generated from the metadata object above */}
         <meta name="theme-color" content="#c1272d" />
         <link rel="canonical" href="https://truefarming.com" />
         <link rel="alternate" hrefLang="en" href="https://truefarming.com" />

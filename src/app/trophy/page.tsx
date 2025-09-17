@@ -2472,9 +2472,16 @@ const CraftingPage = () => {
                    </h3>
                    
                    <div className="text-center mb-6">
-                     <h4 className="text-lg font-semibold text-white">
-                       {t('craftingPage.trophyBoxes', 'Cargamento de trofeos')}
-                     </h4>
+                     <div className="flex items-center justify-center gap-3">
+                       <OptimizedImage 
+                         src={tableItemIcons[85725] || "https://render.guildwars2.com/file/6B604A6F7A5A4A4A4A4A4A4A4A4A4A4A4A4A4A4A/66950.png"} 
+                         alt={tableItemNames[85725] || 'Cargamento de trofeos'} 
+                         className="w-8 h-8 sm:w-10 sm:h-10 flex-shrink-0"
+                       />
+                       <h4 className="text-lg font-semibold text-white">
+                         {tableItemNames[85725] || 'Cargamento de trofeos'}
+                       </h4>
+                     </div>
                    </div>
                    
                    {/* Resumen de ganancias */}
@@ -3942,9 +3949,16 @@ const CraftingPage = () => {
                   </h3>
                   
                   <div className="text-center mb-6">
-                    <h4 className="text-lg font-semibold text-white">
-                      {tableItemNames[79186] || 'Item 79186'}
-                    </h4>
+                    <div className="flex items-center justify-center gap-3">
+                      <OptimizedImage 
+                        src={tableItemIcons[79186] || "https://render.guildwars2.com/file/6B604A6F7A5A4A4A4A4A4A4A4A4A4A4A4A4A4A4A/66950.png"} 
+                        alt={tableItemNames[79186] || 'Lote retorcido por la magia'} 
+                        className="w-8 h-8 sm:w-10 sm:h-10 flex-shrink-0"
+                      />
+                      <h4 className="text-lg font-semibold text-white">
+                        {tableItemNames[79186] || 'Lote retorcido por la magia'}
+                      </h4>
+                    </div>
                   </div>
                   
                   {/* Resumen de ganancias */}
@@ -4960,7 +4974,7 @@ const CraftingPage = () => {
                       <div className="w-2 h-2 sm:w-3 sm:h-3 bg-blue-400 rounded-full animate-pulse flex-shrink-0"></div>
                       <div className="text-blue-300 text-xs md:text-base">
                         <strong>{t('craftingPage.table.dataSource', 'Fuente de Datos')}:</strong> {t('craftingPage.table.basedOn', 'Análisis basado en')}{' '}
-                        <span className="text-blue-200 font-bold">500k {tableItemNames[79186] || 'Lote retorcido por la magia'}</span> {t('craftingPage.table.opened', 'abiertos')}
+                        <span className="text-blue-200 font-bold">400k {tableItemNames[79186] || 'Lote retorcido por la magia'}</span> {t('craftingPage.table.opened', 'abiertos')}
                         <br />
                         <span className="text-blue-400 text-xs">{t('craftingPage.table.dataCredit', 'Datacredit: Vortus43')}</span>
                       </div>

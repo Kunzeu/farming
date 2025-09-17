@@ -43,6 +43,7 @@ const JardinesPage = () => {
   const [list1Copied, setList1Copied] = useState(false);
   const [list2Copied, setList2Copied] = useState(false);
   const [list3Copied, setList3Copied] = useState(false);
+  const [mapData, setMapData] = useState<Record<number, {name: string, region_name: string}>>({});
 
   // Configurar título de la página
   usePageTitle(t('gardenPage.title'), t('gardenPage.title'));
@@ -122,6 +123,33 @@ const JardinesPage = () => {
     fetchItemsData();
   }, [lang]);
 
+  // Obtener datos de los mapas de la API de GW2
+  useEffect(() => {
+    const fetchMapData = async () => {
+      try {
+        // IDs de los mapas que usamos en la página
+        const mapIds = [21, 22, 24, 25, 26, 27, 28]; // Fields of Ruin, Kessex Hills, Gendarran Fields, Harathi Hinterlands, Blazeridge Steppes, Iron Marches, etc.
+        
+        const response = await fetch(`https://api.guildwars2.com/v2/maps?ids=${mapIds.join(',')}&lang=${lang}`);
+        const maps = await response.json();
+        
+        const mapDataObj: Record<number, {name: string, region_name: string}> = {};
+        maps.forEach((map: any) => {
+          mapDataObj[map.id] = {
+            name: map.name,
+            region_name: map.region_name
+          };
+        });
+        
+        setMapData(mapDataObj);
+      } catch (error) {
+        console.error('Error fetching map data:', error);
+      }
+    };
+
+    fetchMapData();
+  }, [lang]);
+
   // Navegación suave con offset para el header
   const handleScrollTo = (sectionId: string) => {
     const el = document.getElementById(sectionId);
@@ -132,6 +160,15 @@ const JardinesPage = () => {
       window.scrollTo({ top: offsetPosition, behavior: 'smooth' });
       setSelectedSection(sectionId);
       setMobileMenuOpen(false);
+    }
+  };
+
+  const copyWaypointToClipboard = async (waypointCode: string) => {
+    try {
+      await navigator.clipboard.writeText(waypointCode);
+      // Aquí podrías agregar una notificación de éxito si quieres
+    } catch (err) {
+      console.error('Error al copiar al portapapeles:', err);
     }
   };
 
@@ -236,7 +273,7 @@ const JardinesPage = () => {
   useEffect(() => {
     const handleHashChange = () => {
       const hash = window.location.hash.substring(1);
-      if (hash && ['introduction', 'gardenTypes', 'plants', 'waypoints', 'rewards'].includes(hash)) {
+      if (hash && ['introduction', 'gardenTypes', 'plants', 'waypoints', 'locations', 'rewards'].includes(hash)) {
         setSelectedSection(hash);
       }
     };
@@ -248,7 +285,7 @@ const JardinesPage = () => {
   // Detectar scroll para actualizar sección activa
   useEffect(() => {
     const handleScroll = () => {
-      const sections = ['introduction', 'gardenTypes', 'plants', 'waypoints', 'rewards'];
+      const sections = ['introduction', 'gardenTypes', 'plants', 'waypoints', 'locations', 'rewards'];
       const scrollPosition = window.scrollY + 100; // Offset para el header
 
       for (let i = sections.length - 1; i >= 0; i--) {
@@ -466,6 +503,16 @@ const JardinesPage = () => {
                     }`}
                   >
                     <span className="font-medium">{t('gardenPage.sidebar.waypoints')}</span>
+                  </button>
+                  <button
+                    onClick={() => handleScrollTo('locations')}
+                    className={`w-full text-left px-4 py-3 rounded-lg transition-colors ${
+                      selectedSection === 'locations'
+                        ? 'bg-emerald-600 text-white'
+                        : 'text-gray-300 hover:bg-slate-700/50'
+                    }`}
+                  >
+                    <span className="font-medium">{t('gardenPage.sidebar.locations')}</span>
                   </button>
                   <button
                     onClick={() => handleScrollTo('rewards')}
@@ -873,6 +920,167 @@ const JardinesPage = () => {
                 </motion.div>
               </section>
 
+              {/* Sección de Ubicaciones */}
+              <section id="locations" className="mt-8 mb-16">
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.8 }}
+                  className="bg-slate-800/30 backdrop-blur-sm border border-slate-700/50 rounded-2xl p-8 max-w-6xl mx-auto"
+                >
+                  <h2 className="text-3xl font-bold text-white mb-8 flex items-center">
+                    <MapPin className="w-8 h-8 text-emerald-400 mr-3" />
+                    {t('gardenPage.sections.locations.title')}
+                  </h2>
+                  
+                  <div className="bg-emerald-900/20 border border-emerald-700/30 rounded-lg p-6 mb-8">
+                    <p className="text-gray-300 text-lg leading-relaxed">
+                      {t('gardenPage.sections.locations.description')}
+                    </p>
+                  </div>
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    {/* Fields of Ruin */}
+                    <div className="bg-slate-800/50 backdrop-blur-sm border border-slate-700/50 rounded-xl p-6 hover:border-emerald-500/50 transition-all duration-200">
+                      <div className="space-y-4">
+                        <Image
+                          src="/images/garden/Tyria-1-565x1024.webp"
+                          alt="Fields of Ruin Garden Location"
+                          width={564}
+                          height={1024}
+                          className="w-full h-64 object-contain rounded-lg bg-slate-700/50"
+                          unoptimized
+                        />
+                        
+                        {/* 1. Nombre del mapa */}
+                        <h3 className="text-xl font-bold text-white mb-3 flex items-center">
+                          <div className="w-8 h-8 bg-gradient-to-br from-red-500 to-orange-600 rounded-full flex items-center justify-center mr-3">
+                            <MapPin className="w-4 h-4 text-white" />
+                          </div>
+                          {mapData[21]?.name || 'Fields of Ruin'}
+                        </h3>
+                        
+                        {/* 2. Nombre del punto de ruta */}
+                        <div className="mb-3">
+                          <p className="text-emerald-300 font-semibold flex items-center gap-2">
+                            <Image 
+                              src="/images/icons/waypoint-icon.png" 
+                              alt="Waypoint" 
+                              width={16} 
+                              height={16} 
+                              className="w-7 h-7"
+                            />
+                            {t('gardenPage.waypoints.ogreRoad')}
+                          </p>
+                        </div>
+                        
+                        {/* 3. Qué da el garden */}
+                        <div className="mb-3">
+                          <div className="flex items-center gap-2 mb-2">
+                            <div className="w-2 h-2 bg-blue-400 rounded-full"></div>
+                            <span className="text-gray-300 font-medium">{t('gardenPage.sections.locations.rewards')}:</span>
+                          </div>
+                          <p className="text-blue-300 font-semibold">8 uvas disponibles</p>
+                        </div>
+                        
+                        {/* 4. Botón para copiar waypoint */}
+                        <div>
+                          <button
+                            onClick={() => copyWaypoint('[&BE8BAAA=]')}
+                            className={`w-full font-medium py-2 px-3 rounded-lg transition-colors duration-200 flex items-center justify-center gap-2 text-sm ${
+                              copiedWaypoint === '[&BE8BAAA=]' 
+                                ? 'bg-green-600 text-white' 
+                                : 'bg-emerald-600 hover:bg-emerald-700 text-white'
+                            }`}
+                          >
+                            {copiedWaypoint === '[&BE8BAAA=]' ? (
+                              <CheckCircle className="w-4 h-4" />
+                            ) : (
+                              <Copy className="w-4 h-4" />
+                            )}
+                            {copiedWaypoint === '[&BE8BAAA=]' 
+                              ? t('gardenPage.sections.locations.waypointCopied')
+                              : t('gardenPage.sections.locations.copyWaypoint')
+                            }
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Kessex Hills */}
+                    <div className="bg-slate-800/50 backdrop-blur-sm border border-slate-700/50 rounded-xl p-6 hover:border-emerald-500/50 transition-all duration-200">
+                      <div className="space-y-4">
+                        <div className="bg-slate-700/50 rounded-lg p-4">
+                          <Image
+                            src="/images/garden/Tyria-2.webp"
+                            alt="Kessex Hills Garden Location"
+                            width={400}
+                            height={200}
+                            className="w-full h-64 object-contain rounded-lg mb-4 bg-slate-700/50"
+                            unoptimized
+                          />
+                          
+                          {/* 1. Nombre del mapa */}
+                          <h3 className="text-xl font-bold text-white mb-3 flex items-center">
+                            <div className="w-8 h-8 bg-gradient-to-br from-green-500 to-teal-600 rounded-full flex items-center justify-center mr-3">
+                              <MapPin className="w-4 h-4 text-white" />
+                            </div>
+                            {mapData[22]?.name || 'Kessex Hills'}
+                          </h3>
+                          
+                          {/* 2. Nombre del punto de ruta */}
+                          <div className="mb-3">
+                            <p className="text-emerald-300 font-semibold flex items-center gap-2">
+                              <Image 
+                                src="/images/icons/waypoint-icon.png" 
+                                alt="Waypoint" 
+                                width={16} 
+                                height={16} 
+                                className="w-4 h-4"
+                              />
+                              {t('gardenPage.waypoints.guardianStone')}
+                            </p>
+                          </div>
+                          
+                          {/* 3. Qué da el garden */}
+                          <div className="mb-3">
+                            <div className="flex items-center gap-2 mb-2">
+                              <div className="w-2 h-2 bg-blue-400 rounded-full"></div>
+                              <span className="text-gray-300 font-medium">Recompensas:</span>
+                            </div>
+                            <p className="text-blue-300 font-semibold">6 uvas disponibles</p>
+                          </div>
+                          
+                          {/* 4. Botón para copiar waypoint */}
+                          <div>
+                            <button
+                              onClick={() => copyWaypoint('[&BAACAAA=]')}
+                              className={`w-full font-medium py-2 px-3 rounded-lg transition-colors duration-200 flex items-center justify-center gap-2 text-sm ${
+                                copiedWaypoint === '[&BAACAAA=]' 
+                                  ? 'bg-green-600 text-white' 
+                                  : 'bg-emerald-600 hover:bg-emerald-700 text-white'
+                              }`}
+                            >
+                              {copiedWaypoint === '[&BAACAAA=]' ? (
+                                <CheckCircle className="w-4 h-4" />
+                              ) : (
+                                <Copy className="w-4 h-4" />
+                              )}
+                              {copiedWaypoint === '[&BAACAAA=]' 
+                                ? t('gardenPage.sections.locations.waypointCopied')
+                                : t('gardenPage.sections.locations.copyWaypoint')
+                              }
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                  </div>
+                </motion.div>
+              </section>
+
+
               {/* Sección de Recompensas */}
               <section id="rewards" className="mb-16">
           <motion.div
@@ -889,18 +1097,35 @@ const JardinesPage = () => {
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                     <div className="bg-slate-800/50 rounded-xl p-6 border border-slate-600/50 text-center">
                       <h3 className="text-white font-semibold mb-3">{t('gardenPage.sections.rewards.personalGarden')}</h3>
-                      <p className="text-2xl font-bold text-emerald-400 mb-2">0 MV/día</p>
-                      <p className="text-gray-400 text-sm">{t('gardenPage.sections.rewards.basicCultivation')}</p>
+                      <p className="text-2xl font-bold text-emerald-400 mb-2">{t('gardenPage.sections.rewards.time')}</p>
               </div>
                     <div className="bg-slate-800/50 rounded-xl p-6 border border-slate-600/50 text-center">
                       <h3 className="text-white font-semibold mb-3">{t('gardenPage.sections.rewards.guildGardens')}</h3>
-                      <p className="text-2xl font-bold text-green-400 mb-2">0 MV/día</p>
-                      <p className="text-gray-400 text-sm">{t('gardenPage.sections.rewards.activeParticipation')}</p>
+                      <div className="flex items-center justify-center mb-2">
+                        <Image
+                          src="/images/expansions/volatile-magic.png"
+                          alt="Volatile Magic"
+                          width={24}
+                          height={24}
+                          className="mr-2"
+                        />
+                        <p className="text-2xl font-bold text-green-400">{t('gardenPage.sections.rewards.volatileMagic')}</p>
+                      </div>
+                      <p className="text-yellow-400 text-sm font-semibold">{t('gardenPage.sections.rewards.profit')}</p>
               </div>
                     <div className="bg-slate-800/50 rounded-xl p-6 border border-slate-600/50 text-center">
                       <h3 className="text-white font-semibold mb-3">{t('gardenPage.sections.rewards.worldGardens')}</h3>
-                      <p className="text-2xl font-bold text-teal-400 mb-2">0 MV/día</p>
-                      <p className="text-gray-400 text-sm">{t('gardenPage.sections.rewards.intensiveExploration')}</p>
+                      <div className="flex items-center justify-center mb-2">
+                        <Image
+                          src="/images/expansions/Spirit_Shard.png"
+                          alt="Spirit Shards"
+                          width={24}
+                          height={24}
+                          className="mr-2"
+                        />
+                        <p className="text-2xl font-bold text-teal-400">{t('gardenPage.sections.rewards.spiritShards')}</p>
+                      </div>
+                      <p className="text-yellow-400 text-sm font-semibold">{t('gardenPage.sections.rewards.spiritShardsProfit')}</p>
               </div>
             </div>
           </motion.div>
