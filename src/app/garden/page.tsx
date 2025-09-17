@@ -1012,7 +1012,7 @@ const JardinesPage = () => {
                       <div className="space-y-4">
                         <div className="bg-slate-700/50 rounded-lg p-4">
                           <Image
-                            src="/images/garden/EoD-2.webp"
+                            src="/images/garden/test2.png"
                             alt="Kessex Hills Garden Location"
                             width={400}
                             height={200}
