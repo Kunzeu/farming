@@ -1,4 +1,6 @@
-import Head from 'next/head';
+'use client';
+
+import { useEffect } from 'react';
 
 interface MetaTagsProps {
   title: string;
@@ -17,49 +19,77 @@ export default function MetaTags({
   keywords = 'Guild Wars 2, farming, gold, materials, GW2, Tyria',
   locale = 'en_US'
 }: MetaTagsProps) {
-  return (
-    <Head>
-      <title>{title}</title>
-      <meta name="description" content={description} />
-      <meta name="keywords" content={keywords} />
+  useEffect(() => {
+    // Update document title
+    document.title = title;
+    
+    // Function to update or create meta tags
+    const updateMetaTag = (property: string, content: string, isProperty = false) => {
+      const selector = isProperty ? `meta[property="${property}"]` : `meta[name="${property}"]`;
+      let meta = document.querySelector(selector) as HTMLMetaElement;
       
-      {/* Open Graph / Facebook */}
-      <meta property="og:type" content="website" />
-      <meta property="og:url" content={url} />
-      <meta property="og:title" content={title} />
-      <meta property="og:description" content={description} />
-      <meta property="og:image" content={image} />
-      <meta property="og:image:width" content="1200" />
-      <meta property="og:image:height" content="630" />
-      <meta property="og:image:alt" content={title} />
-      <meta property="og:image:type" content="image/png" />
-      <meta property="og:site_name" content="True Farming" />
-      <meta property="og:locale" content={locale} />
+      if (!meta) {
+        meta = document.createElement('meta');
+        if (isProperty) {
+          meta.setAttribute('property', property);
+        } else {
+          meta.setAttribute('name', property);
+        }
+        document.head.appendChild(meta);
+      }
+      meta.setAttribute('content', content);
+    };
+
+    // Function to update or create link tags
+    const updateLinkTag = (rel: string, href: string) => {
+      let link = document.querySelector(`link[rel="${rel}"]`) as HTMLLinkElement;
       
-      {/* Twitter */}
-      <meta name="twitter:card" content="summary_large_image" />
-      <meta name="twitter:url" content={url} />
-      <meta name="twitter:title" content={title} />
-      <meta name="twitter:description" content={description} />
-      <meta name="twitter:image" content={image} />
-      <meta name="twitter:image:alt" content={title} />
-      <meta name="twitter:image:width" content="1200" />
-      <meta name="twitter:image:height" content="630" />
-      
-      {/* Additional meta tags */}
-      <meta name="robots" content="index, follow" />
-      <meta name="author" content="True Farming" />
-      <meta name="theme-color" content="#0f172a" />
-      <meta name="msapplication-TileColor" content="#0f172a" />
-      <link rel="canonical" href={url} />
-      
-      {/* Additional meta tags for better compatibility */}
-      <meta property="og:image:secure_url" content={image} />
-      <meta property="og:updated_time" content={new Date().toISOString()} />
-      
-      {/* Twitter specific tags */}
-      <meta name="twitter:site" content="@truefarming" />
-      <meta name="twitter:creator" content="@truefarming" />
-    </Head>
-  );
+      if (!link) {
+        link = document.createElement('link');
+        link.setAttribute('rel', rel);
+        document.head.appendChild(link);
+      }
+      link.setAttribute('href', href);
+    };
+
+    // Basic meta tags
+    updateMetaTag('description', description);
+    if (keywords) updateMetaTag('keywords', keywords);
+    updateMetaTag('robots', 'index, follow');
+    updateMetaTag('author', 'True Farming');
+    updateMetaTag('theme-color', '#0f172a');
+    updateMetaTag('msapplication-TileColor', '#0f172a');
+
+    // Open Graph tags
+    updateMetaTag('og:type', 'website', true);
+    updateMetaTag('og:url', url, true);
+    updateMetaTag('og:title', title, true);
+    updateMetaTag('og:description', description, true);
+    updateMetaTag('og:image', image, true);
+    updateMetaTag('og:image:width', '1200', true);
+    updateMetaTag('og:image:height', '630', true);
+    updateMetaTag('og:image:alt', title, true);
+    updateMetaTag('og:image:type', 'image/png', true);
+    updateMetaTag('og:site_name', 'True Farming', true);
+    updateMetaTag('og:locale', locale, true);
+    updateMetaTag('og:image:secure_url', image, true);
+
+    // Twitter tags
+    updateMetaTag('twitter:card', 'summary_large_image');
+    updateMetaTag('twitter:url', url);
+    updateMetaTag('twitter:title', title);
+    updateMetaTag('twitter:description', description);
+    updateMetaTag('twitter:image', image);
+    updateMetaTag('twitter:image:alt', title);
+    updateMetaTag('twitter:image:width', '1200');
+    updateMetaTag('twitter:image:height', '630');
+    updateMetaTag('twitter:site', '@truefarming');
+    updateMetaTag('twitter:creator', '@truefarming');
+
+    // Canonical URL
+    updateLinkTag('canonical', url);
+
+  }, [title, description, url, image, keywords, locale]);
+
+  return null;
 }
