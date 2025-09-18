@@ -15,7 +15,7 @@ import { Analytics } from "@vercel/analytics/next";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  metadataBase: new URL(process.env.NEXT_PUBLIC_BASE_URL || 'https://truefarming.com'),
+  metadataBase: new URL(process.env.NEXT_PUBLIC_BASE_URL || 'https://www.true-farming.com'),
   title: "True Farming",
   description: "Your platform to optimize farming in Guild Wars 2",
   keywords: ["Guild Wars 2", "farming", "gold", "materials", "gaming", "MMORPG"],
@@ -36,13 +36,13 @@ export const metadata: Metadata = {
   openGraph: {
     type: 'website',
     locale: 'en_US',
-    url: 'https://truefarming.com',
+    url: 'https://www.true-farming.com',
     title: 'True Farming - Guild Wars 2 Farming Hub',
     description: 'Your platform to optimize farming in Guild Wars 2',
     siteName: 'True Farming',
     images: [
       {
-        url: '/images/icons/icon.png',
+        url: 'https://www.true-farming.com/images/icons/icon.png',
         width: 1200,
         height: 630,
         alt: 'True Farming - Guild Wars 2 Farming Hub',
@@ -53,7 +53,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: 'True Farming - Guild Wars 2 Farming Hub',
     description: 'Your platform to optimize farming in Guild Wars 2',
-    images: ['/images/icons/icon.png'],
+    images: ['https://www.true-farming.com/images/icons/icon.png'],
   },
   icons: {
     icon: [
@@ -98,8 +98,8 @@ export default function RootLayout({
           
         {/* Meta tags are automatically generated from the metadata object above */}
         <meta name="theme-color" content="#c1272d" />
-        <link rel="canonical" href="https://truefarming.com"/>
-        <link rel="alternate" hrefLang="en" href="https://truefarming.com"/>
+        <link rel="canonical" href="https://www.true-farming.com"/>
+        <link rel="alternate" hrefLang="en" href="https://www.true-farming.com"/>
       </head>
       <body className={inter.className}>
         <CookieConsentProvider>

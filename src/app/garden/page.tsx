@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import MetaTags from '@/components/SEO/MetaTags';
+;
 import { motion } from 'framer-motion';
 import Navigation from '@/components/layout/Navigation';
 import Image from 'next/image';
@@ -424,14 +424,6 @@ const JardinesPage = () => {
 
   return (
     <>
-      <MetaTags
-        title={`${t('gardenPage.title')} - True Farming`}
-        description={t('gardenPage.description')}
-        url="https://www.true-farming.com/garden"
-        keywords="Guild Wars 2, garden farming, waypoints, Tyria, farming locations, GW2"
-        locale={lang === 'es' ? 'es_ES' : lang === 'fr' ? 'fr_FR' : lang === 'de' ? 'de_DE' : 'en_US'}
-      />
-      
       <Navigation />
       <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
         <div className="container mx-auto px-4 py-8">
