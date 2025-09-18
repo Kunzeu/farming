@@ -20,10 +20,8 @@ import {
   MapPin,
   Calendar,
   CheckCircle,
-  AlertCircle,
   Hammer,
-  Copy,
-  ExternalLink
+  Copy
 } from 'lucide-react';
 import { useI18n } from '@/contexts/I18nContext';
 import { usePageTitle } from '@/hooks/usePageTitle';
@@ -45,7 +43,6 @@ const JardinesPage = () => {
   const [list2Copied, setList2Copied] = useState(false);
   const [list3Copied, setList3Copied] = useState(false);
   const [mapData, setMapData] = useState<Record<number, {name: string, region_name: string}>>({});
-  const [waypointData, setWaypointData] = useState<Record<string, string>>({});
 
   // Configurar título de la página
   usePageTitle(t('gardenPage.title'), t('gardenPage.title'));
@@ -165,14 +162,6 @@ const JardinesPage = () => {
     }
   };
 
-  const copyWaypointToClipboard = async (waypointCode: string) => {
-    try {
-      await navigator.clipboard.writeText(waypointCode);
-      // Aquí podrías agregar una notificación de éxito si quieres
-    } catch (err) {
-      console.error('Error al copiar al portapapeles:', err);
-    }
-  };
 
   // Función para copiar waypoint al portapapeles
   const copyWaypoint = async (waypoint: string) => {
@@ -303,123 +292,7 @@ const JardinesPage = () => {
     return () => { window.removeEventListener('scroll', handleScroll); };
   }, []);
 
-  const gardens = [
-    {
-      id: 'home',
-      name: t('gardenPage.gardens.home.name'),
-      description: t('gardenPage.gardens.home.description'),
-      volatileMagic: t('gardenPage.gardens.home.volatileMagic'),
-      growthTime: t('gardenPage.gardens.home.growthTime'),
-      difficulty: t('gardenPage.gardens.home.difficulty'),
-      requirements: [
-        t('gardenPage.gardens.home.requirements.seeds'),
-        t('gardenPage.gardens.home.requirements.water'),
-        t('gardenPage.gardens.home.requirements.fertilizer')
-      ],
-      tips: [
-        t('gardenPage.gardens.home.tips.dailyWatering'),
-        t('gardenPage.gardens.home.tips.premiumFertilizer'),
-        t('gardenPage.gardens.home.tips.optimalHarvest')
-      ],
-      icon: <TreePine className="w-6 h-6" />,
-      color: "from-green-500 to-green-600"
-    },
-    {
-      id: 'guild',
-      name: t('gardenPage.gardens.guild.name'),
-      description: t('gardenPage.gardens.guild.description'),
-      volatileMagic: t('gardenPage.gardens.guild.volatileMagic'),
-      growthTime: t('gardenPage.gardens.guild.growthTime'),
-      difficulty: t('gardenPage.gardens.guild.difficulty'),
-      requirements: [
-        t('gardenPage.gardens.guild.requirements.guildAccess'),
-        t('gardenPage.gardens.guild.requirements.contribution'),
-        t('gardenPage.gardens.guild.requirements.unlockedNodes')
-      ],
-      tips: [
-        t('gardenPage.gardens.guild.tips.coordinate'),
-        t('gardenPage.gardens.guild.tips.participate'),
-        t('gardenPage.gardens.guild.tips.maintainNodes')
-      ],
-      icon: <Users className="w-6 h-6" />,
-      color: "from-blue-500 to-blue-600"
-    },
-    {
-      id: 'world',
-      name: t('gardenPage.gardens.world.name'),
-      description: t('gardenPage.gardens.world.description'),
-      volatileMagic: t('gardenPage.gardens.world.volatileMagic'),
-      growthTime: t('gardenPage.gardens.world.growthTime'),
-      difficulty: t('gardenPage.gardens.world.difficulty'),
-      requirements: [
-        t('gardenPage.gardens.world.requirements.level80'),
-        t('gardenPage.gardens.world.requirements.unlockedMaps'),
-        t('gardenPage.gardens.world.requirements.tools')
-      ],
-      tips: [
-        t('gardenPage.gardens.world.tips.specificTimes'),
-        t('gardenPage.gardens.world.tips.extraTools'),
-        t('gardenPage.gardens.world.tips.groupProtection')
-      ],
-      icon: <MapPin className="w-6 h-6" />,
-      color: "from-purple-500 to-purple-600"
-    },
-    {
-      id: 'seasonal',
-      name: t('gardenPage.gardens.seasonal.name'),
-      description: t('gardenPage.gardens.seasonal.description'),
-      volatileMagic: t('gardenPage.gardens.seasonal.volatileMagic'),
-      growthTime: t('gardenPage.gardens.seasonal.growthTime'),
-      difficulty: t('gardenPage.gardens.seasonal.difficulty'),
-      requirements: [
-        t('gardenPage.gardens.seasonal.requirements.eventParticipation'),
-        t('gardenPage.gardens.seasonal.requirements.specialTools'),
-        t('gardenPage.gardens.seasonal.requirements.correctTiming')
-      ],
-      tips: [
-        t('gardenPage.gardens.seasonal.tips.markCalendar'),
-        t('gardenPage.gardens.seasonal.tips.prepareResources'),
-        t('gardenPage.gardens.seasonal.tips.participateFromStart')
-      ],
-      icon: <Calendar className="w-6 h-6" />,
-      color: "from-orange-500 to-orange-600"
-    }
-  ];
 
-  const plantTypes = [
-    {
-      name: t('gardenPage.plants.magicCrystals.name'),
-      volatileMagic: t('gardenPage.plants.magicCrystals.volatileMagic'),
-      growthTime: t('gardenPage.plants.magicCrystals.growthTime'),
-      rarity: t('gardenPage.plants.magicCrystals.rarity'),
-      color: 'text-green-400',
-      icon: <Flower2 className="w-6 h-6" />
-    },
-    {
-      name: t('gardenPage.plants.volatilityFlowers.name'),
-      volatileMagic: t('gardenPage.plants.volatilityFlowers.volatileMagic'),
-      growthTime: t('gardenPage.plants.volatilityFlowers.growthTime'),
-      rarity: t('gardenPage.plants.volatilityFlowers.rarity'),
-      color: 'text-blue-400',
-      icon: <Flower2 className="w-6 h-6" />
-    },
-    {
-      name: t('gardenPage.plants.energyTrees.name'),
-      volatileMagic: t('gardenPage.plants.energyTrees.volatileMagic'),
-      growthTime: t('gardenPage.plants.energyTrees.growthTime'),
-      rarity: t('gardenPage.plants.energyTrees.rarity'),
-      color: 'text-purple-400',
-      icon: <TreePine className="w-6 h-6" />
-    },
-    {
-      name: t('gardenPage.plants.legendaryPlants.name'),
-      volatileMagic: t('gardenPage.plants.legendaryPlants.volatileMagic'),
-      growthTime: t('gardenPage.plants.legendaryPlants.growthTime'),
-      rarity: t('gardenPage.plants.legendaryPlants.rarity'),
-      color: 'text-orange-400',
-      icon: <Star className="w-6 h-6" />
-    }
-  ];
 
 
   return (

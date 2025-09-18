@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import { motion } from 'framer-motion'
+import Image from 'next/image'
 import Navigation from '@/components/layout/Navigation'
 import { Search, Calculator, BarChart3, Target, Percent, DollarSign, Package, X, Plus, Shield } from 'lucide-react'
 import { GW2Item, GW2Price, GW2Listing } from '@/types/gw2'
@@ -448,9 +449,11 @@ export default function BuyoutPage() {
                          >
                            <div className="flex items-center gap-3">
                              {item.icon && (
-                               <img 
+                               <Image 
                                  src={item.icon} 
                                  alt={item.name}
+                                 width={32}
+                                 height={32}
                                  className="w-8 h-8 rounded"
                                />
                              )}
@@ -490,9 +493,11 @@ export default function BuyoutPage() {
                         >
                           <div className="flex items-center gap-2">
                             {item.icon && (
-                              <img 
+                              <Image 
                                 src={item.icon} 
                                 alt={item.name}
+                                width={24}
+                                height={24}
                                 className="w-6 h-6 rounded"
                               />
                             )}
@@ -533,9 +538,11 @@ export default function BuyoutPage() {
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-4">
                       {selectedItem.icon && (
-                        <img 
+                        <Image 
                           src={selectedItem.icon} 
                           alt={selectedItem.name}
+                          width={64}
+                          height={64}
                           className="w-16 h-16 rounded"
                         />
                       )}
