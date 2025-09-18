@@ -468,7 +468,7 @@ export default function GiftOfMasteryPage() {
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               className="w-14 h-14 bg-blue-900 hover:bg-blue-800 text-white rounded-full shadow-lg shadow-blue-900/20 flex items-center justify-center transition-all duration-300 hover:scale-110 active:scale-95"
             >
-              {mobileMenuOpen ? <X className="w-8 h-8" /> : <img src="/images/icons/index.png" alt="Menu" className="w-8 h-8" />}
+              {mobileMenuOpen ? <X className="w-8 h-8" /> : <Image src="/images/icons/index.png" alt="Menu" width={32} height={32} className="w-8 h-8" />}
             </button>
           </div>
 

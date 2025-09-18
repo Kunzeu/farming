@@ -283,7 +283,7 @@ export default function ConversionGuidePage() {
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               className="w-14 h-14 bg-purple-900 hover:bg-purple-800 text-white rounded-full shadow-lg shadow-purple-900/20 flex items-center justify-center transition-all duration-300 hover:scale-110 active:scale-95"
             >
-              {mobileMenuOpen ? <X className="w-8 h-8" /> : <img src="/images/icons/index.png" alt={t('conversionGuidePage.images.menu')} className="w-8 h-8" />}
+              {mobileMenuOpen ? <X className="w-8 h-8" /> : <Image src="/images/icons/index.png" alt={t('conversionGuidePage.images.menu')} width={32} height={32} className="w-8 h-8" />}
             </button>
           </div>
 
@@ -510,9 +510,11 @@ export default function ConversionGuidePage() {
                   </p>
                   
                   <div className="mb-6 flex justify-center">
-                    <img 
+                    <Image 
                       src="/thumbnails/convertion.webp" 
                       alt={t('conversionGuidePage.images.conversionRecipe')} 
+                      width={800}
+                      height={600}
                       className="rounded-lg shadow-lg max-w-full h-auto cursor-pointer hover:opacity-90 transition-opacity"
                       onClick={() => openImageModal("/thumbnails/convertion.webp", t('conversionGuidePage.images.conversionRecipe'))}
                     />

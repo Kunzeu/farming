@@ -516,7 +516,7 @@ export default function GiftOfJadeMasteryPage() {
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               className="w-14 h-14 bg-blue-900 hover:bg-blue-800 text-white rounded-full shadow-lg shadow-blue-900/20 flex items-center justify-center transition-all duration-300 hover:scale-110 active:scale-95"
             >
-              {mobileMenuOpen ? <X className="w-8 h-8" /> : <img src="/images/icons/index.png" alt="Menu" className="w-8 h-8" />}
+              {mobileMenuOpen ? <X className="w-8 h-8" /> : <Image src="/images/icons/index.png" alt="Menu" width={32} height={32} className="w-8 h-8" />}
             </button>
           </div>  
 
@@ -1062,22 +1062,31 @@ export default function GiftOfJadeMasteryPage() {
                         <span className="text-green-400 font-bold text-lg">9.</span>
                         <div className="flex items-center space-x-3">
                           <div className="flex items-center space-x-2">
-                            <img 
+                            <Image 
                               src="https://wiki.guildwars2.com/images/4/46/Weaponsmith_tango_icon_20px.png" 
                               alt={t('giftOfJadeMasteryPage.seller.weaponsmith')} 
+                              width={20}
+                              height={20}
                               className="w-5 h-5"
+                              unoptimized
                             />
                             <span className="text-white font-semibold">/</span>
-                            <img 
+                            <Image 
                               src="https://wiki.guildwars2.com/images/b/b7/Artificer_tango_icon_20px.png" 
                               alt={t('giftOfJadeMasteryPage.seller.artificer')} 
+                              width={20}
+                              height={20}
                               className="w-5 h-5"
+                              unoptimized
                             />
                             <span className="text-white font-semibold">/</span>
-                            <img 
+                            <Image 
                               src="https://wiki.guildwars2.com/images/f/f3/Huntsman_tango_icon_20px.png" 
                               alt={t('giftOfJadeMasteryPage.seller.huntsman')} 
+                              width={20}
+                              height={20}
                               className="w-5 h-5"
+                              unoptimized
                             />
                           </div>
                           <span className="text-white font-semibold">al 500</span>
@@ -1098,10 +1107,13 @@ export default function GiftOfJadeMasteryPage() {
                         <span className="text-green-400 font-bold text-lg">11.</span>
                         <div className="flex-1">
                           <div className="flex items-center space-x-2 mb-2">
-                            <img 
+                            <Image 
                               src="https://wiki.guildwars2.com/images/b/b7/Mastery_point_%28Central_Tyria%29.png" 
                               alt="Mastery Point" 
+                              width={20}
+                              height={20}
                               className="w-5 h-5"
+                              unoptimized
                             />
                             <span className="text-white font-semibold">{t('giftOfJadeMasteryPage.seller.masteryTitle')}</span>
                           </div>

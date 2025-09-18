@@ -42,7 +42,7 @@ export const metadata: Metadata = {
     siteName: 'True Farming',
     images: [
       {
-        url: 'https://www.true-farming.com/images/icons/icon.png',
+        url: 'https://www.true-farming.com/images/icons/opengraph-image.png',
         width: 1200,
         height: 630,
         alt: 'True Farming - Guild Wars 2 Farming Hub',
@@ -53,7 +53,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: 'True Farming - Guild Wars 2 Farming Hub',
     description: 'Your platform to optimize farming in Guild Wars 2',
-    images: ['https://www.true-farming.com/images/icons/icon.png'],
+    images: ['https://www.true-farming.com/images/icons/opengraph-image.png'],
   },
   icons: {
     icon: [
@@ -100,6 +100,32 @@ export default function RootLayout({
         <meta name="theme-color" content="#c1272d" />
         <link rel="canonical" href="https://www.true-farming.com"/>
         <link rel="alternate" hrefLang="en" href="https://www.true-farming.com"/>
+        
+        {/* Open Graph meta tags for social media */}
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content="https://www.true-farming.com" />
+        <meta property="og:title" content="True Farming - Guild Wars 2 Farming Hub" />
+        <meta property="og:description" content="Your platform to optimize farming in Guild Wars 2" />
+        <meta property="og:image" content="https://www.true-farming.com/images/icons/opengraph-image.png" />
+        <meta property="og:image:width" content="1200" />
+        <meta property="og:image:height" content="630" />
+        <meta property="og:image:alt" content="True Farming - Guild Wars 2 Farming Hub" />
+        <meta property="og:image:type" content="image/png" />
+        <meta property="og:site_name" content="True Farming" />
+        <meta property="og:locale" content="en_US" />
+        <meta property="og:image:secure_url" content="https://www.true-farming.com/images/icons/opengraph-image.png" />
+        
+        {/* Twitter meta tags */}
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:url" content="https://www.true-farming.com" />
+        <meta name="twitter:title" content="True Farming - Guild Wars 2 Farming Hub" />
+        <meta name="twitter:description" content="Your platform to optimize farming in Guild Wars 2" />
+        <meta name="twitter:image" content="https://www.true-farming.com/images/icons/opengraph-image.png" />
+        <meta name="twitter:image:alt" content="True Farming - Guild Wars 2 Farming Hub" />
+        <meta name="twitter:image:width" content="1200" />
+        <meta name="twitter:image:height" content="630" />
+        <meta name="twitter:site" content="@truefarming" />
+        <meta name="twitter:creator" content="@truefarming" />
       </head>
       <body className={inter.className}>
         <CookieConsentProvider>
