@@ -42,7 +42,7 @@ export const metadata: Metadata = {
     siteName: 'True Farming',
     images: [
       {
-        url: '/images/icons/icon.png',
+        url: '/opengraph.png',
         width: 1200,
         height: 630,
         alt: 'True Farming - Guild Wars 2 Farming Hub',
@@ -53,7 +53,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: 'True Farming - Guild Wars 2 Farming Hub',
     description: 'Your platform to optimize farming in Guild Wars 2',
-    images: ['/images/icons/icon.png'],
+    images: ['/opengraph.png'],
   },
   icons: {
     icon: [
@@ -105,14 +105,14 @@ export default function RootLayout({
         <link rel="alternate" hrefLang="de" href="https://www.true-farming.com/de" />
         
         {/* Open Graph Meta Tags */}
-        <meta property="og:image" content="/images/icons/icon.png" />
+        <meta property="og:image" content="/opengraph.png" />
         <meta property="og:image:width" content="1200" />
         <meta property="og:image:height" content="630" />
         <meta property="og:image:type" content="image/png" />
         <meta property="og:image:alt" content="True Farming - Guild Wars 2 Farming Hub" />
         
         {/* Twitter Card Meta Tags */}
-        <meta name="twitter:image" content="/images/icons/icon.png" />
+        <meta name="twitter:image" content="/opengraph.png" />
         <meta name="twitter:image:alt" content="True Farming - Guild Wars 2 Farming Hub" />
         
         {/* Additional Meta Tags */}
