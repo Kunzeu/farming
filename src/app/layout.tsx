@@ -15,7 +15,7 @@ import { Analytics } from "@vercel/analytics/next";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  metadataBase: new URL(process.env.NEXT_PUBLIC_BASE_URL || 'https://truefarming.com'),
+  metadataBase: new URL(process.env.NEXT_PUBLIC_BASE_URL || 'https://www.true-farming.com'),
   title: "True Farming",
   description: "Your platform to optimize farming in Guild Wars 2",
   keywords: ["Guild Wars 2", "farming", "gold", "materials", "gaming", "MMORPG"],
@@ -98,11 +98,11 @@ export default function RootLayout({
           
         {/* Meta tags are automatically generated from the metadata object above */}
         <meta name="theme-color" content="#c1272d" />
-        <link rel="canonical" href="https://truefarming.com" />
-        <link rel="alternate" hrefLang="en" href="https://truefarming.com" />
-        <link rel="alternate" hrefLang="es" href="https://truefarming.com/es" />
-        <link rel="alternate" hrefLang="fr" href="https://truefarming.com/fr" />
-        <link rel="alternate" hrefLang="de" href="https://truefarming.com/de" />
+        <link rel="canonical" href="https://www.true-farming.com" />
+        <link rel="alternate" hrefLang="en" href="https://www.true-farming.com" />
+        <link rel="alternate" hrefLang="es" href="https://www.true-farming.com/es" />
+        <link rel="alternate" hrefLang="fr" href="https://www.true-farming.com/fr" />
+        <link rel="alternate" hrefLang="de" href="https://www.true-farming.com/de" />
         
         {/* Open Graph Meta Tags */}
         <meta property="og:image" content="/images/icons/icon.png" />
@@ -121,8 +121,8 @@ export default function RootLayout({
         <meta name="twitter:image:alt" content="True Farming - Guild Wars 2 Farming Hub" />
         <meta name="twitter:image:width" content="1200" />
         <meta name="twitter:image:height" content="630" />
-        <meta name="twitter:site" content="@truefarming" />
-        <meta name="twitter:creator" content="@truefarming" />
+        <meta name="twitter:site" content="@true-farming" />
+        <meta name="twitter:creator" content="@true-farming" />
       </head>
       <body className={inter.className}>
         <CookieConsentProvider>
