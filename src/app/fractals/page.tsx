@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useMemo, useEffect, useCallback } from 'react';
+import MetaTags from '@/components/SEO/MetaTags';
 import { useI18n } from '@/contexts/I18nContext';
 import Navigation from '@/components/layout/Navigation';
 import { Package, Search } from 'lucide-react';
@@ -990,7 +991,15 @@ export default function FarmingTrackerPage() {
   );
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
+    <>
+      <MetaTags
+        title="Fractals - True Farming"
+        description="Calculate fractal profits and optimize your fractal runs in Guild Wars 2. Track daily fractal rewards and maximize your gold per hour."
+        url="https://www.true-farming.com/fractals"
+        keywords="Guild Wars 2, fractals, daily fractals, fractal profits, GW2 fractals, fractal rewards"
+      />
+      
+      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
       <style jsx global>{`
         @media (max-width: 640px) {
           .overflow-x-auto {
@@ -3143,6 +3152,7 @@ export default function FarmingTrackerPage() {
            </>
          )}
        </main>
-     </div>
-   );
+    </div>
+    </>
+  );
  }

@@ -167,7 +167,7 @@ export default function FarmingRoutes() {
       <MetaTags
         title="Farming Routes - True Farming"
         description="Discover the best farming routes in Guild Wars 2. Optimize your gold per hour with our comprehensive route database and profit calculations."
-        url="https://truefarming.com/farming-routes"
+        url="https://www.true-farming.com/farming-routes"
         keywords="Guild Wars 2, farming routes, gold per hour, profit, GW2 farming, Tyria routes"
       />
       

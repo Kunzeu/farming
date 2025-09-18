@@ -397,7 +397,7 @@ export default function HomePage() {
       <MetaTags
         title="True Farming - Guild Wars 2 Farming Hub"
         description="Optimize your Guild Wars 2 farming with our comprehensive tools. Track materials, calculate profits, and discover the best farming routes in Tyria."
-        url="https://truefarming.com"
+        url="https://www.true-farming.com"
         keywords="Guild Wars 2, farming, gold, materials, profit calculator, farming routes, GW2, Tyria"
       />
       

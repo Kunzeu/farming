@@ -13,7 +13,7 @@ export default function MetaTags({
   title, 
   description, 
   url, 
-  image = 'https://truefarming.com/images/icons/icon.png',
+  image = 'https://www.true-farming.com/images/icons/icon.png',
   keywords = 'Guild Wars 2, farming, gold, materials, GW2, Tyria',
   locale = 'en_US'
 }: MetaTagsProps) {
@@ -32,6 +32,7 @@ export default function MetaTags({
       <meta property="og:image:width" content="1200" />
       <meta property="og:image:height" content="630" />
       <meta property="og:image:alt" content={title} />
+      <meta property="og:image:type" content="image/png" />
       <meta property="og:site_name" content="True Farming" />
       <meta property="og:locale" content={locale} />
       
@@ -42,6 +43,8 @@ export default function MetaTags({
       <meta name="twitter:description" content={description} />
       <meta name="twitter:image" content={image} />
       <meta name="twitter:image:alt" content={title} />
+      <meta name="twitter:image:width" content="1200" />
+      <meta name="twitter:image:height" content="630" />
       
       {/* Additional meta tags */}
       <meta name="robots" content="index, follow" />
@@ -49,6 +52,14 @@ export default function MetaTags({
       <meta name="theme-color" content="#0f172a" />
       <meta name="msapplication-TileColor" content="#0f172a" />
       <link rel="canonical" href={url} />
+      
+      {/* Additional meta tags for better compatibility */}
+      <meta property="og:image:secure_url" content={image} />
+      <meta property="og:updated_time" content={new Date().toISOString()} />
+      
+      {/* Twitter specific tags */}
+      <meta name="twitter:site" content="@truefarming" />
+      <meta name="twitter:creator" content="@truefarming" />
     </Head>
   );
 }

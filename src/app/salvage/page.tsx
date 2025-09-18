@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import MetaTags from '@/components/SEO/MetaTags';
 import { motion } from 'framer-motion';
 import { Package, ChevronRight, Star, FileText, Wrench, Gift } from 'lucide-react';
 import Navigation from '@/components/layout/Navigation';
@@ -119,6 +120,13 @@ export default function SalvagePage() {
 
   return (
     <>
+      <MetaTags
+        title="Salvaging - True Farming"
+        description="Master the art of salvaging in Guild Wars 2. Learn about salvage kits, luck calculations, and maximize your material returns."
+        url="https://www.true-farming.com/salvage"
+        keywords="Guild Wars 2, salvaging, salvage kits, luck, materials, GW2 salvaging"
+      />
+      
       <Navigation />
       <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
         <div className="max-w-7xl mx-auto p-4 sm:p-6">

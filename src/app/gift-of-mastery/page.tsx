@@ -1,6 +1,7 @@
 'use client'
 
 import { motion } from 'framer-motion'
+import MetaTags from '@/components/SEO/MetaTags'
 import { useState, useEffect } from 'react'
 import { Award, Star, Crown, Gem, Hammer, ExternalLink, Loader2, Info, Zap, X, ShoppingCart, Wrench, ArrowRight, MessageCircle, Lightbulb, ChevronLeft, ChevronRight } from 'lucide-react'
 import { usePageTitle } from '@/hooks/usePageTitle'
@@ -372,8 +373,16 @@ export default function GiftOfMasteryPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 to-slate-800 flex flex-col" style={{ scrollBehavior: 'smooth' }}>
-      <Navigation />
+    <>
+      <MetaTags
+        title="Gift of Mastery - True Farming"
+        description="Calculate the cost and requirements for Gift of Mastery in Guild Wars 2. Track materials, prices, and optimize your legendary crafting."
+        url="https://www.true-farming.com/gift-of-mastery"
+        keywords="Guild Wars 2, gift of mastery, legendary crafting, core tyria, mastery, GW2 legendary"
+      />
+      
+      <div className="min-h-screen bg-gradient-to-br from-slate-900 to-slate-800 flex flex-col" style={{ scrollBehavior: 'smooth' }}>
+        <Navigation />
       <div className="container mx-auto px-4 py-8 flex-1">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
           {/* Sidebar sticky - Desktop Only */}
@@ -1193,5 +1202,6 @@ export default function GiftOfMasteryPage() {
         </div>
       )}
     </div>
+    </>
   )
 }

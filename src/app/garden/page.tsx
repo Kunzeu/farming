@@ -427,7 +427,7 @@ const JardinesPage = () => {
       <MetaTags
         title={`${t('gardenPage.title')} - True Farming`}
         description={t('gardenPage.description')}
-        url="https://truefarming.com/garden"
+        url="https://www.true-farming.com/garden"
         keywords="Guild Wars 2, garden farming, waypoints, Tyria, farming locations, GW2"
         locale={lang === 'es' ? 'es_ES' : lang === 'fr' ? 'fr_FR' : lang === 'de' ? 'de_DE' : 'en_US'}
       />
