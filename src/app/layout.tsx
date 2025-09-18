@@ -98,11 +98,8 @@ export default function RootLayout({
           
         {/* Meta tags are automatically generated from the metadata object above */}
         <meta name="theme-color" content="#c1272d" />
-        <link rel="canonical" href="https://truefarming.com" />
-        <link rel="alternate" hrefLang="en" href="https://truefarming.com" />
-        <link rel="alternate" hrefLang="es" href="https://truefarming.com/es" />
-        <link rel="alternate" hrefLang="fr" href="https://truefarming.com/fr" />
-        <link rel="alternate" hrefLang="de" href="https://truefarming.com/de" />
+        <link rel="canonical" href="https://truefarming.com"/>
+        <link rel="alternate" hrefLang="en" href="https://truefarming.com"/>
       </head>
       <body className={inter.className}>
         <CookieConsentProvider>

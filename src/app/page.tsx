@@ -1,5 +1,6 @@
 'use client'
 
+import MetaTags from '@/components/SEO/MetaTags'
 import { motion } from 'framer-motion'
 import Link from 'next/link'
 import Image from 'next/image'
@@ -392,8 +393,16 @@ export default function HomePage() {
   // Nota: lógica de próximo evento removida porque el CTA solo se muestra con evento activo
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
-      <Navigation />
+    <>
+      <MetaTags
+        title="True Farming - Guild Wars 2 Farming Hub"
+        description="Optimize your Guild Wars 2 farming with our comprehensive tools. Track materials, calculate profits, and discover the best farming routes in Tyria."
+        url="https://truefarming.com"
+        keywords="Guild Wars 2, farming, gold, materials, profit calculator, farming routes, GW2, Tyria"
+      />
+      
+      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
+        <Navigation />
       
       {/* Container principal */}
       <div className="container mx-auto px-4 py-8">
@@ -611,5 +620,6 @@ export default function HomePage() {
         onClose={() => setShowSettings(false)} 
       />
     </div>
+    </>
   )
 } 

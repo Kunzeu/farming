@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
+import MetaTags from '@/components/SEO/MetaTags';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
 import Navigation from '@/components/layout/Navigation';
@@ -162,8 +163,16 @@ export default function FarmingRoutes() {
   }
 
   return (
-    <div className="min-h-screen">
-      <Navigation />
+    <>
+      <MetaTags
+        title="Farming Routes - True Farming"
+        description="Discover the best farming routes in Guild Wars 2. Optimize your gold per hour with our comprehensive route database and profit calculations."
+        url="https://truefarming.com/farming-routes"
+        keywords="Guild Wars 2, farming routes, gold per hour, profit, GW2 farming, Tyria routes"
+      />
+      
+      <div className="min-h-screen">
+        <Navigation />
       
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
@@ -453,5 +462,6 @@ export default function FarmingRoutes() {
       />
 
     </div>
+    </>
   );
 } 
