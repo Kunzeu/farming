@@ -44,6 +44,7 @@ const JardinesPage = () => {
   const [list2Copied, setList2Copied] = useState(false);
   const [list3Copied, setList3Copied] = useState(false);
   const [mapData, setMapData] = useState<Record<number, {name: string, region_name: string}>>({});
+  const [waypointData, setWaypointData] = useState<Record<string, string>>({});
 
   // Configurar título de la página
   usePageTitle(t('gardenPage.title'), t('gardenPage.title'));
@@ -128,7 +129,7 @@ const JardinesPage = () => {
     const fetchMapData = async () => {
       try {
         // IDs de los mapas que usamos en la página
-        const mapIds = [21, 22, 24, 25, 26, 27, 28]; // Fields of Ruin, Kessex Hills, Gendarran Fields, Harathi Hinterlands, Blazeridge Steppes, Iron Marches, etc.
+         const mapIds = [20, 21, 22, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 39, 51, 53, 73]; // Todos los mapas de jardines
         
         const response = await fetch(`https://api.guildwars2.com/v2/maps?ids=${mapIds.join(',')}&lang=${lang}`);
         const maps = await response.json();
@@ -578,7 +579,7 @@ const JardinesPage = () => {
                   
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                     {/* Plantas */}
-                    <div className="bg-slate-800/50 backdrop-blur-sm border border-slate-700/50 rounded-xl p-6 hover:border-emerald-500/50 transition-all duration-200">
+                    <div className="bg-slate-800/50 backdrop-blur-sm border border-slate-700/50 rounded-xl p-8 hover:border-emerald-500/50 transition-all duration-200">
                       <div className="flex items-center gap-3 mb-4">
                         <div className="w-12 h-12 flex items-center justify-center">
                           <Image
@@ -630,7 +631,7 @@ const JardinesPage = () => {
                     </div>
 
                     {/* Mineral */}
-                    <div className="bg-slate-800/50 backdrop-blur-sm border border-slate-700/50 rounded-xl p-6 hover:border-emerald-500/50 transition-all duration-200">
+                    <div className="bg-slate-800/50 backdrop-blur-sm border border-slate-700/50 rounded-xl p-8 hover:border-emerald-500/50 transition-all duration-200">
                       <div className="flex items-center gap-3 mb-4">
                         <div className="w-12 h-12 flex items-center justify-center">
                           <Image
@@ -664,7 +665,7 @@ const JardinesPage = () => {
                     </div>
                     
                     {/* Madera */}
-                    <div className="bg-slate-800/50 backdrop-blur-sm border border-slate-700/50 rounded-xl p-6 hover:border-emerald-500/50 transition-all duration-200">
+                    <div className="bg-slate-800/50 backdrop-blur-sm border border-slate-700/50 rounded-xl p-8 hover:border-emerald-500/50 transition-all duration-200">
                       <div className="flex items-center gap-3 mb-4">
                         <div className="w-12 h-12 flex items-center justify-center">
                           <Image
@@ -939,147 +940,839 @@ const JardinesPage = () => {
                     </p>
                   </div>
                   
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                    {/* Fields of Ruin */}
-                    <div className="bg-slate-800/50 backdrop-blur-sm border border-slate-700/50 rounded-xl p-6 hover:border-emerald-500/50 transition-all duration-200">
-                      <div className="space-y-4">
-                           <Image
-                             src="/images/garden/test.png"
-                             alt="Fields of Ruin Garden Location"
-                             width={564}
-                             height={1024}
-                             className="w-full h-64 object-contain rounded-lg bg-slate-700/50"
-                             unoptimized
-                           />
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    {/* Fields of Ruin - Estilo Uniforme */}
+                    <div className="group relative overflow-hidden rounded-2xl bg-slate-800/50 backdrop-blur-sm border border-slate-700/50 hover:border-emerald-400/60 transition-all duration-300 hover:shadow-xl hover:shadow-emerald-500/20 h-full flex flex-col">
+                      {/* Imagen con dimensiones uniformes */}
+                      <div className="relative h-72 w-full overflow-hidden">
+                        <Image
+                          src="/images/garden/test.png"
+                          alt="Fields of Ruin Garden Location"
+                          fill
+                          className="object-contain group-hover:scale-105 transition-transform duration-500"
+                          unoptimized
+                        />
+                        {/* Overlay sutil para legibilidad */}
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
                         
-                        {/* 1. Nombre del mapa */}
-                        <h3 className="text-xl font-bold text-white mb-3 flex items-center">
-                          <div className="w-8 h-8 bg-gradient-to-br from-red-500 to-orange-600 rounded-full flex items-center justify-center mr-3">
-                            <MapPin className="w-4 h-4 text-white" />
-                          </div>
+                      </div>
+                      
+                      {/* Contenido uniforme */}
+                      <div className="p-6 flex-1 flex flex-col">
+                        <h3 className="text-xl font-bold text-white mb-4">
                           {mapData[21]?.name || 'Fields of Ruin'}
                         </h3>
                         
-                        {/* 2. Nombre del punto de ruta */}
-                        <div className="mb-3">
-                          <p className="text-emerald-300 font-semibold flex items-center gap-2">
+                        <div className="bg-slate-700/50 rounded-lg p-4 border border-slate-600/40 mb-4">
+                          <p className="text-emerald-300 font-semibold flex items-center gap-3 text-sm">
                             <Image 
                               src="/images/icons/waypoint-icon.png" 
                               alt="Waypoint" 
-                              width={16} 
-                              height={16} 
-                              className="w-7 h-7"
+                              width={20} 
+                              height={20} 
+                              className="w-5 h-5"
                             />
                             {t('gardenPage.waypoints.ogreRoad')}
                           </p>
                         </div>
                         
-                        {/* 3. Qué da el garden */}
-                        <div className="mb-3">
-                          <div className="flex items-center gap-2 mb-2">
-                            <div className="w-2 h-2 bg-blue-400 rounded-full"></div>
-                            <span className="text-gray-300 font-medium">{t('gardenPage.sections.locations.rewards')}:</span>
-                          </div>
-                          <p className="text-blue-300 font-semibold">8 uvas disponibles</p>
-                        </div>
-                        
-                        {/* 4. Botón para copiar waypoint */}
-                        <div>
-                          <button
-                            onClick={() => copyWaypoint('[&BE8BAAA=]')}
-                            className={`w-full font-medium py-2 px-3 rounded-lg transition-colors duration-200 flex items-center justify-center gap-2 text-sm ${
-                              copiedWaypoint === '[&BE8BAAA=]' 
-                                ? 'bg-green-600 text-white' 
-                                : 'bg-emerald-600 hover:bg-emerald-700 text-white'
-                            }`}
-                          >
-                            {copiedWaypoint === '[&BE8BAAA=]' ? (
-                              <CheckCircle className="w-4 h-4" />
-                            ) : (
-                              <Copy className="w-4 h-4" />
-                            )}
-                            {copiedWaypoint === '[&BE8BAAA=]' 
-                              ? t('gardenPage.sections.locations.waypointCopied')
-                              : t('gardenPage.sections.locations.copyWaypoint')
-                            }
-                          </button>
-                        </div>
+                        <button
+                          onClick={() => copyWaypoint('[&BE8BAAA=]')}
+                          className={`w-full font-bold py-3 px-4 rounded-lg transition-all duration-300 flex items-center justify-center gap-2 text-sm mt-auto ${
+                            copiedWaypoint === '[&BE8BAAA=]' 
+                              ? 'bg-green-600 text-white shadow-xl' 
+                              : 'bg-gradient-to-r from-emerald-600 to-green-600 hover:from-emerald-500 hover:to-green-500 text-white shadow-lg hover:shadow-xl hover:scale-105'
+                          }`}
+                        >
+                          {copiedWaypoint === '[&BE8BAAA=]' ? (
+                            <CheckCircle className="w-4 h-4" />
+                          ) : (
+                            <Copy className="w-4 h-4" />
+                          )}
+                          {copiedWaypoint === '[&BE8BAAA=]' 
+                            ? t('gardenPage.sections.locations.waypointCopied')
+                            : t('gardenPage.sections.locations.copyWaypoint')
+                          }
+                        </button>
                       </div>
                     </div>
 
-                    {/* Kessex Hills */}
-                    <div className="bg-slate-800/50 backdrop-blur-sm border border-slate-700/50 rounded-xl p-6 hover:border-emerald-500/50 transition-all duration-200">
-                      <div className="space-y-4">
-                        <div className="bg-slate-700/50 rounded-lg p-4">
-                          <Image
-                            src="/images/garden/test2.png"
-                            alt="Kessex Hills Garden Location"
-                            width={400}
-                            height={200}
-                            className="w-full h-64 object-contain rounded-lg mb-4 bg-slate-700/50"
-                            unoptimized
-                          />
-                          
-                          {/* 1. Nombre del mapa */}
-                          <h3 className="text-xl font-bold text-white mb-3 flex items-center">
-                            <div className="w-8 h-8 bg-gradient-to-br from-green-500 to-teal-600 rounded-full flex items-center justify-center mr-3">
-                              <MapPin className="w-4 h-4 text-white" />
-                            </div>
-                            {mapData[22]?.name || 'Kessex Hills'}
-                          </h3>
-                          
-                          {/* 2. Nombre del punto de ruta */}
-                          <div className="mb-3">
-                            <p className="text-emerald-300 font-semibold flex items-center gap-2">
-                              <Image 
-                                src="/images/icons/waypoint-icon.png" 
-                                alt="Waypoint" 
-                                width={16} 
-                                height={16} 
-                                className="w-4 h-4"
-                              />
-                              {t('gardenPage.waypoints.guardianStone')}
-                            </p>
-                          </div>
-                          
-                          {/* 3. Qué da el garden */}
-                          <div className="mb-3">
-                            <div className="flex items-center gap-2 mb-2">
-                              <div className="w-2 h-2 bg-blue-400 rounded-full"></div>
-                              <span className="text-gray-300 font-medium">Recompensas:</span>
-                            </div>
-                            <p className="text-blue-300 font-semibold">6 uvas disponibles</p>
-                          </div>
-                          
-                          {/* 4. Botón para copiar waypoint */}
-                          <div>
-                            <button
-                              onClick={() => copyWaypoint('[&BAACAAA=]')}
-                              className={`w-full font-medium py-2 px-3 rounded-lg transition-colors duration-200 flex items-center justify-center gap-2 text-sm ${
-                                copiedWaypoint === '[&BAACAAA=]' 
-                                  ? 'bg-green-600 text-white' 
-                                  : 'bg-emerald-600 hover:bg-emerald-700 text-white'
-                              }`}
-                            >
-                              {copiedWaypoint === '[&BAACAAA=]' ? (
-                                <CheckCircle className="w-4 h-4" />
-                              ) : (
-                                <Copy className="w-4 h-4" />
-                              )}
-                              {copiedWaypoint === '[&BAACAAA=]' 
-                                ? t('gardenPage.sections.locations.waypointCopied')
-                                : t('gardenPage.sections.locations.copyWaypoint')
-                              }
-                            </button>
-                          </div>
+                    {/* Fireheart Rise - Estilo Uniforme */}
+                    <div className="group relative overflow-hidden rounded-2xl bg-slate-800/50 backdrop-blur-sm border border-slate-700/50 hover:border-teal-400/60 transition-all duration-300 hover:shadow-xl hover:shadow-teal-500/20">
+                      {/* Imagen con dimensiones uniformes */}
+                      <div className="relative h-72 w-full overflow-hidden">
+                        <Image
+                          src="/images/garden/test2.png"
+                          alt="Fireheart Rise"
+                          fill
+                          className="object-contain group-hover:scale-105 transition-transform duration-500"
+                          unoptimized
+                        />
+                        {/* Overlay sutil para legibilidad */}
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+                        
+                      </div>
+                      
+                      {/* Contenido uniforme */}
+                      <div className="p-6 flex-1 flex flex-col">
+                        <h3 className="text-xl font-bold text-white mb-4">
+                          {mapData[20]?.name || 'Blazeridge Steppes'}
+                        </h3>
+                        
+                        <div className="bg-slate-700/50 rounded-lg p-4 border border-slate-600/40 mb-4">
+                          <p className="text-teal-300 font-semibold flex items-center gap-3 text-sm">
+                            <Image 
+                              src="/images/icons/waypoint-icon.png" 
+                              alt="Waypoint" 
+                              width={20} 
+                              height={20} 
+                              className="w-5 h-5"
+                            />
+                            {t('gardenPage.waypoints.guardianStone')}
+                          </p>
                         </div>
+                        
+                        <button
+                          onClick={() => copyWaypoint('[&BAACAAA=]')}
+                          className={`w-full font-bold py-3 px-4 rounded-lg transition-all duration-300 flex items-center justify-center gap-2 text-sm mt-auto ${
+                            copiedWaypoint === '[&BAACAAA=]' 
+                              ? 'bg-green-600 text-white shadow-xl' 
+                              : 'bg-gradient-to-r from-teal-600 to-cyan-600 hover:from-teal-500 hover:to-cyan-500 text-white shadow-lg hover:shadow-xl hover:scale-105'
+                          }`}
+                        >
+                          {copiedWaypoint === '[&BAACAAA=]' ? (
+                            <CheckCircle className="w-4 h-4" />
+                          ) : (
+                            <Copy className="w-4 h-4" />
+                          )}
+                          {copiedWaypoint === '[&BAACAAA=]' 
+                            ? t('gardenPage.sections.locations.waypointCopied')
+                            : t('gardenPage.sections.locations.copyWaypoint')
+                          }
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* Iron Marches - Estilo Uniforme */}
+                    <div className="group relative overflow-hidden rounded-2xl bg-slate-800/50 backdrop-blur-sm border border-slate-700/50 hover:border-purple-400/60 transition-all duration-300 hover:shadow-xl hover:shadow-purple-500/20">
+                      {/* Imagen con dimensiones uniformes */}
+                      <div className="relative h-72 w-full overflow-hidden">
+                        <Image
+                          src="/images/garden/Tyria-3.webp"
+                          alt={mapData[25]?.name || 'Iron Marches Garden Location'}
+                          fill
+                          className="object-contain group-hover:scale-105 transition-transform duration-500"
+                          unoptimized
+                        />
+                        {/* Overlay sutil para legibilidad */}
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+                        
+                      </div>
+                      
+                      {/* Contenido uniforme */}
+                      <div className="p-6 flex-1 flex flex-col">
+                        <h3 className="text-xl font-bold text-white mb-4">
+                          {mapData[25]?.name || 'Iron Marches'}
+                        </h3>
+                        
+                        <div className="bg-slate-700/50 rounded-lg p-4 border border-slate-600/40 mb-4">
+                          <p className="text-purple-300 font-semibold flex items-center gap-3 text-sm">
+                            <Image 
+                              src="/images/icons/waypoint-icon.png" 
+                              alt="Waypoint" 
+                              width={20} 
+                              height={20} 
+                              className="w-5 h-5"
+                            />
+                            {t('gardenPage.waypoints.bulwark')}
+                          </p>
+                        </div>
+                        
+                        <button
+                          onClick={() => copyWaypoint('[&BOwBAAA=]')}
+                          className={`w-full font-bold py-3 px-4 rounded-lg transition-all duration-300 flex items-center justify-center gap-2 text-sm mt-auto ${
+                            copiedWaypoint === '[&BOwBAAA=]' 
+                              ? 'bg-green-600 text-white shadow-xl' 
+                              : 'bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white shadow-lg hover:shadow-xl hover:scale-105'
+                          }`}
+                        >
+                          {copiedWaypoint === '[&BOwBAAA=]' ? (
+                            <CheckCircle className="w-4 h-4" />
+                          ) : (
+                            <Copy className="w-4 h-4" />
+                          )}
+                          {copiedWaypoint === '[&BOwBAAA=]' 
+                            ? t('gardenPage.sections.locations.waypointCopied')
+                            : t('gardenPage.sections.locations.copyWaypoint')
+                          }
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* Plains of Ashford - Estilo Uniforme */}
+                    <div className="group relative overflow-hidden rounded-2xl bg-slate-800/50 backdrop-blur-sm border border-slate-700/50 hover:border-orange-400/60 transition-all duration-300 hover:shadow-xl hover:shadow-orange-500/20">
+                      {/* Imagen con dimensiones uniformes */}
+                      <div className="relative h-72 w-full overflow-hidden">
+                        <Image
+                          src="/images/garden/Tyria-4.webp"
+                          alt={mapData[19]?.name || 'Plains of Ashford Garden Location'}
+                          fill
+                          className="object-contain group-hover:scale-105 transition-transform duration-500"
+                          unoptimized
+                        />
+                        {/* Overlay sutil para legibilidad */}
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+                        
+                      </div>
+                      
+                      {/* Contenido uniforme */}
+                      <div className="p-6 flex-1 flex flex-col">
+                        <h3 className="text-xl font-bold text-white mb-4">
+                          {mapData[19]?.name || 'Plains of Ashford'}
+                        </h3>
+                        
+                        <div className="bg-slate-700/50 rounded-lg p-4 border border-slate-600/40 mb-4">
+                          <p className="text-orange-300 font-semibold flex items-center gap-3 text-sm">
+                            <Image 
+                              src="/images/icons/waypoint-icon.png" 
+                              alt="Waypoint" 
+                              width={20} 
+                              height={20} 
+                              className="w-5 h-5"
+                            />
+                            {t('gardenPage.waypoints.loreclaw')}
+                          </p>
+                        </div>
+                        
+                        <button
+                          onClick={() => copyWaypoint('[&BMcDAAA=]')}
+                          className={`w-full font-bold py-3 px-4 rounded-lg transition-all duration-300 flex items-center justify-center gap-2 text-sm mt-auto ${
+                            copiedWaypoint === '[&BMcDAAA=]' 
+                              ? 'bg-green-600 text-white shadow-xl' 
+                              : 'bg-gradient-to-r from-orange-600 to-red-600 hover:from-orange-500 hover:to-red-500 text-white shadow-lg hover:shadow-xl hover:scale-105'
+                          }`}
+                        >
+                          {copiedWaypoint === '[&BMcDAAA=]' ? (
+                            <CheckCircle className="w-4 h-4" />
+                          ) : (
+                            <Copy className="w-4 h-4" />
+                          )}
+                          {copiedWaypoint === '[&BMcDAAA=]' 
+                            ? t('gardenPage.sections.locations.waypointCopied')
+                            : t('gardenPage.sections.locations.copyWaypoint')
+                          }
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* Diessa Plateau - Estilo Uniforme */}
+                    <div className="group relative overflow-hidden rounded-2xl bg-slate-800/50 backdrop-blur-sm border border-slate-700/50 hover:border-blue-400/60 transition-all duration-300 hover:shadow-xl hover:shadow-blue-500/20">
+                      {/* Imagen con dimensiones uniformes */}
+                      <div className="relative h-72 w-full overflow-hidden">
+                        <Image
+                          src="/images/garden/Tyria-5.webp"
+                          alt={mapData[32]?.name || 'Diessa Plateau Garden Location'}
+                          fill
+                          className="object-contain group-hover:scale-105 transition-transform duration-500"
+                          unoptimized
+                        />
+                        {/* Overlay sutil para legibilidad */}
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+                      </div>
+                      
+                      {/* Contenido uniforme */}
+                      <div className="p-6 flex-1 flex flex-col">
+                        <h3 className="text-xl font-bold text-white mb-4">
+                          {mapData[32]?.name || 'Diessa Plateau'}
+                        </h3>
+                        
+                        <div className="bg-slate-700/50 rounded-lg p-4 border border-slate-600/40 mb-4">
+                          <p className="text-blue-300 font-semibold flex items-center gap-3 text-sm">
+                            <Image 
+                              src="/images/icons/waypoint-icon.png" 
+                              alt="Waypoint" 
+                              width={20} 
+                              height={20} 
+                              className="w-5 h-5"
+                            />
+                            {t('gardenPage.waypoints.nolan')}
+                          </p>
+                        </div>
+                        
+                        <button
+                          onClick={() => copyWaypoint('[&BN4AAAA=]')}
+                          className={`w-full font-bold py-3 px-4 rounded-lg transition-all duration-300 flex items-center justify-center gap-2 text-sm mt-auto ${
+                            copiedWaypoint === '[&BN4AAAA=]' 
+                              ? 'bg-green-600 text-white shadow-xl' 
+                              : 'bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-500 hover:to-cyan-500 text-white shadow-lg hover:shadow-xl hover:scale-105'
+                          }`}
+                        >
+                          {copiedWaypoint === '[&BN4AAAA=]' ? (
+                            <CheckCircle className="w-4 h-4" />
+                          ) : (
+                            <Copy className="w-4 h-4" />
+                          )}
+                          {copiedWaypoint === '[&BN4AAAA=]' 
+                            ? t('gardenPage.sections.locations.waypointCopied')
+                            : t('gardenPage.sections.locations.copyWaypoint')
+                          }
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* Fireheart Rise - Estilo Uniforme */}
+                    <div className="group relative overflow-hidden rounded-2xl bg-slate-800/50 backdrop-blur-sm border border-slate-700/50 hover:border-red-400/60 transition-all duration-300 hover:shadow-xl hover:shadow-red-500/20">
+                      {/* Imagen con dimensiones uniformes */}
+                      <div className="relative h-72 w-full overflow-hidden">
+                        <Image
+                          src="/images/garden/Tyria-6.webp"
+                          alt={mapData[22]?.name || 'Fireheart Rise Garden Location'}
+                          fill
+                          className="object-contain group-hover:scale-105 transition-transform duration-500"
+                          unoptimized
+                        />
+                        {/* Overlay sutil para legibilidad */}
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+                      </div>
+                      
+                      {/* Contenido uniforme */}
+                      <div className="p-6 flex-1 flex flex-col">
+                        <h3 className="text-xl font-bold text-white mb-4">
+                          {mapData[22]?.name || 'Fireheart Rise'}
+                        </h3>
+                        
+                        <div className="bg-slate-700/50 rounded-lg p-4 border border-slate-600/40 mb-4">
+                          <p className="text-red-300 font-semibold flex items-center gap-3 text-sm">
+                            <Image 
+                              src="/images/icons/waypoint-icon.png" 
+                              alt="Waypoint" 
+                              width={20} 
+                              height={20} 
+                              className="w-5 h-5"
+                            />
+                            {t('gardenPage.waypoints.apostate')}
+                          </p>
+                        </div>
+                        
+                        <button
+                          onClick={() => copyWaypoint('[&BB0CAAA=]')}
+                          className={`w-full font-bold py-3 px-4 rounded-lg transition-all duration-300 flex items-center justify-center gap-2 text-sm mt-auto ${
+                            copiedWaypoint === '[&BB0CAAA=]' 
+                              ? 'bg-green-600 text-white shadow-xl' 
+                              : 'bg-gradient-to-r from-red-600 to-orange-600 hover:from-red-500 hover:to-orange-500 text-white shadow-lg hover:shadow-xl hover:scale-105'
+                          }`}
+                        >
+                          {copiedWaypoint === '[&BB0CAAA=]' ? (
+                            <CheckCircle className="w-4 h-4" />
+                          ) : (
+                            <Copy className="w-4 h-4" />
+                          )}
+                          {copiedWaypoint === '[&BB0CAAA=]' 
+                            ? t('gardenPage.sections.locations.waypointCopied')
+                            : t('gardenPage.sections.locations.copyWaypoint')
+                          }
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* Gendarran Fields - Estilo Uniforme */}
+                    <div className="group relative overflow-hidden rounded-2xl bg-slate-800/50 backdrop-blur-sm border border-slate-700/50 hover:border-indigo-400/60 transition-all duration-300 hover:shadow-xl hover:shadow-indigo-500/20">
+                      {/* Imagen con dimensiones uniformes */}
+                      <div className="relative h-72 w-full overflow-hidden">
+                        <Image
+                          src="/images/garden/Tyria-7.webp"
+                          alt={mapData[30]?.name || 'Gendarran Fields Garden Location'}
+                          fill
+                          className="object-contain group-hover:scale-105 transition-transform duration-500"
+                          unoptimized
+                        />
+                        {/* Overlay sutil para legibilidad */}
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+                      </div>
+                      
+                      {/* Contenido uniforme */}
+                      <div className="p-6 flex-1 flex flex-col">
+                        <h3 className="text-xl font-bold text-white mb-4">
+                          {mapData[30]?.name || 'Gendarran Fields'}
+                        </h3>
+                        
+                        <div className="bg-slate-700/50 rounded-lg p-4 border border-slate-600/40 mb-4">
+                          <p className="text-indigo-300 font-semibold flex items-center gap-3 text-sm">
+                            <Image 
+                              src="/images/icons/waypoint-icon.png" 
+                              alt="Waypoint" 
+                              width={20} 
+                              height={20} 
+                              className="w-5 h-5"
+                            />
+                            {t('gardenPage.waypoints.gendarranFields')}
+                          </p>
+                        </div>
+                        
+                        <button
+                          onClick={() => copyWaypoint('[&BHgCAAA=]')}
+                          className={`w-full font-bold py-3 px-4 rounded-lg transition-all duration-300 flex items-center justify-center gap-2 text-sm mt-auto ${
+                            copiedWaypoint === '[&BHgCAAA=]' 
+                              ? 'bg-green-600 text-white shadow-xl' 
+                              : 'bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white shadow-lg hover:shadow-xl hover:scale-105'
+                          }`}
+                        >
+                          {copiedWaypoint === '[&BHgCAAA=]' ? (
+                            <CheckCircle className="w-4 h-4" />
+                          ) : (
+                            <Copy className="w-4 h-4" />
+                          )}
+                          {copiedWaypoint === '[&BHgCAAA=]' 
+                            ? t('gardenPage.sections.locations.waypointCopied')
+                            : t('gardenPage.sections.locations.copyWaypoint')
+                          }
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* Harathi Hinterlands - Estilo Uniforme */}
+                    <div className="group relative overflow-hidden rounded-2xl bg-slate-800/50 backdrop-blur-sm border border-slate-700/50 hover:border-lime-400/60 transition-all duration-300 hover:shadow-xl hover:shadow-lime-500/20">
+                      {/* Imagen con dimensiones uniformes */}
+                      <div className="relative h-72 w-full overflow-hidden">
+                        <Image
+                          src="/images/garden/Tyria-8.webp"
+                          alt={mapData[31]?.name || 'Harathi Hinterlands Garden Location'}
+                          fill
+                          className="object-contain group-hover:scale-105 transition-transform duration-500"
+                          unoptimized
+                        />
+                        {/* Overlay sutil para legibilidad */}
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+                      </div>
+                      
+                      {/* Contenido uniforme */}
+                      <div className="p-6 flex-1 flex flex-col">
+                        <h3 className="text-xl font-bold text-white mb-4">
+                          {mapData[31]?.name || 'Harathi Hinterlands'}
+                        </h3>
+                        
+                        <div className="bg-slate-700/50 rounded-lg p-4 border border-slate-600/40 mb-4">
+                          <p className="text-lime-300 font-semibold flex items-center gap-3 text-sm">
+                            <Image 
+                              src="/images/icons/waypoint-icon.png" 
+                              alt="Waypoint" 
+                              width={20} 
+                              height={20} 
+                              className="w-5 h-5"
+                            />
+                            {t('gardenPage.waypoints.harathiHinterlands')}
+                          </p>
+                        </div>
+                        
+                        <button
+                          onClick={() => copyWaypoint('[&BMAAAAA=]')}
+                          className={`w-full font-bold py-3 px-4 rounded-lg transition-all duration-300 flex items-center justify-center gap-2 text-sm mt-auto ${
+                            copiedWaypoint === '[&BMAAAAA=]' 
+                              ? 'bg-green-600 text-white shadow-xl' 
+                              : 'bg-gradient-to-r from-lime-600 to-green-600 hover:from-lime-500 hover:to-green-500 text-white shadow-lg hover:shadow-xl hover:scale-105'
+                          }`}
+                        >
+                          {copiedWaypoint === '[&BMAAAAA=]' ? (
+                            <CheckCircle className="w-4 h-4" />
+                          ) : (
+                            <Copy className="w-4 h-4" />
+                          )}
+                          {copiedWaypoint === '[&BMAAAAA=]' 
+                            ? t('gardenPage.sections.locations.waypointCopied')
+                            : t('gardenPage.sections.locations.copyWaypoint')
+                          }
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* Kessex Hills - Estilo Uniforme */}
+                    <div className="group relative overflow-hidden rounded-2xl bg-slate-800/50 backdrop-blur-sm border border-slate-700/50 hover:border-rose-400/60 transition-all duration-300 hover:shadow-xl hover:shadow-rose-500/20">
+                      {/* Imagen con dimensiones uniformes */}
+                      <div className="relative h-72 w-full overflow-hidden">
+                        <Image
+                          src="/images/garden/Tyria-9.webp"
+                          alt={mapData[27]?.name || 'Kessex Hills Garden Location'}
+                          fill
+                          className="object-contain group-hover:scale-105 transition-transform duration-500"
+                          unoptimized
+                        />
+                        {/* Overlay sutil para legibilidad */}
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+                      </div>
+                      
+                      {/* Contenido uniforme */}
+                      <div className="p-6 flex-1 flex flex-col">
+                        <h3 className="text-xl font-bold text-white mb-4">
+                          {mapData[27]?.name || 'Kessex Hills'}
+                        </h3>
+                        
+                        <div className="bg-slate-700/50 rounded-lg p-4 border border-slate-600/40 mb-4">
+                          <p className="text-rose-300 font-semibold flex items-center gap-3 text-sm">
+                            <Image 
+                              src="/images/icons/waypoint-icon.png" 
+                              alt="Waypoint" 
+                              width={20} 
+                              height={20} 
+                              className="w-5 h-5"
+                            />
+                            {t('gardenPage.waypoints.kessexHills')}
+                          </p>
+                        </div>
+                        
+                        <button
+                          onClick={() => copyWaypoint('[&BOYAAAA=]')}
+                          className={`w-full font-bold py-3 px-4 rounded-lg transition-all duration-300 flex items-center justify-center gap-2 text-sm mt-auto ${
+                            copiedWaypoint === '[&BOYAAAA=]' 
+                              ? 'bg-green-600 text-white shadow-xl' 
+                              : 'bg-gradient-to-r from-rose-600 to-pink-600 hover:from-rose-500 hover:to-pink-500 text-white shadow-lg hover:shadow-xl hover:scale-105'
+                          }`}
+                        >
+                          {copiedWaypoint === '[&BOYAAAA=]' ? (
+                            <CheckCircle className="w-4 h-4" />
+                          ) : (
+                            <Copy className="w-4 h-4" />
+                          )}
+                          {copiedWaypoint === '[&BOYAAAA=]' 
+                            ? t('gardenPage.sections.locations.waypointCopied')
+                            : t('gardenPage.sections.locations.copyWaypoint')
+                          }
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* Lornar's Pass - Estilo Uniforme */}
+                    <div className="group relative overflow-hidden rounded-2xl bg-slate-800/50 backdrop-blur-sm border border-slate-700/50 hover:border-sky-400/60 transition-all duration-300 hover:shadow-xl hover:shadow-sky-500/20">
+                      {/* Imagen con dimensiones uniformes */}
+                      <div className="relative h-72 w-full overflow-hidden">
+                        <Image
+                          src="/images/garden/Tyria-10.webp"
+                          alt={mapData[26]?.name || 'Lornar\'s Pass Garden Location'}
+                          fill
+                          className="object-contain group-hover:scale-105 transition-transform duration-500"
+                          unoptimized
+                        />
+                        {/* Overlay sutil para legibilidad */}
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+                      </div>
+                      
+                      {/* Contenido uniforme */}
+                      <div className="p-6 flex-1 flex flex-col">
+                        <h3 className="text-xl font-bold text-white mb-4">
+                          {mapData[26]?.name || 'Lornar\'s Pass'}
+                        </h3>
+                        
+                        <div className="bg-slate-700/50 rounded-lg p-4 border border-slate-600/40 mb-4">
+                          <p className="text-sky-300 font-semibold flex items-center gap-3 text-sm">
+                            <Image 
+                              src="/images/icons/waypoint-icon.png" 
+                              alt="Waypoint" 
+                              width={20} 
+                              height={20} 
+                              className="w-5 h-5"
+                            />
+                            {t('gardenPage.waypoints.lornarsPass')}
+                          </p>
+                        </div>
+                        
+                        <button
+                          onClick={() => copyWaypoint('[&BF8CAAA=]')}
+                          className={`w-full font-bold py-3 px-4 rounded-lg transition-all duration-300 flex items-center justify-center gap-2 text-sm mt-auto ${
+                            copiedWaypoint === '[&BF8CAAA=]' 
+                              ? 'bg-green-600 text-white shadow-xl' 
+                              : 'bg-gradient-to-r from-sky-600 to-blue-600 hover:from-sky-500 hover:to-blue-500 text-white shadow-lg hover:shadow-xl hover:scale-105'
+                          }`}
+                        >
+                          {copiedWaypoint === '[&BF8CAAA=]' ? (
+                            <CheckCircle className="w-4 h-4" />
+                          ) : (
+                            <Copy className="w-4 h-4" />
+                          )}
+                          {copiedWaypoint === '[&BF8CAAA=]' 
+                            ? t('gardenPage.sections.locations.waypointCopied')
+                            : t('gardenPage.sections.locations.copyWaypoint')
+                          }
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* Bloodtide Coast - Estilo Uniforme */}
+                    <div className="group relative overflow-hidden rounded-2xl bg-slate-800/50 backdrop-blur-sm border border-slate-700/50 hover:border-cyan-400/60 transition-all duration-300 hover:shadow-xl hover:shadow-cyan-500/20 h-full flex flex-col">
+                      {/* Imagen con dimensiones uniformes */}
+                      <div className="relative h-72 w-full overflow-hidden">
+                        <Image
+                          src="/images/garden/Tyria-11.webp"
+                          alt={mapData[29]?.name || 'Bloodtide Coast Garden Location'}
+                          fill
+                          className="object-contain group-hover:scale-105 transition-transform duration-500"
+                          unoptimized
+                        />
+                        {/* Overlay sutil para legibilidad */}
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+                      </div>
+                      
+                      {/* Contenido uniforme */}
+                      <div className="p-6 flex-1 flex flex-col">
+                        <h3 className="text-xl font-bold text-white mb-4">
+                          {mapData[29]?.name || 'Bloodtide Coast'}
+                        </h3>
+                        
+                        <div className="bg-slate-700/50 rounded-lg p-4 border border-slate-600/40 mb-4">
+                          <p className="text-cyan-300 font-semibold flex items-center gap-3 text-sm">
+                            <Image 
+                              src="/images/icons/waypoint-icon.png" 
+                              alt="Waypoint" 
+                              width={20} 
+                              height={20} 
+                              className="w-5 h-5"
+                            />
+                            {t('gardenPage.waypoints.bloodtideCoast')}
+                          </p>
+                        </div>
+                        
+                        <button
+                          onClick={() => copyWaypoint('[&BFECAAA=]')}
+                          className={`w-full font-bold py-3 px-4 rounded-lg transition-all duration-300 flex items-center justify-center gap-2 text-sm mt-auto ${
+                            copiedWaypoint === '[&BFECAAA=]' 
+                              ? 'bg-green-600 text-white shadow-xl' 
+                              : 'bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white shadow-lg hover:shadow-xl hover:scale-105'
+                          }`}
+                        >
+                          {copiedWaypoint === '[&BFECAAA=]' ? (
+                            <CheckCircle className="w-4 h-4" />
+                          ) : (
+                            <Copy className="w-4 h-4" />
+                          )}
+                          {copiedWaypoint === '[&BFECAAA=]' 
+                            ? t('gardenPage.sections.locations.waypointCopied')
+                            : t('gardenPage.sections.locations.copyWaypoint')
+                          }
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* Dredgehaunt Cliffs - Estilo Uniforme */}
+                    <div className="group relative overflow-hidden rounded-2xl bg-slate-800/50 backdrop-blur-sm border border-slate-700/50 hover:border-violet-400/60 transition-all duration-300 hover:shadow-xl hover:shadow-violet-500/20 h-full flex flex-col">
+                      {/* Imagen con dimensiones uniformes */}
+                      <div className="relative h-72 w-full overflow-hidden">
+                        <Image
+                          src="/images/garden/Tyria-12.webp"
+                          alt={mapData[39]?.name || 'Dredgehaunt Cliffs Garden Location'}
+                          fill
+                          className="object-contain group-hover:scale-105 transition-transform duration-500"
+                          unoptimized
+                        />
+                        {/* Overlay sutil para legibilidad */}
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+                      </div>
+                      
+                      {/* Contenido uniforme */}
+                      <div className="p-6 flex-1 flex flex-col">
+                        <h3 className="text-xl font-bold text-white mb-4">
+                          {mapData[39]?.name || 'Dredgehaunt Cliffs'}
+                        </h3>
+                        
+                        <div className="bg-slate-700/50 rounded-lg p-4 border border-slate-600/40 mb-4">
+                          <p className="text-violet-300 font-semibold flex items-center gap-3 text-sm">
+                            <Image 
+                              src="/images/icons/waypoint-icon.png" 
+                              alt="Waypoint" 
+                              width={20} 
+                              height={20} 
+                              className="w-5 h-5"
+                            />
+                            {t('gardenPage.waypoints.dredgehauntCliffs')}
+                          </p>
+                        </div>
+                        
+                        <button
+                          onClick={() => copyWaypoint('[&BNECAAA=]')}
+                          className={`w-full font-bold py-3 px-4 rounded-lg transition-all duration-300 flex items-center justify-center gap-2 text-sm mt-auto ${
+                            copiedWaypoint === '[&BNECAAA=]' 
+                              ? 'bg-green-600 text-white shadow-xl' 
+                              : 'bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-500 hover:to-purple-500 text-white shadow-lg hover:shadow-xl hover:scale-105'
+                          }`}
+                        >
+                          {copiedWaypoint === '[&BNECAAA=]' ? (
+                            <CheckCircle className="w-4 h-4" />
+                          ) : (
+                            <Copy className="w-4 h-4" />
+                          )}
+                          {copiedWaypoint === '[&BNECAAA=]' 
+                            ? t('gardenPage.sections.locations.waypointCopied')
+                            : t('gardenPage.sections.locations.copyWaypoint')
+                          }
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* Frostgorge Sound - Estilo Uniforme */}
+                    <div className="group relative overflow-hidden rounded-2xl bg-slate-800/50 backdrop-blur-sm border border-slate-700/50 hover:border-ice-400/60 transition-all duration-300 hover:shadow-xl hover:shadow-ice-500/20 h-full flex flex-col">
+                      {/* Imagen con dimensiones uniformes */}
+                      <div className="relative h-72 w-full overflow-hidden">
+                        <Image
+                          src="/images/garden/Tyria-13.webp"
+                          alt={mapData[51]?.name || 'Frostgorge Sound Garden Location'}
+                          fill
+                          className="object-contain group-hover:scale-105 transition-transform duration-500"
+                          unoptimized
+                        />
+                        {/* Overlay sutil para legibilidad */}
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+                      </div>
+                      
+                      {/* Contenido uniforme */}
+                      <div className="p-6 flex-1 flex flex-col">
+                        <h3 className="text-xl font-bold text-white mb-4">
+                          {mapData[51]?.name || 'Frostgorge Sound'}
+                        </h3>
+                        
+                        <div className="bg-slate-700/50 rounded-lg p-4 border border-slate-600/40 mb-4">
+                          <p className="text-ice-300 font-semibold flex items-center gap-3 text-sm">
+                            <Image 
+                              src="/images/icons/waypoint-icon.png" 
+                              alt="Waypoint" 
+                              width={20} 
+                              height={20} 
+                              className="w-5 h-5"
+                            />
+                            {t('gardenPage.waypoints.frostgorgeSound')}
+                          </p>
+                        </div>
+                        
+                        <button
+                          onClick={() => copyWaypoint('[&BFgGAAA=]')}
+                          className={`w-full font-bold py-3 px-4 rounded-lg transition-all duration-300 flex items-center justify-center gap-2 text-sm mt-auto ${
+                            copiedWaypoint === '[&BFgGAAA=]' 
+                              ? 'bg-green-600 text-white shadow-xl' 
+                              : 'bg-gradient-to-r from-cyan-400 to-blue-400 hover:from-cyan-300 hover:to-blue-300 text-white shadow-lg hover:shadow-xl hover:scale-105'
+                          }`}
+                        >
+                          {copiedWaypoint === '[&BFgGAAA=]' ? (
+                            <CheckCircle className="w-4 h-4" />
+                          ) : (
+                            <Copy className="w-4 h-4" />
+                          )}
+                          {copiedWaypoint === '[&BFgGAAA=]' 
+                            ? t('gardenPage.sections.locations.waypointCopied')
+                            : t('gardenPage.sections.locations.copyWaypoint')
+                          }
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* Mount Maelstrom - Estilo Uniforme */}
+                    <div className="group relative overflow-hidden rounded-2xl bg-slate-800/50 backdrop-blur-sm border border-slate-700/50 hover:border-amber-400/60 transition-all duration-300 hover:shadow-xl hover:shadow-amber-500/20 h-full flex flex-col">
+                      {/* Imagen con dimensiones uniformes */}
+                      <div className="relative h-72 w-full overflow-hidden">
+                        <Image
+                          src="/images/garden/Tyria-14.webp"
+                          alt={mapData[53]?.name || 'Mount Maelstrom Garden Location'}
+                          fill
+                          className="object-contain group-hover:scale-105 transition-transform duration-500"
+                          unoptimized
+                        />
+                        {/* Overlay sutil para legibilidad */}
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+                      </div>
+                      
+                      {/* Contenido uniforme */}
+                      <div className="p-6 flex-1 flex flex-col">
+                        <h3 className="text-xl font-bold text-white mb-4">
+                          {mapData[53]?.name || 'Mount Maelstrom'}
+                        </h3>
+                        
+                        <div className="bg-slate-700/50 rounded-lg p-4 border border-slate-600/40 mb-4">
+                          <p className="text-amber-300 font-semibold flex items-center gap-3 text-sm">
+                            <Image 
+                              src="/images/icons/waypoint-icon.png" 
+                              alt="Waypoint" 
+                              width={20} 
+                              height={20} 
+                              className="w-5 h-5"
+                            />
+                            {t('gardenPage.waypoints.mountMaelstrom')}
+                          </p>
+                        </div>
+                        
+                        <button
+                          onClick={() => copyWaypoint('[&BMkBAAA=]')}
+                          className={`w-full font-bold py-3 px-4 rounded-lg transition-all duration-300 flex items-center justify-center gap-2 text-sm mt-auto ${
+                            copiedWaypoint === '[&BMkBAAA=]' 
+                              ? 'bg-green-600 text-white shadow-xl' 
+                              : 'bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-500 hover:to-orange-500 text-white shadow-lg hover:shadow-xl hover:scale-105'
+                          }`}
+                        >
+                          {copiedWaypoint === '[&BMkBAAA=]' ? (
+                            <CheckCircle className="w-4 h-4" />
+                          ) : (
+                            <Copy className="w-4 h-4" />
+                          )}
+                          {copiedWaypoint === '[&BMkBAAA=]' 
+                            ? t('gardenPage.sections.locations.waypointCopied')
+                            : t('gardenPage.sections.locations.copyWaypoint')
+                          }
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* Sparkfly Fen - Estilo Uniforme */}
+                    <div className="group relative overflow-hidden rounded-2xl bg-slate-800/50 backdrop-blur-sm border border-slate-700/50 hover:border-emerald-400/60 transition-all duration-300 hover:shadow-xl hover:shadow-emerald-500/20 h-full flex flex-col">
+                      {/* Imagen con dimensiones uniformes */}
+                      <div className="relative h-72 w-full overflow-hidden">
+                        <Image
+                          src="/images/garden/Tyria-15.webp"
+                          alt={mapData[73]?.name || 'Sparkfly Fen Garden Location'}
+                          fill
+                          className="object-contain group-hover:scale-105 transition-transform duration-500"
+                          unoptimized
+                        />
+                        {/* Overlay sutil para legibilidad */}
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+                      </div>
+                      
+                      {/* Contenido uniforme */}
+                      <div className="p-6 flex-1 flex flex-col">
+                        <h3 className="text-xl font-bold text-white mb-4">
+                          {mapData[73]?.name || 'Sparkfly Fen'}
+                        </h3>
+                        
+                        <div className="bg-slate-700/50 rounded-lg p-4 border border-slate-600/40 mb-4">
+                          <p className="text-emerald-300 font-semibold flex items-center gap-3 text-sm">
+                            <Image 
+                              src="/images/icons/waypoint-icon.png" 
+                              alt="Waypoint" 
+                              width={20} 
+                              height={20} 
+                              className="w-5 h-5"
+                            />
+                            {t('gardenPage.waypoints.sparkflyFen')}
+                          </p>
+                        </div>
+                        
+                        <button
+                          onClick={() => copyWaypoint('[&BKcBAAA=]')}
+                          className={`w-full font-bold py-3 px-4 rounded-lg transition-all duration-300 flex items-center justify-center gap-2 text-sm mt-auto ${
+                            copiedWaypoint === '[&BKcBAAA=]' 
+                              ? 'bg-green-600 text-white shadow-xl' 
+                              : 'bg-gradient-to-r from-emerald-600 to-green-600 hover:from-emerald-500 hover:to-green-500 text-white shadow-lg hover:shadow-xl hover:scale-105'
+                          }`}
+                        >
+                          {copiedWaypoint === '[&BKcBAAA=]' ? (
+                            <CheckCircle className="w-4 h-4" />
+                          ) : (
+                            <Copy className="w-4 h-4" />
+                          )}
+                          {copiedWaypoint === '[&BKcBAAA=]' 
+                            ? t('gardenPage.sections.locations.waypointCopied')
+                            : t('gardenPage.sections.locations.copyWaypoint')
+                          }
+                        </button>
                       </div>
                     </div>
 
                   </div>
                 </motion.div>
               </section>
-
 
               {/* Sección de Recompensas */}
               <section id="rewards" className="mb-16">

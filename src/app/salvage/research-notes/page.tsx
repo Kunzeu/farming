@@ -283,7 +283,7 @@ export default function ResearchNotesPage() {
             fetch(`https://api.guildwars2.com/v2/items/13435?lang=${lang}`),
             fetch(`https://api.guildwars2.com/v2/items/104934?lang=${lang}`),
             fetch(`https://api.guildwars2.com/v2/items/104934?lang=${lang}`),
-                         fetch(`https://api.guildwars2.com/v2/items/13438?lang=${lang}`)
+            fetch(`https://api.guildwars2.com/v2/items/13438?lang=${lang}`)
           ]);
 
          const [item8883Data, item13436Data, item13437Data, item13435Data, item104934Data, item104934BData, item13438Data] = await Promise.all([
@@ -312,7 +312,7 @@ export default function ResearchNotesPage() {
             fetch(`https://api.guildwars2.com/v2/commerce/prices/13435?lang=${lang}`),
             fetch(`https://api.guildwars2.com/v2/commerce/prices/104934?lang=${lang}`),
             fetch(`https://api.guildwars2.com/v2/commerce/prices/104934?lang=${lang}`),
-                         fetch(`https://api.guildwars2.com/v2/commerce/prices/13438?lang=${lang}`)
+            fetch(`https://api.guildwars2.com/v2/commerce/prices/13438?lang=${lang}`)
           ]);
 
          const [price8883Data, price13436Data, price13437Data, price13435Data, price104934Data, price104934BData, price13438Data] = await Promise.all([
@@ -454,7 +454,7 @@ export default function ResearchNotesPage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             className="mb-8">
-                                                                                                       <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 mb-4">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 mb-4">
                 {/* Back Button - Top Left on mobile, Left on desktop */}
                 <motion.div
                   initial={{ opacity: 0, x: -20 }}
@@ -462,9 +462,6 @@ export default function ResearchNotesPage() {
                   className="flex-shrink-0 order-1 sm:order-1">
                   <Link href="/salvage">
                     <button className="flex items-center gap-2 px-4 py-2 bg-gray-900/80 hover:bg-gray-800/90 border border-white/30 text-white rounded-lg transition-all duration-200 hover:scale-105 hover:shadow-lg">
-                      <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 12H5M12 19l-7-7 7-7" />
-                      </svg>
                       <span>{t('researchNotesPage.backToSalvaging')}</span>
                     </button>
                   </Link>
@@ -762,13 +759,24 @@ export default function ResearchNotesPage() {
                                </div>
                              </td>
                                                          <td className="py-2 px-3 text-gray-300 text-center">
-                                 {item.id === 8883 ? '400' : 
-                                  item.id === 13436 ? '300' : 
-                                  item.id === 13437 ? '300' : 
-                                  item.id === 13435 ? '300' : 
-                                  item.id === 13438 ? '325' :  
-                                  item.id === 104934 ? '0' : 
-                                  item.id === 104934.1 ? '0' : '-'}
+                                 <div className="flex items-center justify-center gap-2">
+                                   {item.id !== 104934 && item.id !== 104934.1 && (
+                                     <img 
+                                       src="/images/icons/jeweler-icon.png" 
+                                       alt="Jeweler" 
+                                       className="w-4 h-4"
+                                     />
+                                   )}
+                                   <span>
+                                     {item.id === 8883 ? '400' : 
+                                      item.id === 13436 ? '300' : 
+                                      item.id === 13437 ? '300' : 
+                                      item.id === 13435 ? '300' : 
+                                      item.id === 13438 ? '325' :  
+                                      item.id === 104934 ? '0' : 
+                                      item.id === 104934.1 ? '0' : '-'}
+                                   </span>
+                                 </div>
                                </td>
                              <td className="py-2 px-3 text-green-400 font-medium">{item.notes}</td>
                              <td className="py-2 px-2 text-purple-400 font-medium min-w-[100px]">
