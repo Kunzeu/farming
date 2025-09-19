@@ -396,10 +396,10 @@ export default function HomePage() {
         <Navigation />
       
       {/* Container principal */}
-      <div className="container mx-auto px-4 py-8">
+      <div className="container mx-auto px-4">
         
         {/* Hero Section - Banner Promocional */}
-        <section className="relative overflow-hidden rounded-xl mb-12 h-72 md:h-96">
+        <section className="relative overflow-hidden rounded-xl mb-2 h-72 md:h-96">
           {/* Imagen de fondo de Visions of Eternity */}
           <div 
             className="absolute inset-0 bg-cover bg-center bg-no-repeat rounded-xl"
@@ -516,17 +516,19 @@ export default function HomePage() {
                   <div className="flex gap-2">
                     <button
                       onClick={toggleEditMode}
-                      className="flex items-center gap-2 px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg transition-colors duration-200"
+                      className="flex items-center gap-1 md:gap-2 px-3 md:px-4 py-1.5 md:py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg transition-colors duration-200 text-sm"
                     >
-                      <Settings className="w-4 h-4" />
-                      {t('dashboard.customize', 'Personalizar Dashboard')}
+                      <Settings className="w-3 h-3" />
+                      <span className="hidden sm:inline">{t('dashboard.customize', 'Personalizar Dashboard')}</span>
+                      <span className="sm:hidden">{t('dashboard.customizeShort', 'Personalizar')}</span>
                     </button>
                     <button
                       onClick={() => setShowSettings(true)}
-                      className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors duration-200"
+                      className="flex items-center gap-1 md:gap-2 px-3 md:px-4 py-1.5 md:py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors duration-200 text-sm"
                     >
-                      <Settings className="w-4 h-4" />
-                      Configuración Avanzada
+                      <Settings className="w-3 h-3" />
+                      <span className="hidden sm:inline">{t('dashboard.advancedSettings', 'Configuración Avanzada')}</span>
+                      <span className="sm:hidden">{t('dashboard.advancedSettingsShort', 'Config')}</span>
                     </button>
                   </div>
                 )}

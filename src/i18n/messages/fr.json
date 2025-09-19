@@ -808,6 +808,9 @@
   "craftingPage.autoUpdate": "Mise à jour automatique toutes les 5 minutes",
 
   "dashboard.customize": "Personnaliser le Tableau de Bord",
+  "dashboard.customizeShort": "Personnaliser",
+  "dashboard.advancedSettings": "Paramètres Avancés",
+  "dashboard.advancedSettingsShort": "Paramètres",
   "dashboard.editMode": "Mode Édition",
   "dashboard.saveChanges": "Enregistrer",
   "dashboard.cancel": "Annuler",

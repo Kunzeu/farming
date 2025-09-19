@@ -814,6 +814,9 @@
   "craftingPage.autoUpdate": "Automatische Aktualisierung alle 5 Minuten",
 
   "dashboard.customize": "Dashboard anpassen",
+  "dashboard.customizeShort": "Anpassen",
+  "dashboard.advancedSettings": "Erweiterte Einstellungen",
+  "dashboard.advancedSettingsShort": "Einstellungen",
   "dashboard.editMode": "Bearbeitungsmodus",
   "dashboard.saveChanges": "Speichern",
   "dashboard.cancel": "Abbrechen",
