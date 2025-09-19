@@ -1609,7 +1609,6 @@ const JardinesPage = () => {
                           fill
                           className="object-contain group-hover:scale-105 transition-transform duration-500"
                           unoptimized
-                          priority
                         />
                         {/* Overlay sutil para legibilidad */}
                         <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
@@ -3587,7 +3586,7 @@ const JardinesPage = () => {
                     {/* Lowland Shore - Segunda vez */}
                     <div className="group relative overflow-hidden rounded-2xl bg-slate-800/50 backdrop-blur-sm border border-slate-700/50 hover:border-rose-400/60 transition-all duration-300 hover:shadow-xl hover:shadow-rose-500/20 h-full flex flex-col">
                       {/* Imagen con dimensiones uniformes */}
-                      <div className="relative h-72 w-full overflow-hidden">
+                      <div className="relative h-48 w-full overflow-hidden">
                         <Image
                           src="/images/garden/JW-2.png"
                           alt="Lowland Shore Garden Location"
