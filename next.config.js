@@ -1,13 +1,13 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // Optimizaciones de imágenes
+  // Optimizaciones de imágenes - SIN TRANSFORMACIONES
   images: {
-    formats: ['image/webp', 'image/avif'],
-    deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 3840],
-    imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
-    minimumCacheTTL: 60,
+    unoptimized: true, // Desactiva Vercel completamente
     dangerouslyAllowSVG: true,
     contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
+    // Configuración de calidades para Next.js 16
+    qualities: [25, 50, 75, 85, 90, 95, 100],
+    // Sin transformaciones - las imágenes se sirven tal como están
     // Dominios externos permitidos
     remotePatterns: [
       {
@@ -83,6 +83,19 @@ const nextConfig = {
           {
             key: 'Cache-Control',
             value: 'public, max-age=31536000, immutable',
+          },
+          {
+            key: 'CF-Image-Transform',
+            value: 'off', // Desactiva transformaciones de Cloudflare
+          },
+        ],
+      },
+      {
+        source: '/:path*\\.(png|jpg|jpeg|gif|webp|avif|svg)',
+        headers: [
+          {
+            key: 'CF-Image-Transform',
+            value: 'off', // Desactiva transformaciones para todas las imágenes
           },
         ],
       },

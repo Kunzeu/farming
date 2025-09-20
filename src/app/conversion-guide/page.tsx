@@ -283,7 +283,7 @@ export default function ConversionGuidePage() {
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               className="w-14 h-14 bg-purple-900 hover:bg-purple-800 text-white rounded-full shadow-lg shadow-purple-900/20 flex items-center justify-center transition-all duration-300 hover:scale-110 active:scale-95"
             >
-              {mobileMenuOpen ? <X className="w-8 h-8" /> : <Image src="/images/icons/index.png" alt={t('conversionGuidePage.images.menu')} width={32} height={32} className="w-8 h-8" />}
+              {mobileMenuOpen ? <X className="w-8 h-8" /> : <Image src="/images/icons/index.webp" alt={t('conversionGuidePage.images.menu')} width={32} height={32} className="w-8 h-8" />}
             </button>
           </div>
 
@@ -603,7 +603,7 @@ export default function ConversionGuidePage() {
                         <span className="text-base"><strong>{t('conversionGuidePage.sections.asBuyer.dustAmount')}</strong></span>
                       </li>
                       <li className="ml-4 flex items-center gap-3 py-1">
-                        <img src="/images/expansions/Gold.png" alt={t('conversionGuidePage.images.gold')} className="w-6 h-6 flex-shrink-0" />
+                        <img src="/images/expansions/Gold.webp" alt={t('conversionGuidePage.images.gold')} className="w-6 h-6 flex-shrink-0" />
                         <span className="text-base"><strong>{t('conversionGuidePage.sections.asBuyer.payment')}</strong></span>
                       </li>
                     </ul>

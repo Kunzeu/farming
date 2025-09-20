@@ -14,11 +14,12 @@ export default function NotFound() {
         <div className="mb-8 flex justify-center">
           <div className="relative w-32 h-32">
             <Image
-              src="/images/icons/icon.png"
+              src="/images/icons/icon.webp"
               alt="True Farming Logo"
               width={128}
               height={128}
               className="w-full h-full object-contain"
+              unoptimized
               priority
             />
           </div>

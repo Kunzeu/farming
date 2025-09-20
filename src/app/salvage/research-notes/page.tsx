@@ -762,7 +762,7 @@ export default function ResearchNotesPage() {
                                  <div className="flex items-center justify-center gap-2">
                                    {item.id !== 104934 && item.id !== 104934.1 && (
                                      <img 
-                                       src="/images/icons/jeweler-icon.png" 
+                                       src="/images/icons/jeweler-icon.webp" 
                                        alt="Jeweler" 
                                        className="w-4 h-4"
                                      />

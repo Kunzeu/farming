@@ -11,39 +11,39 @@ interface GW2IconProps {
 
 const iconConfig = {
   gold: {
-    src: '/images/expansions/Gold.png',
+    src: '/images/expansions/Gold.webp',
     alt: 'Oro de Guild Wars 2'
   },
   'spirit-shard': {
-    src: '/images/expansions/Spirit_Shard.png',
+    src: '/images/expansions/Spirit_Shard.webp',
     alt: 'Spirit Shard de Guild Wars 2'
   },
   karma: {
-    src: '/images/expansions/karma.png',
+    src: '/images/expansions/karma.webp',
     alt: 'Karma de Guild Wars 2'
   },
   'fractal-relic': {
-    src: '/images/expansions/fractal-relic.png',
+    src: '/images/expansions/fractal-relic.webp',
     alt: 'Fractal Relic de Guild Wars 2'
   },
   'volatile-magic': {
-    src: '/images/expansions/volatile-magic.png',
+    src: '/images/expansions/Volatile-magic.webp',
     alt: 'Volatile Magic de Guild Wars 2'
   },
   'unbound-magic': {
-    src: '/images/expansions/unbound-magic.png',
+    src: '/images/expansions/unbound-magic.webp',
     alt: 'Unbound Magic de Guild Wars 2'
   },
   'rift-essence': {
-    src: '/images/expansions/rift-essence.png',
+    src: '/images/expansions/rift-essence.webp',
     alt: 'Rift Essence de Guild Wars 2'
   },
   'mystic-clover': {
-    src: '/images/expansions/mystic-clover.png',
+    src: '/images/expansions/mystic-clover.webp',
     alt: 'Mystic Clover de Guild Wars 2'
   },
   'imperial-favor': {
-    src: '/images/expansions/Imperial_Favor.png',
+    src: '/images/expansions/Imperial_Favor.webp',
     alt: 'Imperial Favor de Guild Wars 2'
   }
 };

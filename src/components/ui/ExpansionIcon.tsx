@@ -13,42 +13,42 @@ const expansionData = {
     name: 'Core Game',
     color: 'bg-blue-600',
     textColor: 'text-blue-300',
-    icon: '/images/expansions/core.png',
+    icon: '/images/expansions/core.webp',
     fallbackIcon: '⚔️'
   },
   hot: {
     name: 'Heart of Thorns',
     color: 'bg-blue-700',
     textColor: 'text-blue-300',
-    icon: '/images/expansions/hot.png',
+    icon: '/images/expansions/hot.webp',
     fallbackIcon: '🌿'
   },
   pof: {
     name: 'Path of Fire',
     color: 'bg-blue-800',
     textColor: 'text-blue-300',
-    icon: '/images/expansions/pof.png',
+    icon: '/images/expansions/pof.webp',
     fallbackIcon: '🔥'
   },
   eod: {
     name: 'End of Dragons',
     color: 'bg-blue-600',
     textColor: 'text-blue-300',
-    icon: '/images/expansions/eod.png',
+    icon: '/images/expansions/eod.webp',
     fallbackIcon: '🐉'
   },
   soto: {
     name: 'Secrets of the Obscure',
     color: 'bg-blue-700',
     textColor: 'text-blue-300',
-    icon: '/images/expansions/soto.png',
+    icon: '/images/expansions/soto.webp',
     fallbackIcon: '✨'
   },
   jw: {
     name: 'Janthir Wilds',
     color: 'bg-blue-800',
     textColor: 'text-blue-300',
-    icon: '/images/expansions/jw.png',
+    icon: '/images/expansions/jw.webp',
     fallbackIcon: '🏔️'
   }
 };

@@ -11,6 +11,7 @@ import GW2Icon from '@/components/ui/GW2Icon';
 import { usePageTitle } from '@/hooks/usePageTitle';
 import { useI18n } from '@/contexts/I18nContext';
 import DescriptionModal from '@/components/ui/DescriptionModal';
+import MarkdownText from '@/components/ui/MarkdownText';
 
 export default function FarmingRoutes() {
   usePageTitle('pageTitles.farmingRoutes', 'Farming Routes');
@@ -303,9 +304,10 @@ export default function FarmingRoutes() {
                         className="text-left w-full group"
                       >
                                       <div className="p-3 rounded-lg">
-                <p className="text-gray-400 text-sm leading-relaxed whitespace-pre-wrap break-all group-hover:text-gray-300 transition-colors">
-                  {route.description.length > 150 ? `${route.description.substring(0, 150)}...` : route.description}
-                </p>
+                <MarkdownText 
+                  text={route.description.length > 150 ? `${route.description.substring(0, 150)}...` : route.description}
+                  className="text-gray-400 text-sm leading-relaxed whitespace-pre-wrap break-all group-hover:text-gray-300 transition-colors"
+                />
               </div>
                         <div className="flex items-center gap-2 mt-2 text-blue-400 text-sm">
                           <Info className="w-4 h-4" />

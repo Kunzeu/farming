@@ -71,7 +71,7 @@ export default function GiftOfMasteryPage() {
   // Array de imágenes disponibles
   const images = [
     {
-      src: "/thumbnails/weapons-table-1024x576.png", 
+      src: "/thumbnails/weapons-table-1024x576.webp", 
       alt: "Tabla de armas legendarias con profesiones y mazmorras"
     },
     {
@@ -468,7 +468,7 @@ export default function GiftOfMasteryPage() {
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               className="w-14 h-14 bg-blue-900 hover:bg-blue-800 text-white rounded-full shadow-lg shadow-blue-900/20 flex items-center justify-center transition-all duration-300 hover:scale-110 active:scale-95"
             >
-              {mobileMenuOpen ? <X className="w-8 h-8" /> : <Image src="/images/icons/index.png" alt="Menu" width={32} height={32} className="w-8 h-8" />}
+              {mobileMenuOpen ? <X className="w-8 h-8" /> : <Image src="/images/icons/index.webp" alt="Menu" width={32} height={32} className="w-8 h-8" />}
             </button>
           </div>
 
@@ -765,7 +765,7 @@ export default function GiftOfMasteryPage() {
                   <div className="flex items-center space-x-3">
                     <div className="flex-shrink-0 w-6 h-6 relative">
                       <Image
-                        src="/images/expansions/Gold.png"
+                        src="/images/expansions/Gold.webp"
                         alt="Oro"
                         fill
                         sizes="24px"
@@ -909,7 +909,7 @@ export default function GiftOfMasteryPage() {
                       <div className="flex items-center space-x-3">
                         <div className="flex-shrink-0 w-6 h-6 relative">
                           <Image
-                            src="/images/icons/Crafting_icon.png"
+                            src="/images/icons/Crafting_icon.webp"
                             alt="Artesanías al 400"
                             fill
                             sizes="24px"

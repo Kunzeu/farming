@@ -253,7 +253,7 @@ const CharactersPage = () => {
                         <div className="flex items-center">
                           {formatGold(item.vendor_value)}
                           <Image 
-                            src="/images/expansions/Copper.png" 
+                            src="/images/expansions/Copper.webp" 
                             alt="Copper" 
                             width={8} 
                             height={8} 

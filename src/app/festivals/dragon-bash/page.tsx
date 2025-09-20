@@ -16,7 +16,7 @@ const DragonBashPage = () => {
     <div 
       className="min-h-screen relative bg-gradient-to-br from-gray-900 via-emerald-900 to-teal-900"
       style={{
-        backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('/images/backgrounds/Dragonbash.jpg')`,
+        backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('/images/backgrounds/Dragonbash.webp')`,
         backgroundSize: 'cover',
         backgroundPosition: 'center',
         backgroundAttachment: 'fixed'

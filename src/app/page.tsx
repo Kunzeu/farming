@@ -404,7 +404,7 @@ export default function HomePage() {
           <div 
             className="absolute inset-0 bg-cover bg-center bg-no-repeat rounded-xl"
             style={{
-              backgroundImage: 'url(/images/backgrounds/voe-background.jpg)',
+              backgroundImage: 'url(/images/backgrounds/voe-background.webp)',
             }}
           >
             {/* Overlay mejorado */}

@@ -12,6 +12,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import ExpansionIcon from '@/components/ui/ExpansionIcon';
 import GW2Icon from '@/components/ui/GW2Icon';
 import { usePageTitle } from '@/hooks/usePageTitle';
+import MarkdownText from '@/components/ui/MarkdownText';
 
 type AdminSection = 'farms' | 'users' | 'pending-farms';
 
@@ -1157,9 +1158,10 @@ export default function AdminPanel() {
                     {farm.name}
                   </h3>
                                 <div className="p-3 rounded-lg mb-3">
-                <p className="text-gray-400 text-xs whitespace-pre-wrap break-all" title={farm.description}>
-                  {farm.description.length > 120 ? `${farm.description.substring(0, 120)}...` : farm.description}
-                </p>
+                <MarkdownText 
+                  text={farm.description.length > 120 ? `${farm.description.substring(0, 120)}...` : farm.description}
+                  className="text-gray-400 text-xs whitespace-pre-wrap break-all"
+                />
               </div>
                 </div>
                 <div className="flex gap-1">
@@ -1375,7 +1377,7 @@ export default function AdminPanel() {
                 {farm.estimatedGold && farm.estimatedGold.trim() && (
                   <div className="flex items-center gap-1">
                     <Image 
-                      src="/images/expansions/Gold.png" 
+                      src="/images/expansions/Gold.webp" 
                       alt="Gold"
                       width={16}
                       height={16}
@@ -1387,7 +1389,7 @@ export default function AdminPanel() {
                 {farm.estimatedSpirit && farm.estimatedSpirit.trim() && (
                   <div className="flex items-center gap-1">
                     <Image 
-                      src="/images/expansions/Spirit_Shard.png" 
+                      src="/images/expansions/Spirit_Shard.webp" 
                       alt="Spirit Shard"
                       width={16}
                       height={16}

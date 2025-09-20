@@ -386,7 +386,7 @@ export default function UnidentifiedGearCommonPage() {
             <div className="bg-slate-700 rounded-lg p-3">
               <div className="text-gray-400">{t('salvagePages.costPerUse', 'Cost per use')}</div>
               <div className="text-white font-semibold flex items-center gap-1">
-                3 <Image src="/images/expansions/Copper.png" alt="Copper" width={16} height={16} />
+                3 <Image src="/images/expansions/Copper.webp" alt="Copper" width={16} height={16} />
               </div>
             </div>
             <div className="bg-slate-700 rounded-lg p-3">

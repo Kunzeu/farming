@@ -904,7 +904,7 @@ const CraftingPage = () => {
           const pricesResponse = await fetch(`https://api.guildwars2.com/v2/commerce/prices?ids=${batch.join(',')}`);
           
           if (!pricesResponse.ok) {
-            console.warn(`Error fetching prices batch: ${pricesResponse.status}`);
+            // Error fetching prices batch, skipping
             continue;
           }
           
@@ -918,7 +918,7 @@ const CraftingPage = () => {
             });
           }
         } catch (batchError) {
-          console.warn('Error fetching prices batch:', batchError);
+          // Error fetching prices batch, skipping
           continue;
         }
       }
@@ -927,7 +927,7 @@ const CraftingPage = () => {
       setLastPriceUpdate(new Date());
       
     } catch (error) {
-      console.error('Error fetching table item prices:', error);
+      // Error fetching table item prices
     } finally {
       setIsLoadingPrices(false);
     }
@@ -952,7 +952,7 @@ const CraftingPage = () => {
           const itemsResponse = await fetch(`https://api.guildwars2.com/v2/items?ids=${batch.join(',')}&lang=${lang}`);
           
           if (!itemsResponse.ok) {
-            console.warn(`Error fetching batch: ${itemsResponse.status}`);
+            // Error fetching batch, skipping
             continue;
           }
           
@@ -967,7 +967,7 @@ const CraftingPage = () => {
             });
           }
         } catch (batchError) {
-          console.warn('Error fetching batch:', batchError);
+          // Error fetching batch, skipping
           continue;
         }
       }
@@ -975,7 +975,7 @@ const CraftingPage = () => {
       setTableItemNames(allNames);
       setTableItemIcons(allIcons);
     } catch (error) {
-      console.error('Error fetching table item names:', error);
+      // Error fetching table item names
     }
   }, [tableItemIds, lang]);
 
@@ -2009,15 +2009,7 @@ const CraftingPage = () => {
       const cacheAge = apiCache.lastUpdate ? now.getTime() - apiCache.lastUpdate.getTime() : Infinity;
       const isCacheValid = cacheAge < 5 * 60 * 1000 && apiCache.lang === lang; // 5 minutos y mismo idioma
       
-      console.log('Cache validation:', {
-        cacheAge: cacheAge,
-        isCacheValid: isCacheValid,
-        cacheLang: apiCache.lang,
-        currentLang: lang,
-        hasPrices: Object.keys(apiCache.prices).length > 0,
-        hasItems: Object.keys(apiCache.items).length > 0,
-        forceRefresh: forceRefresh
-      });
+      // Cache validation
       
       let prices: Gw2Price[] = [];
       let items: Gw2Item[] = [];
@@ -2052,13 +2044,7 @@ const CraftingPage = () => {
           return acc;
         }, {} as Record<number, Gw2Price>);
         
-        console.log('Precios obtenidos de la API:', Object.keys(pricesMap).map(id => parseInt(id)).sort((a, b) => a - b));
-        console.log('¿Está el item 24289 en los precios?', !!pricesMap[24289]);
-        if (pricesMap[24289]) {
-          console.log('Precio del item 24289:', pricesMap[24289]);
-        } else {
-          console.log('Item 24289 no encontrado en los precios de la API');
-        }
+        // Precios obtenidos de la API
 
         const itemsMap = items.reduce((acc: Record<number, Gw2Item>, item: Gw2Item) => {
           acc[item.id] = item;
@@ -2137,14 +2123,9 @@ const CraftingPage = () => {
 
       setConversionData(calculatedConversions);
     } catch (error) {
-      console.error('Error fetching conversion data:', error);
-      
-      // Mostrar mensaje de error más específico al usuario
-      if (error instanceof Error) {
-        console.error('Error details:', error.message);
-        // Aquí podrías agregar un toast o notificación de error
-        // toast.error(`Error al cargar datos: ${error.message}`);
-      }
+      // Error fetching conversion data
+      // Aquí podrías agregar un toast o notificación de error
+      // toast.error('Error al cargar datos de conversión');
       
       // En caso de error, mantener los datos anteriores si existen
       // No limpiar el estado para que el usuario no pierda la información
@@ -2429,7 +2410,7 @@ const CraftingPage = () => {
                 <div className="bg-gray-800/50 backdrop-blur-sm border border-gray-700 rounded-lg p-6">
                   <h2 className="text-2xl font-bold text-white mb-6 flex items-center">
                     <OptimizedImage 
-                      src="/images/expansions/volatile-magic.png" 
+                      src="/images/expansions/Volatile-magic.webp" 
                       alt={t('craftingPage.volatileMagic', 'Magia Volatil')} 
                       className="mr-3"
                       priority
@@ -2441,7 +2422,7 @@ const CraftingPage = () => {
                   <div className="bg-gray-700/50 rounded-lg p-6 mb-6 border border-gray-600">
                     <h3 className="text-xl font-bold text-white mb-4 flex items-center">
                       <OptimizedImage 
-                        src="/images/expansions/volatile-magic.png" 
+                        src="/images/expansions/Volatile-magic.webp" 
                         alt={t('craftingPage.volatileMagic', 'Magia Volatil')} 
                         className="mr-3"
                         priority
@@ -3686,7 +3667,7 @@ const CraftingPage = () => {
                 <div className="bg-gray-800/50 backdrop-blur-sm border border-gray-700 rounded-lg p-6">
                   <h2 className="text-2xl font-bold text-white mb-6 flex items-center">
                     <OptimizedImage 
-                      src="/images/expansions/unbound-magic.png" 
+                      src="/images/expansions/unbound-magic.webp" 
                       alt={t('craftingPage.unboundMagic', 'Magia Liberada')} 
                       className="mr-3"
                       priority
@@ -3698,7 +3679,7 @@ const CraftingPage = () => {
                   <div className="bg-gray-700/50 rounded-lg p-6 mb-6 border border-gray-600">
                     <h3 className="text-xl font-bold text-white mb-4 flex items-center">
                       <OptimizedImage 
-                        src="/images/expansions/unbound-magic.png" 
+                        src="/images/expansions/unbound-magic.webp" 
                         alt={t('craftingPage.unboundMagic', 'Magia Liberada')} 
                         className="mr-3"
                         priority

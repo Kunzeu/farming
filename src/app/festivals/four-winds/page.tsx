@@ -535,7 +535,7 @@ const FourWindsPage = () => {
    }, [fetchBoxCalculatorData]);
 
   return (
-    <div className="min-h-screen bg-cover bg-center bg-no-repeat relative" style={{ backgroundImage: 'url(/images/backgrounds/Fourwinds.jpg)' }}>
+    <div className="min-h-screen bg-cover bg-center bg-no-repeat relative" style={{ backgroundImage: 'url(/images/backgrounds/Fourwinds.webp)' }}>
       {/* Overlay semitransparente para mejorar legibilidad */}
       <div className="absolute inset-0 bg-black/40"></div>
       

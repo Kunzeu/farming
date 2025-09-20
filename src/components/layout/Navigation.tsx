@@ -235,7 +235,7 @@ const Navigation = () => {
             <Link href="/" className="flex items-center space-x-3 group">
               <motion.img
                 whileHover={{ scale: 1.05, rotate: 5 }}
-                src="/images/icons/icon.png"
+                src="/images/icons/icon.webp"
                 alt="True Farming"
                 className="w-9 h-9 sm:w-10 sm:h-10 md:w-11 md:h-11 rounded-md shadow-lg group-hover:shadow-purple-500/25 transition-all duration-300"
               />

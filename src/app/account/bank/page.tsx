@@ -410,11 +410,11 @@ const BankPage = () => {
                           return (
                             <>
                               <span>{gold}</span>
-                              <Image src="/images/expansions/Gold.png" alt="Gold" width={20} height={20} />
+                              <Image src="/images/expansions/Gold.webp" alt="Gold" width={20} height={20} />
                               <span>{silver}</span>
-                              <Image src="/images/expansions/Silver.png" alt="Silver" width={20} height={20} />
+                              <Image src="/images/expansions/Silver.webp" alt="Silver" width={20} height={20} />
                               <span>{copper}</span>
-                              <Image src="/images/expansions/Copper.png" alt="Copper" width={20} height={20} />
+                              <Image src="/images/expansions/Copper.webp" alt="Copper" width={20} height={20} />
                             </>
                           );
                         })()}
@@ -425,11 +425,11 @@ const BankPage = () => {
                           return (
                             <>
                               <span>{gold}</span>
-                              <Image src="/images/expansions/Gold.png" alt="Gold" width={16} height={16} />
+                              <Image src="/images/expansions/Gold.webp" alt="Gold" width={16} height={16} />
                               <span>{silver}</span>
-                              <Image src="/images/expansions/Silver.png" alt="Silver" width={16} height={16} />
+                              <Image src="/images/expansions/Silver.webp" alt="Silver" width={16} height={16} />
                               <span>{copper}</span>
-                              <Image src="/images/expansions/Copper.png" alt="Copper" width={16} height={16} />
+                              <Image src="/images/expansions/Copper.webp" alt="Copper" width={16} height={16} />
                             </>
                           );
                         })()}
@@ -444,11 +444,11 @@ const BankPage = () => {
                            return (
                              <>
                                <span>{gold}</span>
-                               <Image src="/images/expansions/Gold.png" alt="Gold" width={20} height={20} />
+                               <Image src="/images/expansions/Gold.webp" alt="Gold" width={20} height={20} />
                                <span>{silver}</span>
-                               <Image src="/images/expansions/Silver.png" alt="Silver" width={20} height={20} />
+                               <Image src="/images/expansions/Silver.webp" alt="Silver" width={20} height={20} />
                                <span>{copper}</span>
-                               <Image src="/images/expansions/Copper.png" alt="Copper" width={20} height={20} />
+                               <Image src="/images/expansions/Copper.webp" alt="Copper" width={20} height={20} />
                              </>
                            );
                          })()}
@@ -459,11 +459,11 @@ const BankPage = () => {
                            return (
                              <>
                                <span>{gold}</span>
-                               <Image src="/images/expansions/Gold.png" alt="Gold" width={12} height={12} />
+                               <Image src="/images/expansions/Gold.webp" alt="Gold" width={12} height={12} />
                                <span>{silver}</span>
-                               <Image src="/images/expansions/Silver.png" alt="Silver" width={12} height={12} />
+                               <Image src="/images/expansions/Silver.webp" alt="Silver" width={12} height={12} />
                                <span>{copper}</span>
-                               <Image src="/images/expansions/Copper.png" alt="Copper" width={12} height={12} />
+                               <Image src="/images/expansions/Copper.webp" alt="Copper" width={12} height={12} />
                              </>
                            );
                          })()}
@@ -484,11 +484,11 @@ const BankPage = () => {
                    <span className="text-xl font-semibold">{bankSummary.usedSlots} / {bankSummary.totalSlots} slots</span>
                    <div className="flex items-center space-x-1">
                      <span className="text-yellow-400">{Math.floor(bankSummary.totalValue / 10000)}</span>
-                     <Image src="/images/expansions/Gold.png" alt="Gold" width={16} height={16} />
+                     <Image src="/images/expansions/Gold.webp" alt="Gold" width={16} height={16} />
                                            <span className="text-gray-400">{Math.floor((bankSummary.totalValue % 10000) / 100)}</span>
-                      <Image src="/images/expansions/Silver.png" alt="Silver" width={16} height={16} />
+                      <Image src="/images/expansions/Silver.webp" alt="Silver" width={16} height={16} />
                       <span className="text-orange-400">{bankSummary.totalValue % 100}</span>
-                      <Image src="/images/expansions/Copper.png" alt="Copper" width={16} height={16} />
+                      <Image src="/images/expansions/Copper.webp" alt="Copper" width={16} height={16} />
                    </div>
                  </div>
              </div>
@@ -588,11 +588,11 @@ const BankPage = () => {
                                     if (totalPrice > 0) {
                                       const { gold, silver } = formatGold(totalPrice);
                                         if (gold > 0) {
-                                                                                 return <Image src="/images/expansions/Gold.png" alt="Gold" width={12} height={12} className="ml-1" />;
+                                        return <Image src="/images/expansions/Gold.webp" alt="Gold" width={12} height={12} className="ml-1" />;
                                        } else if (silver > 0) {
-                                         return <Image src="/images/expansions/Silver.png" alt="Silver" width={12} height={12} className="ml-1" />;
+                                         return <Image src="/images/expansions/Silver.webp" alt="Silver" width={12} height={12} className="ml-1" />;
                                        } else {
-                                         return <Image src="/images/expansions/Copper.png" alt="Copper" width={12} height={12} className="ml-1" />;
+                                         return <Image src="/images/expansions/Copper.webp" alt="Copper" width={12} height={12} className="ml-1" />;
                                       }
                                     }
                                   }
@@ -680,11 +680,11 @@ const BankPage = () => {
                               return (
                                 <>
                                   <span>{gold}</span>
-                                  <Image src="/images/expansions/Gold.png" alt="Gold" width={12} height={12} />
+                                  <Image src="/images/expansions/Gold.webp" alt="Gold" width={12} height={12} />
                                   <span>{silver}</span>
-                                  <Image src="/images/expansions/Silver.png" alt="Silver" width={12} height={12} />
+                                  <Image src="/images/expansions/Silver.webp" alt="Silver" width={12} height={12} />
                                   <span>{copper}</span>
-                                  <Image src="/images/expansions/Copper.png" alt="Copper" width={12} height={12} />
+                                  <Image src="/images/expansions/Copper.webp" alt="Copper" width={12} height={12} />
                                 </>
                               );
                             })()}
@@ -711,11 +711,11 @@ const BankPage = () => {
                                   return (
                                     <>
                                       <span>{gold}</span>
-                                      <Image src="/images/expansions/Gold.png" alt="Gold" width={12} height={12} />
+                                      <Image src="/images/expansions/Gold.webp" alt="Gold" width={12} height={12} />
                                       <span>{silver}</span>
-                                      <Image src="/images/expansions/Silver.png" alt="Silver" width={12} height={12} />
+                                      <Image src="/images/expansions/Silver.webp" alt="Silver" width={12} height={12} />
                                       <span>{copper}</span>
-                                      <Image src="/images/expansions/Copper.png" alt="Copper" width={12} height={12} />
+                                      <Image src="/images/expansions/Copper.webp" alt="Copper" width={12} height={12} />
                                     </>
                                   );
                                 })()}
@@ -739,11 +739,11 @@ const BankPage = () => {
                                   return (
                                     <>
                                       <span>{gold}</span>
-                                      <Image src="/images/expansions/Gold.png" alt="Gold" width={12} height={12} />
+                                      <Image src="/images/expansions/Gold.webp" alt="Gold" width={12} height={12} />
                                       <span>{silver}</span>
-                                      <Image src="/images/expansions/Silver.png" alt="Silver" width={12} height={12} />
+                                      <Image src="/images/expansions/Silver.webp" alt="Silver" width={12} height={12} />
                                       <span>{copper}</span>
-                                      <Image src="/images/expansions/Copper.png" alt="Copper" width={12} height={12} />
+                                      <Image src="/images/expansions/Copper.webp" alt="Copper" width={12} height={12} />
                                     </>
                                   );
                                 })()}

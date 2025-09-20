@@ -22,18 +22,19 @@ import { useDatabase, FarmItem } from '@/hooks/useDatabase';
 import ExpansionIcon from '@/components/ui/ExpansionIcon';
 import { usePageTitle } from '@/hooks/usePageTitle';
 import { useI18n } from '@/contexts/I18nContext';
+import MarkdownText from '@/components/ui/MarkdownText';
 
 // Mapeo de monedas a iconos (fuera del componente para evitar re-renders)
 const currencyConfig = {
-  gold: { icon: '/images/expansions/Gold.png', labelKey: 'currency.gold', color: 'text-yellow-400' },
-  spiritShards: { icon: '/images/expansions/Spirit_Shard.png', labelKey: 'currency.spiritShards', color: 'text-blue-400' },
-  karma: { icon: '/images/expansions/karma.png', labelKey: 'currency.karma', color: 'text-green-400' },
-  fractalRelics: { icon: '/images/expansions/fractal-relic.png', labelKey: 'currency.fractalRelics', color: 'text-purple-400' },
-  volatileMagic: { icon: '/images/expansions/volatile-magic.png', labelKey: 'currency.volatileMagic', color: 'text-orange-400' },
-  unboundMagic: { icon: '/images/expansions/unbound-magic.png', labelKey: 'currency.unboundMagic', color: 'text-indigo-400' },
-  riftEssences: { icon: '/images/expansions/rift-essence.png', labelKey: 'currency.riftEssences', color: 'text-pink-400' },
-  mysticClovers: { icon: '/images/expansions/mystic-clover.png', labelKey: 'currency.mysticClovers', color: 'text-emerald-400' },
-  imperialFavor: { icon: '/images/expansions/Imperial_Favor.png', labelKey: 'currency.imperialFavor', color: 'text-purple-400' }
+  gold: { icon: '/images/expansions/Gold.webp', labelKey: 'currency.gold', color: 'text-yellow-400' },
+  spiritShards: { icon: '/images/expansions/Spirit_Shard.webp', labelKey: 'currency.spiritShards', color: 'text-blue-400' },
+  karma: { icon: '/images/expansions/karma.webp', labelKey: 'currency.karma', color: 'text-green-400' },
+  fractalRelics: { icon: '/images/expansions/fractal-relic.webp', labelKey: 'currency.fractalRelics', color: 'text-purple-400' },
+  volatileMagic: { icon: '/images/expansions/Volatile-magic.webp', labelKey: 'currency.volatileMagic', color: 'text-orange-400' },
+  unboundMagic: { icon: '/images/expansions/unbound-magic.webp', labelKey: 'currency.unboundMagic', color: 'text-indigo-400' },
+  riftEssences: { icon: '/images/expansions/rift-essence.webp', labelKey: 'currency.riftEssences', color: 'text-pink-400' },
+  mysticClovers: { icon: '/images/expansions/mystic-clover.webp', labelKey: 'currency.mysticClovers', color: 'text-emerald-400' },
+  imperialFavor: { icon: '/images/expansions/Imperial_Favor.webp', labelKey: 'currency.imperialFavor', color: 'text-purple-400' }
 };
 
 export default function DailyRoutine() {
@@ -746,7 +747,10 @@ export default function DailyRoutine() {
                       </div>
                       
                       <div className="mb-2 sm:mb-3">
-                        <p className="text-gray-300 text-xs leading-tight line-clamp-2 sm:line-clamp-3">{farm.description}</p>
+                        <MarkdownText 
+                          text={farm.description}
+                          className="text-gray-300 text-xs leading-tight line-clamp-2 sm:line-clamp-3"
+                        />
                       </div>
                       
                       <div className="grid grid-cols-2 gap-2 text-xs sm:text-sm">

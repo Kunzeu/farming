@@ -455,7 +455,7 @@ export default function OrrianJewelryBoxPage() {
               <div className="flex items-center justify-center gap-2">
                 <p className="text-3xl font-bold text-blue-300">45,500,000</p>
                 <img 
-                  src="/images/expansions/karma.png" 
+                  src="/images/expansions/karma.webp" 
                   alt="Karma"
                   className="w-8 h-8"
                 />
@@ -472,7 +472,7 @@ export default function OrrianJewelryBoxPage() {
               <div className="flex items-center justify-center gap-2">
                 <p className="text-3xl font-bold text-orange-300">4,550</p>
                 <img 
-                  src="/images/expansions/karma.png" 
+                  src="/images/expansions/karma.webp" 
                   alt="Karma"
                   className="w-8 h-8"
                 />
@@ -484,7 +484,7 @@ export default function OrrianJewelryBoxPage() {
               <div className="flex items-center justify-center gap-2">
                 <p className="text-3xl font-bold text-purple-300">{totalKarmaRecovered.toLocaleString()}</p>
                 <img 
-                  src="/images/expansions/karma.png" 
+                  src="/images/expansions/karma.webp" 
                   alt="Karma"
                   className="w-8 h-8"
                 />

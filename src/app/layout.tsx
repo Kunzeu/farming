@@ -42,7 +42,7 @@ export const metadata: Metadata = {
     siteName: 'True Farming',
     images: [
       {
-        url: '/images/icons/icontag.png',
+        url: '/images/icons/icontag.webp',
         width: 1200,
         height: 630,
         alt: 'True Farming - Guild Wars 2 Farming Hub',
@@ -53,19 +53,19 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: 'True Farming - Guild Wars 2 Farming Hub',
     description: 'Your platform to optimize farming in Guild Wars 2',
-    images: ['/images/icons/icontag.png'],
+    images: ['/images/icons/icontag.webp'],
   },
   icons: {
     icon: [
       { url: '/images/icons/favicon.svg', type: 'image/svg+xml' },
       { url: '/images/icons/icon.ico', sizes: '16x16', type: 'image/x-icon' },
       { url: '/images/icons/icon1.ico', sizes: '32x32', type: 'image/x-icon' },
-      { url: '/images/icons/icon.png', sizes: '192x192', type: 'image/png' },
-      { url: '/images/icons/icon1.png', sizes: '512x512', type: 'image/png' },
+      { url: '/images/icons/icon.webp', sizes: '192x192', type: 'image/webp' },
+      { url: '/images/icons/icon1.webp', sizes: '512x512', type: 'image/webp' },
     ],
     shortcut: '/images/icons/favicon.svg',
     apple: [
-      { url: '/images/icons/icon.png', sizes: '180x180', type: 'image/png' },
+      { url: '/images/icons/icon.webp', sizes: '180x180', type: 'image/webp' },
     ],
     other: [
       {
@@ -94,7 +94,7 @@ export default function RootLayout({
         crossOrigin="anonymous"></script>
         <meta name="google-site-verification" content="6QMoVlJ1hD8y5DCBubEKA5qv_oLb3O4EVRB8OS03LZU"/>
         <meta name="msapplication-TileColor" content="#c1272d" />
-        <meta name="msapplication-TileImage" content="/images/icons/icon.png" />
+        <meta name="msapplication-TileImage" content="/images/icons/icon.webp" />
           
         {/* Meta tags are automatically generated from the metadata object above */}
         <meta name="theme-color" content="#c1272d" />
@@ -105,19 +105,19 @@ export default function RootLayout({
         <link rel="alternate" hrefLang="de" href="https://www.true-farming.com/de" />
         
         {/* Open Graph Meta Tags */}
-        <meta property="og:image" content="/images/icons/icontag.png" />
+        <meta property="og:image" content="/images/icons/icontag.webp" />
         <meta property="og:image:width" content="1200" />
         <meta property="og:image:height" content="630" />
-        <meta property="og:image:type" content="image/png" />
+        <meta property="og:image:type" content="image/webp" />
         <meta property="og:image:alt" content="True Farming - Guild Wars 2 Farming Hub" />
         
         {/* Twitter Card Meta Tags */}
-        <meta name="twitter:image" content="/images/icons/icontag.png" />
+        <meta name="twitter:image" content="/images/icons/icontag.webp" />
         <meta name="twitter:image:alt" content="True Farming - Guild Wars 2 Farming Hub" />
         
         {/* Additional Meta Tags */}
-        <meta name="image" content="/images/icons/icon.png" />
-        <meta name="thumbnail" content="/images/icons/icon.png" />
+        <meta name="image" content="/images/icons/icon.webp" />
+        <meta name="thumbnail" content="/images/icons/icon.webp" />
         <meta name="twitter:image:alt" content="True Farming - Guild Wars 2 Farming Hub" />
         <meta name="twitter:image:width" content="1200" />
         <meta name="twitter:image:height" content="630" />

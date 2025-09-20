@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { X, Map, Clock, Copy, Users, User } from 'lucide-react';
 import ExpansionIcon from './ExpansionIcon';
 import GW2Icon from './GW2Icon';
+import MarkdownText from './MarkdownText';
 import { useI18n } from '@/contexts/I18nContext';
 
 interface DescriptionModalProps {
@@ -189,9 +190,10 @@ export default function DescriptionModal({ isOpen, onClose, route }: Description
                 <div>
                   <h4 className="text-lg font-semibold text-white mb-3">{t('modal.description', 'Description:')}</h4>
                   <div className="p-4">
-                    <p className="text-gray-300 text-base leading-relaxed whitespace-pre-wrap break-all">
-                      {processDescription(route.description)}
-                    </p>
+                    <MarkdownText 
+                      text={processDescription(route.description)}
+                      className="text-gray-300 text-base leading-relaxed whitespace-pre-wrap break-all"
+                    />
                   </div>
                 </div>
 

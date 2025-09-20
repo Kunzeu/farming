@@ -443,7 +443,7 @@ const JardinesPage = () => {
                 onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
                 className="w-14 h-14 bg-emerald-900 hover:bg-emerald-800 text-white rounded-full shadow-lg shadow-emerald-900/20 flex items-center justify-center transition-all duration-300 hover:scale-110 active:scale-95"
               >
-                {mobileMenuOpen ? <X className="w-8 h-8" /> : <Image src="/images/icons/index.png" alt="Menu" width={32} height={32} className="w-8 h-8" />}
+                {mobileMenuOpen ? <X className="w-8 h-8" /> : <Image src="/images/icons/index.webp" alt="Menu" width={32} height={32} className="w-8 h-8" />}
               </button>
             </div>
 
@@ -813,11 +813,11 @@ const JardinesPage = () => {
                 >
                   <h2 className="text-3xl font-bold text-white mb-8 flex items-center">
                     <Image 
-                      src="https://wiki.guildwars2.com/images/d/d2/Waypoint_%28map_icon%29.png" 
+                      src="images/icons/waypoint-icon.webp" 
                       alt="Waypoint icon" 
-                      width={32} 
-                      height={32} 
-                      className="w-8 h-8 mr-3"
+                      width={50} 
+                      height={50} 
+                      className="w-11 h-11 mr-3"
                       unoptimized
                     />
                     {t('gardenPage.sections.waypoints.title')}
@@ -960,11 +960,11 @@ const JardinesPage = () => {
                         <div className="bg-slate-700/50 rounded-lg p-4 border border-slate-600/40 mb-4">
                           <p className="text-emerald-300 font-semibold flex items-center gap-3 text-sm">
                             <Image 
-                              src="/images/icons/waypoint-icon.png" 
+                              src="/images/icons/waypoint-icon.webp" 
                               alt="Waypoint" 
                               width={20} 
                               height={20} 
-                              className="w-5 h-5"
+                              className="w-7 h-7"
                             />
                             {t('gardenPage.waypoints.ogreRoad')}
                           </p>
@@ -1016,11 +1016,11 @@ const JardinesPage = () => {
                         <div className="bg-slate-700/50 rounded-lg p-4 border border-slate-600/40 mb-4">
                           <p className="text-teal-300 font-semibold flex items-center gap-3 text-sm">
                             <Image 
-                              src="/images/icons/waypoint-icon.png" 
+                              src="/images/icons/waypoint-icon.webp" 
                               alt="Waypoint" 
                               width={20} 
                               height={20} 
-                              className="w-5 h-5"
+                              className="w-7 h-7"
                             />
                             {t('gardenPage.waypoints.guardianStone')}
                           </p>
@@ -1072,11 +1072,11 @@ const JardinesPage = () => {
                         <div className="bg-slate-700/50 rounded-lg p-4 border border-slate-600/40 mb-4">
                           <p className="text-purple-300 font-semibold flex items-center gap-3 text-sm">
                             <Image 
-                              src="/images/icons/waypoint-icon.png" 
+                              src="/images/icons/waypoint-icon.webp" 
                               alt="Waypoint" 
                               width={20} 
                               height={20} 
-                              className="w-5 h-5"
+                              className="w-7 h-7"
                             />
                             {t('gardenPage.waypoints.bulwark')}
                           </p>
@@ -1128,11 +1128,11 @@ const JardinesPage = () => {
                         <div className="bg-slate-700/50 rounded-lg p-4 border border-slate-600/40 mb-4">
                           <p className="text-orange-300 font-semibold flex items-center gap-3 text-sm">
                             <Image 
-                              src="/images/icons/waypoint-icon.png" 
+                              src="/images/icons/waypoint-icon.webp" 
                               alt="Waypoint" 
                               width={20} 
                               height={20} 
-                              className="w-5 h-5"
+                              className="w-7 h-7"
                             />
                             {t('gardenPage.waypoints.loreclaw')}
                           </p>
@@ -1183,11 +1183,11 @@ const JardinesPage = () => {
                         <div className="bg-slate-700/50 rounded-lg p-4 border border-slate-600/40 mb-4">
                           <p className="text-blue-300 font-semibold flex items-center gap-3 text-sm">
                             <Image 
-                              src="/images/icons/waypoint-icon.png" 
+                              src="/images/icons/waypoint-icon.webp" 
                               alt="Waypoint" 
                               width={20} 
                               height={20} 
-                              className="w-5 h-5"
+                              className="w-7 h-7"
                             />
                             {t('gardenPage.waypoints.nolan')}
                           </p>
@@ -1238,11 +1238,11 @@ const JardinesPage = () => {
                         <div className="bg-slate-700/50 rounded-lg p-4 border border-slate-600/40 mb-4">
                           <p className="text-red-300 font-semibold flex items-center gap-3 text-sm">
                             <Image 
-                              src="/images/icons/waypoint-icon.png" 
+                              src="/images/icons/waypoint-icon.webp" 
                               alt="Waypoint" 
                               width={20} 
                               height={20} 
-                              className="w-5 h-5"
+                              className="w-7 h-7"
                             />
                             {t('gardenPage.waypoints.apostate')}
                           </p>
@@ -1293,11 +1293,11 @@ const JardinesPage = () => {
                         <div className="bg-slate-700/50 rounded-lg p-4 border border-slate-600/40 mb-4">
                           <p className="text-indigo-300 font-semibold flex items-center gap-3 text-sm">
                             <Image 
-                              src="/images/icons/waypoint-icon.png" 
+                              src="/images/icons/waypoint-icon.webp" 
                               alt="Waypoint" 
                               width={20} 
                               height={20} 
-                              className="w-5 h-5"
+                              className="w-7 h-7"
                             />
                             {t('gardenPage.waypoints.gendarranFields')}
                           </p>
@@ -1348,11 +1348,11 @@ const JardinesPage = () => {
                         <div className="bg-slate-700/50 rounded-lg p-4 border border-slate-600/40 mb-4">
                           <p className="text-lime-300 font-semibold flex items-center gap-3 text-sm">
                             <Image 
-                              src="/images/icons/waypoint-icon.png" 
+                              src="/images/icons/waypoint-icon.webp" 
                               alt="Waypoint" 
                               width={20} 
                               height={20} 
-                              className="w-5 h-5"
+                              className="w-7 h-7"
                             />
                             {t('gardenPage.waypoints.harathiHinterlands')}
                           </p>
@@ -1403,11 +1403,11 @@ const JardinesPage = () => {
                         <div className="bg-slate-700/50 rounded-lg p-4 border border-slate-600/40 mb-4">
                           <p className="text-rose-300 font-semibold flex items-center gap-3 text-sm">
                             <Image 
-                              src="/images/icons/waypoint-icon.png" 
+                              src="/images/icons/waypoint-icon.webp" 
                               alt="Waypoint" 
                               width={20} 
                               height={20} 
-                              className="w-5 h-5"
+                              className="w-7 h-7"
                             />
                             {t('gardenPage.waypoints.kessexHills')}
                           </p>
@@ -1458,11 +1458,11 @@ const JardinesPage = () => {
                         <div className="bg-slate-700/50 rounded-lg p-4 border border-slate-600/40 mb-4">
                           <p className="text-sky-300 font-semibold flex items-center gap-3 text-sm">
                             <Image 
-                              src="/images/icons/waypoint-icon.png" 
+                              src="/images/icons/waypoint-icon.webp" 
                               alt="Waypoint" 
                               width={20} 
                               height={20} 
-                              className="w-5 h-5"
+                              className="w-7 h-7"
                             />
                             {t('gardenPage.waypoints.lornarsPass')}
                           </p>
@@ -1513,11 +1513,11 @@ const JardinesPage = () => {
                         <div className="bg-slate-700/50 rounded-lg p-4 border border-slate-600/40 mb-4">
                           <p className="text-cyan-300 font-semibold flex items-center gap-3 text-sm">
                             <Image 
-                              src="/images/icons/waypoint-icon.png" 
+                              src="/images/icons/waypoint-icon.webp" 
                               alt="Waypoint" 
                               width={20} 
                               height={20} 
-                              className="w-5 h-5"
+                              className="w-7 h-7"
                             />
                             {t('gardenPage.waypoints.bloodtideCoast')}
                           </p>
@@ -1568,11 +1568,11 @@ const JardinesPage = () => {
                         <div className="bg-slate-700/50 rounded-lg p-4 border border-slate-600/40 mb-4">
                           <p className="text-violet-300 font-semibold flex items-center gap-3 text-sm">
                             <Image 
-                              src="/images/icons/waypoint-icon.png" 
+                              src="/images/icons/waypoint-icon.webp" 
                               alt="Waypoint" 
                               width={20} 
                               height={20} 
-                              className="w-5 h-5"
+                              className="w-7 h-7"
                             />
                             {t('gardenPage.waypoints.dredgehauntCliffs')}
                           </p>
@@ -1623,11 +1623,11 @@ const JardinesPage = () => {
                         <div className="bg-slate-700/50 rounded-lg p-4 border border-slate-600/40 mb-4">
                           <p className="text-ice-300 font-semibold flex items-center gap-3 text-sm">
                             <Image 
-                              src="/images/icons/waypoint-icon.png" 
+                              src="/images/icons/waypoint-icon.webp" 
                               alt="Waypoint" 
                               width={20} 
                               height={20} 
-                              className="w-5 h-5"
+                              className="w-7 h-7"
                             />
                             {t('gardenPage.waypoints.frostgorgeSound')}
                           </p>
@@ -1678,11 +1678,11 @@ const JardinesPage = () => {
                         <div className="bg-slate-700/50 rounded-lg p-4 border border-slate-600/40 mb-4">
                           <p className="text-amber-300 font-semibold flex items-center gap-3 text-sm">
                             <Image 
-                              src="/images/icons/waypoint-icon.png" 
+                              src="/images/icons/waypoint-icon.webp" 
                               alt="Waypoint" 
                               width={20} 
                               height={20} 
-                              className="w-5 h-5"
+                              className="w-7 h-7"
                             />
                             {t('gardenPage.waypoints.mountMaelstrom')}
                           </p>
@@ -1733,11 +1733,11 @@ const JardinesPage = () => {
                         <div className="bg-slate-700/50 rounded-lg p-4 border border-slate-600/40 mb-4">
                           <p className="text-emerald-300 font-semibold flex items-center gap-3 text-sm">
                             <Image 
-                              src="/images/icons/waypoint-icon.png" 
+                              src="/images/icons/waypoint-icon.webp" 
                               alt="Waypoint" 
                               width={20} 
                               height={20} 
-                              className="w-5 h-5"
+                              className="w-7 h-7"
                             />
                             {t('gardenPage.waypoints.sparkflyFen')}
                           </p>
@@ -1790,11 +1790,11 @@ const JardinesPage = () => {
                         <div className="bg-slate-700/50 rounded-lg p-4 border border-slate-600/40 mb-4">
                           <p className="text-yellow-300 font-semibold flex items-center gap-3 text-sm">
                             <Image 
-                              src="/images/icons/waypoint-icon.png" 
+                              src="/images/icons/waypoint-icon.webp" 
                               alt="Waypoint" 
                               width={20} 
                               height={20} 
-                              className="w-5 h-5"
+                              className="w-7 h-7"
                             />
                               {t('gardenPage.waypoints.claypool')}
                           </p>
@@ -1845,11 +1845,11 @@ const JardinesPage = () => {
                         <div className="bg-slate-700/50 rounded-lg p-4 border border-slate-600/40 mb-4">
                           <p className="text-green-300 font-semibold flex items-center gap-3 text-sm">
                             <Image 
-                              src="/images/icons/waypoint-icon.png" 
+                              src="/images/icons/waypoint-icon.webp" 
                               alt="Waypoint" 
                               width={20} 
                               height={20} 
-                              className="w-5 h-5"
+                              className="w-7 h-7"
                             />
                           {t('gardenPage.waypoints.kessexHills2')}
                           </p>
@@ -1900,11 +1900,11 @@ const JardinesPage = () => {
                         <div className="bg-slate-700/50 rounded-lg p-4 border border-slate-600/40 mb-4">
                           <p className="text-teal-300 font-semibold flex items-center gap-3 text-sm">
                             <Image 
-                              src="/images/icons/waypoint-icon.png" 
+                              src="/images/icons/waypoint-icon.webp" 
                               alt="Waypoint" 
                               width={20} 
                               height={20} 
-                              className="w-5 h-5"
+                              className="w-7 h-7"
                             />
                             {t('gardenPage.waypoints.rataSum')}
                           </p>
@@ -1955,11 +1955,11 @@ const JardinesPage = () => {
                         <div className="bg-slate-700/50 rounded-lg p-4 border border-slate-600/40 mb-4">
                           <p className="text-purple-300 font-semibold flex items-center gap-3 text-sm">
                             <Image 
-                              src="/images/icons/waypoint-icon.png" 
+                              src="/images/icons/waypoint-icon.webp" 
                               alt="Waypoint" 
                               width={20} 
                               height={20} 
-                              className="w-5 h-5"
+                              className="w-7 h-7"
                             />
                             {t('gardenPage.waypoints.brisbanWildlands')}
                           </p>
@@ -2010,11 +2010,11 @@ const JardinesPage = () => {
                         <div className="bg-slate-700/50 rounded-lg p-4 border border-slate-600/40 mb-4">
                           <p className="text-cyan-300 font-semibold flex items-center gap-3 text-sm">
                             <Image 
-                              src="/images/icons/waypoint-icon.png" 
+                              src="/images/icons/waypoint-icon.webp" 
                               alt="Waypoint" 
                               width={20} 
                               height={20} 
-                              className="w-5 h-5"
+                              className="w-7 h-7"
                             />
                             {t('gardenPage.waypoints.snowdenDrifts')}
                           </p>
@@ -2065,11 +2065,11 @@ const JardinesPage = () => {
                         <div className="bg-slate-700/50 rounded-lg p-4 border border-slate-600/40 mb-4">
                           <p className="text-rose-300 font-semibold flex items-center gap-3 text-sm">
                             <Image 
-                              src="/images/icons/waypoint-icon.png" 
+                              src="/images/icons/waypoint-icon.webp" 
                               alt="Waypoint" 
                               width={20} 
                               height={20} 
-                              className="w-5 h-5"
+                              className="w-7 h-7"
                             />
                               {t('gardenPage.waypoints.divinitysReach')}
                           </p>
@@ -2120,11 +2120,11 @@ const JardinesPage = () => {
                         <div className="bg-slate-700/50 rounded-lg p-4 border border-slate-600/40 mb-4">
                           <p className="text-blue-300 font-semibold flex items-center gap-3 text-sm">
                             <Image 
-                              src="/images/icons/waypoint-icon.png" 
+                              src="/images/icons/waypoint-icon.webp" 
                               alt="Waypoint" 
                               width={20} 
                               height={20} 
-                              className="w-5 h-5"
+                              className="w-7 h-7"
                             />
                             {t('gardenPage.waypoints.wayfarerFoothills')}
                           </p>
@@ -2175,11 +2175,11 @@ const JardinesPage = () => {
                         <div className="bg-slate-700/50 rounded-lg p-4 border border-slate-600/40 mb-4">
                           <p className="text-lime-300 font-semibold flex items-center gap-3 text-sm">
                             <Image 
-                              src="/images/icons/waypoint-icon.png" 
+                              src="/images/icons/waypoint-icon.webp" 
                               alt="Waypoint" 
                               width={20} 
                               height={20} 
-                              className="w-5 h-5"
+                              className="w-7 h-7"
                             />
                           {t('gardenPage.waypoints.timberlineFalls')}
                           </p>
@@ -2230,11 +2230,11 @@ const JardinesPage = () => {
                         <div className="bg-slate-700/50 rounded-lg p-4 border border-slate-600/40 mb-4">
                           <p className="text-orange-300 font-semibold flex items-center gap-3 text-sm">
                             <Image 
-                              src="/images/icons/waypoint-icon.png" 
+                              src="/images/icons/waypoint-icon.webp" 
                               alt="Waypoint" 
                               width={20} 
                               height={20} 
-                              className="w-5 h-5"
+                              className="w-7 h-7"
                             />
                             {t('gardenPage.waypoints.southsunCove')}
                           </p>
@@ -2285,11 +2285,11 @@ const JardinesPage = () => {
                         <div className="bg-slate-700/50 rounded-lg p-4 border border-slate-600/40 mb-4">
                           <p className="text-amber-300 font-semibold flex items-center gap-3 text-sm">
                             <Image 
-                              src="/images/icons/waypoint-icon.png" 
+                              src="/images/icons/waypoint-icon.webp" 
                               alt="Waypoint" 
                               width={20} 
                               height={20} 
-                              className="w-5 h-5"
+                              className="w-7 h-7"
                             />
                             {t('gardenPage.waypoints.dryTop')}
                           </p>
@@ -2340,11 +2340,11 @@ const JardinesPage = () => {
                         <div className="bg-slate-700/50 rounded-lg p-4 border border-slate-600/40 mb-4">
                           <p className="text-red-300 font-semibold flex items-center gap-3 text-sm">
                             <Image 
-                              src="/images/icons/waypoint-icon.png" 
+                              src="/images/icons/waypoint-icon.webp" 
                               alt="Waypoint" 
                               width={20} 
                               height={20} 
-                              className="w-5 h-5"
+                              className="w-7 h-7"
                             />
                             {t('gardenPage.waypoints.silverwastes')}
                           </p>
@@ -2395,11 +2395,11 @@ const JardinesPage = () => {
                         <div className="bg-slate-700/50 rounded-lg p-4 border border-slate-600/40 mb-4">
                           <p className="text-yellow-300 font-semibold flex items-center gap-3 text-sm">
                             <Image 
-                              src="/images/icons/waypoint-icon.png" 
+                              src="/images/icons/waypoint-icon.webp" 
                               alt="Waypoint" 
                               width={20} 
                               height={20} 
-                              className="w-5 h-5"
+                              className="w-7 h-7"
                             />
                             {t('gardenPage.waypoints.auricBasin')}
                           </p>
@@ -2450,11 +2450,11 @@ const JardinesPage = () => {
                         <div className="bg-slate-700/50 rounded-lg p-4 border border-slate-600/40 mb-4">
                           <p className="text-green-300 font-semibold flex items-center gap-3 text-sm">
                             <Image 
-                              src="/images/icons/waypoint-icon.png" 
+                              src="/images/icons/waypoint-icon.webp" 
                               alt="Waypoint" 
                               width={20} 
                               height={20} 
-                              className="w-5 h-5"
+                              className="w-7 h-7"
                             />
                             {t('gardenPage.waypoints.tangledDepths')}
                           </p>
@@ -2505,11 +2505,11 @@ const JardinesPage = () => {
                         <div className="bg-slate-700/50 rounded-lg p-4 border border-slate-600/40 mb-4">
                           <p className="text-purple-300 font-semibold flex items-center gap-3 text-sm">
                             <Image 
-                              src="/images/icons/waypoint-icon.png" 
+                              src="/images/icons/waypoint-icon.webp" 
                               alt="Waypoint" 
                               width={20} 
                               height={20} 
-                              className="w-5 h-5"
+                              className="w-7 h-7"
                             />
                         {t('gardenPage.waypoints.dragonsStand')}
                           </p>
@@ -2560,11 +2560,11 @@ const JardinesPage = () => {
                         <div className="bg-slate-700/50 rounded-lg p-4 border border-slate-600/40 mb-4">
                           <p className="text-red-300 font-semibold flex items-center gap-3 text-sm">
                             <Image 
-                              src="/images/icons/waypoint-icon.png" 
+                              src="/images/icons/waypoint-icon.webp" 
                               alt="Waypoint" 
                               width={20} 
                               height={20} 
-                              className="w-5 h-5"
+                              className="w-7 h-7"
                             />
                             {t('gardenPage.waypoints.bloodstoneFen')}
                           </p>
@@ -2617,11 +2617,11 @@ const JardinesPage = () => {
                         <div className="bg-slate-700/50 rounded-lg p-4 border border-slate-600/40 mb-4">
                           <p className="text-yellow-300 font-semibold flex items-center gap-3 text-sm">
                             <Image 
-                              src="/images/icons/waypoint-icon.png" 
+                              src="/images/icons/waypoint-icon.webp" 
                               alt="Waypoint" 
                               width={20} 
                               height={20} 
-                              className="w-5 h-5"
+                              className="w-7 h-7"
                             />
                             {t('gardenPage.waypoints.thedesolation')}
                           </p>
@@ -2672,11 +2672,11 @@ const JardinesPage = () => {
                         <div className="bg-slate-700/50 rounded-lg p-4 border border-slate-600/40 mb-4">
                           <p className="text-green-300 font-semibold flex items-center gap-3 text-sm">
                             <Image 
-                              src="/images/icons/waypoint-icon.png" 
+                              src="/images/icons/waypoint-icon.webp" 
                               alt="Waypoint" 
                               width={20} 
                               height={20} 
-                              className="w-5 h-5"
+                              className="w-7 h-7"
                             />
                             {t('gardenPage.waypoints.eloniverlands')} <span className="text-yellow-400 font-bold">x2</span>
                           </p>
@@ -2727,11 +2727,11 @@ const JardinesPage = () => {
                         <div className="bg-slate-700/50 rounded-lg p-4 border border-slate-600/40 mb-4">
                           <p className="text-green-300 font-semibold flex items-center gap-3 text-sm">
                             <Image 
-                              src="/images/icons/waypoint-icon.png" 
+                              src="/images/icons/waypoint-icon.webp" 
                               alt="Waypoint" 
                               width={20} 
                               height={20} 
-                              className="w-5 h-5"
+                              className="w-7 h-7"
                             />
                             {t('gardenPage.waypoints.eloniverlands')} <span className="text-yellow-400 font-bold">x2</span>
                           </p>
@@ -2782,11 +2782,11 @@ const JardinesPage = () => {
                         <div className="bg-slate-700/50 rounded-lg p-4 border border-slate-600/40 mb-4">
                           <p className="text-purple-300 font-semibold flex items-center gap-3 text-sm">
                             <Image 
-                              src="/images/icons/waypoint-icon.png" 
+                              src="/images/icons/waypoint-icon.webp" 
                               alt="Waypoint" 
                               width={20} 
                               height={20} 
-                              className="w-5 h-5"
+                              className="w-7 h-7"
                             />
                             {t('gardenPage.waypoints.deserthighlands')}
                           </p>
@@ -2837,11 +2837,11 @@ const JardinesPage = () => {
                         <div className="bg-slate-700/50 rounded-lg p-4 border border-slate-600/40 mb-4">
                           <p className="text-emerald-300 font-semibold flex items-center gap-3 text-sm">
                             <Image 
-                              src="/images/icons/waypoint-icon.png" 
+                              src="/images/icons/waypoint-icon.webp" 
                               alt="Waypoint" 
                               width={20} 
                               height={20} 
-                              className="w-5 h-5"
+                              className="w-7 h-7"
                             />
                             {t('gardenPage.waypoints.crystaloasis')}
                           </p>
@@ -2892,11 +2892,11 @@ const JardinesPage = () => {
                         <div className="bg-slate-700/50 rounded-lg p-4 border border-slate-600/40 mb-4">
                           <p className="text-red-300 font-semibold flex items-center gap-3 text-sm">
                             <Image 
-                              src="/images/icons/waypoint-icon.png" 
+                              src="/images/icons/waypoint-icon.webp" 
                               alt="Waypoint" 
                               width={20} 
                               height={20} 
-                              className="w-5 h-5"
+                              className="w-7 h-7"
                             />
                             {t('gardenPage.waypoints.sandsweptIsles')}
                           </p>
@@ -2947,11 +2947,11 @@ const JardinesPage = () => {
                         <div className="bg-slate-700/50 rounded-lg p-4 border border-slate-600/40 mb-4">
                           <p className="text-blue-300 font-semibold flex items-center gap-3 text-sm">
                             <Image 
-                              src="/images/icons/waypoint-icon.png" 
+                              src="/images/icons/waypoint-icon.webp" 
                               alt="Waypoint" 
                               width={20} 
                               height={20} 
-                              className="w-5 h-5"
+                              className="w-7 h-7"
                             />
                             {t('gardenPage.waypoints.grothmarvalley')}
                           </p>
@@ -3002,11 +3002,11 @@ const JardinesPage = () => {
                         <div className="bg-slate-700/50 rounded-lg p-4 border border-slate-600/40 mb-4">
                           <p className="text-orange-300 font-semibold flex items-center gap-3 text-sm">
                             <Image 
-                              src="/images/icons/waypoint-icon.png" 
+                              src="/images/icons/waypoint-icon.webp" 
                               alt="Waypoint" 
                               width={20} 
                               height={20} 
-                              className="w-5 h-5"
+                              className="w-7 h-7"
                             />
                             {t('gardenPage.waypoints.bjoramarches')}
                           </p>
@@ -3057,11 +3057,11 @@ const JardinesPage = () => {
                         <div className="bg-slate-700/50 rounded-lg p-4 border border-slate-600/40 mb-4">
                           <p className="text-cyan-300 font-semibold flex items-center gap-3 text-sm">
                             <Image 
-                              src="/images/icons/waypoint-icon.png" 
+                              src="/images/icons/waypoint-icon.webp" 
                               alt="Waypoint" 
                               width={20} 
                               height={20} 
-                              className="w-5 h-5"
+                              className="w-7 h-7"
                             />
                             {t('gardenPage.waypoints.drizzlewoodcoast')} <span className="text-red-400 font-bold">x3</span>
                           </p>
@@ -3112,11 +3112,11 @@ const JardinesPage = () => {
                         <div className="bg-slate-700/50 rounded-lg p-4 border border-slate-600/40 mb-4">
                           <p className="text-cyan-300 font-semibold flex items-center gap-3 text-sm">
                             <Image 
-                              src="/images/icons/waypoint-icon.png" 
+                              src="/images/icons/waypoint-icon.webp" 
                               alt="Waypoint" 
                               width={20} 
                               height={20} 
-                              className="w-5 h-5"
+                              className="w-7 h-7"
                             />
                             {t('gardenPage.waypoints.drizzlewoodcoast')} <span className="text-red-400 font-bold">x3</span>
                           </p>
@@ -3167,11 +3167,11 @@ const JardinesPage = () => {
                         <div className="bg-slate-700/50 rounded-lg p-4 border border-slate-600/40 mb-4">
                           <p className="text-cyan-300 font-semibold flex items-center gap-3 text-sm">
                             <Image 
-                              src="/images/icons/waypoint-icon.png" 
+                              src="/images/icons/waypoint-icon.webp" 
                               alt="Waypoint" 
                               width={20} 
                               height={20} 
-                              className="w-5 h-5"
+                              className="w-7 h-7"
                             />
                             {t('gardenPage.waypoints.drizzlewoodcoast')} <span className="text-red-400 font-bold">x3</span>
                           </p>
@@ -3222,11 +3222,11 @@ const JardinesPage = () => {
                         <div className="bg-slate-700/50 rounded-lg p-4 border border-slate-600/40 mb-4">
                           <p className="text-amber-300 font-semibold flex items-center gap-3 text-sm">
                             <Image 
-                              src="/images/icons/waypoint-icon.png" 
+                              src="/images/icons/waypoint-icon.webp" 
                               alt="Waypoint" 
                               width={20} 
                               height={20} 
-                              className="w-5 h-5"
+                              className="w-7 h-7"
                             />
                             {t('gardenPage.waypoints.newKainengCity')} <span className="text-yellow-400 font-bold">x2</span>
                           </p>
@@ -3277,11 +3277,11 @@ const JardinesPage = () => {
                         <div className="bg-slate-700/50 rounded-lg p-4 border border-slate-600/40 mb-4">
                           <p className="text-amber-300 font-semibold flex items-center gap-3 text-sm">
                             <Image 
-                              src="/images/icons/waypoint-icon.png" 
+                              src="/images/icons/waypoint-icon.webp" 
                               alt="Waypoint" 
                               width={20} 
                               height={20} 
-                              className="w-5 h-5"
+                              className="w-7 h-7"
                             />
                             {t('gardenPage.waypoints.newKainengCity')} <span className="text-yellow-400 font-bold">x2</span>
                           </p>
@@ -3332,11 +3332,11 @@ const JardinesPage = () => {
                         <div className="bg-slate-700/50 rounded-lg p-4 border border-slate-600/40 mb-4">
                           <p className="text-yellow-300 font-semibold flex items-center gap-3 text-sm">
                             <Image 
-                              src="/images/icons/waypoint-icon.png" 
+                              src="/images/icons/waypoint-icon.webp" 
                               alt="Waypoint" 
                               width={20} 
                               height={20} 
-                              className="w-5 h-5"
+                              className="w-7 h-7"
                             />
                             {t('gardenPage.waypoints.newKainengCity2')}
                           </p>
@@ -3387,11 +3387,11 @@ const JardinesPage = () => {
                         <div className="bg-slate-700/50 rounded-lg p-4 border border-slate-600/40 mb-4">
                           <p className="text-lime-300 font-semibold flex items-center gap-3 text-sm">
                             <Image 
-                              src="/images/icons/waypoint-icon.png" 
+                              src="/images/icons/waypoint-icon.webp" 
                               alt="Waypoint" 
                               width={20} 
                               height={20} 
-                              className="w-5 h-5"
+                              className="w-7 h-7"
                             />
                             {t('gardenPage.waypoints.theechovaldwilds')}
                           </p>
@@ -3442,11 +3442,11 @@ const JardinesPage = () => {
                         <div className="bg-slate-700/50 rounded-lg p-4 border border-slate-600/40 mb-4">
                           <p className="text-indigo-300 font-semibold flex items-center gap-3 text-sm">
                             <Image 
-                              src="/images/icons/waypoint-icon.png" 
+                              src="/images/icons/waypoint-icon.webp" 
                               alt="Waypoint" 
                               width={20} 
                               height={20} 
-                              className="w-5 h-5"
+                              className="w-7 h-7"
                             />
                             {t('gardenPage.waypoints.skywatchArchipelago')}
                           </p>
@@ -3497,11 +3497,11 @@ const JardinesPage = () => {
                         <div className="bg-slate-700/50 rounded-lg p-4 border border-slate-600/40 mb-4">
                           <p className="text-violet-300 font-semibold flex items-center gap-3 text-sm">
                             <Image 
-                              src="/images/icons/waypoint-icon.png" 
+                              src="/images/icons/waypoint-icon.webp" 
                               alt="Waypoint" 
                               width={20} 
                               height={20} 
-                              className="w-5 h-5"
+                              className="w-7 h-7"
                             />
                             {t('gardenPage.waypoints.skywatchArchipelago2')} 
                           </p>
@@ -3552,11 +3552,11 @@ const JardinesPage = () => {
                         <div className="bg-slate-700/50 rounded-lg p-4 border border-slate-600/40 mb-4">
                           <p className="text-rose-300 font-semibold flex items-center gap-3 text-sm">
                             <Image 
-                              src="/images/icons/waypoint-icon.png" 
+                              src="/images/icons/waypoint-icon.webp" 
                               alt="Waypoint" 
                               width={20} 
                               height={20} 
-                              className="w-5 h-5"
+                              className="w-7 h-7"
                             />
                             {t('gardenPage.waypoints.lowlandShore')} <span className="text-yellow-400 font-bold">x2</span>
                           </p>
@@ -3608,11 +3608,11 @@ const JardinesPage = () => {
                         <div className="bg-slate-700/50 rounded-lg p-4 border border-slate-600/40 mb-4">
                           <p className="text-rose-300 font-semibold flex items-center gap-3 text-sm">
                             <Image 
-                              src="/images/icons/waypoint-icon.png" 
+                              src="/images/icons/waypoint-icon.webp" 
                               alt="Waypoint" 
                               width={20} 
                               height={20} 
-                              className="w-5 h-5"
+                              className="w-7 h-7"
                             />
                             {t('gardenPage.waypoints.lowlandShore')} <span className="text-yellow-400 font-bold">x2</span>
                           </p>
@@ -3665,7 +3665,7 @@ const JardinesPage = () => {
                       <h3 className="text-white font-semibold mb-3">{t('gardenPage.sections.rewards.guildGardens')}</h3>
                       <div className="flex items-center justify-center mb-2">
                         <Image
-                          src="/images/expansions/volatile-magic.png"
+                          src="/images/expansions/Volatile-magic.webp"
                           alt="Volatile Magic"
                           width={24}
                           height={24}
@@ -3679,7 +3679,7 @@ const JardinesPage = () => {
                       <h3 className="text-white font-semibold mb-3">{t('gardenPage.sections.rewards.worldGardens')}</h3>
                       <div className="flex items-center justify-center mb-2">
                         <Image
-                          src="/images/expansions/Spirit_Shard.png"
+                          src="/images/expansions/Spirit_Shard.webp"
                           alt="Spirit Shards"
                           width={24}
                           height={24}

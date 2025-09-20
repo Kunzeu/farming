@@ -327,6 +327,7 @@ export default function GiftOfJadeMasteryPage() {
               fill
               sizes="24px"
               className="object-contain"
+              unoptimized
             />
           </div>
           <div>
@@ -358,6 +359,7 @@ export default function GiftOfJadeMasteryPage() {
             fill
             sizes="24px"
             className="object-contain"
+            unoptimized
           />
         </div>
         <div>
@@ -516,7 +518,7 @@ export default function GiftOfJadeMasteryPage() {
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               className="w-14 h-14 bg-blue-900 hover:bg-blue-800 text-white rounded-full shadow-lg shadow-blue-900/20 flex items-center justify-center transition-all duration-300 hover:scale-110 active:scale-95"
             >
-              {mobileMenuOpen ? <X className="w-8 h-8" /> : <Image src="/images/icons/index.png" alt="Menu" width={32} height={32} className="w-8 h-8" />}
+              {mobileMenuOpen ? <X className="w-8 h-8" /> : <Image src="/images/icons/index.webp" alt="Menu" width={32} height={32} className="w-8 h-8" unoptimized />}
             </button>
           </div>  
 
@@ -618,6 +620,7 @@ export default function GiftOfJadeMasteryPage() {
                     fill
                     sizes="(max-width: 768px) 128px, 128px"
                     className="object-contain"
+                    unoptimized
                   />
                 </div>
               </div>
@@ -791,6 +794,7 @@ export default function GiftOfJadeMasteryPage() {
                           fill
                           sizes="24px"
                           className="object-contain"
+                          unoptimized
                         />
                       </div>
                       <div>
@@ -860,6 +864,7 @@ export default function GiftOfJadeMasteryPage() {
                               fill
                               sizes="24px"
                               className="object-contain"
+                              unoptimized
                             />
                           ) : (
                             <span className="text-yellow-400 font-bold text-lg">•</span>
@@ -877,6 +882,7 @@ export default function GiftOfJadeMasteryPage() {
                               fill
                               sizes="24px"
                               className="object-contain"
+                              unoptimized
                             />
                           ) : (
                             <span className="text-yellow-400 font-bold text-lg">•</span>
@@ -1362,6 +1368,7 @@ export default function GiftOfJadeMasteryPage() {
                 width={1024}
                 height={576}
                 className="rounded-lg shadow-2xl border border-gray-700/50 transition-transform duration-300 group-hover:scale-105"
+                unoptimized
                 priority
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent rounded-lg"></div>
@@ -1397,6 +1404,7 @@ export default function GiftOfJadeMasteryPage() {
                 width={1024}
                 height={576}
                 className="w-full h-auto rounded-lg shadow-2xl"
+                unoptimized
                 priority
               />
             </div>
