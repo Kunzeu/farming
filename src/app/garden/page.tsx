@@ -715,10 +715,10 @@ const JardinesPage = () => {
                 <p className="mb-4">
                   {volatileMagicGlyphData ? (
                     <>
-                      {lang === 'es' && "Necesitarás al menos "}
-                      {lang === 'en' && "You will need at least "}
-                      {lang === 'fr' && "Vous aurez besoin d'au moins "}
-                      {lang === 'de' && "Du wirst mindestens "}
+                      {lang === 'es' && "Necesitarás al menos 1 "}
+                      {lang === 'en' && "You will need at least 1 "}
+                      {lang === 'fr' && "Vous aurez besoin d'au moins 1 "}
+                      {lang === 'de' && "Du wirst mindestens 1 "}
                       <span className="text-emerald-400 font-semibold inline-flex items-center gap-1">
                         <Image
                           src={volatileMagicGlyphData.icon}
