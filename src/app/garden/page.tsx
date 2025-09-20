@@ -3665,7 +3665,7 @@ const JardinesPage = () => {
                       <h3 className="text-white font-semibold mb-3">{t('gardenPage.sections.rewards.guildGardens')}</h3>
                       <div className="flex items-center justify-center mb-2">
                         <Image
-                          src="/images/expansions/Volatile-magic.webp"
+                          src="/images/expansions/volatile-magic.webp"
                           alt="Volatile Magic"
                           width={24}
                           height={24}

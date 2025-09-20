@@ -2410,7 +2410,7 @@ const CraftingPage = () => {
                 <div className="bg-gray-800/50 backdrop-blur-sm border border-gray-700 rounded-lg p-6">
                   <h2 className="text-2xl font-bold text-white mb-6 flex items-center">
                     <OptimizedImage 
-                      src="/images/expansions/Volatile-magic.webp" 
+                      src="/images/expansions/volatile-magic.webp" 
                       alt={t('craftingPage.volatileMagic', 'Magia Volatil')} 
                       className="mr-3"
                       priority
@@ -2422,7 +2422,7 @@ const CraftingPage = () => {
                   <div className="bg-gray-700/50 rounded-lg p-6 mb-6 border border-gray-600">
                     <h3 className="text-xl font-bold text-white mb-4 flex items-center">
                       <OptimizedImage 
-                        src="/images/expansions/Volatile-magic.webp" 
+                        src="/images/expansions/volatile-magic.webp" 
                         alt={t('craftingPage.volatileMagic', 'Magia Volatil')} 
                         className="mr-3"
                         priority

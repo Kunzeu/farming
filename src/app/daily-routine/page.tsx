@@ -30,7 +30,7 @@ const currencyConfig = {
   spiritShards: { icon: '/images/expansions/Spirit_Shard.webp', labelKey: 'currency.spiritShards', color: 'text-blue-400' },
   karma: { icon: '/images/expansions/karma.webp', labelKey: 'currency.karma', color: 'text-green-400' },
   fractalRelics: { icon: '/images/expansions/fractal-relic.webp', labelKey: 'currency.fractalRelics', color: 'text-purple-400' },
-  volatileMagic: { icon: '/images/expansions/Volatile-magic.webp', labelKey: 'currency.volatileMagic', color: 'text-orange-400' },
+  volatileMagic: { icon: '/images/expansions/volatile-magic.webp', labelKey: 'currency.volatileMagic', color: 'text-orange-400' },
   unboundMagic: { icon: '/images/expansions/unbound-magic.webp', labelKey: 'currency.unboundMagic', color: 'text-indigo-400' },
   riftEssences: { icon: '/images/expansions/rift-essence.webp', labelKey: 'currency.riftEssences', color: 'text-pink-400' },
   mysticClovers: { icon: '/images/expansions/mystic-clover.webp', labelKey: 'currency.mysticClovers', color: 'text-emerald-400' },

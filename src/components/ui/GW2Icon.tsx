@@ -27,7 +27,7 @@ const iconConfig = {
     alt: 'Fractal Relic de Guild Wars 2'
   },
   'volatile-magic': {
-    src: '/images/expansions/Volatile-magic.webp',
+    src: '/images/expansions/volatile-magic.webp',
     alt: 'Volatile Magic de Guild Wars 2'
   },
   'unbound-magic': {
