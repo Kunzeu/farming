@@ -848,7 +848,6 @@
   "gardenPage.sections.gardenTypes.consortiumSickle": "Faucille du Consortium",
   "gardenPage.sections.gardenTypes.unboundMining": "Outil de minage de Magie Libérée",
   "gardenPage.sections.gardenTypes.unboundLogging": "Outil de bûcheronnage de Magie Libérée",
-  "gardenPage.sections.glyphs.info": "Vous aurez besoin d'au moins 1 glyphe de magie volatile, en moyenne, ce glyphe vous donnera 6 magie volatile par nœud.",
   "gardenPage.sections.buffs.title": "Améliorations",
   "gardenPage.sections.buffs.itemBooster.title": "Potenciador d'Objets",
   "gardenPage.sections.buffs.itemBooster.description": "33% de chance d'obtenir un coup de récolte supplémentaire",

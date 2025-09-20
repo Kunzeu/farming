@@ -40,6 +40,7 @@ const JardinesPage = () => {
   const [guildBannerData, setGuildBannerData] = useState<{name: string, icon: string} | null>(null);
   const [xpBoosterData, setXpBoosterData] = useState<{name: string, icon: string} | null>(null);
   const [candyGobblerData, setCandyGobblerData] = useState<{name: string, icon: string} | null>(null);
+  const [volatileMagicGlyphData, setVolatileMagicGlyphData] = useState<{name: string, icon: string} | null>(null);
   const [copiedWaypoint, setCopiedWaypoint] = useState<string | null>(null);
   const [list1Copied, setList1Copied] = useState(false);
   const [list2Copied, setList2Copied] = useState(false);
@@ -115,6 +116,15 @@ const JardinesPage = () => {
         setCandyGobblerData({
           name: candyGobblerData.name,
           icon: candyGobblerData.icon
+        });
+
+        // Obtener datos del Glifo de Magia Volátil (ID: 87698)
+        const volatileMagicGlyphResponse = await fetch(`https://api.guildwars2.com/v2/items/87698?lang=${lang}`);
+        const volatileMagicGlyphData = await volatileMagicGlyphResponse.json();
+        console.log('Volatile Magic Glyph Data:', volatileMagicGlyphData);
+        setVolatileMagicGlyphData({
+          name: volatileMagicGlyphData.name,
+          icon: volatileMagicGlyphData.icon
         });
       } catch (error) {
         console.error('Error fetching items data:', error);
@@ -696,14 +706,42 @@ const JardinesPage = () => {
               </section>
 
               {/* Información adicional sobre glifos */}
-              <motion.p
+              <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.3 }}
                 className="text-gray-300 text-lg mb-16 -mt-8"
               >
-                {t('gardenPage.sections.glyphs.info')}
-              </motion.p>
+                <p className="mb-4">
+                  {volatileMagicGlyphData ? (
+                    <>
+                      {lang === 'es' && "Necesitarás al menos "}
+                      {lang === 'en' && "You will need at least "}
+                      {lang === 'fr' && "Vous aurez besoin d'au moins "}
+                      {lang === 'de' && "Du wirst mindestens "}
+                      <span className="text-emerald-400 font-semibold inline-flex items-center gap-1">
+                        <Image
+                          src={volatileMagicGlyphData.icon}
+                          alt={volatileMagicGlyphData.name}
+                          width={16}
+                          height={16}
+                          className="rounded inline"
+                          unoptimized
+                        />
+                        {volatileMagicGlyphData.name}
+                      </span>
+                      {lang === 'es' && ", de media, este glifo te dará 6 de magia volátil por cada nodo."}
+                      {lang === 'en' && ", on average, this glyph will give you 6 volatile magic per node."}
+                      {lang === 'fr' && ", en moyenne, ce glyphe vous donnera 6 magie volatile par nœud."}
+                      {lang === 'de' && ", im Durchschnitt gibt dir diese Glyphe 6 Flüchtige Magie pro Knoten."}
+                    </>
+                  ) : (
+                    <>
+                      {t('gardenPage.sections.glyphs.info')}
+                    </>
+                  )}
+                </p>
+              </motion.div>
 
               {/* Sección de Buffs */}
               <section id="plants" className="mb-16">
@@ -2818,7 +2856,7 @@ const JardinesPage = () => {
                       {/* Imagen con dimensiones uniformes */}
                       <div className="relative h-72 w-full overflow-hidden">
                         <Image
-                          src="/images/garden/POF-5.webp"
+                          src="/images/garden/PoF-5.webp"
                           alt="Crystal Oasis Garden Location"
                           fill
                           className="object-contain group-hover:scale-105 transition-transform duration-500"

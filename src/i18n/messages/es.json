@@ -740,7 +740,6 @@
   "gardenPage.sections.gardenTypes.consortiumSickle": "Hoz del consorcio",
   "gardenPage.sections.gardenTypes.unboundMining": "Herramienta de minería de magia liberada",
   "gardenPage.sections.gardenTypes.unboundLogging": "Herramienta de tala de magia liberada",
-  "gardenPage.sections.glyphs.info": "Necesitarás al menos 1 glifo de magia volátil, de media, este glifo te dará 6 de magia volátil por cada nodo.",
   "gardenPage.sections.buffs.title": "Mejoras",
   "gardenPage.sections.buffs.itemBooster.title": "Potenciador de Objetos",
   "gardenPage.sections.buffs.itemBooster.description": "33% de probabilidad de obtener un golpe de recolección extra",

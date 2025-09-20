@@ -852,7 +852,6 @@
   "gardenPage.sections.gardenTypes.consortiumSickle": "Consortium Sickle",
   "gardenPage.sections.gardenTypes.unboundMining": "Unbound Magic Mining Tool",
   "gardenPage.sections.gardenTypes.unboundLogging": "Unbound Magic Logging Tool",
-  "gardenPage.sections.glyphs.info": "You will need at least 1 volatile magic glyph, on average, this glyph will give you 6 volatile magic per node.",
   "gardenPage.sections.buffs.title": "Buffs",
   "gardenPage.sections.buffs.itemBooster.title": "Item Booster",
   "gardenPage.sections.buffs.itemBooster.description": "33% chance to gain extra gathering strike",
