@@ -48,7 +48,7 @@ interface RewardSection {
   name: string;
   count: number;
   percentage: number;
-  icon: React.ComponentType<any>;
+  icon: React.ComponentType<React.SVGProps<SVGSVGElement>>;
   itemIcon?: string | null;
   tableData: RewardItem[];
 }
