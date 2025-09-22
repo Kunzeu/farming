@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Gift, ChevronLeft, Package, Star, Coins, BarChart3 } from 'lucide-react';
+import { Gift, ChevronLeft, Package, Star, Coins, BarChart3, ArrowLeft } from 'lucide-react';
 import Navigation from '@/components/layout/Navigation';
 import Link from 'next/link';
 import { usePageTitle } from '@/hooks/usePageTitle';
@@ -149,7 +149,7 @@ export default function FourWindsPrizeBagPage() {
     monederos: {
       name: embroideredPurse ? `${embroideredPurse.name}` : 'Monederos',
       count: 13437,
-      percentage: 33.28,
+      percentage: 33.59,
       icon: Package,
       itemIcon: embroideredPurse?.icon,
       tableData: [
@@ -187,7 +187,7 @@ export default function FourWindsPrizeBagPage() {
     alforjas: {
       name: embroideredSaddlebag ? embroideredSaddlebag.name : 'Alforjas bordadas',
       count: 6695,
-      percentage: 16.58,
+      percentage: 16.73,
       icon: Package,
       itemIcon: embroideredSaddlebag?.icon,
       tableData: [
@@ -197,7 +197,7 @@ export default function FourWindsPrizeBagPage() {
     arcas: {
       name: gildedCoffer ? gildedCoffer.name : 'Arcas Chapadas',
       count: 6573,
-      percentage: 16.28,
+      percentage: 16.43,
       icon: Package,
       itemIcon: gildedCoffer?.icon,
       tableData: [
@@ -207,7 +207,7 @@ export default function FourWindsPrizeBagPage() {
     morrales: {
       name: elaborateLeatherSack ? elaborateLeatherSack.name : 'Morrales de cuero',
       count: 6727,
-      percentage: 16.66,
+      percentage: 16.81,
       icon: Package,
       itemIcon: elaborateLeatherSack?.icon,
       tableData: [
@@ -217,7 +217,7 @@ export default function FourWindsPrizeBagPage() {
     equipo: {
       name: luxuryEquipmentBox ? luxuryEquipmentBox.name : 'Equipo de lujo',
       count: 6568,
-      percentage: 16.27,
+      percentage: 16.42,
       icon: Star,
       itemIcon: luxuryEquipmentBox?.icon,
       tableData: [
@@ -764,9 +764,12 @@ export default function FourWindsPrizeBagPage() {
             transition={{ delay: 0.2 }}
             className="mb-8"
           >
-            <Link href="/opened" className="inline-flex items-center text-blue-400 hover:text-blue-300 transition-colors">
-              <ChevronLeft className="w-5 h-5 mr-1" />
-              Volver a Contenedores
+            <Link 
+              href="/opened" 
+              className="flex items-center gap-2 px-4 py-2 bg-gray-900/80 hover:bg-gray-800/90 border border-purple-500/30 text-white rounded-lg transition-all duration-200 hover:scale-105 hover:shadow-lg w-fit"
+            >
+              <ArrowLeft className="w-4 h-4" />
+              Volver al Contenedor
             </Link>
           </motion.div>
 

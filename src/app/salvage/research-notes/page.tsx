@@ -54,7 +54,7 @@ export default function ResearchNotesPage() {
   const { t, lang } = useI18n();
   
      // Estados para items
-   const [item8883, setItem8883] = useState<GW2Item | null>(null);
+   const [item8868, setItem8868] = useState<GW2Item | null>(null);
    const [item13436, setItem13436] = useState<GW2Item | null>(null);
    const [item13437, setItem13437] = useState<GW2Item | null>(null);
    const [item13435, setItem13435] = useState<GW2Item | null>(null);
@@ -63,7 +63,7 @@ export default function ResearchNotesPage() {
    const [item13438, setItem13438] = useState<GW2Item | null>(null);
     
      // Estados para precios de items
-   const [price8883, setPrice8883] = useState<GW2Price | null>(null);
+   const [price8868, setPrice8868] = useState<GW2Price | null>(null);
    const [price13436, setPrice13436] = useState<GW2Price | null>(null);
    const [price13437, setPrice13437] = useState<GW2Price | null>(null);
    const [price13435, setPrice13435] = useState<GW2Price | null>(null);
@@ -79,6 +79,9 @@ export default function ResearchNotesPage() {
    const [price24277, setPrice24277] = useState<GW2Price | null>(null);
    const [price24351, setPrice24351] = useState<GW2Price | null>(null);
    const [price24300, setPrice24300] = useState<GW2Price | null>(null);
+   const [price24276, setPrice24276] = useState<GW2Price | null>(null);
+   const [price24350, setPrice24350] = useState<GW2Price | null>(null);
+   const [price24299, setPrice24299] = useState<GW2Price | null>(null);
    const [price12156, setPrice12156] = useState<GW2Price | null>(null);
        const [price19722, setPrice19722] = useState<GW2Price | null>(null);
     const [price19729, setPrice19729] = useState<GW2Price | null>(null);
@@ -133,7 +136,7 @@ export default function ResearchNotesPage() {
   // Función para obtener el nivel de crafting de un item
   const getCraftingLevel = (itemId: number): number => {
     const craftingLevels: { [key: number]: number } = {
-      8883: 400,
+      8868: 400,
       13436: 300,
       13437: 300,
       13435: 300,
@@ -206,10 +209,10 @@ export default function ResearchNotesPage() {
 
   // Función para calcular el costo de crafting
   const calculateCraftingCost = (itemId: number): string => {
-    // Si es el item 8883, calcular dinámicamente con 24277, 24351, 24300, 12156 x1 cada uno
-    if (itemId === 8883 && price24277 && price24351 && price24300 && price12156) {
-      const buyTotal = (price24277.buys?.unit_price || 0) * 1 + (price24351.buys?.unit_price || 0) * 1 + (price24300.buys?.unit_price || 0) * 1 + (price12156.buys?.unit_price || 0) * 1;
-      const sellTotal = (price24277.sells?.unit_price || 0) * 1 + (price24351.sells?.unit_price || 0) * 1 + (price24300.sells?.unit_price || 0) * 1 + (price12156.sells?.unit_price || 0) * 1;
+    // Si es el item 8868, calcular dinámicamente con 24276, 24350, 24299, 12156 x1 cada uno
+    if (itemId === 8868 && price24276 && price24350 && price24299 && price12156) {
+      const buyTotal = (price24276.buys?.unit_price || 0) * 1 + (price24350.buys?.unit_price || 0) * 1 + (price24299.buys?.unit_price || 0) * 1 + (price12156.buys?.unit_price || 0) * 1;
+      const sellTotal = (price24276.sells?.unit_price || 0) * 1 + (price24350.sells?.unit_price || 0) * 1 + (price24299.sells?.unit_price || 0) * 1 + (price12156.sells?.unit_price || 0) * 1;
       const selected = craftingPriceSide === 'buy' ? buyTotal : sellTotal;
       return formatGW2Price(selected);
     }
@@ -276,8 +279,8 @@ export default function ResearchNotesPage() {
         setLoading(true);
         
                           // Obtener información de todos los items
-                     const [item8883Response, item13436Response, item13437Response, item13435Response, item104934Response, item104934BResponse, item13438Response] = await Promise.all([
-            fetch(`https://api.guildwars2.com/v2/items/8883?lang=${lang}`),
+                     const [item8868Response, item13436Response, item13437Response, item13435Response, item104934Response, item104934BResponse, item13438Response] = await Promise.all([
+            fetch(`https://api.guildwars2.com/v2/items/8868?lang=${lang}`),
             fetch(`https://api.guildwars2.com/v2/items/13436?lang=${lang}`),
             fetch(`https://api.guildwars2.com/v2/items/13437?lang=${lang}`),
             fetch(`https://api.guildwars2.com/v2/items/13435?lang=${lang}`),
@@ -286,8 +289,8 @@ export default function ResearchNotesPage() {
             fetch(`https://api.guildwars2.com/v2/items/13438?lang=${lang}`)
           ]);
 
-         const [item8883Data, item13436Data, item13437Data, item13435Data, item104934Data, item104934BData, item13438Data] = await Promise.all([
-           item8883Response.json(),
+         const [item8868Data, item13436Data, item13437Data, item13435Data, item104934Data, item104934BData, item13438Data] = await Promise.all([
+           item8868Response.json(),
            item13436Response.json(),
            item13437Response.json(),
            item13435Response.json(),
@@ -296,7 +299,7 @@ export default function ResearchNotesPage() {
            item13438Response.json()
          ]);
 
-         setItem8883(item8883Data);
+         setItem8868(item8868Data);
          setItem13436(item13436Data);
          setItem13437(item13437Data);
          setItem13435(item13435Data);
@@ -305,8 +308,8 @@ export default function ResearchNotesPage() {
          setItem13438(item13438Data);
 
                           // Obtener precios de todos los items
-                     const [price8883Response, price13436Response, price13437Response, price13435Response, price104934Response, price104934BResponse, price13438Response] = await Promise.all([
-            fetch(`https://api.guildwars2.com/v2/commerce/prices/8883?lang=${lang}`),
+                     const [price8868Response, price13436Response, price13437Response, price13435Response, price104934Response, price104934BResponse, price13438Response] = await Promise.all([
+            fetch(`https://api.guildwars2.com/v2/commerce/prices/8868?lang=${lang}`),
             fetch(`https://api.guildwars2.com/v2/commerce/prices/13436?lang=${lang}`),
             fetch(`https://api.guildwars2.com/v2/commerce/prices/13437?lang=${lang}`),
             fetch(`https://api.guildwars2.com/v2/commerce/prices/13435?lang=${lang}`),
@@ -315,8 +318,8 @@ export default function ResearchNotesPage() {
             fetch(`https://api.guildwars2.com/v2/commerce/prices/13438?lang=${lang}`)
           ]);
 
-         const [price8883Data, price13436Data, price13437Data, price13435Data, price104934Data, price104934BData, price13438Data] = await Promise.all([
-           price8883Response.json(),
+         const [price8868Data, price13436Data, price13437Data, price13435Data, price104934Data, price104934BData, price13438Data] = await Promise.all([
+           price8868Response.json(),
            price13436Response.json(),
            price13437Response.json(),
            price13435Response.json(),
@@ -325,7 +328,7 @@ export default function ResearchNotesPage() {
            price13438Response.json()
          ]);
 
-         setPrice8883(price8883Data);
+         setPrice8868(price8868Data);
          setPrice13436(price13436Data);
          setPrice13437(price13437Data);
          setPrice13435(price13435Data);
@@ -334,7 +337,7 @@ export default function ResearchNotesPage() {
          setPrice13438(price13438Data);
 
                                                        // Obtener precios de todos los materiales de una sola vez
-         const allMatsPricesResp = await fetch(`https://api.guildwars2.com/v2/commerce/prices?ids=19700,24473,24475,24519,24511,24277,24351,24300,12156,19722,19729,19748,68063&lang=${lang}`);
+         const allMatsPricesResp = await fetch(`https://api.guildwars2.com/v2/commerce/prices?ids=19700,24473,24475,24519,24511,24277,24351,24300,12156,19722,19729,19748,68063,24276,24350,24299&lang=${lang}`);
          const allMatsPricesData: GW2Price[] = await allMatsPricesResp.json();
          
          const allMatsMap = allMatsPricesData.reduce((acc: Record<number, GW2Price>, p: GW2Price) => {
@@ -349,6 +352,9 @@ export default function ResearchNotesPage() {
          setPrice24277(allMatsMap[24277] || null);
          setPrice24351(allMatsMap[24351] || null);
          setPrice24300(allMatsMap[24300] || null);
+         setPrice24276(allMatsMap[24276] || null);
+         setPrice24350(allMatsMap[24350] || null);
+         setPrice24299(allMatsMap[24299] || null);
          setPrice12156(allMatsMap[12156] || null);
          setPrice19722(allMatsMap[19722] || null);
          setPrice19729(allMatsMap[19729] || null);
@@ -375,13 +381,13 @@ export default function ResearchNotesPage() {
          color: 'text-purple-400',
          items: sortItemsByField([
            { 
-             id: 8883,
-             name: item8883?.name || 'Loading...', 
-             level: item8883?.level || 0, 
+             id: 8868,
+             name: item8868?.name || 'Loading...', 
+             level: item8868?.level || 0, 
              notes: 1.1, 
-             buyPrice: price8883?.buys?.unit_price ? formatGW2Price(price8883.buys.unit_price) : '00g 00s 00c',
-             sellPrice: price8883?.sells?.unit_price ? formatGW2Price(price8883.sells.unit_price) : '00g 00s 00c',
-             craftingCost: calculateCraftingCost(8883)
+             buyPrice: price8868?.buys?.unit_price ? formatGW2Price(price8868.buys.unit_price) : '00g 00s 00c',
+             sellPrice: price8868?.sells?.unit_price ? formatGW2Price(price8868.sells.unit_price) : '00g 00s 00c',
+             craftingCost: calculateCraftingCost(8868)
            },
            { 
              id: 13436,
@@ -440,7 +446,7 @@ export default function ResearchNotesPage() {
          ])
        }
      ];
-   }, [item8883, price8883, item13436, price13436, item13437, price13437, item13435, price13435, item13438, price13438, item104934, price104934, item104934B, price104934B, price19700, price24473, price24475, price24519, price24511, price24277, price24351, price24300, price12156, price19722, price19729, price19748, price68063, craftingPriceSide, sortOrder, sortField, calculateCraftingCost, sortItemsByField]);
+   }, [item8868, price8868, item13436, price13436, item13437, price13437, item13435, price13435, item13438, price13438, item104934, price104934, item104934B, price104934B, price19700, price24473, price24475, price24519, price24511, price24277, price24351, price24300, price24276, price24350, price24299, price12156, price19722, price19729, price19748, price68063, craftingPriceSide, sortOrder, sortField, calculateCraftingCost, sortItemsByField]);
 
   
 
@@ -699,9 +705,9 @@ export default function ResearchNotesPage() {
                            <tr key={itemIndex} className="border-b border-slate-600/30 hover:bg-slate-600/20">
                                                            <td className="py-2 px-3">
                                 <div className="flex items-center gap-3">
-                                  {item.id === 8883 && item8883?.icon ? (
+                                  {item.id === 8868 && item8868?.icon ? (
                                     <img 
-                                      src={item8883.icon} 
+                                      src={item8868.icon} 
                                       alt={item.name}
                                       className="w-8 h-8 rounded"
                                     />
@@ -745,7 +751,7 @@ export default function ResearchNotesPage() {
                                      <div className="w-8 h-8 bg-slate-600 rounded"></div>
                                    )}
                                                                   <span className={(() => {
-                                    if (item.id === 8883) return getRarityColor(item8883?.rarity || '');
+                                    if (item.id === 8868) return getRarityColor(item8868?.rarity || '');
                                     if (item.id === 13436) return getRarityColor(item13436?.rarity || '');
                                     if (item.id === 13437) return getRarityColor(item13437?.rarity || '');
                                     if (item.id === 13435) return getRarityColor(item13435?.rarity || '');
@@ -758,9 +764,15 @@ export default function ResearchNotesPage() {
                                   </span>
                                </div>
                              </td>
-                                                         <td className="py-2 px-3 text-gray-300 text-center">
+                                <td className="py-2 px-3 text-gray-300 text-center">
                                  <div className="flex items-center justify-center gap-2">
-                                   {item.id !== 104934 && item.id !== 104934.1 && (
+                                   {item.id === 8868 ? (
+                                     <img 
+                                       src="https://wiki.guildwars2.com/images/b/b7/Artificer_tango_icon_20px.png" 
+                                       alt="Artificer" 
+                                       className="w-5 h-5"
+                                     />
+                                   ) : item.id !== 104934 && item.id !== 104934.1 && (
                                      <img 
                                        src="/images/icons/jeweler-icon.webp" 
                                        alt="Jeweler" 
@@ -768,10 +780,10 @@ export default function ResearchNotesPage() {
                                      />
                                    )}
                                    <span>
-                                     {item.id === 8883 ? '400' : 
-                                      item.id === 13436 ? '300' : 
+                                     {item.id === 13436 ? '300' : 
                                       item.id === 13437 ? '300' : 
-                                      item.id === 13435 ? '300' : 
+                                      item.id === 13435 ? '300' :
+                                      item.id === 8868 ? '325' :                                        
                                       item.id === 13438 ? '325' :  
                                       item.id === 104934 ? '0' : 
                                       item.id === 104934.1 ? '0' : '-'}
