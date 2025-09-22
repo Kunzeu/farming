@@ -2,13 +2,11 @@
 
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Gift, ChevronLeft, Package, Star, Zap, Coins, BarChart3, Shield, Sword, Gem } from 'lucide-react';
+import { Gift, ChevronLeft, Package, Star, Coins, BarChart3 } from 'lucide-react';
 import Navigation from '@/components/layout/Navigation';
 import Link from 'next/link';
-import { formatPrice } from '@/lib/gw2-api';
 import { usePageTitle } from '@/hooks/usePageTitle';
 import { useI18n } from '@/contexts/I18nContext';
-import Image from 'next/image';
 
 interface RewardItem {
   id: number;
@@ -19,18 +17,45 @@ interface RewardItem {
   icon?: string;
 }
 
+interface GW2Item {
+  id: number;
+  name: string;
+  icon: string;
+  type: string;
+  rarity: string;
+  level: number;
+  vendor_value: number;
+  game_types: string[];
+  flags: string[];
+  restrictions: string[];
+  chat_link: string;
+  description?: string;
+}
+
+interface GW2Price {
+  id: number;
+  sells?: {
+    unit_price: number;
+    quantity: number;
+  };
+  buys?: {
+    unit_price: number;
+    quantity: number;
+  };
+}
+
 interface RewardSection {
   name: string;
   count: number;
   percentage: number;
-  icon: any;
+  icon: React.ComponentType<any>;
   itemIcon?: string | null;
   tableData: RewardItem[];
 }
 
 export default function FourWindsPrizeBagPage() {
   usePageTitle('pageTitles.fourWindsPrizeBag', 'Four Winds Prize Bag');
-  const { t, lang } = useI18n();
+  const { lang } = useI18n();
   const [festivalToken, setFestivalToken] = useState<{name: string, icon: string} | null>(null);
   const [fourWindsBag, setFourWindsBag] = useState<{name: string, icon: string} | null>(null);
   const [embroideredPurse, setEmbroideredPurse] = useState<{name: string, icon: string} | null>(null);
@@ -53,15 +78,15 @@ export default function FourWindsPrizeBagPage() {
   };
 
   // Función para calcular el total de oro de una sección
-  const calculateSectionTotalValue = (section: any) => {
-    return section.tableData.reduce((total: number, row: any) => {
+  const calculateSectionTotalValue = (section: RewardSection) => {
+    return section.tableData.reduce((total: number, row: RewardItem) => {
       const itemPrice = itemDetails[row.id]?.price || 0;
       return total + (itemPrice * row.count);
     }, 0);
   };
 
   // Función para ordenar los datos de la tabla
-  const sortTableData = (data: any[]) => {
+  const sortTableData = (data: RewardItem[]) => {
     return [...data].sort((a, b) => {
       let aValue, bValue;
       
@@ -100,9 +125,12 @@ export default function FourWindsPrizeBagPage() {
           : bValue.localeCompare(aValue);
       }
       
+      const aNum = typeof aValue === 'number' ? aValue : 0;
+      const bNum = typeof bValue === 'number' ? bValue : 0;
+      
       return sortDirection === 'asc' 
-        ? aValue - bValue
-        : bValue - aValue;
+        ? aNum - bNum
+        : bNum - aNum;
     });
   };
 
@@ -217,11 +245,11 @@ export default function FourWindsPrizeBagPage() {
     try {
       // Obtener todos los items en una sola consulta
         const response = await fetch(`https://api.guildwars2.com/v2/items?ids=66224,98586,64531,44252,89815,79082,44471,98632,46731,84731,83008,24288,24356,44960,24299,44976,19748,24341,19700,24282,19701,19732,19729,24329,24320,24357,24300,19745,24309,24350,24324,24358,24319,24294,24295&lang=${language}`);
-      const data = await response.json();
+      const data: GW2Item[] = await response.json();
       
       if (data && data.length >= 8) {
         // Festival Token (ID: 66224)
-        const festivalTokenData = data.find((item: any) => item.id === 66224);
+        const festivalTokenData = data.find((item: GW2Item) => item.id === 66224);
         if (festivalTokenData) {
           setFestivalToken({
             name: festivalTokenData.name,
@@ -230,7 +258,7 @@ export default function FourWindsPrizeBagPage() {
         }
         
         // Four Winds Prize Bag (ID: 98586)
-        const fourWindsData = data.find((item: any) => item.id === 98586);
+        const fourWindsData = data.find((item: GW2Item) => item.id === 98586);
         if (fourWindsData) {
           setFourWindsBag({
             name: fourWindsData.name,
@@ -239,7 +267,7 @@ export default function FourWindsPrizeBagPage() {
         }
         
         // Monedero bordado (ID: 64531)
-        const embroideredPurseData = data.find((item: any) => item.id === 64531);
+        const embroideredPurseData = data.find((item: GW2Item) => item.id === 64531);
         if (embroideredPurseData) {
           setEmbroideredPurse({
             name: embroideredPurseData.name,
@@ -248,7 +276,7 @@ export default function FourWindsPrizeBagPage() {
         }
         
         // Alforja bordada (ID: 44252)
-        const embroideredSaddlebagData = data.find((item: any) => item.id === 44252);
+        const embroideredSaddlebagData = data.find((item: GW2Item) => item.id === 44252);
         if (embroideredSaddlebagData) {
           setEmbroideredSaddlebag({
             name: embroideredSaddlebagData.name,
@@ -257,7 +285,7 @@ export default function FourWindsPrizeBagPage() {
         }
         
         // Arca chapada (ID: 89815)
-        const gildedCofferData = data.find((item: any) => item.id === 89815);
+        const gildedCofferData = data.find((item: GW2Item) => item.id === 89815);
         if (gildedCofferData) {
           setGildedCoffer({
             name: gildedCofferData.name,
@@ -266,7 +294,7 @@ export default function FourWindsPrizeBagPage() {
         }
         
         // Morral de cuero elaborado (ID: 79082)
-        const elaborateLeatherSackData = data.find((item: any) => item.id === 79082);
+        const elaborateLeatherSackData = data.find((item: GW2Item) => item.id === 79082);
         if (elaborateLeatherSackData) {
           setElaborateLeatherSack({
             name: elaborateLeatherSackData.name,
@@ -275,7 +303,7 @@ export default function FourWindsPrizeBagPage() {
         }
         
         // Caja de equipo de lujo (ID: 44471)
-        const luxuryEquipmentBoxData = data.find((item: any) => item.id === 44471);
+        const luxuryEquipmentBoxData = data.find((item: GW2Item) => item.id === 44471);
         if (luxuryEquipmentBoxData) {
           setLuxuryEquipmentBox({
             name: luxuryEquipmentBoxData.name,
@@ -284,13 +312,13 @@ export default function FourWindsPrizeBagPage() {
         }
         
         // Mandoble mecánico (ID: 98632) - Solo para icono de Skins
-        const skinsData = data.find((item: any) => item.id === 98632);
+        const skinsData = data.find((item: GW2Item) => item.id === 98632);
         if (skinsData) {
           setSkinsIcon(skinsData.icon);
         }
         
         // Silver coin (ID: 46731) - Para el primer item de Monederos
-        const silverCoinData = data.find((item: any) => item.id === 46731);
+        const silverCoinData = data.find((item: GW2Item) => item.id === 46731);
         if (silverCoinData) {
           setItemDetails(prev => ({
             ...prev,
@@ -303,7 +331,7 @@ export default function FourWindsPrizeBagPage() {
         }
         
         // Item ID 84731 - Para el segundo item de Monederos
-        const item84731Data = data.find((item: any) => item.id === 84731);
+        const item84731Data = data.find((item: GW2Item) => item.id === 84731);
         if (item84731Data) {
           setItemDetails(prev => ({
             ...prev,
@@ -316,7 +344,7 @@ export default function FourWindsPrizeBagPage() {
         }
         
         // Item ID 83008 - Para el tercer item de Monederos
-        const item83008Data = data.find((item: any) => item.id === 83008);
+        const item83008Data = data.find((item: GW2Item) => item.id === 83008);
         if (item83008Data) {
           setItemDetails(prev => ({
             ...prev,
@@ -329,7 +357,7 @@ export default function FourWindsPrizeBagPage() {
         }
         
         // Item ID 24288 - Para el cuarto item de Monederos
-        const item24288Data = data.find((item: any) => item.id === 24288);
+        const item24288Data = data.find((item: GW2Item) => item.id === 24288);
         if (item24288Data) {
           setItemDetails(prev => ({
             ...prev,
@@ -342,7 +370,7 @@ export default function FourWindsPrizeBagPage() {
         }
         
         // Item ID 24356 - Para el quinto item de Monederos
-        const item24356Data = data.find((item: any) => item.id === 24356);
+        const item24356Data = data.find((item: GW2Item) => item.id === 24356);
         if (item24356Data) {
           setItemDetails(prev => ({
             ...prev,
@@ -355,7 +383,7 @@ export default function FourWindsPrizeBagPage() {
         }
         
         // Item ID 44960 - Para el sexto item de Monederos
-        const item44960Data = data.find((item: any) => item.id === 44960);
+        const item44960Data = data.find((item: GW2Item) => item.id === 44960);
         if (item44960Data) {
           setItemDetails(prev => ({
             ...prev,
@@ -368,7 +396,7 @@ export default function FourWindsPrizeBagPage() {
         }
         
         // Item ID 24299 - Para el séptimo item de Monederos
-        const item24299Data = data.find((item: any) => item.id === 24299);
+        const item24299Data = data.find((item: GW2Item) => item.id === 24299);
         if (item24299Data) {
           setItemDetails(prev => ({
             ...prev,
@@ -381,7 +409,7 @@ export default function FourWindsPrizeBagPage() {
         }
         
         // Item ID 44976 - Para el octavo item de Monederos
-        const item44976Data = data.find((item: any) => item.id === 44976);
+        const item44976Data = data.find((item: GW2Item) => item.id === 44976);
         if (item44976Data) {
           setItemDetails(prev => ({
             ...prev,
@@ -394,7 +422,7 @@ export default function FourWindsPrizeBagPage() {
         }
         
         // Item ID 19748 - Para el noveno item de Monederos
-        const item19748Data = data.find((item: any) => item.id === 19748);
+        const item19748Data = data.find((item: GW2Item) => item.id === 19748);
         if (item19748Data) {
           setItemDetails(prev => ({
             ...prev,
@@ -407,7 +435,7 @@ export default function FourWindsPrizeBagPage() {
         }
         
         // Item ID 24341 - Para el décimo item de Monederos
-        const item24341Data = data.find((item: any) => item.id === 24341);
+        const item24341Data = data.find((item: GW2Item) => item.id === 24341);
         if (item24341Data) {
           setItemDetails(prev => ({
             ...prev,
@@ -420,7 +448,7 @@ export default function FourWindsPrizeBagPage() {
         }
         
         // Item ID 19700 - Para el undécimo item de Monederos
-        const item19700Data = data.find((item: any) => item.id === 19700);
+        const item19700Data = data.find((item: GW2Item) => item.id === 19700);
         if (item19700Data) {
           setItemDetails(prev => ({
             ...prev,
@@ -433,7 +461,7 @@ export default function FourWindsPrizeBagPage() {
         }
         
         // Item ID 24282 - Para el duodécimo item de Monederos
-        const item24282Data = data.find((item: any) => item.id === 24282);
+        const item24282Data = data.find((item: GW2Item) => item.id === 24282);
         if (item24282Data) {
           setItemDetails(prev => ({
             ...prev,
@@ -446,7 +474,7 @@ export default function FourWindsPrizeBagPage() {
         }
         
         // Item ID 19701 - Para el decimotercer item de Monederos
-        const item19701Data = data.find((item: any) => item.id === 19701);
+        const item19701Data = data.find((item: GW2Item) => item.id === 19701);
         if (item19701Data) {
           setItemDetails(prev => ({
             ...prev,
@@ -459,7 +487,7 @@ export default function FourWindsPrizeBagPage() {
         }
         
         // Item ID 19732 - Para el decimocuarto item de Monederos
-        const item19732Data = data.find((item: any) => item.id === 19732);
+        const item19732Data = data.find((item: GW2Item) => item.id === 19732);
         if (item19732Data) {
           setItemDetails(prev => ({
             ...prev,
@@ -472,7 +500,7 @@ export default function FourWindsPrizeBagPage() {
         }
         
         // Item ID 19729 - Para el decimoquinto item de Monederos
-        const item19729Data = data.find((item: any) => item.id === 19729);
+        const item19729Data = data.find((item: GW2Item) => item.id === 19729);
         if (item19729Data) {
           setItemDetails(prev => ({
             ...prev,
@@ -485,7 +513,7 @@ export default function FourWindsPrizeBagPage() {
         }
         
         // Item ID 24329 - Para el decimosexto item de Monederos
-        const item24329Data = data.find((item: any) => item.id === 24329);
+        const item24329Data = data.find((item: GW2Item) => item.id === 24329);
         if (item24329Data) {
           setItemDetails(prev => ({
             ...prev,
@@ -498,7 +526,7 @@ export default function FourWindsPrizeBagPage() {
         }
         
         // Item ID 24320 - Para el decimoséptimo item de Monederos
-        const item24320Data = data.find((item: any) => item.id === 24320);
+        const item24320Data = data.find((item: GW2Item) => item.id === 24320);
         if (item24320Data) {
           setItemDetails(prev => ({
             ...prev,
@@ -511,7 +539,7 @@ export default function FourWindsPrizeBagPage() {
         }
         
         // Item ID 24357 - Para el decimoctavo item de Monederos
-        const item24357Data = data.find((item: any) => item.id === 24357);
+        const item24357Data = data.find((item: GW2Item) => item.id === 24357);
         if (item24357Data) {
           setItemDetails(prev => ({
             ...prev,
@@ -524,7 +552,7 @@ export default function FourWindsPrizeBagPage() {
         }
         
         // Item ID 24300 - Para el decimonoveno item de Monederos
-        const item24300Data = data.find((item: any) => item.id === 24300);
+        const item24300Data = data.find((item: GW2Item) => item.id === 24300);
         if (item24300Data) {
           setItemDetails(prev => ({
             ...prev,
@@ -537,7 +565,7 @@ export default function FourWindsPrizeBagPage() {
         }
         
         // Item ID 19745 - Para el vigésimo item de Monederos
-        const item19745Data = data.find((item: any) => item.id === 19745);
+        const item19745Data = data.find((item: GW2Item) => item.id === 19745);
         if (item19745Data) {
           setItemDetails(prev => ({
             ...prev,
@@ -550,7 +578,7 @@ export default function FourWindsPrizeBagPage() {
         }
         
         // Item ID 24309 - Para el vigésimo primer item de Monederos
-        const item24309Data = data.find((item: any) => item.id === 24309);
+        const item24309Data = data.find((item: GW2Item) => item.id === 24309);
         if (item24309Data) {
           setItemDetails(prev => ({
             ...prev,
@@ -563,7 +591,7 @@ export default function FourWindsPrizeBagPage() {
         }
         
         // Item ID 24350 - Para el vigésimo segundo item de Monederos
-        const item24350Data = data.find((item: any) => item.id === 24350);
+        const item24350Data = data.find((item: GW2Item) => item.id === 24350);
         if (item24350Data) {
           setItemDetails(prev => ({
             ...prev,
@@ -576,7 +604,7 @@ export default function FourWindsPrizeBagPage() {
         }
         
         // Item ID 24324 - Para el vigésimo tercer item de Monederos
-        const item24324Data = data.find((item: any) => item.id === 24324);
+        const item24324Data = data.find((item: GW2Item) => item.id === 24324);
         if (item24324Data) {
           setItemDetails(prev => ({
             ...prev,
@@ -589,7 +617,7 @@ export default function FourWindsPrizeBagPage() {
         }
         
         // Item ID 24358 - Para el vigésimo cuarto item de Monederos
-        const item24358Data = data.find((item: any) => item.id === 24358);
+        const item24358Data = data.find((item: GW2Item) => item.id === 24358);
         if (item24358Data) {
           setItemDetails(prev => ({
             ...prev,
@@ -602,7 +630,7 @@ export default function FourWindsPrizeBagPage() {
         }
         
         // Item ID 24319 - Para el vigésimo quinto item de Monederos
-        const item24319Data = data.find((item: any) => item.id === 24319);
+        const item24319Data = data.find((item: GW2Item) => item.id === 24319);
         if (item24319Data) {
           setItemDetails(prev => ({
             ...prev,
@@ -615,7 +643,7 @@ export default function FourWindsPrizeBagPage() {
         }
         
         // Item ID 24294 - Para el vigésimo sexto item de Monederos
-        const item24294Data = data.find((item: any) => item.id === 24294);
+        const item24294Data = data.find((item: GW2Item) => item.id === 24294);
         if (item24294Data) {
           setItemDetails(prev => ({
             ...prev,
@@ -628,7 +656,7 @@ export default function FourWindsPrizeBagPage() {
         }
         
         // Item ID 24295 - Para el vigésimo séptimo item de Monederos
-        const item24295Data = data.find((item: any) => item.id === 24295);
+        const item24295Data = data.find((item: GW2Item) => item.id === 24295);
         if (item24295Data) {
           setItemDetails(prev => ({
             ...prev,
@@ -650,12 +678,12 @@ export default function FourWindsPrizeBagPage() {
     try {
         const itemIds = [46731, 84731, 83008, 24288, 24356, 44960, 24299, 44976, 19748, 24341, 19700, 24282, 19701, 19732, 19729, 24329, 24320, 24357, 24300, 19745, 24309, 24350, 24324, 24358, 24319, 24294, 24295]; // Agregar más IDs según sea necesario
       const response = await fetch(`https://api.guildwars2.com/v2/commerce/prices?ids=${itemIds.join(',')}`);
-      const prices = await response.json();
+      const prices: GW2Price[] = await response.json();
       
       const priceData: {[key: number]: number} = {};
       const itemsWithoutPrice: number[] = [];
       
-      prices.forEach((price: any) => {
+      prices.forEach((price: GW2Price) => {
         // Intentar obtener precio de venta primero, si no existe, usar precio de compra
         if (price.sells && price.sells.unit_price) {
           priceData[price.id] = price.sells.unit_price;
