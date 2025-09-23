@@ -1647,6 +1647,22 @@
   "error404.title": "Página no encontrada",
   "error404.subtitle": "Estamos trabajando en este apartado",
   "error404.description": "Esta sección está en desarrollo. ¡Vuelve pronto para ver las nuevas funcionalidades!",
-  "error404.backHome": "Volver al inicio"
+  "error404.backHome": "Volver al inicio",
+
+  "fourWindsPrizeBag.title": "Saco de premios de los Cuatro Vientos",
+  "fourWindsPrizeBag.subtitle": "Análisis basado en 40,000 aperturas reales",
+  "fourWindsPrizeBag.backButton": "Volver",
+  "fourWindsPrizeBag.generalStats": "Estadísticas Generales",
+  "fourWindsPrizeBag.totalItems": "Total Items",
+  "fourWindsPrizeBag.rewardsAnalysis": "Análisis de Recompensas",
+  "fourWindsPrizeBag.containerContent": "Contenido del Contenedor - Análisis de Box Opening",
+  "fourWindsPrizeBag.quantityObtained": "Cantidad Obtenida",
+  "fourWindsPrizeBag.currentPrice": "Precio Actual",
+  "fourWindsPrizeBag.totalValueEarned": "Valor Total Ganado",
+  "fourWindsPrizeBag.probability": "Probabilidad",
+  "fourWindsPrizeBag.totalValue": "Valor Total",
+  "fourWindsPrizeBag.purses": "Monederos",
+  "fourWindsPrizeBag.randomExotic": "Exótico Aleatorio",
+  "fourWindsPrizeBag.luxuryEquipment": "Equipo de lujo"
 }
 

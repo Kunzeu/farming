@@ -54,8 +54,8 @@ interface RewardSection {
 }
 
 export default function FourWindsPrizeBagPage() {
-  usePageTitle('pageTitles.fourWindsPrizeBag', 'Four Winds Prize Bag');
-  const { lang } = useI18n();
+  const {t, lang } = useI18n();
+  usePageTitle('pageTitles.fourWindsPrizeBag', t('fourWindsPrizeBag.title'));
   const [festivalToken, setFestivalToken] = useState<{name: string, icon: string} | null>(null);
   const [fourWindsBag, setFourWindsBag] = useState<{name: string, icon: string} | null>(null);
   const [embroideredPurse, setEmbroideredPurse] = useState<{name: string, icon: string} | null>(null);
@@ -79,11 +79,20 @@ export default function FourWindsPrizeBagPage() {
 
   // Función para calcular el total de oro de una sección
   const calculateSectionTotalValue = (section: RewardSection) => {
-    return section.tableData.reduce((total: number, row: RewardItem) => {
+    const baseTotal = section.tableData.reduce((total: number, row: RewardItem) => {
       const itemPrice = itemDetails[row.id]?.price || 0;
       return total + (itemPrice * row.count);
     }, 0);
+    
+    // Solo agregar valor adicional de 129g 65s 06c a la sección de monederos
+    if (section.name === 'Monederos' || (embroideredPurse && section.name === embroideredPurse.name)) {
+      const additionalValue = 1296506;
+      return baseTotal + additionalValue;
+    }
+    
+    return baseTotal;
   };
+
 
   // Función para ordenar los datos de la tabla
   const sortTableData = (data: RewardItem[]) => {
@@ -144,10 +153,10 @@ export default function FourWindsPrizeBagPage() {
     }
   };
   
-  // Datos reales de las primeras 40k+ aperturas (suma de dos conjuntos de datos)
+  // Datos reales de las primeras 40k aperturas (suma de dos conjuntos de datos)
   const rewardSections: {[key: string]: RewardSection} = {
     monederos: {
-      name: embroideredPurse ? `${embroideredPurse.name}` : 'Monederos',
+      name: embroideredPurse ? `${embroideredPurse.name}` : t('fourWindsPrizeBag.purses'),
       count: 13437,
       percentage: 33.59,
       icon: Package,
@@ -180,6 +189,29 @@ export default function FourWindsPrizeBagPage() {
         { id: 24319, item: '', count: 70, chance: '100%' },
         { id: 24294, item: '', count: 943, chance: '100%' },
         { id: 24295, item: '', count: 92, chance: '100%' },
+        { id: 44966, item: '', count: 5, chance: '100%' },
+        { id: 24283, item: '', count: 101, chance: '100%' },
+        { id: 24314, item: '', count: 81, chance: '100%' },
+        { id: 78886, item: '', count: 109, chance: '100%' },
+        { id: 24334, item: '', count: 76, chance: '100%' },
+        { id: 24277, item: '', count: 84, chance: '100%' },
+        { id: 24351, item: '', count: 84, chance: '100%' },
+        { id: 24276, item: '', count: 742, chance: '100%' },
+        { id: 24339, item: '', count: 77, chance: '100%' },
+        { id: 24310, item: '', count: 3, chance: '100%' },
+        { id: 24304, item: '', count: 64, chance: '100%' },
+        { id: 24289, item: '', count: 97, chance: '100%' },
+        { id: 38030, item: '', count: 43, chance: '100%' },
+        { id: 24330, item: '', count: 7, chance: '100%' },
+        { id: 24305, item: '', count: 11, chance: '100%' },
+        { id: 24315, item: '', count: 8, chance: '100%' },
+        { id: 24340, item: '', count: 6, chance: '100%' },
+        { id: 24325, item: '', count: 6, chance: '100%' },
+        { id: 24335, item: '', count: 13, chance: '100%' },
+        { id: 44967, item: '', count: 8, chance: '100%' },
+        { id: 45150, item: '', count: 1, chance: '100%' },
+        { id: 44980, item: '', count: 5, chance: '100%' },
+        { id: 99999, item: t('fourWindsPrizeBag.randomExotic'), count: 9, chance: '100%' },
 
 
       ]
@@ -215,7 +247,7 @@ export default function FourWindsPrizeBagPage() {
       ]
     },
     equipo: {
-      name: luxuryEquipmentBox ? luxuryEquipmentBox.name : 'Equipo de lujo',
+      name: luxuryEquipmentBox ? luxuryEquipmentBox.name : t('fourWindsPrizeBag.luxuryEquipment'),
       count: 6568,
       percentage: 16.42,
       icon: Star,
@@ -244,7 +276,7 @@ export default function FourWindsPrizeBagPage() {
   const fetchItems = async (language: string) => {
     try {
       // Obtener todos los items en una sola consulta
-        const response = await fetch(`https://api.guildwars2.com/v2/items?ids=66224,98586,64531,44252,89815,79082,44471,98632,46731,84731,83008,24288,24356,44960,24299,44976,19748,24341,19700,24282,19701,19732,19729,24329,24320,24357,24300,19745,24309,24350,24324,24358,24319,24294,24295&lang=${language}`);
+        const response = await fetch(`https://api.guildwars2.com/v2/items?ids=66224,98586,64531,44252,89815,79082,44471,98632,46731,84731,83008,24288,24356,44960,24299,44976,19748,24341,19700,24282,19701,19732,19729,24329,24320,24357,24300,19745,24309,24350,24324,24358,24319,24294,24295,44966,24283,24314,78886,24334,24277,24351,24276,24339,24310,24304,24289,38030,24330,24305,24315,24340,24325,24335,44967,45150,44980,26150,2397,28592,1366,26854,26872,27179,2703,2692&lang=${language}`);
       const data: GW2Item[] = await response.json();
       
       if (data && data.length >= 8) {
@@ -667,6 +699,420 @@ export default function FourWindsPrizeBagPage() {
             }
           }));
         }
+        
+        // Item ID 44966 - Para el vigésimo octavo item de Monederos
+        const item44966Data = data.find((item: GW2Item) => item.id === 44966);
+        if (item44966Data) {
+          setItemDetails(prev => ({
+            ...prev,
+            44966: {
+              name: item44966Data.name,
+              icon: item44966Data.icon,
+              price: 0 // Se actualizará con fetchItemPrices
+            }
+          }));
+        }
+        
+        // Item ID 24283 - Para el vigésimo noveno item de Monederos
+        const item24283Data = data.find((item: GW2Item) => item.id === 24283);
+        if (item24283Data) {
+          setItemDetails(prev => ({
+            ...prev,
+            24283: {
+              name: item24283Data.name,
+              icon: item24283Data.icon,
+              price: 0 // Se actualizará con fetchItemPrices
+            }
+          }));
+        }
+        
+        // Item ID 24314 - Para el trigésimo item de Monederos
+        const item24314Data = data.find((item: GW2Item) => item.id === 24314);
+        if (item24314Data) {
+          setItemDetails(prev => ({
+            ...prev,
+            24314: {
+              name: item24314Data.name,
+              icon: item24314Data.icon,
+              price: 0 // Se actualizará con fetchItemPrices
+            }
+          }));
+        }
+        
+        // Item ID 78886 - Para el trigésimo primer item de Monederos
+        const item78886Data = data.find((item: GW2Item) => item.id === 78886);
+        if (item78886Data) {
+          setItemDetails(prev => ({
+            ...prev,
+            78886: {
+              name: item78886Data.name,
+              icon: item78886Data.icon,
+              price: 0 // Se actualizará con fetchItemPrices
+            }
+          }));
+        }
+        
+        // Item ID 24334 - Para el trigésimo segundo item de Monederos
+        const item24334Data = data.find((item: GW2Item) => item.id === 24334);
+        if (item24334Data) {
+          setItemDetails(prev => ({
+            ...prev,
+            24334: {
+              name: item24334Data.name,
+              icon: item24334Data.icon,
+              price: 0 // Se actualizará con fetchItemPrices
+            }
+          }));
+        }
+        
+        // Item ID 24277 - Para el trigésimo tercer item de Monederos
+        const item24277Data = data.find((item: GW2Item) => item.id === 24277);
+        if (item24277Data) {
+          setItemDetails(prev => ({
+            ...prev,
+            24277: {
+              name: item24277Data.name,
+              icon: item24277Data.icon,
+              price: 0 // Se actualizará con fetchItemPrices
+            }
+          }));
+        }
+        
+        // Item ID 24351 - Para el trigésimo cuarto item de Monederos
+        const item24351Data = data.find((item: GW2Item) => item.id === 24351);
+        if (item24351Data) {
+          setItemDetails(prev => ({
+            ...prev,
+            24351: {
+              name: item24351Data.name,
+              icon: item24351Data.icon,
+              price: 0 // Se actualizará con fetchItemPrices
+            }
+          }));
+        }
+        
+        // Item ID 24276 - Para el trigésimo quinto item de Monederos
+        const item24276Data = data.find((item: GW2Item) => item.id === 24276);
+        if (item24276Data) {
+          setItemDetails(prev => ({
+            ...prev,
+            24276: {
+              name: item24276Data.name,
+              icon: item24276Data.icon,
+              price: 0 // Se actualizará con fetchItemPrices
+            }
+          }));
+        }
+        
+        // Item ID 24339 - Para el trigésimo sexto item de Monederos
+        const item24339Data = data.find((item: GW2Item) => item.id === 24339);
+        if (item24339Data) {
+          setItemDetails(prev => ({
+            ...prev,
+            24339: {
+              name: item24339Data.name,
+              icon: item24339Data.icon,
+              price: 0 // Se actualizará con fetchItemPrices
+            }
+          }));
+        }
+        
+        // Item ID 24310 - Para el trigésimo séptimo item de Monederos
+        const item24310Data = data.find((item: GW2Item) => item.id === 24310);
+        if (item24310Data) {
+          setItemDetails(prev => ({
+            ...prev,
+            24310: {
+              name: item24310Data.name,
+              icon: item24310Data.icon,
+              price: 0 // Se actualizará con fetchItemPrices
+            }
+          }));
+        }
+        
+        // Item ID 24304 - Para el trigésimo octavo item de Monederos
+        const item24304Data = data.find((item: GW2Item) => item.id === 24304);
+        if (item24304Data) {
+          setItemDetails(prev => ({
+            ...prev,
+            24304: {
+              name: item24304Data.name,
+              icon: item24304Data.icon,
+              price: 0 // Se actualizará con fetchItemPrices
+            }
+          }));
+        }
+        
+        // Item ID 24289 - Para el trigésimo noveno item de Monederos
+        const item24289Data = data.find((item: GW2Item) => item.id === 24289);
+        if (item24289Data) {
+          setItemDetails(prev => ({
+            ...prev,
+            24289: {
+              name: item24289Data.name,
+              icon: item24289Data.icon,
+              price: 0 // Se actualizará con fetchItemPrices
+            }
+          }));
+        }
+        
+        // Item ID 38030 - Para el cuadragésimo item de Monederos
+        const item38030Data = data.find((item: GW2Item) => item.id === 38030);
+        if (item38030Data) {
+          setItemDetails(prev => ({
+            ...prev,
+            38030: {
+              name: item38030Data.name,
+              icon: item38030Data.icon,
+              price: 0 // Se actualizará con fetchItemPrices
+            }
+          }));
+        }
+        
+        // Item ID 24330 - Para el cuadragésimo primer item de Monederos
+        const item24330Data = data.find((item: GW2Item) => item.id === 24330);
+        if (item24330Data) {
+          setItemDetails(prev => ({
+            ...prev,
+            24330: {
+              name: item24330Data.name,
+              icon: item24330Data.icon,
+              price: 0 // Se actualizará con fetchItemPrices
+            }
+          }));
+        }
+        
+        // Item ID 24305 - Para el cuadragésimo segundo item de Monederos
+        const item24305Data = data.find((item: GW2Item) => item.id === 24305);
+        if (item24305Data) {
+          setItemDetails(prev => ({
+            ...prev,
+            24305: {
+              name: item24305Data.name,
+              icon: item24305Data.icon,
+              price: 0 // Se actualizará con fetchItemPrices
+            }
+          }));
+        }
+        
+        // Item ID 24315 - Para el cuadragésimo tercer item de Monederos
+        const item24315Data = data.find((item: GW2Item) => item.id === 24315);
+        if (item24315Data) {
+          setItemDetails(prev => ({
+            ...prev,
+            24315: {
+              name: item24315Data.name,
+              icon: item24315Data.icon,
+              price: 0 // Se actualizará con fetchItemPrices
+            }
+          }));
+        }
+        
+        // Item ID 24340 - Para el cuadragésimo cuarto item de Monederos
+        const item24340Data = data.find((item: GW2Item) => item.id === 24340);
+        if (item24340Data) {
+          setItemDetails(prev => ({
+            ...prev,
+            24340: {
+              name: item24340Data.name,
+              icon: item24340Data.icon,
+              price: 0 // Se actualizará con fetchItemPrices
+            }
+          }));
+        }
+        
+        // Item ID 24325 - Para el cuadragésimo quinto item de Monederos
+        const item24325Data = data.find((item: GW2Item) => item.id === 24325);
+        if (item24325Data) {
+          setItemDetails(prev => ({
+            ...prev,
+            24325: {
+              name: item24325Data.name,
+              icon: item24325Data.icon,
+              price: 0 // Se actualizará con fetchItemPrices
+            }
+          }));
+        }
+        
+        // Item ID 24335 - Para el cuadragésimo sexto item de Monederos
+        const item24335Data = data.find((item: GW2Item) => item.id === 24335);
+        if (item24335Data) {
+          setItemDetails(prev => ({
+            ...prev,
+            24335: {
+              name: item24335Data.name,
+              icon: item24335Data.icon,
+              price: 0 // Se actualizará con fetchItemPrices
+            }
+          }));
+        }
+        
+        // Item ID 44967 - Para el cuadragésimo séptimo item de Monederos
+        const item44967Data = data.find((item: GW2Item) => item.id === 44967);
+        if (item44967Data) {
+          setItemDetails(prev => ({
+            ...prev,
+            44967: {
+              name: item44967Data.name,
+              icon: item44967Data.icon,
+              price: 0 // Se actualizará con fetchItemPrices
+            }
+          }));
+        }
+        
+        // Item ID 45150 - Para el cuadragésimo octavo item de Monederos
+        const item45150Data = data.find((item: GW2Item) => item.id === 45150);
+        if (item45150Data) {
+          setItemDetails(prev => ({
+            ...prev,
+            45150: {
+              name: item45150Data.name,
+              icon: item45150Data.icon,
+              price: 0 // Se actualizará con fetchItemPrices
+            }
+          }));
+        }
+        
+        // Item ID 44980 - Para el cuadragésimo noveno item de Monederos
+        const item44980Data = data.find((item: GW2Item) => item.id === 44980);
+        if (item44980Data) {
+          setItemDetails(prev => ({
+            ...prev,
+            44980: {
+              name: item44980Data.name,
+              icon: item44980Data.icon,
+              price: 0 // Se actualizará con fetchItemPrices
+            }
+          }));
+        }
+        
+        // Item ID 26150 - Para el quincuagésimo item de Monederos
+        const item26150Data = data.find((item: GW2Item) => item.id === 26150);
+        if (item26150Data) {
+          setItemDetails(prev => ({
+            ...prev,
+            26150: {
+              name: item26150Data.name,
+              icon: item26150Data.icon,
+              price: 0 // Se actualizará con fetchItemPrices
+            }
+          }));
+        }
+        
+        // Item ID 2397 - Para el quincuagésimo primer item de Monederos
+        const item2397Data = data.find((item: GW2Item) => item.id === 2397);
+        if (item2397Data) {
+          setItemDetails(prev => ({
+            ...prev,
+            2397: {
+              name: item2397Data.name,
+              icon: item2397Data.icon,
+              price: 0 // Se actualizará con fetchItemPrices
+            }
+          }));
+        }
+        
+        // Item ID 28592 - Para el quincuagésimo segundo item de Monederos
+        const item28592Data = data.find((item: GW2Item) => item.id === 28592);
+        if (item28592Data) {
+          setItemDetails(prev => ({
+            ...prev,
+            28592: {
+              name: item28592Data.name,
+              icon: item28592Data.icon,
+              price: 0 // Se actualizará con fetchItemPrices
+            }
+          }));
+        }
+        
+        // Item ID 1366 - Para el quincuagésimo tercer item de Monederos
+        const item1366Data = data.find((item: GW2Item) => item.id === 1366);
+        if (item1366Data) {
+          setItemDetails(prev => ({
+            ...prev,
+            1366: {
+              name: item1366Data.name,
+              icon: item1366Data.icon,
+              price: 0 // Se actualizará con fetchItemPrices
+            }
+          }));
+        }
+        
+        // Item ID 26854 - Para el quincuagésimo cuarto item de Monederos
+        const item26854Data = data.find((item: GW2Item) => item.id === 26854);
+        if (item26854Data) {
+          setItemDetails(prev => ({
+            ...prev,
+            26854: {
+              name: item26854Data.name,
+              icon: item26854Data.icon,
+              price: 0 // Se actualizará con fetchItemPrices
+            }
+          }));
+        }
+        
+        // Item ID 26872 - Para el quincuagésimo quinto item de Monederos
+        const item26872Data = data.find((item: GW2Item) => item.id === 26872);
+        if (item26872Data) {
+          setItemDetails(prev => ({
+            ...prev,
+            26872: {
+              name: item26872Data.name,
+              icon: item26872Data.icon,
+              price: 0 // Se actualizará con fetchItemPrices
+            }
+          }));
+        }
+        
+        // Item ID 27179 - Para el quincuagésimo sexto item de Monederos
+        const item27179Data = data.find((item: GW2Item) => item.id === 27179);
+        if (item27179Data) {
+          setItemDetails(prev => ({
+            ...prev,
+            27179: {
+              name: item27179Data.name,
+              icon: item27179Data.icon,
+              price: 0 // Se actualizará con fetchItemPrices
+            }
+          }));
+        }
+        
+        // Item ID 2703 - Para el quincuagésimo séptimo item de Monederos
+        const item2703Data = data.find((item: GW2Item) => item.id === 2703);
+        if (item2703Data) {
+          setItemDetails(prev => ({
+            ...prev,
+            2703: {
+              name: item2703Data.name,
+              icon: item2703Data.icon,
+              price: 0 // Se actualizará con fetchItemPrices
+            }
+          }));
+        }
+        
+        // Item ID 2692 - Para el quincuagésimo octavo item de Monederos
+        const item2692Data = data.find((item: GW2Item) => item.id === 2692);
+        if (item2692Data) {
+          setItemDetails(prev => ({
+            ...prev,
+            2692: {
+              name: item2692Data.name,
+              icon: item2692Data.icon,
+              price: 0 // Se actualizará con fetchItemPrices
+            }
+          }));
+        }
+        
+        // Item ID 99999 - Random Exotic (agrupación de items exóticos)
+        setItemDetails(prev => ({
+          ...prev,
+          99999: {
+            name: t('fourWindsPrizeBag.randomExotic'),
+            icon: 'https://wiki.guildwars2.com/images/6/6f/Mystic_Forge.png', // Icono de Mystic Forge (símbolo de aleatoriedad)
+            price: 0 // Se actualizará con fetchItemPrices
+          }
+        }));
+
       }
     } catch (error) {
       // Error fetching items
@@ -676,7 +1122,7 @@ export default function FourWindsPrizeBagPage() {
   // Función para obtener precios de los items
   const fetchItemPrices = async () => {
     try {
-        const itemIds = [46731, 84731, 83008, 24288, 24356, 44960, 24299, 44976, 19748, 24341, 19700, 24282, 19701, 19732, 19729, 24329, 24320, 24357, 24300, 19745, 24309, 24350, 24324, 24358, 24319, 24294, 24295]; // Agregar más IDs según sea necesario
+        const itemIds = [46731, 84731, 83008, 24288, 24356, 44960, 24299, 44976, 19748, 24341, 19700, 24282, 19701, 19732, 19729, 24329, 24320, 24357, 24300, 19745, 24309, 24350, 24324, 24358, 24319, 24294, 24295, 44966, 24283, 24314, 78886, 24334, 24277, 24351, 24276, 24339, 24310, 24304, 24289, 38030, 24330, 24305, 24315, 24340, 24325, 24335, 44967, 45150, 44980, 26150, 2397, 28592, 1366, 26854, 26872, 27179, 2703, 2692]; // Agregar más IDs según sea necesario
       const response = await fetch(`https://api.guildwars2.com/v2/commerce/prices?ids=${itemIds.join(',')}`);
       const prices: GW2Price[] = await response.json();
       
@@ -705,6 +1151,8 @@ export default function FourWindsPrizeBagPage() {
             updated[parseInt(id)].price = priceData[parseInt(id)];
           }
         });
+        
+        
         return updated;
       });
     } catch (error) {
@@ -732,12 +1180,30 @@ export default function FourWindsPrizeBagPage() {
       <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
         <div className="max-w-7xl mx-auto p-4 sm:p-6">
           {/* Hero Section */}
-          <div className="text-center mb-8">
+          <div className="mb-8">
+            {/* Botón de regreso */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              className="flex items-center justify-center gap-3 mb-4">
-              <div className="w-16 h-16 bg-gradient-to-br from-purple-500 to-pink-600 rounded-xl shadow-lg flex items-center justify-center overflow-hidden">
+              className="mb-4"
+            >
+              <Link 
+                href="/opened" 
+                className="flex items-center gap-2 px-4 py-2 bg-gray-900/80 hover:bg-gray-800/90 border border-purple-500/30 text-white rounded-lg transition-all duration-200 hover:scale-105 hover:shadow-lg w-fit"
+              >
+                <ArrowLeft className="w-4 h-4" />
+                {t('fourWindsPrizeBag.backButton')}
+              </Link>
+            </motion.div>
+
+            {/* Título centrado */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.1 }}
+              className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-6"
+            >
+              <div className="w-20 h-20 sm:w-16 sm:h-16 bg-gradient-to-br from-purple-500 to-pink-600 rounded-xl shadow-lg flex items-center justify-center overflow-hidden">
                 {fourWindsBag ? (
                   <img 
                     src={fourWindsBag.icon} 
@@ -745,35 +1211,28 @@ export default function FourWindsPrizeBagPage() {
                     className="w-full h-full object-cover"
                   />
                 ) : (
-                <Gift className="h-8 w-8 text-white" />
+                <Gift className="h-10 w-10 sm:h-8 sm:w-8 text-white" />
                 )}
               </div>
-              <h1 className="text-4xl font-bold bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
-                {fourWindsBag ? fourWindsBag.name : 'Four Winds Prize Bag'}
+              <h1 className="text-3xl sm:text-4xl font-bold bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent text-center">
+                {fourWindsBag ? fourWindsBag.name : t('fourWindsPrizeBag.title')}
               </h1>
             </motion.div>
-            <p className="text-lg text-gray-300 max-w-2xl mx-auto leading-relaxed">
-              Análisis basado en 40,000+ aperturas reales
-            </p>
+
+            {/* Subtítulo centrado */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2 }}
+              className="text-center px-4"
+            >
+              <p className="text-base sm:text-lg text-gray-300 max-w-2xl mx-auto leading-relaxed">
+                {t('fourWindsPrizeBag.subtitle')}
+              </p>
+            </motion.div>
           </div>
 
-          {/* Botón de regreso */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2 }}
-            className="mb-8"
-          >
-            <Link 
-              href="/opened" 
-              className="flex items-center gap-2 px-4 py-2 bg-gray-900/80 hover:bg-gray-800/90 border border-purple-500/30 text-white rounded-lg transition-all duration-200 hover:scale-105 hover:shadow-lg w-fit"
-            >
-              <ArrowLeft className="w-4 h-4" />
-              Volver al Contenedor
-            </Link>
-          </motion.div>
-
-          {/* Estadísticas Generales */}
+          {/* {t('fourWindsPrizeBag.generalStats')} */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -795,7 +1254,7 @@ export default function FourWindsPrizeBagPage() {
                 <div className="w-8 h-8 bg-gradient-to-br from-orange-500 to-red-500 rounded-md flex items-center justify-center shadow-sm">
                   <Package className="w-4 h-4 text-white" />
                 </div>
-                <h3 className="text-base font-bold text-white">Total Items</h3>
+                <h3 className="text-base font-bold text-white">{t('fourWindsPrizeBag.totalItems')}</h3>
               </div>
               <p className="text-2xl font-bold text-orange-400">{totalItems.toLocaleString()}</p>
             </div>
@@ -824,7 +1283,7 @@ export default function FourWindsPrizeBagPage() {
              
           </motion.div>
 
-          {/* Análisis de Recompensas */}
+          {/* {t('fourWindsPrizeBag.rewardsAnalysis')} */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -832,7 +1291,7 @@ export default function FourWindsPrizeBagPage() {
             className="bg-gradient-to-br from-slate-800/50 to-slate-700/50 backdrop-blur-sm rounded-xl p-6 border border-slate-600/50"
           >
             <h2 className="text-3xl font-bold text-white mb-8 text-center">
-              Análisis de Recompensas
+              {t('fourWindsPrizeBag.rewardsAnalysis')}
             </h2>
             
             {/* Section Navigation */}
@@ -892,13 +1351,13 @@ export default function FourWindsPrizeBagPage() {
                        </div>
                        <div className="bg-pink-500/20 rounded-lg p-4">
                          <div className="text-3xl font-bold text-pink-400">{section.percentage.toFixed(2)}%</div>
-                         <div className="text-sm text-gray-300">Probabilidad</div>
+                         <div className="text-sm text-gray-300">{t('fourWindsPrizeBag.probability')}</div>
                        </div>
                        <div className="bg-green-500/20 rounded-lg p-4">
                          <div className="text-3xl font-bold text-green-400">
                            {formatPriceComplete(calculateSectionTotalValue(section))}
                          </div>
-                         <div className="text-sm text-gray-300">Valor Total</div>
+                         <div className="text-sm text-gray-300">{t('fourWindsPrizeBag.totalValue')}</div>
                        </div>
                      </div>
                   </div>
@@ -908,7 +1367,7 @@ export default function FourWindsPrizeBagPage() {
                      <div className="p-6 border-b border-gray-700">
                        <h4 className="text-2xl font-bold text-white flex items-center">
                          <Package className="w-6 h-6 mr-3 text-green-400" />
-                         Contenido del Contenedor - Análisis de Box Opening
+                         {t('fourWindsPrizeBag.containerContent')}
                        </h4>
                      </div>
                      <div className="overflow-x-auto">
@@ -931,7 +1390,7 @@ export default function FourWindsPrizeBagPage() {
                                onClick={() => handleSort('count')}
                              >
                                <div className="flex items-center justify-center gap-2">
-                                 Cantidad Obtenida
+                                 {t('fourWindsPrizeBag.quantityObtained')}
                                  <div className="flex flex-col text-xs text-gray-500">
                                    <span className={sortBy === 'count' && sortDirection === 'asc' ? 'text-blue-400' : 'text-gray-500'}>↑</span>
                                  </div>
@@ -942,7 +1401,7 @@ export default function FourWindsPrizeBagPage() {
                                onClick={() => handleSort('price')}
                              >
                                <div className="flex items-center justify-center gap-2">
-                                 Precio Actual
+                                 {t('fourWindsPrizeBag.currentPrice')}
                                  <div className="flex flex-col text-xs text-gray-500">
                                    <span className={sortBy === 'price' && sortDirection === 'asc' ? 'text-blue-400' : 'text-gray-500'}>↑</span>
                                  </div>
@@ -953,7 +1412,7 @@ export default function FourWindsPrizeBagPage() {
                                onClick={() => handleSort('totalValue')}
                              >
                                <div className="flex items-center justify-center gap-2">
-                                 Valor Total Ganado
+                                 {t('fourWindsPrizeBag.totalValueEarned')}
                                  <div className="flex flex-col text-xs text-gray-500">
                                    <span className={sortBy === 'totalValue' && sortDirection === 'asc' ? 'text-blue-400' : 'text-gray-500'}>↑</span>
                                  </div>

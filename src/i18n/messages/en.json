@@ -1614,6 +1614,22 @@
   "error404.title": "Page not found",
   "error404.subtitle": "We are working on this section",
   "error404.description": "This section is under development. Come back soon to see the new features!",
-  "error404.backHome": "Back to home"
+  "error404.backHome": "Back to home",
+
+  "fourWindsPrizeBag.title": "Four Winds Prize Bag",
+  "fourWindsPrizeBag.subtitle": "Analysis based on 40,000 real openings",
+  "fourWindsPrizeBag.backButton": "Back",
+  "fourWindsPrizeBag.generalStats": "General Statistics",
+  "fourWindsPrizeBag.totalItems": "Total Items",
+  "fourWindsPrizeBag.rewardsAnalysis": "Rewards Analysis",
+  "fourWindsPrizeBag.containerContent": "Container Content - Box Opening Analysis",
+  "fourWindsPrizeBag.quantityObtained": "Quantity Obtained",
+  "fourWindsPrizeBag.currentPrice": "Current Price",
+  "fourWindsPrizeBag.totalValueEarned": "Total Value Earned",
+  "fourWindsPrizeBag.probability": "Probability",
+  "fourWindsPrizeBag.totalValue": "Total Value",
+  "fourWindsPrizeBag.purses": "Purses",
+  "fourWindsPrizeBag.randomExotic": "Random Exotic",
+  "fourWindsPrizeBag.luxuryEquipment": "Luxury Equipment"
 }
 

@@ -1615,6 +1615,22 @@
   "error404.title": "Seite nicht gefunden",
   "error404.subtitle": "Wir arbeiten an diesem Bereich",
   "error404.description": "Dieser Bereich ist in Entwicklung. Kommen Sie bald zurück, um die neuen Funktionen zu sehen!",
-  "error404.backHome": "Zurück zur Startseite"
+  "error404.backHome": "Zurück zur Startseite",
+
+  "fourWindsPrizeBag.title": "Vier-Winde-Preissack",
+  "fourWindsPrizeBag.subtitle": "Analyse basierend auf 40.000 echten Öffnungen",
+  "fourWindsPrizeBag.backButton": "Zurück",
+  "fourWindsPrizeBag.generalStats": "Allgemeine Statistiken",
+  "fourWindsPrizeBag.totalItems": "Gesamtgegenstände",
+  "fourWindsPrizeBag.rewardsAnalysis": "Belohnungsanalyse",
+  "fourWindsPrizeBag.containerContent": "Container-Inhalt - Kistenöffnungsanalyse",
+  "fourWindsPrizeBag.quantityObtained": "Erhaltene Menge",
+  "fourWindsPrizeBag.currentPrice": "Aktueller Preis",
+  "fourWindsPrizeBag.totalValueEarned": "Gesamtwert Erhalten",
+  "fourWindsPrizeBag.probability": "Wahrscheinlichkeit",
+  "fourWindsPrizeBag.totalValue": "Gesamtwert",
+  "fourWindsPrizeBag.purses": "Geldbörsen",
+  "fourWindsPrizeBag.randomExotic": "Zufällig Exotisch",
+  "fourWindsPrizeBag.luxuryEquipment": "Luxusausrüstung"
 }
 
