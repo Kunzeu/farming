@@ -1008,6 +1008,7 @@
   "gardenPage.waypoints.skywatchArchipelago": "La Tour fracturée",
   "gardenPage.waypoints.skywatchArchipelago2": "Ruines délabrées",
   "gardenPage.waypoints.lowlandShore": "Point de passage du Repaire des moissons",
+  "gardenPage.waypoints.lionArch": "Point de passage du Port du sanctuaire",
   "dashboard.glossary.title": "Glossaire",
   "dashboard.glossary.description": "Dictionnaire des termes et concepts GW2",
   "dashboard.ls4Meta.title": "LS4 Meta",
@@ -1622,6 +1623,7 @@
   "fourWindsPrizeBag.totalValueEarned": "Valeur totale gagnée",
   "fourWindsPrizeBag.probability": "Probabilité",
   "fourWindsPrizeBag.totalValue": "Valeur totale",
+  "fourWindsPrizeBag.boxesOpened": "Boîtes Ouvertes",
   "fourWindsPrizeBag.purses": "Bourses",
   "fourWindsPrizeBag.randomExotic": "Exotique Aléatoire",
   "fourWindsPrizeBag.luxuryEquipment": "Équipement de luxe"

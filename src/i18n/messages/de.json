@@ -1014,6 +1014,7 @@
   "gardenPage.waypoints.skywatchArchipelago": "Der Zerbrochene Turm",
   "gardenPage.waypoints.skywatchArchipelago2": "Verfallene Ruinen",
   "gardenPage.waypoints.lowlandShore": "Wegmarke Erntehöhle",
+  "gardenPage.waypoints.lionArch": "Wegmarke westlicher Bezirk",
   "dashboard.glossary.title": "Glossar",
   "dashboard.glossary.description": "Wörterbuch der GW2-Begriffe und Konzepte",
   "dashboard.ls4Meta.title": "LS4 Meta",
@@ -1629,6 +1630,7 @@
   "fourWindsPrizeBag.totalValueEarned": "Gesamtwert Erhalten",
   "fourWindsPrizeBag.probability": "Wahrscheinlichkeit",
   "fourWindsPrizeBag.totalValue": "Gesamtwert",
+  "fourWindsPrizeBag.boxesOpened": "Geöffnete Kisten",
   "fourWindsPrizeBag.purses": "Geldbörsen",
   "fourWindsPrizeBag.randomExotic": "Zufällig Exotisch",
   "fourWindsPrizeBag.luxuryEquipment": "Luxusausrüstung"

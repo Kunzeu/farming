@@ -84,9 +84,15 @@ export default function FourWindsPrizeBagPage() {
       return total + (itemPrice * row.count);
     }, 0);
     
-    // Solo agregar valor adicional de 129g 65s 06c a la sección de monederos
+    // Agregar valor adicional de 129g 65s 06c a la sección de monederos
     if (section.name === 'Monederos' || (embroideredPurse && section.name === embroideredPurse.name)) {
       const additionalValue = 1296506;
+      return baseTotal + additionalValue;
+    }
+    
+    // Agregar valor adicional de 64g 59s 02c a la sección de arcas
+    if (section.name === 'Arcas Chapadas' || (gildedCoffer && section.name === gildedCoffer.name)) {
+      const additionalValue = 645902;
       return baseTotal + additionalValue;
     }
     
@@ -223,6 +229,17 @@ export default function FourWindsPrizeBagPage() {
       icon: Package,
       itemIcon: embroideredSaddlebag?.icon,
       tableData: [
+        { id: 46731, item: '', count: 16857, chance: '100%' },
+        { id: 84731, item: '', count: 3226, chance: '100%' },
+        { id: 83008, item: '', count: 115, chance: '100%' },
+        { id: 24357, item: '', count: 57, chance: '100%' },
+        { id: 24341, item: '', count: 492, chance: '100%' },
+        { id: 24295, item: '', count: 43, chance: '100%'},
+        { id: 24351, item: '', count: 36, chance: '100%'},
+        { id: 24339, item: '', count: 30, chance: '100%'},
+        { id: 24315, item: '', count: 6, chance: '100%' },
+        { id: 24277, item: '', count: 40, chance: '100%'},
+
         
       ]
     },
@@ -233,7 +250,49 @@ export default function FourWindsPrizeBagPage() {
       icon: Package,
       itemIcon: gildedCoffer?.icon,
       tableData: [
-       
+        { id: 46731, item: '', count: 16565, chance: '100%' },
+        { id: 84731, item: '', count: 3214, chance: '100%' },
+        { id: 83008, item: '', count: 85, chance: '100%' },
+        { id: 24310, item: '', count: 3, chance: '100%' },
+        { id: 24325, item: '', count: 5, chance: '100%' },
+        { id: 24350, item: '', count: 509, chance: '100%' },
+        { id: 24304, item: '', count: 33, chance: '100%' },
+        { id: 44966, item: '', count: 2, chance: '100%' },
+        { id: 24315, item: '', count: 3, chance: '100%' },
+        { id: 24324, item: '', count: 50, chance: '100%' },
+        { id: 24320, item: '', count: 3, chance: '100%' },
+        { id: 24289, item: '', count: 35, chance: '100%' },
+        { id: 24356, item: '', count: 400, chance: '100%' },
+        { id: 38030, item: '', count: 20, chance: '100%' },
+        { id: 24282, item: '', count: 519, chance: '100%' },
+        { id: 19745, item: '', count: 142, chance: '100%' },
+        { id: 24305, item: '', count: 5, chance: '100%' },
+        { id: 99999, item: t('fourWindsPrizeBag.randomExotic'), count: 19, chance: '100%' },
+        { id: 24319, item: '', count: 37, chance: '100%' },
+        { id: 24341, item: '', count: 484, chance: '100%' },
+        { id: 24288, item: '', count: 439, chance: '100%' },
+        { id: 24294, item: '', count: 495, chance: '100%' },
+        { id: 24299, item: '', count: 485, chance: '100%' },
+        { id: 24329, item: '', count: 50, chance: '100%' },
+        { id: 24335, item: '', count: 6, chance: '100%' },
+        { id: 19701, item: '', count: 448, chance: '100%' },
+        { id: 24334, item: '', count: 31, chance: '100%' },
+        { id: 24276, item: '', count: 349, chance: '100%' },
+        { id: 24309, item: '', count: 40, chance: '100%'},
+        { id: 24314, item: '', count: 35, chance: '100%'},
+        { id: 24358, item: '', count: 42, chance: '100%'},
+        { id: 24330, item: '', count: 2, chance: '100%'},
+        { id: 24277, item: '', count: 62, chance: '100%'},
+        { id: 24283, item: '', count: 52, chance: '100%'},
+        { id: 19732, item: '', count: 142, chance: '100%'},
+        { id: 24351, item: '', count: 35, chance: '100%'},
+        { id: 24339, item: '', count: 36, chance: '100%'},
+        { id: 24357, item: '', count: 45, chance: '100%'},
+        { id: 24295, item: '', count: 42, chance: '100%'},
+        { id: 24340, item: '', count: 4, chance: '100%'},
+        { id: 19729, item: '', count: 429, chance: '100%'},
+        { id: 19700, item: '', count: 1292, chance: '100%'},
+        { id: 19748, item: '', count: 848, chance: '100%'},
       ]
     },
     morrales: {
@@ -1347,7 +1406,7 @@ export default function FourWindsPrizeBagPage() {
                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 max-w-4xl mx-auto">
                        <div className="bg-purple-500/20 rounded-lg p-4">
                          <div className="text-3xl font-bold text-purple-400">{section.count.toLocaleString()}</div>
-                         <div className="text-sm text-gray-300">Items Obtenidos</div>
+                         <div className="text-sm text-gray-300">{t('fourWindsPrizeBag.boxesOpened')}</div>
                        </div>
                        <div className="bg-pink-500/20 rounded-lg p-4">
                          <div className="text-3xl font-bold text-pink-400">{section.percentage.toFixed(2)}%</div>

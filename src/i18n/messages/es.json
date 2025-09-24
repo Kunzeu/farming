@@ -900,6 +900,7 @@
   "gardenPage.waypoints.skywatchArchipelago": "Torre Fracturada",
   "gardenPage.waypoints.skywatchArchipelago2": "Ruinas Abandonadas",
   "gardenPage.waypoints.lowlandShore": "Punto de ruta de Guarida de la Cosecha",
+  "gardenPage.waypoints.lionArch": "Punto de Ruta de Distrito Occidental",
   "dashboard.glossary.title": "Glosario",
   "dashboard.glossary.description": "Diccionario de términos y conceptos de GW2",
   "dashboard.ls4Meta.title": "LS4 Meta",
@@ -1661,6 +1662,7 @@
   "fourWindsPrizeBag.totalValueEarned": "Valor Total Ganado",
   "fourWindsPrizeBag.probability": "Probabilidad",
   "fourWindsPrizeBag.totalValue": "Valor Total",
+  "fourWindsPrizeBag.boxesOpened": "Cajas Abiertas",
   "fourWindsPrizeBag.purses": "Monederos",
   "fourWindsPrizeBag.randomExotic": "Exótico Aleatorio",
   "fourWindsPrizeBag.luxuryEquipment": "Equipo de lujo"

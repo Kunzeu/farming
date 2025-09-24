@@ -1012,6 +1012,7 @@
   "gardenPage.waypoints.skywatchArchipelago": "The Fractured Tower",
   "gardenPage.waypoints.skywatchArchipelago2": "Derelict Ruins",
   "gardenPage.waypoints.lowlandShore": "Harvest Den Waypoint",
+  "gardenPage.waypoints.lionArch": "Western Ward Waypoint",
   "dashboard.glossary.title": "Glossary",
   "dashboard.glossary.description": "Dictionary of GW2 terms and concepts",
   "dashboard.ls4Meta.title": "LS4 Meta",
@@ -1628,6 +1629,7 @@
   "fourWindsPrizeBag.totalValueEarned": "Total Value Earned",
   "fourWindsPrizeBag.probability": "Probability",
   "fourWindsPrizeBag.totalValue": "Total Value",
+  "fourWindsPrizeBag.boxesOpened": "Boxes Opened",
   "fourWindsPrizeBag.purses": "Purses",
   "fourWindsPrizeBag.randomExotic": "Random Exotic",
   "fourWindsPrizeBag.luxuryEquipment": "Luxury Equipment"

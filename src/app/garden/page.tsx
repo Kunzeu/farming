@@ -23,7 +23,9 @@ import {
   Hammer,
   Copy,
   Menu,
-  X
+  X,
+  ChevronLeft,
+  ChevronRight
 } from 'lucide-react';
 import { useI18n } from '@/contexts/I18nContext';
 import { usePageTitle } from '@/hooks/usePageTitle';
@@ -46,9 +48,69 @@ const JardinesPage = () => {
   const [list2Copied, setList2Copied] = useState(false);
   const [list3Copied, setList3Copied] = useState(false);
   const [mapData, setMapData] = useState<Record<number, {name: string, region_name: string}>>({});
+  const [imageModal, setImageModal] = useState<{isOpen: boolean, currentIndex: number, images: string[]}>({
+    isOpen: false,
+    currentIndex: 0,
+    images: []
+  });
 
   // Configurar título de la página
   usePageTitle(t('gardenPage.title'), t('gardenPage.title'));
+
+  // Array con todas las imágenes de jardines para el modal
+  const gardenImages = [
+    '/images/garden/test.png',
+    '/images/garden/test2.png',
+    '/images/garden/EoD-1-709x1024.webp',
+    '/images/garden/EoD-2.webp',
+    '/images/garden/EoD-3.webp',
+    '/images/garden/EoD-4.webp',
+    '/images/garden/HoT-1.webp',
+    '/images/garden/HoT-2-1024x802.webp',
+    '/images/garden/JW-1.png',
+    '/images/garden/JW-2.png',
+    '/images/garden/k6OYz1.png',
+    '/images/garden/LS3-1.webp',
+    '/images/garden/LS3-2.webp',
+    '/images/garden/LS3-3-1024x425.webp',
+    '/images/garden/LS4-1.webp',
+    '/images/garden/LS4-2.webp',
+    '/images/garden/LS5-1.webp',
+    '/images/garden/LS5-2.webp',
+    '/images/garden/LS5-3.webp',
+    '/images/garden/LS5-4.webp',
+    '/images/garden/LS5-5.webp',
+    '/images/garden/POF-1.webp',
+    '/images/garden/POF-2-923x1024.webp',
+    '/images/garden/POF-3-1024x361.webp',
+    '/images/garden/POF-4-1-630x1024.webp',
+    '/images/garden/PoF-5.webp',
+    '/images/garden/SOTO-1-1024x458.webp',
+    '/images/garden/SOTO-2-514x1024.webp',
+    '/images/garden/Tyria-10.webp',
+    '/images/garden/Tyria-11.webp',
+    '/images/garden/Tyria-12.webp',
+    '/images/garden/Tyria-13.webp',
+    '/images/garden/Tyria-14.webp',
+    '/images/garden/Tyria-15.webp',
+    '/images/garden/Tyria-16.webp',
+    '/images/garden/Tyria-17.webp',
+    '/images/garden/Tyria-18.webp',
+    '/images/garden/Tyria-19.webp',
+    '/images/garden/Tyria-20.webp',
+    '/images/garden/Tyria-21.webp',
+    '/images/garden/Tyria-22-524x1024.webp',
+    '/images/garden/Tyria-23.webp',
+    '/images/garden/Tyria-24.webp',
+    '/images/garden/Tyria-3.webp',
+    '/images/garden/Tyria-4.webp',
+    '/images/garden/Tyria-5.webp',
+    '/images/garden/Tyria-6.webp',
+    '/images/garden/Tyria-7.webp',
+    '/images/garden/Tyria-8.webp',
+    '/images/garden/Tyria-9.webp',
+    '/images/garden/Lion-Arch.webp'
+  ];
 
   // Obtener datos de los items de la API
   useEffect(() => {
@@ -139,7 +201,7 @@ const JardinesPage = () => {
     const fetchMapData = async () => {
       try {
         // IDs de los mapas que usamos en la página
-         const mapIds = [15, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 39, 51, 53, 54, 73, 988, 1045, 1052, 1175, 1178, 1195, 1210, 1211, 1226, 1271, 1288, 1330, 1343, 1371, 1438, 1452, 1510, 1550]; // Todos los mapas de jardines
+         const mapIds = [15, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 39, 50, 51, 53, 54, 73, 988, 1045, 1052, 1175, 1178, 1195, 1210, 1211, 1226, 1271, 1288, 1330, 1343, 1371, 1438, 1452, 1510, 1550]; // Todos los mapas de jardines
         
         const response = await fetch(`https://api.guildwars2.com/v2/maps?ids=${mapIds.join(',')}&lang=${lang}`);
         const maps = await response.json();
@@ -301,7 +363,7 @@ const JardinesPage = () => {
 
   // Función para copiar Lista 3
   const copyList3 = async () => {
-    const list3Text = '[&BNwKAAA=][&BCgKAAA=]x2[&BJEKAAA=][&BEAKAAA=][&BEMLAAA=][&BBsMAAA=][&BCcMAAA=][&BGQMAAA=]x3[&BBkNAAA=]x2[&BCANAAA=][&BNQMAAA=][&BFUOAAA=][&BNwNAAA=][&BK4OAAA=]x2';
+    const list3Text = '[&BNwKAAA=][&BCgKAAA=]x2[&BJEKAAA=][&BEAKAAA=][&BEMLAAA=][&BBsMAAA=][&BCcMAAA=][&BGQMAAA=]x3[&BBkNAAA=]x2[&BCANAAA=][&BNQMAAA=][&BFUOAAA=][&BNwNAAA=][&BK4OAAA=]x2[&BC4EAAA=]';
     
     try {
       await navigator.clipboard.writeText(list3Text);
@@ -310,6 +372,42 @@ const JardinesPage = () => {
     } catch (err) {
       console.error('Error copying list 3:', err);
     }
+  };
+
+  // Función para abrir el modal de imágenes
+  const openImageModal = (imageSrc: string, allImages: string[]) => {
+    const currentIndex = allImages.findIndex(img => img === imageSrc);
+    setImageModal({
+      isOpen: true,
+      currentIndex: currentIndex >= 0 ? currentIndex : 0,
+      images: allImages
+    });
+  };
+
+  // Función para cerrar el modal
+  const closeImageModal = () => {
+    setImageModal({
+      isOpen: false,
+      currentIndex: 0,
+      images: []
+    });
+  };
+
+  // Función para navegar entre imágenes
+  const navigateImage = (direction: 'prev' | 'next') => {
+    const { currentIndex, images } = imageModal;
+    let newIndex;
+    
+    if (direction === 'prev') {
+      newIndex = currentIndex > 0 ? currentIndex - 1 : images.length - 1;
+    } else {
+      newIndex = currentIndex < images.length - 1 ? currentIndex + 1 : 0;
+    }
+    
+    setImageModal(prev => ({
+      ...prev,
+      currentIndex: newIndex
+    }));
   };
 
   // Detectar cambios en el hash de la URL
@@ -945,7 +1043,7 @@ const JardinesPage = () => {
                       </div>
                       <div className="bg-slate-700/50 rounded-lg p-4 border border-slate-600/50">
                         <div className="text-gray-300 text-lg font-mono break-all leading-relaxed">
-                          [&BNwKAAA=][&BCgKAAA=]<span className="text-yellow-400 font-bold">x2</span>[&BJEKAAA=][&BEAKAAA=][&BEMLAAA=][&BBsMAAA=][&BCcMAAA=][&BGQMAAA=]<span className="text-red-400 font-bold">x3</span>[&BBkNAAA=]<span className="text-yellow-400 font-bold">x2</span>[&BCANAAA=][&BNQMAAA=][&BFUOAAA=][&BNwNAAA=][&BK4OAAA=]<span className="text-yellow-400 font-bold">x2</span>
+                          [&BNwKAAA=][&BCgKAAA=]<span className="text-yellow-400 font-bold">x2</span>[&BJEKAAA=][&BEAKAAA=][&BEMLAAA=][&BBsMAAA=][&BCcMAAA=][&BGQMAAA=]<span className="text-red-400 font-bold">x3</span>[&BBkNAAA=]<span className="text-yellow-400 font-bold">x2</span>[&BCANAAA=][&BNQMAAA=][&BFUOAAA=][&BNwNAAA=][&BK4OAAA=]<span className="text-yellow-400 font-bold">x2</span>[&BC4EAAA=]
                         </div>
                       </div>
                     </div>
@@ -976,7 +1074,10 @@ const JardinesPage = () => {
                     {/* Fields of Ruin - Estilo Uniforme */}
                     <div className="group relative overflow-hidden rounded-2xl bg-slate-800/50 backdrop-blur-sm border border-slate-700/50 hover:border-emerald-400/60 transition-all duration-300 hover:shadow-xl hover:shadow-emerald-500/20 h-full flex flex-col">
                       {/* Imagen con dimensiones uniformes */}
-                      <div className="relative h-72 w-full overflow-hidden">
+                      <div 
+                        className="relative h-72 w-full overflow-hidden cursor-pointer"
+                        onClick={() => openImageModal('/images/garden/test.png', gardenImages)}
+                      >
                         <Image
                           src="/images/garden/test.png"
                           alt="Fields of Ruin Garden Location"
@@ -1032,7 +1133,10 @@ const JardinesPage = () => {
                     {/* Fireheart Rise - Estilo Uniforme */}
                     <div className="group relative overflow-hidden rounded-2xl bg-slate-800/50 backdrop-blur-sm border border-slate-700/50 hover:border-teal-400/60 transition-all duration-300 hover:shadow-xl hover:shadow-teal-500/20">
                       {/* Imagen con dimensiones uniformes */}
-                      <div className="relative h-72 w-full overflow-hidden">
+                      <div 
+                        className="relative h-72 w-full overflow-hidden cursor-pointer"
+                        onClick={() => openImageModal('/images/garden/test2.png', gardenImages)}
+                      >
                         <Image
                           src="/images/garden/test2.png"
                           alt="Fireheart Rise"
@@ -3677,6 +3781,64 @@ const JardinesPage = () => {
                       </div>
                     </div>
 
+                    {/* Lion's Arch - Waypoint BC4EAAA */}
+                    <div className="group relative overflow-hidden rounded-2xl bg-slate-800/50 backdrop-blur-sm border border-slate-700/50 hover:border-purple-400/60 transition-all duration-300 hover:shadow-xl hover:shadow-purple-500/20 h-full flex flex-col">
+                      {/* Imagen con dimensiones uniformes */}
+                      <div 
+                        className="relative h-48 w-full overflow-hidden cursor-pointer"
+                        onClick={() => openImageModal('/images/garden/Lion-Arch.webp', gardenImages)}
+                      >
+                        <Image
+                          src="/images/garden/Lion-Arch.webp"
+                          alt="Lion's Arch Garden Location"
+                          fill
+                          className="object-contain group-hover:scale-105 transition-transform duration-500"
+                          unoptimized
+                        />
+                        {/* Overlay sutil para legibilidad */}
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+                      </div>
+                      
+                      {/* Contenido uniforme */}
+                      <div className="p-6 flex-1 flex flex-col">
+                        <h3 className="text-xl font-bold text-white mb-4">
+                        {mapData[50]?.name || 'Lion\'s Arch'}
+                        </h3>
+                        
+                        <div className="bg-slate-700/50 rounded-lg p-4 border border-slate-600/40 mb-4">
+                          <p className="text-purple-300 font-semibold flex items-center gap-3 text-sm">
+                            <Image 
+                              src="/images/icons/waypoint-icon.webp" 
+                              alt="Waypoint" 
+                              width={20} 
+                              height={20} 
+                              className="w-7 h-7"
+                            />
+                            {t('gardenPage.waypoints.lionArch') || 'Western Ward Waypoint'}
+                          </p>
+                        </div>
+                        
+                        <button
+                          onClick={() => copyWaypoint('[&BC4EAAA=]')}
+                          className={`w-full font-bold py-3 px-4 rounded-lg transition-all duration-300 flex items-center justify-center gap-2 text-sm mt-auto ${
+                            copiedWaypoint === '[&BC4EAAA=]' 
+                              ? 'bg-green-600 text-white shadow-xl' 
+                              : 'bg-gradient-to-r from-purple-600 to-violet-600 hover:from-purple-500 hover:to-violet-500 text-white shadow-lg hover:shadow-xl hover:scale-105'
+                          }`}
+                        >
+                          {copiedWaypoint === '[&BC4EAAA=]' ? (
+                            <CheckCircle className="w-4 h-4" />
+                          ) : (
+                            <Copy className="w-4 h-4" />
+                          )}
+                          {copiedWaypoint === '[&BC4EAAA=]' 
+                            ? t('gardenPage.sections.locations.waypointCopied')
+                            : t('gardenPage.sections.locations.copyWaypoint')
+                          }
+                        </button>
+                      </div>
+                    </div>
+
                   </div>
                 </motion.div>
               </section>
@@ -3735,6 +3897,54 @@ const JardinesPage = () => {
           </div>
         </div>
       </div>
+
+      {/* Modal de visualización de imágenes */}
+      {imageModal.isOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 backdrop-blur-sm">
+          <div className="relative max-w-7xl max-h-[90vh] w-full mx-4">
+            {/* Botón de cerrar */}
+            <button
+              onClick={closeImageModal}
+              className="absolute top-4 right-4 z-10 bg-black/50 hover:bg-black/70 text-white rounded-full p-2 transition-colors"
+            >
+              <X className="w-6 h-6" />
+            </button>
+
+            {/* Botón anterior */}
+            <button
+              onClick={() => navigateImage('prev')}
+              className="absolute left-4 top-1/2 -translate-y-1/2 z-10 bg-black/50 hover:bg-black/70 text-white rounded-full p-3 transition-colors"
+            >
+              <ChevronLeft className="w-6 h-6" />
+            </button>
+
+            {/* Botón siguiente */}
+            <button
+              onClick={() => navigateImage('next')}
+              className="absolute right-4 top-1/2 -translate-y-1/2 z-10 bg-black/50 hover:bg-black/70 text-white rounded-full p-3 transition-colors"
+            >
+              <ChevronRight className="w-6 h-6" />
+            </button>
+
+            {/* Imagen principal */}
+            <div className="relative w-full h-full flex items-center justify-center">
+              <Image
+                src={imageModal.images[imageModal.currentIndex]}
+                alt={`Garden location ${imageModal.currentIndex + 1}`}
+                width={1200}
+                height={800}
+                className="max-w-full max-h-[80vh] object-contain rounded-lg shadow-2xl"
+                unoptimized
+              />
+            </div>
+
+            {/* Indicador de imagen actual */}
+            <div className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-black/50 text-white px-4 py-2 rounded-full text-sm">
+              {imageModal.currentIndex + 1} / {imageModal.images.length}
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 };
