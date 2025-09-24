@@ -122,7 +122,7 @@ const Navigation = () => {
     const calculateSpecialEvent = () => {
       const now = new Date();
       // 28 de octubre de 2025 a las 11:00 UTC
-      const endTime = new Date('2025-10-28T11:00:00.000Z');
+      const endTime = new Date('2025-10-28T16:00:00.000Z');
       
       const diff = endTime.getTime() - now.getTime();
       
