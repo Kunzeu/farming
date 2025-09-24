@@ -25,7 +25,8 @@ import {
   Menu,
   X,
   ChevronLeft,
-  ChevronRight
+  ChevronRight,
+  Search
 } from 'lucide-react';
 import { useI18n } from '@/contexts/I18nContext';
 import { usePageTitle } from '@/hooks/usePageTitle';
@@ -57,59 +58,58 @@ const JardinesPage = () => {
   // Configurar título de la página
   usePageTitle(t('gardenPage.title'), t('gardenPage.title'));
 
-  // Array con todas las imágenes de jardines para el modal
+  // Array con todas las imágenes de jardines para el modal (en orden de aparición en las cuadrículas)
   const gardenImages = [
-    '/images/garden/test.png',
-    '/images/garden/test2.png',
-    '/images/garden/EoD-1-709x1024.webp',
-    '/images/garden/EoD-2.webp',
-    '/images/garden/EoD-3.webp',
-    '/images/garden/EoD-4.webp',
-    '/images/garden/HoT-1.webp',
-    '/images/garden/HoT-2-1024x802.webp',
-    '/images/garden/JW-1.png',
-    '/images/garden/JW-2.png',
-    '/images/garden/k6OYz1.png',
-    '/images/garden/LS3-1.webp',
-    '/images/garden/LS3-2.webp',
-    '/images/garden/LS3-3-1024x425.webp',
-    '/images/garden/LS4-1.webp',
-    '/images/garden/LS4-2.webp',
-    '/images/garden/LS5-1.webp',
-    '/images/garden/LS5-2.webp',
-    '/images/garden/LS5-3.webp',
-    '/images/garden/LS5-4.webp',
-    '/images/garden/LS5-5.webp',
-    '/images/garden/POF-1.webp',
-    '/images/garden/POF-2-923x1024.webp',
-    '/images/garden/POF-3-1024x361.webp',
-    '/images/garden/POF-4-1-630x1024.webp',
-    '/images/garden/PoF-5.webp',
-    '/images/garden/SOTO-1-1024x458.webp',
-    '/images/garden/SOTO-2-514x1024.webp',
-    '/images/garden/Tyria-10.webp',
-    '/images/garden/Tyria-11.webp',
-    '/images/garden/Tyria-12.webp',
-    '/images/garden/Tyria-13.webp',
-    '/images/garden/Tyria-14.webp',
-    '/images/garden/Tyria-15.webp',
-    '/images/garden/Tyria-16.webp',
-    '/images/garden/Tyria-17.webp',
-    '/images/garden/Tyria-18.webp',
-    '/images/garden/Tyria-19.webp',
-    '/images/garden/Tyria-20.webp',
-    '/images/garden/Tyria-21.webp',
-    '/images/garden/Tyria-22-524x1024.webp',
-    '/images/garden/Tyria-23.webp',
-    '/images/garden/Tyria-24.webp',
-    '/images/garden/Tyria-3.webp',
-    '/images/garden/Tyria-4.webp',
-    '/images/garden/Tyria-5.webp',
-    '/images/garden/Tyria-6.webp',
-    '/images/garden/Tyria-7.webp',
-    '/images/garden/Tyria-8.webp',
-    '/images/garden/Tyria-9.webp',
-    '/images/garden/Lion-Arch.webp'
+    '/images/garden/test.png',                    // 1. Fields of Ruin
+    '/images/garden/test2.png',                  // 2. Fireheart Rise
+    '/images/garden/Tyria-3.webp',               // 3. Iron Marches
+    '/images/garden/Tyria-4.webp',               // 4. Plains of Ashford
+    '/images/garden/Tyria-5.webp',               // 5. Diessa Plateau
+    '/images/garden/Tyria-6.webp',               // 6. Fireheart Rise
+    '/images/garden/Tyria-7.webp',               // 7. Gendarran Fields
+    '/images/garden/Tyria-8.webp',               // 8. Harathi Hinterlands
+    '/images/garden/Tyria-9.webp',               // 9. Kessex Hills
+    '/images/garden/Tyria-10.webp',              // 10. Lornar's Pass
+    '/images/garden/Tyria-11.webp',              // 11. Bloodtide Coast
+    '/images/garden/Tyria-12.webp',              // 12. Dredgehaunt Cliffs
+    '/images/garden/Tyria-13.webp',              // 13. Frostgorge Sound
+    '/images/garden/Tyria-14.webp',              // 14. Mount Maelstrom
+    '/images/garden/Tyria-15.webp',              // 15. Sparkfly Fen
+    '/images/garden/Tyria-16.webp',              // 16. Gendarran Fields
+    '/images/garden/Tyria-17.webp',              // 17. Caledon Forest
+    '/images/garden/Tyria-18.webp',              // 18. Metrica Province
+    '/images/garden/Tyria-19.webp',              // 19. Kessex Hills
+    '/images/garden/Tyria-20.webp',              // 20. Metrica Province
+    '/images/garden/Tyria-21.webp',              // 21. Caledon Forest
+    '/images/garden/Tyria-22-524x1024.webp',     // 22. Brisban Wildlands
+    '/images/garden/Tyria-23.webp',              // 23. Dry Top
+    '/images/garden/Tyria-24.webp',              // 24. Malchor's Leap
+    '/images/garden/HoT-1.webp',                 // 25. Jaka Itzel
+    '/images/garden/HoT-2-1024x802.webp',        // 26. Tangled Depths
+    '/images/garden/LS4-2.webp',                 // 27. Domain of Kourna
+    '/images/garden/LS3-1.webp',                 // 28. Ember Bay
+    '/images/garden/LS3-2.webp',                 // 29. Draconis Mons
+    '/images/garden/LS3-3-1024x425.webp',        // 30. Bitterfrost Frontier
+    '/images/garden/POF-1.webp',                 // 31. The Desolation
+    '/images/garden/POF-2-923x1024.webp',        // 32. Elon Riverlands
+    '/images/garden/POF-3-1024x361.webp',        // 33. Elon Riverlands
+    '/images/garden/POF-4-1-630x1024.webp',      // 34. Desert Highlands
+    '/images/garden/PoF-5.webp',                 // 35. Crystal Oasis
+    '/images/garden/LS4-1.webp',                 // 36. Sandswept Isles
+    '/images/garden/LS5-1.webp',                 // 37. Grothmar Valley
+    '/images/garden/LS5-3.webp',                 // 38. Bjora Marches
+    '/images/garden/LS5-2.webp',                 // 39. Drizzlewood Coast
+    '/images/garden/LS5-4.webp',                 // 40. Drizzlewood Coast
+    '/images/garden/LS5-5.webp',                 // 41. Drizzlewood Coast
+    '/images/garden/EoD-1-709x1024.webp',        // 42. New Kaineng City
+    '/images/garden/EoD-2.webp',                 // 43. New Kaineng City
+    '/images/garden/EoD-3.webp',                 // 44. New Kaineng City
+    '/images/garden/EoD-4.webp',                 // 45. New Kaineng City
+    '/images/garden/SOTO-1-1024x458.webp',       // 46. Skywatch Archipelago
+    '/images/garden/SOTO-2-514x1024.webp',       // 47. Skywatch Archipelago
+    '/images/garden/JW-1.png',                   // 48. The Echovald Wilds
+    '/images/garden/JW-2.png',                   // 49. Lowland Shore
+    '/images/garden/Lion-Arch.webp'              // 50. Lion's Arch
   ];
 
   // Obtener datos de los items de la API
@@ -1088,6 +1088,18 @@ const JardinesPage = () => {
                         {/* Overlay sutil para legibilidad */}
                         <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
                         
+                        {/* Icono de zoom para indicar que se puede hacer clic */}
+                        <div className="absolute top-2 right-2 opacity-100 transition-opacity duration-300">
+                          <Image
+                            src="/images/garden/zoom-in.webp"
+                            alt="Zoom"
+                            width={20}
+                            height={20}
+                            className="w-5 h-5 invert"
+                            unoptimized
+                          />
+                        </div>
+                        
                       </div>
                       
                       {/* Contenido uniforme */}
@@ -1147,6 +1159,18 @@ const JardinesPage = () => {
                         {/* Overlay sutil para legibilidad */}
                         <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
                         
+                        {/* Icono de zoom para indicar que se puede hacer clic */}
+                        <div className="absolute top-2 right-2 opacity-100 transition-opacity duration-300">
+                          <Image
+                            src="/images/garden/zoom-in.webp"
+                            alt="Zoom"
+                            width={20}
+                            height={20}
+                            className="w-5 h-5 invert"
+                            unoptimized
+                          />
+                        </div>
+                        
                       </div>
                       
                       {/* Contenido uniforme */}
@@ -1192,7 +1216,10 @@ const JardinesPage = () => {
                     {/* Iron Marches - Estilo Uniforme */}
                     <div className="group relative overflow-hidden rounded-2xl bg-slate-800/50 backdrop-blur-sm border border-slate-700/50 hover:border-purple-400/60 transition-all duration-300 hover:shadow-xl hover:shadow-purple-500/20">
                       {/* Imagen con dimensiones uniformes */}
-                      <div className="relative h-72 w-full overflow-hidden">
+                      <div 
+                        className="relative h-72 w-full overflow-hidden cursor-pointer"
+                        onClick={() => openImageModal('/images/garden/Tyria-3.webp', gardenImages)}
+                      >
                         <Image
                           src="/images/garden/Tyria-3.webp"
                           alt={mapData[25]?.name || 'Iron Marches Garden Location'}
@@ -1202,6 +1229,18 @@ const JardinesPage = () => {
                         />
                         {/* Overlay sutil para legibilidad */}
                         <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+                        
+                        {/* Icono de zoom para indicar que se puede hacer clic */}
+                        <div className="absolute top-2 right-2 opacity-100 transition-opacity duration-300">
+                          <Image
+                            src="/images/garden/zoom-in.webp"
+                            alt="Zoom"
+                            width={20}
+                            height={20}
+                            className="w-5 h-5 invert"
+                            unoptimized
+                          />
+                        </div>
                         
                       </div>
                       
@@ -1248,7 +1287,10 @@ const JardinesPage = () => {
                     {/* Plains of Ashford - Estilo Uniforme */}
                     <div className="group relative overflow-hidden rounded-2xl bg-slate-800/50 backdrop-blur-sm border border-slate-700/50 hover:border-orange-400/60 transition-all duration-300 hover:shadow-xl hover:shadow-orange-500/20">
                       {/* Imagen con dimensiones uniformes */}
-                      <div className="relative h-72 w-full overflow-hidden">
+                      <div 
+                        className="relative h-72 w-full overflow-hidden cursor-pointer"
+                        onClick={() => openImageModal('/images/garden/Tyria-4.webp', gardenImages)}
+                      >
                         <Image
                           src="/images/garden/Tyria-4.webp"
                           alt={mapData[19]?.name || 'Plains of Ashford Garden Location'}
@@ -1258,6 +1300,18 @@ const JardinesPage = () => {
                         />
                         {/* Overlay sutil para legibilidad */}
                         <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+                        
+                        {/* Icono de zoom para indicar que se puede hacer clic */}
+                        <div className="absolute top-2 right-2 opacity-100 transition-opacity duration-300">
+                          <Image
+                            src="/images/garden/zoom-in.webp"
+                            alt="Zoom"
+                            width={20}
+                            height={20}
+                            className="w-5 h-5 invert"
+                            unoptimized
+                          />
+                        </div>
                         
                       </div>
                       
@@ -1304,7 +1358,10 @@ const JardinesPage = () => {
                     {/* Diessa Plateau - Estilo Uniforme */}
                     <div className="group relative overflow-hidden rounded-2xl bg-slate-800/50 backdrop-blur-sm border border-slate-700/50 hover:border-blue-400/60 transition-all duration-300 hover:shadow-xl hover:shadow-blue-500/20">
                       {/* Imagen con dimensiones uniformes */}
-                      <div className="relative h-72 w-full overflow-hidden">
+                      <div 
+                        className="relative h-72 w-full overflow-hidden cursor-pointer"
+                        onClick={() => openImageModal('/images/garden/Tyria-5.webp', gardenImages)}
+                      >
                         <Image
                           src="/images/garden/Tyria-5.webp"
                           alt={mapData[32]?.name || 'Diessa Plateau Garden Location'}
@@ -1314,6 +1371,19 @@ const JardinesPage = () => {
                         />
                         {/* Overlay sutil para legibilidad */}
                         <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+                        
+                        {/* Icono de zoom para indicar que se puede hacer clic */}
+                        <div className="absolute top-2 right-2 opacity-100 transition-opacity duration-300">
+                          <Image
+                            src="/images/garden/zoom-in.webp"
+                            alt="Zoom"
+                            width={20}
+                            height={20}
+                            className="w-5 h-5 invert"
+                            unoptimized
+                          />
+                        </div>
+                        
                       </div>
                       
                       {/* Contenido uniforme */}
@@ -1359,7 +1429,10 @@ const JardinesPage = () => {
                     {/* Fireheart Rise - Estilo Uniforme */}
                     <div className="group relative overflow-hidden rounded-2xl bg-slate-800/50 backdrop-blur-sm border border-slate-700/50 hover:border-red-400/60 transition-all duration-300 hover:shadow-xl hover:shadow-red-500/20">
                       {/* Imagen con dimensiones uniformes */}
-                      <div className="relative h-72 w-full overflow-hidden">
+                      <div 
+                        className="relative h-72 w-full overflow-hidden cursor-pointer"
+                        onClick={() => openImageModal('/images/garden/Tyria-6.webp', gardenImages)}
+                      >
                         <Image
                           src="/images/garden/Tyria-6.webp"
                           alt={mapData[22]?.name || 'Fireheart Rise Garden Location'}
@@ -1369,6 +1442,19 @@ const JardinesPage = () => {
                         />
                         {/* Overlay sutil para legibilidad */}
                         <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+                        
+                        {/* Icono de zoom para indicar que se puede hacer clic */}
+                        <div className="absolute top-2 right-2 opacity-100 transition-opacity duration-300">
+                          <Image
+                            src="/images/garden/zoom-in.webp"
+                            alt="Zoom"
+                            width={20}
+                            height={20}
+                            className="w-5 h-5 invert"
+                            unoptimized
+                          />
+                        </div>
+                        
                       </div>
                       
                       {/* Contenido uniforme */}
@@ -1414,7 +1500,10 @@ const JardinesPage = () => {
                     {/* Gendarran Fields - Estilo Uniforme */}
                     <div className="group relative overflow-hidden rounded-2xl bg-slate-800/50 backdrop-blur-sm border border-slate-700/50 hover:border-indigo-400/60 transition-all duration-300 hover:shadow-xl hover:shadow-indigo-500/20">
                       {/* Imagen con dimensiones uniformes */}
-                      <div className="relative h-72 w-full overflow-hidden">
+                      <div 
+                        className="relative h-72 w-full overflow-hidden cursor-pointer"
+                        onClick={() => openImageModal('/images/garden/Tyria-7.webp', gardenImages)}
+                      >
                         <Image
                           src="/images/garden/Tyria-7.webp"
                           alt={mapData[30]?.name || 'Gendarran Fields Garden Location'}
@@ -1424,6 +1513,19 @@ const JardinesPage = () => {
                         />
                         {/* Overlay sutil para legibilidad */}
                         <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+                        
+                        {/* Icono de zoom para indicar que se puede hacer clic */}
+                        <div className="absolute top-2 right-2 opacity-100 transition-opacity duration-300">
+                          <Image
+                            src="/images/garden/zoom-in.webp"
+                            alt="Zoom"
+                            width={20}
+                            height={20}
+                            className="w-5 h-5 invert"
+                            unoptimized
+                          />
+                        </div>
+                        
                       </div>
                       
                       {/* Contenido uniforme */}
@@ -1469,7 +1571,10 @@ const JardinesPage = () => {
                     {/* Harathi Hinterlands - Estilo Uniforme */}
                     <div className="group relative overflow-hidden rounded-2xl bg-slate-800/50 backdrop-blur-sm border border-slate-700/50 hover:border-lime-400/60 transition-all duration-300 hover:shadow-xl hover:shadow-lime-500/20">
                       {/* Imagen con dimensiones uniformes */}
-                      <div className="relative h-72 w-full overflow-hidden">
+                      <div 
+                        className="relative h-72 w-full overflow-hidden cursor-pointer"
+                        onClick={() => openImageModal('/images/garden/Tyria-8.webp', gardenImages)}
+                      >
                         <Image
                           src="/images/garden/Tyria-8.webp"
                           alt={mapData[31]?.name || 'Harathi Hinterlands Garden Location'}
@@ -1479,6 +1584,19 @@ const JardinesPage = () => {
                         />
                         {/* Overlay sutil para legibilidad */}
                         <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+                        
+                        {/* Icono de zoom para indicar que se puede hacer clic */}
+                        <div className="absolute top-2 right-2 opacity-100 transition-opacity duration-300">
+                          <Image
+                            src="/images/garden/zoom-in.webp"
+                            alt="Zoom"
+                            width={20}
+                            height={20}
+                            className="w-5 h-5 invert"
+                            unoptimized
+                          />
+                        </div>
+                        
                       </div>
                       
                       {/* Contenido uniforme */}
@@ -1524,7 +1642,10 @@ const JardinesPage = () => {
                     {/* Kessex Hills - Estilo Uniforme */}
                     <div className="group relative overflow-hidden rounded-2xl bg-slate-800/50 backdrop-blur-sm border border-slate-700/50 hover:border-rose-400/60 transition-all duration-300 hover:shadow-xl hover:shadow-rose-500/20">
                       {/* Imagen con dimensiones uniformes */}
-                      <div className="relative h-72 w-full overflow-hidden">
+                      <div 
+                        className="relative h-72 w-full overflow-hidden cursor-pointer"
+                        onClick={() => openImageModal('/images/garden/Tyria-9.webp', gardenImages)}
+                      >
                         <Image
                           src="/images/garden/Tyria-9.webp"
                           alt={mapData[27]?.name || 'Kessex Hills Garden Location'}
@@ -1534,6 +1655,19 @@ const JardinesPage = () => {
                         />
                         {/* Overlay sutil para legibilidad */}
                         <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+                        
+                        {/* Icono de zoom para indicar que se puede hacer clic */}
+                        <div className="absolute top-2 right-2 opacity-100 transition-opacity duration-300">
+                          <Image
+                            src="/images/garden/zoom-in.webp"
+                            alt="Zoom"
+                            width={20}
+                            height={20}
+                            className="w-5 h-5 invert"
+                            unoptimized
+                          />
+                        </div>
+                        
                       </div>
                       
                       {/* Contenido uniforme */}
@@ -1579,7 +1713,10 @@ const JardinesPage = () => {
                     {/* Lornar's Pass - Estilo Uniforme */}
                     <div className="group relative overflow-hidden rounded-2xl bg-slate-800/50 backdrop-blur-sm border border-slate-700/50 hover:border-sky-400/60 transition-all duration-300 hover:shadow-xl hover:shadow-sky-500/20">
                       {/* Imagen con dimensiones uniformes */}
-                      <div className="relative h-72 w-full overflow-hidden">
+                      <div 
+                        className="relative h-72 w-full overflow-hidden cursor-pointer"
+                        onClick={() => openImageModal('/images/garden/Tyria-10.webp', gardenImages)}
+                      >
                         <Image
                           src="/images/garden/Tyria-10.webp"
                           alt={mapData[26]?.name || 'Lornar\'s Pass Garden Location'}
@@ -1589,6 +1726,19 @@ const JardinesPage = () => {
                         />
                         {/* Overlay sutil para legibilidad */}
                         <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+                        
+                        {/* Icono de zoom para indicar que se puede hacer clic */}
+                        <div className="absolute top-2 right-2 opacity-100 transition-opacity duration-300">
+                          <Image
+                            src="/images/garden/zoom-in.webp"
+                            alt="Zoom"
+                            width={20}
+                            height={20}
+                            className="w-5 h-5 invert"
+                            unoptimized
+                          />
+                        </div>
+                        
                       </div>
                       
                       {/* Contenido uniforme */}
@@ -1634,7 +1784,10 @@ const JardinesPage = () => {
                     {/* Bloodtide Coast - Estilo Uniforme */}
                     <div className="group relative overflow-hidden rounded-2xl bg-slate-800/50 backdrop-blur-sm border border-slate-700/50 hover:border-cyan-400/60 transition-all duration-300 hover:shadow-xl hover:shadow-cyan-500/20 h-full flex flex-col">
                       {/* Imagen con dimensiones uniformes */}
-                      <div className="relative h-72 w-full overflow-hidden">
+                      <div 
+                        className="relative h-72 w-full overflow-hidden cursor-pointer"
+                        onClick={() => openImageModal('/images/garden/Tyria-11.webp', gardenImages)}
+                      >
                         <Image
                           src="/images/garden/Tyria-11.webp"
                           alt={mapData[29]?.name || 'Bloodtide Coast Garden Location'}
@@ -1644,6 +1797,19 @@ const JardinesPage = () => {
                         />
                         {/* Overlay sutil para legibilidad */}
                         <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+                        
+                        {/* Icono de zoom para indicar que se puede hacer clic */}
+                        <div className="absolute top-2 right-2 opacity-100 transition-opacity duration-300">
+                          <Image
+                            src="/images/garden/zoom-in.webp"
+                            alt="Zoom"
+                            width={20}
+                            height={20}
+                            className="w-5 h-5 invert"
+                            unoptimized
+                          />
+                        </div>
+                        
                       </div>
                       
                       {/* Contenido uniforme */}
@@ -1689,7 +1855,10 @@ const JardinesPage = () => {
                     {/* Dredgehaunt Cliffs - Estilo Uniforme */}
                     <div className="group relative overflow-hidden rounded-2xl bg-slate-800/50 backdrop-blur-sm border border-slate-700/50 hover:border-violet-400/60 transition-all duration-300 hover:shadow-xl hover:shadow-violet-500/20 h-full flex flex-col">
                       {/* Imagen con dimensiones uniformes */}
-                      <div className="relative h-72 w-full overflow-hidden">
+                      <div 
+                        className="relative h-72 w-full overflow-hidden cursor-pointer"
+                        onClick={() => openImageModal('/images/garden/Tyria-12.webp', gardenImages)}
+                      >
                         <Image
                           src="/images/garden/Tyria-12.webp"
                           alt={mapData[39]?.name || 'Dredgehaunt Cliffs Garden Location'}
@@ -1699,6 +1868,19 @@ const JardinesPage = () => {
                         />
                         {/* Overlay sutil para legibilidad */}
                         <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+                        
+                        {/* Icono de zoom para indicar que se puede hacer clic */}
+                        <div className="absolute top-2 right-2 opacity-100 transition-opacity duration-300">
+                          <Image
+                            src="/images/garden/zoom-in.webp"
+                            alt="Zoom"
+                            width={20}
+                            height={20}
+                            className="w-5 h-5 invert"
+                            unoptimized
+                          />
+                        </div>
+                        
                       </div>
                       
                       {/* Contenido uniforme */}
@@ -1744,7 +1926,10 @@ const JardinesPage = () => {
                     {/* Frostgorge Sound - Estilo Uniforme */}
                     <div className="group relative overflow-hidden rounded-2xl bg-slate-800/50 backdrop-blur-sm border border-slate-700/50 hover:border-ice-400/60 transition-all duration-300 hover:shadow-xl hover:shadow-ice-500/20 h-full flex flex-col">
                       {/* Imagen con dimensiones uniformes */}
-                      <div className="relative h-72 w-full overflow-hidden">
+                      <div 
+                        className="relative h-72 w-full overflow-hidden cursor-pointer"
+                        onClick={() => openImageModal('/images/garden/Tyria-13.webp', gardenImages)}
+                      >
                         <Image
                           src="/images/garden/Tyria-13.webp"
                           alt={mapData[51]?.name || 'Frostgorge Sound Garden Location'}
@@ -1754,6 +1939,19 @@ const JardinesPage = () => {
                         />
                         {/* Overlay sutil para legibilidad */}
                         <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+                        
+                        {/* Icono de zoom para indicar que se puede hacer clic */}
+                        <div className="absolute top-2 right-2 opacity-100 transition-opacity duration-300">
+                          <Image
+                            src="/images/garden/zoom-in.webp"
+                            alt="Zoom"
+                            width={20}
+                            height={20}
+                            className="w-5 h-5 invert"
+                            unoptimized
+                          />
+                        </div>
+                        
                       </div>
                       
                       {/* Contenido uniforme */}
@@ -1799,7 +1997,10 @@ const JardinesPage = () => {
                     {/* Mount Maelstrom - Estilo Uniforme */}
                     <div className="group relative overflow-hidden rounded-2xl bg-slate-800/50 backdrop-blur-sm border border-slate-700/50 hover:border-amber-400/60 transition-all duration-300 hover:shadow-xl hover:shadow-amber-500/20 h-full flex flex-col">
                       {/* Imagen con dimensiones uniformes */}
-                      <div className="relative h-72 w-full overflow-hidden">
+                      <div 
+                        className="relative h-72 w-full overflow-hidden cursor-pointer"
+                        onClick={() => openImageModal('/images/garden/Tyria-14.webp', gardenImages)}
+                      >
                         <Image
                           src="/images/garden/Tyria-14.webp"
                           alt={mapData[53]?.name || 'Mount Maelstrom Garden Location'}
@@ -1809,6 +2010,19 @@ const JardinesPage = () => {
                         />
                         {/* Overlay sutil para legibilidad */}
                         <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+                        
+                        {/* Icono de zoom para indicar que se puede hacer clic */}
+                        <div className="absolute top-2 right-2 opacity-100 transition-opacity duration-300">
+                          <Image
+                            src="/images/garden/zoom-in.webp"
+                            alt="Zoom"
+                            width={20}
+                            height={20}
+                            className="w-5 h-5 invert"
+                            unoptimized
+                          />
+                        </div>
+                        
                       </div>
                       
                       {/* Contenido uniforme */}
@@ -1854,7 +2068,10 @@ const JardinesPage = () => {
                     {/* Sparkfly Fen - Estilo Uniforme */}
                     <div className="group relative overflow-hidden rounded-2xl bg-slate-800/50 backdrop-blur-sm border border-slate-700/50 hover:border-emerald-400/60 transition-all duration-300 hover:shadow-xl hover:shadow-emerald-500/20 h-full flex flex-col">
                       {/* Imagen con dimensiones uniformes */}
-                      <div className="relative h-72 w-full overflow-hidden">
+                      <div 
+                        className="relative h-72 w-full overflow-hidden cursor-pointer"
+                        onClick={() => openImageModal('/images/garden/Tyria-15.webp', gardenImages)}
+                      >
                         <Image
                           src="/images/garden/Tyria-15.webp"
                           alt={mapData[73]?.name || 'Sparkfly Fen Garden Location'}
@@ -1864,6 +2081,19 @@ const JardinesPage = () => {
                         />
                         {/* Overlay sutil para legibilidad */}
                         <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+                        
+                        {/* Icono de zoom para indicar que se puede hacer clic */}
+                        <div className="absolute top-2 right-2 opacity-100 transition-opacity duration-300">
+                          <Image
+                            src="/images/garden/zoom-in.webp"
+                            alt="Zoom"
+                            width={20}
+                            height={20}
+                            className="w-5 h-5 invert"
+                            unoptimized
+                          />
+                        </div>
+                        
                       </div>
                       
                       {/* Contenido uniforme */}
@@ -1911,7 +2141,10 @@ const JardinesPage = () => {
                     {/* Gendarran Fields - Estilo Uniforme */}
                     <div className="group relative overflow-hidden rounded-2xl bg-slate-800/50 backdrop-blur-sm border border-slate-700/50 hover:border-yellow-400/60 transition-all duration-300 hover:shadow-xl hover:shadow-yellow-500/20 h-full flex flex-col">
                       {/* Imagen con dimensiones uniformes */}
-                      <div className="relative h-72 w-full overflow-hidden">
+                      <div 
+                        className="relative h-72 w-full overflow-hidden cursor-pointer"
+                        onClick={() => openImageModal('/images/garden/Tyria-16.webp', gardenImages)}
+                      >
                         <Image
                           src="/images/garden/Tyria-16.webp"
                           alt="Gendarran Fields Garden Location"
@@ -1921,6 +2154,19 @@ const JardinesPage = () => {
                         />
                         {/* Overlay sutil para legibilidad */}
                         <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+                        
+                        {/* Icono de zoom para indicar que se puede hacer clic */}
+                        <div className="absolute top-2 right-2 opacity-100 transition-opacity duration-300">
+                          <Image
+                            src="/images/garden/zoom-in.webp"
+                            alt="Zoom"
+                            width={20}
+                            height={20}
+                            className="w-5 h-5 invert"
+                            unoptimized
+                          />
+                        </div>
+                        
                       </div>
                       
                       {/* Contenido uniforme */}
@@ -1966,7 +2212,10 @@ const JardinesPage = () => {
                     {/* Interior Harathi - Estilo Uniforme */}
                     <div className="group relative overflow-hidden rounded-2xl bg-slate-800/50 backdrop-blur-sm border border-slate-700/50 hover:border-green-400/60 transition-all duration-300 hover:shadow-xl hover:shadow-green-500/20 h-full flex flex-col">
                       {/* Imagen con dimensiones uniformes */}
-                      <div className="relative h-72 w-full overflow-hidden">
+                      <div 
+                        className="relative h-72 w-full overflow-hidden cursor-pointer"
+                        onClick={() => openImageModal('/images/garden/Tyria-17.webp', gardenImages)}
+                      >
                         <Image
                           src="/images/garden/Tyria-17.webp"
                           alt="Caledon Forest Garden Location"
@@ -1976,6 +2225,19 @@ const JardinesPage = () => {
                         />
                         {/* Overlay sutil para legibilidad */}
                         <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+                        
+                        {/* Icono de zoom para indicar que se puede hacer clic */}
+                        <div className="absolute top-2 right-2 opacity-100 transition-opacity duration-300">
+                          <Image
+                            src="/images/garden/zoom-in.webp"
+                            alt="Zoom"
+                            width={20}
+                            height={20}
+                            className="w-5 h-5 invert"
+                            unoptimized
+                          />
+                        </div>
+                        
                       </div>
                       
                       {/* Contenido uniforme */}
@@ -2021,7 +2283,10 @@ const JardinesPage = () => {
                     {/* Queensdale - Estilo Uniforme */}
                     <div className="group relative overflow-hidden rounded-2xl bg-slate-800/50 backdrop-blur-sm border border-slate-700/50 hover:border-teal-400/60 transition-all duration-300 hover:shadow-xl hover:shadow-teal-500/20 h-full flex flex-col">
                       {/* Imagen con dimensiones uniformes */}
-                      <div className="relative h-72 w-full overflow-hidden">
+                      <div 
+                        className="relative h-72 w-full overflow-hidden cursor-pointer"
+                        onClick={() => openImageModal('/images/garden/Tyria-18.webp', gardenImages)}
+                      >
                         <Image
                           src="/images/garden/Tyria-18.webp"
                           alt="Metrica Province Garden Location"
@@ -2031,6 +2296,19 @@ const JardinesPage = () => {
                         />
                         {/* Overlay sutil para legibilidad */}
                         <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+                        
+                        {/* Icono de zoom para indicar que se puede hacer clic */}
+                        <div className="absolute top-2 right-2 opacity-100 transition-opacity duration-300">
+                          <Image
+                            src="/images/garden/zoom-in.webp"
+                            alt="Zoom"
+                            width={20}
+                            height={20}
+                            className="w-5 h-5 invert"
+                            unoptimized
+                          />
+                        </div>
+                        
                       </div>
                       
                       {/* Contenido uniforme */}
@@ -2076,7 +2354,10 @@ const JardinesPage = () => {
                     {/* Kessex Hills - Estilo Uniforme */}
                     <div className="group relative overflow-hidden rounded-2xl bg-slate-800/50 backdrop-blur-sm border border-slate-700/50 hover:border-purple-400/60 transition-all duration-300 hover:shadow-xl hover:shadow-purple-500/20 h-full flex flex-col">
                       {/* Imagen con dimensiones uniformes */}
-                      <div className="relative h-72 w-full overflow-hidden">
+                      <div 
+                        className="relative h-72 w-full overflow-hidden cursor-pointer"
+                        onClick={() => openImageModal('/images/garden/Tyria-19.webp', gardenImages)}
+                      >
                         <Image
                           src="/images/garden/Tyria-19.webp"
                           alt="Kessex Hills Garden Location"
@@ -2086,6 +2367,19 @@ const JardinesPage = () => {
                         />
                         {/* Overlay sutil para legibilidad */}
                         <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+                        
+                        {/* Icono de zoom para indicar que se puede hacer clic */}
+                        <div className="absolute top-2 right-2 opacity-100 transition-opacity duration-300">
+                          <Image
+                            src="/images/garden/zoom-in.webp"
+                            alt="Zoom"
+                            width={20}
+                            height={20}
+                            className="w-5 h-5 invert"
+                            unoptimized
+                          />
+                        </div>
+                        
                       </div>
                       
                       {/* Contenido uniforme */}
@@ -2131,7 +2425,10 @@ const JardinesPage = () => {
                     {/* Metrica Province - Estilo Uniforme */}
                     <div className="group relative overflow-hidden rounded-2xl bg-slate-800/50 backdrop-blur-sm border border-slate-700/50 hover:border-cyan-400/60 transition-all duration-300 hover:shadow-xl hover:shadow-cyan-500/20 h-full flex flex-col">
                       {/* Imagen con dimensiones uniformes */}
-                      <div className="relative h-72 w-full overflow-hidden">
+                      <div 
+                        className="relative h-72 w-full overflow-hidden cursor-pointer"
+                        onClick={() => openImageModal('/images/garden/Tyria-20.webp', gardenImages)}
+                      >
                         <Image
                           src="/images/garden/Tyria-20.webp"
                           alt="Metrica Province Garden Location"
@@ -2141,6 +2438,19 @@ const JardinesPage = () => {
                         />
                         {/* Overlay sutil para legibilidad */}
                         <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+                        
+                        {/* Icono de zoom para indicar que se puede hacer clic */}
+                        <div className="absolute top-2 right-2 opacity-100 transition-opacity duration-300">
+                          <Image
+                            src="/images/garden/zoom-in.webp"
+                            alt="Zoom"
+                            width={20}
+                            height={20}
+                            className="w-5 h-5 invert"
+                            unoptimized
+                          />
+                        </div>
+                        
                       </div>
                       
                       {/* Contenido uniforme */}
@@ -2186,7 +2496,10 @@ const JardinesPage = () => {
                     {/* Caledon Forest - Estilo Uniforme */}
                     <div className="group relative overflow-hidden rounded-2xl bg-slate-800/50 backdrop-blur-sm border border-slate-700/50 hover:border-rose-400/60 transition-all duration-300 hover:shadow-xl hover:shadow-rose-500/20 h-full flex flex-col">
                       {/* Imagen con dimensiones uniformes */}
-                      <div className="relative h-72 w-full overflow-hidden">
+                      <div 
+                        className="relative h-72 w-full overflow-hidden cursor-pointer"
+                        onClick={() => openImageModal('/images/garden/Tyria-21.webp', gardenImages)}
+                      >
                         <Image
                           src="/images/garden/Tyria-21.webp"
                           alt="Caledon Forest Garden Location"
@@ -2196,6 +2509,19 @@ const JardinesPage = () => {
                         />
                         {/* Overlay sutil para legibilidad */}
                         <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+                        
+                        {/* Icono de zoom para indicar que se puede hacer clic */}
+                        <div className="absolute top-2 right-2 opacity-100 transition-opacity duration-300">
+                          <Image
+                            src="/images/garden/zoom-in.webp"
+                            alt="Zoom"
+                            width={20}
+                            height={20}
+                            className="w-5 h-5 invert"
+                            unoptimized
+                          />
+                        </div>
+                        
                       </div>
                       
                       {/* Contenido uniforme */}
@@ -2241,7 +2567,10 @@ const JardinesPage = () => {
                     {/* Brisban Wildlands - Estilo Uniforme */}
                     <div className="group relative overflow-hidden rounded-2xl bg-slate-800/50 backdrop-blur-sm border border-slate-700/50 hover:border-blue-400/60 transition-all duration-300 hover:shadow-xl hover:shadow-blue-500/20 h-full flex flex-col">
                       {/* Imagen con dimensiones uniformes */}
-                      <div className="relative h-72 w-full overflow-hidden">
+                      <div 
+                        className="relative h-72 w-full overflow-hidden cursor-pointer"
+                        onClick={() => openImageModal('/images/garden/Tyria-22-524x1024.webp', gardenImages)}
+                      >
                         <Image
                           src="/images/garden/Tyria-22-524x1024.webp"
                           alt="Brisban Wildlands Garden Location"
@@ -2251,6 +2580,19 @@ const JardinesPage = () => {
                         />
                         {/* Overlay sutil para legibilidad */}
                         <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+                        
+                        {/* Icono de zoom para indicar que se puede hacer clic */}
+                        <div className="absolute top-2 right-2 opacity-100 transition-opacity duration-300">
+                          <Image
+                            src="/images/garden/zoom-in.webp"
+                            alt="Zoom"
+                            width={20}
+                            height={20}
+                            className="w-5 h-5 invert"
+                            unoptimized
+                          />
+                        </div>
+                        
                       </div>
                       
                       {/* Contenido uniforme */}
@@ -2296,7 +2638,10 @@ const JardinesPage = () => {
                     {/* Dry Top - Estilo Uniforme */}
                     <div className="group relative overflow-hidden rounded-2xl bg-slate-800/50 backdrop-blur-sm border border-slate-700/50 hover:border-lime-400/60 transition-all duration-300 hover:shadow-xl hover:shadow-lime-500/20 h-full flex flex-col">
                       {/* Imagen con dimensiones uniformes */}
-                      <div className="relative h-72 w-full overflow-hidden">
+                      <div 
+                        className="relative h-72 w-full overflow-hidden cursor-pointer"
+                        onClick={() => openImageModal('/images/garden/Tyria-23.webp', gardenImages)}
+                      >
                         <Image
                           src="/images/garden/Tyria-23.webp"
                           alt="Dry Top Garden Location"
@@ -2306,6 +2651,19 @@ const JardinesPage = () => {
                         />
                         {/* Overlay sutil para legibilidad */}
                         <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+                        
+                        {/* Icono de zoom para indicar que se puede hacer clic */}
+                        <div className="absolute top-2 right-2 opacity-100 transition-opacity duration-300">
+                          <Image
+                            src="/images/garden/zoom-in.webp"
+                            alt="Zoom"
+                            width={20}
+                            height={20}
+                            className="w-5 h-5 invert"
+                            unoptimized
+                          />
+                        </div>
+                        
                       </div>
                       
                       {/* Contenido uniforme */}
@@ -2351,7 +2709,10 @@ const JardinesPage = () => {
                     {/* Malchor's Leap - Estilo Uniforme */}
                     <div className="group relative overflow-hidden rounded-2xl bg-slate-800/50 backdrop-blur-sm border border-slate-700/50 hover:border-orange-400/60 transition-all duration-300 hover:shadow-xl hover:shadow-orange-500/20 h-full flex flex-col">
                       {/* Imagen con dimensiones uniformes */}
-                      <div className="relative h-72 w-full overflow-hidden">
+                      <div 
+                        className="relative h-72 w-full overflow-hidden cursor-pointer"
+                        onClick={() => openImageModal('/images/garden/Tyria-24.webp', gardenImages)}
+                      >
                         <Image
                           src="/images/garden/Tyria-24.webp"
                           alt="Malchor's Leap Garden Location"
@@ -2361,6 +2722,19 @@ const JardinesPage = () => {
                         />
                         {/* Overlay sutil para legibilidad */}
                         <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+                        
+                        {/* Icono de zoom para indicar que se puede hacer clic */}
+                        <div className="absolute top-2 right-2 opacity-100 transition-opacity duration-300">
+                          <Image
+                            src="/images/garden/zoom-in.webp"
+                            alt="Zoom"
+                            width={20}
+                            height={20}
+                            className="w-5 h-5 invert"
+                            unoptimized
+                          />
+                        </div>
+                        
                       </div>
                       
                       {/* Contenido uniforme */}
@@ -2406,7 +2780,10 @@ const JardinesPage = () => {
                     {/* Jaka Itzel - Estilo Uniforme */}
                     <div className="group relative overflow-hidden rounded-2xl bg-slate-800/50 backdrop-blur-sm border border-slate-700/50 hover:border-amber-400/60 transition-all duration-300 hover:shadow-xl hover:shadow-amber-500/20 h-full flex flex-col">
                       {/* Imagen con dimensiones uniformes */}
-                      <div className="relative h-72 w-full overflow-hidden">
+                      <div 
+                        className="relative h-72 w-full overflow-hidden cursor-pointer"
+                        onClick={() => openImageModal('/images/garden/HoT-1.webp', gardenImages)}
+                      >
                         <Image
                           src="/images/garden/HoT-1.webp"
                           alt="Jaka Itzel Garden Location"
@@ -2416,6 +2793,19 @@ const JardinesPage = () => {
                         />
                         {/* Overlay sutil para legibilidad */}
                         <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+                        
+                        {/* Icono de zoom para indicar que se puede hacer clic */}
+                        <div className="absolute top-2 right-2 opacity-100 transition-opacity duration-300">
+                          <Image
+                            src="/images/garden/zoom-in.webp"
+                            alt="Zoom"
+                            width={20}
+                            height={20}
+                            className="w-5 h-5 invert"
+                            unoptimized
+                          />
+                        </div>
+                        
                       </div>
                       
                       {/* Contenido uniforme */}
@@ -2461,7 +2851,10 @@ const JardinesPage = () => {
                     {/* Tangled Depths- Estilo Uniforme */}
                     <div className="group relative overflow-hidden rounded-2xl bg-slate-800/50 backdrop-blur-sm border border-slate-700/50 hover:border-red-400/60 transition-all duration-300 hover:shadow-xl hover:shadow-red-500/20 h-full flex flex-col">
                       {/* Imagen con dimensiones uniformes */}
-                      <div className="relative h-72 w-full overflow-hidden">
+                      <div 
+                        className="relative h-72 w-full overflow-hidden cursor-pointer"
+                        onClick={() => openImageModal('/images/garden/HoT-2-1024x802.webp', gardenImages)}
+                      >
                         <Image
                           src="/images/garden/HoT-2-1024x802.webp"
                           alt="Tangled Depths Garden Location"
@@ -2471,6 +2864,19 @@ const JardinesPage = () => {
                         />
                         {/* Overlay sutil para legibilidad */}
                         <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+                        
+                        {/* Icono de zoom para indicar que se puede hacer clic */}
+                        <div className="absolute top-2 right-2 opacity-100 transition-opacity duration-300">
+                          <Image
+                            src="/images/garden/zoom-in.webp"
+                            alt="Zoom"
+                            width={20}
+                            height={20}
+                            className="w-5 h-5 invert"
+                            unoptimized
+                          />
+                        </div>
+                        
                       </div>
                       
                       {/* Contenido uniforme */}
@@ -2516,7 +2922,10 @@ const JardinesPage = () => {
                     {/* Domain of Kourna - Estilo Uniforme */}
                     <div className="group relative overflow-hidden rounded-2xl bg-slate-800/50 backdrop-blur-sm border border-slate-700/50 hover:border-yellow-400/60 transition-all duration-300 hover:shadow-xl hover:shadow-yellow-500/20 h-full flex flex-col">
                       {/* Imagen con dimensiones uniformes */}
-                      <div className="relative h-72 w-full overflow-hidden">
+                      <div 
+                        className="relative h-72 w-full overflow-hidden cursor-pointer"
+                        onClick={() => openImageModal('/images/garden/LS4-2.webp', gardenImages)}
+                      >
                         <Image
                           src="/images/garden/LS4-2.webp"
                           alt="Domain of Kourna Garden Location"
@@ -2526,6 +2935,19 @@ const JardinesPage = () => {
                         />
                         {/* Overlay sutil para legibilidad */}
                         <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+                        
+                        {/* Icono de zoom para indicar que se puede hacer clic */}
+                        <div className="absolute top-2 right-2 opacity-100 transition-opacity duration-300">
+                          <Image
+                            src="/images/garden/zoom-in.webp"
+                            alt="Zoom"
+                            width={20}
+                            height={20}
+                            className="w-5 h-5 invert"
+                            unoptimized
+                          />
+                        </div>
+                        
                       </div>
                       
                       {/* Contenido uniforme */}
@@ -2571,7 +2993,10 @@ const JardinesPage = () => {
                     {/* Ember Bay - Estilo Uniforme */}
                     <div className="group relative overflow-hidden rounded-2xl bg-slate-800/50 backdrop-blur-sm border border-slate-700/50 hover:border-green-400/60 transition-all duration-300 hover:shadow-xl hover:shadow-green-500/20 h-full flex flex-col">
                       {/* Imagen con dimensiones uniformes */}
-                      <div className="relative h-72 w-full overflow-hidden">
+                      <div 
+                        className="relative h-72 w-full overflow-hidden cursor-pointer"
+                        onClick={() => openImageModal('/images/garden/LS3-1.webp', gardenImages)}
+                      >
                         <Image
                           src="/images/garden/LS3-1.webp"
                           alt="Ember Bay Garden Location"
@@ -2581,6 +3006,19 @@ const JardinesPage = () => {
                         />
                         {/* Overlay sutil para legibilidad */}
                         <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+                        
+                        {/* Icono de zoom para indicar que se puede hacer clic */}
+                        <div className="absolute top-2 right-2 opacity-100 transition-opacity duration-300">
+                          <Image
+                            src="/images/garden/zoom-in.webp"
+                            alt="Zoom"
+                            width={20}
+                            height={20}
+                            className="w-5 h-5 invert"
+                            unoptimized
+                          />
+                        </div>
+                        
                       </div>
                       
                       {/* Contenido uniforme */}
@@ -2626,7 +3064,10 @@ const JardinesPage = () => {
                     {/* Draconis Mons - Estilo Uniforme */}
                     <div className="group relative overflow-hidden rounded-2xl bg-slate-800/50 backdrop-blur-sm border border-slate-700/50 hover:border-purple-400/60 transition-all duration-300 hover:shadow-xl hover:shadow-purple-500/20 h-full flex flex-col">
                       {/* Imagen con dimensiones uniformes */}
-                      <div className="relative h-72 w-full overflow-hidden">
+                      <div 
+                        className="relative h-72 w-full overflow-hidden cursor-pointer"
+                        onClick={() => openImageModal('/images/garden/LS3-2.webp', gardenImages)}
+                      >
                         <Image
                           src="/images/garden/LS3-2.webp"
                           alt="Draconis Mons Garden Location"
@@ -2636,6 +3077,19 @@ const JardinesPage = () => {
                         />
                         {/* Overlay sutil para legibilidad */}
                         <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+                        
+                        {/* Icono de zoom para indicar que se puede hacer clic */}
+                        <div className="absolute top-2 right-2 opacity-100 transition-opacity duration-300">
+                          <Image
+                            src="/images/garden/zoom-in.webp"
+                            alt="Zoom"
+                            width={20}
+                            height={20}
+                            className="w-5 h-5 invert"
+                            unoptimized
+                          />
+                        </div>
+                        
                       </div>
                       
                       {/* Contenido uniforme */}
@@ -2681,7 +3135,10 @@ const JardinesPage = () => {
                     {/* Bitterfrost Frontier - Estilo Uniforme */}
                     <div className="group relative overflow-hidden rounded-2xl bg-slate-800/50 backdrop-blur-sm border border-slate-700/50 hover:border-red-400/60 transition-all duration-300 hover:shadow-xl hover:shadow-red-500/20 h-full flex flex-col">
                       {/* Imagen con dimensiones uniformes */}
-                      <div className="relative h-72 w-full overflow-hidden">
+                      <div 
+                        className="relative h-72 w-full overflow-hidden cursor-pointer"
+                        onClick={() => openImageModal('/images/garden/LS3-3-1024x425.webp', gardenImages)}
+                      >
                         <Image
                           src="/images/garden/LS3-3-1024x425.webp"
                           alt="Bitterfrost Frontier Garden Location"
@@ -2691,6 +3148,19 @@ const JardinesPage = () => {
                         />
                         {/* Overlay sutil para legibilidad */}
                         <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+                        
+                        {/* Icono de zoom para indicar que se puede hacer clic */}
+                        <div className="absolute top-2 right-2 opacity-100 transition-opacity duration-300">
+                          <Image
+                            src="/images/garden/zoom-in.webp"
+                            alt="Zoom"
+                            width={20}
+                            height={20}
+                            className="w-5 h-5 invert"
+                            unoptimized
+                          />
+                        </div>
+                        
                       </div>
                       
                       {/* Contenido uniforme */}
@@ -2738,7 +3208,10 @@ const JardinesPage = () => {
                     {/* The Desolation - Estilo Uniforme */}
                     <div className="group relative overflow-hidden rounded-2xl bg-slate-800/50 backdrop-blur-sm border border-slate-700/50 hover:border-yellow-400/60 transition-all duration-300 hover:shadow-xl hover:shadow-yellow-500/20 h-full flex flex-col">
                       {/* Imagen con dimensiones uniformes */}
-                      <div className="relative h-72 w-full overflow-hidden">
+                      <div 
+                        className="relative h-72 w-full overflow-hidden cursor-pointer"
+                        onClick={() => openImageModal('/images/garden/POF-1.webp', gardenImages)}
+                      >
                         <Image
                           src="/images/garden/POF-1.webp"
                           alt="The Desolation Garden Location"
@@ -2748,6 +3221,19 @@ const JardinesPage = () => {
                         />
                         {/* Overlay sutil para legibilidad */}
                         <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+                        
+                        {/* Icono de zoom para indicar que se puede hacer clic */}
+                        <div className="absolute top-2 right-2 opacity-100 transition-opacity duration-300">
+                          <Image
+                            src="/images/garden/zoom-in.webp"
+                            alt="Zoom"
+                            width={20}
+                            height={20}
+                            className="w-5 h-5 invert"
+                            unoptimized
+                          />
+                        </div>
+                        
                       </div>
                       
                       {/* Contenido uniforme */}
@@ -2793,7 +3279,10 @@ const JardinesPage = () => {
                     {/* Elon Riverlands - Primera vez */}
                     <div className="group relative overflow-hidden rounded-2xl bg-slate-800/50 backdrop-blur-sm border border-slate-700/50 hover:border-green-400/60 transition-all duration-300 hover:shadow-xl hover:shadow-green-500/20 h-full flex flex-col">
                       {/* Imagen con dimensiones uniformes */}
-                      <div className="relative h-72 w-full overflow-hidden">
+                      <div 
+                        className="relative h-72 w-full overflow-hidden cursor-pointer"
+                        onClick={() => openImageModal('/images/garden/POF-2-923x1024.webp', gardenImages)}
+                      >
                         <Image
                           src="/images/garden/POF-2-923x1024.webp"
                           alt="Elon Riverlands Garden Location"
@@ -2803,6 +3292,19 @@ const JardinesPage = () => {
                         />
                         {/* Overlay sutil para legibilidad */}
                         <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+                        
+                        {/* Icono de zoom para indicar que se puede hacer clic */}
+                        <div className="absolute top-2 right-2 opacity-100 transition-opacity duration-300">
+                          <Image
+                            src="/images/garden/zoom-in.webp"
+                            alt="Zoom"
+                            width={20}
+                            height={20}
+                            className="w-5 h-5 invert"
+                            unoptimized
+                          />
+                        </div>
+                        
                       </div>
                       
                       {/* Contenido uniforme */}
@@ -2848,7 +3350,10 @@ const JardinesPage = () => {
                     {/* Elon Riverlands - Segunda vez */}
                     <div className="group relative overflow-hidden rounded-2xl bg-slate-800/50 backdrop-blur-sm border border-slate-700/50 hover:border-green-400/60 transition-all duration-300 hover:shadow-xl hover:shadow-green-500/20 h-full flex flex-col">
                       {/* Imagen con dimensiones uniformes */}
-                      <div className="relative h-72 w-full overflow-hidden">
+                      <div 
+                        className="relative h-72 w-full overflow-hidden cursor-pointer"
+                        onClick={() => openImageModal('/images/garden/POF-3-1024x361.webp', gardenImages)}
+                      >
                         <Image
                           src="/images/garden/POF-3-1024x361.webp"
                           alt="Elon Riverlands Garden Location"
@@ -2858,6 +3363,19 @@ const JardinesPage = () => {
                         />
                         {/* Overlay sutil para legibilidad */}
                         <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+                        
+                        {/* Icono de zoom para indicar que se puede hacer clic */}
+                        <div className="absolute top-2 right-2 opacity-100 transition-opacity duration-300">
+                          <Image
+                            src="/images/garden/zoom-in.webp"
+                            alt="Zoom"
+                            width={20}
+                            height={20}
+                            className="w-5 h-5 invert"
+                            unoptimized
+                          />
+                        </div>
+                        
                       </div>
                       
                       {/* Contenido uniforme */}
@@ -2903,7 +3421,10 @@ const JardinesPage = () => {
                     {/* Desert Highlands - Estilo Uniforme */}
                     <div className="group relative overflow-hidden rounded-2xl bg-slate-800/50 backdrop-blur-sm border border-slate-700/50 hover:border-purple-400/60 transition-all duration-300 hover:shadow-xl hover:shadow-purple-500/20 h-full flex flex-col">
                       {/* Imagen con dimensiones uniformes */}
-                      <div className="relative h-72 w-full overflow-hidden">
+                      <div 
+                        className="relative h-72 w-full overflow-hidden cursor-pointer"
+                        onClick={() => openImageModal('/images/garden/POF-4-1-630x1024.webp', gardenImages)}
+                      >
                         <Image
                           src="/images/garden/POF-4-1-630x1024.webp"
                           alt="Desert Highlands Garden Location"
@@ -2913,6 +3434,19 @@ const JardinesPage = () => {
                         />
                         {/* Overlay sutil para legibilidad */}
                         <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+                        
+                        {/* Icono de zoom para indicar que se puede hacer clic */}
+                        <div className="absolute top-2 right-2 opacity-100 transition-opacity duration-300">
+                          <Image
+                            src="/images/garden/zoom-in.webp"
+                            alt="Zoom"
+                            width={20}
+                            height={20}
+                            className="w-5 h-5 invert"
+                            unoptimized
+                          />
+                        </div>
+                        
                       </div>
                       
                       {/* Contenido uniforme */}
@@ -2958,7 +3492,10 @@ const JardinesPage = () => {
                     {/* Crystal Oasis - Estilo Uniforme */}
                     <div className="group relative overflow-hidden rounded-2xl bg-slate-800/50 backdrop-blur-sm border border-slate-700/50 hover:border-emerald-400/60 transition-all duration-300 hover:shadow-xl hover:shadow-emerald-500/20 h-full flex flex-col">
                       {/* Imagen con dimensiones uniformes */}
-                      <div className="relative h-72 w-full overflow-hidden">
+                      <div 
+                        className="relative h-72 w-full overflow-hidden cursor-pointer"
+                        onClick={() => openImageModal('/images/garden/PoF-5.webp', gardenImages)}
+                      >
                         <Image
                           src="/images/garden/PoF-5.webp"
                           alt="Crystal Oasis Garden Location"
@@ -2968,6 +3505,19 @@ const JardinesPage = () => {
                         />
                         {/* Overlay sutil para legibilidad */}
                         <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+                        
+                        {/* Icono de zoom para indicar que se puede hacer clic */}
+                        <div className="absolute top-2 right-2 opacity-100 transition-opacity duration-300">
+                          <Image
+                            src="/images/garden/zoom-in.webp"
+                            alt="Zoom"
+                            width={20}
+                            height={20}
+                            className="w-5 h-5 invert"
+                            unoptimized
+                          />
+                        </div>
+                        
                       </div>
                       
                       {/* Contenido uniforme */}
@@ -3013,7 +3563,10 @@ const JardinesPage = () => {
                     {/* Sandswept Isles - Estilo Uniforme */}
                     <div className="group relative overflow-hidden rounded-2xl bg-slate-800/50 backdrop-blur-sm border border-slate-700/50 hover:border-red-400/60 transition-all duration-300 hover:shadow-xl hover:shadow-red-500/20 h-full flex flex-col">
                       {/* Imagen con dimensiones uniformes */}
-                      <div className="relative h-72 w-full overflow-hidden">
+                      <div 
+                        className="relative h-72 w-full overflow-hidden cursor-pointer"
+                        onClick={() => openImageModal('/images/garden/LS4-1.webp', gardenImages)}
+                      >
                         <Image
                           src="/images/garden/LS4-1.webp"
                           alt="Sandswept Isles Garden Location"
@@ -3023,6 +3576,19 @@ const JardinesPage = () => {
                         />
                         {/* Overlay sutil para legibilidad */}
                         <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+                        
+                        {/* Icono de zoom para indicar que se puede hacer clic */}
+                        <div className="absolute top-2 right-2 opacity-100 transition-opacity duration-300">
+                          <Image
+                            src="/images/garden/zoom-in.webp"
+                            alt="Zoom"
+                            width={20}
+                            height={20}
+                            className="w-5 h-5 invert"
+                            unoptimized
+                          />
+                        </div>
+                        
                       </div>
                       
                       {/* Contenido uniforme */}
@@ -3068,7 +3634,10 @@ const JardinesPage = () => {
                     {/* Grothmar Valley - Estilo Uniforme */}
                     <div className="group relative overflow-hidden rounded-2xl bg-slate-800/50 backdrop-blur-sm border border-slate-700/50 hover:border-blue-400/60 transition-all duration-300 hover:shadow-xl hover:shadow-blue-500/20 h-full flex flex-col">
                       {/* Imagen con dimensiones uniformes */}
-                      <div className="relative h-72 w-full overflow-hidden">
+                      <div 
+                        className="relative h-72 w-full overflow-hidden cursor-pointer"
+                        onClick={() => openImageModal('/images/garden/LS5-1.webp', gardenImages)}
+                      >
                         <Image
                           src="/images/garden/LS5-1.webp"
                           alt="Grothmar Valley Garden Location"
@@ -3078,6 +3647,19 @@ const JardinesPage = () => {
                         />
                         {/* Overlay sutil para legibilidad */}
                         <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+                        
+                        {/* Icono de zoom para indicar que se puede hacer clic */}
+                        <div className="absolute top-2 right-2 opacity-100 transition-opacity duration-300">
+                          <Image
+                            src="/images/garden/zoom-in.webp"
+                            alt="Zoom"
+                            width={20}
+                            height={20}
+                            className="w-5 h-5 invert"
+                            unoptimized
+                          />
+                        </div>
+                        
                       </div>
                       
                       {/* Contenido uniforme */}
@@ -3123,7 +3705,10 @@ const JardinesPage = () => {
                     {/* Bjora Marches - Estilo Uniforme */}
                     <div className="group relative overflow-hidden rounded-2xl bg-slate-800/50 backdrop-blur-sm border border-slate-700/50 hover:border-orange-400/60 transition-all duration-300 hover:shadow-xl hover:shadow-orange-500/20 h-full flex flex-col">
                       {/* Imagen con dimensiones uniformes */}
-                      <div className="relative h-72 w-full overflow-hidden">
+                      <div 
+                        className="relative h-72 w-full overflow-hidden cursor-pointer"
+                        onClick={() => openImageModal('/images/garden/LS5-3.webp', gardenImages)}
+                      >
                         <Image
                           src="/images/garden/LS5-3.webp"
                           alt="Bjora Marches Garden Location"
@@ -3133,6 +3718,19 @@ const JardinesPage = () => {
                         />
                         {/* Overlay sutil para legibilidad */}
                         <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+                        
+                        {/* Icono de zoom para indicar que se puede hacer clic */}
+                        <div className="absolute top-2 right-2 opacity-100 transition-opacity duration-300">
+                          <Image
+                            src="/images/garden/zoom-in.webp"
+                            alt="Zoom"
+                            width={20}
+                            height={20}
+                            className="w-5 h-5 invert"
+                            unoptimized
+                          />
+                        </div>
+                        
                       </div>
                       
                       {/* Contenido uniforme */}
@@ -3178,7 +3776,10 @@ const JardinesPage = () => {
                     {/* Drizzlewood Coast - Primera vez */}
                     <div className="group relative overflow-hidden rounded-2xl bg-slate-800/50 backdrop-blur-sm border border-slate-700/50 hover:border-cyan-400/60 transition-all duration-300 hover:shadow-xl hover:shadow-cyan-500/20 h-full flex flex-col">
                       {/* Imagen con dimensiones uniformes */}
-                      <div className="relative h-72 w-full overflow-hidden">
+                      <div 
+                        className="relative h-72 w-full overflow-hidden cursor-pointer"
+                        onClick={() => openImageModal('/images/garden/LS5-2.webp', gardenImages)}
+                      >
                         <Image
                           src="/images/garden/LS5-2.webp"
                           alt="Drizzlewood Coast Garden Location"
@@ -3188,6 +3789,19 @@ const JardinesPage = () => {
                         />
                         {/* Overlay sutil para legibilidad */}
                         <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+                        
+                        {/* Icono de zoom para indicar que se puede hacer clic */}
+                        <div className="absolute top-2 right-2 opacity-100 transition-opacity duration-300">
+                          <Image
+                            src="/images/garden/zoom-in.webp"
+                            alt="Zoom"
+                            width={20}
+                            height={20}
+                            className="w-5 h-5 invert"
+                            unoptimized
+                          />
+                        </div>
+                        
                       </div>
                       
                       {/* Contenido uniforme */}
@@ -3233,7 +3847,10 @@ const JardinesPage = () => {
                     {/* Drizzlewood Coast - Segunda vez */}
                     <div className="group relative overflow-hidden rounded-2xl bg-slate-800/50 backdrop-blur-sm border border-slate-700/50 hover:border-cyan-400/60 transition-all duration-300 hover:shadow-xl hover:shadow-cyan-500/20 h-full flex flex-col">
                       {/* Imagen con dimensiones uniformes */}
-                      <div className="relative h-72 w-full overflow-hidden">
+                      <div 
+                        className="relative h-72 w-full overflow-hidden cursor-pointer"
+                        onClick={() => openImageModal('/images/garden/LS5-4.webp', gardenImages)}
+                      >
                         <Image
                           src="/images/garden/LS5-4.webp"
                           alt="Drizzlewood Coast Garden Location"
@@ -3243,6 +3860,19 @@ const JardinesPage = () => {
                         />
                         {/* Overlay sutil para legibilidad */}
                         <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+                        
+                        {/* Icono de zoom para indicar que se puede hacer clic */}
+                        <div className="absolute top-2 right-2 opacity-100 transition-opacity duration-300">
+                          <Image
+                            src="/images/garden/zoom-in.webp"
+                            alt="Zoom"
+                            width={20}
+                            height={20}
+                            className="w-5 h-5 invert"
+                            unoptimized
+                          />
+                        </div>
+                        
                       </div>
                       
                       {/* Contenido uniforme */}
@@ -3288,7 +3918,10 @@ const JardinesPage = () => {
                     {/* Drizzlewood Coast - Tercera vez */}
                     <div className="group relative overflow-hidden rounded-2xl bg-slate-800/50 backdrop-blur-sm border border-slate-700/50 hover:border-cyan-400/60 transition-all duration-300 hover:shadow-xl hover:shadow-cyan-500/20 h-full flex flex-col">
                       {/* Imagen con dimensiones uniformes */}
-                      <div className="relative h-72 w-full overflow-hidden">
+                      <div 
+                        className="relative h-72 w-full overflow-hidden cursor-pointer"
+                        onClick={() => openImageModal('/images/garden/LS5-5.webp', gardenImages)}
+                      >
                         <Image
                           src="/images/garden/LS5-5.webp"
                           alt="Drizzlewood Coast Garden Location"
@@ -3298,6 +3931,19 @@ const JardinesPage = () => {
                         />
                         {/* Overlay sutil para legibilidad */}
                         <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+                        
+                        {/* Icono de zoom para indicar que se puede hacer clic */}
+                        <div className="absolute top-2 right-2 opacity-100 transition-opacity duration-300">
+                          <Image
+                            src="/images/garden/zoom-in.webp"
+                            alt="Zoom"
+                            width={20}
+                            height={20}
+                            className="w-5 h-5 invert"
+                            unoptimized
+                          />
+                        </div>
+                        
                       </div>
                       
                       {/* Contenido uniforme */}
@@ -3343,7 +3989,10 @@ const JardinesPage = () => {
                     {/* New Kaineng City - Primera vez */}
                     <div className="group relative overflow-hidden rounded-2xl bg-slate-800/50 backdrop-blur-sm border border-slate-700/50 hover:border-amber-400/60 transition-all duration-300 hover:shadow-xl hover:shadow-amber-500/20 h-full flex flex-col">
                       {/* Imagen con dimensiones uniformes */}
-                      <div className="relative h-72 w-full overflow-hidden">
+                      <div 
+                        className="relative h-72 w-full overflow-hidden cursor-pointer"
+                        onClick={() => openImageModal('/images/garden/EoD-1-709x1024.webp', gardenImages)}
+                      >
                         <Image
                           src="/images/garden/EoD-1-709x1024.webp"
                           alt="New Kaineng City Garden Location"
@@ -3353,6 +4002,19 @@ const JardinesPage = () => {
                         />
                         {/* Overlay sutil para legibilidad */}
                         <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+                        
+                        {/* Icono de zoom para indicar que se puede hacer clic */}
+                        <div className="absolute top-2 right-2 opacity-100 transition-opacity duration-300">
+                          <Image
+                            src="/images/garden/zoom-in.webp"
+                            alt="Zoom"
+                            width={20}
+                            height={20}
+                            className="w-5 h-5 invert"
+                            unoptimized
+                          />
+                        </div>
+                        
                       </div>
                       
                       {/* Contenido uniforme */}
@@ -3398,7 +4060,10 @@ const JardinesPage = () => {
                     {/* New Kaineng City - Segunda vez */}
                     <div className="group relative overflow-hidden rounded-2xl bg-slate-800/50 backdrop-blur-sm border border-slate-700/50 hover:border-amber-400/60 transition-all duration-300 hover:shadow-xl hover:shadow-amber-500/20 h-full flex flex-col">
                       {/* Imagen con dimensiones uniformes */}
-                      <div className="relative h-72 w-full overflow-hidden">
+                      <div 
+                        className="relative h-72 w-full overflow-hidden cursor-pointer"
+                        onClick={() => openImageModal('/images/garden/EoD-2.webp', gardenImages)}
+                      >
                         <Image
                           src="/images/garden/EoD-2.webp"
                           alt="New Kaineng City Garden Location"
@@ -3408,6 +4073,19 @@ const JardinesPage = () => {
                         />
                         {/* Overlay sutil para legibilidad */}
                         <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+                        
+                        {/* Icono de zoom para indicar que se puede hacer clic */}
+                        <div className="absolute top-2 right-2 opacity-100 transition-opacity duration-300">
+                          <Image
+                            src="/images/garden/zoom-in.webp"
+                            alt="Zoom"
+                            width={20}
+                            height={20}
+                            className="w-5 h-5 invert"
+                            unoptimized
+                          />
+                        </div>
+                        
                       </div>
                       
                       {/* Contenido uniforme */}
@@ -3453,7 +4131,10 @@ const JardinesPage = () => {
                     {/* New Kaineng City - Estilo Uniforme */}
                     <div className="group relative overflow-hidden rounded-2xl bg-slate-800/50 backdrop-blur-sm border border-slate-700/50 hover:border-sand-400/60 transition-all duration-300 hover:shadow-xl hover:shadow-sand-500/20 h-full flex flex-col">
                       {/* Imagen con dimensiones uniformes */}
-                      <div className="relative h-72 w-full overflow-hidden">
+                      <div 
+                        className="relative h-72 w-full overflow-hidden cursor-pointer"
+                        onClick={() => openImageModal('/images/garden/EoD-3.webp', gardenImages)}
+                      >
                         <Image
                           src="/images/garden/EoD-3.webp"
                           alt="New Kaineng City Garden Location"
@@ -3463,6 +4144,19 @@ const JardinesPage = () => {
                         />
                         {/* Overlay sutil para legibilidad */}
                         <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+                        
+                        {/* Icono de zoom para indicar que se puede hacer clic */}
+                        <div className="absolute top-2 right-2 opacity-100 transition-opacity duration-300">
+                          <Image
+                            src="/images/garden/zoom-in.webp"
+                            alt="Zoom"
+                            width={20}
+                            height={20}
+                            className="w-5 h-5 invert"
+                            unoptimized
+                          />
+                        </div>
+                        
                       </div>
                       
                       {/* Contenido uniforme */}
@@ -3508,7 +4202,10 @@ const JardinesPage = () => {
                     {/* The Echovald Wilds - Estilo Uniforme */}
                     <div className="group relative overflow-hidden rounded-2xl bg-slate-800/50 backdrop-blur-sm border border-slate-700/50 hover:border-lime-400/60 transition-all duration-300 hover:shadow-xl hover:shadow-lime-500/20 h-full flex flex-col">
                       {/* Imagen con dimensiones uniformes */}
-                      <div className="relative h-72 w-full overflow-hidden">
+                      <div 
+                        className="relative h-72 w-full overflow-hidden cursor-pointer"
+                        onClick={() => openImageModal('/images/garden/EoD-4.webp', gardenImages)}
+                      >
                         <Image
                           src="/images/garden/EoD-4.webp"
                           alt="The Echovald Wilds Garden Location"
@@ -3518,6 +4215,19 @@ const JardinesPage = () => {
                         />
                         {/* Overlay sutil para legibilidad */}
                         <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+                        
+                        {/* Icono de zoom para indicar que se puede hacer clic */}
+                        <div className="absolute top-2 right-2 opacity-100 transition-opacity duration-300">
+                          <Image
+                            src="/images/garden/zoom-in.webp"
+                            alt="Zoom"
+                            width={20}
+                            height={20}
+                            className="w-5 h-5 invert"
+                            unoptimized
+                          />
+                        </div>
+                        
                       </div>
                       
                       {/* Contenido uniforme */}
@@ -3563,7 +4273,10 @@ const JardinesPage = () => {
                     {/* Skywatch Archipelago - Estilo Uniforme */}
                     <div className="group relative overflow-hidden rounded-2xl bg-slate-800/50 backdrop-blur-sm border border-slate-700/50 hover:border-indigo-400/60 transition-all duration-300 hover:shadow-xl hover:shadow-indigo-500/20 h-full flex flex-col">
                       {/* Imagen con dimensiones uniformes */}
-                      <div className="relative h-72 w-full overflow-hidden">
+                      <div 
+                        className="relative h-72 w-full overflow-hidden cursor-pointer"
+                        onClick={() => openImageModal('/images/garden/SOTO-1-1024x458.webp', gardenImages)}
+                      >
                         <Image
                           src="/images/garden/SOTO-1-1024x458.webp"
                           alt="Skywatch Archipelago Garden Location"
@@ -3573,6 +4286,19 @@ const JardinesPage = () => {
                         />
                         {/* Overlay sutil para legibilidad */}
                         <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+                        
+                        {/* Icono de zoom para indicar que se puede hacer clic */}
+                        <div className="absolute top-2 right-2 opacity-100 transition-opacity duration-300">
+                          <Image
+                            src="/images/garden/zoom-in.webp"
+                            alt="Zoom"
+                            width={20}
+                            height={20}
+                            className="w-5 h-5 invert"
+                            unoptimized
+                          />
+                        </div>
+                        
                       </div>
                       
                       {/* Contenido uniforme */}
@@ -3618,7 +4344,10 @@ const JardinesPage = () => {
                     {/* Skywatch Archipelago - Primera vez */}
                     <div className="group relative overflow-hidden rounded-2xl bg-slate-800/50 backdrop-blur-sm border border-slate-700/50 hover:border-violet-400/60 transition-all duration-300 hover:shadow-xl hover:shadow-violet-500/20 h-full flex flex-col">
                       {/* Imagen con dimensiones uniformes */}
-                      <div className="relative h-72 w-full overflow-hidden">
+                      <div 
+                        className="relative h-72 w-full overflow-hidden cursor-pointer"
+                        onClick={() => openImageModal('/images/garden/SOTO-2-514x1024.webp', gardenImages)}
+                      >
                         <Image
                           src="/images/garden/SOTO-2-514x1024.webp"
                           alt="Skywatch Archipelago Garden Location"
@@ -3628,6 +4357,19 @@ const JardinesPage = () => {
                         />
                         {/* Overlay sutil para legibilidad */}
                         <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+                        
+                        {/* Icono de zoom para indicar que se puede hacer clic */}
+                        <div className="absolute top-2 right-2 opacity-100 transition-opacity duration-300">
+                          <Image
+                            src="/images/garden/zoom-in.webp"
+                            alt="Zoom"
+                            width={20}
+                            height={20}
+                            className="w-5 h-5 invert"
+                            unoptimized
+                          />
+                        </div>
+                        
                       </div>
                       
                       {/* Contenido uniforme */}
@@ -3673,7 +4415,10 @@ const JardinesPage = () => {
                     {/*Lowland Shore - Primera vez */}
                     <div className="group relative overflow-hidden rounded-2xl bg-slate-800/50 backdrop-blur-sm border border-slate-700/50 hover:border-rose-400/60 transition-all duration-300 hover:shadow-xl hover:shadow-rose-500/20 h-full flex flex-col">
                       {/* Imagen con dimensiones uniformes */}
-                      <div className="relative h-72 w-full overflow-hidden">
+                      <div 
+                        className="relative h-72 w-full overflow-hidden cursor-pointer"
+                        onClick={() => openImageModal('/images/garden/JW-1.png', gardenImages)}
+                      >
                         <Image
                           src="/images/garden/JW-1.png"
                           alt="Lowland Shore Garden Location"
@@ -3683,6 +4428,19 @@ const JardinesPage = () => {
                         />
                         {/* Overlay sutil para legibilidad */}
                         <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+                        
+                        {/* Icono de zoom para indicar que se puede hacer clic */}
+                        <div className="absolute top-2 right-2 opacity-100 transition-opacity duration-300">
+                          <Image
+                            src="/images/garden/zoom-in.webp"
+                            alt="Zoom"
+                            width={20}
+                            height={20}
+                            className="w-5 h-5 invert"
+                            unoptimized
+                          />
+                        </div>
+                        
                       </div>
                       
                       {/* Contenido uniforme */}
@@ -3728,7 +4486,10 @@ const JardinesPage = () => {
                     {/* Lowland Shore - Segunda vez */}
                     <div className="group relative overflow-hidden rounded-2xl bg-slate-800/50 backdrop-blur-sm border border-slate-700/50 hover:border-rose-400/60 transition-all duration-300 hover:shadow-xl hover:shadow-rose-500/20 h-full flex flex-col">
                       {/* Imagen con dimensiones uniformes */}
-                      <div className="relative h-48 w-full overflow-hidden">
+                      <div 
+                        className="relative h-48 w-full overflow-hidden cursor-pointer"
+                        onClick={() => openImageModal('/images/garden/JW-2.png', gardenImages)}
+                      >
                         <Image
                           src="/images/garden/JW-2.png"
                           alt="Lowland Shore Garden Location"
@@ -3739,6 +4500,19 @@ const JardinesPage = () => {
                         />
                         {/* Overlay sutil para legibilidad */}
                         <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+                        
+                        {/* Icono de zoom para indicar que se puede hacer clic */}
+                        <div className="absolute top-2 right-2 opacity-100 transition-opacity duration-300">
+                          <Image
+                            src="/images/garden/zoom-in.webp"
+                            alt="Zoom"
+                            width={20}
+                            height={20}
+                            className="w-5 h-5 invert"
+                            unoptimized
+                          />
+                        </div>
+                        
                       </div>
                       
                       {/* Contenido uniforme */}
@@ -3797,6 +4571,19 @@ const JardinesPage = () => {
                         />
                         {/* Overlay sutil para legibilidad */}
                         <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+                        
+                        {/* Icono de zoom para indicar que se puede hacer clic */}
+                        <div className="absolute top-2 right-2 opacity-100 transition-opacity duration-300">
+                          <Image
+                            src="/images/garden/zoom-in.webp"
+                            alt="Zoom"
+                            width={20}
+                            height={20}
+                            className="w-5 h-5 invert"
+                            unoptimized
+                          />
+                        </div>
+                        
                       </div>
                       
                       {/* Contenido uniforme */}
