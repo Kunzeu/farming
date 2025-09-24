@@ -442,6 +442,28 @@ const JardinesPage = () => {
     return () => { window.removeEventListener('scroll', handleScroll); };
   }, []);
 
+  // Cerrar modal con tecla Escape
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape' && imageModal.isOpen) {
+        closeImageModal();
+      }
+    };
+
+    if (imageModal.isOpen) {
+      document.addEventListener('keydown', handleKeyDown);
+      // Prevenir scroll del body cuando el modal está abierto
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+      document.body.style.overflow = 'unset';
+    };
+  }, [imageModal.isOpen]);
+
 
 
 
