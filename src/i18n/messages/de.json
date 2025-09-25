@@ -755,7 +755,7 @@
   "craftingPage.volatileMagicDesc": "Flüchtige Magie ist eine Währung, die in der Brieftasche gespeichert wird und die Hauptwährung der 4. Staffel der Lebenden Welt ist.",
   "craftingPage.trophyBoxes": "Trophäenlieferung",
   "craftingPage.calculating": "Berechne...",
-  "craftingPage.analysisRewards": "Analyse der Belohnungen aus Trophäenlieferung",
+  "craftingPage.analysisRewards": "Analyse der Belohnungen aus ",
   "craftingPage.itemBuy": "Gegenstand {id} × {quantity} (kaufen)",
   "craftingPage.itemSell": "Gegenstand {id} × {quantity} (verkaufen × 0.9)",
   "craftingPage.totalSum": "GESAMTSUMME ({items})",
@@ -1633,6 +1633,7 @@
   "fourWindsPrizeBag.boxesOpened": "Geöffnete Kisten",
   "fourWindsPrizeBag.purses": "Geldbörsen",
   "fourWindsPrizeBag.randomExotic": "Zufällig Exotisch",
-  "fourWindsPrizeBag.luxuryEquipment": "Luxusausrüstung"
+  "fourWindsPrizeBag.luxuryEquipment": "Luxusausrüstung",
+  "trophyPage.t6ConversionButton": "WIE MAN T6 KONVERTIERUNGEN + SPIRITUELLE SPLITTER-VERKÄUFE MACHT"
 }
 

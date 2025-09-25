@@ -239,6 +239,22 @@ export default function FourWindsPrizeBagPage() {
         { id: 24339, item: '', count: 30, chance: '100%'},
         { id: 24315, item: '', count: 6, chance: '100%' },
         { id: 24277, item: '', count: 40, chance: '100%'},
+        { id: 24288, item: '', count: 483, chance: '100%' },
+        { id: 24340, item: '', count: 5, chance: '100%' },
+        { id: 24310, item: '', count: 4, chance: '100%' },
+        { id: 24283, item: '', count: 58, chance: '100%' },
+        { id: 24299, item: '', count: 519, chance: '100%' },
+        { id: 24282, item: '', count: 465, chance: '100%' },
+        { id: 24324, item: '', count: 40, chance: '100%' },
+        { id: 38030, item: '', count: 25, chance: '100%' },
+        { id: 24304, item: '', count: 33, chance: '100%' },
+        { id: 24351, item: '', count: 45, chance: '100%' },
+        { id: 19748, item: '', count: 941, chance: '100%' },
+        { id: 24309, item: '', count: 36, chance: '100%' },
+        { id: 19729, item: '', count: 454, chance: '100%' },
+        { id: 24305, item: '', count: 4, chance: '100%' }, //Piedra imán cargada
+
+
 
         
       ]

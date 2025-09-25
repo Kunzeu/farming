@@ -755,7 +755,7 @@
   "craftingPage.volatileMagicDesc": "Volatile Magic is a currency stored in the wallet and is the main currency of Living World Season 4.",
   "craftingPage.trophyBoxes": "Trophy Boxes",
   "craftingPage.calculating": "Calculating...",
-  "craftingPage.analysisRewards": "Analysis of Rewards from Trophy Boxes",
+  "craftingPage.analysisRewards": "Analysis of Rewards from ",
   "craftingPage.itemBuy": "Item {id} × {quantity} (buy)",
   "craftingPage.itemSell": "Item {id} × {quantity} (sell × 0.9)",
   "craftingPage.totalSum": "TOTAL SUM ({items})",
@@ -1632,6 +1632,7 @@
   "fourWindsPrizeBag.boxesOpened": "Boxes Opened",
   "fourWindsPrizeBag.purses": "Purses",
   "fourWindsPrizeBag.randomExotic": "Random Exotic",
-  "fourWindsPrizeBag.luxuryEquipment": "Luxury Equipment"
+  "fourWindsPrizeBag.luxuryEquipment": "Luxury Equipment",
+  "trophyPage.t6ConversionButton": "HOW TO MAKE T6 CONVERSIONS + SPIRITUAL SHARD SALES"
 }
 

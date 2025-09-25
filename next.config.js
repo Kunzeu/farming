@@ -99,6 +99,20 @@ const nextConfig = {
           },
         ],
       },
+      // Redirecciones 301 para rutas de idiomas inexistentes
+      // Nota: En Next.js, las redirecciones se definen en "async redirects()" más abajo
+    ];
+  },
+  
+  // Redirecciones permanentes para evitar 404 en idiomas no implementados
+  async redirects() {
+    return [
+      { source: '/es', destination: '/', permanent: true },
+      { source: '/es/(.*)', destination: '/', permanent: true },
+      { source: '/fr', destination: '/', permanent: true },
+      { source: '/fr/(.*)', destination: '/', permanent: true },
+      { source: '/de', destination: '/', permanent: true },
+      { source: '/de/(.*)', destination: '/', permanent: true },
     ];
   },
   

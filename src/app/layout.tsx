@@ -99,10 +99,8 @@ export default function RootLayout({
         {/* Meta tags are automatically generated from the metadata object above */}
         <meta name="theme-color" content="#c1272d" />
         <link rel="canonical" href="https://www.true-farming.com" />
+        <link rel="alternate" hrefLang="x-default" href="https://www.true-farming.com" />
         <link rel="alternate" hrefLang="en" href="https://www.true-farming.com" />
-        <link rel="alternate" hrefLang="es" href="https://www.true-farming.com/es" />
-        <link rel="alternate" hrefLang="fr" href="https://www.true-farming.com/fr" />
-        <link rel="alternate" hrefLang="de" href="https://www.true-farming.com/de" />
         
         {/* Open Graph Meta Tags */}
         <meta property="og:image" content="/images/icons/icontag.webp" />

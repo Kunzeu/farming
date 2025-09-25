@@ -750,7 +750,7 @@
   "craftingPage.volatileMagicDesc": "La Magie Volatile est une devise stockée dans le portefeuille et est la devise principale de la Saison 4 du Monde Vivant.",
   "craftingPage.trophyBoxes": "Chargement de trophées",
   "craftingPage.calculating": "Calcul en cours...",
-  "craftingPage.analysisRewards": "Analyse des Récompenses des Chargement de trophées",
+  "craftingPage.analysisRewards": "Analyse des Récompenses des ",
   "craftingPage.itemBuy": "Objet {id} × {quantity} (achat)",
   "craftingPage.itemSell": "Objet {id} × {quantity} (vente × 0.9)",
   "craftingPage.totalSum": "SOMME TOTALE ({items})",
@@ -1626,6 +1626,7 @@
   "fourWindsPrizeBag.boxesOpened": "Boîtes Ouvertes",
   "fourWindsPrizeBag.purses": "Bourses",
   "fourWindsPrizeBag.randomExotic": "Exotique Aléatoire",
-  "fourWindsPrizeBag.luxuryEquipment": "Équipement de luxe"
+  "fourWindsPrizeBag.luxuryEquipment": "Équipement de luxe",
+  "trophyPage.t6ConversionButton": "COMMENT FAIRE DES CONVERSIONS T6 + VENTE D'ÉCLATS SPIRITUELS"
 }
 
