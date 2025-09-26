@@ -10,14 +10,36 @@ import Footer from "@/components/layout/Footer";
 import ScrollToTop from "@/components/ui/ScrollToTop";
 import CookieBanner from "@/components/ui/CookieBanner";
 import { Analytics } from "@vercel/analytics/next";
-
-
 const inter = Inter({ subsets: ["latin"] });
+
+// Slogans para metadatos (función del servidor)
+const slogans = [
+  "Passion for gold",
+  "Gold - Today and tomorrow", 
+  "Gold is my passion",
+  "True Farming Saves Your Time",
+  "We use real data, not like others",
+  "The art of True Farming",
+  "All you need is True Farming",
+  "Real Farming? It must be like True Data",
+  "Don't Say Fast, Say True",
+  "The gold don't wait people",
+  "My Doctor Says 'A good farmer is a true farmer'",
+  "600g/h? We show you that doesn't exist!"
+];
+
+// Función del servidor para obtener slogan aleatorio
+function getRandomSloganServer(): string {
+  return slogans[Math.floor(Math.random() * slogans.length)];
+}
+
+// Generar slogan aleatorio para metadatos
+const randomSlogan = getRandomSloganServer();
 
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_BASE_URL || 'https://www.true-farming.com'),
   title: "True Farming",
-  description: "Your platform to optimize farming in Guild Wars 2",
+  description: `${randomSlogan} - Your platform to optimize farming in Guild Wars 2`,
   keywords: ["Guild Wars 2", "farming", "gold", "materials", "gaming", "MMORPG"],
   authors: [{ name: "True Farming" }],
   creator: "True Farming",
@@ -38,7 +60,7 @@ export const metadata: Metadata = {
     locale: 'en_US',
     url: 'https://www.true-farming.com',
     title: 'True Farming - Guild Wars 2',
-    description: 'Your platform to optimize farming in Guild Wars 2',
+    description: `${randomSlogan} - Your platform to optimize farming in Guild Wars 2`,
     siteName: 'True Farming',
     images: [
       {
@@ -52,7 +74,7 @@ export const metadata: Metadata = {
   twitter: {
     card: 'summary_large_image',
     title: 'True Farming - Guild Wars 2',
-    description: 'Your platform to optimize farming in Guild Wars 2',
+    description: `${randomSlogan} - Your platform to optimize farming in Guild Wars 2`,
     images: ['/images/icons/icontag.webp'],
   },
   icons: {

@@ -26,6 +26,7 @@ import { usePageTitle } from '@/hooks/usePageTitle'
 import { useI18n } from '@/contexts/I18nContext'
 import { useDashboardPreferences } from '@/hooks/useDashboardPreferences'
 import DashboardSettings from '@/components/DashboardSettings'
+import Slogan from '@/components/ui/Slogan'
 import { useState, useEffect, useMemo } from 'react'
 
 
@@ -426,6 +427,14 @@ export default function HomePage() {
             />
           </div>
 
+          {/* Slogan aleatorio */}
+          <div className="absolute top-8 right-8 flex justify-end">
+            <Slogan 
+              variant="random" 
+              className="text-white drop-shadow-2xl font-bold text-lg"
+            />
+          </div>
+
           {/* Contenido principal */}
           <div className="absolute bottom-8 left-0 right-0 text-center translate-y-[0.5cm]">
             <div className="max-w-3xl mx-auto">
@@ -435,8 +444,6 @@ export default function HomePage() {
                 transition={{ duration: 0.6 }}
                 className="space-y-4">
         
-                {/* (CTA de evento movido debajo, antes de Available Tools) */}
-
                 {/* Botón Purchase Now */}
                 <div className="pt-2">
                   <motion.a
@@ -461,7 +468,7 @@ export default function HomePage() {
 
         {/* Sección de herramientas principales */}
         <section className="mb-12">
-          {/* CTA de Evento Activo arriba del título (solo cuando hay evento activo) */}
+          {/* Evento Activo arriba del título (solo cuando hay evento activo) */}
           {activeEvent && (
             <div className="mb-6 flex flex-col items-center">
               <Link href={activeEvent.path}>
