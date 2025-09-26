@@ -14,7 +14,12 @@ import { generateMetadata } from "@/lib/metadata";
 
 const inter = Inter({ subsets: ["latin"] });
 
-export const metadata: Metadata = generateMetadata();
+// Exportar función de metadatos dinámicos
+export { generateMetadata };
+
+// Forzar Server-Side Rendering para metadatos dinámicos
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
 
 export default function RootLayout({
   children,

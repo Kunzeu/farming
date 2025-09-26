@@ -99,6 +99,23 @@ const nextConfig = {
           },
         ],
       },
+      {
+        source: '/',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'no-cache, no-store, must-revalidate',
+          },
+          {
+            key: 'Pragma',
+            value: 'no-cache',
+          },
+          {
+            key: 'Expires',
+            value: '0',
+          },
+        ],
+      },
       // Redirecciones 301 para rutas de idiomas inexistentes
       // Nota: En Next.js, las redirecciones se definen en "async redirects()" más abajo
     ];
