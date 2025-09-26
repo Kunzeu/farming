@@ -63,7 +63,7 @@ export default function Slogan({
 
   return (
     <div className={`slogan-container ${className}`}>
-      <p className="text-lg font-semibold text-gold-400 text-center transition-all duration-500 ease-in-out animate-fade-in">
+      <p className="transition-all duration-500 ease-in-out animate-fade-in">
         {currentSlogan}
       </p>
     </div>

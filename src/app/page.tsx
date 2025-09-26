@@ -428,10 +428,10 @@ export default function HomePage() {
           </div>
 
           {/* Slogan aleatorio */}
-          <div className="absolute top-8 right-8 flex justify-end">
+          <div className="absolute top-6 left-1/2 transform -translate-x-1/2">
             <Slogan 
               variant="random" 
-              className="text-white drop-shadow-2xl font-bold text-lg"
+              className="text-yellow-400 drop-shadow-2xl font-bold text-base md:text-sm lg:text-base"
             />
           </div>
 
