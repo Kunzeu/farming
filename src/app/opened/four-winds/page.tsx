@@ -96,6 +96,19 @@ export default function FourWindsPrizeBagPage() {
       return baseTotal + additionalValue;
     }
     
+    // Agregar valor adicional de 63g 77s 14c a la sección de morrales
+    if (section.name === 'Morrales de cuero' || (elaborateLeatherSack && section.name === elaborateLeatherSack.name)) {
+      const additionalValue = 637714;
+      return baseTotal + additionalValue;
+    }
+    
+    // Agregar valor adicional de 64g 16s 51c a la sección de alforjas
+    if (section.name === 'Alforjas bordadas' || (embroideredSaddlebag && section.name === embroideredSaddlebag.name)) {
+      const additionalValue = 641651;
+      return baseTotal + additionalValue;
+    }
+    
+    
     return baseTotal;
   };
 
@@ -253,6 +266,29 @@ export default function FourWindsPrizeBagPage() {
         { id: 24309, item: '', count: 36, chance: '100%' },
         { id: 19729, item: '', count: 454, chance: '100%' },
         { id: 24305, item: '', count: 4, chance: '100%' }, //Piedra imán cargada
+        { id: 44971, item: '', count: 2, chance: '100%' },
+        { id: 44980, item: '', count: 2, chance: '100%' },
+        { id: 44978, item: '', count: 1, chance: '100%' },
+        { id: 99999, item: t('fourWindsPrizeBag.randomExotic'), count: 8, chance: '100%' },
+        { id: 19700, item: '', count: 1271, chance: '100%' },
+        { id: 24358, item: '', count: 65, chance: '100%' },
+        { id: 24350, item: '', count: 446, chance: '100%' },
+        { id: 19701, item: '', count: 436, chance: '100%' },
+        { id: 24335, item: '', count: 3, chance: '100%' },
+        { id: 24356, item: '', count: 438, chance: '100%' },
+        { id: 24294, item: '', count: 488, chance: '100%' },
+        { id: 24325, item: '', count: 2, chance: '100%' },
+        { id: 19732, item: '', count: 141, chance: '100%' },
+        { id: 24276, item: '', count: 360, chance: '100%' },
+        { id: 24329, item: '', count: 46, chance: '100%' },
+        { id: 24334, item: '', count: 30, chance: '100%' },
+        { id: 19745, item: '', count: 162, chance: '100%' },
+        { id: 24319, item: '', count: 46, chance: '100%' },
+        { id: 19748, item: '', count: 691, chance: '100%' },
+        { id: 44991, item: '', count: 1, chance: '100%' },
+        { id: 24289, item: '', count: 53, chance: '100%' },
+        { id: 24320, item: '', count: 4, chance: '100%' },
+        { id: 24300, item: '', count: 27, chance: '100%' },
 
 
 
@@ -283,7 +319,7 @@ export default function FourWindsPrizeBagPage() {
         { id: 24282, item: '', count: 519, chance: '100%' },
         { id: 19745, item: '', count: 142, chance: '100%' },
         { id: 24305, item: '', count: 5, chance: '100%' },
-        { id: 99999, item: t('fourWindsPrizeBag.randomExotic'), count: 19, chance: '100%' },
+        { id: 99999, item: t('fourWindsPrizeBag.randomExotic'), count: 8, chance: '100%' },
         { id: 24319, item: '', count: 37, chance: '100%' },
         { id: 24341, item: '', count: 484, chance: '100%' },
         { id: 24288, item: '', count: 439, chance: '100%' },
@@ -309,6 +345,13 @@ export default function FourWindsPrizeBagPage() {
         { id: 19729, item: '', count: 429, chance: '100%'},
         { id: 19700, item: '', count: 1292, chance: '100%'},
         { id: 19748, item: '', count: 848, chance: '100%'},
+        { id: 44991, item: '', count: 1, chance: '100%' },
+        { id: 44985, item: '', count: 2, chance: '100%' },
+        { id: 44992, item: '', count: 1, chance: '100%' },
+        { id: 44972, item: '', count: 3, chance: '100%' },
+        { id: 44975, item: '', count: 1, chance: '100%' },
+        { id: 44979, item: '', count: 2, chance: '100%' },
+
       ]
     },
     morrales: {
@@ -318,7 +361,50 @@ export default function FourWindsPrizeBagPage() {
       icon: Package,
       itemIcon: elaborateLeatherSack?.icon,
       tableData: [
-        
+        { id: 46731, item: '', count: 16680, chance: '100%' },
+        { id: 84731, item: '', count: 3220, chance: '100%' },
+        { id: 83008, item: '', count: 118, chance: '100%' },
+        { id: 24299, item: '', count: 553, chance: '100%' },
+        { id: 19729, item: '', count: 436, chance: '100%' },
+        { id: 24294, item: '', count: 489, chance: '100%' },
+        { id: 24350, item: '', count: 585, chance: '100%' },
+        { id: 24277, item: '', count: 41, chance: '100%' },
+        { id: 99999, item: t('fourWindsPrizeBag.randomExotic'), count: 30, chance: '100%' },
+        { id: 44965, item: '', count: 4, chance: '100%' },
+        { id: 24319, item: '', count: 41, chance: '100%' },
+        { id: 19748, item: '', count: 877, chance: '100%' },
+        { id: 24320, item: '', count: 4, chance: '100%' },
+        { id: 24315, item: '', count: 1, chance: '100%' },
+        { id: 24324, item: '', count: 35, chance: '100%' },
+        { id: 19700, item: '', count: 1204, chance: '100%' }, 
+        { id: 24288, item: '', count: 554, chance: '100%' },
+        { id: 24334, item: '', count: 45, chance: '100%' },
+        { id: 24329, item: '', count: 37, chance: '100%' },
+        { id: 24282, item: '', count: 528, chance: '100%' },
+        { id: 24283, item: '', count: 34, chance: '100%' },
+        { id: 24341, item: '', count: 487, chance: '100%' },
+        { id: 24358, item: '', count: 46, chance: '100%' },
+        { id: 19701, item: '', count: 446, chance: '100%' },
+        { id: 24325, item: '', count: 5, chance: '100%' },
+        { id: 24330, item: '', count: 5, chance: '100%' },
+        { id: 24289, item: '', count: 34, chance: '100%' },
+        { id: 24356, item: '', count: 427, chance: '100%' },
+        { id: 24335, item: '', count: 5, chance: '100%' },
+        { id: 24305, item: '', count: 4, chance: '100%' },
+        { id: 19745, item: '', count: 169, chance: '100%' },
+        { id: 24314, item: '', count: 30, chance: '100%' },
+        { id: 24339, item: '', count: 45, chance: '100%' },
+        { id: 38030, item: '', count: 16, chance: '100%' },
+        { id: 24309, item: '', count: 36, chance: '100%' },
+        { id: 19732, item: '', count: 133, chance: '100%' },
+        { id: 24351, item: '', count: 52, chance: '100%' },
+        { id: 24295, item: '', count: 50, chance: '100%' },
+        { id: 24304, item: '', count: 32, chance: '100%' },
+        { id: 24310, item: '', count: 6, chance: '100%' },
+        { id: 24276, item: '', count: 351, chance: '100%' },
+        { id: 24357, item: '', count: 57, chance: '100%' },
+        { id: 24340, item: '', count: 6, chance: '100%' },
+        { id: 24300, item: '', count: 41, chance: '100%' },
       ]
     },
     equipo: {
@@ -328,6 +414,14 @@ export default function FourWindsPrizeBagPage() {
       icon: Star,
       itemIcon: luxuryEquipmentBox?.icon,
       tableData: [
+        { id: 46731, item: '', count: 163232, chance: '100%' },
+        { id: 24324, item: '', count: 40, chance: '100%' },
+        { id: 84731, item: '', count: 3097, chance: '100%' },
+        { id: 83008, item: '', count: 126, chance: '100%' },
+        { id: 24357, item: '', count: 21, chance: '100%' },
+        { id: 24350, item: '', count: 547, chance: '100%' },
+        { id: 19701, item: '', count: 4, chance: '100%' },
+        
        
       ]
     },
@@ -351,7 +445,7 @@ export default function FourWindsPrizeBagPage() {
   const fetchItems = async (language: string) => {
     try {
       // Obtener todos los items en una sola consulta
-        const response = await fetch(`https://api.guildwars2.com/v2/items?ids=66224,98586,64531,44252,89815,79082,44471,98632,46731,84731,83008,24288,24356,44960,24299,44976,19748,24341,19700,24282,19701,19732,19729,24329,24320,24357,24300,19745,24309,24350,24324,24358,24319,24294,24295,44966,24283,24314,78886,24334,24277,24351,24276,24339,24310,24304,24289,38030,24330,24305,24315,24340,24325,24335,44967,45150,44980,26150,2397,28592,1366,26854,26872,27179,2703,2692&lang=${language}`);
+        const response = await fetch(`https://api.guildwars2.com/v2/items?ids=66224,98586,64531,44252,89815,79082,44471,98632,46731,84731,83008,24288,24356,44960,24299,44976,19748,24341,19700,24282,19701,19732,19729,24329,24320,24357,24300,19745,24309,24350,24324,24358,24319,24294,24295,44966,24283,24314,78886,24334,24277,24351,24276,24339,24310,24304,24289,38030,24330,24305,24315,24340,24325,24335,44967,45150,44980,44991,44985,44992,44972,44975,44979,44971,44978,44965,26150,2397,28592,1366,26854,26872,27179,2703,2692&lang=${language}`);
       const data: GW2Item[] = await response.json();
       
       if (data && data.length >= 8) {
@@ -1178,6 +1272,124 @@ export default function FourWindsPrizeBagPage() {
           }));
         }
         
+        // Item ID 44991 - Combustion
+        const item44991Data = data.find((item: GW2Item) => item.id === 44991);
+        if (item44991Data) {
+          setItemDetails(prev => ({
+            ...prev,
+            44991: {
+              name: item44991Data.name,
+              icon: item44991Data.icon,
+              price: 0 // Se actualizará con fetchItemPrices
+            }
+          }));
+        }
+
+        // Item ID 44985 - Crystal Guardian
+        const item44985Data = data.find((item: GW2Item) => item.id === 44985);
+        if (item44985Data) {
+          setItemDetails(prev => ({
+            ...prev,
+            44985: {
+              name: item44985Data.name,
+              icon: item44985Data.icon,
+              price: 0 // Se actualizará con fetchItemPrices
+            }
+          }));
+        }
+
+        // Item ID 44992 - Monsoon
+        const item44992Data = data.find((item: GW2Item) => item.id === 44992);
+        if (item44992Data) {
+          setItemDetails(prev => ({
+            ...prev,
+            44992: {
+              name: item44992Data.name,
+              icon: item44992Data.icon,
+              price: 0 // Se actualizará con fetchItemPrices
+            }
+          }));
+        }
+
+        // Item ID 44972 - Scepter of the Highborn
+        const item44972Data = data.find((item: GW2Item) => item.id === 44972);
+        if (item44972Data) {
+          setItemDetails(prev => ({
+            ...prev,
+            44972: {
+              name: item44972Data.name,
+              icon: item44972Data.icon,
+              price: 0 // Se actualizará con fetchItemPrices
+            }
+          }));
+        }
+
+        // Item ID 44975 - Shiverstone
+        const item44975Data = data.find((item: GW2Item) => item.id === 44975);
+        if (item44975Data) {
+          setItemDetails(prev => ({
+            ...prev,
+            44975: {
+              name: item44975Data.name,
+              icon: item44975Data.icon,
+              price: 0 // Se actualizará con fetchItemPrices
+            }
+          }));
+        }
+
+        // Item ID 44979 - Stardust
+        const item44979Data = data.find((item: GW2Item) => item.id === 44979);
+        if (item44979Data) {
+          setItemDetails(prev => ({
+            ...prev,
+            44979: {
+              name: item44979Data.name,
+              icon: item44979Data.icon,
+              price: 0 // Se actualizará con fetchItemPrices
+            }
+          }));
+        }
+
+        // Item ID 44971 - Scepter of the Highborn
+        const item44971Data = data.find((item: GW2Item) => item.id === 44971);
+        if (item44971Data) {
+          setItemDetails(prev => ({
+            ...prev,
+            44971: {
+              name: item44971Data.name,
+              icon: item44971Data.icon,
+              price: 0 // Se actualizará con fetchItemPrices
+            }
+          }));
+        }
+
+
+        // Item ID 44978 - Stardust
+        const item44978Data = data.find((item: GW2Item) => item.id === 44978);
+        if (item44978Data) {
+          setItemDetails(prev => ({
+            ...prev,
+            44978: {
+              name: item44978Data.name,
+              icon: item44978Data.icon,
+              price: 0 // Se actualizará con fetchItemPrices
+            }
+          }));
+        }
+
+        // Item ID 44965
+        const item44965Data = data.find((item: GW2Item) => item.id === 44965);
+        if (item44965Data) {
+          setItemDetails(prev => ({
+            ...prev,
+            44965: {
+              name: item44965Data.name,
+              icon: item44965Data.icon,
+              price: 0 // Se actualizará con fetchItemPrices
+            }
+          }));
+        }
+
         // Item ID 99999 - Random Exotic (agrupación de items exóticos)
         setItemDetails(prev => ({
           ...prev,
@@ -1197,7 +1409,7 @@ export default function FourWindsPrizeBagPage() {
   // Función para obtener precios de los items
   const fetchItemPrices = async () => {
     try {
-        const itemIds = [46731, 84731, 83008, 24288, 24356, 44960, 24299, 44976, 19748, 24341, 19700, 24282, 19701, 19732, 19729, 24329, 24320, 24357, 24300, 19745, 24309, 24350, 24324, 24358, 24319, 24294, 24295, 44966, 24283, 24314, 78886, 24334, 24277, 24351, 24276, 24339, 24310, 24304, 24289, 38030, 24330, 24305, 24315, 24340, 24325, 24335, 44967, 45150, 44980, 26150, 2397, 28592, 1366, 26854, 26872, 27179, 2703, 2692]; // Agregar más IDs según sea necesario
+        const itemIds = [46731, 84731, 83008, 24288, 24356, 44960, 24299, 44976, 19748, 24341, 19700, 24282, 19701, 19732, 19729, 24329, 24320, 24357, 24300, 19745, 24309, 24350, 24324, 24358, 24319, 24294, 24295, 44966, 24283, 24314, 78886, 24334, 24277, 24351, 24276, 24339, 24310, 24304, 24289, 38030, 24330, 24305, 24315, 24340, 24325, 24335, 44967, 45150, 44980, 44991, 44985, 44992, 44972, 44975, 44979, 44971, 44978, 44965, 26150, 2397, 28592, 1366, 26854, 26872, 27179, 2703, 2692]; // Agregar más IDs según sea necesario
       const response = await fetch(`https://api.guildwars2.com/v2/commerce/prices?ids=${itemIds.join(',')}`);
       const prices: GW2Price[] = await response.json();
       
