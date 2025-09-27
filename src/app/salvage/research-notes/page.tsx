@@ -1,4 +1,5 @@
 'use client';
+/* eslint-disable @typescript-eslint/no-explicit-any */
 
 import { motion } from 'framer-motion';
 import { FileText, Hammer, Gem } from 'lucide-react';
@@ -322,8 +323,8 @@ export default function ResearchNotesPage() {
          setItem104934B(item104934BData as any);
          setItem13438(item13438Data as any);
 
-                          // Obtener precios de todos los items
-                     // OPTIMIZADO: Una sola llamada de precios batch en lugar de 7 llamadas individuales
+          // Obtener precios de todos los items
+        // OPTIMIZADO: Una sola llamada de precios batch en lugar de 7 llamadas individuales
          const pricesResponse = await fetch(`https://api.guildwars2.com/v2/commerce/prices?ids=${itemIds.join(',')}&lang=${lang}`, {
            headers: {
              'Accept': 'application/json',
