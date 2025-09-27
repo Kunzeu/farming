@@ -119,7 +119,7 @@ export default function UnidentifiedGearRarePage() {
         }
       };
       
-      setWikiUrl(buildWikiUrl(unidGearItemData.name, apiLang));
+      setWikiUrl(buildWikiUrl(unidGearItem.name, apiLang));
       
       // Usar precio de compra (buys) para calcular costo real
       if (unidGearData.buys && unidGearData.buys.unit_price) {
