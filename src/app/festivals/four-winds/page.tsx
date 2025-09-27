@@ -180,8 +180,18 @@ const FourWindsPage = () => {
       const itemIds = boxCalculatorData.map(item => item.id).join(',');
       
       const [itemsResponse, pricesResponse] = await Promise.all([
-        fetch(`https://api.guildwars2.com/v2/items?ids=${itemIds}&lang=${lang}`),
-        fetch(`https://api.guildwars2.com/v2/commerce/prices?ids=${itemIds}&lang=${lang}`)
+        fetch(`https://api.guildwars2.com/v2/items?ids=${itemIds}&lang=${lang}`, {
+          headers: {
+            'Accept': 'application/json',
+            'Accept-Encoding': 'gzip, deflate, br'
+          }
+        }),
+        fetch(`https://api.guildwars2.com/v2/commerce/prices?ids=${itemIds}&lang=${lang}`, {
+          headers: {
+            'Accept': 'application/json',
+            'Accept-Encoding': 'gzip, deflate, br'
+          }
+        })
       ]);
 
       if (itemsResponse.ok && pricesResponse.ok) {
@@ -247,8 +257,18 @@ const FourWindsPage = () => {
       setPrimaryLoading(true);
       const ids = BOX_OPENING_PRIMARY_IDS.join(',');
       const [itemsRes, pricesRes] = await Promise.all([
-        fetch(`https://api.guildwars2.com/v2/items?ids=${ids}&lang=${lang}`),
-        fetch(`https://api.guildwars2.com/v2/commerce/prices?ids=${ids}&lang=${lang}`)
+        fetch(`https://api.guildwars2.com/v2/items?ids=${ids}&lang=${lang}`, {
+          headers: {
+            'Accept': 'application/json',
+            'Accept-Encoding': 'gzip, deflate, br'
+          }
+        }),
+        fetch(`https://api.guildwars2.com/v2/commerce/prices?ids=${ids}&lang=${lang}`, {
+          headers: {
+            'Accept': 'application/json',
+            'Accept-Encoding': 'gzip, deflate, br'
+          }
+        })
       ]);
       if (!itemsRes.ok) return;
       const data: Gw2Item[] = await itemsRes.json();

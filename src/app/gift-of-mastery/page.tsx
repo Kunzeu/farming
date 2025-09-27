@@ -124,7 +124,12 @@ export default function GiftOfMasteryPage() {
       const gw2Lang = getGW2LangCode(lang)
       const itemIds = Object.values(ITEM_IDS).join(',')
       
-      const response = await fetch(`https://api.guildwars2.com/v2/items?ids=${itemIds}&lang=${gw2Lang}`)
+      const response = await fetch(`https://api.guildwars2.com/v2/items?ids=${itemIds}&lang=${gw2Lang}`, {
+        headers: {
+          'Accept': 'application/json',
+          'Accept-Encoding': 'gzip, deflate, br'
+        }
+      })
       
       if (!response.ok) {
         throw new Error(`Failed to fetch materials: ${response.status}`)
@@ -160,7 +165,12 @@ export default function GiftOfMasteryPage() {
         const gw2Lang = getGW2LangCode(lang)
         
         // Obtener el item principal primero
-        const itemResponse = await fetch(`https://api.guildwars2.com/v2/items/19674?lang=${gw2Lang}`)
+        const itemResponse = await fetch(`https://api.guildwars2.com/v2/items/19674?lang=${gw2Lang}`, {
+          headers: {
+            'Accept': 'application/json',
+            'Accept-Encoding': 'gzip, deflate, br'
+          }
+        })
         
         if (!itemResponse.ok) {
           throw new Error('Failed to fetch item from GW2 API')

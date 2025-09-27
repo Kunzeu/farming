@@ -901,7 +901,12 @@ const CraftingPage = () => {
       
       for (const batch of batches) {
         try {
-          const pricesResponse = await fetch(`https://api.guildwars2.com/v2/commerce/prices?ids=${batch.join(',')}`);
+          const pricesResponse = await fetch(`https://api.guildwars2.com/v2/commerce/prices?ids=${batch.join(',')}`, {
+            headers: {
+              'Accept': 'application/json',
+              'Accept-Encoding': 'gzip, deflate, br'
+            }
+          });
           
           if (!pricesResponse.ok) {
             // Error fetching prices batch, skipping
@@ -949,7 +954,12 @@ const CraftingPage = () => {
       
       for (const batch of batches) {
         try {
-          const itemsResponse = await fetch(`https://api.guildwars2.com/v2/items?ids=${batch.join(',')}&lang=${lang}`);
+          const itemsResponse = await fetch(`https://api.guildwars2.com/v2/items?ids=${batch.join(',')}&lang=${lang}`, {
+            headers: {
+              'Accept': 'application/json',
+              'Accept-Encoding': 'gzip, deflate, br'
+            }
+          });
           
           if (!itemsResponse.ok) {
             // Error fetching batch, skipping
@@ -2021,8 +2031,18 @@ const CraftingPage = () => {
       } else {
         // Realizar llamadas a la API
         const [pricesResponse, itemsResponse] = await Promise.all([
-          fetch(`https://api.guildwars2.com/v2/commerce/prices?ids=${allConversionItemIds.join(',')}`),
-          fetch(`https://api.guildwars2.com/v2/items?ids=${allConversionItemIds.join(',')}&lang=${lang}`)
+          fetch(`https://api.guildwars2.com/v2/commerce/prices?ids=${allConversionItemIds.join(',')}`, {
+            headers: {
+              'Accept': 'application/json',
+              'Accept-Encoding': 'gzip, deflate, br'
+            }
+          }),
+          fetch(`https://api.guildwars2.com/v2/items?ids=${allConversionItemIds.join(',')}&lang=${lang}`, {
+            headers: {
+              'Accept': 'application/json',
+              'Accept-Encoding': 'gzip, deflate, br'
+            }
+          })
         ]);
 
         // Verificar que ambas respuestas sean exitosas

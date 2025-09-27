@@ -51,7 +51,13 @@ const nextConfig = {
   experimental: {
     // Optimizaciones de paquetes
     optimizePackageImports: ['lucide-react', 'framer-motion'],
+    // Optimizaciones adicionales para performance
+    optimizeServerReact: true,
+    serverMinification: true,
   },
+  
+  // Compresión automática
+  compress: true,
   
   // Headers de seguridad y rendimiento
   async headers() {
@@ -74,6 +80,15 @@ const nextConfig = {
           {
             key: 'Referrer-Policy',
             value: 'strict-origin-when-cross-origin',
+          },
+          // Headers de performance para Desktop
+          {
+            key: 'X-DNS-Prefetch-Control',
+            value: 'on',
+          },
+          {
+            key: 'Strict-Transport-Security',
+            value: 'max-age=31536000; includeSubDomains',
           },
         ],
       },

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { Package, ChevronRight, Star, FileText, Wrench, Gift } from 'lucide-react';
 import Navigation from '@/components/layout/Navigation';
@@ -27,7 +27,12 @@ export default function SalvagePage() {
         const kitIds = ['44602', '89409', '67027'];
         const kitIdsString = kitIds.join(',');
         
-        const response = await fetch(`https://api.guildwars2.com/v2/items?ids=${kitIdsString}&lang=${apiLang}`);
+        const response = await fetch(`https://api.guildwars2.com/v2/items?ids=${kitIdsString}&lang=${apiLang}`, {
+          headers: {
+            'Accept': 'application/json',
+            'Accept-Encoding': 'gzip, deflate, br'
+          }
+        });
         const itemsData = await response.json();
         
         const names: {[key: string]: string} = {};

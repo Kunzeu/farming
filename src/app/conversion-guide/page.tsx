@@ -86,7 +86,12 @@ export default function ConversionGuidePage() {
   const fetchMaterialIcons = async () => {
     try {
       const itemIds = [...Object.values(T5_MATERIAL_IDS), T6_DUST_ID, PHILOSOPHER_STONE_ID].join(',');
-      const response = await fetch(`https://api.guildwars2.com/v2/items?ids=${itemIds}&lang=${lang}`);
+      const response = await fetch(`https://api.guildwars2.com/v2/items?ids=${itemIds}&lang=${lang}`, {
+        headers: {
+          'Accept': 'application/json',
+          'Accept-Encoding': 'gzip, deflate, br'
+        }
+      });
       
       if (response.ok) {
         const items = await response.json();

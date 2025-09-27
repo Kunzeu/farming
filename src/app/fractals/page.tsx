@@ -521,28 +521,37 @@ export default function FarmingTrackerPage() {
     { id: 64185, name: 'Malicious Chest of Shoulders', beforeCount: 13, afterCount: 16, difference: 3, category: 'other' },
   ], []);
 
-  // Calcular estadísticas para cada cofre
+  // OPTIMIZADO: Calcular estadísticas para cada cofre con mejor performance
   const dungeonChestStats = useMemo(() => {
     const totalItems = dungeonChestData.reduce((sum, item) => sum + Math.max(0, item.difference), 0);
     
-    // Calcular valor total usando precios actuales
-    const totalValue = dungeonChestData.reduce((sum, item) => {
-      if (item.id > 0 && itemDetails[item.id]?.currentPrice) {
-        return sum + (itemDetails[item.id].currentPrice * Math.max(0, item.difference));
+    // OPTIMIZADO: Calcular valor total más eficientemente
+    let totalValue = 0;
+    for (const item of dungeonChestData) {
+      if (item.id > 0) {
+        const currentPrice = itemDetails[item.id]?.currentPrice;
+        if (currentPrice) {
+          totalValue += currentPrice * Math.max(0, item.difference);
+        }
       }
-      return sum;
-    }, 0);
+    }
     
     // Cada Pristine Fractal Relic = 1 cofre abierto
     const estimatedChests = 2250; // Base fija basada en Pristine Fractal Relics
     const avgGoldPerChest = totalValue / estimatedChests;
     
-    // Calcular porcentajes y drop rates para cada item
-    const itemsWithStats = dungeonChestData.map(item => ({
-      ...item,
-      percentage: totalItems > 0 ? (Math.max(0, item.difference) / totalItems) * 100 : 0,
-      dropRate: estimatedChests > 0 ? (Math.max(0, item.difference) / estimatedChests) : 0
-    }));
+    // OPTIMIZADO: Pre-calcular valores reutilizados
+    const totalItemsIsValid = totalItems > 0;
+    const estimatedChestsIsValid = estimatedChests > 0;
+    
+    const itemsWithStats = dungeonChestData.map(item => {
+      const difference = Math.max(0, item.difference);
+      return {
+        ...item,
+        percentage: totalItemsIsValid ? (difference / totalItems) * 100 : 0,
+        dropRate: estimatedChestsIsValid ? (difference / estimatedChests) : 0
+      };
+    });
 
     return {
       totalItems,
@@ -683,7 +692,12 @@ export default function FarmingTrackerPage() {
       const itemsArrays = await Promise.all(
         itemChunks.map(async (chunk) => {
           try {
-            const res = await fetch(`https://api.guildwars2.com/v2/items?ids=${chunk.join(',')}&lang=${lang}`);
+            const res = await fetch(`https://api.guildwars2.com/v2/items?ids=${chunk.join(',')}&lang=${lang}`, {
+              headers: {
+                'Accept': 'application/json',
+                'Accept-Encoding': 'gzip, deflate, br'
+              }
+            });
             const data = await res.json();
             return Array.isArray(data) ? data : [data];
           } catch {
@@ -698,7 +712,12 @@ export default function FarmingTrackerPage() {
       const pricesArrays = await Promise.all(
         priceChunks.map(async (chunk) => {
           try {
-            const res = await fetch(`https://api.guildwars2.com/v2/commerce/prices?ids=${chunk.join(',')}`);
+            const res = await fetch(`https://api.guildwars2.com/v2/commerce/prices?ids=${chunk.join(',')}`, {
+              headers: {
+                'Accept': 'application/json',
+                'Accept-Encoding': 'gzip, deflate, br'
+              }
+            });
             const data = await res.json();
             return Array.isArray(data) ? data : [data];
           } catch {
@@ -781,7 +800,12 @@ export default function FarmingTrackerPage() {
   /*
   const refreshItemPrice = useCallback(async (id: number) => {
     try {
-      const pricesResponse = await fetch(`https://api.guildwars2.com/v2/commerce/prices?ids=${id}`);
+      const pricesResponse = await fetch(`https://api.guildwars2.com/v2/commerce/prices?ids=${id}`, {
+        headers: {
+          'Accept': 'application/json',
+          'Accept-Encoding': 'gzip, deflate, br'
+        }
+      });
       const prices = await pricesResponse.json();
       const priceData = Array.isArray(prices) ? prices[0] : prices;
       setItemDetails(prev => ({
@@ -807,8 +831,12 @@ export default function FarmingTrackerPage() {
       const validIds = Array.from(new Set((ids || []).filter((x) => x > 0)));
       if (validIds.length === 0) return;
       const [itemsResp, pricesResp] = await Promise.all([
-        fetch(`https://api.guildwars2.com/v2/items?ids=${validIds.join(',')}&lang=${lang}`),
-        fetch(`https://api.guildwars2.com/v2/commerce/prices?ids=${validIds.join(',')}`),
+        fetch(`https://api.guildwars2.com/v2/items?ids=${validIds.join(',')}&lang=${lang}`, {
+          headers: { 'Accept': 'application/json', 'Accept-Encoding': 'gzip, deflate, br' }
+        }),
+        fetch(`https://api.guildwars2.com/v2/commerce/prices?ids=${validIds.join(',')}`, {
+          headers: { 'Accept': 'application/json', 'Accept-Encoding': 'gzip, deflate, br' }
+        }),
       ]);
       const itemsJson: Array<{ id: number; icon: string; name: string }> = await itemsResp.json();
       const pricesJson: Array<GW2Price> = await pricesResp.json();
@@ -836,7 +864,8 @@ export default function FarmingTrackerPage() {
   }, [lang]);
   */
 
-  const formatGoldSilverCopper = (copper: number) => {
+  // OPTIMIZADO: Formateo de oro memoizado para evitar re-cálculos
+  const formatGoldSilverCopper = useCallback((copper: number) => {
     const isNegative = copper < 0;
     const absCopper = Math.abs(copper);
     const gold = Math.floor(absCopper / 10000);
@@ -844,7 +873,7 @@ export default function FarmingTrackerPage() {
     const copperRemainder = Math.round(absCopper % 100);
     const sign = isNegative ? '- ' : '';
     return `${sign}${gold.toString().padStart(2, '0')}g ${silver.toString().padStart(2, '0')}s ${copperRemainder.toString().padStart(2, '0')}c`;
-  };
+  }, []);
 
   // Mapeo de IDs a nombres de traducción para los items de fractales
   const fractalItemNames: Record<number, string> = {
@@ -1254,7 +1283,7 @@ export default function FarmingTrackerPage() {
                                  </div>
                                )}
                                <div>
-                                 <div className="font-medium">{itemDetails[item.id]?.name || item.name}</div>
+                                 <div className="font-medium text-sm whitespace-nowrap overflow-hidden text-ellipsis max-w-xs">{itemDetails[item.id]?.name || item.name}</div>
                                </div>
                              </div>
                            </td>
@@ -1299,39 +1328,6 @@ export default function FarmingTrackerPage() {
                  </table>
                </div>
                
-               {/* Summary */}
-               <div className="p-3 sm:p-4 md:p-6 bg-gray-800/60 border-t border-gray-700">
-                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 text-center">
-                   <div>
-                     <div className="text-lg sm:text-xl md:text-2xl font-bold text-blue-400">
-                       {dungeonChestStats.itemsWithStats.filter(item => itemMatchesSearch(item, searchTerm)).length}
-                     </div>
-                     <div className="text-gray-300 text-xs sm:text-sm">{t('farmingTracker.summary.itemsShown')}</div>
-                   </div>
-                   <div>
-                     <div className="text-lg sm:text-xl md:text-2xl font-bold text-green-400">
-                       {formatGoldSilverCopper(dungeonChestStats.itemsWithStats.filter(item => itemMatchesSearch(item, searchTerm)).reduce((sum, item) => {
-                         if (item.id > 0 && itemDetails[item.id]?.currentPrice) {
-                           return sum + (itemDetails[item.id].currentPrice * Math.max(0, item.difference));
-                         }
-                         return sum;
-                       }, 0))}
-                     </div>
-                     <div className="text-gray-300 text-xs sm:text-sm">{t('farmingTracker.summary.totalValueFiltered')}</div>
-                   </div>
-                   <div>
-                     <div className="text-lg sm:text-xl md:text-2xl font-bold text-yellow-400">
-                       {formatGoldSilverCopper(Math.round(dungeonChestStats.itemsWithStats.filter(item => itemMatchesSearch(item, searchTerm)).reduce((sum, item) => {
-                         if (item.id > 0 && itemDetails[item.id]?.currentPrice) {
-                           return sum + (itemDetails[item.id].currentPrice * Math.max(0, item.difference));
-                         }
-                         return sum;
-                       }, 0) / dungeonChestStats.estimatedChests))}
-                     </div>
-                     <div className="text-xs sm:text-sm text-gray-300">{t('farmingTracker.summary.avgValuePerChest')}</div>
-                   </div>
-                 </div>
-               </div>
              </div>
            </>
          )}
@@ -1513,7 +1509,7 @@ export default function FarmingTrackerPage() {
                                  </div>
                                )}
                                <div>
-                                 <div className="font-medium">{itemDetails[item.id]?.name || item.name}</div>
+                                 <div className="font-medium text-sm whitespace-nowrap overflow-hidden text-ellipsis max-w-xs">{itemDetails[item.id]?.name || item.name}</div>
                                </div>
                              </div>
                            </td>
@@ -1558,39 +1554,6 @@ export default function FarmingTrackerPage() {
                  </table>
                </div>
                
-               {/* Summary */}
-               <div className="p-6 bg-gray-800/60 border-t border-gray-700">
-                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-center">
-                   <div>
-                     <div className="text-2xl font-bold text-blue-400">
-                       {raidChestStats.itemsWithStats.filter(item => itemMatchesSearch(item, searchTerm)).length}
-                     </div>
-                     <div className="text-gray-300 text-sm">{t('farmingTracker.summary.itemsShown')}</div>
-                   </div>
-                   <div>
-                     <div className="text-2xl font-bold text-green-400">
-                       {formatGoldSilverCopper(raidChestStats.itemsWithStats.filter(item => itemMatchesSearch(item, searchTerm)).reduce((sum, item) => {
-                         if (item.id > 0 && itemDetails[item.id]?.currentPrice) {
-                           return sum + (itemDetails[item.id].currentPrice * Math.max(0, item.difference));
-                         }
-                         return sum;
-                       }, 0))}
-                     </div>
-                     <div className="text-gray-300 text-sm">{t('farmingTracker.summary.totalValueFiltered')}</div>
-                   </div>
-                   <div>
-                     <div className="text-2xl font-bold text-yellow-400">
-                       {formatGoldSilverCopper(Math.round(raidChestStats.itemsWithStats.filter(item => itemMatchesSearch(item, searchTerm)).reduce((sum, item) => {
-                         if (item.id > 0 && itemDetails[item.id]?.currentPrice) {
-                           return sum + (itemDetails[item.id].currentPrice * Math.max(0, item.difference));
-                         }
-                         return sum;
-                       }, 0) / raidChestStats.estimatedChests))}
-                     </div>
-                     <div className="text-sm text-gray-300">{t('farmingTracker.summary.avgValuePerChest')}</div>
-                   </div>
-                 </div>
-               </div>
              </div>
            </>
          )}
@@ -1772,7 +1735,7 @@ export default function FarmingTrackerPage() {
                                  </div>
                                )}
                                <div>
-                                 <div className="font-medium">{itemDetails[item.id]?.name || item.name}</div>
+                                 <div className="font-medium text-sm whitespace-nowrap overflow-hidden text-ellipsis max-w-xs">{itemDetails[item.id]?.name || item.name}</div>
                                </div>
                              </div>
                            </td>
@@ -1817,39 +1780,6 @@ export default function FarmingTrackerPage() {
                  </table>
                </div>
                
-               {/* Summary */}
-               <div className="p-6 bg-gray-800/60 border-t border-gray-700">
-                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-center">
-                   <div>
-                     <div className="text-2xl font-bold text-blue-400">
-                       {strikeChestStats.itemsWithStats.filter(item => itemMatchesSearch(item, searchTerm)).length}
-                     </div>
-                     <div className="text-gray-300 text-sm">{t('farmingTracker.summary.itemsShown')}</div>
-                   </div>
-                   <div>
-                     <div className="text-2xl font-bold text-green-400">
-                       {formatGoldSilverCopper(strikeChestStats.itemsWithStats.filter(item => itemMatchesSearch(item, searchTerm)).reduce((sum, item) => {
-                         if (item.id > 0 && itemDetails[item.id]?.currentPrice) {
-                           return sum + (itemDetails[item.id].currentPrice * Math.max(0, item.difference));
-                         }
-                         return sum;
-                       }, 0))}
-                     </div>
-                     <div className="text-gray-300 text-sm">{t('farmingTracker.summary.totalValueFiltered')}</div>
-                   </div>
-                   <div>
-                     <div className="text-2xl font-bold text-yellow-400">
-                       {formatGoldSilverCopper(Math.round(strikeChestStats.itemsWithStats.filter(item => itemMatchesSearch(item, searchTerm)).reduce((sum, item) => {
-                         if (item.id > 0 && itemDetails[item.id]?.currentPrice) {
-                           return sum + (itemDetails[item.id].currentPrice * Math.max(0, item.difference));
-                         }
-                         return sum;
-                       }, 0) / strikeChestStats.estimatedChests))}
-                     </div>
-                     <div className="text-sm text-gray-300">{t('farmingTracker.summary.avgValuePerChest')}</div>
-                   </div>
-                 </div>
-               </div>
              </div>
            </>
          )}
@@ -1999,7 +1929,7 @@ export default function FarmingTrackerPage() {
                           </div>
                         )}
                         <div>
-                          <div className="font-medium">{itemDetails[item.id]?.name || item.name}</div>
+                          <div className="font-medium text-sm whitespace-nowrap overflow-hidden text-ellipsis max-w-xs">{itemDetails[item.id]?.name || item.name}</div>
                         </div>
                       </div>
                     </td>
@@ -2044,37 +1974,6 @@ export default function FarmingTrackerPage() {
             </table>
           </div>
           
-          {/* Summary */}
-          <div className="p-6 bg-gray-800/60 border-t border-gray-700">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-center">
-              <div>
-                <div className="text-2xl font-bold text-blue-400">{filteredAndSortedItems.length}</div>
-                <div className="text-gray-300 text-sm">{t('farmingTracker.summary.itemsShown')}</div>
-              </div>
-              <div>
-                <div className="text-2xl font-bold text-green-400">
-                  {formatGoldSilverCopper(filteredAndSortedItems.reduce((sum, item) => {
-                    if (item.id > 0 && itemDetails[item.id]?.currentPrice) {
-                      return sum + (itemDetails[item.id].currentPrice * Math.max(0, item.difference));
-                    }
-                    return sum;
-                  }, 0))}
-                </div>
-                <div className="text-gray-300 text-sm">{t('farmingTracker.summary.totalValueFiltered')}</div>
-              </div>
-              <div>
-                <div className="text-2xl font-bold text-yellow-400">
-                  {formatGoldSilverCopper(Math.round(filteredAndSortedItems.reduce((sum, item) => {
-                    if (item.id > 0 && itemDetails[item.id]?.currentPrice) {
-                      return sum + (itemDetails[item.id].currentPrice * Math.max(0, item.difference));
-                    }
-                    return sum;
-                  }, 0) / stats.estimatedChests))}
-                </div>
-                <div className="text-sm text-gray-300">{t('farmingTracker.summary.avgValuePerChest')}</div>
-              </div>
-            </div>
-          </div>
         </div>
            </>
          )}
@@ -2098,7 +1997,7 @@ export default function FarmingTrackerPage() {
                <h3 className="text-lg sm:text-xl font-semibold text-white mb-3 md:mb-4">{t('fractals.sections.trophies')}</h3>
               <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 md:gap-6">
                 <div className="lg:col-span-3 overflow-x-auto">
-                 <table className="w-full text-xs sm:text-sm">
+                 <table className="w-full text-sm">
                    <thead>
                      <tr className="border-b border-gray-700 bg-gray-800/60">
                        <th className="text-left p-2 sm:p-3 text-gray-200 font-semibold">{t('fractals.table.name')}</th>
@@ -2295,7 +2194,7 @@ export default function FarmingTrackerPage() {
                <h3 className="text-lg sm:text-xl font-semibold text-white mb-3 md:mb-4">{t('fractals.sections.materialsT5')}</h3>
               <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 md:gap-6">
                 <div className="lg:col-span-3 overflow-x-auto">
-                 <table className="w-full text-xs sm:text-sm">
+                 <table className="w-full text-sm">
                    <thead>
                      <tr className="border-b border-gray-700 bg-gray-800/60">
                        <th className="text-left p-1 text-gray-200 font-semibold">{t('fractals.table.name')}</th>
@@ -2576,7 +2475,7 @@ export default function FarmingTrackerPage() {
                <h3 className="text-lg sm:text-xl font-semibold text-white mb-3 md:mb-4">{t('fractals.sections.otherDrops')}</h3>
               <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 md:gap-6">
                 <div className="lg:col-span-3 overflow-x-auto">
-                 <table className="w-full text-xs sm:text-sm">
+                 <table className="w-full text-sm">
                    <thead>
                      <tr className="border-b border-gray-700 bg-gray-800/60">
                        <th className="text-left p-1 sm:p-2 text-gray-200 font-semibold">{t('fractals.table.name')}</th>
@@ -2945,7 +2844,7 @@ export default function FarmingTrackerPage() {
                <h3 className="text-lg sm:text-xl font-semibold text-white mb-3 md:mb-4">{t('fractals.sections.profits')}</h3>
               <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 md:gap-6">
                 <div className="lg:col-span-3 overflow-x-auto">
-                 <table className="w-full text-xs sm:text-sm">
+                 <table className="w-full text-sm">
                    <thead>
                      <tr className="border-b border-gray-700 bg-gray-800/60">
                        <th className="text-left p-1 sm:p-2 text-gray-200 font-semibold">{t('fractals.profits.table.boxKeyTypes')}</th>

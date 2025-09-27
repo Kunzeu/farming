@@ -159,17 +159,32 @@ export default function OrrianJewelryBoxPage() {
         setNoMarketData(false);
 
         // Fetch item data
-        const itemResponse = await fetch(`https://api.guildwars2.com/v2/items/39088?lang=${lang}`);
+        const itemResponse = await fetch(`https://api.guildwars2.com/v2/items/39088?lang=${lang}`, {
+          headers: {
+            'Accept': 'application/json',
+            'Accept-Encoding': 'gzip, deflate, br'
+          }
+        });
         if (!itemResponse.ok) throw new Error('Failed to fetch item data');
         const itemData: ItemData = await itemResponse.json();
 
         // Fetch drop items data
         try {
-          const dropItemsResponse = await fetch(`https://api.guildwars2.com/v2/items?ids=${DROP_ITEM_IDS.join(',')}&lang=${lang}`);
+          const dropItemsResponse = await fetch(`https://api.guildwars2.com/v2/items?ids=${DROP_ITEM_IDS.join(',')}&lang=${lang}`, {
+            headers: {
+              'Accept': 'application/json',
+              'Accept-Encoding': 'gzip, deflate, br'
+            }
+          });
           if (dropItemsResponse.ok) {
             const dropItemsData: ItemData[] = await dropItemsResponse.json();
-            // Fetch prices for all drop items
-            const pricesResponse = await fetch(`https://api.guildwars2.com/v2/commerce/prices?ids=${DROP_ITEM_IDS.join(',')}`);
+            // OPTIMIZADO: Fetch prices con compresión
+            const pricesResponse = await fetch(`https://api.guildwars2.com/v2/commerce/prices?ids=${DROP_ITEM_IDS.join(',')}`, {
+              headers: {
+                'Accept': 'application/json',
+                'Accept-Encoding': 'gzip, deflate, br'
+              }
+            });
             let pricesData: PriceData[] = [];
             
             if (pricesResponse.ok) {

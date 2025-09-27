@@ -48,7 +48,12 @@ export default function GlossaryPage() {
         const kitIds = ['44602', '89409', '67027'];
         const kitIdsString = kitIds.join(',');
         
-        const response = await fetch(`https://api.guildwars2.com/v2/items?ids=${kitIdsString}&lang=${apiLang}`);
+        const response = await fetch(`https://api.guildwars2.com/v2/items?ids=${kitIdsString}&lang=${apiLang}`, {
+          headers: {
+            'Accept': 'application/json',
+            'Accept-Encoding': 'gzip, deflate, br'
+          }
+        });
         const itemsData = await response.json();
         
         const names: {[key: string]: string} = {};

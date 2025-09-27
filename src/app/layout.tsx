@@ -12,7 +12,13 @@ import CookieBanner from "@/components/ui/CookieBanner";
 import { Analytics } from "@vercel/analytics/next";
 import { generateMetadata } from "@/lib/metadata";
 
-const inter = Inter({ subsets: ["latin"] });
+// Optimización de fuentes para Desktop
+const inter = Inter({ 
+  subsets: ["latin"],
+  display: 'swap', // Mejora LCP
+  preload: true,
+  fallback: ['system-ui', 'arial'] // Fallback rápido
+});
 
 // Exportar función de metadatos dinámicos
 export { generateMetadata };
@@ -29,6 +35,12 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
+        {/* Performance: Preconnect crítico para Desktop */}
+        <link rel="preconnect" href="https://api.guildwars2.com" />
+        <link rel="preconnect" href="https://pagead2.googlesyndication.com" />
+        <link rel="dns-prefetch" href="https://render.guildwars2.com" />
+        <link rel="dns-prefetch" href="https://wiki.guildwars2.com" />
+        
         <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2746156864243335"
         crossOrigin="anonymous"></script>
         <meta name="google-site-verification" content="6QMoVlJ1hD8y5DCBubEKA5qv_oLb3O4EVRB8OS03LZU"/>

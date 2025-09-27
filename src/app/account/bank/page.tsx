@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { ArrowLeft, Package, Search, Database } from 'lucide-react';
 import Link from 'next/link';
@@ -123,11 +123,21 @@ const BankPage = () => {
     
     try {
       // Fetch item details
-      const detailsResponse = await fetch(`https://api.guildwars2.com/v2/items/${item.id}`);
+      const detailsResponse = await fetch(`https://api.guildwars2.com/v2/items/${item.id}`, {
+        headers: {
+          'Accept': 'application/json',
+          'Accept-Encoding': 'gzip, deflate, br'
+        }
+      });
       const details: ItemDetails = await detailsResponse.json();
       
       // Fetch item price
-      const priceResponse = await fetch(`https://api.guildwars2.com/v2/commerce/prices/${item.id}`);
+      const priceResponse = await fetch(`https://api.guildwars2.com/v2/commerce/prices/${item.id}`, {
+        headers: {
+          'Accept': 'application/json',
+          'Accept-Encoding': 'gzip, deflate, br'
+        }
+      });
       const price: ItemPrice = await priceResponse.json();
       
       // Cache the result

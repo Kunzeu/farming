@@ -72,25 +72,37 @@ export default function UnidentifiedGearMasterworkPage() {
       
       // Obtener información básica de items con idioma
       const apiLang = lang === 'es' ? 'es' : lang === 'de' ? 'de' : lang === 'fr' ? 'fr' : 'en';
-      const itemsResponse = await fetch(`https://api.guildwars2.com/v2/items?ids=${itemIds}&lang=${apiLang}`);
+      const itemsResponse = await fetch(`https://api.guildwars2.com/v2/items?ids=${itemIds}&lang=${apiLang}`, {
+        headers: {
+          'Accept': 'application/json',
+          'Accept-Encoding': 'gzip, deflate, br'
+        }
+      });
       const itemsData = await itemsResponse.json();
       
       // Obtener precios del Trading Post para materiales
-      const pricesResponse = await fetch(`https://api.guildwars2.com/v2/commerce/prices?ids=${itemIds}`);
+      // OPTIMIZADO: Todas las llamadas restantes con compresión
+      const [pricesResponse, unidGearResponse, unidGearItemResponse, kitItemResponse] = await Promise.all([
+        fetch(`https://api.guildwars2.com/v2/commerce/prices?ids=${itemIds}`, {
+          headers: { 'Accept': 'application/json', 'Accept-Encoding': 'gzip, deflate, br' }
+        }),
+        fetch('https://api.guildwars2.com/v2/commerce/prices/84731', {
+          headers: { 'Accept': 'application/json', 'Accept-Encoding': 'gzip, deflate, br' }
+        }),
+        fetch(`https://api.guildwars2.com/v2/items/84731?lang=${apiLang}`, {
+          headers: { 'Accept': 'application/json', 'Accept-Encoding': 'gzip, deflate, br' }
+        }),
+        fetch(`https://api.guildwars2.com/v2/items/89409?lang=${apiLang}`, {
+          headers: { 'Accept': 'application/json', 'Accept-Encoding': 'gzip, deflate, br' }
+        })
+      ]);
+      
       const pricesData = await pricesResponse.json();
-      
-      // Obtener precio del Unidentified Gear (ID: 84731)
-      const unidGearResponse = await fetch('https://api.guildwars2.com/v2/commerce/prices/84731');
       const unidGearData = await unidGearResponse.json();
-      
-      // Obtener nombre del Unidentified Gear
-      const unidGearItemResponse = await fetch(`https://api.guildwars2.com/v2/items/84731?lang=${apiLang}`);
       const unidGearItemData = await unidGearItemResponse.json();
-      setUnidentifiedGearName(unidGearItemData.name);
-      
-      // Obtener nombre del Runecrafter's Salvage-o-Matic (ID: 89409)
-      const kitItemResponse = await fetch(`https://api.guildwars2.com/v2/items/89409?lang=${apiLang}`);
       const kitItemData = await kitItemResponse.json();
+      
+      setUnidentifiedGearName(unidGearItemData.name);
       setKitName(kitItemData.name);
       
       // Construir URL de Wiki basada en el idioma y nombre del item

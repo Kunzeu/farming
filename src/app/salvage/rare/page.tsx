@@ -69,28 +69,37 @@ export default function UnidentifiedGearRarePage() {
       setLoading(true);
       const itemIds = baseMaterials.map(m => m.id).join(',');
       
-      // Obtener información básica de items con idioma
+      // OPTIMIZADO: Llamadas paralelas con compresión
       const apiLang = lang === 'es' ? 'es' : lang === 'de' ? 'de' : lang === 'fr' ? 'fr' : 'en';
-      const itemsResponse = await fetch(`https://api.guildwars2.com/v2/items?ids=${itemIds}&lang=${apiLang}`);
-      const itemsData = await itemsResponse.json();
+      const allItemIds = `${itemIds},83008,67027`;
+      const allPriceIds = `${itemIds},83008`;
       
-      // Obtener precios del Trading Post para materiales
-      const pricesResponse = await fetch(`https://api.guildwars2.com/v2/commerce/prices?ids=${itemIds}`);
+      const [itemsResponse, pricesResponse] = await Promise.all([
+        fetch(`https://api.guildwars2.com/v2/items?ids=${allItemIds}&lang=${apiLang}`, {
+          headers: {
+            'Accept': 'application/json',
+            'Accept-Encoding': 'gzip, deflate, br'
+          }
+        }),
+        fetch(`https://api.guildwars2.com/v2/commerce/prices?ids=${allPriceIds}`, {
+          headers: {
+            'Accept': 'application/json',
+            'Accept-Encoding': 'gzip, deflate, br'
+          }
+        })
+      ]);
+      
+      const itemsData = await itemsResponse.json();
       const pricesData = await pricesResponse.json();
       
-      // Obtener precio del Rare Unidentified Gear (ID: 83008)
-      const unidGearResponse = await fetch('https://api.guildwars2.com/v2/commerce/prices/83008');
-      const unidGearData = await unidGearResponse.json();
+      // Extraer datos específicos del batch
+      const unidGearItem = itemsData.find((item: any) => item.id === 83008);
+      const kitItem = itemsData.find((item: any) => item.id === 67027);
+      const unidGearPrice = pricesData.find((price: any) => price.id === 83008);
       
-      // Obtener nombre del Rare Unidentified Gear
-      const unidGearItemResponse = await fetch(`https://api.guildwars2.com/v2/items/83008?lang=${apiLang}`);
-      const unidGearItemData = await unidGearItemResponse.json();
-      setUnidentifiedGearName(unidGearItemData.name);
-      
-      // Obtener nombre del Silver-Fed Salvage-o-Matic (ID: 67027 )
-      const kitItemResponse = await fetch(`https://api.guildwars2.com/v2/items/67027?lang=${apiLang}`);
-      const kitItemData = await kitItemResponse.json();
-      setKitName(kitItemData.name);
+      if (unidGearItem) setUnidentifiedGearName(unidGearItem.name);
+      if (kitItem) setKitName(kitItem.name);
+      const unidGearData = unidGearPrice;
       
       // Construir URL de Wiki basada en el idioma y nombre del item
       const buildWikiUrl = (itemName: string, language: string) => {

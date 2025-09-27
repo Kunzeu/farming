@@ -57,7 +57,12 @@ const WalletPage = () => {
         }
 
         // Fetch only important currencies data
-        const currenciesResponse = await fetch(`https://api.guildwars2.com/v2/currencies?ids=${importantCurrencyIds.join(',')}`);
+        const currenciesResponse = await fetch(`https://api.guildwars2.com/v2/currencies?ids=${importantCurrencyIds.join(',')}`, {
+          headers: {
+            'Accept': 'application/json',
+            'Accept-Encoding': 'gzip, deflate, br'
+          }
+        });
         if (currenciesResponse.ok) {
           const currenciesData = await currenciesResponse.json();
           setCurrencies(currenciesData);

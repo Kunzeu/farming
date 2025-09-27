@@ -184,12 +184,22 @@ const HalloweenPage = () => {
   const fetchCalculatorData = useCallback(async () => {
     setIsLoadingCalculator(true);
     try {
-      // Obtener precios de la API de GW2
-      const pricesResponse = await fetch(`https://api.guildwars2.com/v2/commerce/prices?ids=${allItemIds.join(',')}&lang=${lang}`);
+      // OPTIMIZADO: Obtener precios de la API de GW2 con compresión
+      const pricesResponse = await fetch(`https://api.guildwars2.com/v2/commerce/prices?ids=${allItemIds.join(',')}&lang=${lang}`, {
+        headers: {
+          'Accept': 'application/json',
+          'Accept-Encoding': 'gzip, deflate, br'
+        }
+      });
       const prices = await pricesResponse.json();
       
-      // Obtener detalles de los items
-      const itemsResponse = await fetch(`https://api.guildwars2.com/v2/items?ids=${allItemIds.join(',')}&lang=${lang}`);
+      // OPTIMIZADO: Obtener detalles de los items con compresión
+      const itemsResponse = await fetch(`https://api.guildwars2.com/v2/items?ids=${allItemIds.join(',')}&lang=${lang}`, {
+        headers: {
+          'Accept': 'application/json',
+          'Accept-Encoding': 'gzip, deflate, br'
+        }
+      });
       const items = await itemsResponse.json();
 
       // Crear mapas

@@ -112,81 +112,53 @@ const JardinesPage = () => {
     '/images/garden/Lion-Arch.webp'              // 50. Lion's Arch
   ];
 
-  // Obtener datos de los items de la API
+  // Obtener datos de los items de la API - OPTIMIZADO: Una sola llamada
   useEffect(() => {
     const fetchItemsData = async () => {
       try {
-        // Obtener datos de la Hoz del Consorcio (ID: 42594)
-        const sickleResponse = await fetch(`https://api.guildwars2.com/v2/items/42594?lang=${lang}`);
-        const sickleData = await sickleResponse.json();
-        setConsortiumSickleData({
-          name: sickleData.name,
-          icon: sickleData.icon
+        // Obtener todos los items en una sola llamada optimizada
+        const itemIds = [42594, 80977, 80979, 102000, 20003, 39699, 20002, 67393, 87698];
+        const itemsResponse = await fetch(`https://api.guildwars2.com/v2/items?ids=${itemIds.join(',')}&lang=${lang}`, {
+          headers: {
+            'Accept': 'application/json',
+            'Accept-Encoding': 'gzip, deflate, br'
+          }
         });
-
-        // Obtener datos de la Herramienta de minería de magia liberada (ID: 80977)
-        const miningResponse = await fetch(`https://api.guildwars2.com/v2/items/80977?lang=${lang}`);
-        const miningData = await miningResponse.json();
-        setUnboundMiningData({
-          name: miningData.name,
-          icon: miningData.icon
-        });
-
-        // Obtener datos de la Herramienta de tala de magia liberada (ID: 80979)
-        const loggingResponse = await fetch(`https://api.guildwars2.com/v2/items/80979?lang=${lang}`);
-        const loggingData = await loggingResponse.json();
-        setUnboundLoggingData({
-          name: loggingData.name,
-          icon: loggingData.icon
-        });
-
-        // Obtener datos de la herramienta alternativa para plantas (ID: 102651)
-        const alternativeSickleResponse = await fetch(`https://api.guildwars2.com/v2/items/102000?lang=${lang}`);
-        const alternativeSickleData = await alternativeSickleResponse.json();
-        setAlternativeSickleData({
-          name: alternativeSickleData.name,
-          icon: alternativeSickleData.icon
-        });
-
-        // Obtener datos del Item Booster (ID: 20003)
-        const itemBoosterResponse = await fetch(`https://api.guildwars2.com/v2/items/20003?lang=${lang}`);
-        const itemBoosterData = await itemBoosterResponse.json();
-        setItemBoosterData({
-          name: itemBoosterData.name,
-          icon: itemBoosterData.icon
-        });
-
-        // Obtener datos del Guild Gathering Banner Booster (ID: 39699)
-        const guildBannerResponse = await fetch(`https://api.guildwars2.com/v2/items/39699?lang=${lang}`);
-        const guildBannerData = await guildBannerResponse.json();
-        setGuildBannerData({
-          name: guildBannerData.name,
-          icon: guildBannerData.icon
-        });
-
-        // Obtener datos del Experience Booster (ID: 20002)
-        const xpBoosterResponse = await fetch(`https://api.guildwars2.com/v2/items/20002?lang=${lang}`);
-        const xpBoosterData = await xpBoosterResponse.json();
-        setXpBoosterData({
-          name: xpBoosterData.name,
-          icon: xpBoosterData.icon
-        });
-
-        // Obtener datos del Candy Gobbler (ID: 67393)
-        const candyGobblerResponse = await fetch(`https://api.guildwars2.com/v2/items/67393?lang=${lang}`);
-        const candyGobblerData = await candyGobblerResponse.json();
-        setCandyGobblerData({
-          name: candyGobblerData.name,
-          icon: candyGobblerData.icon
-        });
-
-        // Obtener datos del Glifo de Magia Volátil (ID: 87698)
-        const volatileMagicGlyphResponse = await fetch(`https://api.guildwars2.com/v2/items/87698?lang=${lang}`);
-        const volatileMagicGlyphData = await volatileMagicGlyphResponse.json();
-        console.log('Volatile Magic Glyph Data:', volatileMagicGlyphData);
-        setVolatileMagicGlyphData({
-          name: volatileMagicGlyphData.name,
-          icon: volatileMagicGlyphData.icon
+        const itemsData = await itemsResponse.json();
+        
+        // Mapear los resultados a los estados correspondientes
+        itemsData.forEach((item: any) => {
+          const itemData = { name: item.name, icon: item.icon };
+          
+          switch (item.id) {
+            case 42594:
+              setConsortiumSickleData(itemData);
+              break;
+            case 80977:
+              setUnboundMiningData(itemData);
+              break;
+            case 80979:
+              setUnboundLoggingData(itemData);
+              break;
+            case 102000:
+              setAlternativeSickleData(itemData);
+              break;
+            case 20003:
+              setItemBoosterData(itemData);
+              break;
+            case 39699:
+              setGuildBannerData(itemData);
+              break;
+            case 20002:
+              setXpBoosterData(itemData);
+              break;
+            case 67393:
+              setCandyGobblerData(itemData);
+              break;
+            case 87698:
+              setVolatileMagicGlyphData(itemData);
+              break;
+          }
         });
       } catch (error) {
         console.error('Error fetching items data:', error);
@@ -203,7 +175,12 @@ const JardinesPage = () => {
         // IDs de los mapas que usamos en la página
          const mapIds = [15, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 39, 50, 51, 53, 54, 73, 988, 1045, 1052, 1175, 1178, 1195, 1210, 1211, 1226, 1271, 1288, 1330, 1343, 1371, 1438, 1452, 1510, 1550]; // Todos los mapas de jardines
         
-        const response = await fetch(`https://api.guildwars2.com/v2/maps?ids=${mapIds.join(',')}&lang=${lang}`);
+        const response = await fetch(`https://api.guildwars2.com/v2/maps?ids=${mapIds.join(',')}&lang=${lang}`, {
+          headers: {
+            'Accept': 'application/json',
+            'Accept-Encoding': 'gzip, deflate, br'
+          }
+        });
         const maps = await response.json();
         
         const mapDataObj: Record<number, {name: string, region_name: string}> = {};
@@ -242,34 +219,50 @@ const JardinesPage = () => {
 
   // Detectar sección activa basándose en el scroll
   useEffect(() => {
-    let isScrolling = false;
+    let ticking = false;
     
     const handleScroll = () => {
-      if (isScrolling) return;
-      
-      isScrolling = true;
-      requestAnimationFrame(() => {
-        const sections = ['introduction', 'gardenTypes', 'plants', 'waypoints', 'locations', 'rewards'];
-        const headerOffset = 120;
-        let currentSection = 'introduction';
-        
-        for (let i = sections.length - 1; i >= 0; i--) {
-          const section = document.getElementById(sections[i]);
-          if (section) {
-            const rect = section.getBoundingClientRect();
-            if (rect.top <= headerOffset && rect.bottom > headerOffset) {
+      if (!ticking) {
+        requestAnimationFrame(() => {
+          const sections = ['introduction', 'gardenTypes', 'plants', 'waypoints', 'locations', 'rewards'];
+          const headerOffset = 200;
+          let currentSection = 'introduction';
+          
+          const scrollPosition = window.scrollY + headerOffset;
+          const windowHeight = window.innerHeight;
+          const documentHeight = document.documentElement.scrollHeight;
+          const scrollTop = window.scrollY;
+          
+          // Buscar la sección activa
+          for (let i = sections.length - 1; i >= 0; i--) {
+            const section = document.getElementById(sections[i]);
+            if (section && section.offsetTop <= scrollPosition) {
               currentSection = sections[i];
               break;
             }
           }
-        }
-        
-        setSelectedSection(currentSection);
-        isScrolling = false;
-      });
+          
+          // Detectión especial para la última sección (rewards)
+          // Si estamos en el último 20% del documento, forzar rewards
+          if (scrollTop + windowHeight >= documentHeight * 0.8) {
+            const rewardsSection = document.getElementById('rewards');
+            if (rewardsSection) {
+              currentSection = 'rewards';
+            }
+          }
+          
+          // Solo actualizar si realmente cambió la sección
+          setSelectedSection(prevSection => {
+            return prevSection !== currentSection ? currentSection : prevSection;
+          });
+          
+          ticking = false;
+        });
+        ticking = true;
+      }
     };
 
-    // Ejecutar una vez al cargar para establecer la sección inicial
+    // Ejecutar una vez al cargar
     handleScroll();
     
     window.addEventListener('scroll', handleScroll, { passive: true });
@@ -423,24 +416,6 @@ const JardinesPage = () => {
     return () => { window.removeEventListener('hashchange', handleHashChange); };
   }, []);
 
-  // Detectar scroll para actualizar sección activa
-  useEffect(() => {
-    const handleScroll = () => {
-      const sections = ['introduction', 'gardenTypes', 'plants', 'waypoints', 'locations', 'rewards'];
-      const scrollPosition = window.scrollY + 100; // Offset para el header
-
-      for (let i = sections.length - 1; i >= 0; i--) {
-        const section = document.getElementById(sections[i]);
-        if (section && section.offsetTop <= scrollPosition) {
-          setSelectedSection(sections[i]);
-          break;
-        }
-      }
-    };
-
-    window.addEventListener('scroll', handleScroll);
-    return () => { window.removeEventListener('scroll', handleScroll); };
-  }, []);
 
   // Cerrar modal con tecla Escape
   useEffect(() => {

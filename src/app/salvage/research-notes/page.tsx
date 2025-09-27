@@ -279,15 +279,30 @@ export default function ResearchNotesPage() {
         setLoading(true);
         
                           // Obtener información de todos los items
-                     const [item8868Response, item13436Response, item13437Response, item13435Response, item104934Response, item104934BResponse, item13438Response] = await Promise.all([
-            fetch(`https://api.guildwars2.com/v2/items/8868?lang=${lang}`),
-            fetch(`https://api.guildwars2.com/v2/items/13436?lang=${lang}`),
-            fetch(`https://api.guildwars2.com/v2/items/13437?lang=${lang}`),
-            fetch(`https://api.guildwars2.com/v2/items/13435?lang=${lang}`),
-            fetch(`https://api.guildwars2.com/v2/items/104934?lang=${lang}`),
-            fetch(`https://api.guildwars2.com/v2/items/104934?lang=${lang}`),
-            fetch(`https://api.guildwars2.com/v2/items/13438?lang=${lang}`)
-          ]);
+                     // OPTIMIZADO: Una sola llamada batch en lugar de 7 llamadas individuales
+          const itemIds = [8868, 13436, 13437, 13435, 104934, 13438];
+          const itemsResponse = await fetch(`https://api.guildwars2.com/v2/items?ids=${itemIds.join(',')}&lang=${lang}`, {
+            headers: {
+              'Accept': 'application/json',
+              'Accept-Encoding': 'gzip, deflate, br'
+            }
+          });
+          const itemsData = await itemsResponse.json();
+          
+          // Mapear resultados por ID
+          const itemsMap: Record<number, any> = {};
+          itemsData.forEach((item: any) => {
+            itemsMap[item.id] = { json: () => Promise.resolve(item) };
+          });
+          
+          // Mantener compatibilidad con código existente
+          const item8868Response = itemsMap[8868];
+          const item13436Response = itemsMap[13436];
+          const item13437Response = itemsMap[13437];
+          const item13435Response = itemsMap[13435];
+          const item104934Response = itemsMap[104934];
+          const item104934BResponse = itemsMap[104934];
+          const item13438Response = itemsMap[13438];
 
          const [item8868Data, item13436Data, item13437Data, item13435Data, item104934Data, item104934BData, item13438Data] = await Promise.all([
            item8868Response.json(),
@@ -308,15 +323,28 @@ export default function ResearchNotesPage() {
          setItem13438(item13438Data);
 
                           // Obtener precios de todos los items
-                     const [price8868Response, price13436Response, price13437Response, price13435Response, price104934Response, price104934BResponse, price13438Response] = await Promise.all([
-            fetch(`https://api.guildwars2.com/v2/commerce/prices/8868?lang=${lang}`),
-            fetch(`https://api.guildwars2.com/v2/commerce/prices/13436?lang=${lang}`),
-            fetch(`https://api.guildwars2.com/v2/commerce/prices/13437?lang=${lang}`),
-            fetch(`https://api.guildwars2.com/v2/commerce/prices/13435?lang=${lang}`),
-            fetch(`https://api.guildwars2.com/v2/commerce/prices/104934?lang=${lang}`),
-            fetch(`https://api.guildwars2.com/v2/commerce/prices/104934?lang=${lang}`),
-            fetch(`https://api.guildwars2.com/v2/commerce/prices/13438?lang=${lang}`)
-          ]);
+                     // OPTIMIZADO: Una sola llamada de precios batch en lugar de 7 llamadas individuales
+         const pricesResponse = await fetch(`https://api.guildwars2.com/v2/commerce/prices?ids=${itemIds.join(',')}&lang=${lang}`, {
+           headers: {
+             'Accept': 'application/json',
+             'Accept-Encoding': 'gzip, deflate, br'
+           }
+         });
+         const pricesData = await pricesResponse.json();
+         
+         // Mapear precios por ID para compatibilidad
+         const pricesMap: Record<number, any> = {};
+         pricesData.forEach((price: any) => {
+           pricesMap[price.id] = { json: () => Promise.resolve(price) };
+         });
+         
+         const price8868Response = pricesMap[8868];
+         const price13436Response = pricesMap[13436];
+         const price13437Response = pricesMap[13437];
+         const price13435Response = pricesMap[13435];
+         const price104934Response = pricesMap[104934];
+         const price104934BResponse = pricesMap[104934];
+         const price13438Response = pricesMap[13438];
 
          const [price8868Data, price13436Data, price13437Data, price13435Data, price104934Data, price104934BData, price13438Data] = await Promise.all([
            price8868Response.json(),
@@ -337,7 +365,12 @@ export default function ResearchNotesPage() {
          setPrice13438(price13438Data);
 
                                                        // Obtener precios de todos los materiales de una sola vez
-         const allMatsPricesResp = await fetch(`https://api.guildwars2.com/v2/commerce/prices?ids=19700,24473,24475,24519,24511,24277,24351,24300,12156,19722,19729,19748,68063,24276,24350,24299&lang=${lang}`);
+         const allMatsPricesResp = await fetch(`https://api.guildwars2.com/v2/commerce/prices?ids=19700,24473,24475,24519,24511,24277,24351,24300,12156,19722,19729,19748,68063,24276,24350,24299&lang=${lang}`, {
+           headers: {
+             'Accept': 'application/json',
+             'Accept-Encoding': 'gzip, deflate, br'
+           }
+         });
          const allMatsPricesData: GW2Price[] = await allMatsPricesResp.json();
          
          const allMatsMap = allMatsPricesData.reduce((acc: Record<number, GW2Price>, p: GW2Price) => {
