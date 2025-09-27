@@ -108,6 +108,12 @@ export default function FourWindsPrizeBagPage() {
       return baseTotal + additionalValue;
     }
     
+    // Agregar valor adicional de 61g 72s 15c a la sección de equipo
+    if (section.name === 'Caja de equipo de lujo' || (luxuryEquipmentBox && section.name === luxuryEquipmentBox.name)) {
+      const additionalValue = 617215;
+      return baseTotal + additionalValue;
+    }
+    
     
     return baseTotal;
   };
@@ -414,24 +420,79 @@ export default function FourWindsPrizeBagPage() {
       icon: Star,
       itemIcon: luxuryEquipmentBox?.icon,
       tableData: [
-        { id: 46731, item: '', count: 163232, chance: '100%' },
+        { id: 46731, item: '', count: 16232, chance: '100%' },
         { id: 24324, item: '', count: 40, chance: '100%' },
         { id: 84731, item: '', count: 3097, chance: '100%' },
         { id: 83008, item: '', count: 126, chance: '100%' },
         { id: 24357, item: '', count: 21, chance: '100%' },
         { id: 24350, item: '', count: 547, chance: '100%' },
-        { id: 19701, item: '', count: 4, chance: '100%' },
+        { id: 19701, item: '', count: 507, chance: '100%' },
+        { id: 19700, item: '', count: 1290, chance: '100%' },
+        { id: 44970, item: '', count: 4, chance: '100%' },
+        { id: 24339, item: '', count: 39, chance: '100%' },
+        { id: 44980, item: '', count: 4, chance: '100%' },
+        { id: 24300, item: '', count: 43, chance: '100%' },
+        { id: 24295, item: '', count: 56, chance: '100%' },
+        { id: 24341, item: '', count: 366, chance: '100%' },
+        { id: 24320, item: '', count: 3, chance: '100%' },
+        { id: 19748, item: '', count: 967, chance: '100%' },
+        { id: 24319, item: '', count: 27, chance: '100%' },
+        { id: 19732, item: '', count: 132, chance: '100%' },
+        { id: 38030, item: '', count: 18, chance: '100%' },
+        { id: 44988, item: '', count: 3, chance: '100%' },
+        { id: 24314, item: '', count: 39, chance: '100%' },
+        { id: 24299, item: '', count: 468, chance: '100%' },
+        { id: 24289, item: '', count: 31, chance: '100%' },
+        { id: 24288, item: '', count: 450, chance: '100%' },
+        { id: 24282, item: '', count: 464, chance: '100%' },
+        { id: 19745, item: '', count: 164, chance: '100%' },
+        { id: 24358, item: '', count: 50, chance: '100%' },
+        { id: 24356, item: '', count: 439, chance: '100%' },
+        { id: 19729, item: '', count: 434, chance: '100%' },
+        { id: 24277, item: '', count: 42, chance: '100%' },
+        { id: 24305, item: '', count: 1, chance: '100%' },
+        { id: 24309, item: '', count: 33, chance: '100%' },
+        { id: 24294, item: '', count: 379, chance: '100%' },
+        { id: 24310, item: '', count: 4, chance: '100%' },
+        { id: 24276, item: '', count: 343, chance: '100%' },
+        { id: 24340, item: '', count: 4, chance: '100%' },
+        { id: 24304, item: '', count: 42, chance: '100%' },
+        { id: 24351, item: '', count: 43, chance: '100%' },
+        { id: 24329, item: '', count: 35, chance: '100%' },
+        { id: 24315, item: '', count: 3, chance: '100%' },
+        { id: 24283, item: '', count: 39, chance: '100%' },
+        { id: 24325, item: '', count: 2, chance: '100%' },
+        { id: 24330, item: '', count: 2, chance: '100%' },
+        { id: 44973, item: '', count: 2, chance: '100%' },
+        { id: 99999, item: t('fourWindsPrizeBag.randomExotic'), count: 3, chance: '100%' },
+        { id: 24334, item: '', count: 42, chance: '100%' },
+        { id: 24335, item: '', count: 2, chance: '100%' },
         
        
       ]
     },
     skins: {
       name: 'Skins',
-      count: 381,
+      count: 184,
       percentage: 0.95,
       icon: Star,
       itemIcon: skinsIcon,
       tableData: [
+        { id: 98755, item: '', count: 12, chance: '100%' },
+        { id: 98775, item: '', count: 10, chance: '100%' },
+        { id: 98569, item: '', count: 13, chance: '100%' },
+        { id: 98445, item: '', count: 23, chance: '100%' },
+        { id: 98632, item: '', count: 9, chance: '100%' },
+        { id: 98843, item: '', count: 7, chance: '100%' },
+        { id: 98452, item: '', count: 11, chance: '100%' },
+        { id: 98427, item: '', count: 7, chance: '100%' },
+        { id: 98521, item: '', count: 11, chance: '100%' },
+        { id: 98506, item: '', count: 14, chance: '100%' },
+        { id: 98826, item: '', count: 18, chance: '100%' },
+        { id: 98809, item: '', count: 11, chance: '100%' },
+        { id: 98492, item: '', count: 13, chance: '100%' }, 
+        { id: 98578, item: '', count: 8, chance: '100%' }, 
+        { id: 98784, item: '', count: 17, chance: '100%' }, 
       
       ]
     }
@@ -445,7 +506,7 @@ export default function FourWindsPrizeBagPage() {
   const fetchItems = async (language: string) => {
     try {
       // Obtener todos los items en una sola consulta
-        const response = await fetch(`https://api.guildwars2.com/v2/items?ids=66224,98586,64531,44252,89815,79082,44471,98632,46731,84731,83008,24288,24356,44960,24299,44976,19748,24341,19700,24282,19701,19732,19729,24329,24320,24357,24300,19745,24309,24350,24324,24358,24319,24294,24295,44966,24283,24314,78886,24334,24277,24351,24276,24339,24310,24304,24289,38030,24330,24305,24315,24340,24325,24335,44967,45150,44980,44991,44985,44992,44972,44975,44979,44971,44978,44965,26150,2397,28592,1366,26854,26872,27179,2703,2692&lang=${language}`);
+        const response = await fetch(`https://api.guildwars2.com/v2/items?ids=66224,98586,64531,44252,89815,79082,44471,98632,46731,84731,83008,24288,24356,44960,24299,44976,19748,24341,19700,24282,19701,19732,19729,24329,24320,24357,24300,19745,24309,24350,24324,24358,24319,24294,24295,44966,24283,24314,78886,24334,24277,24351,24276,24339,24310,24304,24289,38030,24330,24305,24315,24340,24325,24335,44967,45150,44980,44991,44985,44992,44972,44975,44979,44971,44978,44965,44970,44988,44973,98755,98775,98569,98445,98843,98452,98427,98521,98506,98826,98809,98492,98578,98784,26150,2397,28592,1366,26854,26872,27179,2703,2692&lang=${language}`);
       const data: GW2Item[] = await response.json();
       
       if (data && data.length >= 8) {
@@ -1390,6 +1451,240 @@ export default function FourWindsPrizeBagPage() {
           }));
         }
 
+        // Item ID 44970
+        const item44970Data = data.find((item: GW2Item) => item.id === 44970);
+        if (item44970Data) {
+          setItemDetails(prev => ({
+            ...prev,
+            44970: {
+              name: item44970Data.name,
+              icon: item44970Data.icon,
+              price: 0 // Se actualizará con fetchItemPrices
+            }
+          }));
+        }
+
+        // Item ID 44988
+        const item44988Data = data.find((item: GW2Item) => item.id === 44988);
+        if (item44988Data) {
+          setItemDetails(prev => ({
+            ...prev,
+            44988: {
+              name: item44988Data.name,
+              icon: item44988Data.icon,
+              price: 0 // Se actualizará con fetchItemPrices
+            }
+          }));
+        }
+
+        // Item ID 44973
+        const item44973Data = data.find((item: GW2Item) => item.id === 44973);
+        if (item44973Data) {
+          setItemDetails(prev => ({
+            ...prev,
+            44973: {
+              name: item44973Data.name,
+              icon: item44973Data.icon,
+              price: 0 // Se actualizará con fetchItemPrices
+            }
+          }));
+        }
+
+        // Item ID 98755
+        const item98755Data = data.find((item: GW2Item) => item.id === 98755);
+        if (item98755Data) {
+          setItemDetails(prev => ({
+            ...prev,
+            98755: {
+              name: item98755Data.name,
+              icon: item98755Data.icon,
+              price: 0 // Se actualizará con fetchItemPrices
+            }
+          }));
+        }
+
+        // Item ID 98775
+        const item98775Data = data.find((item: GW2Item) => item.id === 98775);
+        if (item98775Data) {
+          setItemDetails(prev => ({
+            ...prev,
+            98775: {
+              name: item98775Data.name,
+              icon: item98775Data.icon,
+              price: 0 // Se actualizará con fetchItemPrices
+            }
+          }));
+        }
+
+        // Item ID 98569
+        const item98569Data = data.find((item: GW2Item) => item.id === 98569);
+        if (item98569Data) {
+          setItemDetails(prev => ({
+            ...prev,
+            98569: {
+              name: item98569Data.name,
+              icon: item98569Data.icon,
+              price: 0 // Se actualizará con fetchItemPrices
+            }
+          }));
+        }
+
+        // Item ID 98445
+        const item98445Data = data.find((item: GW2Item) => item.id === 98445);
+        if (item98445Data) {
+          setItemDetails(prev => ({
+            ...prev,
+            98445: {
+              name: item98445Data.name,
+              icon: item98445Data.icon,
+              price: 0 // Se actualizará con fetchItemPrices
+            }
+          }));
+        }
+
+        // Item ID 98843
+        const item98843Data = data.find((item: GW2Item) => item.id === 98843);
+        if (item98843Data) {
+          setItemDetails(prev => ({
+            ...prev,
+            98843: {
+              name: item98843Data.name,
+              icon: item98843Data.icon,
+              price: 0 // Se actualizará con fetchItemPrices
+            }
+          }));
+        }
+
+        // Item ID 98452
+        const item98452Data = data.find((item: GW2Item) => item.id === 98452);
+        if (item98452Data) {
+          setItemDetails(prev => ({
+            ...prev,
+            98452: {
+              name: item98452Data.name,
+              icon: item98452Data.icon,
+              price: 0 // Se actualizará con fetchItemPrices
+            }
+          }));
+        }
+
+        // Item ID 98427
+        const item98427Data = data.find((item: GW2Item) => item.id === 98427);
+        if (item98427Data) {
+          setItemDetails(prev => ({
+            ...prev,
+            98427: {
+              name: item98427Data.name,
+              icon: item98427Data.icon,
+              price: 0 // Se actualizará con fetchItemPrices
+            }
+          }));
+        }
+
+        // Item ID 98521
+        const item98521Data = data.find((item: GW2Item) => item.id === 98521);
+        if (item98521Data) {
+          setItemDetails(prev => ({
+            ...prev,
+            98521: {
+              name: item98521Data.name,
+              icon: item98521Data.icon,
+              price: 0 // Se actualizará con fetchItemPrices
+            }
+          }));
+        }
+
+        // Item ID 98506
+        const item98506Data = data.find((item: GW2Item) => item.id === 98506);
+        if (item98506Data) {
+          setItemDetails(prev => ({
+            ...prev,
+            98506: {
+              name: item98506Data.name,
+              icon: item98506Data.icon,
+              price: 0 // Se actualizará con fetchItemPrices
+            }
+          }));
+        }
+
+        // Item ID 98826
+        const item98826Data = data.find((item: GW2Item) => item.id === 98826);
+        if (item98826Data) {
+          setItemDetails(prev => ({
+            ...prev,
+            98826: {
+              name: item98826Data.name,
+              icon: item98826Data.icon,
+              price: 0 // Se actualizará con fetchItemPrices
+            }
+          }));
+        }
+
+        // Item ID 98809
+        const item98809Data = data.find((item: GW2Item) => item.id === 98809);
+        if (item98809Data) {
+          setItemDetails(prev => ({
+            ...prev,
+            98809: {
+              name: item98809Data.name,
+              icon: item98809Data.icon,
+              price: 0 // Se actualizará con fetchItemPrices
+            }
+          }));
+        }
+
+        // Item ID 98492
+        const item98492Data = data.find((item: GW2Item) => item.id === 98492);
+        if (item98492Data) {
+          setItemDetails(prev => ({
+            ...prev,
+            98492: {
+              name: item98492Data.name,
+              icon: item98492Data.icon,
+              price: 0 // Se actualizará con fetchItemPrices
+            }
+          }));
+        }
+
+        // Item ID 98578
+        const item98578Data = data.find((item: GW2Item) => item.id === 98578);
+        if (item98578Data) {
+          setItemDetails(prev => ({
+            ...prev,
+            98578: {
+              name: item98578Data.name,
+              icon: item98578Data.icon,
+              price: 0 // Se actualizará con fetchItemPrices
+            }
+          }));
+        }
+
+        // Item ID 98784
+        const item98784Data = data.find((item: GW2Item) => item.id === 98784);
+        if (item98784Data) {
+          setItemDetails(prev => ({
+            ...prev,
+            98784: {
+              name: item98784Data.name,
+              icon: item98784Data.icon,
+              price: 0 // Se actualizará con fetchItemPrices
+            }
+          }));
+        }
+
+        // Item ID 98632
+        const item98632Data = data.find((item: GW2Item) => item.id === 98632);
+        if (item98632Data) {
+          setItemDetails(prev => ({
+            ...prev,
+            98632: {
+              name: item98632Data.name,
+              icon: item98632Data.icon,
+              price: 0 // Se actualizará con fetchItemPrices
+            }
+          }));
+        }
+
         // Item ID 99999 - Random Exotic (agrupación de items exóticos)
         setItemDetails(prev => ({
           ...prev,
@@ -1409,7 +1704,7 @@ export default function FourWindsPrizeBagPage() {
   // Función para obtener precios de los items
   const fetchItemPrices = async () => {
     try {
-        const itemIds = [46731, 84731, 83008, 24288, 24356, 44960, 24299, 44976, 19748, 24341, 19700, 24282, 19701, 19732, 19729, 24329, 24320, 24357, 24300, 19745, 24309, 24350, 24324, 24358, 24319, 24294, 24295, 44966, 24283, 24314, 78886, 24334, 24277, 24351, 24276, 24339, 24310, 24304, 24289, 38030, 24330, 24305, 24315, 24340, 24325, 24335, 44967, 45150, 44980, 44991, 44985, 44992, 44972, 44975, 44979, 44971, 44978, 44965, 26150, 2397, 28592, 1366, 26854, 26872, 27179, 2703, 2692]; // Agregar más IDs según sea necesario
+        const itemIds = [46731, 84731, 83008, 24288, 24356, 44960, 24299, 44976, 19748, 24341, 19700, 24282, 19701, 19732, 19729, 24329, 24320, 24357, 24300, 19745, 24309, 24350, 24324, 24358, 24319, 24294, 24295, 44966, 24283, 24314, 78886, 24334, 24277, 24351, 24276, 24339, 24310, 24304, 24289, 38030, 24330, 24305, 24315, 24340, 24325, 24335, 44967, 45150, 44980, 44991, 44985, 44992, 44972, 44975, 44979, 44971, 44978, 44965, 44970, 44988, 44973, 98755, 98775, 98569, 98445, 98843, 98452, 98427, 98521, 98506, 98826, 98809, 98492, 98578, 98784, 98632, 26150, 2397, 28592, 1366, 26854, 26872, 27179, 2703, 2692]; // Agregar más IDs según sea necesario
       const response = await fetch(`https://api.guildwars2.com/v2/commerce/prices?ids=${itemIds.join(',')}`);
       const prices: GW2Price[] = await response.json();
       
