@@ -3,7 +3,6 @@
 import { motion } from 'framer-motion'
 import Link from 'next/link'
 import Image from 'next/image'
-import { memo } from 'react'
 import Navigation from '@/components/layout/Navigation'
 import { 
   Package, 

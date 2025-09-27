@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 
 // Hook simple y seguro para optimizar fetches a GW2 API
-export function useGW2Fetch<T>(url: string | null, dependencies: any[] = []) {
+export function useGW2Fetch<T>(url: string | null, dependencies: unknown[] = []) {
   const [data, setData] = useState<T | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
@@ -47,7 +47,7 @@ export function useGW2Items(itemIds: number[], language: string = 'en') {
     ? `https://api.guildwars2.com/v2/items?ids=${itemIds.join(',')}&lang=${language}`
     : null;
   
-  return useGW2Fetch<any[]>(url, [itemIds, language]);
+  return useGW2Fetch<{id: number, name: string, icon: string}[]>(url, [itemIds, language]);
 }
 
 // Hook específico para precios de GW2
@@ -56,5 +56,5 @@ export function useGW2Prices(itemIds: number[]) {
     ? `https://api.guildwars2.com/v2/commerce/prices?ids=${itemIds.join(',')}`
     : null;
   
-  return useGW2Fetch<any[]>(url, [itemIds]);
+  return useGW2Fetch<{id: number, buys?: {unit_price: number}, sells?: {unit_price: number}}[]>(url, [itemIds]);
 }

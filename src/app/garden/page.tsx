@@ -127,7 +127,7 @@ const JardinesPage = () => {
         const itemsData = await itemsResponse.json();
         
         // Mapear los resultados a los estados correspondientes
-        itemsData.forEach((item: any) => {
+        itemsData.forEach((item: {id: number, name: string, icon: string}) => {
           const itemData = { name: item.name, icon: item.icon };
           
           switch (item.id) {

@@ -93,9 +93,9 @@ export default function UnidentifiedGearRarePage() {
       const pricesData = await pricesResponse.json();
       
       // Extraer datos específicos del batch
-      const unidGearItem = itemsData.find((item: any) => item.id === 83008);
-      const kitItem = itemsData.find((item: any) => item.id === 67027);
-      const unidGearPrice = pricesData.find((price: any) => price.id === 83008);
+      const unidGearItem = itemsData.find((item: {id: number, name: string}) => item.id === 83008);
+      const kitItem = itemsData.find((item: {id: number, name: string}) => item.id === 67027);
+      const unidGearPrice = pricesData.find((price: {id: number, buys?: {unit_price: number}, sells?: {unit_price: number}}) => price.id === 83008);
       
       if (unidGearItem) setUnidentifiedGearName(unidGearItem.name);
       if (kitItem) setKitName(kitItem.name);

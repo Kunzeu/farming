@@ -314,13 +314,13 @@ export default function ResearchNotesPage() {
            item13438Response.json()
          ]);
 
-         setItem8868(item8868Data);
-         setItem13436(item13436Data);
-         setItem13437(item13437Data);
-         setItem13435(item13435Data);
-         setItem104934(item104934Data);
-         setItem104934B(item104934BData);
-         setItem13438(item13438Data);
+         setItem8868(item8868Data as any);
+         setItem13436(item13436Data as any);
+         setItem13437(item13437Data as any);
+         setItem13435(item13435Data as any);
+         setItem104934(item104934Data as any);
+         setItem104934B(item104934BData as any);
+         setItem13438(item13438Data as any);
 
                           // Obtener precios de todos los items
                      // OPTIMIZADO: Una sola llamada de precios batch en lugar de 7 llamadas individuales
@@ -356,13 +356,13 @@ export default function ResearchNotesPage() {
            price13438Response.json()
          ]);
 
-         setPrice8868(price8868Data);
-         setPrice13436(price13436Data);
-         setPrice13437(price13437Data);
-         setPrice13435(price13435Data);
-         setPrice104934(price104934Data);
-         setPrice104934B(price104934BData);
-         setPrice13438(price13438Data);
+         setPrice8868(price8868Data as any);
+         setPrice13436(price13436Data as any);
+         setPrice13437(price13437Data as any);
+         setPrice13435(price13435Data as any);
+         setPrice104934(price104934Data as any);
+         setPrice104934B(price104934BData as any);
+         setPrice13438(price13438Data as any);
 
                                                        // Obtener precios de todos los materiales de una sola vez
          const allMatsPricesResp = await fetch(`https://api.guildwars2.com/v2/commerce/prices?ids=19700,24473,24475,24519,24511,24277,24351,24300,12156,19722,19729,19748,68063,24276,24350,24299&lang=${lang}`, {
