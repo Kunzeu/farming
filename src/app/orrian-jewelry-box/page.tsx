@@ -5,6 +5,7 @@ import { useI18n } from '@/contexts/I18nContext';
 import { motion } from 'framer-motion';
 import { ArrowLeft, Info, ExternalLink } from 'lucide-react';
 import Link from 'next/link';
+import Image from 'next/image';
 import Navigation from '@/components/layout/Navigation';
 import { usePageTitle } from '@/hooks/usePageTitle';
 
@@ -418,9 +419,11 @@ export default function OrrianJewelryBoxPage() {
             <div className="flex flex-col md:flex-row items-center md:items-start gap-6">
               {/* Item Icon */}
               <div className="flex-shrink-0">
-                <img 
+                <Image 
                   src={itemData.icon} 
                   alt={itemData.name}
+                  width={96}
+                  height={96}
                   className="w-24 h-24 rounded-lg border-2 border-slate-600/50"
                 />
               </div>
@@ -469,9 +472,11 @@ export default function OrrianJewelryBoxPage() {
               <p className="text-sm text-gray-400 mb-2">{t('orrianJewelryBoxPage.karmaInicial', 'Karma Inicial')}</p>
               <div className="flex items-center justify-center gap-2">
                 <p className="text-3xl font-bold text-blue-300">45,500,000</p>
-                <img 
+                <Image 
                   src="/images/expansions/karma.webp" 
                   alt="Karma"
+                  width={32}
+                  height={32}
                   className="w-8 h-8"
                 />
               </div>
@@ -486,9 +491,11 @@ export default function OrrianJewelryBoxPage() {
               <p className="text-sm text-gray-400 mb-2">{t('orrianJewelryBoxPage.costoCofre', 'Costo Cofre')}</p>
               <div className="flex items-center justify-center gap-2">
                 <p className="text-3xl font-bold text-orange-300">4,550</p>
-                <img 
+                <Image 
                   src="/images/expansions/karma.webp" 
                   alt="Karma"
+                  width={32}
+                  height={32}
                   className="w-8 h-8"
                 />
               </div>
@@ -498,9 +505,11 @@ export default function OrrianJewelryBoxPage() {
               <p className="text-sm text-gray-400 mb-2">{t('orrianJewelryBoxPage.karmaRecuperado', 'Karma Recuperado')}</p>
               <div className="flex items-center justify-center gap-2">
                 <p className="text-3xl font-bold text-purple-300">{totalKarmaRecovered.toLocaleString()}</p>
-                <img 
+                <Image 
                   src="/images/expansions/karma.webp" 
                   alt="Karma"
+                  width={32}
+                  height={32}
                   className="w-8 h-8"
                 />
               </div>
@@ -681,9 +690,11 @@ export default function OrrianJewelryBoxPage() {
             {finalSortedItems.map((item) => (
               <div key={item.id} className="sm:hidden grid [grid-template-columns:2fr_1.2fr_0.8fr_1.2fr] gap-3 items-center py-3 px-6 hover:bg-slate-700/30 transition-colors">
                 <div className="flex items-center gap-3 min-w-0">
-                  <img 
+                  <Image 
                     src={item.icon} 
                     alt={item.name}
+                    width={24}
+                    height={24}
                     className="w-6 h-6 rounded border border-slate-600/50 flex-shrink-0"
                   />
                   <span className="font-medium text-sm truncate">{item.name}</span>
@@ -717,9 +728,11 @@ export default function OrrianJewelryBoxPage() {
                 <div key={item.id}>
                   <div className="grid grid-cols-4 gap-5 py-3 px-5 hover:bg-slate-700/30 transition-colors">
                     <div className="flex items-center gap-3 min-w-0">
-                      <img 
+                      <Image 
                         src={item.icon} 
                         alt={item.name}
+                        width={32}
+                        height={32}
                         className="w-8 h-8 rounded border border-slate-600/50 flex-shrink-0"
                       />
                       <span className="font-medium text-sm sm:text-base truncate">{item.name}</span>

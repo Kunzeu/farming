@@ -561,54 +561,54 @@ export default function ConversionGuidePage() {
                       </li>
                       <li className="ml-4 flex items-center gap-3 py-1">
                         {materialIcons[T5_MATERIAL_IDS.blood] && (
-                          <img src={materialIcons[T5_MATERIAL_IDS.blood]} alt={getMaterialName(T5_MATERIAL_IDS.blood, "Sangre T5")} className="w-6 h-6 flex-shrink-0" />
+                          <Image src={materialIcons[T5_MATERIAL_IDS.blood]} alt={getMaterialName(T5_MATERIAL_IDS.blood, "Sangre T5")} width={24} height={24} className="w-6 h-6 flex-shrink-0" />
                         )}
                         <span className="text-base">{getMaterialName(T5_MATERIAL_IDS.blood, "Sangre T5")}</span>
                       </li>
                       <li className="ml-4 flex items-center gap-3 py-1">
                         {materialIcons[T5_MATERIAL_IDS.bone] && (
-                          <img src={materialIcons[T5_MATERIAL_IDS.bone]} alt={getMaterialName(T5_MATERIAL_IDS.bone, "Hueso T5")} className="w-6 h-6 flex-shrink-0" />
+                          <Image src={materialIcons[T5_MATERIAL_IDS.bone]} alt={getMaterialName(T5_MATERIAL_IDS.bone, "Hueso T5")} width={24} height={24} className="w-6 h-6 flex-shrink-0" />
                         )}
                         <span className="text-base">{getMaterialName(T5_MATERIAL_IDS.bone, "Hueso T5")}</span>
                       </li>
                       <li className="ml-4 flex items-center gap-3 py-1">
                         {materialIcons[T5_MATERIAL_IDS.claw] && (
-                          <img src={materialIcons[T5_MATERIAL_IDS.claw]} alt={getMaterialName(T5_MATERIAL_IDS.claw, "Garra T5")} className="w-6 h-6 flex-shrink-0" />
+                          <Image src={materialIcons[T5_MATERIAL_IDS.claw]} alt={getMaterialName(T5_MATERIAL_IDS.claw, "Garra T5")} width={24} height={24} className="w-6 h-6 flex-shrink-0" />
                         )}
                         <span className="text-base">{getMaterialName(T5_MATERIAL_IDS.claw, "Garra T5")}</span>
                       </li>
                       <li className="ml-4 flex items-center gap-3 py-1">
                         {materialIcons[T5_MATERIAL_IDS.fang] && (
-                          <img src={materialIcons[T5_MATERIAL_IDS.fang]} alt={getMaterialName(T5_MATERIAL_IDS.fang, "Colmillo T5")} className="w-6 h-6 flex-shrink-0" />
+                          <Image src={materialIcons[T5_MATERIAL_IDS.fang]} alt={getMaterialName(T5_MATERIAL_IDS.fang, "Colmillo T5")} width={24} height={24} className="w-6 h-6 flex-shrink-0" />
                         )}
                         <span className="text-base">{getMaterialName(T5_MATERIAL_IDS.fang, "Colmillo T5")}</span>
                       </li>
                       <li className="ml-4 flex items-center gap-3 py-1">
                         {materialIcons[T5_MATERIAL_IDS.scale] && (
-                          <img src={materialIcons[T5_MATERIAL_IDS.scale]} alt={getMaterialName(T5_MATERIAL_IDS.scale, "Escama T5")} className="w-6 h-6 flex-shrink-0" />
+                          <Image src={materialIcons[T5_MATERIAL_IDS.scale]} alt={getMaterialName(T5_MATERIAL_IDS.scale, "Escama T5")} width={24} height={24} className="w-6 h-6 flex-shrink-0" />
                         )}
                         <span className="text-base">{getMaterialName(T5_MATERIAL_IDS.scale, "Escama T5")}</span>
                       </li>
                       <li className="ml-4 flex items-center gap-3 py-1">
                         {materialIcons[T5_MATERIAL_IDS.totem] && (
-                          <img src={materialIcons[T5_MATERIAL_IDS.totem]} alt={getMaterialName(T5_MATERIAL_IDS.totem, "Tótem T5")} className="w-6 h-6 flex-shrink-0" />
+                          <Image src={materialIcons[T5_MATERIAL_IDS.totem]} alt={getMaterialName(T5_MATERIAL_IDS.totem, "Tótem T5")} width={24} height={24} className="w-6 h-6 flex-shrink-0" />
                         )}
                         <span className="text-base">{getMaterialName(T5_MATERIAL_IDS.totem, "Tótem T5")}</span>
                       </li>
                       <li className="ml-4 flex items-center gap-3 py-1">
                         {materialIcons[T5_MATERIAL_IDS.venom] && (
-                          <img src={materialIcons[T5_MATERIAL_IDS.venom]} alt={getMaterialName(T5_MATERIAL_IDS.venom, "Veneno T5")} className="w-6 h-6 flex-shrink-0" />
+                          <Image src={materialIcons[T5_MATERIAL_IDS.venom]} alt={getMaterialName(T5_MATERIAL_IDS.venom, "Veneno T5")} width={24} height={24} className="w-6 h-6 flex-shrink-0" />
                         )}
                         <span className="text-base">{getMaterialName(T5_MATERIAL_IDS.venom, "Veneno T5")}</span>
                       </li>
                       <li className="ml-4 flex items-center gap-3 py-1">
                         {materialIcons[T6_DUST_ID] && (
-                          <img src={materialIcons[T6_DUST_ID]} alt={getMaterialName(T6_DUST_ID, "Polvo brillante")} className="w-6 h-6 flex-shrink-0" />
+                          <Image src={materialIcons[T6_DUST_ID]} alt={getMaterialName(T6_DUST_ID, "Polvo brillante")} width={24} height={24} className="w-6 h-6 flex-shrink-0" />
                         )}
                         <span className="text-base"><strong>{t('conversionGuidePage.sections.asBuyer.dustAmount')}</strong></span>
                       </li>
                       <li className="ml-4 flex items-center gap-3 py-1">
-                        <img src="/images/expansions/Gold.webp" alt={t('conversionGuidePage.images.gold')} className="w-6 h-6 flex-shrink-0" />
+                        <Image src="/images/expansions/Gold.webp" alt={t('conversionGuidePage.images.gold')} width={24} height={24} className="w-6 h-6 flex-shrink-0" />
                         <span className="text-base"><strong>{t('conversionGuidePage.sections.asBuyer.payment')}</strong></span>
                       </li>
                     </ul>
@@ -623,9 +623,11 @@ export default function ConversionGuidePage() {
                     {t('conversionGuidePage.sections.asBuyer.content4')}
                   </p>
                   <div className="mb-6 flex justify-center">
-                    <img 
+                    <Image 
                       src="/thumbnails/t5.webp" 
                       alt={t('conversionGuidePage.images.t5Materials')} 
+                      width={800}
+                      height={600}
                       className="rounded-lg shadow-lg max-w-full h-auto cursor-pointer hover:opacity-90 transition-opacity"
                       onClick={() => openImageModal("/thumbnails/t5.webp", t('conversionGuidePage.images.t5Materials'))}
                     />
@@ -648,9 +650,11 @@ export default function ConversionGuidePage() {
                     {t('conversionGuidePage.sections.asSeller.content1')}
                   </p>
                   <div className="mb-6 flex justify-center">
-                    <img 
+                    <Image 
                       src="/thumbnails/unknown-11.webp" 
                       alt={t('conversionGuidePage.images.inventorySetup')} 
+                      width={800}
+                      height={600}
                       className="rounded-lg shadow-lg max-w-full h-auto cursor-pointer hover:opacity-90 transition-opacity"
                       onClick={() => openImageModal("/thumbnails/unknown-11.webp", t('conversionGuidePage.images.inventorySetup'))}
                     />
@@ -660,9 +664,11 @@ export default function ConversionGuidePage() {
                     {t('conversionGuidePage.sections.asSeller.content2')}
                   </p>
                   <div className="mb-6 flex justify-center">
-                    <img 
+                    <Image 
                       src="/thumbnails/unknown-12.webp" 
                       alt={t('conversionGuidePage.images.philosopherStones')} 
+                      width={800}
+                      height={600}
                       className="rounded-lg shadow-lg max-w-full h-auto cursor-pointer hover:opacity-90 transition-opacity"
                       onClick={() => openImageModal("/thumbnails/unknown-12.webp", t('conversionGuidePage.images.philosopherStones'))}
                     />
@@ -714,9 +720,11 @@ export default function ConversionGuidePage() {
           onClick={closeImageModal}
         >
           <div className="relative max-w-4xl max-h-full">
-            <img 
+            <Image 
               src={modalImageSrc} 
               alt={modalImageAlt}
+              width={1200}
+              height={900}
               className="max-w-full max-h-full object-contain rounded-lg shadow-2xl"
             />
             <button

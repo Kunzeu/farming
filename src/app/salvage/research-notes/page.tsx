@@ -5,6 +5,7 @@ import { motion } from 'framer-motion';
 import { FileText, Hammer, Gem } from 'lucide-react';
 import Navigation from '@/components/layout/Navigation';
 import Link from 'next/link';
+import Image from 'next/image';
 import { usePageTitle } from '@/hooks/usePageTitle';
 import { useI18n } from '@/contexts/I18nContext';
 import { useEffect, useState, useMemo } from 'react';
@@ -302,17 +303,17 @@ export default function ResearchNotesPage() {
           const item13437Response = itemsMap[13437];
           const item13435Response = itemsMap[13435];
           const item104934Response = itemsMap[104934];
-          const item104934BResponse = itemsMap[104934];
+          const item104934BResponse = itemsMap[104934]; // Same item, different variant
           const item13438Response = itemsMap[13438];
 
          const [item8868Data, item13436Data, item13437Data, item13435Data, item104934Data, item104934BData, item13438Data] = await Promise.all([
-           item8868Response.json(),
-           item13436Response.json(),
-           item13437Response.json(),
-           item13435Response.json(),
-           item104934Response.json(),
-           item104934BResponse.json(),
-           item13438Response.json()
+           item8868Response?.json() || Promise.resolve(null),
+           item13436Response?.json() || Promise.resolve(null),
+           item13437Response?.json() || Promise.resolve(null),
+           item13435Response?.json() || Promise.resolve(null),
+           item104934Response?.json() || Promise.resolve(null),
+           item104934BResponse?.json() || Promise.resolve(null),
+           item13438Response?.json() || Promise.resolve(null)
          ]);
 
          setItem8868(item8868Data as any);
@@ -344,17 +345,17 @@ export default function ResearchNotesPage() {
          const price13437Response = pricesMap[13437];
          const price13435Response = pricesMap[13435];
          const price104934Response = pricesMap[104934];
-         const price104934BResponse = pricesMap[104934];
+         const price104934BResponse = pricesMap[104934]; // Same item, different variant
          const price13438Response = pricesMap[13438];
 
          const [price8868Data, price13436Data, price13437Data, price13435Data, price104934Data, price104934BData, price13438Data] = await Promise.all([
-           price8868Response.json(),
-           price13436Response.json(),
-           price13437Response.json(),
-           price13435Response.json(),
-           price104934Response.json(),
-           price104934BResponse.json(),
-           price13438Response.json()
+           price8868Response?.json() || Promise.resolve(null),
+           price13436Response?.json() || Promise.resolve(null),
+           price13437Response?.json() || Promise.resolve(null),
+           price13435Response?.json() || Promise.resolve(null),
+           price104934Response?.json() || Promise.resolve(null),
+           price104934BResponse?.json() || Promise.resolve(null),
+           price13438Response?.json() || Promise.resolve(null)
          ]);
 
          setPrice8868(price8868Data as any);
@@ -735,51 +736,65 @@ export default function ResearchNotesPage() {
                         </tr>
                       </thead>
                       <tbody>
-                                                 {craftingDisciplines[0].items.map((item, itemIndex) => (
+                       {craftingDisciplines[0].items.map((item, itemIndex) => (
                            <tr key={itemIndex} className="border-b border-slate-600/30 hover:bg-slate-600/20">
-                                                           <td className="py-2 px-3">
+                             <td className="py-2 px-3">
                                 <div className="flex items-center gap-3">
                                   {item.id === 8868 && item8868?.icon ? (
-                                    <img 
+                                    <Image 
                                       src={item8868.icon} 
                                       alt={item.name}
+                                      width={32}
+                                      height={32}
                                       className="w-8 h-8 rounded"
                                     />
                                   ) : item.id === 13436 && item13436?.icon ? (
-                                    <img 
+                                    <Image 
                                       src={item13436.icon} 
                                       alt={item.name}
+                                      width={32}
+                                      height={32}
                                       className="w-8 h-8 rounded"
                                     />
                                   ) : item.id === 13437 && item13437?.icon ? (
-                                   <img 
+                                   <Image 
                                      src={item13437.icon} 
                                      alt={item.name}
+                                     width={32}
+                                     height={32}
                                      className="w-8 h-8 rounded"
                                    />
-                                                                  ) : item.id === 13435 && item13435?.icon ? (
-                                     <img 
+                                  ) : item.id === 13435 && item13435?.icon ? (
+                                     <Image 
                                        src={item13435.icon} 
                                        alt={item.name}
-                                       className="w-8 h-8 rounded"
+                                       width={32}
+                                      height={32}
+                                      className="w-8 h-8 rounded"
                                      />
                                                                       ) : item.id === 13438 && item13438?.icon ? (
-                                      <img 
+                                      <Image 
                                         src={item13438.icon} 
                                         alt={item.name}
-                                        className="w-8 h-8 rounded"
+                                        width={32}
+                                      height={32}
+                                      className="w-8 h-8 rounded"
                                       />
                                    ) : item.id === 104934 && item104934?.icon ? (
-                                     <img 
+                                     <Image 
                                        src={item104934.icon} 
                                        alt={item.name}
-                                       className="w-8 h-8 rounded"
+                                       width={32}
+                                      height={32}
+                                      className="w-8 h-8 rounded"
                                      />
                                    ) : item.id === 104934.1 && item104934B?.icon ? (
-                                     <img 
+                                     <Image 
                                        src={item104934B.icon} 
                                        alt={item.name}
-                                       className="w-8 h-8 rounded"
+                                       width={32}
+                                      height={32}
+                                      className="w-8 h-8 rounded"
                                      />
                                    ) : (
                                      <div className="w-8 h-8 bg-slate-600 rounded"></div>
@@ -801,15 +816,19 @@ export default function ResearchNotesPage() {
                                 <td className="py-2 px-3 text-gray-300 text-center">
                                  <div className="flex items-center justify-center gap-2">
                                    {item.id === 8868 ? (
-                                     <img 
+                                     <Image 
                                        src="https://wiki.guildwars2.com/images/b/b7/Artificer_tango_icon_20px.png" 
                                        alt="Artificer" 
+                                       width={20}
+                                       height={20}
                                        className="w-5 h-5"
                                      />
                                    ) : item.id !== 104934 && item.id !== 104934.1 && (
-                                     <img 
+                                     <Image 
                                        src="/images/icons/jeweler-icon.webp" 
                                        alt="Jeweler" 
+                                       width={16}
+                                       height={16}
                                        className="w-4 h-4"
                                      />
                                    )}

@@ -3,7 +3,8 @@
 import { motion } from 'framer-motion';
 import { Package, Gift } from 'lucide-react';
 import Navigation from '@/components/layout/Navigation';
-import Link from 'next/link';
+import Link from 'next/link'
+import Image from 'next/image';
 import { usePageTitle } from '@/hooks/usePageTitle';
 import { useI18n } from '@/contexts/I18nContext';
 
@@ -89,9 +90,11 @@ export default function OpenedPage() {
                   <div className="bg-gradient-to-br from-purple-500/20 to-purple-600/20 backdrop-blur-sm rounded-xl p-6 border border-purple-500/30 hover:scale-105 transition-all duration-300 cursor-pointer">
                     <div className="flex items-center gap-4 mb-4">
                       <div className="w-12 h-12 bg-gradient-to-br from-purple-500/20 to-purple-600/20 rounded-lg flex items-center justify-center border border-purple-500/30 overflow-hidden">
-                        <img 
+                        <Image 
                           src="https://render.guildwars2.com/file/556EDAB564D0341502AB1E129F0303C0F739A4AC/2718778.png" 
                           alt="Four Winds Prize Bag"
+                          width={40}
+                          height={40}
                           className="w-10 h-10 object-contain"
                         />
                       </div>

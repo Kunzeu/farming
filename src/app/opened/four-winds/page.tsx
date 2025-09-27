@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
+import Image from 'next/image';
 import { Gift, ChevronLeft, Package, Star, Coins, BarChart3, ArrowLeft } from 'lucide-react';
 import Navigation from '@/components/layout/Navigation';
 import Link from 'next/link';
@@ -1798,9 +1799,11 @@ export default function FourWindsPrizeBagPage() {
             >
               <div className="w-20 h-20 sm:w-16 sm:h-16 bg-gradient-to-br from-purple-500 to-pink-600 rounded-xl shadow-lg flex items-center justify-center overflow-hidden">
                 {fourWindsBag ? (
-                  <img 
+                  <Image 
                     src={fourWindsBag.icon} 
                     alt={fourWindsBag.name} 
+                    width={80}
+                    height={80}
                     className="w-full h-full object-cover"
                   />
                 ) : (
@@ -1858,9 +1861,11 @@ export default function FourWindsPrizeBagPage() {
                <div className="flex items-center gap-2 mb-2">
                  <div className="w-8 h-8 rounded-md flex items-center justify-center shadow-sm overflow-hidden">
                    {festivalToken ? (
-                     <img 
+                     <Image 
                        src={festivalToken.icon} 
                        alt={festivalToken.name} 
+                       width={32}
+                       height={32}
                        className="w-full h-full object-cover"
                      />
                    ) : (
@@ -1923,9 +1928,11 @@ export default function FourWindsPrizeBagPage() {
                     <div className="flex items-center justify-center gap-4 mb-4">
                       <div className="w-16 h-16 bg-gradient-to-br from-purple-500 to-pink-500 rounded-lg flex items-center justify-center overflow-hidden">
                         {section.itemIcon ? (
-                          <img 
+                          <Image 
                             src={section.itemIcon} 
                             alt={section.name} 
+                            width={64}
+                            height={64}
                             className="w-full h-full object-cover"
                           />
                         ) : (
@@ -2032,7 +2039,7 @@ export default function FourWindsPrizeBagPage() {
                                  <td className="p-3 text-white">
                                    <div className="flex items-center gap-3">
                                      {itemDetails[row.id]?.icon ? (
-                                       <img
+                                       <Image
                                          src={itemDetails[row.id].icon}
                                          alt={itemDetails[row.id].name}
                                          width={32}
