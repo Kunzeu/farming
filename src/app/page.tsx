@@ -414,16 +414,16 @@ export default function HomePage() {
           </div>
 
           {/* Logo central */}
-          <div className="absolute inset-0 flex items-center justify-center -mt-8 md:-mt-16">
+          <div className="absolute inset-0 flex items-center justify-center -mt-8 md:-mt-10">
             <Image 
-              src="/images/backgrounds/GuildWars2.gif" 
+              src="/images/backgrounds/GuildWars2.webp" 
               alt="Guild Wars 2: Visions of Eternity"
-              width={420}
-              height={420}
+              width={20}
+              height={20}
               priority
               unoptimized
               style={{ width: "auto", height: "auto" }}
-              className="max-w-[260px] md:max-w-sm lg:max-w-md h-auto drop-shadow-2xl"
+              className="max-w-[205px] md:max-w-[160px] lg:max-w-[295px] h-auto drop-shadow-2xl"
             />
           </div>
 
