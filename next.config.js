@@ -50,7 +50,7 @@ const nextConfig = {
   // Configuración experimental
   experimental: {
     // Optimizaciones de paquetes
-    optimizePackageImports: ['lucide-react', 'framer-motion'],
+    optimizePackageImports: ['lucide-react', 'framer-motion', 'react', 'react-dom'],
     // Optimizaciones adicionales para performance
     optimizeServerReact: true,
     serverMinification: true,
@@ -60,12 +60,18 @@ const nextConfig = {
     webpackBuildWorker: true,
     // Tree shaking mejorado
     esmExternals: true,
-    // Optimizaciones adicionales para reducir JavaScript no utilizado
-    optimizePackageImports: ['lucide-react', 'framer-motion', 'react', 'react-dom'],
+    // Compilación moderna - elimina polyfills innecesarios
+    browsersListForSwc: true,
   },
   
   // Compresión automática
   compress: true,
+  
+  // Source maps para debugging en producción
+  productionBrowserSourceMaps: true,
+  
+  // Minificación con SWC (elimina polyfills innecesarios)
+  swcMinify: true,
   
   // Headers de seguridad y rendimiento
   async headers() {
@@ -292,6 +298,19 @@ const nextConfig = {
       // Optimización de módulos para reducir bundle size
       config.optimization.mangleExports = true;
       config.optimization.innerGraph = true;
+      
+      // Eliminar polyfills innecesarios para navegadores modernos
+      config.resolve.fallback = {
+        ...config.resolve.fallback,
+        // No incluir polyfills para características ES2022+
+        "util": false,
+        "buffer": false,
+        "stream": false,
+        "crypto": false,
+        "fs": false,
+        "path": false,
+        "os": false,
+      };
       
       // Configuración de chunks más agresiva
       config.optimization.splitChunks.maxAsyncRequests = 5;

@@ -1,0 +1,91 @@
+{
+  "$schema": "https://json.schemastore.org/swcrc",
+  "jsc": {
+    "target": "es2022",
+    "parser": {
+      "syntax": "typescript",
+      "tsx": true,
+      "decorators": true,
+      "dynamicImport": true
+    },
+    "transform": {
+      "react": {
+        "runtime": "automatic"
+      },
+      "legacyDecorator": true,
+      "decoratorMetadata": true
+    },
+    "loose": false,
+    "externalHelpers": false,
+    "keepClassNames": false
+  },
+  "module": {
+    "type": "es6",
+    "strict": false,
+    "strictMode": true,
+    "lazy": false,
+    "noInterop": false
+  },
+  "minify": true,
+  "isModule": true,
+  "env": {
+    "targets": {
+      "chrome": "93",
+      "firefox": "92",
+      "safari": "15.4",
+      "edge": "93"
+    },
+    "mode": "usage",
+    "coreJs": false,
+    "shippedProposals": true,
+    "forceAllTransforms": false,
+    "include": [],
+    "exclude": [
+      "transform-type-script",
+      "transform-parameters",
+      "transform-destructuring",
+      "transform-spread",
+      "transform-arrow-functions",
+      "transform-classes",
+      "transform-object-super",
+      "transform-shorthand-properties",
+      "transform-duplicate-keys",
+      "transform-computed-properties",
+      "transform-for-of",
+      "transform-sticky-regex",
+      "transform-unicode-regex",
+      "transform-spread",
+      "transform-destructuring",
+      "transform-block-scoping",
+      "transform-typeof-symbol",
+      "transform-new-target",
+      "transform-regenerator",
+      "transform-exponentiation-operator",
+      "transform-async-to-generator",
+      "transform-template-literals",
+      "transform-literals",
+      "transform-function-name",
+      "transform-arrow-functions",
+      "transform-block-scoped-functions",
+      "transform-classes",
+      "transform-object-super",
+      "transform-shorthand-properties",
+      "transform-duplicate-keys",
+      "transform-computed-properties",
+      "transform-for-of",
+      "transform-sticky-regex",
+      "transform-unicode-regex",
+      "transform-spread",
+      "transform-destructuring",
+      "transform-block-scoping",
+      "transform-typeof-symbol",
+      "transform-new-target",
+      "transform-regenerator",
+      "transform-exponentiation-operator",
+      "transform-async-to-generator",
+      "transform-template-literals",
+      "transform-literals",
+      "transform-function-name"
+    ]
+  }
+}

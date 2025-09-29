@@ -9,7 +9,12 @@
     "lint": "next lint",
     "analyze": "set ANALYZE=true && next build",
     "analyze:unix": "ANALYZE=true next build",
+    "check-polyfills": "node scripts/check-polyfills.js",
     "analyze:css": "node scripts/analyze-css.js",
+    "optimize:css": "node scripts/build-optimized-css.js",
+    "apply:css": "node scripts/apply-optimized-css.js",
+    "restore:css": "node scripts/restore-original-css.js",
+    "build:optimized": "node scripts/build-optimized.js",
     "migrate": "node scripts/run_migration.js",
     "migrate:editing-fields": "node scripts/run_migration.js"
   },
