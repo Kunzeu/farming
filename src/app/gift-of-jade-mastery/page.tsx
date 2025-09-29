@@ -48,8 +48,7 @@ const ITEM_IDS = {
   mysticClover: 19675,
   
   // Materiales específicos
-  runicStone: 19676,
-  customIcon: 'https://render.guildwars2.com/file/37CCE672250A3170B71760949C4C9C9B186517B1/619327.png',
+  runicStone: 79418,
   
   // Materiales específicos
   giftOfJadeMastery: 96033,
@@ -326,13 +325,35 @@ export default function GiftOfJadeMasteryPage() {
   const MaterialItem = ({ materialKey, quantity, note }: { materialKey: string, quantity: number, note?: string }) => {
     const material = materials[materialKey]
     
+    // Si es runicStone, mostrar oro personalizado
+    if (materialKey === 'runicStone') {
+      return (
+        <div className="flex items-start space-x-3" title={t('giftOfJadeMasteryPage.notes.runicStones')}>
+          <div className="flex-shrink-0 w-6 h-6 relative">
+            <Image
+              src="/images/expansions/Gold.webp"
+              alt="Gold"
+              fill
+              sizes="24px"
+              className="object-contain"
+              unoptimized
+            />
+          </div>
+          <div>
+            <span className="text-white font-semibold">100g</span>
+            <p className="text-gray-400 text-sm">({t('giftOfJadeMasteryPage.notes.MysticRunicStones')})</p>
+          </div>
+        </div>
+      )
+    }
+    
     // Si es un icono personalizado (URL directa)
     if (materialKey === 'customIcon') {
       return (
         <div className="flex items-start space-x-3">
           <div className="flex-shrink-0 w-6 h-6 relative">
             <Image
-              src="https://render.guildwars2.com/file/37CCE672250A3170B71760949C4C9C9B186517B1/619327.png"
+              src=""
               alt={t('giftOfJadeMasteryPage.materialItem.customIconAlt')}
               fill
               sizes="24px"
@@ -441,7 +462,7 @@ export default function GiftOfJadeMasteryPage() {
             <div className="sticky top-24 bg-slate-800/50 backdrop-blur-sm border border-slate-700/50 rounded-2xl p-6 shadow-lg">
               <div className="flex items-center mb-6">
                 <Award className="w-5 h-5 text-yellow-400 mr-2" />
-                <h3 className="text-white font-bold text-lg">Guía GOM</h3>
+                <h3 className="text-white font-bold text-lg">{t('giftOfJadeMasteryPage.sidebar.title')}</h3>
               </div>
               <nav className="space-y-1">
                 <button 
@@ -926,6 +947,10 @@ export default function GiftOfJadeMasteryPage() {
                     
                     <MaterialItem 
                       materialKey="ancientInvocationStones" 
+                      quantity={100} 
+                    />
+                    <MaterialItem 
+                      materialKey="runicStone" 
                       quantity={100} 
                     />
                   </div>

@@ -2,7 +2,8 @@
 
 import Link from 'next/link';
 import { useI18n } from '@/contexts/I18nContext';
-import { motion } from 'framer-motion';
+import { motion } from '@/lib/framer-motion-optimized';
+import { useEffect, useState } from 'react';
 import { 
   ExternalLink, 
   Heart, 
@@ -38,6 +39,15 @@ const DiscordIcon = ({ className }: { className?: string }) => (
 
 export default function Footer() {
   const { t } = useI18n();
+  const [isClient, setIsClient] = useState(false);
+
+  // Prevenir errores de hidratación con fecha - usar estado
+  const [currentYear, setCurrentYear] = useState(2025);
+
+  useEffect(() => {
+    setIsClient(true);
+    setCurrentYear(new Date().getFullYear());
+  }, []);
 
   return (
     <footer className="bg-gradient-to-r from-slate-900 via-gray-900 to-slate-900 border-t border-gray-700/50 mt-auto relative overflow-hidden">
@@ -72,12 +82,12 @@ export default function Footer() {
                 suppressHydrationWarning={true}
               >
               <motion.div
-                animate={{ rotate: [0, 360] }}
+                animate={isClient ? { rotate: [0, 360] } : {}}
                 transition={{ duration: 6, repeat: Infinity, ease: "linear" }}
               >
                 <Heart className="w-4 h-4" />
               </motion.div>
-              {t('footer.patreonTitle', '¡Apóyanos en Patreon!')}
+{t('footer.patreonTitle', '¡Hazte Patrocinador!')}
               </motion.a>
             </div>
           </motion.div>
@@ -179,8 +189,8 @@ export default function Footer() {
           transition={{ duration: 0.6, delay: 0.3 }}
         >
           <div className="text-center space-y-2">
-            <p className="text-xs text-gray-400">
-              © {new Date().getFullYear()} True Farming. {t('footer.allRights', 'Todos los derechos reservados.')}
+            <p className="text-xs text-gray-400" suppressHydrationWarning={true}>
+              © {currentYear} True Farming. {t('footer.allRights', 'Todos los derechos reservados.')}
             </p>
             <p className="text-xs text-gray-500">
               Guild Wars 2 © ArenaNet LLC. {t('footer.trademarks', 'Todas las marcas registradas son propiedad de sus respectivos dueños.')}

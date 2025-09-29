@@ -7,6 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
+    "analyze": "set ANALYZE=true && next build",
+    "analyze:unix": "ANALYZE=true next build",
     "migrate": "node scripts/run_migration.js",
     "migrate:editing-fields": "node scripts/run_migration.js"
   },
@@ -18,7 +20,7 @@
     "@vercel/analytics": "^1.5.0",
     "axios": "^1.11.0",
     "bcryptjs": "^3.0.2",
-    "caniuse-lite": "^1.0.30001736",
+    "browserslist": "^4.26.2",
     "dotenv": "^17.2.1",
     "framer-motion": "^12.23.9",
     "lightningcss": "^1.28.1",
@@ -30,6 +32,7 @@
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
+    "@fullhuman/postcss-purgecss": "^7.0.2",
     "@svgr/webpack": "^8.1.0",
     "@types/estree": "^1.0.8",
     "@types/json-schema": "^7.0.15",
@@ -37,11 +40,13 @@
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "autoprefixer": "^10.4.19",
+    "critters": "^0.0.23",
     "eslint": "^9",
     "eslint-config-next": "^15.5.0",
     "eslint-plugin-import": "^2.32.0",
     "postcss": "^8.4.38",
     "tailwindcss": "^3.4.14",
-    "typescript": "^5"
+    "typescript": "^5",
+    "webpack-bundle-analyzer": "^4.10.1"
   }
 }

@@ -54,6 +54,14 @@ const nextConfig = {
     // Optimizaciones adicionales para performance
     optimizeServerReact: true,
     serverMinification: true,
+    // Optimizaciones CSS para reducir cadenas críticas (compatible con Turbopack)
+    optimizeCss: true,
+    // Optimizaciones de JavaScript
+    webpackBuildWorker: true,
+    // Tree shaking mejorado
+    esmExternals: true,
+    // Optimizaciones adicionales para reducir JavaScript no utilizado
+    optimizePackageImports: ['lucide-react', 'framer-motion', 'react', 'react-dom'],
   },
   
   // Compresión automática
@@ -86,6 +94,11 @@ const nextConfig = {
             key: 'X-DNS-Prefetch-Control',
             value: 'on',
           },
+          // Preload y prefetch optimizado para terceros
+          {
+            key: 'Link',
+            value: '</images/icons/icon.webp>; rel=preload; as=image, <https://pagead2.googlesyndication.com>; rel=dns-prefetch, <https://static.cloudflareinsights.com>; rel=dns-prefetch',
+          },
           {
             key: 'Strict-Transport-Security',
             value: 'max-age=31536000; includeSubDomains',
@@ -102,6 +115,52 @@ const nextConfig = {
           {
             key: 'CF-Image-Transform',
             value: 'off', // Desactiva transformaciones de Cloudflare
+          },
+        ],
+      },
+      // Caché optimizado para archivos JavaScript y CSS
+      {
+        source: '/_next/static/(.*)',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=31536000, immutable',
+          },
+        ],
+      },
+      {
+        source: '/:path*\\.(js|css|woff|woff2|eot|ttf|otf)',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=31536000, immutable',
+          },
+        ],
+      },
+      // Caché para archivos de datos de la API
+      {
+        source: '/api/(.*)',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, s-maxage=3600, stale-while-revalidate=86400',
+          },
+        ],
+      },
+      // Headers para optimizar scripts de terceros específicos
+      {
+        source: '/:path*',
+        has: [
+          {
+            type: 'header',
+            key: 'referer',
+            value: '(.*cloudflare.*|.*rocket-loader.*|.*beacon.*)',
+          },
+        ],
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=86400, stale-while-revalidate=604800',
           },
         ],
       },
@@ -150,15 +209,60 @@ const nextConfig = {
   
   // Configuración de Webpack solo para producción
   webpack: (config, { dev, isServer }) => {
+    // Bundle Analyzer
+    if (process.env.ANALYZE === 'true' && !isServer) {
+      const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer');
+      config.plugins.push(
+        new BundleAnalyzerPlugin({
+          analyzerMode: 'static',
+          openAnalyzer: false,
+          reportFilename: './bundle-analysis.html',
+        })
+      );
+    }
+
     // Solo aplicar optimizaciones en producción y en el cliente
     if (!dev && !isServer) {
       config.optimization.splitChunks.cacheGroups = {
         ...config.optimization.splitChunks.cacheGroups,
+        // CSS crítico separado
+        criticalCss: {
+          name: 'critical',
+          test: /[\\/]globals\.css$/,
+          chunks: 'all',
+          priority: 20,
+          enforce: true,
+        },
+        // Chunks específicos para librerías pesadas
+        framerMotion: {
+          test: /[\\/]node_modules[\\/]framer-motion[\\/]/,
+          name: 'framer-motion',
+          chunks: 'all',
+          priority: 15,
+        },
+        lucideReact: {
+          test: /[\\/]node_modules[\\/]lucide-react[\\/]/,
+          name: 'lucide-react',
+          chunks: 'all',
+          priority: 15,
+        },
+        // Bundle de vendors optimizado para reducir JavaScript no utilizado
         vendor: {
           test: /[\\/]node_modules[\\/]/,
           name: 'vendors',
           chunks: 'all',
           priority: 10,
+          enforce: true,
+          minChunks: 1,
+          maxSize: 200000, // 200KB máximo por chunk
+        },
+        // Chunk separado para librerías grandes que pueden no usarse
+        largeVendor: {
+          test: /[\\/]node_modules[\\/](framer-motion|lucide-react)[\\/]/,
+          name: 'large-vendor',
+          chunks: 'all',
+          priority: 8,
+          enforce: true,
         },
         common: {
           name: 'common',
@@ -170,6 +274,37 @@ const nextConfig = {
       
       // Optimización de chunks
       config.optimization.runtimeChunk = 'single';
+      
+      // Optimizaciones adicionales para CSS
+      config.optimization.usedExports = true;
+      config.optimization.sideEffects = false;
+      
+      // Optimizaciones de JavaScript para reducir TBT
+      config.optimization.concatenateModules = true;
+      config.optimization.providedExports = true;
+      config.optimization.usedExports = true;
+      
+      // Tree shaking más agresivo para eliminar código no utilizado
+      config.optimization.sideEffects = false;
+      config.optimization.usedExports = true;
+      config.optimization.providedExports = true;
+      
+      // Optimización de módulos para reducir bundle size
+      config.optimization.mangleExports = true;
+      config.optimization.innerGraph = true;
+      
+      // Configuración de chunks más agresiva
+      config.optimization.splitChunks.maxAsyncRequests = 5;
+      config.optimization.splitChunks.maxInitialRequests = 3;
+      config.optimization.splitChunks.minSize = 20000;
+      config.optimization.splitChunks.maxSize = 244000;
+      
+      // Optimizaciones adicionales para reducir TBT
+      config.optimization.moduleIds = 'deterministic';
+      config.optimization.chunkIds = 'deterministic';
+      
+      // Configuración de paralelización
+      config.parallelism = 4;
     }
     
     // Configuración para SVG
@@ -186,6 +321,10 @@ const nextConfig = {
     // Eliminar console.log en producción
     removeConsole: process.env.NODE_ENV === 'production',
   },
+  
+  // Configuración de compilación optimizada para navegadores modernos
+  // swcMinify está habilitado por defecto en Next.js 15.5
+  
   
   // Configuración de TypeScript
   typescript: {

@@ -1,0 +1,23 @@
+# Navegadores modernos únicamente - elimina polyfills innecesarios
+# Esto reduce el bundle size eliminando polyfills para Array.at, Array.flat, etc.
+
+# Soporte para navegadores que tienen todas las características ES2022+ nativas
+chrome >= 93
+firefox >= 92
+safari >= 15.4
+edge >= 93
+
+# Excluir navegadores antiguos
+not dead
+not ie >= 0
+not op_mini all
+not android < 93
+not ios_saf < 15.4
+
+# Específicamente requerir soporte para:
+# - Array.prototype.at (Chrome 92+, Firefox 90+, Safari 15.4+)
+# - Array.prototype.flat (Chrome 69+, Firefox 62+, Safari 12+) 
+# - Array.prototype.flatMap (Chrome 69+, Firefox 62+, Safari 12+)
+# - Object.fromEntries (Chrome 73+, Firefox 63+, Safari 12.1+)
+# - Object.hasOwn (Chrome 93+, Firefox 92+, Safari 15.4+)
+# - String.prototype.trimStart/trimEnd (Chrome 66+, Firefox 61+, Safari 12+)

@@ -292,14 +292,10 @@ export default function FourWindsPrizeBagPage() {
         { id: 19745, item: '', count: 162, chance: '100%' },
         { id: 24319, item: '', count: 46, chance: '100%' },
         { id: 19748, item: '', count: 691, chance: '100%' },
-        { id: 44991, item: '', count: 1, chance: '100%' },
         { id: 24289, item: '', count: 53, chance: '100%' },
         { id: 24320, item: '', count: 4, chance: '100%' },
         { id: 24300, item: '', count: 27, chance: '100%' },
-
-
-
-        
+       
       ]
     },
     arcas: {

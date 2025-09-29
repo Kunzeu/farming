@@ -1,6 +1,6 @@
 'use client'
 
-import { motion } from 'framer-motion'
+import { motion } from '@/lib/framer-motion-optimized'
 import Link from 'next/link'
 import Image from 'next/image'
 import Navigation from '@/components/layout/Navigation'
@@ -25,9 +25,11 @@ import {
 import { usePageTitle } from '@/hooks/usePageTitle'
 import { useI18n } from '@/contexts/I18nContext'
 import { useDashboardPreferences } from '@/hooks/useDashboardPreferences'
-import DashboardSettings from '@/components/DashboardSettings'
 import Slogan from '@/components/ui/Slogan'
-import { useState, useEffect, useMemo } from 'react'
+import { useState, useEffect, useMemo, lazy, Suspense } from 'react'
+
+// Lazy loading para componentes pesados
+const DashboardSettings = lazy(() => import('@/components/DashboardSettings'))
 
 
 interface DashboardCard {
@@ -138,7 +140,7 @@ const initialCards: DashboardCard[] = [
     description: "dashboard.giftOfMastery.description",
     href: "/gift-of-mastery",
     icon: <Award className="w-8 h-8" />,
-    color: "from-yellow-500 to-orange-600",
+    color: "from-amber-500 to-yellow-600",
     delay: 1.0,
     visible: true,
     order: 9
@@ -149,7 +151,7 @@ const initialCards: DashboardCard[] = [
     description: "dashboard.giftOfJadeMastery.description",
     href: "/gift-of-jade-mastery",
     icon: <Gift className="w-8 h-8" />,
-    color: "from-cyan-500 to-blue-600",
+    color: "from-cyan-500 to-teal-600",
     delay: 1.1,
     visible: true,
     order: 10
@@ -180,7 +182,7 @@ export default function HomePage() {
   const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
   const [showSettings, setShowSettings] = useState(false);
 
-  // Función para reconstruir iconos desde los datos guardados
+  // Función para reconstruir iconos y colores desde los datos guardados
   const reconstructCardWithIcon = (savedCard: Omit<DashboardCard, 'icon'>): DashboardCard => {
     const iconMap: Record<string, React.ReactNode> = {
       "farms": <Route className="w-8 h-8" />,
@@ -196,9 +198,24 @@ export default function HomePage() {
       "garden": <TreePine className="w-8 h-8" />
     };
 
+  const colorMap: Record<string, string> = {
+    "farms": "from-blue-500 to-blue-600",
+    "dailyRoutine": "from-green-500 to-green-600",
+    "salvaging": "from-orange-500 to-orange-600",
+    "trophy": "from-purple-500 to-purple-600",
+    "festivals": "from-pink-500 to-pink-600",
+    "farmingTracker": "from-indigo-500 to-indigo-600",
+    "glossary": "from-teal-500 to-teal-600",
+    "orrianJewelry": "from-rose-500 to-rose-600",
+    "giftOfMastery": "from-amber-500 to-yellow-600",
+    "giftOfJadeMastery": "from-cyan-500 to-teal-600",
+    "garden": "from-emerald-500 to-green-600"
+  };
+
     return {
       ...savedCard,
-      icon: iconMap[savedCard.id] || <Package className="w-8 h-8" />
+      icon: iconMap[savedCard.id] || <Package className="w-8 h-8" />,
+      color: colorMap[savedCard.id] || "from-gray-500 to-gray-600"
     };
   };
 
@@ -211,13 +228,19 @@ export default function HomePage() {
       !preferences.hiddenCards.includes(card.id)
     );
 
+    // Reconstruir todas las tarjetas filtradas para asegurar colores correctos
+    const reconstructedFilteredCards = filteredCards.map(card => reconstructCardWithIcon(card));
+
     // Ordenar basado en preferencias del usuario
     const orderedCards = preferences.cardOrder
-      .map(cardId => filteredCards.find(card => card.id === cardId))
+      .map(cardId => {
+        const foundCard = reconstructedFilteredCards.find(card => card.id === cardId);
+        return foundCard || null;
+      })
       .filter(Boolean) as DashboardCard[];
 
     // Agregar tarjetas que no están en el orden personalizado
-    const remainingCards = filteredCards.filter(card => 
+    const remainingCards = reconstructedFilteredCards.filter(card => 
       !preferences.cardOrder.includes(card.id)
     );
 
@@ -393,21 +416,27 @@ export default function HomePage() {
   // Nota: lógica de próximo evento removida porque el CTA solo se muestra con evento activo
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
+    <div>
         <Navigation />
       
       {/* Container principal */}
-      <div className="container mx-auto px-4">
+      <div className="container mx-auto px-4 pb-8">
         
         {/* Hero Section - Banner Promocional */}
         <section className="relative overflow-hidden rounded-xl mb-2 h-72 md:h-96">
           {/* Imagen de fondo de Visions of Eternity */}
-          <div 
-            className="absolute inset-0 bg-cover bg-center bg-no-repeat rounded-xl"
-            style={{
-              backgroundImage: 'url(/images/backgrounds/voe-background.webp)',
-            }}
-          >
+          <div className="absolute inset-0 rounded-xl">
+            <Image
+              src="/images/backgrounds/voe-background.webp"
+              alt="Guild Wars 2: Visions of Eternity Background"
+              fill
+              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 100vw, 100vw"
+              className="object-cover rounded-xl"
+              priority
+              fetchPriority="high"
+              quality={95}
+              placeholder="empty"
+            />
             {/* Overlay mejorado */}
             <div className="absolute inset-0 bg-gradient-to-br from-black/40 via-black/50 to-black/70 rounded-xl"></div>
             <div className="absolute inset-0 bg-gradient-to-t from-slate-900/90 via-transparent to-transparent rounded-xl"></div>
@@ -418,17 +447,15 @@ export default function HomePage() {
             <Image 
               src="/images/backgrounds/GuildWars2.webp" 
               alt="Guild Wars 2: Visions of Eternity"
-              width={20}
-              height={20}
-              priority
-              unoptimized
-              style={{ width: "auto", height: "auto" }}
-              className="max-w-[205px] md:max-w-[160px] lg:max-w-[295px] h-auto drop-shadow-2xl"
+              width={295}
+              height={295}
+              sizes="(max-width: 640px) 180px, (max-width: 1024px) 250px, 295px"
+              className="max-w-[180px] md:max-w-[250px] lg:max-w-[295px] h-auto drop-shadow-2xl"
             />
           </div>
 
           {/* Slogan aleatorio */}
-          <div className="absolute top-6 left-1/2 transform -translate-x-1/2">
+          <div className="absolute top-4 left-1/2 transform -translate-x-1/2">
             <Slogan 
               variant="random" 
               className="text-yellow-400 drop-shadow-2xl font-bold text-base md:text-sm lg:text-base"
@@ -467,7 +494,7 @@ export default function HomePage() {
         </section> 
 
         {/* Sección de herramientas principales */}
-        <section className="mb-12">
+        <section className="mb-12 pb-8">
           {/* Evento Activo arriba del título (solo cuando hay evento activo) */}
           {activeEvent && (
             <div className="mb-6 flex flex-col items-center">
@@ -615,10 +642,12 @@ export default function HomePage() {
       </div>
       
       {/* Modal de configuración avanzada */}
-      <DashboardSettings 
-        isOpen={showSettings} 
-        onClose={() => setShowSettings(false)} 
-      />
+      <Suspense fallback={<div className="fixed inset-0 bg-black/50 flex items-center justify-center"><div className="text-white">Cargando...</div></div>}>
+        <DashboardSettings 
+          isOpen={showSettings} 
+          onClose={() => setShowSettings(false)} 
+        />
+      </Suspense>
     </div>
   )
 } 

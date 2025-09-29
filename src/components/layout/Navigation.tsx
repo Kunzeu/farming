@@ -2,7 +2,9 @@
 
 import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
-import { motion } from 'framer-motion';
+import Image from 'next/image';
+import { motion } from '@/lib/framer-motion-optimized';
+import dynamic from 'next/dynamic';
 import { useAuth } from '@/contexts/AuthContext';
 import { 
   Home, 
@@ -27,6 +29,28 @@ import {
 import LanguageSwitcher from '@/components/ui/LanguageSwitcher';
 import { useI18n } from '@/contexts/I18nContext';
 
+// Componente de timer que solo se renderiza en el cliente
+const TimerDisplay = ({ time, className, style }: { time: string, className: string, style: React.CSSProperties }) => {
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
+  if (!isMounted) {
+    return (
+      <span className={className} style={style}>
+        {time === '--h --m --s' ? '--h --m --s' : '--d --h --m'}
+      </span>
+    );
+  }
+
+  return (
+    <span className={className} style={style}>
+      {time}
+    </span>
+  );
+};
 
 const Navigation = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -70,10 +94,11 @@ const Navigation = () => {
     }
   }, []);
   
-  // Reset timers
-  const [dailyResetTime, setDailyResetTime] = useState<string>('');
-  const [weeklyResetTime, setWeeklyResetTime] = useState<string>('');
-  const [specialEventTime, setSpecialEventTime] = useState<string>('');
+  // Reset timers - Inicializar con placeholders para evitar layout shift
+  const [dailyResetTime, setDailyResetTime] = useState<string>('--h --m --s');
+  const [weeklyResetTime, setWeeklyResetTime] = useState<string>('--d --h --m');
+  const [specialEventTime, setSpecialEventTime] = useState<string>('--d --h --m');
+  // Estados para control de menús (mantenidos)
 
   // Calculate reset times
   useEffect(() => {
@@ -233,12 +258,16 @@ const Navigation = () => {
           {/* Logo - Esquina Izquierda */}
           <div className="flex-shrink-0">
             <Link href="/" className="flex items-center space-x-3 group">
-              <motion.img
-                whileHover={{ scale: 1.05, rotate: 5 }}
-                src="/images/icons/icon.webp"
-                alt="True Farming"
-                className="w-9 h-9 sm:w-10 sm:h-10 md:w-11 md:h-11 rounded-md shadow-lg group-hover:shadow-purple-500/25 transition-all duration-300"
-              />
+              <motion.div whileHover={{ scale: 1.05, rotate: 5 }}>
+                <Image
+                  src="/images/icons/icon.webp"
+                  alt="True Farming"
+                  width={44}
+                  height={44}
+                  sizes="(max-width: 640px) 36px, (max-width: 768px) 40px, 44px"
+                  className="w-9 h-9 sm:w-10 sm:h-10 md:w-11 md:h-11 rounded-md shadow-lg group-hover:shadow-purple-500/25 transition-all duration-300"
+                />
+              </motion.div>
               <div className="block">
                 <div className="flex flex-col">
                   <span className="text-white font-black text-base sm:text-lg md:text-xl leading-tight font-display">True Farming</span>
@@ -255,21 +284,33 @@ const Navigation = () => {
               title={t('nav.dailyReset', 'Reset Daily - Daily rewards, missions and achievements reset')}
             >
               <Clock className="w-4 h-4" />
-              <span className="text-sm font-mono font-bold">{dailyResetTime}</span>
+              <TimerDisplay 
+                time={dailyResetTime}
+                className="text-sm font-mono font-bold"
+                style={{ width: '6rem', minWidth: '6rem', display: 'inline-block', textAlign: 'center' }}
+              />
             </div>
             <div 
               className="flex items-center space-x-2 text-purple-300 px-3 py-2 rounded-lg bg-purple-900/20 border border-purple-700/30"
               title={t('nav.weeklyReset', 'Reset Weekly - Weekly rewards, raids, fractals and WvW reset')}
             >
               <Calendar className="w-4 h-4" />
-              <span className="text-sm font-mono font-bold">{weeklyResetTime}</span>
+              <TimerDisplay 
+                time={weeklyResetTime}
+                className="text-sm font-mono font-bold"
+                style={{ width: '6rem', minWidth: '6rem', display: 'inline-block', textAlign: 'center' }}
+              />
             </div>
             <div 
               className="flex items-center space-x-2 text-amber-300 px-3 py-2 rounded-lg bg-amber-900/20 border border-amber-700/30"
               title={t('nav.specialEvent', 'Special Event - Ends October 28, 2025 at 11:00 UTC')}
             >
               <Star className="w-4 h-4" />
-              <span className="text-sm font-mono font-bold">{specialEventTime}</span>
+              <TimerDisplay 
+                time={specialEventTime}
+                className="text-sm font-mono font-bold"
+                style={{ width: '6rem', minWidth: '6rem', display: 'inline-block', textAlign: 'center' }}
+              />
             </div>
           </div>
 
@@ -452,7 +493,11 @@ const Navigation = () => {
                             title={t('nav.dailyReset', 'Reset Daily - Daily rewards, missions and achievements reset')}
                           >
                             <Clock className="w-4 h-4" />
-                            <span className="text-xs font-mono font-bold">{dailyResetTime}</span>
+                            <TimerDisplay 
+                              time={dailyResetTime}
+                              className="text-xs font-mono font-bold"
+                              style={{ width: '5rem', minWidth: '5rem', display: 'inline-block', textAlign: 'center' }}
+                            />
                             <span className="text-xs text-blue-200 ml-auto">{t('nav.daily', 'Daily')}</span>
                           </div>
                           <div 
@@ -460,7 +505,11 @@ const Navigation = () => {
                             title={t('nav.weeklyReset', 'Reset Weekly - Weekly rewards, raids, fractals and WvW reset')}
                           >
                             <Calendar className="w-4 h-4" />
-                            <span className="text-xs font-mono font-bold">{weeklyResetTime}</span>
+                            <TimerDisplay 
+                              time={weeklyResetTime}
+                              className="text-xs font-mono font-bold"
+                              style={{ width: '5rem', minWidth: '5rem', display: 'inline-block', textAlign: 'center' }}
+                            />
                             <span className="text-xs text-purple-200 ml-auto">{t('nav.weekly', 'Weekly')}</span>
                           </div>
                           <div 
@@ -468,7 +517,11 @@ const Navigation = () => {
                             title={t('nav.specialEvent', 'Special Event - Ends October 28, 2025 at 11:00 UTC')}
                           >
                             <Star className="w-4 h-4" />
-                            <span className="text-xs font-mono font-bold">{specialEventTime}</span>
+                            <TimerDisplay 
+                              time={specialEventTime}
+                              className="text-xs font-mono font-bold"
+                              style={{ width: '5rem', minWidth: '5rem', display: 'inline-block', textAlign: 'center' }}
+                            />
                             <span className="text-xs text-amber-200 ml-auto">{t('nav.special', 'Special')}</span>
                           </div>
                         </div>
