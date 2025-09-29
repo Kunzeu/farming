@@ -17,7 +17,7 @@ export function useLazyScript({
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
-    let timeoutId: NodeJS.Timeout;
+    const timeoutRef = { current: null as NodeJS.Timeout | null };
     let isMounted = true;
 
     const loadScript = () => {
@@ -52,12 +52,14 @@ export function useLazyScript({
     };
 
     // Cargar después del delay
-    timeoutId = setTimeout(loadScript, delay);
+    timeoutRef.current = setTimeout(loadScript, delay);
 
     // Cargar en interacciones del usuario
     if (triggerOnInteraction) {
       const handleInteraction = () => {
-        clearTimeout(timeoutId);
+        if (timeoutRef.current) {
+          clearTimeout(timeoutRef.current);
+        }
         loadScript();
       };
 
@@ -69,7 +71,9 @@ export function useLazyScript({
     // Cargar en scroll
     if (triggerOnScroll) {
       const handleScroll = () => {
-        clearTimeout(timeoutId);
+        if (timeoutRef.current) {
+          clearTimeout(timeoutRef.current);
+        }
         loadScript();
       };
 
@@ -77,7 +81,9 @@ export function useLazyScript({
     }
 
     return () => {
-      clearTimeout(timeoutId);
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
       isMounted = false;
     };
   }, [src, delay, triggerOnInteraction, triggerOnScroll, isLoading, isLoaded]);
