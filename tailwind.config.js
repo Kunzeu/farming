@@ -74,4 +74,23 @@ module.exports = {
   experimental: {
     optimizeUniversalDefaults: true,
   },
+  // Configuración de purging más agresiva
+  safelist: [
+    // Mantener clases dinámicas y de animación
+    'animate-fade-in',
+    'prose',
+    'prose-invert',
+    'line-clamp-1',
+    'line-clamp-2',
+    'line-clamp-3',
+    // Mantener clases de gradientes que podrían ser generadas dinámicamente
+    'bg-gradient-to-r',
+    'bg-gradient-to-l',
+    'bg-gradient-to-t',
+    'bg-gradient-to-b',
+    'bg-gradient-to-tr',
+    'bg-gradient-to-tl',
+    'bg-gradient-to-br',
+    'bg-gradient-to-bl',
+  ],
 }

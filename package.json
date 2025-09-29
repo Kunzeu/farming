@@ -14,7 +14,7 @@
     "optimize:css": "node scripts/build-optimized-css.js",
     "apply:css": "node scripts/apply-optimized-css.js",
     "restore:css": "node scripts/restore-original-css.js",
-    "build:optimized": "node scripts/build-optimized.js",
+    "build:optimized": "node scripts/build-optimized-simple.js",
     "migrate": "node scripts/run_migration.js",
     "migrate:editing-fields": "node scripts/run_migration.js"
   },
