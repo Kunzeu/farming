@@ -54,8 +54,6 @@
       "transform-for-of",
       "transform-sticky-regex",
       "transform-unicode-regex",
-      "transform-spread",
-      "transform-destructuring",
       "transform-block-scoping",
       "transform-typeof-symbol",
       "transform-new-target",
@@ -65,27 +63,7 @@
       "transform-template-literals",
       "transform-literals",
       "transform-function-name",
-      "transform-arrow-functions",
-      "transform-block-scoped-functions",
-      "transform-classes",
-      "transform-object-super",
-      "transform-shorthand-properties",
-      "transform-duplicate-keys",
-      "transform-computed-properties",
-      "transform-for-of",
-      "transform-sticky-regex",
-      "transform-unicode-regex",
-      "transform-spread",
-      "transform-destructuring",
-      "transform-block-scoping",
-      "transform-typeof-symbol",
-      "transform-new-target",
-      "transform-regenerator",
-      "transform-exponentiation-operator",
-      "transform-async-to-generator",
-      "transform-template-literals",
-      "transform-literals",
-      "transform-function-name"
+      "transform-block-scoped-functions"
     ]
   }
 }
