@@ -30,7 +30,7 @@ export async function POST(
     console.log(`Invalidando sesión del usuario: ${username} (ID: ${id}, Rol: ${userRole}) - Razón: ${reason}`);
     
     // Por ahora, solo registramos la invalidación
-    // En una implementación más avanzada, podrías:
+    // En una implementación más avanzada, podríamos hacer:
     // 1. Almacenar tokens invalidados en una tabla
     // 2. Usar WebSockets para notificar al usuario en tiempo real
     // 3. Implementar un sistema de blacklist de tokens

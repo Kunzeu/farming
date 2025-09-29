@@ -39,7 +39,6 @@ self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME)
       .then((cache) => {
-        console.log('Cache abierto');
         return cache.addAll(CRITICAL_RESOURCES);
       })
       .then(() => self.skipWaiting())
@@ -55,7 +54,6 @@ self.addEventListener('activate', (event) => {
           if (cacheName !== CACHE_NAME && 
               cacheName !== STATIC_CACHE_NAME && 
               cacheName !== THIRD_PARTY_CACHE_NAME) {
-            console.log('Eliminando caché antiguo:', cacheName);
             return caches.delete(cacheName);
           }
         })
@@ -76,10 +74,8 @@ self.addEventListener('message', (event) => {
         if (response.ok) {
           const cacheInstance = await cache;
           await cacheInstance.put(url, response.clone());
-          console.log('Cloudflare script cacheado:', url);
         }
       } catch (error) {
-        console.log('Error cacheando script de Cloudflare:', error);
       }
     });
   }
@@ -151,7 +147,6 @@ async function cacheFirstStrategy(request, strategy) {
     }
     return networkResponse;
   } catch (error) {
-    console.log('Error en cache first:', error);
     return new Response('Recurso no disponible', { status: 404 });
   }
 }
@@ -186,7 +181,6 @@ async function staleWhileRevalidateStrategy(request, strategy) {
       }
       return networkResponse;
     } catch (error) {
-      console.log('Error actualizando caché:', error);
     }
   };
   

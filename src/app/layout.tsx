@@ -228,10 +228,10 @@ export default function RootLayout({
               window.addEventListener('load', function() {
                 navigator.serviceWorker.register('/sw.js')
                   .then(function(registration) {
-                    console.log('SW registrado con éxito:', registration.scope);
+                    // SW registrado con éxito
                   })
                   .catch(function(error) {
-                    console.log('SW registration falló:', error);
+                    // SW registration falló
                   });
               });
             }

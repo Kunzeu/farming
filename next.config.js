@@ -54,14 +54,12 @@ const nextConfig = {
     // Optimizaciones adicionales para performance
     optimizeServerReact: true,
     serverMinification: true,
-    // Optimizaciones CSS para reducir cadenas críticas (compatible con Turbopack)
+    // Optimizaciones CSS para reducir cadenas críticas
     optimizeCss: true,
     // Optimizaciones de JavaScript
     webpackBuildWorker: true,
     // Tree shaking mejorado
     esmExternals: true,
-    // Compilación moderna - elimina polyfills innecesarios
-    browsersListForSwc: true,
   },
   
   // Compresión automática
@@ -70,8 +68,6 @@ const nextConfig = {
   // Source maps para debugging en producción
   productionBrowserSourceMaps: true,
   
-  // Minificación con SWC (elimina polyfills innecesarios)
-  swcMinify: true,
   
   // Headers de seguridad y rendimiento
   async headers() {
@@ -196,6 +192,20 @@ const nextConfig = {
           },
         ],
       },
+      // Headers para source maps
+      {
+        source: '/_next/static/chunks/:path*.js.map',
+        headers: [
+          {
+            key: 'Content-Type',
+            value: 'application/json',
+          },
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=31536000, immutable',
+          },
+        ],
+      },
       // Redirecciones 301 para rutas de idiomas inexistentes
       // Nota: En Next.js, las redirecciones se definen en "async redirects()" más abajo
     ];
@@ -225,6 +235,11 @@ const nextConfig = {
           reportFilename: './bundle-analysis.html',
         })
       );
+    }
+
+    // Configuración de source maps para mejor debugging
+    if (!dev && !isServer) {
+      config.devtool = 'source-map';
     }
 
     // Solo aplicar optimizaciones en producción y en el cliente
@@ -340,10 +355,7 @@ const nextConfig = {
     // Eliminar console.log en producción
     removeConsole: process.env.NODE_ENV === 'production',
   },
-  
-  // Configuración de compilación optimizada para navegadores modernos
-  // swcMinify está habilitado por defecto en Next.js 15.5
-  
+    
   
   // Configuración de TypeScript
   typescript: {

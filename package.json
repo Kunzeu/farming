@@ -9,12 +9,6 @@
     "lint": "next lint",
     "analyze": "set ANALYZE=true && next build",
     "analyze:unix": "ANALYZE=true next build",
-    "check-polyfills": "node scripts/check-polyfills.js",
-    "analyze:css": "node scripts/analyze-css.js",
-    "optimize:css": "node scripts/build-optimized-css.js",
-    "apply:css": "node scripts/apply-optimized-css.js",
-    "restore:css": "node scripts/restore-original-css.js",
-    "build:optimized": "node scripts/build-optimized-simple.js",
     "migrate": "node scripts/run_migration.js",
     "migrate:editing-fields": "node scripts/run_migration.js"
   },
@@ -38,7 +32,6 @@
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
-    "@fullhuman/postcss-purgecss": "^7.0.2",
     "@svgr/webpack": "^8.1.0",
     "@types/estree": "^1.0.8",
     "@types/json-schema": "^7.0.15",
@@ -50,7 +43,6 @@
     "eslint": "^9",
     "eslint-config-next": "^15.5.0",
     "eslint-plugin-import": "^2.32.0",
-    "glob": "^10.3.10",
     "postcss": "^8.4.38",
     "tailwindcss": "^3.4.14",
     "typescript": "^5",
