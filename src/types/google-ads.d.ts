@@ -1,7 +1,7 @@
 // Declaraciones de tipos para Google Ads
 declare global {
   interface Window {
-    adsbygoogle: any[];
+    adsbygoogle: unknown[];
   }
 }
 

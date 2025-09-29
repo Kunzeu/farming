@@ -26,7 +26,7 @@ import { usePageTitle } from '@/hooks/usePageTitle'
 import { useI18n } from '@/contexts/I18nContext'
 import { useDashboardPreferences } from '@/hooks/useDashboardPreferences'
 import Slogan from '@/components/ui/Slogan'
-import { useState, useEffect, useMemo, lazy, Suspense } from 'react'
+import { useState, useEffect, lazy, Suspense } from 'react'
 
 // Lazy loading para componentes pesados
 const DashboardSettings = lazy(() => import('@/components/DashboardSettings'))

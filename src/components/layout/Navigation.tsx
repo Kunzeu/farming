@@ -4,7 +4,6 @@ import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { motion } from '@/lib/framer-motion-optimized';
-import dynamic from 'next/dynamic';
 import { useAuth } from '@/contexts/AuthContext';
 import { 
   Home, 
