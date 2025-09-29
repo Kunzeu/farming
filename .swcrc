@@ -1,5 +1,4 @@
 {
-  "$schema": "https://json.schemastore.org/swcrc",
   "jsc": {
     "target": "es2022",
     "parser": {
@@ -36,7 +35,7 @@
       "edge": "93"
     },
     "mode": "usage",
-    "coreJs": false,
+    "coreJs": "3",
     "shippedProposals": true,
     "forceAllTransforms": false,
     "include": [],
