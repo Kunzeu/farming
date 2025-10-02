@@ -2410,9 +2410,58 @@ export default function EctoGamblingPage() {
       setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
     } else {
       setSortBy(column);
-      setSortOrder('asc');
+      setSortOrder('desc'); // por defecto: mayor a menor
     }
   };
+
+  // Helpers para cálculo por fila
+  const getTrashValue = useCallback((index: number) => {
+    const item = ectoGamblingData[index % ectoGamblingData.length];
+    return item?.difference ?? 0;
+  }, [ectoGamblingData]);
+
+  const getEctosValue = useCallback((index: number) => {
+    return ectoplasmaData[index % ectoplasmaData.length] || 0;
+  }, [ectoplasmaData]);
+
+  const getTotalCopperForPct = useCallback((index: number, pct: number) => {
+    if (ectoUnitPrice == null) return 0;
+    const item = ectoGamblingData[index % ectoGamblingData.length];
+    const amountTrashCopper = ((item?.difference || 0) * 10000);
+    const amountEctos = getEctosValue(index);
+    return amountTrashCopper + Math.round(amountEctos * ectoUnitPrice * pct);
+  }, [ectoUnitPrice, ectoGamblingData, getEctosValue]);
+
+  // Índices ordenados según sortBy/sortOrder
+  const sortedIndices = useMemo(() => {
+    const indices = Array.from({ length: 1483 }, (_, i) => i);
+    if (sortBy === 'name') return indices; // no ordenar por defecto, mantiene orden natural
+
+    const getComparableValue = (idx: number) => {
+      switch (sortBy) {
+        case 'trash':
+          return getTrashValue(idx);
+        case 'ectos':
+          return getEctosValue(idx);
+        case 'total85':
+          return getTotalCopperForPct(idx, 0.85);
+        case 'total90':
+          return getTotalCopperForPct(idx, 0.9);
+        case 'total100':
+          return getTotalCopperForPct(idx, 1);
+        default:
+          return 0;
+      }
+    };
+
+    indices.sort((a, b) => {
+      const va = getComparableValue(a);
+      const vb = getComparableValue(b);
+      if (va === vb) return 0;
+      return sortOrder === 'asc' ? (va - vb) : (vb - va);
+    });
+    return indices;
+  }, [sortBy, sortOrder, getTrashValue, getEctosValue, getTotalCopperForPct]);
 
 
 
@@ -2444,6 +2493,9 @@ export default function EctoGamblingPage() {
           </h1>
           <p className="text-gray-300 text-sm sm:text-base md:text-lg">
             {t('ectogamblingPage.subtitle')}
+          </p>
+          <p className="mt-2 text-xs text-gray-400">
+            {t('ectogamblingPage.dataCredit', 'Data Credit for Vortus43')}
           </p>
         </div>
 
@@ -2556,7 +2608,7 @@ export default function EctoGamblingPage() {
                         <div className="text-blue-300 font-bold text-lg">{rollTotals.t85 != null ? formatLargeGold(rollTotals.t85) : t('ectogamblingPage.loading')}</div>
                       </div>
                       <div className="bg-gradient-to-br from-indigo-900/20 to-indigo-800/10 border border-indigo-500/20 rounded-lg p-3 text-center">
-                        <div className="text-indigo-400 text-sm font-medium mb-1">90%</div>
+                      <div className="text-indigo-400 text-sm font-medium mb-1">90%</div>
                         <div className="text-indigo-300 font-bold text-lg">{rollTotals.t90 != null ? formatLargeGold(rollTotals.t90) : t('ectogamblingPage.loading')}</div>
                       </div>
                       <div className="bg-gradient-to-br from-purple-900/20 to-purple-800/10 border border-purple-500/20 rounded-lg p-3 text-center">
@@ -2581,11 +2633,16 @@ export default function EctoGamblingPage() {
                 <table className="w-full text-xs sm:text-sm">
                   <thead>
                     <tr className="border-b border-gray-700 bg-gray-800/60">
-                       <th className="text-left p-2 sm:p-3 text-gray-200 font-semibold cursor-pointer hover:bg-gray-700/60 transition-colors select-none" onClick={() => handleSort('name')}>
-                         <div className="flex items-center gap-2">
-                           Rolls
+                        <th className="text-left p-2 sm:p-3 text-gray-200 font-semibold">
+                          <div className="flex items-center gap-2">
+                            Rolls
+                          </div>
+                        </th>
+                       <th className="text-center p-2 sm:p-3 text-gray-200 font-semibold cursor-pointer hover:bg-gray-700/60 transition-colors select-none" onClick={() => handleSort('trash')}>
+                         <div className="flex items-center justify-center gap-2">
+                           {t('ectogamblingPage.trash')}
                            <div className="flex flex-col text-xs text-gray-500">
-                             {sortBy === 'name' ? (
+                             {sortBy === 'trash' ? (
                                sortOrder === 'asc' ? (
                                  <span className="text-blue-400">↑</span>
                                ) : (
@@ -2600,16 +2657,87 @@ export default function EctoGamblingPage() {
                            </div>
                          </div>
                        </th>
-                        <th className="text-center p-2 sm:p-3 text-gray-200 font-semibold">{t('ectogamblingPage.trash')}</th>
-                        <th className="text-center p-2 sm:p-3 text-gray-200 font-semibold">{t('ectogamblingPage.ectos')}</th>
-                        <th className="text-center p-2 sm:p-3 text-gray-200 font-semibold">{t('ectogamblingPage.treasure')}</th>
-                        <th className="text-center p-2 sm:p-3 text-gray-200 font-semibold whitespace-nowrap">{t('ectogamblingPage.total85')}</th>
-                        <th className="text-center p-2 sm:p-3 text-gray-200 font-semibold whitespace-nowrap">{t('ectogamblingPage.total90')}</th>
-                        <th className="text-center p-2 sm:p-3 text-gray-200 font-semibold whitespace-nowrap">{t('ectogamblingPage.total100')}</th>
+                       <th className="text-center p-2 sm:p-3 text-gray-200 font-semibold cursor-pointer hover:bg-gray-700/60 transition-colors select-none" onClick={() => handleSort('ectos')}>
+                         <div className="flex items-center justify-center gap-2">
+                           {t('ectogamblingPage.ectos')}
+                           <div className="flex flex-col text-xs text-gray-500">
+                             {sortBy === 'ectos' ? (
+                               sortOrder === 'asc' ? (
+                                 <span className="text-blue-400">↑</span>
+                               ) : (
+                                 <span className="text-blue-400">↓</span>
+                               )
+                             ) : (
+                               <>
+                                 <span>↑</span>
+                                 <span>↓</span>
+                               </>
+                             )}
+                           </div>
+                         </div>
+                       </th>
+                       <th className="text-center p-2 sm:p-3 text-gray-200 font-semibold">{t('ectogamblingPage.treasure')}</th>
+                       <th className="text-center p-2 sm:p-3 text-gray-200 font-semibold whitespace-nowrap cursor-pointer hover:bg-gray-700/60 transition-colors select-none" onClick={() => handleSort('total85')}>
+                         <div className="flex items-center justify-center gap-2">
+                           {t('ectogamblingPage.total85')}
+                           <div className="flex flex-col text-xs text-gray-500">
+                             {sortBy === 'total85' ? (
+                               sortOrder === 'asc' ? (
+                                 <span className="text-blue-400">↑</span>
+                               ) : (
+                                 <span className="text-blue-400">↓</span>
+                               )
+                             ) : (
+                               <>
+                                 <span>↑</span>
+                                 <span>↓</span>
+                               </>
+                             )}
+                           </div>
+                         </div>
+                       </th>
+                       <th className="text-center p-2 sm:p-3 text-gray-200 font-semibold whitespace-nowrap cursor-pointer hover:bg-gray-700/60 transition-colors select-none" onClick={() => handleSort('total90')}>
+                         <div className="flex items-center justify-center gap-2">
+                           {t('ectogamblingPage.total90')}
+                           <div className="flex flex-col text-xs text-gray-500">
+                             {sortBy === 'total90' ? (
+                               sortOrder === 'asc' ? (
+                                 <span className="text-blue-400">↑</span>
+                               ) : (
+                                 <span className="text-blue-400">↓</span>
+                               )
+                             ) : (
+                               <>
+                                 <span>↑</span>
+                                 <span>↓</span>
+                               </>
+                             )}
+                           </div>
+                         </div>
+                       </th>
+                       <th className="text-center p-2 sm:p-3 text-gray-200 font-semibold whitespace-nowrap cursor-pointer hover:bg-gray-700/60 transition-colors select-none" onClick={() => handleSort('total100')}>
+                         <div className="flex items-center justify-center gap-2">
+                           {t('ectogamblingPage.total100')}
+                           <div className="flex flex-col text-xs text-gray-500">
+                             {sortBy === 'total100' ? (
+                               sortOrder === 'asc' ? (
+                                 <span className="text-blue-400">↑</span>
+                               ) : (
+                                 <span className="text-blue-400">↓</span>
+                               )
+                             ) : (
+                               <>
+                                 <span>↑</span>
+                                 <span>↓</span>
+                               </>
+                             )}
+                           </div>
+                         </div>
+                       </th>
                     </tr>
                   </thead>
                   <tbody>
-                     {Array.from({ length: 1483 }, (_, index) => {
+                    {sortedIndices.map((index) => {
                        const rollNumber = index + 1;
                        const item = ectoGamblingData[index % ectoGamblingData.length];
                        
@@ -2650,29 +2778,23 @@ export default function EctoGamblingPage() {
                             })()}
                           </td>
                           <td className="p-2 sm:p-3 text-center text-blue-300 font-semibold">
+                            {(() => {
+                              if (ectoUnitPrice == null) return '-';
+                              const totalCopper = getTotalCopperForPct(index, 0.85);
+                              return <span className="font-semibold text-blue-300">{formatLargeGold(totalCopper)}</span>;
+                            })()}
+                          </td>
+                          <td className="p-2 sm:p-3 text-center text-blue-300 font-semibold">
                              {(() => {
-                               if (ectoUnitPrice == null) return '-';
-                               const amountTrashCopper = (item.difference || 0) * 10000;
-                               const amountEctos = ectoplasmaData[index % ectoplasmaData.length] || 0;
-                               const totalCopper = amountTrashCopper + Math.round(amountEctos * ectoUnitPrice * 0.85);
+                              if (ectoUnitPrice == null) return '-';
+                              const totalCopper = getTotalCopperForPct(index, 0.9);
                                return <span className="font-semibold text-blue-300">{formatLargeGold(totalCopper)}</span>;
                              })()}
                            </td>
                           <td className="p-2 sm:p-3 text-center text-blue-300 font-semibold">
                              {(() => {
-                               if (ectoUnitPrice == null) return '-';
-                               const amountTrashCopper = (item.difference || 0) * 10000;
-                               const amountEctos = ectoplasmaData[index % ectoplasmaData.length] || 0;
-                               const totalCopper = amountTrashCopper + Math.round(amountEctos * ectoUnitPrice * 0.9);
-                               return <span className="font-semibold text-blue-300">{formatLargeGold(totalCopper)}</span>;
-                             })()}
-                           </td>
-                          <td className="p-2 sm:p-3 text-center text-blue-300 font-semibold">
-                             {(() => {
-                               if (ectoUnitPrice == null) return '-';
-                               const amountTrashCopper = (item.difference || 0) * 10000;
-                               const amountEctos = ectoplasmaData[index % ectoplasmaData.length] || 0;
-                               const totalCopper = amountTrashCopper + Math.round(amountEctos * ectoUnitPrice);
+                              if (ectoUnitPrice == null) return '-';
+                              const totalCopper = getTotalCopperForPct(index, 1);
                                return <span className="font-semibold text-blue-300">{formatLargeGold(totalCopper)}</span>;
                              })()}
                            </td>

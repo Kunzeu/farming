@@ -1661,6 +1661,7 @@
   "ectogamblingPage.totalRollsCount": "Gesamte Würfe",
   "ectogamblingPage.successRate": "Erfolgsrate",
   "ectogamblingPage.title": "Ectoplasma-Spiel",
-  "ectogamblingPage.ectoplasmaName": "Ektoplasmakugel"
+  "ectogamblingPage.ectoplasmaName": "Ektoplasmakugel",
+  "ectogamblingPage.dataCredit": "Datenquelle: Vortus43"
 }
 

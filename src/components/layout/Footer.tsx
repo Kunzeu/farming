@@ -41,12 +41,10 @@ export default function Footer() {
   const { t } = useI18n();
   const [isClient, setIsClient] = useState(false);
 
-  // Prevenir errores de hidratación con fecha - usar estado
-  const [currentYear, setCurrentYear] = useState(2025);
+  // Prevenir errores de hidratación con animaciones dependientes del cliente
 
   useEffect(() => {
     setIsClient(true);
-    setCurrentYear(new Date().getFullYear());
   }, []);
 
   return (
@@ -190,7 +188,7 @@ export default function Footer() {
         >
           <div className="text-center space-y-2">
             <p className="text-xs text-gray-400" suppressHydrationWarning={true}>
-              © {currentYear} True Farming. {t('footer.allRights', 'Todos los derechos reservados.')}
+              © {new Date().getFullYear()} True Farming. {t('footer.allRights', 'Todos los derechos reservados.')}
             </p>
             <p className="text-xs text-gray-500">
               Guild Wars 2 © ArenaNet LLC. {t('footer.trademarks', 'Todas las marcas registradas son propiedad de sus respectivos dueños.')}
