@@ -2440,10 +2440,10 @@ export default function EctoGamblingPage() {
         {/* Header */}
         <div className="text-center mb-6 md:mb-8">
           <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white mb-3 md:mb-4">
-            Ectoplasma Gamble
+            {t('ectogamblingPage.title')}
           </h1>
           <p className="text-gray-300 text-sm sm:text-base md:text-lg">
-            Análisis completo de estadísticas y probabilidades de ectogambling
+            {t('ectogamblingPage.subtitle')}
           </p>
         </div>
 
@@ -2459,18 +2459,18 @@ export default function EctoGamblingPage() {
                     : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
                 }`}
               >
-                 Rolls
+                 {t('ectogamblingPage.rolls')}
               </button>
-              <button
-                onClick={() => setActiveSection('sandstorm')}
-                className={`px-3 sm:px-4 md:px-6 py-2 md:py-3 rounded-lg font-semibold transition-all duration-200 text-sm md:text-base ${
-                  activeSection === 'sandstorm'
-                    ? 'bg-purple-600 text-white shadow-lg'
-                    : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
-                }`}
-              >
-                Lucky Sandstorm draw
-              </button>
+                <button
+                  onClick={() => setActiveSection('sandstorm')}
+                  className={`px-3 sm:px-4 md:px-6 py-2 md:py-3 rounded-lg font-semibold transition-all duration-200 text-sm md:text-base ${
+                    activeSection === 'sandstorm'
+                      ? 'bg-purple-600 text-white shadow-lg'
+                      : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
+                  }`}
+                >
+                  {t('ectogamblingPage.sandstormLuckyDraw')}
+                </button>
             </div>
           </div>
         </div>
@@ -2486,7 +2486,7 @@ export default function EctoGamblingPage() {
               <header className="flex items-center justify-between px-6 py-4 border-b border-gray-600/30 bg-gradient-to-r from-purple-900/20 to-blue-900/20">
                 <div className="flex items-center space-x-3">
                   <h3 className="text-xl font-bold text-white">
-                    Estadísticas de Ectogambling
+                    {t('ectogamblingPage.stats')}
                   </h3>
                 </div>
                 <button
@@ -2503,21 +2503,21 @@ export default function EctoGamblingPage() {
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
                     <div className="bg-gradient-to-br from-yellow-900/30 to-yellow-800/20 border border-yellow-500/30 rounded-xl p-4 hover:shadow-lg transition-all duration-200">
                       <div className="mb-2">
-                        <span className="text-yellow-400 text-sm font-medium">Oro total usado</span>
+                        <span className="text-yellow-400 text-sm font-medium">{t('ectogamblingPage.totalGoldUsed')}</span>
                       </div>
                       <div className="text-yellow-300 font-bold text-lg">{formatLargeGold(mainStats.totalGoldUsedDetailed)}</div>
                     </div>
                     
                     <div className="bg-gradient-to-br from-blue-900/30 to-blue-800/20 border border-blue-500/30 rounded-xl p-4 hover:shadow-lg transition-all duration-200">
                       <div className="mb-2">
-                        <span className="text-blue-400 text-sm font-medium">Total rolls</span>
+                        <span className="text-blue-400 text-sm font-medium">{t('ectogamblingPage.totalRolls')}</span>
                       </div>
                       <div className="text-blue-300 font-bold text-lg">{mainStats.totalRolls.toLocaleString()}</div>
                     </div>
                     
                     <div className="bg-gradient-to-br from-purple-900/30 to-purple-800/20 border border-purple-500/30 rounded-xl p-4 hover:shadow-lg transition-all duration-200">
                       <div className="mb-2">
-                        <span className="text-purple-400 text-sm font-medium">Valor promedio</span>
+                        <span className="text-purple-400 text-sm font-medium">{t('ectogamblingPage.avgValue')}</span>
                       </div>
                       <div className="text-purple-300 font-bold text-lg">{formatGoldSilverCopper(mainStats.avgValuePerRoll)}</div>
                     </div>
@@ -2527,21 +2527,21 @@ export default function EctoGamblingPage() {
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
                     <div className="bg-gradient-to-br from-red-900/30 to-red-800/20 border border-red-500/30 rounded-xl p-4 hover:shadow-lg transition-all duration-200">
                       <div className="mb-2">
-                        <span className="text-red-400 text-sm font-medium">Costo por roll</span>
+                        <span className="text-red-400 text-sm font-medium">{t('ectogamblingPage.costPerRoll')}</span>
                       </div>
                       <div className="text-red-300 font-bold text-lg">{formatGoldSilverCopper(mainStats.costPerRoll)}</div>
                     </div>
                     
                     <div className="bg-gradient-to-br from-red-900/30 to-red-800/20 border border-red-500/30 rounded-xl p-4 hover:shadow-lg transition-all duration-200">
                       <div className="mb-2">
-                        <span className="text-red-400 text-sm font-medium">Pérdida total</span>
+                        <span className="text-red-400 text-sm font-medium">{t('ectogamblingPage.totalLoss')}</span>
                       </div>
                       <div className="text-red-300 font-bold text-lg">{formatLargeGold(mainStats.loss)}</div>
                     </div>
                     
                     <div className="bg-gradient-to-br from-green-900/30 to-green-800/20 border border-green-500/30 rounded-xl p-4 hover:shadow-lg transition-all duration-200">
                       <div className="mb-2">
-                        <span className="text-green-400 text-sm font-medium">Ectoplasma</span>
+                        <span className="text-green-400 text-sm font-medium">{t('ectogamblingPage.ectoplasmaName')}</span>
                       </div>
                       <div className="text-green-300 font-bold text-lg">{mainStats.ectoplasmaTreasure}</div>
                     </div>
@@ -2549,19 +2549,19 @@ export default function EctoGamblingPage() {
 
                   {/* Totales por porcentaje */}
                   <div className="bg-gradient-to-r from-gray-800/40 to-gray-700/40 border border-gray-600/30 rounded-xl p-4">
-                    <h4 className="text-gray-300 font-semibold mb-4 text-center">Totales</h4>
+                    <h4 className="text-gray-300 font-semibold mb-4 text-center">{t('ectogamblingPage.totals')}</h4>
                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                       <div className="bg-gradient-to-br from-blue-900/20 to-blue-800/10 border border-blue-500/20 rounded-lg p-3 text-center">
                         <div className="text-blue-400 text-sm font-medium mb-1">85%</div>
-                        <div className="text-blue-300 font-bold text-lg">{rollTotals.t85 != null ? formatLargeGold(rollTotals.t85) : 'cargando...'}</div>
+                        <div className="text-blue-300 font-bold text-lg">{rollTotals.t85 != null ? formatLargeGold(rollTotals.t85) : t('ectogamblingPage.loading')}</div>
                       </div>
                       <div className="bg-gradient-to-br from-indigo-900/20 to-indigo-800/10 border border-indigo-500/20 rounded-lg p-3 text-center">
                         <div className="text-indigo-400 text-sm font-medium mb-1">90%</div>
-                        <div className="text-indigo-300 font-bold text-lg">{rollTotals.t90 != null ? formatLargeGold(rollTotals.t90) : 'cargando...'}</div>
+                        <div className="text-indigo-300 font-bold text-lg">{rollTotals.t90 != null ? formatLargeGold(rollTotals.t90) : t('ectogamblingPage.loading')}</div>
                       </div>
                       <div className="bg-gradient-to-br from-purple-900/20 to-purple-800/10 border border-purple-500/20 rounded-lg p-3 text-center">
                         <div className="text-purple-400 text-sm font-medium mb-1">100%</div>
-                        <div className="text-purple-300 font-bold text-lg">{rollTotals.t100 != null ? formatLargeGold(rollTotals.t100) : 'cargando...'}</div>
+                        <div className="text-purple-300 font-bold text-lg">{rollTotals.t100 != null ? formatLargeGold(rollTotals.t100) : t('ectogamblingPage.loading')}</div>
                       </div>
                     </div>
                   </div>
@@ -2574,7 +2574,7 @@ export default function EctoGamblingPage() {
               <div className="p-6 border-b border-gray-700">
                 <h2 className="text-2xl font-bold text-white flex items-center">
                   <Package className="w-6 h-6 mr-3 text-purple-400" />
-                  Tabla de Rolls de Ectogambling
+                  {t('ectogamblingPage.rollsTable')}
                 </h2>
               </div>
               <div className="overflow-x-auto">
@@ -2600,12 +2600,12 @@ export default function EctoGamblingPage() {
                            </div>
                          </div>
                        </th>
-                        <th className="text-center p-2 sm:p-3 text-gray-200 font-semibold">Trash</th>
-                        <th className="text-center p-2 sm:p-3 text-gray-200 font-semibold">Ectos</th>
-                        <th className="text-center p-2 sm:p-3 text-gray-200 font-semibold">Treasure</th>
-                        <th className="text-center p-2 sm:p-3 text-gray-200 font-semibold whitespace-nowrap">Total 85%</th>
-                        <th className="text-center p-2 sm:p-3 text-gray-200 font-semibold whitespace-nowrap">Total 90%</th>
-                        <th className="text-center p-2 sm:p-3 text-gray-200 font-semibold whitespace-nowrap">Total 100%</th>
+                        <th className="text-center p-2 sm:p-3 text-gray-200 font-semibold">{t('ectogamblingPage.trash')}</th>
+                        <th className="text-center p-2 sm:p-3 text-gray-200 font-semibold">{t('ectogamblingPage.ectos')}</th>
+                        <th className="text-center p-2 sm:p-3 text-gray-200 font-semibold">{t('ectogamblingPage.treasure')}</th>
+                        <th className="text-center p-2 sm:p-3 text-gray-200 font-semibold whitespace-nowrap">{t('ectogamblingPage.total85')}</th>
+                        <th className="text-center p-2 sm:p-3 text-gray-200 font-semibold whitespace-nowrap">{t('ectogamblingPage.total90')}</th>
+                        <th className="text-center p-2 sm:p-3 text-gray-200 font-semibold whitespace-nowrap">{t('ectogamblingPage.total100')}</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -2627,8 +2627,8 @@ export default function EctoGamblingPage() {
                                </div>
                                <div>
                                 <div className="font-medium text-xs sm:text-sm whitespace-nowrap overflow-hidden text-ellipsis max-w-[6rem] sm:max-w-xs">
-                                   Rolls {rollNumber}
-                                 </div>
+                                   {t('ectogamblingPage.roll')} {rollNumber}
+                                </div>
                                </div>
                              </div>
                            </td>
@@ -2686,7 +2686,7 @@ export default function EctoGamblingPage() {
           </>
         )}
 
-        {/* Lucky Sandstorm draw Section */}
+        {/* Sandstorm Lucky Draw Section */}
         {activeSection === 'sandstorm' && (
           <>
             {/* Sandstorm Casino Information */}
@@ -2701,7 +2701,7 @@ export default function EctoGamblingPage() {
                     className="w-8 h-8"
                   />
                   <h3 className="text-xl font-bold text-white">
-                    Lucky Sandstorm Draw
+                    {t('ectogamblingPage.sandstormLuckyDraw')}
                   </h3>
                 </div>
               </header>
@@ -2711,8 +2711,8 @@ export default function EctoGamblingPage() {
                     <table className="w-full text-xs sm:text-sm">
                       <thead>
                         <tr className="border-b border-gray-600/50 bg-gray-800/60">
-                          <th className="text-left p-2 sm:p-3 text-gray-200 font-semibold">Roll</th>
-                          <th className="text-center p-2 sm:p-3 text-gray-200 font-semibold">Valor</th>
+                          <th className="text-left p-2 sm:p-3 text-gray-200 font-semibold">{t('ectogamblingPage.roll')}</th>
+                          <th className="text-center p-2 sm:p-3 text-gray-200 font-semibold">{t('ectogamblingPage.value')}</th>
                         </tr>
                       </thead>
                       <tbody>
@@ -2727,7 +2727,7 @@ export default function EctoGamblingPage() {
                         ].map((item, index) => (
                           <tr key={index} className="border-b border-gray-700/30 hover:bg-gray-700/20 transition-colors">
                             <td className="p-2 sm:p-3 text-gray-300 font-medium">
-                              Roll {item.roll}
+                              {t('ectogamblingPage.roll')} {item.roll}
                             </td>
                             <td className="p-2 sm:p-3 text-center">
                               <span className="px-2 py-1 rounded text-xs font-semibold bg-gray-600/20 text-gray-300">
@@ -2744,11 +2744,11 @@ export default function EctoGamblingPage() {
                   <div className="mt-4 grid grid-cols-2 gap-4">
                     <div className="bg-gray-700/30 rounded-lg p-3 text-center">
                       <div className="text-2xl font-bold text-white">27</div>
-                      <div className="text-xs text-gray-400">Total Rolls</div>
+                      <div className="text-xs text-gray-400">{t('ectogamblingPage.totalRollsCount')}</div>
                     </div>
                     <div className="bg-gray-700/30 rounded-lg p-3 text-center">
                       <div className="text-2xl font-bold text-blue-400">14.8%</div>
-                      <div className="text-xs text-gray-400">Tasa de Éxito</div>
+                      <div className="text-xs text-gray-400">{t('ectogamblingPage.successRate')}</div>
                     </div>
                 </div>
               </div>
