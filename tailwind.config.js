@@ -70,10 +70,6 @@ module.exports = {
   future: {
     hoverOnlyWhenSupported: true,
   },
-  // Configuración experimental para reducir el tamaño
-  experimental: {
-    optimizeUniversalDefaults: true,
-  },
   // Configuración de purging más agresiva
   safelist: [
     // Mantener clases dinámicas y de animación

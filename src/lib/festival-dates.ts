@@ -28,8 +28,8 @@ export const festivalDates: Record<string, FestivalDate> = {
     endDateFormatted: 'August'
   },
   halloween: {
-    startDate: '2025-10-21',
-    endDate: '2025-11-11',
+    startDate: '2025-10-07',
+    endDate: '2025-11-04',
     startDateFormatted: 'October',
     endDateFormatted: 'November'
   },

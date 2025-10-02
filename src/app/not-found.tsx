@@ -14,7 +14,7 @@ export default function NotFound() {
         <div className="mb-8 flex justify-center">
           <div className="relative w-32 h-32">
             <Image
-              src="/images/icons/icon.webp"
+              src="/images/icons/icoon.webp"
               alt="True Farming Logo"
               width={128}
               height={128}
