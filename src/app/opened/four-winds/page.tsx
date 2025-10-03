@@ -1806,8 +1806,18 @@ export default function FourWindsPrizeBagPage() {
                 <Gift className="h-10 w-10 sm:h-8 sm:w-8 text-white" />
                 )}
               </div>
-              <h1 className="text-3xl sm:text-4xl font-bold bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent text-center">
-                {fourWindsBag ? fourWindsBag.name : t('fourWindsPrizeBag.title')}
+              <h1 className="text-3xl sm:text-4xl font-bold text-center">
+                <span 
+                  className="bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent"
+                  style={{
+                    WebkitBackgroundClip: 'text',
+                    WebkitTextFillColor: 'transparent',
+                    backgroundClip: 'text',
+                    color: 'transparent'
+                  }}
+                >
+                  {fourWindsBag ? fourWindsBag.name : t('fourWindsPrizeBag.title')}
+                </span>
               </h1>
             </motion.div>
 

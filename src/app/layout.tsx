@@ -177,6 +177,23 @@ export default function RootLayout({
             .timer-text {
               transition: opacity 0.2s ease-in-out;
             }
+            
+            /* CSS crítico para gradientes de texto - Compatibilidad desarrollo/producción */
+            .gradient-text {
+              background: linear-gradient(to right, #60a5fa, #a855f7);
+              -webkit-background-clip: text;
+              -webkit-text-fill-color: transparent;
+              background-clip: text;
+              color: transparent;
+            }
+            
+            /* Fallback para navegadores que no soportan background-clip */
+            @supports not (background-clip: text) {
+              .gradient-text {
+                background: none;
+                color: #60a5fa;
+              }
+            }
           `
         }} />
         

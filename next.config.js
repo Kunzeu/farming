@@ -4,7 +4,7 @@ const nextConfig = {
   images: {
     unoptimized: true, // Desactiva Vercel completamente
     dangerouslyAllowSVG: true,
-    contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
+    contentSecurityPolicy: "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://pagead2.googlesyndication.com https://static.cloudflareinsights.com https://www.true-farming.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https://render.guildwars2.com https://pagead2.googlesyndication.com; connect-src 'self' https://api.guildwars2.com https://static.cloudflareinsights.com; worker-src 'self' blob:;",
     // Configuración de calidades para Next.js 16
     qualities: [25, 50, 75, 85, 90, 95, 100],
     // Sin transformaciones - las imágenes se sirven tal como están

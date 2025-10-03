@@ -27,8 +27,18 @@ export default function OpenedPage() {
               <div className="w-16 h-16 bg-gradient-to-br from-cyan-500 to-blue-600 rounded-xl shadow-lg flex items-center justify-center">
                 <Package className="h-8 w-8 text-white" />
               </div>
-              <h1 className="text-4xl font-bold bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent">
-                {t('openedPage.title', 'Contenedores Abribles')}
+              <h1 className="text-4xl font-bold">
+                <span 
+                  className="bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent"
+                  style={{
+                    WebkitBackgroundClip: 'text',
+                    WebkitTextFillColor: 'transparent',
+                    backgroundClip: 'text',
+                    color: 'transparent'
+                  }}
+                >
+                  {t('openedPage.title', 'Contenedores Abribles')}
+                </span>
               </h1>
             </motion.div>
             <p className="text-lg text-gray-300 max-w-2xl mx-auto leading-relaxed">
