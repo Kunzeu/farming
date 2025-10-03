@@ -28,6 +28,75 @@ import {
 import LanguageSwitcher from '@/components/ui/LanguageSwitcher';
 import { useI18n } from '@/contexts/I18nContext';
 
+// Componente de selector de idiomas flotante
+const FloatingLanguageSwitcher = () => {
+  const { lang, setLang, t } = useI18n();
+  const [isOpen, setIsOpen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+
+  const languages = [
+    { code: 'es', name: 'ES'},
+    { code: 'en', name: 'EN'},
+    { code: 'de', name: 'DE'},
+    { code: 'fr', name: 'FR'},
+  ];
+
+  const handleLanguageChange = (newLang: string) => {
+    setLang(newLang as 'en' | 'de' | 'es' | 'fr');
+    setIsOpen(false);
+  };
+
+  const currentLang = languages.find(l => l.code === lang) || languages[0];
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (ref.current && !ref.current.contains(event.target as Node)) {
+        setIsOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
+
+  return (
+    <div className="relative" ref={ref}>
+      <button
+        onClick={() => setIsOpen(!isOpen)}
+        className="flex items-center gap-2 px-3 py-2 bg-gray-800/90 backdrop-blur-sm border border-gray-600 rounded-lg text-white hover:bg-gray-700/90 transition-all duration-200 shadow-lg"
+      >
+        <span className="text-lg"></span>
+        <span className="text-sm font-medium">{currentLang.name}</span>
+        <ChevronDown className={`w-4 h-4 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
+      </button>
+
+      {isOpen && (
+        <motion.div
+          initial={{ opacity: 0, y: -10, scale: 0.95 }}
+          animate={{ opacity: 1, y: 0, scale: 1 }}
+          exit={{ opacity: 0, y: -10, scale: 0.95 }}
+          className="absolute top-full left-0 mt-2 bg-gray-800/95 backdrop-blur-sm border border-gray-600 rounded-lg shadow-xl py-2 z-50 min-w-[120px]"
+        >
+          {languages.map((l) => (
+            <button
+              key={l.code}
+              onClick={() => handleLanguageChange(l.code)}
+              className={`w-full flex items-center gap-3 px-4 py-2 text-sm hover:bg-gray-700/50 transition-colors ${
+                lang === l.code ? 'text-blue-400 font-semibold' : 'text-gray-300'
+              }`}
+            >
+              <span className="text-lg"></span>
+              <span>{l.name}</span>
+            </button>
+          ))}
+        </motion.div>
+      )}
+    </div>
+  );
+};
+
 // Componente de timer que solo se renderiza en el cliente
 const TimerDisplay = ({ time, className, style }: { time: string, className: string, style: React.CSSProperties }) => {
   const [isMounted, setIsMounted] = useState(false);
@@ -57,7 +126,7 @@ const Navigation = () => {
   const [isToolsMenuOpen, setIsToolsMenuOpen] = useState(false); 
   const [isMobileToolsOpen, setIsMobileToolsOpen] = useState(false);
   const [isMobileUserOpen, setIsMobileUserOpen] = useState(false);
-  const { user, isAuthenticated, isLoading, logout } = useAuth();
+  const {user, isAuthenticated, isLoading, logout} = useAuth();
   const toolsMenuRef = useRef<HTMLDivElement>(null);
   const mobileMenuRef = useRef<HTMLDivElement>(null);
   const userMenuRef = useRef<HTMLDivElement>(null);
@@ -231,7 +300,9 @@ const Navigation = () => {
     { href: '/glossary', label: t('nav.glossary', 'Glossary'), icon: BookOpen },
     { href: '/gift-of-mastery', label: t('nav.giftOfMastery', 'Gift of Mastery'), icon: Award },
     { href: '/gift-of-jade-mastery', label: t('nav.giftOfJadeMastery', 'Gift of Jade Mastery'), icon: Award },
-    // Solo mostrar Buyout Calculator para admins puros
+    { href: '/ectogambling', label: t('ectogamblingPage.title', 'Ectogambling'), icon: Star },
+
+    // Solo mostrar Buyout Calculator para admins
     ...(user?.role === 'admin' ? [{ href: '/buyout', label: 'Buyout Calculator', icon: ShoppingCart }] : []),
   ];
 
@@ -250,7 +321,7 @@ const Navigation = () => {
           font-weight: 900;
           text-rendering: optimizeSpeed;
         }
-      `}</style>
+      `}</style>    
       <nav className="bg-gray-900/95 backdrop-blur-md border-b border-gray-700/50 sticky top-0 z-50">
       <div className="max-w-8xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
@@ -635,13 +706,15 @@ const Navigation = () => {
                   </motion.div>
                 )}
               </div>
-              {/* Language Switcher */}
-              <LanguageSwitcher />
             </div>
           </div>
         </div>
       </div>
     </nav>
+     {/* Language Switcher Flotante */}
+     <div className="fixed top-20 left-4 z-50">
+        <FloatingLanguageSwitcher />
+      </div>
     </>
   );
 };
