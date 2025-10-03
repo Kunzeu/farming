@@ -12,19 +12,17 @@ export interface DashboardPreferences {
 const defaultPreferences: DashboardPreferences = {
   layout: 'grid',
   cardOrder: [
-    'trophy',
-    'farming-routes',
-    'daily-routine',
-    'fractals',
-    'ls4-meta',
-    'garden',
+    'farms',
+    'dailyRoutine',
     'salvaging',
+    'trophy',
     'festivals',
-    'buyout',
-    'orrian-jewelry-box',
+    'farmingTracker',
+    'glossary',
+    'orrianJewelry',
     'giftOfMastery',
-    'others',
-    'glossary'
+    'giftOfJadeMastery',
+    'garden'
   ],
   hiddenCards: [],
   cardSizes: {}
@@ -98,6 +96,18 @@ export function useDashboardPreferences() {
     savePreferences({ cardSizes: newCardSizes });
   }, [preferences.cardSizes, savePreferences]);
 
+  const setGlobalCardSize = useCallback((size: 'small' | 'medium' | 'large') => {
+    // Aplicar el tamaño a todas las tarjetas visibles
+    const allCardIds = preferences.cardOrder;
+    const newCardSizes: Record<string, 'small' | 'medium' | 'large'> = {};
+    
+    allCardIds.forEach(cardId => {
+      newCardSizes[cardId] = size;
+    });
+    
+    savePreferences({ cardSizes: newCardSizes });
+  }, [preferences.cardOrder, savePreferences]);
+
   const setLayout = useCallback((layout: 'grid' | 'list') => {
     savePreferences({ layout });
   }, [savePreferences]);
@@ -112,6 +122,7 @@ export function useDashboardPreferences() {
     updateCardOrder,
     toggleCardVisibility,
     updateCardSize,
+    setGlobalCardSize,
     setLayout,
     resetToDefault,
     savePreferences

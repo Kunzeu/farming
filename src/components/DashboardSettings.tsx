@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useDashboardPreferences } from '@/hooks/useDashboardPreferences';
 import { useAuth } from '@/contexts/AuthContext';
 import { Settings, Grid, List, Eye, EyeOff, RotateCcw } from 'lucide-react';
@@ -19,11 +19,9 @@ const availableCards = [
   { id: 'farmingTracker', name: 'Fractales' },
   { id: 'glossary', name: 'Glosario' },
   { id: 'orrianJewelry', name: 'Caja de Joyas Orrianas' },
-  { id: 'garden', name: 'Jardín' },
-  { id: 'ls4Meta', name: 'LS4 Meta' },
-  { id: 'buyout', name: 'Compra' },
-  { id: 'others', name: 'Otros' },
-  { id: 'profile', name: 'Perfil' }
+  { id: 'giftOfMastery', name: 'Gift of Mastery' },
+  { id: 'giftOfJadeMastery', name: 'Gift of Jade Mastery' },
+  { id: 'garden', name: 'Jardín' }
 ];
 
 export default function DashboardSettings({ isOpen, onClose }: DashboardSettingsProps) {
@@ -34,11 +32,29 @@ export default function DashboardSettings({ isOpen, onClose }: DashboardSettings
     updateCardOrder,
     toggleCardVisibility,
     updateCardSize,
+    setGlobalCardSize,
     setLayout,
     resetToDefault
   } = useDashboardPreferences();
 
   const [draggedCard, setDraggedCard] = useState<string | null>(null);
+
+  // Cerrar modal con tecla ESC
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape' && isOpen) {
+        onClose();
+      }
+    };
+
+    if (isOpen) {
+      document.addEventListener('keydown', handleKeyDown);
+    }
+
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [isOpen, onClose]);
 
   if (!isOpen || !user) return null;
 
@@ -118,6 +134,49 @@ export default function DashboardSettings({ isOpen, onClose }: DashboardSettings
           </div>
         </div>
 
+        {/* Global Size Selection */}
+        <div className="mb-6">
+          <h3 className="text-lg font-semibold text-white mb-3">Tamaño de Tarjetas</h3>
+          <p className="text-gray-400 text-sm mb-4">
+            Cambia el tamaño de todas las tarjetas del dashboard.
+          </p>
+          <div className="flex gap-4">
+            <button
+              onClick={() => setGlobalCardSize('small')}
+              className={`flex items-center px-4 py-2 rounded-lg ${
+                Object.values(preferences.cardSizes).every(size => size === 'small') || Object.keys(preferences.cardSizes).length === 0
+                  ? 'bg-green-600 text-white'
+                  : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+              }`}
+            >
+              <div className="w-3 h-3 bg-current rounded mr-2"></div>
+              Pequeño
+            </button>
+            <button
+              onClick={() => setGlobalCardSize('medium')}
+              className={`flex items-center px-4 py-2 rounded-lg ${
+                Object.values(preferences.cardSizes).every(size => size === 'medium')
+                  ? 'bg-green-600 text-white'
+                  : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+              }`}
+            >
+              <div className="w-4 h-4 bg-current rounded mr-2"></div>
+              Mediano
+            </button>
+            <button
+              onClick={() => setGlobalCardSize('large')}
+              className={`flex items-center px-4 py-2 rounded-lg ${
+                Object.values(preferences.cardSizes).every(size => size === 'large')
+                  ? 'bg-green-600 text-white'
+                  : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+              }`}
+            >
+              <div className="w-5 h-5 bg-current rounded mr-2"></div>
+              Grande
+            </button>
+          </div>
+        </div>
+
         {/* Card Order and Visibility */}
         <div className="mb-6">
           <h3 className="text-lg font-semibold text-white mb-3">
@@ -128,53 +187,50 @@ export default function DashboardSettings({ isOpen, onClose }: DashboardSettings
           </p>
           
           <div className="space-y-2">
-            {preferences.cardOrder.map((cardId) => {
-              const card = availableCards.find(c => c.id === cardId);
-              if (!card) return null;
-
+            {availableCards.map((card) => {
+              const cardId = card.id;
               const isHidden = preferences.hiddenCards.includes(cardId);
               const cardSize = preferences.cardSizes[cardId] || 'medium';
+              const isInOrder = preferences.cardOrder.includes(cardId);
 
               return (
                 <div
                   key={cardId}
-                  draggable
-                  onDragStart={(e) => handleDragStart(e, cardId)}
+                  draggable={isInOrder}
+                  onDragStart={(e) => isInOrder && handleDragStart(e, cardId)}
                   onDragOver={handleDragOver}
                   onDrop={(e) => handleDrop(e, cardId)}
                   onDragEnd={handleDragEnd}
-                  className={`flex items-center justify-between p-3 rounded-lg border-2 border-dashed ${
-                    isHidden ? 'bg-gray-700 border-gray-600' : 'bg-gray-700 border-gray-500'
-                  } ${draggedCard === cardId ? 'opacity-50' : ''}`}
+                  className={`flex items-center justify-between p-3 rounded-lg border-2 ${
+                    isInOrder ? 'border-dashed border-gray-500' : 'border-solid border-gray-600'
+                  } ${
+                    isHidden ? 'bg-gray-700' : 'bg-gray-700'
+                  } ${draggedCard === cardId ? 'opacity-50' : ''} ${
+                    !isInOrder ? 'opacity-60' : ''
+                  }`}
                 >
                   <div className="flex items-center">
-                    <div className="w-2 h-2 bg-gray-400 rounded-full mr-3 cursor-move" />
+                    {isInOrder && <div className="w-2 h-2 bg-gray-400 rounded-full mr-3 cursor-move" />}
                     <span className={`${isHidden ? 'text-gray-500 line-through' : 'text-white'}`}>
                       {card.name}
                     </span>
+                    {!isInOrder && (
+                      <span className="ml-2 text-xs text-gray-400">(No disponible)</span>
+                    )}
                   </div>
                   
                   <div className="flex items-center gap-2">
-                    {/* Card Size */}
-                    <select
-                      value={cardSize}
-                      onChange={(e) => updateCardSize(cardId, e.target.value as 'small' | 'medium' | 'large')}
-                      className="bg-gray-600 text-white text-sm rounded px-2 py-1"
-                    >
-                      <option value="small">Pequeña</option>
-                      <option value="medium">Mediana</option>
-                      <option value="large">Grande</option>
-                    </select>
-                    
-                    {/* Visibility Toggle */}
-                    <button
-                      onClick={() => toggleCardVisibility(cardId)}
-                      className={`p-2 rounded ${
-                        isHidden ? 'text-gray-500 hover:text-gray-400' : 'text-blue-400 hover:text-blue-300'
-                      }`}
-                    >
-                      {isHidden ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                    </button>
+                    {/* Visibility Toggle - Solo si está en el orden */}
+                    {isInOrder && (
+                      <button
+                        onClick={() => toggleCardVisibility(cardId)}
+                        className={`p-2 rounded ${
+                          isHidden ? 'text-gray-500 hover:text-gray-400' : 'text-blue-400 hover:text-blue-300'
+                        }`}
+                      >
+                        {isHidden ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                      </button>
+                    )}
                   </div>
                 </div>
               );
