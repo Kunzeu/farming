@@ -130,13 +130,31 @@ const TimerDisplay = ({ time, className, style }: { time: string, className: str
 const Navigation = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
+  const [isGuidesMenuOpen, setIsGuidesMenuOpen] = useState(false);
   const [isToolsMenuOpen, setIsToolsMenuOpen] = useState(false); 
+  const [isMobileGuidesOpen, setIsMobileGuidesOpen] = useState(false);
   const [isMobileToolsOpen, setIsMobileToolsOpen] = useState(false);
   const [isMobileUserOpen, setIsMobileUserOpen] = useState(false);
   const {user, isAuthenticated, isLoading, logout} = useAuth();
+  const guidesMenuRef = useRef<HTMLDivElement>(null);
   const toolsMenuRef = useRef<HTMLDivElement>(null);
   const mobileMenuRef = useRef<HTMLDivElement>(null);
   const userMenuRef = useRef<HTMLDivElement>(null);
+
+  // Funciones para manejar el estado del menú de guías con localStorage
+  const handleGuidesMenuToggle = (isOpen: boolean) => {
+    setIsGuidesMenuOpen(isOpen);
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('guidesMenuOpen', JSON.stringify(isOpen));
+    }
+  };
+
+  const handleMobileGuidesToggle = (isOpen: boolean) => {
+    setIsMobileGuidesOpen(isOpen);
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('mobileGuidesOpen', JSON.stringify(isOpen));
+    }
+  };
 
   // Funciones para manejar el estado del menú de tools con localStorage
   const handleToolsMenuToggle = (isOpen: boolean) => {
@@ -156,8 +174,18 @@ const Navigation = () => {
   // Cargar preferencias del localStorage después de la hidratación
   useEffect(() => {
     if (typeof window !== 'undefined') {
+      const savedGuidesMenu = localStorage.getItem('guidesMenuOpen');
+      const savedMobileGuides = localStorage.getItem('mobileGuidesOpen');
       const savedToolsMenu = localStorage.getItem('toolsMenuOpen');
       const savedMobileTools = localStorage.getItem('mobileToolsOpen');
+      
+      if (savedGuidesMenu !== null) {
+        setIsGuidesMenuOpen(JSON.parse(savedGuidesMenu));
+      }
+      
+      if (savedMobileGuides !== null) {
+        setIsMobileGuidesOpen(JSON.parse(savedMobileGuides));
+      }
       
       if (savedToolsMenu !== null) {
         setIsToolsMenuOpen(JSON.parse(savedToolsMenu));
@@ -256,12 +284,15 @@ const Navigation = () => {
     const handleClickOutside = (event: MouseEvent) => {
       const target = event.target as Node;
       
+      // Cerrar menú de guías
+      if (guidesMenuRef.current && !guidesMenuRef.current.contains(target)) {
+        handleGuidesMenuToggle(false);
+      }
+      
       // Cerrar menú de herramientas
       if (toolsMenuRef.current && !toolsMenuRef.current.contains(target)) {
         handleToolsMenuToggle(false);
       }
-      
-
       
       // Cerrar menú de usuario
       if (userMenuRef.current && !userMenuRef.current.contains(target)) {
@@ -280,6 +311,7 @@ const Navigation = () => {
           if (!isClickInsideMenu && !isClickInsideButton) {
             setIsMobileMenuOpen(false);
             setIsUserMenuOpen(false);
+            handleMobileGuidesToggle(false);
             handleMobileToolsToggle(false);
             setIsMobileUserOpen(false);
           }
@@ -300,14 +332,22 @@ const Navigation = () => {
     { href: '/salvage', label: t('nav.salvaging', 'Salvaging'), icon: Package },
   ];
 
-  const toolsItems = [
-    { href: '/trophy', label: t('dashboard.trophy.title', 'Trophy'), icon: FileText },
-    { href: '/festivals', label: t('nav.festivals', 'Festivals'), icon: Calendar },
-    { href: '/fractals', label: t('dashboard.farmingTracker.title', 'Fractals'), icon: Map },
-    { href: '/glossary', label: t('nav.glossary', 'Glossary'), icon: BookOpen },
+  // Sección de Guías
+  const guidesItems = [
+    { href: '/conversion-guide', label: t('nav.conversionGuide', 'Guía de Conversión'), icon: BookOpen },
     { href: '/gift-of-mastery', label: t('nav.giftOfMastery', 'Gift of Mastery'), icon: Award },
     { href: '/gift-of-jade-mastery', label: t('nav.giftOfJadeMastery', 'Gift of Jade Mastery'), icon: Award },
+    { href: '/glossary', label: t('nav.glossary', 'Glosario'), icon: FileText },
+  ];
+
+  // Sección de Herramientas
+  const toolsItems = [
+    { href: '/trophy', label: t('dashboard.trophy.title', 'Trophy'), icon: FileText },
+    { href: '/festivals', label: t('nav.festivals', 'Festivales'), icon: Calendar },
+    { href: '/fractals', label: t('dashboard.farmingTracker.title', 'Fractales'), icon: Map },
     { href: '/ectogambling', label: t('ectogamblingPage.title', 'Ectogambling'), icon: Star },
+    { href: '/garden', label: t('nav.garden', 'Jardín'), icon: Star },
+    { href: '/opened', label: t('nav.opened', 'Contenedores Abribles'), icon: Package },
 
     // Solo mostrar Buyout Calculator para admins
     ...(user?.role === 'admin' ? [{ href: '/buyout', label: 'Buyout Calculator', icon: ShoppingCart }] : []),
@@ -405,7 +445,36 @@ const Navigation = () => {
                 </Link>
               ))}
               
+              {/* Guides Dropdown */}
+              <div className="relative" ref={guidesMenuRef}>
+                <button
+                  onClick={() => handleGuidesMenuToggle(!isGuidesMenuOpen)}
+                  className="flex items-center space-x-2 text-gray-300 hover:text-white transition-all duration-200 px-3 py-2 rounded-lg hover:bg-gray-800/50 hover:shadow-md cursor-pointer">
+                  <BookOpen className="w-4 h-4" />
+                  <span className="font-bold">{t('nav.guides', 'Guías')}</span>
+                  <ChevronDown className={`w-4 h-4 text-gray-400 transition-transform duration-200 ${isGuidesMenuOpen ? 'rotate-180' : ''}`} />
+                </button>
 
+                {/* Guides Dropdown Menu */}
+                {isGuidesMenuOpen && (
+                  <motion.div
+                    initial={{ opacity: 0, y: -10, scale: 0.95 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, y: -10, scale: 0.95 }}
+                    className="absolute left-0 mt-2 w-56 bg-gray-800 rounded-lg shadow-xl border border-gray-700 py-2 z-50">
+                    {guidesItems.map((item) => (
+                      <Link
+                        key={item.href}
+                        href={item.href}
+                        className="flex items-center space-x-3 px-4 py-2 text-gray-300 hover:text-white hover:bg-gray-700 transition-colors"
+                        onClick={() => handleGuidesMenuToggle(false)}>
+                        <item.icon className="w-4 h-4" />
+                        <span>{item.label}</span>
+                      </Link>
+                    ))}
+                  </motion.div>
+                )}
+              </div>
 
               {/* Tools Dropdown */}
               <div className="relative" ref={toolsMenuRef}>
@@ -413,7 +482,7 @@ const Navigation = () => {
                   onClick={() => handleToolsMenuToggle(!isToolsMenuOpen)}
                   className="flex items-center space-x-2 text-gray-300 hover:text-white transition-all duration-200 px-3 py-2 rounded-lg hover:bg-gray-800/50 hover:shadow-md cursor-pointer">
                   <Shield className="w-4 h-4" />
-                  <span className="font-bold">{t('nav.tools', 'Tools')}</span>
+                  <span className="font-bold">{t('nav.tools', 'Herramientas')}</span>
                   <ChevronDown className={`w-4 h-4 text-gray-400 transition-transform duration-200 ${isToolsMenuOpen ? 'rotate-180' : ''}`} />
                 </button>
 
@@ -423,7 +492,7 @@ const Navigation = () => {
                     initial={{ opacity: 0, y: -10, scale: 0.95 }}
                     animate={{ opacity: 1, y: 0, scale: 1 }}
                     exit={{ opacity: 0, y: -10, scale: 0.95 }}
-                    className="absolute left-0 mt-2 w-48 bg-gray-800 rounded-lg shadow-xl border border-gray-700 py-2 z-50">
+                    className="absolute left-0 mt-2 w-56 bg-gray-800 rounded-lg shadow-xl border border-gray-700 py-2 z-50">
                     {toolsItems.map((item) => (
                       <Link
                         key={item.href}
@@ -615,7 +684,32 @@ const Navigation = () => {
                         </Link>
                       ))}
 
-
+                      {/* Guides Section */}
+                      <div className="border-t border-gray-700 my-2 pt-2">
+                        <button
+                          onClick={() => handleMobileGuidesToggle(!isMobileGuidesOpen)}
+                          className="flex items-center justify-between w-full px-3 py-2 text-xs font-semibold text-gray-400 uppercase tracking-wider hover:text-white transition-colors duration-200 cursor-pointer">
+                          <div className="flex items-center space-x-2">
+                            <BookOpen className="w-4 h-4" />
+                            <span>{t('nav.guides', 'Guías')}</span>
+                          </div>
+                          <ChevronDown className={`w-4 h-4 text-gray-400 transition-transform duration-200 ${isMobileGuidesOpen ? 'rotate-180' : ''}`} />
+                        </button>
+                        {isMobileGuidesOpen && (
+                          <div className="space-y-1">
+                            {guidesItems.map((item) => (
+                              <Link
+                                key={item.href}
+                                href={item.href}
+                                onClick={() => setIsMobileMenuOpen(false)}
+                                className="flex items-center space-x-3 px-3 py-3 text-gray-300 hover:text-white hover:bg-gray-700 rounded-md transition-colors duration-200">
+                                <item.icon className="w-5 h-5" />
+                                <span className="font-medium">{item.label}</span>
+                              </Link>
+                            ))}
+                          </div>
+                        )}
+                      </div>
 
                       {/* Tools Section */}
                       <div className="border-t border-gray-700 my-2 pt-2">
@@ -624,7 +718,7 @@ const Navigation = () => {
                           className="flex items-center justify-between w-full px-3 py-2 text-xs font-semibold text-gray-400 uppercase tracking-wider hover:text-white transition-colors duration-200 cursor-pointer">
                           <div className="flex items-center space-x-2">
                             <Shield className="w-4 h-4" />
-                            <span>{t('nav.tools', 'Tools')}</span>
+                            <span>{t('nav.tools', 'Herramientas')}</span>
                           </div>
                           <ChevronDown className={`w-4 h-4 text-gray-400 transition-transform duration-200 ${isMobileToolsOpen ? 'rotate-180' : ''}`} />
                         </button>
