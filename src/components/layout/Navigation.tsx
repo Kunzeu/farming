@@ -348,7 +348,7 @@ const Navigation = () => {
           </div>
 
           {/* Reset Timers - After Logo */}
-          <div className="hidden lg:flex items-center space-x-4 -ml-4">
+          <div className="hidden lg:flex items-center space-x-4 ml-8">
             <div 
               className="flex items-center space-x-2 text-blue-300 px-3 py-2 rounded-lg bg-blue-900/20 border border-blue-700/30"
               title={t('nav.dailyReset', 'Reset Daily - Daily rewards, missions and achievements reset')}
