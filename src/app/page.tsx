@@ -26,6 +26,7 @@ import { usePageTitle } from '@/hooks/usePageTitle'
 import { useI18n } from '@/contexts/I18nContext'
 import { useDashboardPreferences } from '@/hooks/useDashboardPreferences'
 import Slogan from '@/components/ui/Slogan'
+import { getActiveFestivalEvents } from '@/lib/festival-dates'
 import { useState, useEffect, lazy, Suspense } from 'react'
 
 // Lazy loading para componentes pesados
@@ -345,73 +346,9 @@ export default function HomePage() {
     setDraggedIndex(null);
   };
 
-  // Eventos de festivales (fechas aproximadas; actualizar cada año según calendario oficial)
-  const now = new Date();
-  const currentYear = now.getFullYear();
-  type MonthDay = { month: number; day: number };
-  interface FestivalEvent {
-    nameKey: string;
-    path: string;
-    start: MonthDay;
-    end: MonthDay;
-    color: string;
-  }
-  interface FestivalEventWithDates extends Omit<FestivalEvent, 'start' | 'end'> {
-    start: Date;
-    end: Date;
-  }
-  // UpcomingFestival type removed (CTA solo para activo)
-
-  const festivalEvents: FestivalEvent[] = [
-    {
-      nameKey: 'festival.fourWinds',
-      path: '/festivals/four-winds',
-      start: { month: 7, day: 20 },
-      end: { month: 8, day: 20 },
-      color: 'from-green-600 to-cyan-600',
-    },
-    {
-      nameKey: 'festival.halloween',
-      path: '/festivals/halloween',
-      start: { month: 10, day: 15 },
-      end: { month: 11, day: 5 },
-      color: 'from-orange-600 to-orange-700',
-    },
-    {
-      nameKey: 'festival.lunarNewYear',
-      path: '/festivals/lunar-new-year',
-      start: { month: 1, day: 20 },
-      end: { month: 2, day: 10 },
-      color: 'from-red-600 to-yellow-500',
-    },
-    {
-      nameKey: 'festival.dragonBash',
-      path: '/festivals/dragon-bash',
-      start: { month: 6, day: 20 },
-      end: { month: 7, day: 10 },
-      color: 'from-emerald-600 to-teal-600',
-    },
-    {
-      nameKey: 'festival.wintersday',
-      path: '/festivals/wintersday',
-      start: { month: 12, day: 12 },
-      end: { month: 1, day: 5 }, // cruza de año
-      color: 'from-sky-600 to-cyan-500',
-    },
-  ];
-
-  const addDates = (evt: FestivalEvent): FestivalEventWithDates => {
-    const start = new Date(currentYear, evt.start.month - 1, evt.start.day, 0, 0, 0);
-    let end = new Date(currentYear, evt.end.month - 1, evt.end.day, 23, 59, 59);
-    if (end < start) {
-      // Evento cruza de año
-      end = new Date(currentYear + 1, evt.end.month - 1, evt.end.day, 23, 59, 59);
-    }
-    return { ...evt, start, end };
-  };
-
-  const eventsWithDates: FestivalEventWithDates[] = festivalEvents.map(addDates);
-  const activeEvent = eventsWithDates.find(e => now >= e.start && now <= e.end);
+  // Obtener eventos activos desde la configuración centralizada
+  const activeFestivalEvents = getActiveFestivalEvents();
+  const activeEvent = activeFestivalEvents[0]; // Mostrar el primer evento activo si hay múltiples
 
   // Nota: lógica de próximo evento removida porque el CTA solo se muestra con evento activo
 
@@ -499,7 +436,7 @@ export default function HomePage() {
           {activeEvent && (
             <div className="mb-6 flex flex-col items-center">
               <Link href={activeEvent.path}>
-                <span className={`inline-block bg-gradient-to-r ${activeEvent.color} hover:opacity-95 text-white font-bold py-3 px-8 rounded-lg text-lg shadow-lg hover:shadow-xl transition-all duración-300 transform hover:-translate-y-1 border border-white/10`}>
+                <span className={`inline-block bg-gradient-to-r ${activeEvent.color} hover:opacity-95 text-white font-bold py-3 px-8 rounded-lg text-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 border border-white/10`}>
                   {t('cta.activeEvent', `Active event: {name}`).replace('{name}', t(activeEvent.nameKey))}
                 </span>
               </Link>

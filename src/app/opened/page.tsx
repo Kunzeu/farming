@@ -102,7 +102,7 @@ export default function OpenedPage() {
                       <div className="w-12 h-12 bg-gradient-to-br from-purple-500/20 to-purple-600/20 rounded-lg flex items-center justify-center border border-purple-500/30 overflow-hidden">
                         <Image 
                           src="https://render.guildwars2.com/file/556EDAB564D0341502AB1E129F0303C0F739A4AC/2718778.png" 
-                          alt="Four Winds Prize Bag"
+                          alt={t('fourWindsPrizeBag.title', 'Four Winds Prize Bag')}
                           width={40}
                           height={40}
                           className="w-10 h-10 object-contain"
@@ -110,14 +110,14 @@ export default function OpenedPage() {
                       </div>
                       <div>
                         <h3 className="text-xl font-bold text-purple-400 group-hover:text-white transition-colors">
-                          Four Winds Prize Bag
+                          {t('fourWindsPrizeBag.title', 'Four Winds Prize Bag')}
                         </h3>
                       </div>
                     </div>
                     
                     <div className="mt-4 flex items-center justify-between">
                       <span className="text-sm font-medium text-purple-400 group-hover:text-white transition-colors">
-                        Explorar
+                        {t('salvagePage.explore', 'Explorar')}
                       </span>
                       <div className="w-6 h-6 rounded-full bg-gradient-to-br from-purple-500/20 to-purple-600/20 flex items-center justify-center group-hover:scale-110 transition-transform">
                         <svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">

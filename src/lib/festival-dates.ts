@@ -8,6 +8,12 @@ export interface FestivalDate {
   endDateFormatted: string;
 }
 
+export interface FestivalEvent {
+  nameKey: string;
+  path: string;
+  color: string;
+}
+
 export const festivalDates: Record<string, FestivalDate> = {
   lunar: {
     startDate: '2025-01-28',
@@ -69,4 +75,59 @@ export const formatDateRange = (startDate: string, endDate: string): string => {
   }
   
   return `${startMonth} - ${endMonth}`;
+};
+
+// Configuración de eventos de festivales con sus propiedades
+export const festivalEvents: FestivalEvent[] = [
+  {
+    nameKey: 'festival.fourWinds',
+    path: '/festivals/four-winds',
+    color: 'from-green-600 to-cyan-600',
+  },
+  {
+    nameKey: 'festival.halloween',
+    path: '/festivals/halloween',
+    color: 'from-orange-600 to-orange-700',
+  },
+  {
+    nameKey: 'festival.lunarNewYear',
+    path: '/festivals/lunar-new-year',
+    color: 'from-red-600 to-yellow-500',
+  },
+  {
+    nameKey: 'festival.dragonBash',
+    path: '/festivals/dragon-bash',
+    color: 'from-emerald-600 to-teal-600',
+  },
+  {
+    nameKey: 'festival.wintersday',
+    path: '/festivals/wintersday',
+    color: 'from-sky-600 to-cyan-500',
+  },
+];
+
+// Función para obtener eventos activos basados en las fechas
+export const getActiveFestivalEvents = (): Array<FestivalEvent & { start: Date; end: Date }> => {
+  const now = new Date();
+  const activeEvents: Array<FestivalEvent & { start: Date; end: Date }> = [];
+
+  festivalEvents.forEach(event => {
+    const festivalKey = event.nameKey.replace('festival.', '');
+    const dates = festivalDates[festivalKey];
+    
+    if (dates) {
+      const start = new Date(dates.startDate);
+      const end = new Date(dates.endDate);
+      
+      if (now >= start && now <= end) {
+        activeEvents.push({
+          ...event,
+          start,
+          end
+        });
+      }
+    }
+  });
+
+  return activeEvents;
 }; 

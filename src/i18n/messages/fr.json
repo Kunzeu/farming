@@ -5,6 +5,7 @@
   "lang.french": "Français",
   "nav.home": "Accueil",
   "nav.farms": "Itinéraires",
+  "nav.guides": "Guides",
   "nav.glossary": "Glossaire",
   "nav.tools": "Outils",
   "nav.daily": "Quotidien",
@@ -825,6 +826,7 @@
   "dashboard.garden.description": "Gérez vos jardins et cultures",
 
   "gardenPage.title": "Guide des Jardins - Farming de Magie Volatile",
+  "gardenPage.titleShort": "Guide des Jardins",
   "gardenPage.subtitle": "Guide complet pour maximiser les profits dans ce farming de magie volatile",
   "gardenPage.images.volatileMagic": "Magie Volatile",
   "gardenPage.sidebar.title": "Guide des Jardins",
@@ -1655,6 +1657,15 @@
   "ectogamblingPage.successRate": "Taux de Réussite",
   "ectogamblingPage.title": "Pari d'Ectoplasma",
   "ectogamblingPage.ectoplasmaName": "Ectoplasme",
-  "ectogamblingPage.dataCredit": "Crédit des données: Vortus43"
+  "ectogamblingPage.dataCredit": "Crédit des données: Vortus43",
+  "openedPage.title": "Conteneurs Ouvrables",
+  "openedPage.subtitle": "Guide complet des conteneurs dans Guild Wars 2. Découvrez quelles récompenses vous pouvez obtenir en ouvrant différents types de conteneurs.",
+  "openedPage.generalInfo.title": "Que sont les Conteneurs?",
+  "openedPage.generalInfo.description1": "Les conteneurs sont des objets spéciaux que vous pouvez ouvrir pour obtenir des récompenses aléatoires. Chaque type de conteneur a différentes probabilités de drop et des récompenses uniques.",
+  "openedPage.generalInfo.description2": "Certains conteneurs sont plus précieux que d'autres, et savoir ce qu'ils contiennent peut vous aider à décider de les ouvrir ou de les vendre.",
+  "openedPage.generalInfo.tips": "Conseils:",
+  "openedPage.generalInfo.tip1": "Vérifiez les prix du marché avant d'ouvrir",
+  "openedPage.generalInfo.tip2": "Certains conteneurs ont des restrictions d'utilisation",
+  "openedPage.generalInfo.tip3": "Les conteneurs d'événements ont généralement des récompenses limitées"
 }
 

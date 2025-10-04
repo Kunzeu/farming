@@ -335,6 +335,7 @@ const Navigation = () => {
   // Sección de Guías
   const guidesItems = [
     { href: '/conversion-guide', label: t('nav.conversionGuide', 'Guía de Conversión'), icon: BookOpen },
+    { href: '/garden', label: t('gardenPage.titleShort', 'Jardín'), icon: Star },
     { href: '/gift-of-mastery', label: t('nav.giftOfMastery', 'Gift of Mastery'), icon: Award },
     { href: '/gift-of-jade-mastery', label: t('nav.giftOfJadeMastery', 'Gift of Jade Mastery'), icon: Award },
     { href: '/glossary', label: t('nav.glossary', 'Glosario'), icon: FileText },
@@ -346,8 +347,7 @@ const Navigation = () => {
     { href: '/festivals', label: t('nav.festivals', 'Festivales'), icon: Calendar },
     { href: '/fractals', label: t('dashboard.farmingTracker.title', 'Fractales'), icon: Map },
     { href: '/ectogambling', label: t('ectogamblingPage.title', 'Ectogambling'), icon: Star },
-    { href: '/garden', label: t('nav.garden', 'Jardín'), icon: Star },
-    { href: '/opened', label: t('nav.opened', 'Contenedores Abribles'), icon: Package },
+    { href: '/opened', label: t('openedPage.title', 'Contenedores Abribles'), icon: Package },
 
     // Solo mostrar Buyout Calculator para admins
     ...(user?.role === 'admin' ? [{ href: '/buyout', label: 'Buyout Calculator', icon: ShoppingCart }] : []),

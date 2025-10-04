@@ -5,6 +5,7 @@
   "lang.french": "Français",
   "nav.home": "Startseite",
   "nav.farms": "Routen",
+  "nav.guides": "Anleitungen",
   "nav.glossary": "Glossar",
   "nav.tools": "Werkzeuge",
   "nav.daily": "Täglich",
@@ -830,6 +831,7 @@
   "dashboard.garden.description": "Verwalte deine Gärten und Pflanzen",
 
   "gardenPage.title": "Garten-Guide - Flüchtige Magie Farming",
+  "gardenPage.titleShort": "Garten-Guide",
   "gardenPage.subtitle": "Vollständiger Leitfaden zur Gewinnmaximierung in diesem Flüchtige Magie Farming",
   "gardenPage.images.volatileMagic": "Flüchtige Magie",
   "gardenPage.sidebar.title": "Garten-Guide",
@@ -1661,6 +1663,15 @@
   "ectogamblingPage.successRate": "Erfolgsrate",
   "ectogamblingPage.title": "Ectoplasma-Spiel",
   "ectogamblingPage.ectoplasmaName": "Ektoplasmakugel",
-  "ectogamblingPage.dataCredit": "Datenquelle: Vortus43"
+  "ectogamblingPage.dataCredit": "Datenquelle: Vortus43",
+  "openedPage.title": "Öffnbare Behälter",
+  "openedPage.subtitle": "Vollständiger Leitfaden zu Behältern in Guild Wars 2. Entdecken Sie, welche Belohnungen Sie durch das Öffnen verschiedener Behältertypen erhalten können.",
+  "openedPage.generalInfo.title": "Was sind Behälter?",
+  "openedPage.generalInfo.description1": "Behälter sind spezielle Gegenstände, die Sie öffnen können, um zufällige Belohnungen zu erhalten. Jeder Behältertyp hat unterschiedliche Drop-Wahrscheinlichkeiten und einzigartige Belohnungen.",
+  "openedPage.generalInfo.description2": "Einige Behälter sind wertvoller als andere, und zu wissen, was sie enthalten, kann Ihnen helfen zu entscheiden, ob Sie sie öffnen oder verkaufen sollen.",
+  "openedPage.generalInfo.tips": "Tipps:",
+  "openedPage.generalInfo.tip1": "Überprüfen Sie die Marktpreise vor dem Öffnen",
+  "openedPage.generalInfo.tip2": "Einige Behälter haben Nutzungsbeschränkungen",
+  "openedPage.generalInfo.tip3": "Event-Behälter haben normalerweise begrenzte Belohnungen"
 }
 

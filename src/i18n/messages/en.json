@@ -5,6 +5,7 @@
   "lang.french": "Français",
   "nav.home": "Home",
   "nav.farms": "Farms",
+  "nav.guides": "Guides",
   "nav.glossary": "Glossary",
   "nav.tools": "Tools",
   "nav.daily": "Daily",
@@ -829,6 +830,7 @@
   "dashboard.garden.description": "Manage your gardens and crops",
 
   "gardenPage.title": "Garden Guide - Volatile Magic Farming",
+  "gardenPage.titleShort": "Garden Guide",
   "gardenPage.subtitle": "Complete guide to maximize profits in this volatile magic farming",
   "gardenPage.images.volatileMagic": "Volatile Magic",
   "gardenPage.sidebar.title": "Garden Guide",
@@ -1661,6 +1663,15 @@
   "ectogamblingPage.successRate": "Success Rate",
   "ectogamblingPage.title": "Ectoplasma Gamble",
   "ectogamblingPage.ectoplasmaName": "Ectoplasm",
-  "ectogamblingPage.dataCredit": "Data credit: Vortus43"
+  "ectogamblingPage.dataCredit": "Data credit: Vortus43",
+  "openedPage.title": "Openable Containers",
+  "openedPage.subtitle": "Complete guide to containers in Guild Wars 2. Discover what rewards you can get by opening different types of containers.",
+  "openedPage.generalInfo.title": "What are Containers?",
+  "openedPage.generalInfo.description1": "Containers are special items that you can open to get random rewards. Each type of container has different drop probabilities and unique rewards.",
+  "openedPage.generalInfo.description2": "Some containers are more valuable than others, and knowing what they contain can help you decide whether to open them or sell them.",
+  "openedPage.generalInfo.tips": "Tips:",
+  "openedPage.generalInfo.tip1": "Check market prices before opening",
+  "openedPage.generalInfo.tip2": "Some containers have usage restrictions",
+  "openedPage.generalInfo.tip3": "Event containers usually have limited rewards"
 }
 
