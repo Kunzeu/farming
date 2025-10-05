@@ -46,9 +46,50 @@ pool.query('SELECT NOW()', (err) => {
   }
 });
 
-export async function GET() {
-  // GET deshabilitado por solicitud: evitar exponer datos de usuario
-  return NextResponse.json({ error: 'GET /api/users is disabled' }, { status: 405 });
+export async function GET(request: NextRequest) {
+  const { searchParams } = new URL(request.url);
+  const discordId = searchParams.get('discordId');
+
+  try {
+    if (discordId) {
+      // Soporte para login con Discord (sin password)
+      const query = `
+        SELECT id, email, username, role, is_active as "isActive",
+               created_at as "createdAt", updated_at as "updatedAt", discord_id as "discordId"
+        FROM users 
+        WHERE discord_id = $1
+      `;
+
+      const result = await pool.query(query, [discordId]);
+      if (result.rows.length === 0) {
+        return NextResponse.json({ error: 'User not found' }, { status: 404 });
+      }
+      const row = result.rows[0];
+      return NextResponse.json({
+        ...row,
+        createdAt: new Date(row.createdAt),
+        updatedAt: new Date(row.updatedAt)
+      });
+    }
+
+    // Listado mínimo (sin password). Usado para verificar si existe el primer usuario en registro
+    const query = `
+      SELECT id, email, username, role, is_active as "isActive",
+             created_at as "createdAt", updated_at as "updatedAt", discord_id as "discordId"
+      FROM users 
+      ORDER BY created_at DESC
+    `;
+    const result = await pool.query(query);
+    const users = result.rows.map(row => ({
+      ...row,
+      createdAt: new Date(row.createdAt),
+      updatedAt: new Date(row.updatedAt)
+    }));
+    return NextResponse.json(users);
+  } catch (error) {
+    console.error('Error fetching users:', error);
+    return NextResponse.json({ error: 'Error fetching users' }, { status: 500 });
+  }
 }
 
 export async function POST(request: NextRequest) {
