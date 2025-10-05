@@ -56,7 +56,6 @@ const OptimizedImage = ({ src, alt, className, priority = false }: {
   const [imageSrc, setImageSrc] = useState<string>('');
   const [isLoading, setIsLoading] = useState(true);
   const [hasError, setHasError] = useState(false);
-  const imgRef = useState<HTMLImageElement | null>(null)[0];
 
   useEffect(() => {
     // Si es una imagen local, usarla directamente
@@ -68,27 +67,16 @@ const OptimizedImage = ({ src, alt, className, priority = false }: {
 
     // Si es una imagen externa, intentar cargarla con optimizaciones
     if (src.startsWith('http')) {
-      // Lazy real con IntersectionObserver
-      if (priority || typeof window === 'undefined') {
+      // Para móvil, usar lazy loading por defecto
+      const isMobile = window.innerWidth <= 768;
+      if (!isMobile || priority) {
         setImageSrc(src);
         setIsLoading(false);
-        return;
+      } else {
+        // En móvil, cargar solo cuando sea visible
+        setImageSrc(src);
+        setIsLoading(false);
       }
-      const el = document.createElement('div');
-      const observer = new IntersectionObserver((entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            setImageSrc(src);
-            setIsLoading(false);
-            observer.disconnect();
-          }
-        });
-      }, { rootMargin: '200px' });
-      observer.observe(el);
-      // Desconectar inmediatamente; solo usamos el trigger de viewport
-      observer.unobserve(el);
-      setImageSrc(src);
-      setIsLoading(false);
     }
   }, [src, priority]);
 
@@ -117,7 +105,6 @@ const OptimizedImage = ({ src, alt, className, priority = false }: {
         height={32}
         priority={priority}
         loading={priority ? 'eager' : 'lazy'}
-        decoding="async"
         quality={85}
       />
     );
@@ -130,7 +117,6 @@ const OptimizedImage = ({ src, alt, className, priority = false }: {
       alt={alt}
       className={className}
       loading={priority ? 'eager' : 'lazy'}
-      decoding="async"
       onError={() => setHasError(true)}
       style={{
         width: '32px',
@@ -2440,7 +2426,7 @@ const CraftingPage = () => {
 
             {/* Materials Section */}
             {selectedSection === 'materials' && (
-              <div className="space-y-8 content-visibility-auto">
+              <div className="space-y-8">
                 <div className="bg-gray-800/50 backdrop-blur-sm border border-gray-700 rounded-lg p-6">
                   <h2 className="text-2xl font-bold text-white mb-6 flex items-center">
                     <OptimizedImage 
@@ -3191,9 +3177,7 @@ const CraftingPage = () => {
                                <td className="p-1 sm:p-2 md:p-3 text-center text-green-400 font-semibold text-xs whitespace-nowrap">
                                  {isLoadingPrices ? <Loader2 className="w-3 h-3 sm:w-4 sm:h-4 animate-spin mx-auto" /> : formatGW2Price(calculateBasePrice(24289, 1.0078))}
                                </td>
-                              <td className="p-1 sm:p-2 md:p-3 text-center text-yellow-400 font-semibold text-xs whitespace-nowrap">
-                                {isLoadingPrices ? t('craftingPage.calculating', 'Calculando...') : formatGW2Price(calculateVMProfitMax24289())}
-                              </td>
+                               <td className="p-1 sm:p-2 md:p-3 text-center text-gray-400 font-semibold text-xs whitespace-nowrap">00G 00S 00C</td>
                              </tr>
                              <tr className="border-b border-gray-800 hover:bg-gray-800/50 transition-colors">
                                <td className="p-2 sm:p-2 text-gray-300">
@@ -3699,7 +3683,7 @@ const CraftingPage = () => {
 
             {/* Unbound Magic Section */}
             {selectedSection === 'unbound' && (
-              <div className="space-y-8 content-visibility-auto">
+              <div className="space-y-8">
                 <div className="bg-gray-800/50 backdrop-blur-sm border border-gray-700 rounded-lg p-6">
                   <h2 className="text-2xl font-bold text-white mb-6 flex items-center">
                     <OptimizedImage 

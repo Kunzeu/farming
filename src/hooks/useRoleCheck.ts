@@ -80,8 +80,8 @@ export function useRoleCheck() {
     // Verificar inmediatamente al montar
     checkRole();
 
-    // Configurar intervalo de 30 segundos
-    intervalRef.current = setInterval(checkRole, 30000);
+    // Configurar intervalo de 60 segundos
+    intervalRef.current = setInterval(checkRole, 60000);
 
     // Limpiar intervalo al desmontar
     return () => {

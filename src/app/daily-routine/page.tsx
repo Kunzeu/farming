@@ -112,9 +112,9 @@ export default function DailyRoutine() {
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
-  // Inicializar desde preferencias cuando estén cargadas
+  // Inicializar selección desde localStorage (hook)
   useEffect(() => {
-    if (initialIds) {
+    if (Array.isArray(initialIds)) {
       setSelectedFarms(new Set(initialIds));
     }
   }, [initialIds]);
@@ -131,7 +131,7 @@ export default function DailyRoutine() {
     });
   };
 
-  // Guardar cambios con debounce cuando cambie la selección
+  // Guardar cambios en localStorage con debounce
   const debouncedSave = useDebouncedSave();
   useEffect(() => {
     debouncedSave(Array.from(selectedFarms));

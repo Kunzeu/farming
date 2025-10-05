@@ -6,6 +6,12 @@ export function middleware(request: NextRequest) {
   
   // Headers básicos de optimización para todas las páginas
   const pathname = request.nextUrl.pathname;
+
+  // Redirigir rutas basura compuestas solo por símbolos (/$, /&, etc.)
+  const onlySymbols = /^[^a-zA-Z0-9\/_-]+$/;
+  if (pathname !== '/' && onlySymbols.test(pathname.replaceAll('/', ''))) {
+    return NextResponse.redirect(new URL('/', request.url), 301);
+  }
   
   // Para assets estáticos - cache largo
   if (pathname.match(/\.(js|css|png|jpg|jpeg|gif|webp|svg|ico|woff|woff2|ttf|eot)$/)) {

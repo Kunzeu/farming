@@ -12,3 +12,9 @@ Disallow: /admin/
 Disallow: /api/
 Disallow: /account/
 Disallow: /moderator/
+
+# Bloquear rutas basura
+Disallow: /$
+Disallow: /&
+Disallow: /*$
+Disallow: /*&

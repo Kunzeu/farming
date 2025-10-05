@@ -16,8 +16,7 @@ export async function POST(request: NextRequest) {
     // Get user from database
     const query = `
       SELECT id, email, username, password, role, is_active as "isActive",
-             created_at as "createdAt", updated_at as "updatedAt", discord_id as "discordId",
-             preferences
+             created_at as "createdAt", updated_at as "updatedAt", discord_id as "discordId"
       FROM users 
       WHERE email = $1
     `;

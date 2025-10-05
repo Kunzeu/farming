@@ -146,15 +146,7 @@ function AuthProviderInternal({ children }: { children: ReactNode }) {
         joinDate: data.user.createdAt ? (typeof data.user.createdAt === 'string' ? data.user.createdAt : data.user.createdAt.toISOString()) : new Date().toISOString(),
         lastLogin: new Date().toISOString(),
         isAdmin: data.user.role === 'admin',
-        preferences: data.user.preferences ?? {
-          theme: 'dark',
-          language: 'es',
-          notifications: {
-            priceAlerts: true,
-            eventReminders: true,
-            buildUpdates: false
-          }
-        }
+        preferences: data.user.preferences
       };
 
       const token = 'jwt_token_' + Date.now();
