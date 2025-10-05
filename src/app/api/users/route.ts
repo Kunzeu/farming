@@ -48,47 +48,124 @@ pool.query('SELECT NOW()', (err) => {
 
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
+  const email = searchParams.get('email');
+  const username = searchParams.get('username');
   const discordId = searchParams.get('discordId');
+  const userId = searchParams.get('userId'); // Para obtener perfil específico
 
   try {
-    if (discordId) {
-      // Soporte para login con Discord (sin password)
+    if (email) {
+      // Buscar por email (para login)
       const query = `
-        SELECT id, email, username, role, is_active as "isActive",
+        SELECT id, email, username, password, role, is_active as "isActive",
                created_at as "createdAt", updated_at as "updatedAt", discord_id as "discordId"
         FROM users 
-        WHERE discord_id = $1
+        WHERE email = $1
       `;
-
-      const result = await pool.query(query, [discordId]);
+      
+      const result = await pool.query(query, [email]);
       if (result.rows.length === 0) {
         return NextResponse.json({ error: 'User not found' }, { status: 404 });
       }
+      
       const row = result.rows[0];
       return NextResponse.json({
         ...row,
         createdAt: new Date(row.createdAt),
         updatedAt: new Date(row.updatedAt)
       });
-    }
+      
+    } else if (username) {
+      // Buscar por username
+      const query = `
+        SELECT id, email, username, role, is_active as "isActive",
+               created_at as "createdAt", updated_at as "updatedAt", discord_id as "discordId"
+        FROM users 
+        WHERE username = $1
+      `;
+      
+      const result = await pool.query(query, [username]);
+      if (result.rows.length === 0) {
+        return NextResponse.json({ error: 'User not found' }, { status: 404 });
+      }
+      
+      const row = result.rows[0];
+      return NextResponse.json({
+        ...row,
+        createdAt: new Date(row.createdAt),
+        updatedAt: new Date(row.updatedAt)
+      });
+      
+    } else if (discordId) {
+      // Buscar por Discord ID
+      const query = `
+        SELECT id, email, username, role, is_active as "isActive",
+               created_at as "createdAt", updated_at as "updatedAt", discord_id as "discordId"
+        FROM users 
+        WHERE discord_id = $1
+      `;
+      
+      const result = await pool.query(query, [discordId]);
+      if (result.rows.length === 0) {
+        return NextResponse.json({ error: 'User not found' }, { status: 404 });
+      }
+      
+      const row = result.rows[0];
+      return NextResponse.json({
+        ...row,
+        createdAt: new Date(row.createdAt),
+        updatedAt: new Date(row.updatedAt)
+      });
+      
+    } else if (userId) {
+      // Obtener perfil específico (usando RLS)
+      await pool.query('SELECT set_current_user_id($1)', [userId]);
+      
+      const query = `
+        SELECT id, email, username, role, is_active as "isActive",
+               created_at as "createdAt", updated_at as "updatedAt", discord_id as "discordId"
+        FROM users 
+        WHERE id = $1
+      `;
+      
+      const result = await pool.query(query, [userId]);
+      if (result.rows.length === 0) {
+        return NextResponse.json({ error: 'User not found' }, { status: 404 });
+      }
+      
+      const row = result.rows[0];
+      return NextResponse.json({
+        ...row,
+        createdAt: new Date(row.createdAt),
+        updatedAt: new Date(row.updatedAt)
+      });
+      
+    } else {
+      // Obtener todos los usuarios (solo para admins)
+      // Nota: Esto requeriría verificar que el usuario actual es admin
+      const query = `
+        SELECT id, email, username, role, is_active as "isActive",
+               created_at as "createdAt", updated_at as "updatedAt", discord_id as "discordId"
+        FROM users 
+        ORDER BY created_at DESC
+      `;
+      
+      const result = await pool.query(query);
+      const users = result.rows.map(row => ({
+        ...row,
+        createdAt: new Date(row.createdAt),
+        updatedAt: new Date(row.updatedAt)
+      }));
 
-    // Listado mínimo (sin password). Usado para verificar si existe el primer usuario en registro
-    const query = `
-      SELECT id, email, username, role, is_active as "isActive",
-             created_at as "createdAt", updated_at as "updatedAt", discord_id as "discordId"
-      FROM users 
-      ORDER BY created_at DESC
-    `;
-    const result = await pool.query(query);
-    const users = result.rows.map(row => ({
-      ...row,
-      createdAt: new Date(row.createdAt),
-      updatedAt: new Date(row.updatedAt)
-    }));
-    return NextResponse.json(users);
+      return NextResponse.json(users);
+    }
   } catch (error) {
     console.error('Error fetching users:', error);
-    return NextResponse.json({ error: 'Error fetching users' }, { status: 500 });
+    return NextResponse.json({ 
+      error: 'Error fetching users', 
+      details: error instanceof Error ? error.message : String(error),
+      code: error instanceof Error && 'code' in error ? error.code : 'UNKNOWN'
+    }, { status: 500 });
   }
 }
 
