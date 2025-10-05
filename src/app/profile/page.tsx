@@ -19,7 +19,7 @@ import { useI18n } from '@/contexts/I18nContext';
 
 export default function ProfilePage() {
   const { user } = useAuth();
-  const { t } = useI18n();
+  const { t, lang } = useI18n();
   usePageTitle('pageTitles.profile', t('profile.title'));
   const [isEditing, setIsEditing] = useState(false);
   const [preferences, setPreferences] = useState({
@@ -47,6 +47,12 @@ export default function ProfilePage() {
       });
     }
   }, [user?.preferences]);
+
+  const memberSinceDate = user?.createdAt
+    ? new Date(user.createdAt)
+    : (user?.joinDate ? new Date(user.joinDate) : null);
+
+  const locale = lang === 'es' ? 'es-ES' : lang === 'de' ? 'de-DE' : lang === 'fr' ? 'fr-FR' : 'en-US';
 
   const handleSave = async () => {
     try {
@@ -173,14 +179,13 @@ export default function ProfilePage() {
                     <div className="min-w-0 flex-1">
                       <p className="text-gray-400 text-xs font-medium uppercase tracking-wider">{t('profile.memberSince')}</p>
                       <p className="text-white font-semibold text-sm">
-                        {user?.createdAt 
-                          ? new Date(user.createdAt).toLocaleDateString('es-ES', {
+                        {memberSinceDate
+                          ? memberSinceDate.toLocaleDateString(locale, {
                               year: 'numeric',
                               month: 'long',
                               day: 'numeric'
                             })
-                          : t('profile.dateNotAvailable')
-                        }
+                          : t('profile.dateNotAvailable')}
                       </p>
                     </div>
                   </div>
