@@ -402,7 +402,7 @@ const HalloweenPage = () => {
       <div 
         className="min-h-screen relative"
         style={{
-          backgroundImage: 'url(/images/backgrounds/halloween.webp)',
+          backgroundImage: 'url(/images/backgrounds/Halloween.webp)',
           backgroundSize: 'cover',
           backgroundPosition: 'center',
           backgroundAttachment: 'fixed'

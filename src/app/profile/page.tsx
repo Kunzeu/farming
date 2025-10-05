@@ -8,19 +8,19 @@ import { useAuth } from '@/contexts/AuthContext';
 import { 
   User, 
   Mail, 
-  Calendar, 
-  Settings, 
-  Heart, 
-  Bell,
-
+  Calendar,
+  Settings,
   Save,
-  Edit
+  Edit,
+  Shield
 } from 'lucide-react';
 import { usePageTitle } from '@/hooks/usePageTitle';
+import { useI18n } from '@/contexts/I18nContext';
 
 export default function ProfilePage() {
   const { user } = useAuth();
-  usePageTitle('pageTitles.profile', 'My Profile');
+  const { t } = useI18n();
+  usePageTitle('pageTitles.profile', t('profile.title'));
   const [isEditing, setIsEditing] = useState(false);
   const [preferences, setPreferences] = useState({
     notifications: {
@@ -43,12 +43,10 @@ export default function ProfilePage() {
           priceAlerts: user.preferences.notifications?.priceAlerts ?? true,
           eventReminders: user.preferences.notifications?.eventReminders ?? true,
           buildUpdates: user.preferences.notifications?.buildUpdates ?? false,
-    }
-  });
+        }
+      });
     }
   }, [user?.preferences]);
-
-
 
   const handleSave = async () => {
     try {
@@ -64,17 +62,17 @@ export default function ProfilePage() {
         // Validar y cambiar contraseña si se proporcionaron datos
         if (passwordData.newPassword || passwordData.confirmPassword) {
           if (!passwordData.newPassword) {
-            alert('You must enter a new password');
+            alert(t('profile.passwordRequired'));
             return;
           }
           
           if (passwordData.newPassword !== passwordData.confirmPassword) {
-            alert('Passwords do not match');
+            alert(t('profile.passwordsNoMatch'));
             return;
           }
           
           if (passwordData.newPassword.length < 6) {
-            alert('New password must be at least 6 characters long');
+            alert(t('profile.passwordTooShort'));
             return;
           }
           
@@ -97,65 +95,92 @@ export default function ProfilePage() {
           confirmPassword: ''
         });
         
-    setIsEditing(false);
-        alert('Settings saved successfully');
+        setIsEditing(false);
+        alert(t('profile.saveSuccess'));
       }
     } catch (error) {
       console.error('Error saving preferences:', error);
-      alert('Error saving settings');
+      alert(t('profile.saveError'));
     }
   };
 
+
   return (
     <ProtectedRoute>
-      <div className="min-h-screen">
+      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
         <Navigation />
         
-        <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          {/* Header */}
+        <main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          {/* Header Hero */}
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
-            className="text-center mb-8">
-            <h1 className="text-4xl font-bold text-white mb-4">
-              My Profile
-            </h1>
-            <p className="text-xl text-gray-300">
-              Manage your account and preferences
+            className="text-center mb-10">
+            <div className="relative inline-block">
+              <h1 className="text-4xl font-black text-white mb-4 tracking-tight">
+                {t('profile.title')}
+              </h1>
+              <div className="absolute -bottom-2 left-1/2 transform -translate-x-1/2 w-24 h-1 bg-gradient-to-r from-purple-500 via-pink-500 to-blue-500 rounded-full"></div>
+            </div>
+            <p className="text-lg text-gray-300 mt-6 max-w-xl mx-auto">
+              {t('profile.subtitle')}
             </p>
           </motion.div>
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            {/* Información del Usuario */}
+            {/* Información del Usuario - Diseño Card */}
             <motion.div
-              initial={{ opacity: 0, x: -20 }}
+              initial={{ opacity: 0, x: -30 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.2 }}
               className="lg:col-span-1">
-              <div className="bg-gray-800 rounded-lg p-6 border border-gray-700">
+              <div className="bg-gradient-to-br from-gray-800/95 to-gray-900/95 backdrop-blur-xl rounded-2xl p-6 border border-gray-700/50 shadow-xl">
+                
                 <div className="text-center mb-6">
-                  <div className="w-24 h-24 bg-purple-600 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <User className="w-12 h-12 text-white" />
+                  <div className="w-24 h-24 mx-auto mb-4 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center shadow-xl border-2 border-white/10">
+                    <User className="w-10 h-10 text-white" />
                   </div>
-                  <h2 className="text-2xl font-bold text-white">{user?.username}</h2>
-                  <p className="text-gray-400">{user?.email}</p>
+                  <h2 className="text-2xl font-black text-white mb-2 tracking-tight">{user?.username}</h2>
                 </div>
 
                 <div className="space-y-4">
-                  <div className="flex items-center gap-3">
-                    <Mail className="w-5 h-5 text-gray-400" />
-                    <div>
-                      <p className="text-gray-400 text-sm">Email</p>
-                      <p className="text-white">{user?.email}</p>
+                  <div className="group flex items-center gap-3 p-4 bg-gradient-to-r from-gray-700/40 to-gray-800/40 rounded-xl border border-gray-600/30 hover:border-blue-500/50 transition-all duration-300 hover:shadow-lg">
+                    <div className="w-10 h-10 bg-gradient-to-br from-blue-500/30 to-purple-500/30 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                      <Mail className="w-5 h-5 text-blue-400" />
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <p className="text-gray-400 text-xs font-medium uppercase tracking-wider">{t('profile.email')}</p>
+                      <p className="text-white font-semibold text-sm break-all">{user?.email}</p>
                     </div>
                   </div>
 
-                  <div className="flex items-center gap-3">
-                    <Calendar className="w-5 h-5 text-gray-400" />
-                    <div>
-                      <p className="text-gray-400 text-sm">Last access</p>
-                      <p className="text-white">
+                  <div className="group flex items-center gap-3 p-4 bg-gradient-to-r from-gray-700/40 to-gray-800/40 rounded-xl border border-gray-600/30 hover:border-purple-500/50 transition-all duration-300 hover:shadow-lg">
+                    <div className="w-10 h-10 bg-gradient-to-br from-purple-500/30 to-blue-500/30 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                      <Calendar className="w-5 h-5 text-purple-400" />
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <p className="text-gray-400 text-xs font-medium uppercase tracking-wider">{t('profile.lastAccess')}</p>
+                      <p className="text-white font-semibold text-sm">
                         {user?.lastLogin ? new Date(user.lastLogin).toLocaleDateString('es-ES') : 'N/A'}
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="group flex items-center gap-3 p-4 bg-gradient-to-r from-gray-700/40 to-gray-800/40 rounded-xl border border-gray-600/30 hover:border-blue-500/50 transition-all duration-300 hover:shadow-lg">
+                    <div className="w-10 h-10 bg-gradient-to-br from-blue-500/30 to-purple-500/30 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                      <Calendar className="w-5 h-5 text-blue-400" />
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <p className="text-gray-400 text-xs font-medium uppercase tracking-wider">{t('profile.memberSince')}</p>
+                      <p className="text-white font-semibold text-sm">
+                        {user?.createdAt 
+                          ? new Date(user.createdAt).toLocaleDateString('es-ES', {
+                              year: 'numeric',
+                              month: 'long',
+                              day: 'numeric'
+                            })
+                          : t('profile.dateNotAvailable')
+                        }
                       </p>
                     </div>
                   </div>
@@ -163,177 +188,89 @@ export default function ProfilePage() {
               </div>
             </motion.div>
 
-            {/* Configuraciones */}
+            {/* Panel de Configuración */}
             <motion.div
-              initial={{ opacity: 0, x: 20 }}
+              initial={{ opacity: 0, x: 30 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.3 }}
               className="lg:col-span-2">
-              <div className="bg-gray-800 rounded-lg p-6 border border-gray-700">
+              
+              {/* Configuraciones Principales */}
+              <div className="bg-gradient-to-br from-gray-800/95 to-gray-900/95 backdrop-blur-xl rounded-2xl p-6 border border-gray-700/50 shadow-xl">
                 <div className="flex items-center justify-between mb-6">
-                  <h3 className="text-xl font-bold text-white">Settings</h3>
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl flex items-center justify-center">
+                      <Settings className="w-5 h-5 text-white" />
+                    </div>
+                    <h3 className="text-2xl font-black text-white">{t('profile.settings')}</h3>
+                  </div>
                   <button
                     onClick={() => setIsEditing(!isEditing)}
-                    className="flex items-center gap-2 px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg transition-colors">
-                    <Edit className="w-4 h-4" />
-                    {isEditing ? 'Cancel' : 'Edit'}
+                    className="group inline-flex items-center gap-3 px-6 py-3 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white font-semibold rounded-lg transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105">
+                    <Edit className="w-4 h-4 group-hover:rotate-12 transition-transform duration-300" />
+                    <span>{isEditing ? t('profile.cancel') : t('profile.edit')}</span>
                   </button>
                 </div>
 
                 <div className="space-y-6">
                   {/* Cambio de contraseña */}
                   <div className="space-y-4">
-                    <h4 className="text-white font-medium">Change Password</h4>
+                    <div className="flex items-center gap-2">
+                      <Shield className="w-5 h-5 text-yellow-400" />
+                      <h4 className="text-lg font-bold text-white">{t('profile.changePassword')}</h4>
+                    </div>
                     
-                    <div>
-                      <label className="block text-gray-300 text-sm mb-2">
-                        New password
-                      </label>
-                      <input
-                        type="password"
-                        value={passwordData.newPassword}
-                        onChange={(e) => setPasswordData({...passwordData, newPassword: e.target.value})}
-                        disabled={!isEditing}
-                        placeholder="Enter your new password"
-                        className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 disabled:opacity-50"
-                      />
-                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-gray-300 text-sm font-medium mb-2">
+                          {t('profile.newPassword')}
+                        </label>
+                        <input
+                          type="password"
+                          value={passwordData.newPassword}
+                          onChange={(e) => setPasswordData({...passwordData, newPassword: e.target.value})}
+                          disabled={!isEditing}
+                          placeholder={t('profile.newPasswordPlaceholder')}
+                          className="w-full px-3 py-3 bg-gray-700/50 border border-gray-600/50 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent disabled:opacity-50 transition-all duration-300"
+                        />
+                      </div>
 
-                    <div>
-                      <label className="block text-gray-300 text-sm mb-2">
-                        Confirm new password
-                      </label>
-                      <input
-                        type="password"
-                        value={passwordData.confirmPassword}
-                        onChange={(e) => setPasswordData({...passwordData, confirmPassword: e.target.value})}
-                        disabled={!isEditing}
-                        placeholder="Confirm your new password"
-                        className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 disabled:opacity-50"
-                      />
-                    </div>
-                  </div>
-
-                  {/* Notificaciones */}
-                  <div>
-                    <label className="flex items-center gap-2 text-white font-medium mb-3">
-                      <Bell className="w-5 h-5" />
-                      Notifications
-                    </label>
-                    <div className="space-y-3">
-                      <label className="flex items-center gap-3">
+                      <div>
+                        <label className="block text-gray-300 text-sm font-medium mb-2">
+                          {t('profile.confirmPassword')}
+                        </label>
                         <input
-                          type="checkbox"
-                          checked={preferences.notifications.priceAlerts}
-                          onChange={(e) => setPreferences({
-                            ...preferences,
-                            notifications: {
-                              ...preferences.notifications,
-                              priceAlerts: e.target.checked
-                            }
-                          })}
+                          type="password"
+                          value={passwordData.confirmPassword}
+                          onChange={(e) => setPasswordData({...passwordData, confirmPassword: e.target.value})}
                           disabled={!isEditing}
-                          className="w-4 h-4 text-purple-600 bg-gray-700 border-gray-600 rounded focus:ring-purple-500 disabled:opacity-50"
+                          placeholder={t('profile.confirmPasswordPlaceholder')}
+                          className="w-full px-3 py-3 bg-gray-700/50 border border-gray-600/50 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent disabled:opacity-50 transition-all duration-300"
                         />
-                        <span className="text-gray-300">Price alerts</span>
-                      </label>
-                      
-                      <label className="flex items-center gap-3">
-                        <input
-                          type="checkbox"
-                          checked={preferences.notifications.eventReminders}
-                          onChange={(e) => setPreferences({
-                            ...preferences,
-                            notifications: {
-                              ...preferences.notifications,
-                              eventReminders: e.target.checked
-                            }
-                          })}
-                          disabled={!isEditing}
-                          className="w-4 h-4 text-purple-600 bg-gray-700 border-gray-600 rounded focus:ring-purple-500 disabled:opacity-50"
-                        />
-                        <span className="text-gray-300">Event reminders</span>
-                      </label>
-                      
-                      <label className="flex items-center gap-3">
-                        <input
-                          type="checkbox"
-                          checked={preferences.notifications.buildUpdates}
-                          onChange={(e) => setPreferences({
-                            ...preferences,
-                            notifications: {
-                              ...preferences.notifications,
-                              buildUpdates: e.target.checked
-                            }
-                          })}
-                          disabled={!isEditing}
-                          className="w-4 h-4 text-purple-600 bg-gray-700 border-gray-600 rounded focus:ring-purple-500 disabled:opacity-50"
-                        />
-                        <span className="text-gray-300">Build updates</span>
-                      </label>
+                      </div>
                     </div>
                   </div>
 
                   {/* Botón de guardar */}
                   {isEditing && (
-                    <motion.button
-                      initial={{ opacity: 0, y: 10 }}
+                    <motion.div
+                      initial={{ opacity: 0, y: 20 }}
                       animate={{ opacity: 1, y: 0 }}
-                      onClick={handleSave}
-                      className="flex items-center gap-2 px-6 py-3 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors">
-                      <Save className="w-4 h-4" />
-                      Save Changes
-                    </motion.button>
+                      className="flex justify-center pt-4">
+                      <button
+                        onClick={handleSave}
+                        className="group inline-flex items-center gap-3 px-6 py-3 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white font-semibold rounded-lg transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105">
+                        <Save className="w-4 h-4 group-hover:rotate-12 transition-transform duration-300" />
+                        <span>{t('profile.saveChanges')}</span>
+                      </button>
+                    </motion.div>
                   )}
                 </div>
               </div>
-
-              {/* Estadísticas */}
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.4 }}
-                className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div className="bg-gray-800 rounded-lg p-4 border border-gray-700">
-                  <div className="flex items-center gap-3">
-                    <Heart className="w-8 h-8 text-red-400" />
-                    <div>
-                      <p className="text-gray-400 text-sm">Favorite Items</p>
-                      <p className="text-white font-bold text-xl">
-                        {user?.preferences?.favoriteItems?.length || 0}
-                      </p>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="bg-gray-800 rounded-lg p-4 border border-gray-700">
-                  <div className="flex items-center gap-3">
-                    <Settings className="w-8 h-8 text-blue-400" />
-                    <div>
-                      <p className="text-gray-400 text-sm">Saved Routes</p>
-                      <p className="text-white font-bold text-xl">
-                        {user?.preferences?.favoriteRoutes?.length || 0}
-                      </p>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="bg-gray-800 rounded-lg p-4 border border-gray-700">
-                  <div className="flex items-center gap-3">
-                    <Bell className="w-8 h-8 text-yellow-400" />
-                    <div>
-                      <p className="text-gray-400 text-sm">Notifications</p>
-                      <p className="text-white font-bold text-xl">
-                        {Object.values(preferences.notifications).filter(Boolean).length}
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              </motion.div>
             </motion.div>
           </div>
         </main>
       </div>
     </ProtectedRoute>
   );
-} 
+}

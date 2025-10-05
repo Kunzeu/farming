@@ -13,7 +13,6 @@ import {
   X,
   User,
   LogOut,
-  Settings,
   Shield,
   Package,
   ChevronDown,
@@ -546,13 +545,6 @@ const Navigation = () => {
                             
 
                             
-                            <Link
-                              href="/settings"
-                              className="flex items-center space-x-3 px-4 py-2 text-gray-300 hover:text-white hover:bg-gray-700 transition-colors"
-                              onClick={() => setIsUserMenuOpen(false)}>
-                              <Settings className="w-4 h-4" />
-                       <span>{t('auth.settings', 'Settings')}</span>
-                            </Link>
 
                             {/* Solo mostrar Admin Panel si es admin y NO moderador */}
                             {((user?.role === 'admin' || user?.isAdmin) && user?.role !== 'moderator') && (
@@ -761,13 +753,6 @@ const Navigation = () => {
                                   <span className="font-medium">Profile</span>
                                 </Link>
                                 
-                                <Link
-                                  href="/settings"
-                                  onClick={() => setIsMobileMenuOpen(false)}
-                                  className="flex items-center space-x-3 px-3 py-3 text-gray-300 hover:text-white hover:bg-gray-700 rounded-md transition-colors duration-200">
-                                  <Settings className="w-5 h-5" />
-                                  <span className="font-medium">Settings</span>
-                                </Link>
 
                                 {/* Solo mostrar Admin Panel si es admin y NO moderador */}
                                 {((user?.role === 'admin' || user?.isAdmin) && user?.role !== 'moderator') && (
