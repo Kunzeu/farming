@@ -7,6 +7,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import Navigation from '@/components/layout/Navigation';
 import { usePageTitle } from '@/hooks/usePageTitle';
+import { useI18n } from '@/contexts/I18nContext';
 
 interface WalletItem {
   id: number;
@@ -23,10 +24,12 @@ interface Currency {
 
 const WalletPage = () => {
   const { isAuthenticated } = useAuth();
-  usePageTitle('pageTitles.wallet', 'Wallet');
+  const { t } = useI18n();
+  usePageTitle('pageTitles.wallet', t('account.wallet', 'Wallet'));
   const [walletData, setWalletData] = useState<WalletItem[]>([]);
   const [currencies, setCurrencies] = useState<Currency[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  // No mostrar modal aquí; solo en /account
 
   // Important currency IDs (ordered with Spirit Shards after Coin)
   const importantCurrencyIds = useMemo(() => [
@@ -38,8 +41,8 @@ const WalletPage = () => {
       try {
         setIsLoading(true);
         const apiKey = localStorage.getItem('gw2_api_key');
-        if (!apiKey) {
-          console.error('No API key found');
+        if (!apiKey || apiKey.trim().length < 10) {
+          // Sin API key: no llamamos, pero no mostramos modal en subpáginas
           return;
         }
         
@@ -109,16 +112,16 @@ const WalletPage = () => {
         <div className="mb-8">
           <Link href="/account" className="inline-flex items-center text-blue-400 hover:text-blue-300 mb-4">
             <ArrowLeft className="w-4 h-4 mr-2" />
-            Back to My Account
+            {t('account.back', 'Back to My Account')}
           </Link>
-          <h1 className="text-3xl font-bold mb-2">Wallet</h1>
-          <p className="text-gray-400">Your coins and resources</p>
+          <h1 className="text-3xl font-bold mb-2">{t('account.wallet', 'Wallet')}</h1>
+          <p className="text-gray-400">{t('account.walletSubtitle', 'Your coins and resources')}</p>
         </div>
 
         {isLoading ? (
           <div className="text-center py-12">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto mb-4"></div>
-            <p className="text-gray-400">Loading wallet...</p>
+            <p className="text-gray-400">{t('account.loadingWallet', 'Loading wallet...')}</p>
           </div>
                  ) : (
                        <div className="space-y-4">

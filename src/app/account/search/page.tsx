@@ -5,6 +5,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { ArrowLeft, Search, Package, Users, Database } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
+import Navigation from '@/components/layout/Navigation';
 
 interface SearchResult {
   id: number;
@@ -20,14 +21,17 @@ interface SearchResult {
 }
 
 import { usePageTitle } from '@/hooks/usePageTitle';
+import { useI18n } from '@/contexts/I18nContext';
 
 const SearchPage = () => {
   const { isAuthenticated } = useAuth();
-  usePageTitle('pageTitles.search', 'Account Search');
+  const { t } = useI18n();
+  usePageTitle('pageTitles.search', t('pageTitles.search', 'Account Search'));
   const [searchTerm, setSearchTerm] = useState('');
   const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [searchScope, setSearchScope] = useState<'all' | 'bank' | 'characters' | 'storage'>('all');
+  // No modal aquí; solo en /account
 
   const handleSearch = useCallback(async () => {
     if (!searchTerm.trim()) return;
@@ -35,8 +39,7 @@ const SearchPage = () => {
     setIsLoading(true);
     try {
       const apiKey = localStorage.getItem('gw2_api_key');
-      if (!apiKey) {
-        console.error('No API key found');
+      if (!apiKey || apiKey.trim().length < 10) {
         return;
       }
       
@@ -65,9 +68,9 @@ const SearchPage = () => {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
-                     <h2 className="text-2xl font-bold text-white mb-2">Access Required</h2>
+                    <h2 className="text-2xl font-bold text-white mb-2">{t('auth.accessRequired', 'Access Required')}</h2>
           <Link href="/login" className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg">
-                         Go to Login
+                        {t('auth.goToLogin', 'Go to Login')}
           </Link>
         </div>
       </div>
@@ -76,14 +79,15 @@ const SearchPage = () => {
 
   return (
     <div className="min-h-screen bg-gray-900 text-white">
+      <Navigation />
       <div className="container mx-auto px-4 py-8">
         <div className="mb-8">
           <Link href="/account" className="inline-flex items-center text-blue-400 hover:text-blue-300 mb-4">
             <ArrowLeft className="w-4 h-4 mr-2" />
-            Back to My Account
+            {t('account.back', 'Back to My Account')}
           </Link>
-                      <h1 className="text-3xl font-bold mb-2">Search</h1>
-                      <p className="text-gray-400">Search items in your account</p>
+                     <h1 className="text-3xl font-bold mb-2">{t('search.title', 'Search')}</h1>
+                     <p className="text-gray-400">{t('search.subtitle', 'Search items in your account')}</p>
         </div>
 
         {/* Search Controls */}
@@ -94,7 +98,7 @@ const SearchPage = () => {
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
                 <input
                   type="text"
-                  placeholder="Search items..."
+                  placeholder={t('search.searchPlaceholder', 'Search items...')}
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   className="w-full pl-10 pr-4 py-3 bg-gray-800 border border-gray-700 rounded-lg focus:outline-none focus:border-blue-500"
@@ -111,7 +115,7 @@ const SearchPage = () => {
                     : 'bg-gray-800 border-gray-700 text-gray-300 hover:bg-gray-700'
                 }`}
               >
-                                 All
+                                {t('search.scopeAll', 'All')}
               </button>
               <button
                 onClick={() => setSearchScope('bank')}
@@ -151,7 +155,7 @@ const SearchPage = () => {
         {isLoading && (
           <div className="text-center py-12">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto mb-4"></div>
-                         <p className="text-gray-400">Searching...</p>
+                         <p className="text-gray-400">{t('search.loading', 'Searching...')}</p>
           </div>
         )}
 
@@ -169,12 +173,12 @@ const SearchPage = () => {
                        className="mr-3"
                      />
                    )}
-                  <h3 className="text-lg font-semibold">{item.name}</h3>
+                      <h3 className="text-lg font-semibold">{item.name}</h3>
                 </div>
                 <div className="space-y-2 text-sm text-gray-400">
-                                     <p><strong>Quantity:</strong> {item.count}</p>
-                   <p><strong>Location:</strong> {item.location}</p>
-                   {item.rarity && <p><strong>Rarity:</strong> {item.rarity}</p>}
+                                    <p><strong>{t('search.quantity', 'Quantity')}:</strong> {item.count}</p>
+                  <p><strong>{t('search.location', 'Location')}:</strong> {item.location}</p>
+                  {item.rarity && <p><strong>{t('search.rarity', 'Rarity')}:</strong> {item.rarity}</p>}
                 </div>
               </div>
             ))}
@@ -184,10 +188,11 @@ const SearchPage = () => {
         {!isLoading && searchTerm && searchResults.length === 0 && (
           <div className="text-center py-12">
             <Search className="w-16 h-16 text-gray-600 mx-auto mb-4" />
-                         <h3 className="text-xl font-semibold text-gray-300 mb-2">No results found</h3>
-             <p className="text-gray-400">Try with other search terms</p>
+                        <h3 className="text-xl font-semibold text-gray-300 mb-2">{t('search.emptyTitle', 'No results found')}</h3>
+            <p className="text-gray-400">{t('search.emptyDesc', 'Try with other search terms')}</p>
           </div>
         )}
+        {/* Sin modal aquí; se muestra solo en /account */}
       </div>
     </div>
   );

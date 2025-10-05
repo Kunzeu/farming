@@ -1,12 +1,15 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { motion } from 'framer-motion';
+import { X } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { ArrowLeft, Package, Search, Database } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { usePageTitle } from '@/hooks/usePageTitle';
 import Navigation from '@/components/layout/Navigation';
+import { useI18n } from '@/contexts/I18nContext';
 
 interface BankItem {
   id: number;
@@ -54,7 +57,8 @@ interface ItemDetails {
 
 const BankPage = () => {
   const { isAuthenticated } = useAuth();
-  usePageTitle('pageTitles.bank', 'Bank');
+  const { t } = useI18n();
+  usePageTitle('pageTitles.bank', t('pageTitles.bank', 'Bank'));
   const [bankItems, setBankItems] = useState<(BankItem | null)[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
@@ -175,8 +179,7 @@ const BankPage = () => {
            console.log('🔄 Fetching bank data...');
            setIsLoading(true);
            const apiKey = localStorage.getItem('gw2_api_key');
-           if (!apiKey) {
-             console.error('❌ No API key found');
+           if (!apiKey || apiKey.trim().length < 10) {
              return;
            }
            
@@ -346,9 +349,9 @@ const BankPage = () => {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
-          <h2 className="text-2xl font-bold text-white mb-2">Access Required</h2>
+          <h2 className="text-2xl font-bold text-white mb-2">{t('auth.accessRequired', 'Access Required')}</h2>
           <Link href="/login" className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg">
-            Go to Login
+            {t('auth.goToLogin', 'Go to Login')}
           </Link>
         </div>
       </div>
@@ -362,19 +365,19 @@ const BankPage = () => {
         <div className="mb-8">
           <Link href="/account" className="inline-flex items-center text-blue-400 hover:text-blue-300 mb-4">
             <ArrowLeft className="w-4 h-4 mr-2" />
-            Back to My Account
+            {t('account.back', 'Back to My Account')}
           </Link>
-          <h1 className="text-3xl font-bold mb-2">Bank</h1>
-          <p className="text-gray-400">Your bank inventory</p>
+          <h1 className="text-3xl font-bold mb-2">{t('bank.title', 'Bank')}</h1>
+          <p className="text-gray-400">{t('bank.subtitle', 'Your bank inventory')}</p>
         </div>
 
                  {/* Search and Refresh */}
          <div className="mb-6 flex gap-4">
            <div className="relative flex-1">
              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-             <input
+            <input
                type="text"
-               placeholder="Search bank..."
+              placeholder={t('bank.searchPlaceholder', 'Search bank...')}
                value={searchTerm}
                onChange={(e) => setSearchTerm(e.target.value)}
                className="w-full pl-10 pr-4 py-3 bg-gray-800 border border-gray-700 rounded-lg focus:outline-none focus:border-blue-500"
@@ -396,24 +399,24 @@ const BankPage = () => {
                    .finally(() => setIsLoading(false));
                }
              }}
-             className="px-4 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors"
+            className="px-4 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors"
            >
-             🔄 Refresh
+            🔄 {t('common.refresh', 'Refresh')}
            </button>
          </div>
 
                  {isLoading ? (
-           <div className="text-center py-12">
+          <div className="text-center py-12">
              <div className="animate-spin rounded-full h-15 w-15 border-b-2 border-blue-500 mx-auto mb-4"></div>
-             <p className="text-gray-400">Loading bank...</p>
+            <p className="text-gray-400">{t('bank.loading', 'Loading bank...')}</p>
            </div>
          ) : (
            <div className="space-y-6">
                            {/* Financial Summary */}
               <div className="bg-gray-800 rounded-lg p-4 border border-gray-700 max-w-2xl mx-auto">
                                                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                                   <div className="text-center">
-                                                                                   <h3 className="text-base font-semibold mb-2">Total Buy Price</h3>
+                  <div className="text-center">
+                    <h3 className="text-base font-semibold mb-2">{t('bank.totalBuyPrice', 'Total Buy Price')}</h3>
                                            <div className="text-2xl font-bold text-yellow-400 flex items-center justify-center space-x-1">
                         {(() => {
                           const { gold, silver, copper } = formatGold(Math.floor(bankSummary.totalBuyPrice * 0.85));
@@ -443,11 +446,11 @@ const BankPage = () => {
                             </>
                           );
                         })()}
-                        <span className="ml-1">excl. fees</span>
+                        <span className="ml-1">{t('bank.excludingFees', 'excl. fees')}</span>
                       </div>
                                       </div>
                                       <div className="text-center">
-                                            <h3 className="text-base font-semibold mb-2">Total Sell Price</h3>
+                      <h3 className="text-base font-semibold mb-2">{t('bank.totalSellPrice', 'Total Sell Price')}</h3>
                                             <div className="text-2xl font-bold text-green-400 flex items-center justify-center space-x-1">
                          {(() => {
                            const { gold, silver, copper } = formatGold(Math.floor(bankSummary.totalSellPrice * 0.85));
@@ -477,21 +480,21 @@ const BankPage = () => {
                              </>
                            );
                          })()}
-                         <span className="ml-1">excl. fees</span>
+                         <span className="ml-1">{t('bank.excludingFees', 'excl. fees')}</span>
                        </div>
                     </div>
                </div>
                
-                               {/* Bank Usage */}
+               {/* Bank Usage */}
                 <div className="text-center mb-4">
                   <p className="text-lg text-gray-300">
-                    You are using {bankSummary.usedSlots} of {bankSummary.totalSlots} ({((bankSummary.usedSlots / bankSummary.totalSlots) * 100).toFixed(2)}%) available bank slots.
+                    {t('bank.usage', `You are using ${bankSummary.usedSlots} of ${bankSummary.totalSlots} (${((bankSummary.usedSlots / bankSummary.totalSlots) * 100).toFixed(2)}%) available bank slots.`)}
                   </p>
                 </div>
                 
                                  {/* Current Slot Count & Currency */}
                  <div className="flex items-center justify-center space-x-4">
-                   <span className="text-xl font-semibold">{bankSummary.usedSlots} / {bankSummary.totalSlots} slots</span>
+                  <span className="text-xl font-semibold">{bankSummary.usedSlots} / {bankSummary.totalSlots} {t('bank.slots', 'slots')}</span>
                    <div className="flex items-center space-x-1">
                      <span className="text-yellow-400">{Math.floor(bankSummary.totalValue / 10000)}</span>
                      <Image src="/images/expansions/Gold.webp" alt="Gold" width={16} height={16} />
@@ -506,12 +509,12 @@ const BankPage = () => {
                                                        {/* Bank Grid */}
               <div className="bg-gray-800 rounded-lg p-6 border border-gray-700 max-w-5xl mx-auto">
                              <div className="flex items-center justify-between mb-4">
-                 <h2 className="text-xl font-semibold flex items-center">
+                <h2 className="text-xl font-semibold flex items-center">
                    <Package className="w-5 h-5 mr-2 text-blue-500" />
-                   Bank Tab 1
+                  {t('bank.tabLabel', 'Bank Tab 1')}
                  </h2>
                  <div className="text-sm text-gray-400">
-                   {filteredItems.length} items • 30 slots
+                  {filteredItems.length} {t('bank.items', 'items')} • 30 {t('bank.slots', 'slots')}
                  </div>
                </div>
               
@@ -554,9 +557,9 @@ const BankPage = () => {
                              )}
                              
                              {/* Bound indicator */}
-                             {item.bound && (
+                            {item.bound && (
                                <span className="text-xs text-gray-300 font-semibold absolute top-0 right-0 px-1">
-                                 Bound
+                                {t('bank.bound', 'Bound')}
                                </span>
                              )}
                              
@@ -621,6 +624,8 @@ const BankPage = () => {
           </div>
         )}
 
+        {/* Sin modal aquí; se muestra solo en /account */}
+
         {!isLoading && filteredItems.length === 0 && (
           <div className="text-center py-12">
             <Database className="w-16 h-16 text-gray-600 mx-auto mb-4" />
@@ -678,12 +683,12 @@ const BankPage = () => {
                                    {/* Prices */}
                                      {(selectedItem.price || selectedItem.details.vendor_value) && (
                      <div className="space-y-2">
-                       <h4 className="text-sm font-semibold text-gray-200">Prices</h4>
+                      <h4 className="text-sm font-semibold text-gray-200">{t('bank.prices', 'Prices')}</h4>
                       
                       {/* Vendor Price - Always show if available */}
                       {selectedItem.details.vendor_value && (
                                                  <div className="flex justify-between items-center">
-                           <span className="text-gray-400 text-xs">Vendor Price:</span>
+                          <span className="text-gray-400 text-xs">{t('bank.vendorPrice', 'Vendor Price:')}</span>
                            <div className="flex items-center space-x-1">
                             {(() => {
                               const { gold, silver, copper } = formatGold(selectedItem.details.vendor_value!);
@@ -701,7 +706,7 @@ const BankPage = () => {
                                                          <span className="text-gray-400 text-xs ml-2">
                                ({(() => {
                                  const { gold, silver, copper } = formatGold(selectedItem.details.vendor_value! * selectedItem.item.count);
-                                 return `${gold}g ${silver}s ${copper}c per ${selectedItem.item.count}`;
+                                   return `${gold}g ${silver}s ${copper}c ${t('bank.perCount', 'per')} ${selectedItem.item.count}`;
                                })()})
                              </span>
                           </div>
@@ -714,7 +719,7 @@ const BankPage = () => {
                                                      {/* Buy Price - Only show if exists */}
                            {selectedItem.price.buys && selectedItem.price.buys.unit_price > 0 && (
                              <div className="flex justify-between items-center">
-                               <span className="text-gray-400 text-xs">Buy Price:</span>
+                              <span className="text-gray-400 text-xs">{t('bank.buyPrice', 'Buy Price:')}</span>
                               <div className="flex items-center space-x-1">
                                 {(() => {
                                   const { gold, silver, copper } = formatGold(selectedItem.price.buys.unit_price);
@@ -732,7 +737,7 @@ const BankPage = () => {
                                                                  <span className="text-gray-400 text-xs ml-2">
                                    ({(() => {
                                      const { gold, silver, copper } = formatGold(selectedItem.price.buys.unit_price * selectedItem.item.count);
-                                     return `${gold}g ${silver}s ${copper}c per ${selectedItem.item.count}`;
+                                     return `${gold}g ${silver}s ${copper}c ${t('bank.perCount', 'per')} ${selectedItem.item.count}`;
                                    })()})
                                  </span>
                               </div>
@@ -742,7 +747,7 @@ const BankPage = () => {
                                                      {/* Sell Price - Only show if exists */}
                            {selectedItem.price.sells && selectedItem.price.sells.unit_price > 0 && (
                              <div className="flex justify-between items-center">
-                               <span className="text-gray-400 text-xs">Sell Price:</span>
+                              <span className="text-gray-400 text-xs">{t('bank.sellPrice', 'Sell Price:')}</span>
                               <div className="flex items-center space-x-1">
                                 {(() => {
                                   const { gold, silver, copper } = formatGold(selectedItem.price.sells.unit_price);
@@ -760,7 +765,7 @@ const BankPage = () => {
                                                                  <span className="text-gray-400 text-xs ml-2">
                                    ({(() => {
                                      const { gold, silver, copper } = formatGold(selectedItem.price.sells.unit_price * selectedItem.item.count);
-                                     return `${gold}g ${silver}s ${copper}c per ${selectedItem.item.count}`;
+                                     return `${gold}g ${silver}s ${copper}c ${t('bank.perCount', 'per')} ${selectedItem.item.count}`;
                                    })()})
                                  </span>
                               </div>

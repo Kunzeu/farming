@@ -7,6 +7,7 @@ import Link from 'next/link';
 import Navigation from '@/components/layout/Navigation';
 import Image from 'next/image';
 import { usePageTitle } from '@/hooks/usePageTitle';
+import { useI18n } from '@/contexts/I18nContext';
 
 interface Character {
   name: string;
@@ -48,7 +49,8 @@ interface Character {
 
 const CharactersPage = () => {
   const { isAuthenticated } = useAuth();
-  usePageTitle('pageTitles.characters', 'Characters');
+  const { t } = useI18n();
+  usePageTitle('pageTitles.characters', t('pageTitles.characters', 'Characters'));
   const [characters, setCharacters] = useState<Character[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
@@ -71,8 +73,9 @@ const CharactersPage = () => {
         setError(null);
         
         const apiKey = checkApiKey();
-        if (!apiKey) {
-          setError('No API key configured');
+        if (!apiKey || apiKey.trim().length < 10) {
+          setHasApiKey(false);
+          setIsLoading(false);
           return;
         }
         
@@ -182,7 +185,7 @@ const CharactersPage = () => {
       return (
         <div className="text-center py-4 text-gray-400">
           <Package className="w-8 h-8 mx-auto mb-2" />
-                     <p>No inventory available</p>
+                     <p>{t('characters.noInventory', 'No inventory available')}</p>
         </div>
       );
     }
@@ -191,7 +194,7 @@ const CharactersPage = () => {
       return (
         <div className="text-center py-4 text-gray-400">
           <Package className="w-8 h-8 mx-auto mb-2" />
-                     <p>Empty inventory</p>
+                     <p>{t('characters.emptyInventory', 'Empty inventory')}</p>
         </div>
       );
     }
@@ -204,11 +207,11 @@ const CharactersPage = () => {
                <div className="flex items-center">
                  <Package className="w-4 h-4 text-gray-400 mr-2" />
                                     <h5 className="text-sm font-semibold text-gray-300">
-                     Bag {bag.id || bagIndex + 1}
+                    {t('characters.bag', 'Bag')} {bag.id || bagIndex + 1}
                    </h5>
                </div>
               <span className="text-xs text-gray-400">
-                {bag.inventory?.filter(item => item !== null).length || 0}/{bag.size || 0} slots
+               {bag.inventory?.filter(item => item !== null).length || 0}/{bag.size || 0} {t('characters.slots', 'slots')}
               </span>
             </div>
             
@@ -276,9 +279,9 @@ const CharactersPage = () => {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
-                     <h2 className="text-2xl font-bold text-white mb-2">Access Required</h2>
+                    <h2 className="text-2xl font-bold text-white mb-2">{t('auth.accessRequired', 'Access Required')}</h2>
           <Link href="/login" className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg">
-                         Go to Login
+                        {t('auth.goToLogin', 'Go to Login')}
           </Link>
         </div>
       </div>
@@ -292,10 +295,10 @@ const CharactersPage = () => {
         <div className="mb-8">
           <Link href="/account" className="inline-flex items-center text-blue-400 hover:text-blue-300 mb-4">
             <ArrowLeft className="w-4 h-4 mr-2" />
-                         Back to My Account
+                        {t('account.back', 'Back to My Account')}
           </Link>
-                     <h1 className="text-3xl font-bold mb-2">Characters</h1>
-           <p className="text-gray-400">Your characters and equipment</p>
+                    <h1 className="text-3xl font-bold mb-2">{t('characters.title', 'Characters')}</h1>
+          <p className="text-gray-400">{t('characters.subtitle', 'Your characters and equipment')}</p>
         </div>
 
         {/* API Key Warning */}
@@ -304,16 +307,16 @@ const CharactersPage = () => {
             <div className="flex items-center">
               <Key className="w-5 h-5 text-yellow-500 mr-3" />
               <div>
-                                 <h3 className="text-yellow-400 font-semibold mb-1">API Key Required</h3>
-                 <p className="text-yellow-300 text-sm mb-3">
-                   To view your characters, you need to configure your Guild Wars 2 API key.
-                 </p>
-                <Link 
-                  href="/account/settings" 
-                  className="inline-flex items-center px-4 py-2 bg-yellow-600 hover:bg-yellow-700 text-white rounded-lg text-sm transition-colors"
-                >
-                                     Configure API Key
-                </Link>
+                                <h3 className="text-yellow-400 font-semibold mb-1">{t('characters.apiKeyRequiredTitle', 'API Key Required')}</h3>
+                <p className="text-yellow-300 text-sm mb-3">
+                  {t('characters.apiKeyRequiredDesc', 'To view your characters, you need to configure your Guild Wars 2 API key.')}
+                </p>
+               <Link 
+                 href="/account/settings" 
+                 className="inline-flex items-center px-4 py-2 bg-yellow-600 hover:bg-yellow-700 text-white rounded-lg text-sm transition-colors"
+               >
+                                    {t('characters.configureApiKey', 'Configure API Key')}
+               </Link>
               </div>
             </div>
           </div>
@@ -322,18 +325,18 @@ const CharactersPage = () => {
         {/* Error Message */}
         {error && (
           <div className="mb-6 p-4 bg-red-900/20 border border-red-700 rounded-lg">
-            <div className="flex items-center">
+              <div className="flex items-center">
               <AlertCircle className="w-5 h-5 text-red-500 mr-3" />
               <div>
-                <h3 className="text-red-400 font-semibold mb-1">Error</h3>
+                <h3 className="text-red-400 font-semibold mb-1">{t('common.error', 'Error')}</h3>
                 <p className="text-red-300 text-sm mb-3">{error}</p>
                 {error.includes('API key') && (
-                                   <Link 
-                   href="/account/settings" 
-                   className="inline-flex items-center px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg text-sm transition-colors"
-                 >
-                   Review Configuration
-                 </Link>
+                                  <Link 
+                  href="/account/settings" 
+                  className="inline-flex items-center px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg text-sm transition-colors"
+                >
+                  {t('characters.reviewConfiguration', 'Review Configuration')}
+                </Link>
                 )}
               </div>
             </div>
@@ -347,7 +350,7 @@ const CharactersPage = () => {
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
               <input
                 type="text"
-                                 placeholder="Search characters..."
+                                placeholder={t('characters.searchPlaceholder', 'Search characters...')}
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="w-full pl-10 pr-4 py-3 bg-gray-800 border border-gray-700 rounded-lg focus:outline-none focus:border-blue-500"
@@ -359,7 +362,7 @@ const CharactersPage = () => {
         {isLoading ? (
           <div className="text-center py-12">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto mb-4"></div>
-                         <p className="text-gray-400">Loading characters...</p>
+                        <p className="text-gray-400">{t('characters.loading', 'Loading characters...')}</p>
           </div>
         ) : hasApiKey && !error && (
           <div className="space-y-6">
@@ -381,29 +384,29 @@ const CharactersPage = () => {
                     {expandedInventories.has(character.name) ? (
                       <>
                         <EyeOff className="w-4 h-4" />
-                                                 Hide Inventory
+                                                {t('characters.hideInventory', 'Hide Inventory')}
                       </>
                     ) : (
                       <>
                         <Eye className="w-4 h-4" />
-                                                 View Inventory
+                                                {t('characters.viewInventory', 'View Inventory')}
                       </>
                     )}
                   </button>
                 </div>
                 
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm text-gray-400 mb-4">
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm text-gray-400 mb-4">
                                      <div>
-                     <strong>Level:</strong> {character.level}
+                    <strong>{t('characters.level', 'Level')}:</strong> {character.level}
                    </div>
                    <div>
-                     <strong>Race:</strong> {character.race}
+                     <strong>{t('characters.race', 'Race')}:</strong> {character.race}
                    </div>
                    <div>
-                     <strong>Specialization:</strong> {character.specialization || 'None'}
+                     <strong>{t('characters.specialization', 'Specialization')}:</strong> {character.specialization || t('common.none', 'None')}
                    </div>
                    <div>
-                     <strong>World:</strong> {character.world}
+                     <strong>{t('characters.world', 'World')}:</strong> {character.world}
                    </div>
                 </div>
 
@@ -412,7 +415,7 @@ const CharactersPage = () => {
                   <div className="mt-4 pt-4 border-t border-gray-700">
                                          <h4 className="text-lg font-semibold mb-3 flex items-center">
                        <Package className="w-5 h-5 mr-2" />
-                       Inventory
+                       {t('characters.inventory', 'Inventory')}
                      </h4>
                     {renderInventory(character)}
                   </div>
@@ -421,6 +424,8 @@ const CharactersPage = () => {
             ))}
           </div>
         )}
+
+        {/* No modal here when API key is missing; only the yellow banner above */}
 
         {!isLoading && hasApiKey && !error && filteredCharacters.length === 0 && (
           <div className="text-center py-12">

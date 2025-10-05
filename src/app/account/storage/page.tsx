@@ -1,12 +1,15 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { motion } from 'framer-motion';
+import { X } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { ArrowLeft, Database, Search } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
 import Navigation from '@/components/layout/Navigation';
 import { usePageTitle } from '@/hooks/usePageTitle';
+import { useI18n } from '@/contexts/I18nContext';
 
 interface Material {
   id: number;
@@ -19,7 +22,8 @@ interface Material {
 
 const StoragePage = () => {
   const { isAuthenticated } = useAuth();
-  usePageTitle('pageTitles.storage', 'Material Storage');
+  const { t } = useI18n();
+  usePageTitle('pageTitles.storage', t('pageTitles.storage', 'Material Storage'));
   const [materials, setMaterials] = useState<Material[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
@@ -29,8 +33,7 @@ const StoragePage = () => {
       try {
         setIsLoading(true);
         const apiKey = localStorage.getItem('gw2_api_key');
-        if (!apiKey) {
-          console.error('No API key found');
+        if (!apiKey || apiKey.trim().length < 10) {
           return;
         }
         
@@ -61,9 +64,9 @@ const StoragePage = () => {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
-          <h2 className="text-2xl font-bold text-white mb-2">Access Required</h2>
+          <h2 className="text-2xl font-bold text-white mb-2">{t('auth.accessRequired', 'Access Required')}</h2>
           <Link href="/login" className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg">
-            Go to Login
+            {t('auth.goToLogin', 'Go to Login')}
           </Link>
         </div>
       </div>
@@ -77,10 +80,10 @@ const StoragePage = () => {
         <div className="mb-8">
           <Link href="/account" className="inline-flex items-center text-blue-400 hover:text-blue-300 mb-4">
             <ArrowLeft className="w-4 h-4 mr-2" />
-            Back to My Account
+            {t('account.back', 'Back to My Account')}
           </Link>
-          <h1 className="text-3xl font-bold mb-2">Material Storage</h1>
-          <p className="text-gray-400">Your Material Storage</p>
+          <h1 className="text-3xl font-bold mb-2">{t('storage.title', 'Material Storage')}</h1>
+          <p className="text-gray-400">{t('storage.subtitle', 'Your Material Storage')}</p>
         </div>
 
         {/* Search */}
@@ -89,7 +92,7 @@ const StoragePage = () => {
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
             <input
               type="text"
-              placeholder="Search materials..."
+              placeholder={t('storage.searchPlaceholder', 'Search materials...')}
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="w-full pl-10 pr-4 py-3 bg-gray-800 border border-gray-700 rounded-lg focus:outline-none focus:border-blue-500"
@@ -100,7 +103,7 @@ const StoragePage = () => {
         {isLoading ? (
           <div className="text-center py-12">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto mb-4"></div>
-            <p className="text-gray-400">Loading materials...</p>
+            <p className="text-gray-400">{t('storage.loading', 'Loading materials...')}</p>
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
@@ -143,11 +146,13 @@ const StoragePage = () => {
           </div>
         )}
 
+        {/* Sin modal aquí; se muestra solo en /account */}
+
         {!isLoading && filteredMaterials.length === 0 && (
           <div className="text-center py-12">
             <Database className="w-16 h-16 text-gray-600 mx-auto mb-4" />
-            <h3 className="text-xl font-semibold text-gray-300 mb-2">No materials</h3>
-            <p className="text-gray-400">There are no materials in your storage</p>
+            <h3 className="text-xl font-semibold text-gray-300 mb-2">{t('storage.emptyTitle', 'No materials')}</h3>
+            <p className="text-gray-400">{t('storage.emptyDesc', 'There are no materials in your storage')}</p>
           </div>
         )}
       </div>
