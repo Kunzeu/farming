@@ -24,6 +24,10 @@ export interface UserPreferences {
   };
   favoriteItems?: string[];
   favoriteRoutes?: string[];
+  dailyRoutine?: {
+    selectedFarmIds: string[];
+    lastUpdated?: string; // ISO date
+  };
   dashboard?: {
     layout?: 'grid' | 'list';
     cardOrder?: string[];

@@ -23,6 +23,7 @@ import ExpansionIcon from '@/components/ui/ExpansionIcon';
 import { usePageTitle } from '@/hooks/usePageTitle';
 import { useI18n } from '@/contexts/I18nContext';
 import MarkdownText from '@/components/ui/MarkdownText';
+import { useDailyRoutinePrefs } from '@/hooks/useDailyRoutine';
 
 // Mapeo de monedas a iconos (fuera del componente para evitar re-renders)
 const currencyConfig = {
@@ -42,6 +43,7 @@ export default function DailyRoutine() {
   
   const { dbService } = useDatabase();
   const { t } = useI18n();
+  const { initialIds, useDebouncedSave } = useDailyRoutinePrefs();
   const [farms, setFarms] = useState<FarmItem[]>([]);
   const [selectedFarms, setSelectedFarms] = useState<Set<string>>(new Set());
   
@@ -110,6 +112,13 @@ export default function DailyRoutine() {
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
+  // Inicializar desde preferencias cuando estén cargadas
+  useEffect(() => {
+    if (initialIds) {
+      setSelectedFarms(new Set(initialIds));
+    }
+  }, [initialIds]);
+
   const toggleFarmSelection = (farmId: string) => {
     setSelectedFarms(prev => {
       const newSet = new Set(prev);
@@ -121,6 +130,12 @@ export default function DailyRoutine() {
       return newSet;
     });
   };
+
+  // Guardar cambios con debounce cuando cambie la selección
+  const debouncedSave = useDebouncedSave();
+  useEffect(() => {
+    debouncedSave(Array.from(selectedFarms));
+  }, [selectedFarms, debouncedSave]);
 
   // Función para convertir HH:MM:SS a minutos totales
   const parseTimeToMinutes = (timeStr: string): number => {
