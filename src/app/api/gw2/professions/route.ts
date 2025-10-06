@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from 'next/server';
 const GW2_API_BASE = 'https://api.guildwars2.com/v2';
 
 // Simple cache for profession data
-const professionCache = new Map<string, { data: any; expiry: number }>();
+const professionCache = new Map<string, { data: unknown; expiry: number }>();
 const CACHE_TTL = 24 * 60 * 60 * 1000; // 24 hours (professions don't change often)
 
 async function fetchWith429Retry(url: string, options: RequestInit = {}): Promise<Response> {
@@ -67,13 +67,13 @@ export async function GET(request: NextRequest) {
     const professions = await professionDetailsResponse.json();
     
     // Create a map for easy lookup
-    const professionMap = professions.reduce((acc: any, profession: any) => {
-      acc[profession.id] = {
-        id: profession.id,
-        name: profession.name,
-        icon: profession.icon,
-        icon_big: profession.icon_big,
-        specializations: profession.specializations || []
+    const professionMap = professions.reduce((acc: Record<string, unknown>, profession: unknown) => {
+      acc[(profession as { id: string }).id] = {
+        id: (profession as { id: string }).id,
+        name: (profession as { name: string }).name,
+        icon: (profession as { icon: string }).icon,
+        icon_big: (profession as { icon_big: string }).icon_big,
+        specializations: (profession as { specializations?: unknown[] }).specializations || []
       };
       return acc;
     }, {});

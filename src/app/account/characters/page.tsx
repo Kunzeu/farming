@@ -59,8 +59,8 @@ const CharactersPage = () => {
   const [expandedInventories, setExpandedInventories] = useState<Set<string>>(new Set());
   const [selectedItem, setSelectedItem] = useState<{ id: number; name?: string; icon?: string; rarity?: string; count: number; vendor_value?: number; description?: string; level?: number; binding?: string; bound_to?: string } | null>(null);
   const [showModal, setShowModal] = useState(false);
-  const [professions, setProfessions] = useState<Record<string, any>>({});
-  const [specializations, setSpecializations] = useState<Record<string, any>>({});
+  const [professions, setProfessions] = useState<Record<string, unknown>>({});
+  const [specializations, setSpecializations] = useState<Record<string, unknown>>({});
 
   useEffect(() => {
     const checkApiKey = () => {
@@ -144,15 +144,15 @@ const CharactersPage = () => {
 
   const getProfessionIcon = (profession: string) => {
     // Find profession by name (case insensitive)
-    const professionData = Object.values(professions).find((p: any) => 
-      p.name?.toLowerCase() === profession.toLowerCase()
+    const professionData = Object.values(professions).find((p: unknown) => 
+      (p as { name?: string })?.name?.toLowerCase() === profession.toLowerCase()
     );
     
-    if (professionData?.icon) {
+    if ((professionData as { icon?: string })?.icon) {
       return (
         <Image 
-          src={professionData.icon} 
-          alt={professionData.name || profession}
+          src={(professionData as { icon: string }).icon} 
+          alt={(professionData as { name?: string }).name || profession}
           width={20}
           height={20}
           className="w-5 h-5"
@@ -179,15 +179,15 @@ const CharactersPage = () => {
     if (!character.specialization) return null;
     
     // Find specialization by name (case insensitive)
-    const specializationData = Object.values(specializations).find((s: any) => 
-      s.name?.toLowerCase() === character.specialization?.toLowerCase()
+    const specializationData = Object.values(specializations).find((s: unknown) => 
+      (s as { name?: string })?.name?.toLowerCase() === character.specialization?.toLowerCase()
     );
     
-    if (specializationData?.icon) {
+    if ((specializationData as { icon?: string })?.icon) {
       return (
         <Image 
-          src={specializationData.icon} 
-          alt={specializationData.name || character.specialization}
+          src={(specializationData as { icon: string }).icon} 
+          alt={(specializationData as { name?: string }).name || character.specialization}
           width={16}
           height={16}
           className="w-4 h-4 ml-1"

@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from 'next/server';
 const GW2_API_BASE = 'https://api.guildwars2.com/v2';
 
 // Simple cache for account data
-const accountCache = new Map<string, { data: any; expiry: number }>();
+const accountCache = new Map<string, { data: unknown; expiry: number }>();
 const CACHE_TTL = 5 * 60 * 1000; // 5 minutes
 
 async function fetchWith429Retry(url: string, options: RequestInit = {}): Promise<Response> {

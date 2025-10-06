@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from 'next/server';
 const GW2_API_BASE = 'https://api.guildwars2.com/v2';
 
 // Simple cache for specialization data
-const specializationCache = new Map<string, { data: any; expiry: number }>();
+const specializationCache = new Map<string, { data: unknown; expiry: number }>();
 const CACHE_TTL = 24 * 60 * 60 * 1000; // 24 hours
 
 async function fetchWith429Retry(url: string, options: RequestInit = {}): Promise<Response> {
@@ -58,13 +58,13 @@ export async function GET(request: NextRequest) {
     const specializations = await response.json();
     
     // Create a map for easy lookup
-    const specializationMap = specializations.reduce((acc: any, spec: any) => {
-      acc[spec.id] = {
-        id: spec.id,
-        name: spec.name,
-        icon: spec.icon,
-        background: spec.background,
-        profession: spec.profession
+    const specializationMap = specializations.reduce((acc: Record<string, unknown>, spec: unknown) => {
+      acc[(spec as { id: string }).id] = {
+        id: (spec as { id: string }).id,
+        name: (spec as { name: string }).name,
+        icon: (spec as { icon: string }).icon,
+        background: (spec as { background: string }).background,
+        profession: (spec as { profession: string }).profession
       };
       return acc;
     }, {});

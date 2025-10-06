@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from 'next/server';
 const GW2_API_BASE = 'https://api.guildwars2.com/v2';
 
 // Simple cache for search results
-const searchCache = new Map<string, { data: any; expiry: number }>();
+const searchCache = new Map<string, { data: unknown; expiry: number }>();
 const CACHE_TTL = 5 * 60 * 1000; // 5 minutes
 
 async function fetchWith429Retry(url: string, options: RequestInit = {}): Promise<Response> {
@@ -45,7 +45,7 @@ export async function GET(request: NextRequest) {
       return NextResponse.json(cached.data);
     }
 
-    const results: any[] = [];
+    const results: unknown[] = [];
     const searchTerm = query.toLowerCase();
 
     // Search in bank
@@ -60,26 +60,26 @@ export async function GET(request: NextRequest) {
           
           // Get item details for bank items
           const bankItemIds = bankData
-            .filter((item: any) => item !== null)
-            .map((item: any) => item.id);
+            .filter((item: unknown) => item !== null)
+            .map((item: unknown) => (item as { id: number }).id);
           
           if (bankItemIds.length > 0) {
             const itemsResponse = await fetchWith429Retry(`${GW2_API_BASE}/items?ids=${bankItemIds.join(',')}&lang=${lang}`);
             if (itemsResponse.ok) {
               const itemsData = await itemsResponse.json();
-              const itemsMap = new Map(itemsData.map((item: any) => [item.id, item]));
+              const itemsMap = new Map(itemsData.map((item: unknown) => [(item as { id: number }).id, item]));
               
-              bankData.forEach((bankItem: any, index: number) => {
-                if (bankItem && itemsMap.has(bankItem.id)) {
-                  const itemDetails = itemsMap.get(bankItem.id) as any;
-                  if (itemDetails?.name?.toLowerCase().includes(searchTerm)) {
+              bankData.forEach((bankItem: unknown, index: number) => {
+                if (bankItem && itemsMap.has((bankItem as { id: number }).id)) {
+                  const itemDetails = itemsMap.get((bankItem as { id: number }).id) as unknown;
+                  if ((itemDetails as { name?: string })?.name?.toLowerCase().includes(searchTerm)) {
                     results.push({
-                      id: bankItem.id,
-                      name: itemDetails.name,
-                      icon: itemDetails.icon,
-                      count: bankItem.count,
+                      id: (bankItem as { id: number }).id,
+                      name: (itemDetails as { name: string }).name,
+                      icon: (itemDetails as { icon: string }).icon,
+                      count: (bankItem as { count: number }).count,
                       location: `search.bankSlot ${index + 1}`,
-                      rarity: itemDetails.rarity,
+                      rarity: (itemDetails as { rarity: string }).rarity,
                       category: 'bank',
                       slot: index + 1
                     });
@@ -107,12 +107,12 @@ export async function GET(request: NextRequest) {
           // Collect all item IDs from character inventories
           const characterItemIds: number[] = [];
           for (const character of charactersData) {
-            if (character.inventory?.bags) {
-              for (const bag of character.inventory.bags) {
-                if (bag.inventory) {
-                  for (const item of bag.inventory) {
-                    if (item && item.id) {
-                      characterItemIds.push(item.id);
+            if ((character as { inventory?: { bags?: unknown[] } }).inventory?.bags) {
+              for (const bag of (character as { inventory: { bags: unknown[] } }).inventory.bags) {
+                if ((bag as { inventory?: unknown[] }).inventory) {
+                  for (const item of (bag as { inventory: unknown[] }).inventory) {
+                    if (item && (item as { id?: number }).id) {
+                      characterItemIds.push((item as { id: number }).id);
                     }
                   }
                 }
@@ -126,27 +126,27 @@ export async function GET(request: NextRequest) {
             const itemsResponse = await fetchWith429Retry(`${GW2_API_BASE}/items?ids=${uniqueItemIds.join(',')}&lang=${lang}`);
             if (itemsResponse.ok) {
               const itemsData = await itemsResponse.json();
-              const itemsMap = new Map(itemsData.map((item: any) => [item.id, item]));
+              const itemsMap = new Map(itemsData.map((item: unknown) => [(item as { id: number }).id, item]));
               
               for (const character of charactersData) {
-                if (character.inventory?.bags) {
-                  for (let bagIndex = 0; bagIndex < character.inventory.bags.length; bagIndex++) {
-                    const bag = character.inventory.bags[bagIndex];
-                    if (bag.inventory) {
-                      for (let slotIndex = 0; slotIndex < bag.inventory.length; slotIndex++) {
-                        const item = bag.inventory[slotIndex];
-                        if (item && itemsMap.has(item.id)) {
-                          const itemDetails = itemsMap.get(item.id) as any;
-                          if (itemDetails?.name?.toLowerCase().includes(searchTerm)) {
+                if ((character as { inventory?: { bags?: unknown[] } }).inventory?.bags) {
+                  for (let bagIndex = 0; bagIndex < (character as { inventory: { bags: unknown[] } }).inventory.bags.length; bagIndex++) {
+                    const bag = (character as { inventory: { bags: unknown[] } }).inventory.bags[bagIndex];
+                    if ((bag as { inventory?: unknown[] }).inventory) {
+                      for (let slotIndex = 0; slotIndex < (bag as { inventory: unknown[] }).inventory.length; slotIndex++) {
+                        const item = (bag as { inventory: unknown[] }).inventory[slotIndex];
+                        if (item && itemsMap.has((item as { id: number }).id)) {
+                          const itemDetails = itemsMap.get((item as { id: number }).id) as unknown;
+                          if ((itemDetails as { name?: string })?.name?.toLowerCase().includes(searchTerm)) {
                             results.push({
-                              id: item.id,
-                              name: itemDetails.name,
-                              icon: itemDetails.icon,
-                              count: item.count,
-                              location: `${character.name} - search.characterBag ${bagIndex + 1}`,
-                              rarity: itemDetails.rarity,
+                              id: (item as { id: number }).id,
+                              name: (itemDetails as { name: string }).name,
+                              icon: (itemDetails as { icon: string }).icon,
+                              count: (item as { count: number }).count,
+                              location: `${(character as { name: string }).name} - search.characterBag ${bagIndex + 1}`,
+                              rarity: (itemDetails as { rarity: string }).rarity,
                               category: 'character',
-                              character: character.name,
+                              character: (character as { name: string }).name,
                               bag: bagIndex + 1,
                               slot: slotIndex + 1
                             });
@@ -177,26 +177,26 @@ export async function GET(request: NextRequest) {
           
           // Get item details for storage items
           const storageItemIds = storageData
-            .filter((item: any) => item !== null)
-            .map((item: any) => item.id);
+            .filter((item: unknown) => item !== null)
+            .map((item: unknown) => (item as { id: number }).id);
           
           if (storageItemIds.length > 0) {
             const itemsResponse = await fetchWith429Retry(`${GW2_API_BASE}/items?ids=${storageItemIds.join(',')}&lang=${lang}`);
             if (itemsResponse.ok) {
               const itemsData = await itemsResponse.json();
-              const itemsMap = new Map(itemsData.map((item: any) => [item.id, item]));
+              const itemsMap = new Map(itemsData.map((item: unknown) => [(item as { id: number }).id, item]));
               
-              storageData.forEach((storageItem: any) => {
-                if (storageItem && itemsMap.has(storageItem.id)) {
-                  const itemDetails = itemsMap.get(storageItem.id) as any;
-                  if (itemDetails?.name?.toLowerCase().includes(searchTerm)) {
+              storageData.forEach((storageItem: unknown) => {
+                if (storageItem && itemsMap.has((storageItem as { id: number }).id)) {
+                  const itemDetails = itemsMap.get((storageItem as { id: number }).id) as unknown;
+                  if ((itemDetails as { name?: string })?.name?.toLowerCase().includes(searchTerm)) {
                     results.push({
-                      id: storageItem.id,
-                      name: itemDetails.name,
-                      icon: itemDetails.icon,
-                      count: storageItem.count,
+                      id: (storageItem as { id: number }).id,
+                      name: (itemDetails as { name: string }).name,
+                      icon: (itemDetails as { icon: string }).icon,
+                      count: (storageItem as { count: number }).count,
                       location: 'search.materialStorage',
-                      rarity: itemDetails.rarity,
+                      rarity: (itemDetails as { rarity: string }).rarity,
                       category: 'storage'
                     });
                   }

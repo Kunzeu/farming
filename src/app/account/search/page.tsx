@@ -55,7 +55,7 @@ const SearchPage = () => {
     } finally {
       setIsLoading(false);
     }
-  }, [searchTerm, searchScope]);
+  }, [searchTerm, searchScope, lang]);
 
   useEffect(() => {
     if (searchTerm.trim()) {
