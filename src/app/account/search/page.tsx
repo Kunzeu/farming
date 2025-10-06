@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
-import { ArrowLeft, Search, Package, Users, Database } from 'lucide-react';
+import { ArrowLeft, Search, Package, Database } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
 import Navigation from '@/components/layout/Navigation';
@@ -25,7 +25,7 @@ import { useI18n } from '@/contexts/I18nContext';
 
 const SearchPage = () => {
   const { isAuthenticated } = useAuth();
-  const { t } = useI18n();
+  const { t, lang } = useI18n();
   usePageTitle('pageTitles.search', t('pageTitles.search', 'Account Search'));
   const [searchTerm, setSearchTerm] = useState('');
   const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
@@ -43,7 +43,7 @@ const SearchPage = () => {
         return;
       }
       
-      const response = await fetch(`/api/gw2/search?q=${encodeURIComponent(searchTerm)}&scope=${searchScope}&api_key=${apiKey}`);
+      const response = await fetch(`/api/gw2/search?q=${encodeURIComponent(searchTerm)}&scope=${searchScope}&api_key=${apiKey}&lang=${lang}`);
       if (response.ok) {
         const data = await response.json();
         setSearchResults(data);
@@ -115,7 +115,7 @@ const SearchPage = () => {
                     : 'bg-gray-800 border-gray-700 text-gray-300 hover:bg-gray-700'
                 }`}
               >
-                                {t('search.scopeAll', 'All')}
+                {t('search.scopeAll', 'All')}
               </button>
               <button
                 onClick={() => setSearchScope('bank')}
@@ -124,6 +124,7 @@ const SearchPage = () => {
                     ? 'bg-blue-600 border-blue-500 text-white' 
                     : 'bg-gray-800 border-gray-700 text-gray-300 hover:bg-gray-700'
                 }`}
+                title={t('search.scopeBank', 'Bank')}
               >
                 <Package className="w-4 h-4" />
               </button>
@@ -134,8 +135,15 @@ const SearchPage = () => {
                     ? 'bg-blue-600 border-blue-500 text-white' 
                     : 'bg-gray-800 border-gray-700 text-gray-300 hover:bg-gray-700'
                 }`}
+                title={t('search.scopeCharacters', 'Characters')}
               >
-                <Users className="w-4 h-4" />
+                <Image 
+                  src="/images/icons/character-slot.png" 
+                  alt="Character"
+                  width={200}
+                  height={200}
+                  className="w-6 h-6 object-cover"
+                />
               </button>
               <button
                 onClick={() => setSearchScope('storage')}
@@ -144,6 +152,7 @@ const SearchPage = () => {
                     ? 'bg-blue-600 border-blue-500 text-white' 
                     : 'bg-gray-800 border-gray-700 text-gray-300 hover:bg-gray-700'
                 }`}
+                title={t('search.scopeStorage', 'Storage')}
               >
                 <Database className="w-4 h-4" />
               </button>
@@ -161,8 +170,8 @@ const SearchPage = () => {
 
         {!isLoading && searchResults.length > 0 && (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {searchResults.map((item) => (
-              <div key={item.id} className="bg-gray-800 rounded-lg p-6 border border-gray-700">
+            {searchResults.map((item, index) => (
+              <div key={`${item.id}-${item.category}-${index}`} className="bg-gray-800 rounded-lg p-6 border border-gray-700">
                                  <div className="flex items-center mb-4">
                    {item.icon && (
                      <Image 
@@ -173,12 +182,28 @@ const SearchPage = () => {
                        className="mr-3"
                      />
                    )}
+                   {item.category === 'character' && (
+                     <Image 
+                       src="/images/icons/character-slot.png" 
+                       alt="Character"
+                       width={20}
+                       height={20}
+                       className="mr-2 opacity-70"
+                     />
+                   )}
                       <h3 className="text-lg font-semibold">{item.name}</h3>
                 </div>
                 <div className="space-y-2 text-sm text-gray-400">
                                     <p><strong>{t('search.quantity', 'Quantity')}:</strong> {item.count}</p>
-                  <p><strong>{t('search.location', 'Location')}:</strong> {item.location}</p>
-                  {item.rarity && <p><strong>{t('search.rarity', 'Rarity')}:</strong> {item.rarity}</p>}
+                  <p><strong>{t('search.location', 'Location')}:</strong> {
+                    item.location.includes('search.bankSlot') 
+                      ? `${t('search.bankSlot', 'Bank Slot')} ${item.location.split(' ')[1]}`
+                      : item.location.includes('search.characterBag')
+                      ? item.location.replace('search.characterBag', t('search.characterBag', 'Bag'))
+                      : item.location.includes('search.materialStorage')
+                      ? t('search.materialStorage', 'Material Storage')
+                      : item.location
+                  }</p>
                 </div>
               </div>
             ))}

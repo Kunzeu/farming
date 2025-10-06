@@ -49,7 +49,7 @@ interface Character {
 
 const CharactersPage = () => {
   const { isAuthenticated } = useAuth();
-  const { t } = useI18n();
+  const { t, lang } = useI18n();
   usePageTitle('pageTitles.characters', t('pageTitles.characters', 'Characters'));
   const [characters, setCharacters] = useState<Character[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -59,6 +59,8 @@ const CharactersPage = () => {
   const [expandedInventories, setExpandedInventories] = useState<Set<string>>(new Set());
   const [selectedItem, setSelectedItem] = useState<{ id: number; name?: string; icon?: string; rarity?: string; count: number; vendor_value?: number; description?: string; level?: number; binding?: string; bound_to?: string } | null>(null);
   const [showModal, setShowModal] = useState(false);
+  const [professions, setProfessions] = useState<Record<string, any>>({});
+  const [specializations, setSpecializations] = useState<Record<string, any>>({});
 
   useEffect(() => {
     const checkApiKey = () => {
@@ -79,16 +81,48 @@ const CharactersPage = () => {
           return;
         }
         
-        const response = await fetch(`/api/gw2/characters?api_key=${apiKey}`);
-        if (response.ok) {
-          const data = await response.json();
-          setCharacters(data);
+        // Fetch characters and profession data in parallel
+        const [charactersResponse, professionsResponse] = await Promise.all([
+          fetch(`/api/gw2/characters?api_key=${apiKey}`),
+          fetch(`/api/gw2/professions?lang=${lang}`)
+        ]);
+
+        let charactersData: Character[] = [];
+        
+        if (charactersResponse.ok) {
+          charactersData = await charactersResponse.json();
+          setCharacters(charactersData);
         } else {
-          console.error('Error response:', response.status, response.statusText);
-          if (response.status === 401) {
+          console.error('Error response:', charactersResponse.status, charactersResponse.statusText);
+          if (charactersResponse.status === 401) {
             setError('Invalid API key or insufficient permissions');
           } else {
             setError('Error loading characters');
+          }
+        }
+
+        if (professionsResponse.ok) {
+          const professionsData = await professionsResponse.json();
+          setProfessions(professionsData);
+        }
+
+        // Load specializations if characters were loaded successfully
+        if (charactersResponse.ok && charactersData.length > 0) {
+          const specializationNames = charactersData
+            .map((char: Character) => char.specialization)
+            .filter((spec): spec is string => Boolean(spec))
+            .filter((value: string, index: number, self: string[]) => self.indexOf(value) === index); // Remove duplicates
+          
+          if (specializationNames.length > 0) {
+            try {
+              const specializationsResponse = await fetch(`/api/gw2/specializations?lang=${lang}`);
+              if (specializationsResponse.ok) {
+                const specializationsData = await specializationsResponse.json();
+                setSpecializations(specializationsData);
+              }
+            } catch (error) {
+              console.error('Error fetching specializations:', error);
+            }
           }
         }
       } catch (error) {
@@ -102,19 +136,66 @@ const CharactersPage = () => {
     if (isAuthenticated) {
       fetchCharactersData();
     }
-  }, [isAuthenticated]);
+  }, [isAuthenticated, lang]);
 
   const filteredCharacters = characters.filter(character => 
     character && character.name && character.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   const getProfessionIcon = (profession: string) => {
+    // Find profession by name (case insensitive)
+    const professionData = Object.values(professions).find((p: any) => 
+      p.name?.toLowerCase() === profession.toLowerCase()
+    );
+    
+    if (professionData?.icon) {
+      return (
+        <Image 
+          src={professionData.icon} 
+          alt={professionData.name || profession}
+          width={20}
+          height={20}
+          className="w-5 h-5"
+        />
+      );
+    }
+    
+    // Fallback to default icons
     switch (profession.toLowerCase()) {
       case 'guardian': return <Shield className="w-5 h-5 text-blue-500" />;
       case 'warrior': return <Sword className="w-5 h-5 text-red-500" />;
       case 'ranger': return <Zap className="w-5 h-5 text-green-500" />;
+      case 'thief': return <Users className="w-5 h-5 text-purple-500" />;
+      case 'engineer': return <Users className="w-5 h-5 text-orange-500" />;
+      case 'mesmer': return <Users className="w-5 h-5 text-pink-500" />;
+      case 'necromancer': return <Users className="w-5 h-5 text-green-600" />;
+      case 'elementalist': return <Users className="w-5 h-5 text-red-400" />;
+      case 'revenant': return <Users className="w-5 h-5 text-purple-400" />;
       default: return <Users className="w-5 h-5 text-gray-500" />;
     }
+  };
+
+  const getSpecializationIcon = (character: Character) => {
+    if (!character.specialization) return null;
+    
+    // Find specialization by name (case insensitive)
+    const specializationData = Object.values(specializations).find((s: any) => 
+      s.name?.toLowerCase() === character.specialization?.toLowerCase()
+    );
+    
+    if (specializationData?.icon) {
+      return (
+        <Image 
+          src={specializationData.icon} 
+          alt={specializationData.name || character.specialization}
+          width={16}
+          height={16}
+          className="w-4 h-4 ml-1"
+        />
+      );
+    }
+    
+    return null;
   };
 
   const getRarityBorderColor = (rarity: string | undefined) => {
@@ -402,8 +483,10 @@ const CharactersPage = () => {
                    <div>
                      <strong>{t('characters.race', 'Race')}:</strong> {character.race}
                    </div>
-                   <div>
-                     <strong>{t('characters.specialization', 'Specialization')}:</strong> {character.specialization || t('common.none', 'None')}
+                   <div className="flex items-center">
+                     <strong>{t('characters.specialization', 'Specialization')}:</strong> 
+                     <span className="ml-1">{character.specialization || t('common.none', 'None')}</span>
+                     {getSpecializationIcon(character)}
                    </div>
                    <div>
                      <strong>{t('characters.world', 'World')}:</strong> {character.world}

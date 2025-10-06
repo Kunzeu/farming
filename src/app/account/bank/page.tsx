@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { X } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
@@ -57,7 +57,7 @@ interface ItemDetails {
 
 const BankPage = () => {
   const { isAuthenticated } = useAuth();
-  const { t } = useI18n();
+  const { t, lang } = useI18n();
   usePageTitle('pageTitles.bank', t('pageTitles.bank', 'Bank'));
   const [bankItems, setBankItems] = useState<(BankItem | null)[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -73,6 +73,10 @@ const BankPage = () => {
   const [isLoadingItemDetails, setIsLoadingItemDetails] = useState(false);
   const [hoverPosition, setHoverPosition] = useState({ x: 0, y: 0 });
   const [itemCache, setItemCache] = useState<Map<number, { details: ItemDetails; price?: ItemPrice }>>(new Map());
+
+  // Simple formatter for i18n strings with placeholders like {used}
+  const format = (template: string, params: Record<string, string | number>) =>
+    template.replace(/\{(\w+)\}/g, (_match, key) => String(params[key] ?? _match));
 
   const formatGold = (copper: number) => {
     const gold = Math.floor(copper / 10000);
@@ -127,7 +131,7 @@ const BankPage = () => {
     
     try {
       // Fetch item details
-      const detailsResponse = await fetch(`https://api.guildwars2.com/v2/items/${item.id}`, {
+          const detailsResponse = await fetch(`https://api.guildwars2.com/v2/items/${item.id}?lang=${lang}`, {
         headers: {
           'Accept': 'application/json',
           'Accept-Encoding': 'gzip, deflate, br'
@@ -149,19 +153,16 @@ const BankPage = () => {
       
       setSelectedItem({ item, details, price });
     } catch (error) {
-      console.error('Error fetching item details:', error);
       // If price fetch fails, still show item details
       try {
-        const detailsResponse = await fetch(`https://api.guildwars2.com/v2/items/${item.id}`);
+        const detailsResponse = await fetch(`https://api.guildwars2.com/v2/items/${item.id}?lang=${lang}`);
         const details: ItemDetails = await detailsResponse.json();
         
         // Cache the result (without price)
         setItemCache(prev => new Map(prev).set(item.id, { details }));
         
         setSelectedItem({ item, details });
-      } catch (detailsError) {
-        console.error('Error fetching item details:', detailsError);
-      }
+      } catch (detailsError) {}
     } finally {
       setIsLoadingItemDetails(false);
     }
@@ -173,27 +174,33 @@ const BankPage = () => {
 
 
 
+  const lastFetchedApiKeyRef = useRef<string | null>(null);
+
                        useEffect(() => {
        const fetchBankData = async () => {
-         try {
-           console.log('🔄 Fetching bank data...');
+        try {
            setIsLoading(true);
-           const apiKey = localStorage.getItem('gw2_api_key');
+          const apiKey = localStorage.getItem('gw2_api_key') || sessionStorage.getItem('gw2_api_key');
            if (!apiKey || apiKey.trim().length < 10) {
              return;
            }
            
-           console.log('🔑 API Key found, fetching bank data...');
-           const response = await fetch(`/api/gw2/bank?api_key=${apiKey}`);
+           // Avoid re-fetching if the same key was already fetched in this session
+          if (lastFetchedApiKeyRef.current === apiKey) {
+             setIsLoading(false);
+             return;
+           }
+           
+          const response = await fetch(`/api/gw2/bank?api_key=${apiKey}&lang=${lang}`);
            if (response.ok) {
              const data = await response.json();
-                         console.log('✅ Bank data received:', data.length, 'items');
               setBankItems(data);
+              lastFetchedApiKeyRef.current = apiKey;
+              // Store in session to speed up navigations within the session
+              try { sessionStorage.setItem('gw2_api_key', apiKey); } catch {}
               // Calculate prices after loading bank data
-              console.log('💰 Calculating bank summary...');
               await calculateBankSummary(data);
               // Pre-load item details for price display
-              console.log('🔄 Pre-loading item details for price display...');
               
                              // Pre-load item details inline
                const validItems = data.filter((item: unknown): item is BankItem => item !== null);
@@ -203,7 +210,6 @@ const BankPage = () => {
                const uncachedItems = uniqueItemIds.filter((id: unknown) => !itemCache.has(id as number));
               
               if (uncachedItems.length > 0) {
-                console.log(`🔄 Pre-loading ${uncachedItems.length} items...`);
                 
                 // Load in batches to avoid overwhelming the API
                 const batchSize = 10;
@@ -212,8 +218,8 @@ const BankPage = () => {
                   
                   try {
                     // Fetch item details
-                    const detailsPromises = batch.map(id => 
-                      fetch(`https://api.guildwars2.com/v2/items/${id}`).then(res => res.json())
+                  const detailsPromises = batch.map(id => 
+                    fetch(`https://api.guildwars2.com/v2/items/${id}?lang=${lang}`).then(res => res.json())
                     );
                     const details = await Promise.all(detailsPromises);
                     
@@ -231,34 +237,24 @@ const BankPage = () => {
                        }));
                      });
                     
-                    console.log(`✅ Cached batch ${Math.floor(i / batchSize) + 1}/${Math.ceil(uncachedItems.length / batchSize)}`);
-                  } catch (error) {
-                    console.error('❌ Error pre-loading item details:', error);
-                  }
+                  } catch (error) {}
                 }
                 
-                console.log('✅ Pre-loading completed');
               } else {
-                console.log('✅ All items already cached');
               }
            } else {
-             console.error('❌ Error response:', response.status, response.statusText);
            }
          } catch (error) {
-           console.error('❌ Error fetching bank:', error);
          } finally {
            setIsLoading(false);
-           console.log('✅ Bank data loading completed');
          }
        };
 
-       if (isAuthenticated) {
-         console.log('🔐 User authenticated, starting bank fetch...');
+      if (isAuthenticated) {
          fetchBankData();
-       } else {
-         console.log('❌ User not authenticated');
-       }
-     }, [isAuthenticated, itemCache]);
+      } else {
+      }
+    }, [isAuthenticated]);
 
   const filteredItems = bankItems.filter((item): item is BankItem => 
     item !== null && 
@@ -266,16 +262,16 @@ const BankPage = () => {
     item.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  // Fixed grid of 10x3 (30 slots) like GW2 bank
-  const maxSlots = 30;
+  const isSearching = searchTerm.trim().length > 0;
+
+  // Each bank tab has 30 slots
+  const slotsPerTab = 30;
+  const bankTabs = Math.max(1, Math.ceil((bankItems.length || slotsPerTab) / slotsPerTab));
 
   // Calculate bank summary with real prices
   const calculateBankSummary = async (items: (BankItem | null)[]) => {
     // Filter out null items (empty slots)
     const validItems = items.filter((item): item is BankItem => item !== null);
-    
-    console.log('Valid items found:', validItems.length);
-    console.log('Valid items:', validItems);
     
     if (validItems.length === 0) {
       console.log('No valid items, setting summary to 0');
@@ -284,7 +280,7 @@ const BankPage = () => {
         totalSellPrice: 0,
         totalValue: 0,
         usedSlots: 0,
-        totalSlots: maxSlots
+        totalSlots: items.length
       });
       return;
     }
@@ -292,15 +288,12 @@ const BankPage = () => {
     try {
       // Get unique item IDs
       const itemIds = [...new Set(validItems.map(item => item.id))];
-      console.log('Item IDs to fetch prices for:', itemIds);
       
       // Fetch prices from GW2 API
       const pricesResponse = await fetch(`https://api.guildwars2.com/v2/commerce/prices?ids=${itemIds.join(',')}`);
-      console.log('Prices response status:', pricesResponse.status);
       
       if (pricesResponse.ok) {
         const prices: ItemPrice[] = await pricesResponse.json();
-        console.log('Prices received:', prices);
         
                  let totalBuyPrice = 0;
          let totalSellPrice = 0;
@@ -318,8 +311,7 @@ const BankPage = () => {
              
            } else {
              // Item has no Trading Post price, use crafting value
-             const craftingValue = (item.value || 0) * item.count;
-             console.log(`No TP price for ${item.name}, using crafting value: ${craftingValue} copper`);
+            const craftingValue = (item.value || 0) * item.count;
              
              // For items without TP prices, use crafting value for both buy and sell
              totalBuyPrice += craftingValue;
@@ -327,15 +319,13 @@ const BankPage = () => {
            }
          });
          
-         console.log('Final totals:', { totalBuyPrice, totalSellPrice, difference: totalBuyPrice - totalSellPrice });
-         console.log('Price difference percentage:', ((totalBuyPrice - totalSellPrice) / totalBuyPrice * 100).toFixed(2) + '%');
          
-                   setBankSummary({
+          setBankSummary({
             totalBuyPrice: totalBuyPrice, // Total Buy Price = sum of all buy prices (left side)
             totalSellPrice: totalSellPrice, // Total Sell Price = sum of all sell prices (right side)
             totalValue: totalSellPrice, // Total value = sell price (includes TP + crafting values)
             usedSlots: validItems.length,
-            totalSlots: maxSlots
+            totalSlots: items.length
           });
       } else {
         console.error('Prices response not ok:', pricesResponse.status, pricesResponse.statusText);
@@ -377,28 +367,25 @@ const BankPage = () => {
              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
             <input
                type="text"
-              placeholder={t('bank.searchPlaceholder', 'Search bank...')}
+              placeholder={t('bank.searchPlaceholder')}
                value={searchTerm}
                onChange={(e) => setSearchTerm(e.target.value)}
                className="w-full pl-10 pr-4 py-3 bg-gray-800 border border-gray-700 rounded-lg focus:outline-none focus:border-blue-500"
              />
            </div>
-           <button
-             onClick={() => {
-               console.log('🔄 Manual refresh triggered');
-               setIsLoading(true);
-               const apiKey = localStorage.getItem('gw2_api_key');
-               if (apiKey) {
-                 fetch(`/api/gw2/bank?api_key=${apiKey}`)
-                   .then(response => response.json())
-                   .then(data => {
-                     setBankItems(data);
-                     calculateBankSummary(data);
-                   })
-                   .catch(error => console.error('❌ Refresh error:', error))
-                   .finally(() => setIsLoading(false));
-               }
-             }}
+          <button
+            onClick={() => {
+              setIsLoading(true);
+              const apiKey = localStorage.getItem('gw2_api_key') || sessionStorage.getItem('gw2_api_key');
+              if (!apiKey || apiKey.trim().length < 10) return;
+              fetch(`/api/gw2/bank?api_key=${apiKey}`)
+                .then(res => res.json())
+                .then(async data => {
+                  setBankItems(data);
+                  await calculateBankSummary(data);
+                })
+                .finally(() => setIsLoading(false));
+            }}
             className="px-4 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors"
            >
             🔄 {t('common.refresh', 'Refresh')}
@@ -488,13 +475,22 @@ const BankPage = () => {
                {/* Bank Usage */}
                 <div className="text-center mb-4">
                   <p className="text-lg text-gray-300">
-                    {t('bank.usage', `You are using ${bankSummary.usedSlots} of ${bankSummary.totalSlots} (${((bankSummary.usedSlots / bankSummary.totalSlots) * 100).toFixed(2)}%) available bank slots.`)}
+                    {format(
+                      t('bank.usage', 'Estás usando {used} de {total} ({percent}%) espacios disponibles del banco.'),
+                      {
+                        used: bankSummary.usedSlots,
+                        total: bankSummary.totalSlots,
+                        percent: bankSummary.totalSlots > 0
+                          ? ((bankSummary.usedSlots / bankSummary.totalSlots) * 100).toFixed(2)
+                          : '0.00'
+                      }
+                    )}
                   </p>
                 </div>
                 
                                  {/* Current Slot Count & Currency */}
                  <div className="flex items-center justify-center space-x-4">
-                  <span className="text-xl font-semibold">{bankSummary.usedSlots} / {bankSummary.totalSlots} {t('bank.slots', 'slots')}</span>
+                  <span className="text-xl font-semibold">{bankSummary.usedSlots} / {bankSummary.totalSlots} {t('bank.slots')}</span>
                    <div className="flex items-center space-x-1">
                      <span className="text-yellow-400">{Math.floor(bankSummary.totalValue / 10000)}</span>
                      <Image src="/images/expansions/Gold.webp" alt="Gold" width={16} height={16} />
@@ -508,23 +504,119 @@ const BankPage = () => {
 
                                                        {/* Bank Grid */}
               <div className="bg-gray-800 rounded-lg p-6 border border-gray-700 max-w-5xl mx-auto">
-                             <div className="flex items-center justify-between mb-4">
-                <h2 className="text-xl font-semibold flex items-center">
-                   <Package className="w-5 h-5 mr-2 text-blue-500" />
-                  {t('bank.tabLabel', 'Bank Tab 1')}
-                 </h2>
-                 <div className="text-sm text-gray-400">
-                  {filteredItems.length} {t('bank.items', 'items')} • 30 {t('bank.slots', 'slots')}
-                 </div>
-               </div>
-              
-                                            <div className="grid grid-cols-10 gap-0.6 max-w-3xl mx-auto">
-                 {Array.from({ length: maxSlots }, (_, slotIndex) => {
-                   const item = bankItems[slotIndex]; // Get item directly from bankItems array
-                   
-                   return (
-                     <div 
-                       key={slotIndex} 
+                {isSearching ? (
+                  <>
+                    <div className="flex items-center justify-between mb-4">
+                      <h2 className="text-xl font-semibold flex items-center">
+                        <Package className="w-5 h-5 mr-2 text-blue-500" />
+                        {t('bank.searchResults')}
+                      </h2>
+                      <div className="text-sm text-gray-400">
+                        {filteredItems.length} {t('bank.items')}
+                      </div>
+                    </div>
+                    <div className="grid grid-cols-10 gap-0.6 max-w-3xl mx-auto">
+                      {filteredItems.map((item, idx) => (
+                        <div 
+                          key={`${item.id}-${idx}`}
+                          className={`
+                            w-16 h-24 rounded border-2 flex flex-col items-center justify-center p-0.6 relative
+                            ${getRarityBorderColor(item.rarity)} bg-gray-700 hover:bg-gray-600 transition-colors cursor-pointer group
+                          `}
+                          title={`${t('bank.slot')} ${bankItems.indexOf(item) + 1}`}
+                          onMouseEnter={(e) => handleItemHover(item, e)}
+                          onMouseLeave={handleItemLeave}
+                        >
+                          {item.icon && (
+                            <Image 
+                              src={item.icon} 
+                              alt={item.name}
+                              width={72}
+                              height={72}
+                              className="w-18 h-18 object-contain mb-1"
+                            />
+                          )}
+                          {item.count > 1 && (
+                            <span className="text-xl text-white font-bold absolute inset-0 flex items-center justify-center drop-shadow-lg">
+                              {item.count}
+                            </span>
+                          )}
+                          {item.bound && (
+                            <span className="text-xs text-gray-300 font-semibold absolute top-0 right-0 px-1">
+                              {t('bank.bound')}
+                            </span>
+                          )}
+                          <div className="absolute bottom-0 left-0 right-0 bg-black text-white text-sm py-1 flex items-center justify-center">
+                            <span className="font-bold">
+                              {(() => {
+                                const cached = itemCache.get(item.id);
+                                if (cached) {
+                                  let totalPrice = 0;
+                                  if (cached.price && cached.price.sells && cached.price.sells.unit_price > 0) {
+                                    totalPrice = cached.price.sells.unit_price * item.count;
+                                  } else if (cached.details && cached.details.vendor_value) {
+                                    totalPrice = cached.details.vendor_value * item.count;
+                                  }
+                                  if (totalPrice > 0) {
+                                    const { gold, silver, copper } = formatGold(totalPrice);
+                                    return gold > 0 ? `${gold}g` : silver > 0 ? `${silver}s` : `${copper}c`;
+                                  }
+                                }
+                                return '';
+                              })()}
+                            </span>
+                            {(() => {
+                              const cached = itemCache.get(item.id);
+                              if (cached) {
+                                let totalPrice = 0;
+                                if (cached.price && cached.price.sells && cached.price.sells.unit_price > 0) {
+                                  totalPrice = cached.price.sells.unit_price * item.count;
+                                } else if (cached.details && cached.details.vendor_value) {
+                                  totalPrice = cached.details.vendor_value * item.count;
+                                }
+                                if (totalPrice > 0) {
+                                  const { gold, silver } = formatGold(totalPrice);
+                                  if (gold > 0) {
+                                    return <Image src="/images/expansions/Gold.webp" alt="Gold" width={12} height={12} className="ml-1" />;
+                                  } else if (silver > 0) {
+                                    return <Image src="/images/expansions/Silver.webp" alt="Silver" width={12} height={12} className="ml-1" />;
+                                  } else {
+                                    return <Image src="/images/expansions/Copper.webp" alt="Copper" width={12} height={12} className="ml-1" />;
+                                  }
+                                }
+                              }
+                              return null;
+                            })()}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </>
+                ) : (
+                <>
+                {[...Array(bankTabs)].map((_, tabIndex) => {
+                  const start = tabIndex * slotsPerTab;
+                  const tabItems = bankItems.slice(start, start + slotsPerTab);
+                  const usedInTab = tabItems.filter((it) => it !== null).length;
+                      const baseTabLabel = t('bank.tabLabel').replace(/\s*\d+\s*$/, '');
+                  return (
+                    <div key={tabIndex} className="mb-6 last:mb-0">
+                      <div className="flex items-center justify-between mb-4">
+                        <h2 className="text-xl font-semibold flex items-center">
+                          <Package className="w-5 h-5 mr-2 text-blue-500" />
+                          {baseTabLabel} {tabIndex + 1}
+                        </h2>
+                            <div className="text-sm text-gray-400">
+                              {usedInTab} / 30 {t('bank.slots')}
+                            </div>
+                      </div>
+                      <div className="grid grid-cols-10 gap-0.6 max-w-3xl mx-auto">
+                        {Array.from({ length: slotsPerTab }, (_, slotIndex) => {
+                          const globalIndex = start + slotIndex;
+                          const item = bankItems[globalIndex];
+                          return (
+                            <div 
+                              key={slotIndex} 
                                                                                                className={`
                            w-16 h-24 rounded border-2 flex flex-col items-center justify-center p-0.6 relative
                           ${item 
@@ -532,10 +624,10 @@ const BankPage = () => {
                             : 'border-dashed border-gray-600 bg-gray-800'
                           }
                         `}
-                                               title={item ? `${item.name} (Slot ${slotIndex + 1})` : `Slot ${slotIndex + 1} empty`}
-                        onMouseEnter={(e) => item && handleItemHover(item, e)}
-                        onMouseLeave={handleItemLeave}
-                      >
+                              title={item ? `${t('bank.slot')} ${globalIndex + 1}` : `${t('bank.slot')} ${globalIndex + 1} ${t('bank.empty')}`}
+                              onMouseEnter={(e) => item && handleItemHover(item, e)}
+                              onMouseLeave={handleItemLeave}
+                            >
                                                                                                {item ? (
                           <>
                                                          {/* Item icon as background */}
@@ -557,11 +649,11 @@ const BankPage = () => {
                              )}
                              
                              {/* Bound indicator */}
-                            {item.bound && (
-                               <span className="text-xs text-gray-300 font-semibold absolute top-0 right-0 px-1">
-                                {t('bank.bound', 'Bound')}
-                               </span>
-                             )}
+                                      {item.bound && (
+                                        <span className="text-xs text-gray-300 font-semibold absolute top-0 right-0 px-1">
+                                          {t('bank.bound')}
+                                        </span>
+                                      )}
                              
                                                            {/* Price display at bottom (black background) */}
                                                              <div className="absolute bottom-0 left-0 right-0 bg-black text-white text-sm py-1 flex items-center justify-center">
@@ -614,13 +706,16 @@ const BankPage = () => {
                              </div>
                           </>
                         ) : null}
-                     </div>
-                   );
-                 })}
-               </div>
-              
-              
-            </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  );
+                })}
+                </>
+              )}
+              </div>
           </div>
         )}
 

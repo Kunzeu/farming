@@ -2,65 +2,29 @@ import { NextRequest, NextResponse } from 'next/server';
 
 const GW2_API_BASE = 'https://api.guildwars2.com/v2';
 
-interface BankItem {
-  id: number;
-  count?: number;
-  slot?: number;
-}
+// Simple cache for search results
+const searchCache = new Map<string, { data: any; expiry: number }>();
+const CACHE_TTL = 5 * 60 * 1000; // 5 minutes
 
-interface Character {
-  name: string;
-}
+async function fetchWith429Retry(url: string, options: RequestInit = {}): Promise<Response> {
+  let retries = 0;
+  const MAX_RETRIES = 3;
 
-interface EquipmentItem {
-  id: number;
-  slot?: string;
-}
-
-interface BagItem {
-  id: number;
-  count?: number;
-}
-
-interface Bag {
-  id: number;
-  inventory: (BagItem | null)[];
-}
-
-interface CharacterData {
-  equipment: (EquipmentItem | null)[];
-  bags: (Bag | null)[];
-}
-
-interface Material {
-  id: number;
-  count: number;
-}
-
-interface MaterialDetails {
-  id: number;
-  name: string;
-  category?: string;
-}
-
-interface ItemDetails {
-  id: number;
-  name: string;
-  icon?: string;
-  rarity?: string;
-}
-
-interface SearchResult {
-  id: number;
-  name: string;
-  icon?: string;
-  rarity?: string;
-  location: string;
-  count: number;
-  character?: string;
-  slot?: string | number;
-  bag?: number;
-  category?: string;
+  while (retries < MAX_RETRIES) {
+    const response = await fetch(url, options);
+    
+    if (response.status === 429) {
+      const retryAfter = response.headers.get('Retry-After');
+      const delay = retryAfter ? parseInt(retryAfter) * 1000 : Math.pow(2, retries) * 1000;
+      await new Promise(resolve => setTimeout(resolve, delay));
+      retries++;
+      continue;
+    }
+    
+    return response;
+  }
+  
+  throw new Error('Max retries exceeded');
 }
 
 export async function GET(request: NextRequest) {
@@ -68,52 +32,60 @@ export async function GET(request: NextRequest) {
     const apiKey = request.nextUrl.searchParams.get('api_key');
     const query = request.nextUrl.searchParams.get('q');
     const scope = request.nextUrl.searchParams.get('scope') || 'all';
-
-    if (!apiKey) {
-      return NextResponse.json({ error: 'API key required' }, { status: 400 });
+    const lang = request.nextUrl.searchParams.get('lang') || 'en';
+    
+    if (!apiKey || !query) {
+      return NextResponse.json({ error: 'API key and query required' }, { status: 400 });
     }
 
-    if (!query || query.length < 2) {
-      return NextResponse.json({ error: 'Query must be at least 2 characters' }, { status: 400 });
+    const cacheKey = `search-${apiKey}-${query}-${scope}-${lang}`;
+    const cached = searchCache.get(cacheKey);
+    
+    if (cached && cached.expiry > Date.now()) {
+      return NextResponse.json(cached.data);
     }
 
-    const results: SearchResult[] = [];
-    const searchQuery = query.toLowerCase();
-    const MAX_RESULTS = 20; // Limitar resultados para mayor velocidad
+    const results: any[] = [];
+    const searchTerm = query.toLowerCase();
 
     // Search in bank
     if (scope === 'all' || scope === 'bank') {
       try {
-        const bankResponse = await fetch(`${GW2_API_BASE}/account/bank?access_token=${apiKey}`);
+        const bankResponse = await fetchWith429Retry(`${GW2_API_BASE}/account/bank?access_token=${apiKey}`, {
+          headers: { 'Accept': 'application/json' },
+        });
+
         if (bankResponse.ok) {
-          const bankData = await bankResponse.json() as (BankItem | null)[];
-          const bankItems = bankData.filter((item): item is BankItem => item !== null);
+          const bankData = await bankResponse.json();
           
-          if (bankItems.length > 0) {
-            const itemIds = bankItems.map((item: BankItem) => item.id);
-            console.log(`Searching ${itemIds.length} bank items for: ${searchQuery}`);
-            
-            const itemsResponse = await fetch(`${GW2_API_BASE}/items?ids=${itemIds.join(',')}`);
+          // Get item details for bank items
+          const bankItemIds = bankData
+            .filter((item: any) => item !== null)
+            .map((item: any) => item.id);
+          
+          if (bankItemIds.length > 0) {
+            const itemsResponse = await fetchWith429Retry(`${GW2_API_BASE}/items?ids=${bankItemIds.join(',')}&lang=${lang}`);
             if (itemsResponse.ok) {
-              const itemsData = await itemsResponse.json() as ItemDetails[];
-              console.log(`Found ${itemsData.length} item details`);
+              const itemsData = await itemsResponse.json();
+              const itemsMap = new Map(itemsData.map((item: any) => [item.id, item]));
               
-              const matchingItems = itemsData.filter((item: ItemDetails) => 
-                item.name && item.name.toLowerCase().includes(searchQuery)
-              );
-              
-              console.log(`Found ${matchingItems.length} matching items in bank`);
-              
-              for (const item of matchingItems) {
-                if (results.length >= MAX_RESULTS) break;
-                const bankItem = bankItems.find((bi: BankItem) => bi.id === item.id);
-                results.push({
-                  ...item,
-                  location: 'bank',
-                  count: bankItem?.count || 1,
-                  slot: bankItem?.slot
-                });
-              }
+              bankData.forEach((bankItem: any, index: number) => {
+                if (bankItem && itemsMap.has(bankItem.id)) {
+                  const itemDetails = itemsMap.get(bankItem.id) as any;
+                  if (itemDetails?.name?.toLowerCase().includes(searchTerm)) {
+                    results.push({
+                      id: bankItem.id,
+                      name: itemDetails.name,
+                      icon: itemDetails.icon,
+                      count: bankItem.count,
+                      location: `search.bankSlot ${index + 1}`,
+                      rarity: itemDetails.rarity,
+                      category: 'bank',
+                      slot: index + 1
+                    });
+                  }
+                }
+              });
             }
           }
         }
@@ -125,77 +97,66 @@ export async function GET(request: NextRequest) {
     // Search in characters
     if (scope === 'all' || scope === 'characters') {
       try {
-        const charactersResponse = await fetch(`${GW2_API_BASE}/characters?access_token=${apiKey}`);
+        const charactersResponse = await fetchWith429Retry(`${GW2_API_BASE}/characters?access_token=${apiKey}`, {
+          headers: { 'Accept': 'application/json' },
+        });
+
         if (charactersResponse.ok) {
-          const charactersData = await charactersResponse.json() as Character[];
-          console.log(`Searching ${charactersData.length} characters for: ${searchQuery}`);
+          const charactersData = await charactersResponse.json();
           
+          // Collect all item IDs from character inventories
+          const characterItemIds: number[] = [];
           for (const character of charactersData) {
-            if (results.length >= MAX_RESULTS) break;
-            
-            try {
-              const characterResponse = await fetch(`${GW2_API_BASE}/characters/${encodeURIComponent(character.name)}?access_token=${apiKey}`);
-              if (characterResponse.ok) {
-                const characterData = await characterResponse.json() as CharacterData;
-                const equipment = characterData.equipment || [];
-                const bags = characterData.bags || [];
-                
-                // Search in equipment
-                const equipmentItems = equipment.filter((item): item is EquipmentItem => item !== null);
-                if (equipmentItems.length > 0) {
-                  const itemIds = equipmentItems.map((item: EquipmentItem) => item.id);
-                  const itemsResponse = await fetch(`${GW2_API_BASE}/items?ids=${itemIds.join(',')}`);
-                  if (itemsResponse.ok) {
-                    const itemsData = await itemsResponse.json() as ItemDetails[];
-                    const matchingItems = itemsData.filter((item: ItemDetails) => 
-                      item.name && item.name.toLowerCase().includes(searchQuery)
-                    );
-                    
-                    for (const item of matchingItems) {
-                      if (results.length >= MAX_RESULTS) break;
-                      const equipItem = equipmentItems.find((ei: EquipmentItem) => ei.id === item.id);
-                      results.push({
-                        ...item,
-                        location: 'character',
-                        character: character.name,
-                        slot: equipItem?.slot,
-                        count: 1
-                      });
+            if (character.inventory?.bags) {
+              for (const bag of character.inventory.bags) {
+                if (bag.inventory) {
+                  for (const item of bag.inventory) {
+                    if (item && item.id) {
+                      characterItemIds.push(item.id);
                     }
                   }
                 }
-                
-                // Search in bags
-                for (const bag of bags) {
-                  if (bag && bag.inventory) {
-                    const bagItems = bag.inventory.filter((item): item is BagItem => item !== null);
-                    if (bagItems.length > 0) {
-                      const itemIds = bagItems.map((item: BagItem) => item.id);
-                      const itemsResponse = await fetch(`${GW2_API_BASE}/items?ids=${itemIds.join(',')}`);
-                      if (itemsResponse.ok) {
-                        const itemsData = await itemsResponse.json() as ItemDetails[];
-                        const matchingItems = itemsData.filter((item: ItemDetails) => 
-                          item.name && item.name.toLowerCase().includes(searchQuery)
-                        );
-                        
-                        for (const item of matchingItems) {
-                          if (results.length >= MAX_RESULTS) break;
-                          const bagItem = bagItems.find((bi: BagItem) => bi.id === item.id);
-                          results.push({
-                            ...item,
-                            location: 'character',
-                            character: character.name,
-                            bag: bag.id,
-                            count: bagItem?.count || 1
-                          });
+              }
+            }
+          }
+
+          // Get item details for character items
+          if (characterItemIds.length > 0) {
+            const uniqueItemIds = [...new Set(characterItemIds)];
+            const itemsResponse = await fetchWith429Retry(`${GW2_API_BASE}/items?ids=${uniqueItemIds.join(',')}&lang=${lang}`);
+            if (itemsResponse.ok) {
+              const itemsData = await itemsResponse.json();
+              const itemsMap = new Map(itemsData.map((item: any) => [item.id, item]));
+              
+              for (const character of charactersData) {
+                if (character.inventory?.bags) {
+                  for (let bagIndex = 0; bagIndex < character.inventory.bags.length; bagIndex++) {
+                    const bag = character.inventory.bags[bagIndex];
+                    if (bag.inventory) {
+                      for (let slotIndex = 0; slotIndex < bag.inventory.length; slotIndex++) {
+                        const item = bag.inventory[slotIndex];
+                        if (item && itemsMap.has(item.id)) {
+                          const itemDetails = itemsMap.get(item.id) as any;
+                          if (itemDetails?.name?.toLowerCase().includes(searchTerm)) {
+                            results.push({
+                              id: item.id,
+                              name: itemDetails.name,
+                              icon: itemDetails.icon,
+                              count: item.count,
+                              location: `${character.name} - search.characterBag ${bagIndex + 1}`,
+                              rarity: itemDetails.rarity,
+                              category: 'character',
+                              character: character.name,
+                              bag: bagIndex + 1,
+                              slot: slotIndex + 1
+                            });
+                          }
                         }
                       }
                     }
                   }
                 }
               }
-            } catch (error) {
-              console.error(`Error searching character ${character.name}:`, error);
             }
           }
         }
@@ -204,53 +165,63 @@ export async function GET(request: NextRequest) {
       }
     }
 
-    // Search in materials storage
+    // Search in material storage
     if (scope === 'all' || scope === 'storage') {
       try {
-        const materialsResponse = await fetch(`${GW2_API_BASE}/account/materials?access_token=${apiKey}`);
-        if (materialsResponse.ok) {
-          const materialsData = await materialsResponse.json() as Material[];
+        const storageResponse = await fetchWith429Retry(`${GW2_API_BASE}/account/materials?access_token=${apiKey}`, {
+          headers: { 'Accept': 'application/json' },
+        });
+
+        if (storageResponse.ok) {
+          const storageData = await storageResponse.json();
           
-          if (materialsData.length > 0) {
-            const materialIds = materialsData.map((material: Material) => material.id);
-            console.log(`Searching ${materialIds.length} materials for: ${searchQuery}`);
-            
-            const materialsDetailsResponse = await fetch(`${GW2_API_BASE}/materials?ids=${materialIds.join(',')}`);
-            if (materialsDetailsResponse.ok) {
-              const materialsDetails = await materialsDetailsResponse.json() as MaterialDetails[];
-              console.log(`Found ${materialsDetails.length} material details`);
+          // Get item details for storage items
+          const storageItemIds = storageData
+            .filter((item: any) => item !== null)
+            .map((item: any) => item.id);
+          
+          if (storageItemIds.length > 0) {
+            const itemsResponse = await fetchWith429Retry(`${GW2_API_BASE}/items?ids=${storageItemIds.join(',')}&lang=${lang}`);
+            if (itemsResponse.ok) {
+              const itemsData = await itemsResponse.json();
+              const itemsMap = new Map(itemsData.map((item: any) => [item.id, item]));
               
-              const matchingMaterials = materialsDetails.filter((material: MaterialDetails) => 
-                material.name && material.name.toLowerCase().includes(searchQuery)
-              );
-              
-              console.log(`Found ${matchingMaterials.length} matching materials`);
-              
-              for (const material of matchingMaterials) {
-                if (results.length >= MAX_RESULTS) break;
-                const storageMaterial = materialsData.find((sm: Material) => sm.id === material.id);
-                results.push({
-                  ...material,
-                  location: 'storage',
-                  count: storageMaterial?.count || 0,
-                  category: material.category
-                });
-              }
+              storageData.forEach((storageItem: any) => {
+                if (storageItem && itemsMap.has(storageItem.id)) {
+                  const itemDetails = itemsMap.get(storageItem.id) as any;
+                  if (itemDetails?.name?.toLowerCase().includes(searchTerm)) {
+                    results.push({
+                      id: storageItem.id,
+                      name: itemDetails.name,
+                      icon: itemDetails.icon,
+                      count: storageItem.count,
+                      location: 'search.materialStorage',
+                      rarity: itemDetails.rarity,
+                      category: 'storage'
+                    });
+                  }
+                }
+              });
             }
           }
         }
       } catch (error) {
-        console.error('Error searching materials:', error);
+        console.error('Error searching storage:', error);
       }
     }
 
-    console.log(`Total results found: ${results.length}`);
+    // Cache the results
+    searchCache.set(cacheKey, {
+      data: results,
+      expiry: Date.now() + CACHE_TTL
+    });
+
     return NextResponse.json(results);
   } catch (error) {
-    console.error('Error searching:', error);
+    console.error('Search API error:', error);
     return NextResponse.json(
-      { error: 'Failed to search', details: error instanceof Error ? error.message : 'Unknown error' },
+      { error: 'Internal server error' },
       { status: 500 }
     );
   }
-} 
+}

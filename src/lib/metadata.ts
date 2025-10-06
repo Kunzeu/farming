@@ -67,15 +67,15 @@ export function generateMetadata(): Metadata {
     },
     icons: {
       icon: [
-        { url: '/images/icons/favicon.svg', type: 'image/svg+xml' },
-        { url: '/images/icons/icon.ico', sizes: '16x16', type: 'image/x-icon' },
-        { url: '/images/icons/icon1.ico', sizes: '32x32', type: 'image/x-icon' },
-        { url: '/images/icons/icon.webp', sizes: '192x192', type: 'image/webp' },
-        { url: '/images/icons/icon1.webp', sizes: '512x512', type: 'image/webp' },
+        { url: '/images/icons/favicon.svg', type: 'image/svg+xml', sizes: 'any' },
+        { url: '/images/icons/favicon.svg', type: 'image/svg+xml', sizes: '16x16' },
+        { url: '/images/icons/favicon.svg', type: 'image/svg+xml', sizes: '32x32' },
+        { url: '/images/icons/favicon.svg', type: 'image/svg+xml', sizes: '192x192' },
+        { url: '/images/icons/favicon.svg', type: 'image/svg+xml', sizes: '512x512' },
       ],
       shortcut: '/images/icons/favicon.svg',
       apple: [
-        { url: '/images/icons/icon.webp', sizes: '180x180', type: 'image/webp' },
+        { url: '/images/icons/favicon.svg', sizes: '180x180', type: 'image/svg+xml' },
       ],
       other: [
         {
@@ -85,6 +85,7 @@ export function generateMetadata(): Metadata {
         },
       ],
     },
+    manifest: '/manifest.json',
     other: {
       'msapplication-TileColor': '#c1272d',
       'msapplication-config': '/browserconfig.xml',

@@ -256,7 +256,20 @@ export default function RootLayout({
         }} />
         <meta name="google-site-verification" content="6QMoVlJ1hD8y5DCBubEKA5qv_oLb3O4EVRB8OS03LZU"/>
         <meta name="msapplication-TileColor" content="#c1272d" />
-        <meta name="msapplication-TileImage" content="/images/icons/icon.webp" />
+        <meta name="msapplication-TileImage" content="/images/icons/favicon.svg" />
+        <link rel="manifest" href="/manifest.json" />
+        
+        {/* Favicon adicionales para mejor compatibilidad móvil */}
+        <link rel="icon" href="/images/icons/favicon.svg" type="image/svg+xml" />
+        <link rel="icon" href="/images/icons/icon.ico" type="image/x-icon" />
+        <link rel="apple-touch-icon" href="/images/icons/favicon.svg" />
+        <link rel="apple-touch-icon-precomposed" href="/images/icons/favicon.svg" />
+        
+        {/* Meta tags para mejor indexación en móviles */}
+        <meta name="mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+        <meta name="apple-mobile-web-app-title" content="True Farming" />
           
         {/* Meta tags are automatically generated from the metadata object above */}
         <meta name="theme-color" content="#c1272d" />
