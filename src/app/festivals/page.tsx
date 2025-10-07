@@ -22,7 +22,7 @@ const getFestivals = () => [
     descriptionKey: 'festivals.descriptions.lunar',
     icon: '🏮',
     color: 'from-red-500 to-yellow-600',
-    status: getFestivalStatus(festivalDates.lunar.startDate, festivalDates.lunar.endDate),
+    status: getFestivalStatus(festivalDates.lunar.startDate, festivalDates.lunar.endDate, festivalDates.lunar.startTime, festivalDates.lunar.endTime, festivalDates.lunar.timezone),
     startDate: festivalDates.lunar.startDateFormatted,
     endDate: festivalDates.lunar.endDateFormatted,
     features: [
@@ -42,7 +42,7 @@ const getFestivals = () => [
     descriptionKey: 'festivals.descriptions.dragonBash',
     icon: '🐉',
     color: 'from-purple-500 to-pink-600',
-    status: getFestivalStatus(festivalDates['dragon-bash'].startDate, festivalDates['dragon-bash'].endDate),
+    status: getFestivalStatus(festivalDates['dragon-bash'].startDate, festivalDates['dragon-bash'].endDate, festivalDates['dragon-bash'].startTime, festivalDates['dragon-bash'].endTime, festivalDates['dragon-bash'].timezone),
     startDate: festivalDates['dragon-bash'].startDateFormatted,
     endDate: festivalDates['dragon-bash'].endDateFormatted,
     features: [
@@ -62,7 +62,7 @@ const getFestivals = () => [
     descriptionKey: 'festivals.descriptions.fourWinds',
     icon: '🪂',
     color: 'from-green-500 to-blue-600',
-    status: getFestivalStatus(festivalDates['four-winds'].startDate, festivalDates['four-winds'].endDate),
+    status: getFestivalStatus(festivalDates['four-winds'].startDate, festivalDates['four-winds'].endDate, festivalDates['four-winds'].startTime, festivalDates['four-winds'].endTime, festivalDates['four-winds'].timezone),
     startDate: festivalDates['four-winds'].startDateFormatted,
     endDate: festivalDates['four-winds'].endDateFormatted,
     features: [
@@ -82,7 +82,7 @@ const getFestivals = () => [
     descriptionKey: 'festivals.descriptions.halloween',
     icon: '🎃',
     color: 'from-orange-500 to-red-600',
-    status: getFestivalStatus(festivalDates.halloween.startDate, festivalDates.halloween.endDate),
+    status: getFestivalStatus(festivalDates.halloween.startDate, festivalDates.halloween.endDate, festivalDates.halloween.startTime, festivalDates.halloween.endTime, festivalDates.halloween.timezone),
     startDate: festivalDates.halloween.startDateFormatted,
     endDate: festivalDates.halloween.endDateFormatted,
     features: [
@@ -102,7 +102,7 @@ const getFestivals = () => [
     descriptionKey: 'festivals.descriptions.wintersday',
     icon: '❄️',
     color: 'from-blue-500 to-cyan-600',
-    status: getFestivalStatus(festivalDates.wintersday.startDate, festivalDates.wintersday.endDate),
+    status: getFestivalStatus(festivalDates.wintersday.startDate, festivalDates.wintersday.endDate, festivalDates.wintersday.startTime, festivalDates.wintersday.endTime, festivalDates.wintersday.timezone),
     startDate: festivalDates.wintersday.startDateFormatted,
     endDate: festivalDates.wintersday.endDateFormatted,
     features: [
