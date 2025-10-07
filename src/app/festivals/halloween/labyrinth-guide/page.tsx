@@ -1299,7 +1299,7 @@ const LabyrinthGuidePage = () => {
                              Note for English speakers
                            </h4>
                            <p className="text-gray-300 text-sm">
-                             The image is in Spanish: <strong>"Puerta"</strong> = <strong>"Door"</strong> | <strong>"Inicio"</strong> = <strong>"Start"</strong>
+                             The image is in Spanish: <strong>&quot;Puerta&quot;</strong> = <strong>&quot;Door&quot;</strong> | <strong>&quot;Inicio&quot;</strong> = <strong>&quot;Start&quot;</strong>
                            </p>
                          </div>
                        </div>
