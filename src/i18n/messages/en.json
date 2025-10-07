@@ -1530,7 +1530,7 @@
   "halloween.labyrinth.builds.firebrand": "Firebrand Justice",
   "halloween.labyrinth.builds.mirage": "Mirage Spammer",
   "halloween.labyrinth.builds.daredevilPower": "Daredevil Power",
-  "halloween.labyrinth.builds.daredevilCondi": "Daredevil Condition",
+  "halloween.labyrinth.builds.daredevilCondi": "Herald Boons",
   "halloween.labyrinth.content.intro": "In this guide I'll give you the best 5 builds to farm the Halloween Labyrinth. It also works for general tagging farms. If the class you want to use isn't here, don't worry because days after this article comes out, you'll have another one with a different build for each class. Check if I already uploaded it here.",
   "halloween.labyrinth.content.commonPoints": "As common points I just wanted to say 3 points. The first of all is that we never play with accessories, rings and backpacks so we don't do too much damage and screw up the rest of the players because we kill enemies too fast. It won't matter if we go ascended or exotic. As a second point, the food and improvements to increase our farming will be in another post about how to farm the labyrinth. So stay tuned to the posts in the how to make gold section. The third is that all these builds can change their stats for another similar one with vitality to go more comfortable. In the case of Berserker builds we could go Assaulter or Dragon.",
   "halloween.labyrinth.content.routes": "The labyrinth farming process is like any other tagging farm, that is, a farm that consists of attacking everyone and letting the rest of the group attack too so that we all get the loot from each enemy.",
@@ -1959,6 +1959,15 @@
   "bank.slot": "Slot",
   "bank.empty": "empty",
   
-  "common.later": "Later"
+  "common.later": "Later",
+  "common.and": "and",
+  "halloween.labyrinth.scrapper.usage.part1": "Lastly, here’s how to use it. We’ll mainly deal damage with Flamethrower 1; hold it down and rotate the camera to hit everything. Meanwhile, use the spins to add more AoE damage, but always right before the",
+  "halloween.labyrinth.scrapper.usage.superspeedFallback": "superspeed",
+  "halloween.labyrinth.scrapper.usage.part2": "ends to get the most out of it.",
+  "halloween.labyrinth.scrapper.usage.priority": "As a priority, we will use",
+  "halloween.labyrinth.scrapper.usage.whirlBastion": "Bastion Whirl",
+  "halloween.labyrinth.scrapper.usage.whirlFunction": "Function Whirl",
+  "halloween.labyrinth.scrapper.usage.whirlMedic": "Medic Whirl",
+  "halloween.labyrinth.scrapper.usage.whirlStealth": "Stealth Whirl"
 }
 

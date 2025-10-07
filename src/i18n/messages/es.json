@@ -1563,7 +1563,7 @@
   "halloween.labyrinth.builds.firebrand": "Abrasador Justicia",
   "halloween.labyrinth.builds.mirage": "Quimérico Spammer",
   "halloween.labyrinth.builds.daredevilPower": "Temerario Poder",
-  "halloween.labyrinth.builds.daredevilCondi": "Temerario Condición",
+  "halloween.labyrinth.builds.daredevilCondi": "Bendiciones de Heraldo",
   "halloween.labyrinth.content.intro": "En esta guía os pondré las mejores 5 builds para farmear el Laberinto de Halloween. También vale para los farmeos de tagging en general. Si la clase que queréis usar no está aquí no os preocupéis por que días después de salir este artículo, tendréis otro con una build distinta de cada clase. Comprueba si ya lo subí aquí.",
   "halloween.labyrinth.content.commonPoints": "Como puntos comunes solo quería decir 3 puntos. El primero de todos es que nunca jugamos con accesorios, anillos y espaldar para así no hacer demasiado daño y joder al resto de jugadores por que matemos muy rápido a los enemigos. Dará igual que vayamos ascendidos o exóticos. Como segundo punto, las comidas y mejoras para aumentar nuestro farming estará en otro post sobre como farmear el laberinto. Así que estad atentos a los post del apartado de como hacer oro. El tercero es que todas estas builds pueden cambiar sus estadísticas por otra que sea similar y con vitalidad para ir más cómodo. En el caso de las builds con Berserker podríamos ir Asaltante o Dragón.",
   "halloween.labyrinth.content.routes": "El proceso de farmeo del laberinto es como cualquier otro farmeo de tageo, es decir, un farmeo que consiste en atacar a todos y dejar que el resto del grupo ataquen también para que todos nos llevemos el loot de cada enemigo.",
@@ -1987,12 +1987,18 @@
   "account.noApiKeyBank": "Agrega tu API key de Guild Wars 2 en Configuración para habilitar Banco.",
   "account.noApiKeyStorage": "Agrega tu API key de Guild Wars 2 en Configuración para habilitar Almacén de Materiales.",
   "account.noApiKeyCharacters": "Agrega tu API key de Guild Wars 2 en Configuración para habilitar Personajes.",
+  "halloween.labyrinth.scrapper.usage.part1": "Por último os comentaré un poco la forma de usarlo. Principalmente haremos daño con el 1 de lanzallamas; mantenlo pulsado y gira la cámara para golpear a todo. Mientras tanto usaremos los giros para hacer más daño en área, pero siempre justo antes de que se acabe la",
+  "halloween.labyrinth.scrapper.usage.superspeedFallback": "supervelocidad",
+  "halloween.labyrinth.scrapper.usage.part2": "para obtener el máximo de esta.",
+  "halloween.labyrinth.scrapper.usage.priority": "Como prioridad usaremos",
+  
   "account.addApiKey": "Agregar API key",
 
   "bank.searchResults": "Resultados de búsqueda",
   "bank.slot": "Slot",
   "bank.empty": "vacío",
 
-  "common.later": "Después"
+  "common.later": "Después",
+  "common.and": "y"
 }
 

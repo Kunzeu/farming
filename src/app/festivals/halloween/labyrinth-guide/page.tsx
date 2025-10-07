@@ -54,6 +54,17 @@ const LabyrinthGuidePage = () => {
   const [precisionData, setPrecisionData] = useState<{name: string, icon: string, wikiUrl: string} | null>(null);
   const [runa100148Data, setRuna100148Data] = useState<{name: string, icon: string, wikiUrl: string} | null>(null);
   const [runaVelocidadData, setRunaVelocidadData] = useState<{name: string, icon: string, wikiUrl: string} | null>(null);
+  const [relicVampirismData, setRelicVampirismData] = useState<{name: string, icon?: string, wikiUrl: string} | null>(null);
+  const [relicSpeedData, setRelicSpeedData] = useState<{name: string, icon: string, wikiUrl: string} | null>(null);
+  const [trait1833Name, setTrait1833Name] = useState<string>('Entrenamiento de loto');
+  const [trait1833Data, setTrait1833Data] = useState<{name: string, icon: string, wikiUrl: string} | null>(null);
+  const [channeledVigorData, setChanneledVigorData] = useState<{name: string, icon: string, wikiUrl: string} | null>(null);
+  const [brawlersTenacityData, setBrawlersTenacityData] = useState<{name: string, wikiUrl: string, icon: string} | null>(null);
+  const [signetAgilityData, setSignetAgilityData] = useState<{name: string, wikiUrl: string, icon: string} | null>(null);
+  const [stealData, setStealData] = useState<{name: string, wikiUrl: string, icon: string} | null>(null);
+  const [enduranceThiefData, setEnduranceThiefData] = useState<{name: string, wikiUrl: string, icon: string} | null>(null);
+  const [shadowstepData, setShadowstepData] = useState<{name: string, wikiUrl: string, icon: string} | null>(null);
+  const [infiltratorsArrowData, setInfiltratorsArrowData] = useState<{name: string, wikiUrl: string, icon: string} | null>(null);
 
   const sections = [
     { id: 'overview', label: t('halloween.labyrinth.sections.overview'), icon: Info },
@@ -65,19 +76,236 @@ const LabyrinthGuidePage = () => {
 
   // Función para construir URL de wiki
   const buildWikiUrl = (itemName: string, itemType: 'item' | 'skill') => {
-    const formattedName = itemName.replace(/ /g, '_');
-    
-    if (lang === 'es') {
-      // Para español usamos la wiki en inglés
-      return `https://wiki.guildwars2.com/wiki/Superior_Rune_of_the_Zephyrite`;
-    } else if (lang === 'fr') {
-      return `https://wiki-fr.guildwars2.com/wiki/Rune_sup%C3%A9rieure_des_Z%C3%A9phyrites`;
-    } else if (lang === 'de') {
-      return `https://wiki-de.guildwars2.com/wiki/%C3%9Cberlegene_Rune_der_Zephyriten`;
-    } else {
-      return `https://wiki.guildwars2.com/wiki/Superior_Rune_of_the_Zephyrite`;
+    const normalized = (lang || 'en').toLowerCase();
+    const wikiLang = normalized.startsWith('fr') ? 'fr' : normalized.startsWith('de') ? 'de' : 'en';
+    const formattedName = (itemName || '').replace(/ /g, '_');
+    if (itemType === 'skill' || itemType === 'item') {
+      if (wikiLang === 'fr') return `https://wiki-fr.guildwars2.com/wiki/${formattedName}`;
+      if (wikiLang === 'de') return `https://wiki-de.guildwars2.com/wiki/${formattedName}`;
+      return `https://wiki.guildwars2.com/wiki/${formattedName}`;
     }
+    return `https://wiki.guildwars2.com/wiki/${formattedName}`;
   };
+
+  // Trait 1833 (Lotus Training): nombre, icono fijo y wiki por idioma
+  useEffect(() => {
+    const normalized = (lang || 'en').toLowerCase();
+    const langKey = normalized.startsWith('es') ? 'es' : normalized.startsWith('de') ? 'de' : normalized.startsWith('fr') ? 'fr' : 'en';
+    const nameByLang: Record<string, string> = {
+      en: 'Lotus Training',
+      de: 'Lotus-Training',
+      es: 'Entrenamiento de loto',
+      fr: 'Initiation du lotus',
+    };
+    const wikiByLang: Record<string, string> = {
+      en: 'https://wiki.guildwars2.com/wiki/Lotus_Training',
+      es: 'https://wiki-es.guildwars2.com/wiki/Entrenamiento_de_loto',
+      de: 'https://wiki-de.guildwars2.com/wiki/Lotus-Training',
+      fr: 'https://wiki-fr.guildwars2.com/wiki/Initiation_du_lotus',
+    };
+    const icon = 'https://wiki.guildwars2.com/images/e/ea/Lotus_Training.png';
+    const name = nameByLang[langKey] || nameByLang.en;
+    const wikiUrl = wikiByLang[langKey] || wikiByLang.en;
+    setTrait1833Name(name);
+    setTrait1833Data({ name, icon, wikiUrl });
+  }, [lang]);
+
+  // Obtener datos de Vigor canalizado (skill 30400) según idioma actual (icono fijo + nombre mapeado)
+  useEffect(() => {
+    const normalized = (lang || 'en').toLowerCase();
+    const langKey = normalized.startsWith('es') ? 'es' : normalized.startsWith('de') ? 'de' : normalized.startsWith('fr') ? 'fr' : 'en';
+    const fixedIcon = 'https://wiki.guildwars2.com/images/thumb/a/a1/Channeled_Vigor.png/48px-Channeled_Vigor.png';
+    const nameByLang: Record<string, string> = {
+      en: 'Channeled Vigor',
+      de: 'Kanalisierter Elan',
+      es: 'Vigor canalizado',
+      fr: 'Vigueur canalisée'
+    };
+    const wikiByLang: Record<string, string> = {
+      en: 'https://wiki.guildwars2.com/wiki/Channeled_Vigor',
+      es: 'https://wiki.guildwars2.com/wiki/Channeled_Vigor',
+      de: 'https://wiki-de.guildwars2.com/wiki/Kanalisierter_Elan',
+      fr: 'https://wiki-fr.guildwars2.com/wiki/Vigueur_canalisée'
+    };
+    const name = nameByLang[langKey] || nameByLang.en;
+    const wikiUrl = wikiByLang[langKey] || wikiByLang.en;
+    setChanneledVigorData({
+      name,
+      icon: fixedIcon,
+      wikiUrl
+    });
+  }, [lang]);
+
+  // La tenacidad del luchador (Brawler's Tenacity): nombre, icono fijo y wiki por idioma
+  useEffect(() => {
+    const normalized = (lang || 'en').toLowerCase();
+    const langKey = normalized.startsWith('es') ? 'es' : normalized.startsWith('de') ? 'de' : normalized.startsWith('fr') ? 'fr' : 'en';
+    const nameByLang: Record<string, string> = {
+      en: "Brawler's Tenacity",
+      de: 'Hartnäckigkeit des Raufbolds',
+      es: 'Tenacidad de pendenciero',
+      fr: 'Ténacité du bagarreur'
+    };
+    const wikiByLang: Record<string, string> = {
+      en: 'https://wiki.guildwars2.com/wiki/Brawler%27s_Tenacity',
+      es: 'https://wiki.guildwars2.com/wiki/Brawler%27s_Tenacity',
+      de: 'https://wiki-de.guildwars2.com/wiki/Hartn%C3%A4ckigkeit_des_Raufbolds',
+      fr: 'https://wiki-fr.guildwars2.com/wiki/T%C3%A9nacit%C3%A9_du_bagarreur'
+    };
+    const icon = 'https://wiki.guildwars2.com/images/8/89/Brawler%27s_Tenacity.png';
+    setBrawlersTenacityData({ name: nameByLang[langKey], wikiUrl: wikiByLang[langKey], icon });
+  }, [lang]);
+
+  // Sello de Agilidad (Signet of Agility): nombre, icono fijo y wiki por idioma
+  useEffect(() => {
+    const normalized = (lang || 'en').toLowerCase();
+    const langKey = normalized.startsWith('es') ? 'es' : normalized.startsWith('de') ? 'de' : normalized.startsWith('fr') ? 'fr' : 'en';
+    const nameByLang: Record<string, string> = {
+      en: 'Signet of Agility',
+      de: 'Siegel der Beweglichkeit',
+      es: 'Sello de agilidad',
+      fr: "Signe d'agilité",
+    };
+    const wikiByLang: Record<string, string> = {
+      en: 'https://wiki.guildwars2.com/wiki/Signet_of_Agility',
+      es: 'https://wiki.guildwars2.com/wiki/Signet_of_Agility',
+      de: 'https://wiki-de.guildwars2.com/wiki/Siegel_der_Beweglichkeit',
+      fr: 'https://wiki-fr.guildwars2.com/wiki/Signe_d%27agilit%C3%A9',
+    };
+    const icon = 'https://wiki.guildwars2.com/images/thumb/1/1d/Signet_of_Agility.png/48px-Signet_of_Agility.png';
+    setSignetAgilityData({ name: nameByLang[langKey], wikiUrl: wikiByLang[langKey], icon });
+  }, [lang]);
+
+  // Reliquia de Velocidad (ID 100148): icono desde API + wiki por idioma
+  useEffect(() => {
+    const normalized = (lang || 'en').toLowerCase();
+    const apiLang = normalized.startsWith('es') ? 'es' : normalized.startsWith('de') ? 'de' : normalized.startsWith('fr') ? 'fr' : 'en';
+    const wikiByLang: Record<string, string> = {
+      en: 'https://wiki.guildwars2.com/wiki/Relic_of_Speed',
+      es: 'https://wiki.guildwars2.com/wiki/Relic_of_Speed',
+      de: 'https://wiki-de.guildwars2.com/wiki/Relikt_der_Geschwindigkeit',
+      fr: 'https://wiki-fr.guildwars2.com/wiki/Relique_de_vitesse',
+    };
+    const langKey = normalized.startsWith('es') ? 'es' : normalized.startsWith('de') ? 'de' : normalized.startsWith('fr') ? 'fr' : 'en';
+    fetch(`https://api.guildwars2.com/v2/items/100148?lang=${apiLang}`)
+      .then(r => r.ok ? r.json() : null)
+      .then(d => {
+        if (!d) return;
+        setRelicSpeedData({ name: d.name, icon: d.icon, wikiUrl: wikiByLang[langKey] });
+      })
+      .catch(() => {});
+  }, [lang]);
+
+  // Reliquia de Vampirismo (ID 100676): nombre y wiki por idioma (icono opcional)
+  useEffect(() => {
+    const normalized = (lang || 'en').toLowerCase();
+    const langKey = normalized.startsWith('es') ? 'es' : normalized.startsWith('de') ? 'de' : normalized.startsWith('fr') ? 'fr' : 'en';
+    const nameByLang: Record<string, string> = {
+      en: 'Relic of Vampirism',
+      de: 'Relikt des Vampirismus',
+      es: 'Reliquia de vampirismo',
+      fr: 'Relique de vampirisme',
+    };
+    const wikiByLang: Record<string, string> = {
+      en: 'https://wiki.guildwars2.com/wiki/Relic_of_Vampirism',
+      es: 'https://wiki.guildwars2.com/wiki/Relic_of_Vampirism',
+      de: 'https://wiki-de.guildwars2.com/wiki/Relikt_des_Vampirismus',
+      fr: 'https://wiki-fr.guildwars2.com/wiki/Relique_de_vampirisme',
+    };
+    const name = nameByLang[langKey];
+    const wikiUrl = wikiByLang[langKey];
+    setRelicVampirismData({ name, wikiUrl });
+    // Intentar obtener icono desde la API de items por ID (100676)
+    const apiLang = normalized.startsWith('es') ? 'es' : normalized.startsWith('de') ? 'de' : normalized.startsWith('fr') ? 'fr' : 'en';
+    fetch(`https://api.guildwars2.com/v2/items/100676?lang=${apiLang}`)
+      .then(r => r.ok ? r.json() : null)
+      .then(d => {
+        if (d && typeof d.icon === 'string' && d.icon) {
+          setRelicVampirismData(prev => prev ? { ...prev, icon: d.icon } : { name, wikiUrl, icon: d.icon });
+        }
+      })
+      .catch(() => {});
+  }, [lang]);
+
+  // Robar (Steal): nombre, icono fijo y wiki por idioma
+  useEffect(() => {
+    const normalized = (lang || 'en').toLowerCase();
+    const langKey = normalized.startsWith('es') ? 'es' : normalized.startsWith('de') ? 'de' : normalized.startsWith('fr') ? 'fr' : 'en';
+    const nameByLang: Record<string, string> = {
+      en: 'Steal',
+      de: 'Stehlen',
+      es: 'Robar',
+      fr: 'Larcin',
+    };
+    const wikiByLang: Record<string, string> = {
+      en: 'https://wiki.guildwars2.com/wiki/Steal',
+      es: 'https://wiki.guildwars2.com/wiki/Steal',
+      de: 'https://wiki-de.guildwars2.com/wiki/Stehlen',
+      fr: 'https://wiki-fr.guildwars2.com/wiki/Larcin',
+    };
+    const icon = 'https://wiki.guildwars2.com/images/9/92/Steal.png';
+    setStealData({ name: nameByLang[langKey], wikiUrl: wikiByLang[langKey], icon });
+  }, [lang]);
+
+  // Ladrón de resistencia (Endurance Thief): nombre, icono fijo y wiki por idioma
+  useEffect(() => {
+    const normalized = (lang || 'en').toLowerCase();
+    const langKey = normalized.startsWith('es') ? 'es' : normalized.startsWith('de') ? 'de' : normalized.startsWith('fr') ? 'fr' : 'en';
+    const nameByLang: Record<string, string> = {
+      en: 'Endurance Thief',
+      de: 'Ausdauer-Dieb',
+      es: 'Ladrón de aguante',
+      fr: "Voleur d'endurance",
+    };
+    const wikiByLang: Record<string, string> = {
+      en: 'https://wiki.guildwars2.com/wiki/Endurance_Thief',
+      es: 'https://wiki.guildwars2.com/wiki/Endurance_Thief',
+      de: 'https://wiki-de.guildwars2.com/wiki/Ausdauer-Dieb',
+      fr: 'https://wiki-fr.guildwars2.com/wiki/Voleur_d%27endurance',
+    };
+    const icon = 'https://wiki.guildwars2.com/images/4/46/Endurance_Thief.png';
+    setEnduranceThiefData({ name: nameByLang[langKey], wikiUrl: wikiByLang[langKey], icon });
+  }, [lang]);
+
+  // Paso de sombra (Shadowstep): nombre, icono fijo y wiki por idioma
+  useEffect(() => {
+    const normalized = (lang || 'en').toLowerCase();
+    const langKey = normalized.startsWith('es') ? 'es' : normalized.startsWith('de') ? 'de' : normalized.startsWith('fr') ? 'fr' : 'en';
+    const nameByLang: Record<string, string> = {
+      en: 'Shadowstep',
+      de: 'Schattenschritt (Dieb)',
+      es: 'Paso sombrío',
+      fr: "Foulée de l'ombre",
+    };
+    const wikiByLang: Record<string, string> = {
+      en: 'https://wiki.guildwars2.com/wiki/Shadowstep',
+      es: 'https://wiki.guildwars2.com/wiki/Shadowstep',
+      de: 'https://wiki-de.guildwars2.com/wiki/Schattenschritt_(Dieb)',
+      fr: 'https://wiki-fr.guildwars2.com/wiki/Foul%C3%A9e_de_l%27ombre',
+    };
+    const icon = 'https://wiki.guildwars2.com/images/2/25/Shadowstep.png';
+    setShadowstepData({ name: nameByLang[langKey], wikiUrl: wikiByLang[langKey], icon });
+  }, [lang]);
+
+  // Flecha del infiltrado (Infiltrator's Arrow): nombre, icono fijo y wiki por idioma
+  useEffect(() => {
+    const normalized = (lang || 'en').toLowerCase();
+    const langKey = normalized.startsWith('es') ? 'es' : normalized.startsWith('de') ? 'de' : normalized.startsWith('fr') ? 'fr' : 'en';
+    const nameByLang: Record<string, string> = {
+      en: "Infiltrator's Arrow",
+      de: 'Pfeil des Infiltrators',
+      es: 'Flecha del infiltrado',
+      fr: "Flèche de l'infiltré",
+    };
+    const wikiByLang: Record<string, string> = {
+      en: 'https://wiki.guildwars2.com/wiki/Infiltrator%27s_Arrow',
+      es: 'https://wiki.guildwars2.com/wiki/Infiltrator%27s_Arrow',
+      de: 'https://wiki-de.guildwars2.com/wiki/Pfeil_des_Infiltrators',
+      fr: 'https://wiki-fr.guildwars2.com/wiki/Fl%C3%A8che_de_l%27infiltr%C3%A9',
+    };
+    const icon = 'https://wiki.guildwars2.com/images/c/c7/Infiltrator%27s_Arrow.png';
+    setInfiltratorsArrowData({ name: nameByLang[langKey], wikiUrl: wikiByLang[langKey], icon });
+  }, [lang]);
 
   // Función para construir URL de wiki de sellos
   const buildSigilWikiUrl = (itemType: 'vitality' | 'fire' | 'vampirismo' | 'velocidad' | 'tomo-justicia' | 'epilogo-cenizas'): string => {
@@ -113,13 +341,13 @@ const LabyrinthGuidePage = () => {
       }
     } else if (itemType === 'velocidad') {
       if (lang === 'es') {
-        return `https://wiki.guildwars2.com/wiki/Relic_of_Speed`;
+        return `https://wiki.guildwars2.com/wiki/Relic_of_Vampirism`;
       } else if (lang === 'fr') {
-        return `https://wiki-fr.guildwars2.com/wiki/Relique_de_vitesse`;
+        return `https://wiki-fr.guildwars2.com/wiki/Relique_de_vampirisme`;
       } else if (lang === 'de') {
-        return `https://wiki-de.guildwars2.com/wiki/Relikt_der_Geschwindigkeit`;
+        return `https://wiki-de.guildwars2.com/wiki/Relikt_des_Vampirismus`;
       } else {
-        return `https://wiki.guildwars2.com/wiki/Relic_of_Speed`;
+        return `https://wiki.guildwars2.com/wiki/Relic_of_Vampirism`;
       }
     } else if (itemType === 'tomo-justicia') {
       if (lang === 'es') {
@@ -646,7 +874,7 @@ const LabyrinthGuidePage = () => {
                          {t('halloween.labyrinth.builds.commonPoints')}
                        </h3>
                        
-                       <div className="space-y-4">
+                      <div className="space-y-4">
                          <div className="bg-red-800/20 border border-red-400/30 rounded-lg p-3">
                            <h4 className="text-red-200 font-semibold mb-2 flex items-center">
                              <span className="text-lg mr-2">🚫</span>
@@ -867,36 +1095,28 @@ const LabyrinthGuidePage = () => {
                              </span>
                            ) : (
                              <span className="text-orange-300 font-semibold">supervelocidad</span>
-                           )} y {vampirismoData ? (
-                             <a 
-                               href={vampirismoData.wikiUrl}
-                               target="_blank" 
-                               rel="noopener noreferrer"
-                               className="inline-flex items-center gap-1 hover:opacity-80 transition-opacity"
-                             >
-                               <Image
-                                 src={vampirismoData.icon}
-                                 alt={vampirismoData.name}
-                                 width={20}
-                                 height={20}
-                                 className="rounded"
-                                 onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = 'none'; }}
-                               />
-                               <span className="text-orange-300 font-semibold">{vampirismoData.name}</span>
-                             </a>
-                           ) : (
-                             <a 
-                               href={lang === 'es' ? 'https://wiki.guildwars2.com/wiki/Superior_Rune_of_Vampirism' : 
-                                   lang === 'fr' ? 'https://wiki-fr.guildwars2.com/wiki/Rune_sup%C3%A9rieure_de_vampirisme' :
-                                   lang === 'de' ? 'https://wiki-de.guildwars2.com/wiki/%C3%9Cberlegene_Rune_des_Vampirismus' :
-                                   'https://wiki.guildwars2.com/wiki/Superior_Rune_of_Vampirism'}
-                               target="_blank" 
-                               rel="noopener noreferrer"
-                               className="text-orange-300 font-semibold hover:text-orange-200 transition-colors underline"
-                             >
-                               Runa de Vampirismo
-                             </a>
-                           )} {t('halloween.labyrinth.builds.scrapper.equipment.ifMoreSurvival')}. {t('halloween.labyrinth.builds.scrapper.weapons')} {vitalityData ? (
+                          )} y {relicSpeedData ? (
+                            <a
+                              href={relicSpeedData.wikiUrl}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="inline-flex items-center gap-1 hover:opacity-80 transition-opacity"
+                            >
+                              {relicSpeedData.icon && (
+                                <Image
+                                  src={relicSpeedData.icon}
+                                  alt={relicSpeedData.name}
+                                  width={20}
+                                  height={20}
+                                  className="rounded"
+                                  onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = 'none'; }}
+                                />
+                              )}
+                              <span className="text-orange-300 font-semibold">{relicSpeedData.name}</span>
+                            </a>
+                          ) : (
+                            <span className="text-orange-300 font-semibold">Relic of Speed</span>
+                          )} {t('halloween.labyrinth.builds.scrapper.equipment.ifMoreSurvival')}. {t('halloween.labyrinth.builds.scrapper.weapons')} {vitalityData ? (
                              <a 
                                href={vitalityData.wikiUrl}
                                target="_blank" 
@@ -1034,8 +1254,9 @@ const LabyrinthGuidePage = () => {
                          
                          {/* Instrucciones de uso */}
                          <div className="mt-4 space-y-3">
-                           <p className="text-gray-200 text-sm leading-relaxed">
-                             Por último os comentaré un poco la forma de usarlo. Principalmente haremos daño con el 1 de lanzallamas, simplemente dejadlo pulsado y girad la cámara para darle a todo. Mientras tanto iremos usando los giros para hacer más daño en área pero siempre usándolos justo antes de que se acabe la {skillData ? (
+                          <p className="text-gray-200 text-sm leading-relaxed">
+                            {t('halloween.labyrinth.scrapper.usage.part1')}{' '}
+                            {skillData ? (
                                <span className="inline-flex items-center gap-1">
                                  <Image
                                    src={skillData.icon}
@@ -1048,11 +1269,13 @@ const LabyrinthGuidePage = () => {
                                  <span className="text-orange-300 font-semibold">{skillData.name}</span>
                                </span>
                              ) : (
-                               <span className="text-orange-300 font-semibold">supervelocidad</span>
-                             )} para ganar el máximo de esta.
+                              <span className="text-orange-300 font-semibold">{t('halloween.labyrinth.scrapper.usage.superspeedFallback')}</span>
+                            )}{' '}
+                            {t('halloween.labyrinth.scrapper.usage.part2')}
                            </p>
-                           <p className="text-gray-200 text-sm leading-relaxed">
-                             Como prioridad usaremos {baluarteData ? (
+                          <p className="text-gray-200 text-sm leading-relaxed">
+                            {t('halloween.labyrinth.scrapper.usage.priority')}{' '}
+                            {baluarteData ? (
                                <span className="inline-flex items-center gap-1">
                                  <Image
                                    src={baluarteData.icon}
@@ -1065,7 +1288,7 @@ const LabyrinthGuidePage = () => {
                                  <span className="text-orange-300 font-semibold">{baluarteData.name}</span>
                                </span>
                              ) : (
-                               <span className="text-orange-300 font-semibold">Giro baluarte</span>
+                              <span className="text-orange-300 font-semibold">{'(sin datos)'}</span>
                              )}, {funcionalData ? (
                                <span className="inline-flex items-center gap-1">
                                  <Image
@@ -1079,7 +1302,7 @@ const LabyrinthGuidePage = () => {
                                  <span className="text-orange-300 font-semibold">{funcionalData.name}</span>
                                </span>
                              ) : (
-                               <span className="text-orange-300 font-semibold">Giro funcional</span>
+                              <span className="text-orange-300 font-semibold">{'(sin datos)'}</span>
                              )}, {medicoData ? (
                                <span className="inline-flex items-center gap-1">
                                  <Image
@@ -1093,8 +1316,8 @@ const LabyrinthGuidePage = () => {
                                  <span className="text-orange-300 font-semibold">{medicoData.name}</span>
                                </span>
                              ) : (
-                               <span className="text-orange-300 font-semibold">Giro medico</span>
-                             )} y {furtivoData ? (
+                              <span className="text-orange-300 font-semibold">{'(sin datos)'}</span>
+                             )} {t('common.and')} {furtivoData ? (
                                <span className="inline-flex items-center gap-1">
                                  <Image
                                    src={furtivoData.icon}
@@ -1107,7 +1330,7 @@ const LabyrinthGuidePage = () => {
                                  <span className="text-orange-300 font-semibold">{furtivoData.name}</span>
                                </span>
                              ) : (
-                               <span className="text-orange-300 font-semibold">Giro furtivo</span>
+                              <span className="text-orange-300 font-semibold">{'(sin datos)'}</span>
                              )}.
                            </p>
                          </div>
@@ -1125,12 +1348,12 @@ const LabyrinthGuidePage = () => {
                              className="mr-2 rounded"
                              onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = 'none'; }}
                            />
-{t('halloween.labyrinth.builds.firebrand')}
+                          {t('halloween.labyrinth.builds.firebrand')}
                          </h3>
                        
                        <div className="prose prose-invert max-w-none">
                          <p className="text-gray-200 mb-4 text-sm leading-relaxed">
-{t('halloween.labyrinth.builds.firebrand.description')}
+                        {t('halloween.labyrinth.builds.firebrand.description')}
                          </p>
                          <p className="text-gray-200 mb-4 text-sm leading-relaxed">
                            En el equipamiento lo llevaríamos completamente Berserker con {vampirismoData ? (
@@ -1181,7 +1404,7 @@ const LabyrinthGuidePage = () => {
                              </a>
                            ) : (
                              <span className="text-orange-300 font-semibold">Runa 100148</span>
-                           )}. En las armas nos pondríamos mandoble para hacer unos daños insanos a los jefes y para ayudarnos en nuestra movilidad. En el segundo set podemos llevar Cetro-Foco para hacer daño a media distancia y áreas para las puertas. En cuanto a los sellos se llevarían los estándar para este tipo de farmeos, es decir, {vitalityData && vitalityData.icon ? (
+                           )}. En las armas nos pondríamos lanza para hacer unos daños insanos a los jefes y para ayudarnos en nuestra movilidad. En el segundo set podemos llevar Cetro-Foco para hacer daño a media distancia y áreas para las puertas. En cuanto a los sellos se llevarían los estándar para este tipo de farmeos, es decir, {vitalityData && vitalityData.icon ? (
                              <a
                                href={vitalityData.wikiUrl}
                                target="_blank"
@@ -1462,7 +1685,7 @@ const LabyrinthGuidePage = () => {
                              >
                                Vampirismo
                              </a>
-                           )} si os veis mal de supervivencia. Llevaremos de arma el mandoble con Sellos de {vitalityData && vitalityData.icon ? (
+                           )} si os veis mal de supervivencia. Llevaremos de arma el mandoble con {vitalityData && vitalityData.icon ? (
                              <a
                                href={vitalityData.wikiUrl}
                                target="_blank"
@@ -1703,12 +1926,12 @@ const LabyrinthGuidePage = () => {
                            className="mr-2 rounded"
                            onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = 'none'; }}
                          />
-{t('halloween.labyrinth.builds.daredevilPower')}
+                        {t('halloween.labyrinth.builds.daredevilPower')}
                        </h3>
                        
                        <div className="space-y-4">
                          <p className="text-gray-200 text-sm leading-relaxed">
-{t('halloween.labyrinth.builds.daredevilPower.description')}
+                        {t('halloween.labyrinth.builds.daredevilPower.description')}
                          </p>
                          
                          <p className="text-gray-200 text-sm leading-relaxed">
@@ -1731,33 +1954,35 @@ const LabyrinthGuidePage = () => {
                              </a>
                            ) : (
                              <span className="text-orange-300 font-semibold">Runa 24836</span>
-                           )} y {runaVelocidadData && runaVelocidadData.icon ? (
-                             <a
-                               href={runaVelocidadData.wikiUrl}
-                               target="_blank"
-                               rel="noopener noreferrer"
-                               className="inline-flex items-center gap-1 hover:opacity-80 transition-opacity"
-                             >
-                               <Image
-                                 src={runaVelocidadData.icon}
-                                 alt={runaVelocidadData.name}
-                                 width={20}
-                                 height={20}
-                                 className="rounded"
-                                 onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = 'none'; }}
-                               />
-                               <span className="text-orange-300 font-semibold">{runaVelocidadData.name}</span>
-                             </a>
-                           ) : (
-                             <a
-                               href={buildSigilWikiUrl('velocidad')}
-                               target="_blank"
-                               rel="noopener noreferrer"
-                               className="text-orange-300 font-semibold hover:text-orange-200 transition-colors underline"
-                             >
-                               Runa de Velocidad
-                             </a>
-                           )}. En sus armas llevaríamos el arco corto con Sello de {vitalityData && vitalityData.icon ? (
+                          )} y {relicVampirismData ? (
+                            <a
+                              href={relicVampirismData.wikiUrl}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="inline-flex items-center gap-1 hover:opacity-80 transition-opacity"
+                            >
+                              {relicVampirismData.icon && (
+                                <Image
+                                  src={relicVampirismData.icon}
+                                  alt={relicVampirismData.name}
+                                  width={20}
+                                  height={20}
+                                  className="rounded"
+                                  onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = 'none'; }}
+                                />
+                              )}
+                              <span className="text-orange-300 font-semibold">{relicVampirismData.name}</span>
+                            </a>
+                          ) : (
+                            <a
+                              href={buildSigilWikiUrl('velocidad')}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-orange-300 font-semibold hover:text-orange-200 transition-colors underline"
+                            >
+                              Relic of Vampirism
+                            </a>
+                          )}. En sus armas llevaríamos el arco corto con {vitalityData && vitalityData.icon ? (
                              <a
                                href={vitalityData.wikiUrl}
                                target="_blank"
@@ -1815,7 +2040,7 @@ const LabyrinthGuidePage = () => {
                              >
                                Fuego
                              </a>
-                           )} y en el otro set un báculo o dos pistolas con sellos de {fuerzaData && fuerzaData.icon ? (
+                           )} y en el otro set un báculo o dos pistolas con {fuerzaData && fuerzaData.icon ? (
                              <a
                                href={fuerzaData.wikiUrl}
                                target="_blank"
@@ -1856,9 +2081,225 @@ const LabyrinthGuidePage = () => {
                            )} para hacer daño exclusivamente a jefes.
                          </p>
                          
-                         <p className="text-gray-200 text-sm leading-relaxed">
-                           En sus habilidades llevamos 3 teletransportes que nos ayudarán para nuestra movilidad y romper stuns. Estos son el 5 de arco y 2 habilidades de apoyo. Además tendríamos 2 fuentes de recuperación de esquivas y una élite que hace mucho daño en áreas.
-                         </p>
+                        <p className="text-gray-200 text-sm leading-relaxed">
+                          Esquiva para marcar a los enemigos con {trait1833Data ? (
+                            <a
+                              href={trait1833Data.wikiUrl}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="inline-flex items-center gap-1 hover:opacity-80 transition-opacity"
+                            >
+                              {trait1833Data.icon && (
+                                <Image
+                                  src={trait1833Data.icon}
+                                  alt={trait1833Data.name}
+                                  width={20}
+                                  height={20}
+                                  className="rounded"
+                                  onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = 'none'; }}
+                                />
+                              )}
+                              <span className="text-orange-300 font-semibold">{trait1833Data.name || trait1833Name}</span>
+                            </a>
+                          ) : (
+                            <span className="text-orange-300 font-semibold">{trait1833Name}</span>
+                          )} y ataque automático con tu arco corto. Maximizando su resistencia te mantendrá Esquivando para siempre. <br/>Tienes algunas fuentes:<br/>
+                          {vitalityData && vitalityData.icon ? (
+                            <a
+                              href={vitalityData.wikiUrl}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="inline-flex items-center gap-1 hover:opacity-80 transition-opacity"
+                            >
+                              <Image
+                                src={vitalityData.icon}
+                                alt={vitalityData.name}
+                                width={20}
+                                height={20}
+                                className="rounded"
+                                onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = 'none'; }}
+                              />
+                              <span className="text-orange-300 font-semibold">{vitalityData.name}</span>
+                            </a>
+                          ) : (
+                            <a
+                              href={buildSigilWikiUrl('vitality')}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="inline-flex items-center gap-1 hover:opacity-80 transition-opacity"
+                            >
+                              <span className="text-orange-300 font-semibold">Sello superior de Stamina</span>
+                            </a>
+                          )}<br />
+                          {channeledVigorData ? (
+                            <a
+                              href={channeledVigorData.wikiUrl}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="inline-flex items-center gap-1 hover:opacity-80 transition-opacity"
+                            >
+                              {channeledVigorData.icon && (
+                                <Image
+                                  src={channeledVigorData.icon}
+                                  alt={channeledVigorData.name}
+                                  width={20}
+                                  height={20}
+                                  className="rounded"
+                                  onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = 'none'; }}
+                                />
+                              )}
+                              <span className="text-orange-300 font-semibold">{channeledVigorData.name}</span>
+                            </a>
+                          ) : (
+                            <span className="text-orange-300 font-semibold">Vigor canalizado</span>
+                          )} y <a
+                            href={brawlersTenacityData?.wikiUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center gap-1 hover:opacity-80 transition-opacity"
+                          >
+                            {brawlersTenacityData?.icon && (
+                              <Image
+                                src={brawlersTenacityData.icon}
+                                alt={brawlersTenacityData.name}
+                                width={20}
+                                height={20}
+                                className="rounded"
+                                onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = 'none'; }}
+                              />
+                            )}
+                            <span className="text-orange-300 font-semibold">{brawlersTenacityData?.name || 'La tenacidad del luchador'}</span>
+                          </a><br />
+                          {signetAgilityData ? (
+                            <a
+                              href={signetAgilityData.wikiUrl}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="inline-flex items-center gap-1 hover:opacity-80 transition-opacity"
+                            >
+                              {signetAgilityData.icon && (
+                                <Image
+                                  src={signetAgilityData.icon}
+                                  alt={signetAgilityData.name}
+                                  width={20}
+                                  height={20}
+                                  className="rounded"
+                                  onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = 'none'; }}
+                                />
+                              )}
+                              <span className="text-orange-300 font-semibold">{signetAgilityData.name}</span>
+                            </a>
+                          ) : (
+                            <span className="text-orange-300 font-semibold">Sello de agilidad</span>
+                          )}<br />
+                          {stealData ? (
+                            <a
+                              href={stealData.wikiUrl}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="inline-flex items-center gap-1 hover:opacity-80 transition-opacity"
+                            >
+                              {stealData.icon && (
+                                <Image
+                                  src={stealData.icon}
+                                  alt={stealData.name}
+                                  width={20}
+                                  height={20}
+                                  className="rounded"
+                                  onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = 'none'; }}
+                                />
+                              )}
+                              <span className="text-orange-300 font-semibold">{stealData.name}</span>
+                            </a>
+                          ) : (
+                            <span className="text-orange-300 font-semibold">Robar</span>
+                          )} debido a {enduranceThiefData ? (
+                            <a
+                              href={enduranceThiefData.wikiUrl}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="inline-flex items-center gap-1 hover:opacity-80 transition-opacity"
+                            >
+                              {enduranceThiefData.icon && (
+                                <Image
+                                  src={enduranceThiefData.icon}
+                                  alt={enduranceThiefData.name}
+                                  width={20}
+                                  height={20}
+                                  className="rounded"
+                                  onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = 'none'; }}
+                                />
+                              )}
+                              <span className="text-orange-300 font-semibold">{enduranceThiefData.name}</span>
+                            </a>
+                          ) : (
+                            <span className="text-orange-300 font-semibold">Ladrón de resistencia</span>
+                          )} <br />
+                          {shadowstepData ? (
+                            <a
+                              href={shadowstepData.wikiUrl}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="inline-flex items-center gap-1 hover:opacity-80 transition-opacity"
+                            >
+                              {shadowstepData.icon && (
+                                <Image
+                                  src={shadowstepData.icon}
+                                  alt={shadowstepData.name}
+                                  width={20}
+                                  height={20}
+                                  className="rounded"
+                                  onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = 'none'; }}
+                                />
+                              )}
+                              <span className="text-orange-300 font-semibold">{shadowstepData.name}</span>
+                            </a>
+                          ) : (
+                            <span className="text-orange-300 font-semibold">Paso de sombra</span>
+                          )}, {infiltratorsArrowData ? (
+                            <a
+                              href={infiltratorsArrowData.wikiUrl}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="inline-flex items-center gap-1 hover:opacity-80 transition-opacity"
+                            >
+                              {infiltratorsArrowData.icon && (
+                                <Image
+                                  src={infiltratorsArrowData.icon}
+                                  alt={infiltratorsArrowData.name}
+                                  width={20}
+                                  height={20}
+                                  className="rounded"
+                                  onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = 'none'; }}
+                                />
+                              )}
+                              <span className="text-orange-300 font-semibold">{infiltratorsArrowData.name}</span>
+                            </a>
+                          ) : (
+                            <span className="text-orange-300 font-semibold">Flecha del infiltrado</span>
+                          )} y {stealData ? (
+                            <a
+                              href={stealData.wikiUrl}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="inline-flex items-center gap-1 hover:opacity-80 transition-opacity"
+                            >
+                              {stealData.icon && (
+                                <Image
+                                  src={stealData.icon}
+                                  alt={stealData.name}
+                                  width={20}
+                                  height={20}
+                                  className="rounded"
+                                  onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = 'none'; }}
+                                />
+                              )}
+                              <span className="text-orange-300 font-semibold">{stealData.name}</span>
+                            </a>
+                          ) : (
+                            <span className="text-orange-300 font-semibold">Robar</span>
+                          )} Para mantenerse por delante de los zerg.
+                        </p>
                          
                          <p className="text-gray-200 text-sm leading-relaxed">
                            El arco tendría un básico excepcional para este farm y podríamos usar el 4 para hacer daños en área en lugares como las puertas.
@@ -1922,246 +2363,72 @@ const LabyrinthGuidePage = () => {
                      <div id="temerario-condicion" className="bg-gray-800/60 border border-orange-500/30 rounded-lg p-6">
                        <h3 className="text-white font-semibold mb-4 flex items-center">
                          <Image
-                           src="https://wiki-es.guildwars2.com/images/e/e6/Temerario_icono_%28highres%29.png"
+                           src="https://wiki-es.guildwars2.com/images/b/b1/Heraldo_icono_%28highres%29.png"
                            alt="Temerario"
                            width={64}
                            height={64}
                            className="mr-2 rounded"
                            onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = 'none'; }}
                          />
-{t('halloween.labyrinth.builds.daredevilCondi')}
+                          {t('halloween.labyrinth.builds.daredevilCondi')}
                        </h3>
                        
-                       <div className="space-y-4">
+                       <div className="space-y-2">
                          <p className="text-gray-200 text-sm leading-relaxed">
-                           Siempre pensamos que el <a 
-                             href="#temerario-poder" 
-                             onClick={(e) => {
-                               e.preventDefault();
-                               const element = document.getElementById('temerario-poder');
-                               if (element) {
-                                 const elementPosition = element.offsetTop;
-                                 setTimeout(() => {
-                                   window.scrollTo({ top: elementPosition - 100, behavior: 'smooth' });
-                                 }, 100);
-                               }
-                             }}
-                             className="text-orange-300 font-semibold hover:text-orange-200 transition-colors underline cursor-pointer"
-                           >
-                             Ladrón Poder
-                           </a> era la build perfecta para este farmeo y realmente así es, pero tras ver esta variante podemos decir que el Ladrón Poder no estaría solo y le damos un TOP 1 ya que, a diferencia del Ladrón Poder que nos sirve para todos los farmeos de tageo, esta está diseñada únicamente para este farmeo.
+                           Ojo, importante, hace falta un mínimo de 10 ladrones, si haces como fotos que han salido de 20 heraldos soporte y 4 ladrones, no vas a lootear ni 5 oros por hora.
                          </p>
-                         
                          <p className="text-gray-200 text-sm leading-relaxed">
-                           Su equipamiento sería víbora o cualquier equipamiento con daño de condición y potencia que nos podamos equipar. {runa100148Data && runa100148Data.icon ? (
-                             <a
-                               href={runa100148Data.wikiUrl}
-                               target="_blank"
-                               rel="noopener noreferrer"
-                               className="inline-flex items-center gap-1 hover:opacity-80 transition-opacity"
-                             >
-                               <Image
-                                 src={runa100148Data.icon}
-                                 alt={runa100148Data.name}
-                                 width={20}
-                                 height={20}
-                                 className="rounded"
-                                 onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = 'none'; }}
-                               />
-                               <span className="text-orange-300 font-semibold">{runa100148Data.name}</span>
-                             </a>
-                           ) : (
-                             <a
-                               href={lang === 'es' ? 'https://wiki.guildwars2.com/wiki/Superior_Rune_of_Speed' :
-                                   lang === 'fr' ? 'https://wiki-fr.guildwars2.com/wiki/Rune_sup%C3%A9rieure_de_vitesse' :
-                                   lang === 'de' ? 'https://wiki-de.guildwars2.com/wiki/%C3%9Cberlegene_Rune_der_Geschwindigkeit' :
-                                   'https://wiki.guildwars2.com/wiki/Superior_Rune_of_Speed'}
-                               target="_blank"
-                               rel="noopener noreferrer"
-                               className="text-orange-300 font-semibold hover:text-orange-200 transition-colors underline"
-                             >
-                               Velocidad
-                             </a>
-                           )} y {vampirismoData && vampirismoData.icon ? (
-                             <a
-                               href={vampirismoData.wikiUrl}
-                               target="_blank"
-                               rel="noopener noreferrer"
-                               className="inline-flex items-center gap-1 hover:opacity-80 transition-opacity"
-                             >
-                               <Image
-                                 src={vampirismoData.icon}
-                                 alt={vampirismoData.name}
-                                 width={20}
-                                 height={20}
-                                 className="rounded"
-                                 onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = 'none'; }}
-                               />
-                               <span className="text-orange-300 font-semibold">{vampirismoData.name}</span>
-                             </a>
-                           ) : (
-                             <a
-                               href={lang === 'es' ? 'https://wiki.guildwars2.com/wiki/Superior_Rune_of_Vampirism' :
-                                   lang === 'fr' ? 'https://wiki-fr.guildwars2.com/wiki/Rune_sup%C3%A9rieure_de_vampirisme' :
-                                   lang === 'de' ? 'https://wiki-de.guildwars2.com/wiki/%C3%9Cberlegene_Rune_des_Vampirismus' :
-                                   'https://wiki.guildwars2.com/wiki/Superior_Rune_of_Vampirism'}
-                               target="_blank"
-                               rel="noopener noreferrer"
-                               className="text-orange-300 font-semibold hover:text-orange-200 transition-colors underline"
-                             >
-                               Vampirismo
-                             </a>
-                           )}, arco corto con Sellos de {vitalityData && vitalityData.icon ? (
-                             <a
-                               href={vitalityData.wikiUrl}
-                               target="_blank"
-                               rel="noopener noreferrer"
-                               className="inline-flex items-center gap-1 hover:opacity-80 transition-opacity"
-                             >
-                               <Image
-                                 src={vitalityData.icon}
-                                 alt={vitalityData.name}
-                                 width={20}
-                                 height={20}
-                                 className="rounded"
-                                 onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = 'none'; }}
-                               />
-                               <span className="text-orange-300 font-semibold">{vitalityData.name}</span>
-                             </a>
-                           ) : (
-                             <a
-                               href={lang === 'es' ? 'https://wiki.guildwars2.com/wiki/Superior_Sigil_of_Stamina' :
-                                   lang === 'fr' ? 'https://wiki-fr.guildwars2.com/wiki/Cachet_d%27endurance_sup%C3%A9rieur' :
-                                   lang === 'de' ? 'https://wiki-de.guildwars2.com/wiki/%C3%9Cberlegenes_Sigill_der_Ausdauer' :
-                                   'https://wiki.guildwars2.com/wiki/Superior_Sigil_of_Stamina'}
-                               target="_blank"
-                               rel="noopener noreferrer"
-                               className="text-orange-300 font-semibold hover:text-orange-200 transition-colors underline"
-                             >
-                               Vitalidad
-                             </a>
-                           )} y {fireData && fireData.icon ? (
-                             <a
-                               href={fireData.wikiUrl}
-                               target="_blank"
-                               rel="noopener noreferrer"
-                               className="inline-flex items-center gap-1 hover:opacity-80 transition-opacity"
-                             >
-                               <Image
-                                 src={fireData.icon}
-                                 alt={fireData.name}
-                                 width={20}
-                                 height={20}
-                                 className="rounded"
-                                 onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = 'none'; }}
-                               />
-                               <span className="text-orange-300 font-semibold">{fireData.name}</span>
-                             </a>
-                           ) : (
-                             <a
-                               href={lang === 'es' ? 'https://wiki.guildwars2.com/wiki/Superior_Sigil_of_Fire' :
-                                   lang === 'fr' ? 'https://wiki-fr.guildwars2.com/wiki/Cachet_de_feu_sup%C3%A9rieur' :
-                                   lang === 'de' ? 'https://wiki-de.guildwars2.com/wiki/%C3%9Cberlegenes_Sigill_des_Feuers' :
-                                   'https://wiki.guildwars2.com/wiki/Superior_Sigil_of_Fire'}
-                               target="_blank"
-                               rel="noopener noreferrer"
-                               className="text-orange-300 font-semibold hover:text-orange-200 transition-colors underline"
-                             >
-                               Fuego
-                             </a>
-                           )} además de un segundo set con doble pistola con {fuerzaData && fuerzaData.icon ? (
-                             <a
-                               href={fuerzaData.wikiUrl}
-                               target="_blank"
-                               rel="noopener noreferrer"
-                               className="inline-flex items-center gap-1 hover:opacity-80 transition-opacity"
-                             >
-                               <Image
-                                 src={fuerzaData.icon}
-                                 alt={fuerzaData.name}
-                                 width={20}
-                                 height={20}
-                                 className="rounded"
-                                 onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = 'none'; }}
-                               />
-                               <span className="text-orange-300 font-semibold">{fuerzaData.name}</span>
-                             </a>
-                           ) : (
-                             <span className="text-orange-300 font-semibold">fuerza</span>
-                           )} y {precisionData && precisionData.icon ? (
-                             <a
-                               href={precisionData.wikiUrl}
-                               target="_blank"
-                               rel="noopener noreferrer"
-                               className="inline-flex items-center gap-1 hover:opacity-80 transition-opacity"
-                             >
-                               <Image
-                                 src={precisionData.icon}
-                                 alt={precisionData.name}
-                                 width={20}
-                                 height={20}
-                                 className="rounded"
-                                 onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = 'none'; }}
-                               />
-                               <span className="text-orange-300 font-semibold">{precisionData.name}</span>
-                             </a>
-                           ) : (
-                             <span className="text-orange-300 font-semibold">precisión</span>
-                           )}.
+                           En armas llevaremos maza espada y mandoble, básicamente nos interesa tener movilidad, saltos, dashes, nada de daño ya que NO atacaremos a los enemigos. Esto irá con sellos de energía y purificación.
                          </p>
-                         
                          <p className="text-gray-200 text-sm leading-relaxed">
-                           Nuestras habilidades son muy similares a las del Ladrón Poder pero nos quitaríamos un sello que nos daría movilidad a cambio de un veneno que usaríamos en autocast para que nuestros aliados nos den loot cuando ellos matan.
+                           En la armadura llevaremos cualquier estadística, nos será indiferente. De runa llevará de estrellas ya que nuestro mayor problema son las cadenas y necesitamos tener la mayor eficiencia para seguir a nuestros ladrones.
                          </p>
-                         
-                         <div className="space-y-4">
-                           <div>
-                             <div className="flex items-center justify-between mb-2">
-                               <h4 className="text-white font-semibold flex items-center">
-                                 <span className="text-lg mr-2">⚙️</span>
-                                 Código de Traits
-                               </h4>
-                               <button
-                                 onClick={() => {
-                                   navigator.clipboard.writeText('[&DQUcHzY+BxmUEgAAVwEAAFgAAAAvAQAAnwEAAAAAAAAAAAAAAAAAAAAAAAA=]');
-                                   setShowCopyModal(true);
-                                   // Auto-cerrar el modal después de 2 segundos
-                                   setTimeout(() => setShowCopyModal(false), 2000);
-                                 }}
-                                 className="flex items-center gap-1 px-3 py-1 bg-orange-600 hover:bg-orange-700 text-white text-xs rounded transition-colors duration-200"
-                               >
-                                 <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
-                                 </svg>
-                                 Copiar
-                               </button>
-                             </div>
-                             <div className="bg-gray-900/50 border border-orange-500/30 rounded-lg p-3">
-                               <code className="text-orange-300 text-sm font-mono break-all">
-                                 [&DQUcHzY+BxmUEgAAVwEAAFgAAAAvAQAAnwEAAAAAAAAAAAAAAAAAAAAAAAA=]
-                               </code>
-                             </div>
-                           </div>
-                           
-                           <div>
-                             <Image
-                               src="/thumbnails/skills-y-traits-ladron-condi-1-1024x576.webp"
-                               alt="Skills y Traits - Temerario Condición"
-                               width={1024}
-                               height={576}
-                               className="w-full h-auto rounded-lg border border-orange-500/30"
-                               onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = 'none'; }}
-                             />
-                             <p className="text-gray-200 text-sm leading-relaxed mt-4">
-                               Los traits nos otorgarán aumento de daño, celeridad y hará que nuestras esquivas hagan daño de condición en área.
-                             </p>
-                             <p className="text-gray-200 text-sm leading-relaxed">
-                               El uso sería similar al del Ladrón Poder cuando estemos en los enemigos normales o los jefes, así que para no repetirme recordad que está un poco más arriba. La diferencia es que cuando llegamos a las puertas podemos usar el 4 de arco corto para crear un área de condiciones y empezar a usar la esquiva sin parar. Con el sello de vitalidad, cada vez que un enemigo muera, recuperaremos esquivas y podremos spamear.
-                             </p>
-                             <p className="text-gray-200 text-sm leading-relaxed">
-                               Esto último le da el suficiente daño para que todo enemigo sea atacado por nosotros y una supervivencia extrema ya que estamos todo el rato esquivando.
-                             </p>
-                           </div>
+                         <p className="text-gray-200 text-sm leading-relaxed">
+                           Como reliquia llevaremos la de velocidad para que nuestra celeridad nos de un 66% de velocidad de movimiento y, por último, como leyenda usaremos Glint, la dragona.
+                         </p>
+                         <p className="text-gray-200 text-sm leading-relaxed">
+                           En cuanto a traits llevaremos los de debajo, nos interesa tener limpieza de condiciones, eliminación de condiciones de movimiento, regeneración de aguante y otorgar bendiciones a los aliados.
+                         </p>
+                        <div className="space-y-2">
+                          <div className="flex items-center justify-between">
+                            <h4 className="text-white font-semibold flex items-center">
+                              <span className="text-lg mr-2">⚙️</span>
+                              Código de Traits
+                            </h4>
+                            <button
+                              onClick={() => {
+                                navigator.clipboard.writeText('[&DQkDNg8qNBbcEQAABhIAACsSAADUEQAAyhEAAAECAADUESsSBhIAAAAAAAA=]');
+                                setShowCopyModal(true);
+                                setTimeout(() => setShowCopyModal(false), 2000);
+                              }}
+                              className="flex items-center gap-1 px-3 py-1 bg-orange-600 hover:bg-orange-700 text-white text-xs rounded transition-colors duration-200"
+                            >
+                              <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                              </svg>
+                              Copiar
+                            </button>
+                          </div>
+                          <div className="bg-gray-900/50 border border-orange-500/30 rounded-lg p-3">
+                            <code className="text-orange-300 text-sm font-mono break-all">[&DQkDNg8qNBbcEQAABhIAACsSAADUEQAAyhEAAAECAADUESsSBhIAAAAAAAA=]</code>
+                          </div>
+                          
+                          <div>
+                           <Image
+                             src="/thumbnails/skills-y-traits-ladron-condi-1-1024x576.webp"
+                             alt="Skills y Traits - Temerario Condición"
+                             width={1024}
+                             height={576}
+                             className="w-full h-auto rounded-lg border border-orange-500/30"
+                             onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = 'none'; }}
+                           />
+                          </div>
+                          <p className="text-gray-200 text-sm leading-relaxed">
+                            Su forma de uso se centra en tener la faceta de los elementos y la faceta del caos permanentemente activas para dar un bufo de celeridad y otro de protección y así no dar bufos ofensivos. Una vez tenemos esto solo correremos, nos limpiaremos condiciones si nos atan y usaremos las esquivas siempre que vayamos cerca de momias ya que nos pueden parar. Además de esto usaremos los teletransportes en enemigos lejanos para ir al ritmo de los ladrones. Lo más importante NO ATACAR A NADA ya que nos llevamos loot por bufar a nuestros compañeros
+                          </p>
+                          <p className="text-gray-200 text-sm leading-relaxed">
+                            Ahora, a leechear y disfrutar de mucho oro por dar vueltas sin hacer nada.
+                          </p>
                          </div>
                        </div>
                      </div>

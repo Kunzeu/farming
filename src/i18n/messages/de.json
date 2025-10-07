@@ -1526,7 +1526,7 @@
   "halloween.labyrinth.builds.firebrand": "Aufwiegler Gerechtigkeit",
   "halloween.labyrinth.builds.mirage": "Illusionist Spammer",
   "halloween.labyrinth.builds.daredevilPower": "Draufgänger Macht",
-  "halloween.labyrinth.builds.daredevilCondi": "Draufgänger Zustand",
+  "halloween.labyrinth.builds.daredevilCondi": " Segen des Herolds",
   "halloween.labyrinth.content.intro": "In diesem Leitfaden werde ich euch die besten 5 Builds zum Farmen des Halloween-Labyrinths geben. Es funktioniert auch für allgemeine Tagging-Farms. Wenn die Klasse, die ihr verwenden wollt, hier nicht ist, macht euch keine Sorgen, denn Tage nach der Veröffentlichung dieses Artikels werdet ihr einen anderen mit einer anderen Build für jede Klasse haben. Prüft, ob ich ihn bereits hier hochgeladen habe.",
   "halloween.labyrinth.content.commonPoints": "Als gemeinsame Punkte wollte ich nur 3 Punkte sagen. Der erste von allen ist, dass wir niemals mit Accessoires, Ringen und Rucksäcken spielen, damit wir nicht zu viel Schaden machen und den Rest der Spieler verärgern, weil wir Feinde zu schnell töten. Es ist egal, ob wir ascended oder exotisch gehen. Als zweiten Punkt werden die Nahrung und Verbesserungen zur Steigerung unseres Farmings in einem anderen Post über das Farmen des Labyrinths sein. Also bleibt dran bei den Posts im Abschnitt wie man Gold macht. Der dritte ist, dass alle diese Builds ihre Stats für eine andere ähnliche mit Vitalität ändern können, um bequemer zu gehen. Im Fall von Berserker-Builds könnten wir Angreifer oder Drache gehen.",
   "halloween.labyrinth.content.routes": "Der Labyrinth-Farming-Prozess ist wie jede andere Tagging-Farm, das heißt, eine Farm, die darin besteht, alle anzugreifen und den Rest der Gruppe auch angreifen zu lassen, damit wir alle die Beute von jedem Feind bekommen.",
@@ -1959,6 +1959,12 @@
   "bank.slot": "Slot",
   "bank.empty": "leer",
 
-  "common.later": "Später"
+  "common.later": "Später",
+  "common.and": "und",
+  "halloween.labyrinth.scrapper.usage.part1": "Zum Schluss noch kurz zur Nutzung. Wir verursachen hauptsächlich Schaden mit Flammenwerfer 1; gedrückt halten und die Kamera drehen, um alle zu treffen. Währenddessen verwenden wir die Drehungen für mehr Flächenschaden, aber immer kurz bevor die",
+  "halloween.labyrinth.scrapper.usage.superspeedFallback": "Supergeschwindigkeit",
+  "halloween.labyrinth.scrapper.usage.part2": "endet, um das Maximum herauszuholen.",
+  "halloween.labyrinth.scrapper.usage.priority": "Als Priorität verwenden wir"
+  
 }
 

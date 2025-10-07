@@ -1524,7 +1524,7 @@
   "halloween.labyrinth.builds.firebrand": "Incendiaire Justice",
   "halloween.labyrinth.builds.mirage": "Mirage Spammer",
   "halloween.labyrinth.builds.daredevilPower": "Fracasseur Pouvoir",
-  "halloween.labyrinth.builds.daredevilCondi": "Fracasseur Condition",
+  "halloween.labyrinth.builds.daredevilCondi": "Aubaines du Héraut",
   "halloween.labyrinth.content.intro": "Dans ce guide, je vais vous donner les 5 meilleures builds pour farmer le Labyrinthe d'Halloween. Cela fonctionne aussi pour les farms de tagging en général. Si la classe que vous voulez utiliser n'est pas ici, ne vous inquiétez pas car quelques jours après la sortie de cet article, vous en aurez un autre avec une build différente pour chaque classe. Vérifiez si je l'ai déjà uploadé ici.",
   "halloween.labyrinth.content.commonPoints": "Comme points communs, je voulais juste dire 3 points. Le premier de tous est que nous ne jouons jamais avec des accessoires, bagues et sacs à dos pour ne pas faire trop de dégâts et foutre en l'air le reste des joueurs parce que nous tuons les ennemis trop vite. Peu importe que nous allions en ascended ou exotique. Comme deuxième point, la nourriture et les améliorations pour augmenter notre farming seront dans un autre post sur comment farmer le labyrinthe. Alors restez à l'écoute des posts dans la section comment faire de l'or. Le troisième est que toutes ces builds peuvent changer leurs stats pour une autre similaire avec vitalité pour aller plus confortable. Dans le cas des builds Berserker, nous pourrions aller Assaillant ou Dragon.",
   "halloween.labyrinth.content.routes": "Le processus de farming du labyrinthe est comme tout autre farm de tagging, c'est-à-dire un farm qui consiste à attaquer tout le monde et laisser le reste du groupe attaquer aussi pour que nous obtenions tous le loot de chaque ennemi.",
@@ -1953,6 +1953,12 @@
   "bank.slot": "Emplacement",
   "bank.empty": "vide",
 
-  "common.later": "Plus tard"
+  "common.later": "Plus tard",
+  "common.and": "et",
+  "halloween.labyrinth.scrapper.usage.part1": "Enfin, voici comment l'utiliser. Nous ferons principalement des dégâts avec le 1 du lance-flammes; maintenez-le enfoncé et tournez la caméra pour toucher tout le monde. Pendant ce temps, utilisez les tours pour infliger plus de dégâts de zone, mais toujours juste avant la fin de la",
+  "halloween.labyrinth.scrapper.usage.superspeedFallback": "supervitesse",
+  "halloween.labyrinth.scrapper.usage.part2": "pour en tirer le maximum.",
+  "halloween.labyrinth.scrapper.usage.priority": "En priorité, nous utiliserons"
+  
 }
 

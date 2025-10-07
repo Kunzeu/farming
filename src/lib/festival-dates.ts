@@ -65,30 +65,25 @@ export const festivalDates: Record<string, FestivalDate> = {
   }
 };
 
-// Función para crear una fecha con hora específica
+// Función para crear una fecha con hora específica (normalizada a UTC internamente)
 const createDateTime = (date: string, time?: string, timezone: string = 'UTC'): Date => {
   if (!time) {
-    return new Date(date);
+    // Interpretar fecha a medianoche UTC
+    const [y, m, d] = date.split('-').map(Number);
+    return new Date(Date.UTC(y, (m || 1) - 1, d || 1, 0, 0, 0));
   }
-  
-  // Crear fecha con hora específica en la zona horaria indicada
-  const dateTimeString = `${date}T${time}:00`;
-  
-  if (timezone === 'UTC') {
-    return new Date(dateTimeString + 'Z');
-  } else {
-    // Para zonas horarias específicas, crear en UTC y luego ajustar
-    // Colombia es UTC-5, así que 11:00 AM Colombia = 16:00 UTC
-    const tempDate = new Date(dateTimeString + 'Z');
-    
-    if (timezone === 'America/Bogota') {
-      // Colombia está en UTC-5, así que restamos 5 horas para obtener la hora local
-      return new Date(tempDate.getTime() - (5 * 60 * 60 * 1000));
-    }
-    
-    // Para otras zonas horarias, usar Intl.DateTimeFormat
-    return new Date(dateTimeString);
+
+  const [y, m, d] = date.split('-').map(Number);
+  const [hh, mm] = time.split(':').map(Number);
+
+  // Nota: América/Bogotá es UTC-5 y no tiene DST
+  if (timezone === 'America/Bogota') {
+    // 11:00 hora Colombia = 16:00 UTC → sumar 5 horas para convertir a UTC
+    return new Date(Date.UTC(y, (m || 1) - 1, d || 1, (hh || 0) + 5, mm || 0, 0));
   }
+
+  // Por defecto, tratar como UTC
+  return new Date(Date.UTC(y, (m || 1) - 1, d || 1, hh || 0, mm || 0, 0));
 };
 
 // Función para obtener el estado actual del festival
