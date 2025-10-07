@@ -42,13 +42,13 @@ const LabyrinthGuidePage = () => {
   const [furtivoData, setFurtivoData] = useState<{name: string, icon: string} | null>(null);
   const [vampirismoData, setVampirismoData] = useState<{name: string, icon: string, wikiUrl: string} | null>(null);
   const [tercerTomoData, setTercerTomoData] = useState<{name: string, icon: string} | null>(null);
-  const [primerTomoData, setPrimerTomoData] = useState<{name: string, icon: string} | null>(null);
-  const [habilidad1Data, setHabilidad1Data] = useState<{name: string, icon: string} | null>(null);
-  const [mantraData, setMantraData] = useState<{name: string, icon: string} | null>(null);
-  const [selloData, setSelloData] = useState<{name: string, icon: string} | null>(null);
-  const [habilidad2Data, setHabilidad2Data] = useState<{name: string, icon: string} | null>(null);
-  const [habilidad3Data, setHabilidad3Data] = useState<{name: string, icon: string} | null>(null);
-  const [habilidad4Data, setHabilidad4Data] = useState<{name: string, icon: string} | null>(null);
+  const [primerTomoData, setPrimerTomoData] = useState<{name: string, icon: string, wikiUrl: string} | null>(null);
+  const [habilidad1Data, setHabilidad1Data] = useState<{name: string, icon: string, wikiUrl: string} | null>(null);
+  const [mantraData, setMantraData] = useState<{name: string, icon: string, wikiUrl: string} | null>(null);
+  const [selloData, setSelloData] = useState<{name: string, icon: string, wikiUrl: string} | null>(null);
+  const [habilidad2Data, setHabilidad2Data] = useState<{name: string, icon: string, wikiUrl: string} | null>(null);
+  const [habilidad3Data, setHabilidad3Data] = useState<{name: string, icon: string, wikiUrl: string} | null>(null);
+  const [habilidad4Data, setHabilidad4Data] = useState<{name: string, icon: string, wikiUrl: string} | null>(null);
   const [runa24836Data, setRuna24836Data] = useState<{name: string, icon: string, wikiUrl: string} | null>(null);
   const [fuerzaData, setFuerzaData] = useState<{name: string, icon: string, wikiUrl: string} | null>(null);
   const [precisionData, setPrecisionData] = useState<{name: string, icon: string, wikiUrl: string} | null>(null);
@@ -543,7 +543,8 @@ const LabyrinthGuidePage = () => {
       const data = await response.json();
       setPrimerTomoData({
         name: data.name,
-        icon: data.icon
+        icon: data.icon,
+        wikiUrl: buildSigilWikiUrl('tomo-justicia')
       });
     } catch (error) {
       // Error fetching primer tomo data
@@ -554,9 +555,18 @@ const LabyrinthGuidePage = () => {
     try {
       const response = await fetch(`https://api.guildwars2.com/v2/skills/10219?lang=${lang}`);
       const data = await response.json();
+      const normalized = (lang || 'en').toLowerCase();
+      const langKey = normalized.startsWith('es') ? 'es' : normalized.startsWith('de') ? 'de' : normalized.startsWith('fr') ? 'fr' : 'en';
+      const wikiByLang: Record<string, string> = {
+        en: 'https://wiki.guildwars2.com/wiki/Spatial_Surge',
+        es: 'https://wiki.guildwars2.com/wiki/Spatial_Surge',
+        de: 'https://wiki-de.guildwars2.com/wiki/R%C3%A4umliche_Welle',
+        fr: 'https://wiki-fr.guildwars2.com/wiki/Renforcement_spatial'
+      };
       setHabilidad1Data({
         name: data.name,
-        icon: data.icon
+        icon: data.icon,
+        wikiUrl: wikiByLang[langKey]
       });
     } catch (error) {
       // Error fetching habilidad 1 data
@@ -567,9 +577,18 @@ const LabyrinthGuidePage = () => {
     try {
       const response = await fetch(`https://api.guildwars2.com/v2/skills/10211?lang=${lang}`);
       const data = await response.json();
+      const normalized = (lang || 'en').toLowerCase();
+      const langKey = normalized.startsWith('es') ? 'es' : normalized.startsWith('de') ? 'de' : normalized.startsWith('fr') ? 'fr' : 'en';
+      const wikiByLang: Record<string, string> = {
+        en: 'https://wiki.guildwars2.com/wiki/Mantra_of_Pain',
+        es: 'https://wiki.guildwars2.com/wiki/Mantra_of_Pain',
+        de: 'https://wiki-de.guildwars2.com/wiki/Mantra_der_Schmerzen',
+        fr: 'https://wiki-fr.guildwars2.com/wiki/Mantra_de_douleur'
+      };
       setMantraData({
         name: data.name,
-        icon: data.icon
+        icon: data.icon,
+        wikiUrl: wikiByLang[langKey]
       });
     } catch (error) {
       // Error fetching mantra data
@@ -580,9 +599,18 @@ const LabyrinthGuidePage = () => {
     try {
       const response = await fetch(`https://api.guildwars2.com/v2/skills/10236?lang=${lang}`);
       const data = await response.json();
+      const normalized = (lang || 'en').toLowerCase();
+      const langKey = normalized.startsWith('es') ? 'es' : normalized.startsWith('de') ? 'de' : normalized.startsWith('fr') ? 'fr' : 'en';
+      const wikiByLang: Record<string, string> = {
+        en: 'https://wiki.guildwars2.com/wiki/Signet_of_Inspiration',
+        es: 'https://wiki.guildwars2.com/wiki/Signet_of_Inspiration',
+        de: 'https://wiki-de.guildwars2.com/wiki/Siegel_der_Inspiration',
+        fr: 'https://wiki-fr.guildwars2.com/wiki/Signe_d%27inspiration'
+      };
       setSelloData({
         name: data.name,
-        icon: data.icon
+        icon: data.icon,
+        wikiUrl: wikiByLang[langKey]
       });
     } catch (error) {
       // Error fetching sello data
@@ -593,9 +621,18 @@ const LabyrinthGuidePage = () => {
     try {
       const response = await fetch(`https://api.guildwars2.com/v2/skills/10333?lang=${lang}`);
       const data = await response.json();
+      const normalized = (lang || 'en').toLowerCase();
+      const langKey = normalized.startsWith('es') ? 'es' : normalized.startsWith('de') ? 'de' : normalized.startsWith('fr') ? 'fr' : 'en';
+      const wikiByLang: Record<string, string> = {
+        en: 'https://wiki.guildwars2.com/wiki/Mirror_Blade',
+        es: 'https://wiki.guildwars2.com/wiki/Mirror_Blade',
+        de: 'https://wiki-de.guildwars2.com/wiki/Spiegelklinge',
+        fr: 'https://wiki-fr.guildwars2.com/wiki/Lame_miroir'
+      };
       setHabilidad2Data({
         name: data.name,
-        icon: data.icon
+        icon: data.icon,
+        wikiUrl: wikiByLang[langKey]
       });
     } catch (error) {
       // Error fetching habilidad 2 data
@@ -606,9 +643,18 @@ const LabyrinthGuidePage = () => {
     try {
       const response = await fetch(`https://api.guildwars2.com/v2/skills/10218?lang=${lang}`);
       const data = await response.json();
+      const normalized = (lang || 'en').toLowerCase();
+      const langKey = normalized.startsWith('es') ? 'es' : normalized.startsWith('de') ? 'de' : normalized.startsWith('fr') ? 'fr' : 'en';
+      const wikiByLang: Record<string, string> = {
+        en: 'https://wiki.guildwars2.com/wiki/Mind_Stab',
+        es: 'https://wiki.guildwars2.com/wiki/Mind_Stab',
+        de: 'https://wiki-de.guildwars2.com/wiki/Gedankenstich',
+        fr: 'https://wiki-fr.guildwars2.com/wiki/Surin_mental'
+      };
       setHabilidad3Data({
         name: data.name,
-        icon: data.icon
+        icon: data.icon,
+        wikiUrl: wikiByLang[langKey]
       });
     } catch (error) {
       // Error fetching habilidad 3 data
@@ -619,9 +665,18 @@ const LabyrinthGuidePage = () => {
     try {
       const response = await fetch(`https://api.guildwars2.com/v2/skills/10221?lang=${lang}`);
       const data = await response.json();
+      const normalized = (lang || 'en').toLowerCase();
+      const langKey = normalized.startsWith('es') ? 'es' : normalized.startsWith('de') ? 'de' : normalized.startsWith('fr') ? 'fr' : 'en';
+      const wikiByLang: Record<string, string> = {
+        en: 'https://wiki.guildwars2.com/wiki/Phantasmal_Berserker',
+        es: 'https://wiki.guildwars2.com/wiki/Phantasmal_Berserker',
+        de: 'https://wiki-de.guildwars2.com/wiki/Tr%C3%BCgerischer_Berserker',
+        fr: 'https://wiki-fr.guildwars2.com/wiki/Berserker_fantasmagorique'
+      };
       setHabilidad4Data({
         name: data.name,
-        icon: data.icon
+        icon: data.icon,
+        wikiUrl: wikiByLang[langKey]
       });
     } catch (error) {
       // Error fetching habilidad 4 data
@@ -1095,7 +1150,7 @@ const LabyrinthGuidePage = () => {
                              </span>
                            ) : (
                              <span className="text-orange-300 font-semibold">supervelocidad</span>
-                          )} y {relicSpeedData ? (
+                          )} {t('common.and')} {relicSpeedData ? (
                             <a
                               href={relicSpeedData.wikiUrl}
                               target="_blank"
@@ -1145,7 +1200,7 @@ const LabyrinthGuidePage = () => {
                              >
                                vitalidad
                              </a>
-                           )} y {fireData ? (
+                           )} {t('common.and')} {fireData ? (
                              <a 
                                href={fireData.wikiUrl}
                                target="_blank" 
@@ -1355,8 +1410,8 @@ const LabyrinthGuidePage = () => {
                          <p className="text-gray-200 mb-4 text-sm leading-relaxed">
                         {t('halloween.labyrinth.builds.firebrand.description')}
                          </p>
-                         <p className="text-gray-200 mb-4 text-sm leading-relaxed">
-                           En el equipamiento lo llevaríamos completamente Berserker con {vampirismoData ? (
+                        <p className="text-gray-200 mb-4 text-sm leading-relaxed">
+                          {t('halloween.labyrinth.firebrand.equipmentIntro')} {vampirismoData ? (
                              <a 
                                href={vampirismoData.wikiUrl}
                                target="_blank" 
@@ -1385,7 +1440,7 @@ const LabyrinthGuidePage = () => {
                              >
                                Runa de Vampirismo
                              </a>
-                           )} y {runa100148Data ? (
+                           )} {t('common.and')} {runa100148Data ? (
                              <a 
                                href={runa100148Data.wikiUrl}
                                target="_blank" 
@@ -1403,8 +1458,8 @@ const LabyrinthGuidePage = () => {
                                <span className="text-orange-300 font-semibold">{runa100148Data.name}</span>
                              </a>
                            ) : (
-                             <span className="text-orange-300 font-semibold">Runa 100148</span>
-                           )}. En las armas nos pondríamos lanza para hacer unos daños insanos a los jefes y para ayudarnos en nuestra movilidad. En el segundo set podemos llevar Cetro-Foco para hacer daño a media distancia y áreas para las puertas. En cuanto a los sellos se llevarían los estándar para este tipo de farmeos, es decir, {vitalityData && vitalityData.icon ? (
+                              <span className="text-orange-300 font-semibold">Runa 100148</span>
+                           )}. {t('halloween.labyrinth.firebrand.weaponsIntro')} {vitalityData && vitalityData.icon ? (
                              <a
                                href={vitalityData.wikiUrl}
                                target="_blank"
@@ -1433,7 +1488,7 @@ const LabyrinthGuidePage = () => {
                              >
                                Vitalidad
                              </a>
-                           )} y {fireData && fireData.icon ? (
+                           )} {t('common.and')} {fireData && fireData.icon ? (
                              <a
                                href={fireData.wikiUrl}
                                target="_blank"
@@ -1464,25 +1519,43 @@ const LabyrinthGuidePage = () => {
                              </a>
                            )}.
                          </p>
+                        <p className="text-gray-200 mb-4 text-sm leading-relaxed">{t('halloween.labyrinth.firebrand.skillsSummary')}</p>
                          <p className="text-gray-200 mb-4 text-sm leading-relaxed">
-                           Nuestras habilidades nos proporcionan un daño en área bastante bueno para el uso en las puertas, bufos varios como rapidez, égida y celeridad y habilidades de movilidad.
-                         </p>
-                         <p className="text-gray-200 mb-4 text-sm leading-relaxed">
-                           Lo más importante serían los tomos del abrasador ya que tendríamos todo nuestro daño en el primero de estos y nuestra movilidad dependerá en su mayoría de {tercerTomoData && tercerTomoData.icon ? (
-                             <span className="inline-flex items-center gap-1">
-                               <Image
-                                 src={tercerTomoData.icon}
-                                 alt={tercerTomoData.name}
-                                 width={20}
-                                 height={20}
-                                 className="rounded"
-                                 onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = 'none'; }}
-                               />
-                               <span className="text-orange-300 font-semibold">{tercerTomoData.name}</span>
-                             </span>
-                           ) : (
-                             <span className="text-orange-300 font-semibold">tercer tomo</span>
-                           )}.
+                          {t('halloween.labyrinth.firebrand.tomesIntro')}{tercerTomoData && tercerTomoData.icon ? (
+                            <a
+                              href={lang === 'es' ? 'https://wiki.guildwars2.com/wiki/Tome_of_Courage' :
+                                     lang === 'fr' ? 'https://wiki-fr.guildwars2.com/wiki/Grimoire_du_courage' :
+                                     lang === 'de' ? 'https://wiki-de.guildwars2.com/wiki/Foliant_der_Tapferkeit' :
+                                                     'https://wiki.guildwars2.com/wiki/Tome_of_Courage'}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="inline-flex items-center gap-1 hover:opacity-80 transition-opacity"
+                            >
+                              <Image
+                                src={tercerTomoData.icon}
+                                alt={tercerTomoData.name}
+                                width={20}
+                                height={20}
+                                className="rounded"
+                                onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = 'none'; }}
+                              />
+                              <span className="text-orange-300 font-semibold">
+                                {lang === 'es' ? 'Tomo de valor' : lang === 'fr' ? 'Grimoire du courage' : lang === 'de' ? 'Foliant der Tapferkeit' : 'Tome of Courage'}
+                              </span>
+                            </a>
+                          ) : (
+                            <a
+                              href={lang === 'es' ? 'https://wiki.guildwars2.com/wiki/Tome_of_Courage' :
+                                     lang === 'fr' ? 'https://wiki-fr.guildwars2.com/wiki/Grimoire_du_courage' :
+                                     lang === 'de' ? 'https://wiki-de.guildwars2.com/wiki/Foliant_der_Tapferkeit' :
+                                                     'https://wiki.guildwars2.com/wiki/Tome_of_Courage'}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-orange-300 font-semibold hover:opacity-80 transition-opacity"
+                            >
+                              {lang === 'es' ? 'Tomo de valor' : lang === 'fr' ? 'Grimoire du courage' : lang === 'de' ? 'Foliant der Tapferkeit' : 'Tome of Courage'}
+                            </a>
+                          )}.
                          </p>
                          
                          {/* Código de traits */}
@@ -1490,7 +1563,7 @@ const LabyrinthGuidePage = () => {
                            <div className="flex items-center justify-between mb-2">
                              <h4 className="text-white font-semibold flex items-center">
                                <span className="text-lg mr-2">⚙️</span>
-                               Código de Traits
+                                {t('halloween.labyrinth.builds.traitsCode')}  
                              </h4>
                              <button
                                onClick={() => {
@@ -1504,7 +1577,7 @@ const LabyrinthGuidePage = () => {
                                <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
                                </svg>
-                               Copiar
+                               {t('halloween.labyrinth.builds.copyCode')}
                              </button>
                            </div>
                            <div className="bg-gray-900/50 border border-orange-500/30 rounded-lg p-3">
@@ -1529,79 +1602,115 @@ const LabyrinthGuidePage = () => {
                          {/* Instrucciones de uso detalladas */}
                          <div className="mt-6">
                            <div className="space-y-4">
-                               <p className="text-gray-200 text-sm leading-relaxed">
-                                 Su trait más importante nos otorga una recuperación del {primerTomoData && primerTomoData.icon ? (
-                                   <span className="inline-flex items-center gap-1">
-                                     <Image
-                                       src={primerTomoData.icon}
-                                       alt={primerTomoData.name}
-                                       width={20}
-                                       height={20}
-                                       className="rounded"
-                                       onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = 'none'; }}
-                                     />
-                                     <span className="text-orange-300 font-semibold">{primerTomoData.name}</span>
-                                   </span>
+                              <p className="text-gray-200 text-sm leading-relaxed">
+                              {t('halloween.labyrinth.builds.firebrand.trait')} {primerTomoData && primerTomoData.icon ? (
+                                  <a 
+                                    href={primerTomoData.wikiUrl}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="inline-flex items-center gap-1 hover:opacity-80 transition-opacity"
+                                  >
+                                    <Image
+                                      src={primerTomoData.icon}
+                                      alt={primerTomoData.name}
+                                      width={20}
+                                      height={20}
+                                      className="rounded"
+                                      onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = 'none'; }}
+                                    />
+                                    <span className="text-orange-300 font-semibold">{primerTomoData.name}</span>
+                                  </a>
                                  ) : (
                                    <span className="text-orange-300 font-semibold">primer tomo</span>
-                                 )} cada vez que un enemigo muera pero, si este muere mientras estamos dentro del tomo, nos devolverá páginas. Otros traits nos darán páginas extra en los tomos, bufos cuando usamos diferentes habilidades y una gama de mejoras de nuestro daño.
+                                )} {t('halloween.labyrinth.builds.firebrand.trait.description')}
                                </p>
-                               <p className="text-gray-200 text-sm leading-relaxed">
-                                 El uso de esta build es realmente sencillo. Solo tendremos que entrar en {primerTomoData && primerTomoData.icon ? (
-                                   <span className="inline-flex items-center gap-1">
-                                     <Image
-                                       src={primerTomoData.icon}
-                                       alt={primerTomoData.name}
-                                       width={20}
-                                       height={20}
-                                       className="rounded"
-                                       onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = 'none'; }}
-                                     />
-                                     <span className="text-orange-300 font-semibold">{primerTomoData.name}</span>
-                                   </span>
+                              <p className="text-gray-200 text-sm leading-relaxed">
+                                {t('halloween.labyrinth.firebrand.usageIntro')} {primerTomoData && primerTomoData.icon ? (
+                                  <a 
+                                    href={primerTomoData.wikiUrl}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="inline-flex items-center gap-1 hover:opacity-80 transition-opacity"
+                                  >
+                                    <Image
+                                      src={primerTomoData.icon}
+                                      alt={primerTomoData.name}
+                                      width={20}
+                                      height={20}
+                                      className="rounded"
+                                      onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = 'none'; }}
+                                    />
+                                    <span className="text-orange-300 font-semibold">{primerTomoData.name}</span>
+                                  </a>
                                  ) : (
                                    <span className="text-orange-300 font-semibold">primer tomo</span>
-                                 )}, usar <span className="inline-flex items-center gap-1">
-                                   <Image
-                                     src="https://wiki-es.guildwars2.com/images/d/d3/Ep%C3%ADlogo-_Las_cenizas_de_los_justos.png"
-                                     alt="Epílogo: Las cenizas de los justos"
-                                     width={20}
-                                     height={20}
-                                     className="rounded"
-                                     onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = 'none'; }}
-                                   />
-                                   <span className="text-orange-300 font-semibold">Epílogo: Las cenizas de los justos</span>
-                                 </span> siempre que lo tengamos, <span className="inline-flex items-center gap-1">
+                                )}, {t('common.use')} <a
+                                  href={buildSigilWikiUrl('epilogo-cenizas')}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="inline-flex items-center gap-1 hover:opacity-80 transition-opacity"
+                                >
+                                  <Image
+                                    src="https://wiki-es.guildwars2.com/images/d/d3/Ep%C3%ADlogo-_Las_cenizas_de_los_justos.png"
+                                    alt={t('halloween.labyrinth.firebrand.epilogueAshes')}
+                                    width={20}
+                                    height={20}
+                                    className="rounded"
+                                    onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = 'none'; }}
+                                  />
+                                  <span className="text-orange-300 font-semibold">{t('halloween.labyrinth.firebrand.epilogueAshes')}</span>
+                                </a> {t('common.whenAvailable')}, <span className="inline-flex items-center gap-1">
                                    <Image
                                      src="https://wiki-es.guildwars2.com/images/e/e7/Cap%C3%ADtulo_2-_Estallido_calcinante.png"
-                                     alt="Capítulo 2: Estallido calcinante"
+                                    alt={t('halloween.labyrinth.firebrand.chapter2')}
                                      width={20}
                                      height={20}
                                      className="rounded"
                                      onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = 'none'; }}
                                    />
-                                   <span className="text-orange-300 font-semibold">Capítulo 2: Estallido calcinante</span>
-                                 </span> y luego usar <span className="inline-flex items-center gap-1">
+                                  <a
+                                    href={lang === 'fr' ? 'https://wiki-fr.guildwars2.com/wiki/Chapitre_2_:_Explosion_ardente' : lang === 'de' ? 'https://wiki-de.guildwars2.com/wiki/Kapitel_2:_Entz%C3%BCndende_Welle' : 'https://wiki.guildwars2.com/wiki/Chapter_2:_Igniting_Burst'}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="text-orange-300 font-semibold hover:opacity-80 transition-opacity"
+                                  >
+                                    {t('halloween.labyrinth.firebrand.chapter2')}
+                                  </a>
+                                </span> {t('common.andThen')} {t('common.use')} <span className="inline-flex items-center gap-1">
                                    <Image
                                      src="https://wiki-es.guildwars2.com/images/d/dc/Cap%C3%ADtulo_1-_Hechizo_abrasador.png"
-                                     alt="Capítulo 1: Hechizo abrasador"
+                                    alt={t('halloween.labyrinth.firebrand.chapter1')}
                                      width={20}
                                      height={20}
                                      className="rounded"
                                      onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = 'none'; }}
                                    />
-                                   <span className="text-orange-300 font-semibold">Capítulo 1: Hechizo abrasador</span>
-                                 </span> hasta que se acabe o tengamos una de las 2 habilidades que acabo de mencionar. En caso de estar en una puerta usaremos el <span className="inline-flex items-center gap-1">
+                                  <a
+                                    href={lang === 'fr' ? 'https://wiki-fr.guildwars2.com/wiki/Chapitre_1_:_Sort_br%C3%BBlant' : lang === 'de' ? 'https://wiki-de.guildwars2.com/wiki/Kapitel_1:_Sengender_Zauber' : 'https://wiki.guildwars2.com/wiki/Chapter_1:_Searing_Spell'}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="text-orange-300 font-semibold hover:opacity-80 transition-opacity"
+                                  >
+                                    {t('halloween.labyrinth.firebrand.chapter1')}
+                                  </a>
+                                </span> {t('halloween.labyrinth.firebrand.untilEnds')} {t('halloween.labyrinth.firebrand.ifDoorUse')} <span className="inline-flex items-center gap-1">
                                    <Image
                                      src="https://wiki-es.guildwars2.com/images/e/ee/Cap%C3%ADtulo_4-_Tierra_quemada.png"
-                                     alt="Capítulo 4: Tierra quemada"
+                                    alt={t('halloween.labyrinth.firebrand.chapter4')}
                                      width={20}
                                      height={20}
                                      className="rounded"
                                      onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = 'none'; }}
                                    />
-                                   <span className="text-orange-300 font-semibold">Capítulo 4: Tierra quemada</span>
-                                 </span> también. En cuanto a las habilidades de la derecha solo tirad los gritos siempre que los tengáis, el área para las puertas y el teletransporte para moveros.
+                                  <a
+                                    href={lang === 'fr' ? 'https://wiki-fr.guildwars2.com/wiki/Chapitre_4_:_Cons%C3%A9quences_br%C3%BBlantes' : lang === 'de' ? 'https://wiki-de.guildwars2.com/wiki/Kapitel_4:_Die_versengten_Folgen' : 'https://wiki.guildwars2.com/wiki/Chapter_4:_Scorched_Aftermath'}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="text-orange-300 font-semibold hover:opacity-80 transition-opacity"
+                                  >
+                                    {t('halloween.labyrinth.firebrand.chapter4')}
+                                  </a>
+                                </span> {t('halloween.labyrinth.firebrand.rightSideSkills')}
                                </p>
                            </div>
                          </div>
@@ -1618,16 +1727,16 @@ const LabyrinthGuidePage = () => {
                            className="mr-2 rounded"
                            onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = 'none'; }}
                          />
-{t('halloween.labyrinth.builds.mirage')}
+                        {t('halloween.labyrinth.builds.mirage')}
                        </h3>
                        
                        <div className="space-y-4">
                          <p className="text-gray-200 text-sm leading-relaxed">
-{t('halloween.labyrinth.builds.mirage.description')}
+                        {t('halloween.labyrinth.builds.mirage.description')}
                          </p>
                          
-                         <p className="text-gray-200 text-sm leading-relaxed">
-                           El equipamiento sería completamente Berserker con {runa100148Data && runa100148Data.icon ? (
+                        <p className="text-gray-200 text-sm leading-relaxed">
+                          {t('halloween.labyrinth.mirage.equipmentIntro')} {runa100148Data && runa100148Data.icon ? (
                              <a
                                href={runa100148Data.wikiUrl}
                                target="_blank"
@@ -1653,10 +1762,10 @@ const LabyrinthGuidePage = () => {
                                target="_blank"
                                rel="noopener noreferrer"
                                className="text-orange-300 font-semibold hover:text-orange-200 transition-colors underline"
-                             >
-                               Runa 100148
+                            >
+                              {t('halloween.labyrinth.mirage.rune100148Fallback')}
                              </a>
-                           )} y {vampirismoData && vampirismoData.icon ? (
+                          )} {t('common.and')} {vampirismoData && vampirismoData.icon ? (
                              <a
                                href={vampirismoData.wikiUrl}
                                target="_blank"
@@ -1682,10 +1791,10 @@ const LabyrinthGuidePage = () => {
                                target="_blank"
                                rel="noopener noreferrer"
                                className="text-orange-300 font-semibold hover:text-orange-200 transition-colors underline"
-                             >
-                               Vampirismo
+                            >
+                              {t('halloween.labyrinth.mirage.vampirismFallback')}
                              </a>
-                           )} si os veis mal de supervivencia. Llevaremos de arma el mandoble con {vitalityData && vitalityData.icon ? (
+                          )} {t('halloween.labyrinth.mirage.survivalNote')} {t('halloween.labyrinth.mirage.weaponsIntro')} {vitalityData && vitalityData.icon ? (
                              <a
                                href={vitalityData.wikiUrl}
                                target="_blank"
@@ -1711,10 +1820,10 @@ const LabyrinthGuidePage = () => {
                                target="_blank"
                                rel="noopener noreferrer"
                                className="text-orange-300 font-semibold hover:text-orange-200 transition-colors underline"
-                             >
-                               Vitalidad
+                            >
+                              {t('halloween.labyrinth.mirage.vitalityFallback')}
                              </a>
-                           )} y {fireData && fireData.icon ? (
+                          )} {t('common.and')} {fireData && fireData.icon ? (
                              <a
                                href={fireData.wikiUrl}
                                target="_blank"
@@ -1740,10 +1849,10 @@ const LabyrinthGuidePage = () => {
                                target="_blank"
                                rel="noopener noreferrer"
                                className="text-orange-300 font-semibold hover:text-orange-200 transition-colors underline"
-                             >
-                               Fuego
+                            >
+                              {t('halloween.labyrinth.mirage.fireFallback')}
                              </a>
-                           )}. El Sello de {vitalityData && vitalityData.icon ? (
+                          )}. {t('halloween.labyrinth.mirage.vitalSigilImportant.prefix')} {vitalityData && vitalityData.icon ? (
                              <a
                                href={vitalityData.wikiUrl}
                                target="_blank"
@@ -1769,22 +1878,20 @@ const LabyrinthGuidePage = () => {
                                target="_blank"
                                rel="noopener noreferrer"
                                className="text-orange-300 font-semibold hover:text-orange-200 transition-colors underline"
-                             >
-                               Vitalidad
+                            >
+                              {t('halloween.labyrinth.mirage.vitalityFallback')}
                              </a>
-                           )} de esta build es increíblemente importante por que sin este no podremos hacer el spam.
+                          )} {t('halloween.labyrinth.mirage.vitalSigilImportant.suffix')}
                          </p>
                          
-                         <p className="text-gray-200 text-sm leading-relaxed">
-                           Sus habilidades nos aumentan nuestra movilidad con la élite, el pestañear y el sello, ojo con no usar este. Tendremos también un mantra para hacer algo más de daño. En el mandoble tenemos daño en área pero lo más importante es la habilidad básica. Cuando esquivamos o recogemos un espejo quimérico del suelo se transformará en una habilidad que le dará a varios enemigos a la vez.
-                         </p>
+                        <p className="text-gray-200 text-sm leading-relaxed">{t('halloween.labyrinth.mirage.abilitiesSummary')}</p>
                          
                          <div className="space-y-4">
                            <div>
                              <div className="flex items-center justify-between mb-2">
                                <h4 className="text-white font-semibold flex items-center">
                                  <span className="text-lg mr-2">⚙️</span>
-                                 Código de Traits
+                                 {t('halloween.labyrinth.builds.traitsCode')}
                                </h4>
                                <button
                                  onClick={() => {
@@ -1798,7 +1905,7 @@ const LabyrinthGuidePage = () => {
                                  <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
                                  </svg>
-                                 Copiar
+                                 {t('halloween.labyrinth.builds.copyCode')}
                                </button>
                              </div>
                              <div className="bg-gray-900/50 border border-orange-500/30 rounded-lg p-3">
@@ -1809,20 +1916,20 @@ const LabyrinthGuidePage = () => {
                            </div>
                            
                            <div>
-                             <Image
+                            <Image
                                src="/thumbnails/skills-y-traits-mirage-1-1024x576.webp"
-                               alt="Skills y Traits - Mirage"
+                              alt={t('halloween.labyrinth.mirage.imageAlt')}
                                width={1024}
                                height={576}
                                className="w-full h-auto rounded-lg border border-orange-500/30"
                                onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = 'none'; }}
                              />
                              <p className="text-gray-200 text-sm leading-relaxed mt-4">
-                               Los traits nos proporcionan daño y una muy buena generación de clones que usaremos sobre todo en las puertas.
+                              {t('halloween.labyrinth.mirage.traitsSummary')}
                              </p>
-                             <p className="text-gray-200 text-sm leading-relaxed">
-                               El método de uso es muy sencillo. Simplemente esquivamos, le daremos a {habilidad1Data && habilidad1Data.icon ? (
-                                 <span className="inline-flex items-center gap-1">
+                            <p className="text-gray-200 text-sm leading-relaxed">
+                              {t('halloween.labyrinth.mirage.method.introPrefix')} {habilidad1Data && habilidad1Data.icon ? (
+                                 <a href={habilidad1Data.wikiUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 no-underline">
                                    <Image
                                      src={habilidad1Data.icon}
                                      alt={habilidad1Data.name}
@@ -1832,11 +1939,11 @@ const LabyrinthGuidePage = () => {
                                      onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = 'none'; }}
                                    />
                                    <span className="text-orange-300 font-semibold">{habilidad1Data.name}</span>
-                                 </span>
+                                 </a>
                                ) : (
                                  <span className="text-orange-300 font-semibold">1</span>
-                               )} y repetimos. El {mantraData && mantraData.icon ? (
-                                 <span className="inline-flex items-center gap-1">
+                              )} {t('halloween.labyrinth.mirage.method.andRepeat')} {t('halloween.labyrinth.mirage.method.the')} {mantraData && mantraData.icon ? (
+                                 <a href={mantraData.wikiUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 no-underline">
                                    <Image
                                      src={mantraData.icon}
                                      alt={mantraData.name}
@@ -1846,11 +1953,11 @@ const LabyrinthGuidePage = () => {
                                      onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = 'none'; }}
                                    />
                                    <span className="text-orange-300 font-semibold">{mantraData.name}</span>
-                                 </span>
+                                 </a>
                                ) : (
                                  <span className="text-orange-300 font-semibold">mantra</span>
-                               )} lo tiramos a cualquiera que tengamos a mano, no usar nunca el {selloData && selloData.icon ? (
-                                 <span className="inline-flex items-center gap-1">
+                              )} {t('halloween.labyrinth.mirage.method.throwMantraSuffix')} {selloData && selloData.icon ? (
+                                 <a href={selloData.wikiUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 no-underline">
                                    <Image
                                      src={selloData.icon}
                                      alt={selloData.name}
@@ -1860,11 +1967,11 @@ const LabyrinthGuidePage = () => {
                                      onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = 'none'; }}
                                    />
                                    <span className="text-orange-300 font-semibold">{selloData.name}</span>
-                                 </span>
+                                 </a>
                                ) : (
                                  <span className="text-orange-300 font-semibold">sello</span>
-                               )} y ya estaría. La élite la podemos usar para movernos más rápido o para generar clones en las puertas. En cuanto al resto de habilidades, tirad siempre {habilidad2Data && habilidad2Data.icon ? (
-                                 <span className="inline-flex items-center gap-1">
+                              )} {t('halloween.labyrinth.mirage.method.endPrefix')} {habilidad2Data && habilidad2Data.icon ? (
+                                 <a href={habilidad2Data.wikiUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 no-underline">
                                    <Image
                                      src={habilidad2Data.icon}
                                      alt={habilidad2Data.name}
@@ -1874,11 +1981,11 @@ const LabyrinthGuidePage = () => {
                                      onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = 'none'; }}
                                    />
                                    <span className="text-orange-300 font-semibold">{habilidad2Data.name}</span>
-                                 </span>
+                                 </a>
                                ) : (
                                  <span className="text-orange-300 font-semibold">el 2</span>
-                               )} y {habilidad3Data && habilidad3Data.icon ? (
-                                 <span className="inline-flex items-center gap-1">
+                              )} {t('common.and')} {habilidad3Data && habilidad3Data.icon ? (
+                                 <a href={habilidad3Data.wikiUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 no-underline">
                                    <Image
                                      src={habilidad3Data.icon}
                                      alt={habilidad3Data.name}
@@ -1888,11 +1995,11 @@ const LabyrinthGuidePage = () => {
                                      onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = 'none'; }}
                                    />
                                    <span className="text-orange-300 font-semibold">{habilidad3Data.name}</span>
-                                 </span>
+                                 </a>
                                ) : (
                                  <span className="text-orange-300 font-semibold">el 3</span>
-                               )}, para los jefes usaremos {habilidad4Data && habilidad4Data.icon ? (
-                                 <span className="inline-flex items-center gap-1">
+                             )}, {t('halloween.labyrinth.mirage.method.forBossesUse')} {habilidad4Data && habilidad4Data.icon ? (
+                                 <a href={habilidad4Data.wikiUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 no-underline">
                                    <Image
                                      src={habilidad4Data.icon}
                                      alt={habilidad4Data.name}
@@ -1902,14 +2009,12 @@ const LabyrinthGuidePage = () => {
                                      onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = 'none'; }}
                                    />
                                    <span className="text-orange-300 font-semibold">{habilidad4Data.name}</span>
-                                 </span>
+                                 </a>
                                ) : (
                                  <span className="text-orange-300 font-semibold">el 4</span>
-                               )} también.
+                              )} {t('halloween.labyrinth.mirage.method.also')}
                              </p>
-                             <p className="text-gray-200 text-sm leading-relaxed">
-                               Los destrozos, es decir, las habilidades de los Fs, las usaremos solo en los jefes y en las puertas tirando uno de ellos siempre que tengamos 3 clones para hacer daños en área.
-                             </p>
+                            <p className="text-gray-200 text-sm leading-relaxed">{t('halloween.labyrinth.mirage.shattersUsage')}</p>
                            </div>
                          </div>
                          
@@ -1934,8 +2039,8 @@ const LabyrinthGuidePage = () => {
                         {t('halloween.labyrinth.builds.daredevilPower.description')}
                          </p>
                          
-                         <p className="text-gray-200 text-sm leading-relaxed">
-                           Su equipamiento será completamente Berserker con {runa24836Data && runa24836Data.icon ? (
+                        <p className="text-gray-200 text-sm leading-relaxed">
+                          {t('halloween.labyrinth.builds.daredevilPower.equipment')} {runa24836Data && runa24836Data.icon ? (
                              <a
                                href={runa24836Data.wikiUrl}
                                target="_blank"
@@ -1954,7 +2059,7 @@ const LabyrinthGuidePage = () => {
                              </a>
                            ) : (
                              <span className="text-orange-300 font-semibold">Runa 24836</span>
-                          )} y {relicVampirismData ? (
+                          )} {t('common.and')} {relicVampirismData ? (
                             <a
                               href={relicVampirismData.wikiUrl}
                               target="_blank"
@@ -1982,7 +2087,7 @@ const LabyrinthGuidePage = () => {
                             >
                               Relic of Vampirism
                             </a>
-                          )}. En sus armas llevaríamos el arco corto con {vitalityData && vitalityData.icon ? (
+                          )}. {t('halloween.labyrinth.builds.daredevilPower.weapons')} {vitalityData && vitalityData.icon ? (
                              <a
                                href={vitalityData.wikiUrl}
                                target="_blank"
@@ -2011,7 +2116,7 @@ const LabyrinthGuidePage = () => {
                              >
                                Vitalidad
                              </a>
-                           )} y {fireData && fireData.icon ? (
+                           )} {t('common.and')} {fireData && fireData.icon ? (
                              <a
                                href={fireData.wikiUrl}
                                target="_blank"
@@ -2040,7 +2145,7 @@ const LabyrinthGuidePage = () => {
                              >
                                Fuego
                              </a>
-                           )} y en el otro set un báculo o dos pistolas con {fuerzaData && fuerzaData.icon ? (
+                          )} {t('halloween.labyrinth.builds.daredevilPower.weapons.secondSet')} {fuerzaData && fuerzaData.icon ? (
                              <a
                                href={fuerzaData.wikiUrl}
                                target="_blank"
@@ -2059,7 +2164,7 @@ const LabyrinthGuidePage = () => {
                              </a>
                            ) : (
                              <span className="text-orange-300 font-semibold">fuerza</span>
-                           )} y {precisionData && precisionData.icon ? (
+                           )} {t('common.and')} {precisionData && precisionData.icon ? (
                              <a
                                href={precisionData.wikiUrl}
                                target="_blank"
@@ -2078,11 +2183,11 @@ const LabyrinthGuidePage = () => {
                              </a>
                            ) : (
                              <span className="text-orange-300 font-semibold">precisión</span>
-                           )} para hacer daño exclusivamente a jefes.
+                           )}{t('halloween.labyrinth.builds.daredevilPower.weapons.bossesNote')}
                          </p>
                          
                         <p className="text-gray-200 text-sm leading-relaxed">
-                          Esquiva para marcar a los enemigos con {trait1833Data ? (
+                          {t('halloween.labyrinth.builds.daredevilPower.usageIntroPrefix')} {trait1833Data ? (
                             <a
                               href={trait1833Data.wikiUrl}
                               target="_blank"
@@ -2103,7 +2208,7 @@ const LabyrinthGuidePage = () => {
                             </a>
                           ) : (
                             <span className="text-orange-300 font-semibold">{trait1833Name}</span>
-                          )} y ataque automático con tu arco corto. Maximizando su resistencia te mantendrá Esquivando para siempre. <br/>Tienes algunas fuentes:<br/>
+                          )}{t('halloween.labyrinth.builds.daredevilPower.autoAttackBow')}{t('halloween.labyrinth.builds.daredevilPower.maxEndurance')} <br/>{t('halloween.labyrinth.builds.daredevilPower.sourcesIntro')}<br/>
                           {vitalityData && vitalityData.icon ? (
                             <a
                               href={vitalityData.wikiUrl}
@@ -2152,7 +2257,7 @@ const LabyrinthGuidePage = () => {
                             </a>
                           ) : (
                             <span className="text-orange-300 font-semibold">Vigor canalizado</span>
-                          )} y <a
+                          )} {t('common.and')} <a
                             href={brawlersTenacityData?.wikiUrl}
                             target="_blank"
                             rel="noopener noreferrer"
@@ -2213,7 +2318,7 @@ const LabyrinthGuidePage = () => {
                             </a>
                           ) : (
                             <span className="text-orange-300 font-semibold">Robar</span>
-                          )} debido a {enduranceThiefData ? (
+                          )} {t('common.dueTo')} {enduranceThiefData ? (
                             <a
                               href={enduranceThiefData.wikiUrl}
                               target="_blank"
@@ -2277,7 +2382,7 @@ const LabyrinthGuidePage = () => {
                             </a>
                           ) : (
                             <span className="text-orange-300 font-semibold">Flecha del infiltrado</span>
-                          )} y {stealData ? (
+                          )} {t('common.and')} {stealData ? (
                             <a
                               href={stealData.wikiUrl}
                               target="_blank"
@@ -2298,11 +2403,11 @@ const LabyrinthGuidePage = () => {
                             </a>
                           ) : (
                             <span className="text-orange-300 font-semibold">Robar</span>
-                          )} Para mantenerse por delante de los zerg.
+                          )} {t('halloween.labyrinth.builds.daredevilPower.keepAheadZerg')}.
                         </p>
                          
                          <p className="text-gray-200 text-sm leading-relaxed">
-                           El arco tendría un básico excepcional para este farm y podríamos usar el 4 para hacer daños en área en lugares como las puertas.
+                           {t('halloween.labyrinth.builds.daredevilPower.bowExceptional')} {t('halloween.labyrinth.builds.daredevilPower.useFourAoEDoors')}
                          </p>
                          
                          <div className="space-y-4">
@@ -2310,7 +2415,7 @@ const LabyrinthGuidePage = () => {
                              <div className="flex items-center justify-between mb-2">
                                <h4 className="text-white font-semibold flex items-center">
                                  <span className="text-lg mr-2">⚙️</span>
-                                 Código de Traits
+                                 {t('halloween.labyrinth.builds.traitsCode')}
                                </h4>
                                <button
                                  onClick={() => {
@@ -2324,7 +2429,7 @@ const LabyrinthGuidePage = () => {
                                  <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
                                  </svg>
-                                 Copiar
+                                 {t('halloween.labyrinth.builds.copyCode')}
                                </button>
                              </div>
                              <div className="bg-gray-900/50 border border-orange-500/30 rounded-lg p-3">
@@ -2343,18 +2448,18 @@ const LabyrinthGuidePage = () => {
                                className="w-full h-auto rounded-lg border border-orange-500/30"
                                onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = 'none'; }}
                              />
-                             <p className="text-gray-200 text-sm leading-relaxed mt-4">
-                               Sus traits nos aumentan la iniciativa, la recuperación de esta, la movilidad y el daño.
-                             </p>
-                             <p className="text-gray-200 text-sm leading-relaxed">
-                               El modo de uso es bastante sencillo, solo tenemos que estar spameando sin parar las esquivas para movernos, el ataque básico para ir matando a los enemigos normales y, cuando llegamos a las puertas, la habilidad número 4 del arco y la élite.
-                             </p>
-                             <p className="text-gray-200 text-sm leading-relaxed">
-                               Si necesitásemos recuperar esquivas podríamos usar el sello de agilidad o la habilidad de curación.
-                             </p>
-                             <p className="text-gray-200 text-sm leading-relaxed">
-                               En los jefes usaríamos un báculo con un spam de la habilidad 2 o doble pistola para usar sin parar la habilidad 3.
-                             </p>
+                            <p className="text-gray-200 text-sm leading-relaxed mt-4">
+                              {t('halloween.labyrinth.builds.daredevilPower.traits')}
+                            </p>
+                            <p className="text-gray-200 text-sm leading-relaxed">
+                              {t('halloween.labyrinth.builds.daredevilPower.usageSummary')}
+                            </p>
+                            <p className="text-gray-200 text-sm leading-relaxed">
+                              {t('halloween.labyrinth.builds.daredevilPower.recoverDodges')}
+                            </p>
+                            <p className="text-gray-200 text-sm leading-relaxed">
+                              {t('halloween.labyrinth.builds.daredevilPower.bossesUsage')}
+                            </p>
                            </div>
                          </div>
                        </div>
@@ -2374,26 +2479,16 @@ const LabyrinthGuidePage = () => {
                        </h3>
                        
                        <div className="space-y-2">
-                         <p className="text-gray-200 text-sm leading-relaxed">
-                           Ojo, importante, hace falta un mínimo de 10 ladrones, si haces como fotos que han salido de 20 heraldos soporte y 4 ladrones, no vas a lootear ni 5 oros por hora.
-                         </p>
-                         <p className="text-gray-200 text-sm leading-relaxed">
-                           En armas llevaremos maza espada y mandoble, básicamente nos interesa tener movilidad, saltos, dashes, nada de daño ya que NO atacaremos a los enemigos. Esto irá con sellos de energía y purificación.
-                         </p>
-                         <p className="text-gray-200 text-sm leading-relaxed">
-                           En la armadura llevaremos cualquier estadística, nos será indiferente. De runa llevará de estrellas ya que nuestro mayor problema son las cadenas y necesitamos tener la mayor eficiencia para seguir a nuestros ladrones.
-                         </p>
-                         <p className="text-gray-200 text-sm leading-relaxed">
-                           Como reliquia llevaremos la de velocidad para que nuestra celeridad nos de un 66% de velocidad de movimiento y, por último, como leyenda usaremos Glint, la dragona.
-                         </p>
-                         <p className="text-gray-200 text-sm leading-relaxed">
-                           En cuanto a traits llevaremos los de debajo, nos interesa tener limpieza de condiciones, eliminación de condiciones de movimiento, regeneración de aguante y otorgar bendiciones a los aliados.
-                         </p>
+                        <p className="text-gray-200 text-sm leading-relaxed">{t('halloween.labyrinth.herald.p1')}</p>
+                        <p className="text-gray-200 text-sm leading-relaxed">{t('halloween.labyrinth.herald.p2')}</p>
+                        <p className="text-gray-200 text-sm leading-relaxed">{t('halloween.labyrinth.herald.p3')}</p>
+                        <p className="text-gray-200 text-sm leading-relaxed">{t('halloween.labyrinth.herald.p4')}</p>
+                        <p className="text-gray-200 text-sm leading-relaxed">{t('halloween.labyrinth.herald.p5')}</p>
                         <div className="space-y-2">
                           <div className="flex items-center justify-between">
                             <h4 className="text-white font-semibold flex items-center">
                               <span className="text-lg mr-2">⚙️</span>
-                              Código de Traits
+                              {t('halloween.labyrinth.builds.traitsCode')}
                             </h4>
                             <button
                               onClick={() => {
@@ -2406,7 +2501,7 @@ const LabyrinthGuidePage = () => {
                               <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
                               </svg>
-                              Copiar
+                              {t('halloween.labyrinth.builds.copyCode')}
                             </button>
                           </div>
                           <div className="bg-gray-900/50 border border-orange-500/30 rounded-lg p-3">
@@ -2423,12 +2518,8 @@ const LabyrinthGuidePage = () => {
                              onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = 'none'; }}
                            />
                           </div>
-                          <p className="text-gray-200 text-sm leading-relaxed">
-                            Su forma de uso se centra en tener la faceta de los elementos y la faceta del caos permanentemente activas para dar un bufo de celeridad y otro de protección y así no dar bufos ofensivos. Una vez tenemos esto solo correremos, nos limpiaremos condiciones si nos atan y usaremos las esquivas siempre que vayamos cerca de momias ya que nos pueden parar. Además de esto usaremos los teletransportes en enemigos lejanos para ir al ritmo de los ladrones. Lo más importante NO ATACAR A NADA ya que nos llevamos loot por bufar a nuestros compañeros
-                          </p>
-                          <p className="text-gray-200 text-sm leading-relaxed">
-                            Ahora, a leechear y disfrutar de mucho oro por dar vueltas sin hacer nada.
-                          </p>
+                          <p className="text-gray-200 text-sm leading-relaxed">{t('halloween.labyrinth.herald.p6')}</p>
+                          <p className="text-gray-200 text-sm leading-relaxed">{t('halloween.labyrinth.herald.p7')}</p>
                          </div>
                        </div>
                      </div>
