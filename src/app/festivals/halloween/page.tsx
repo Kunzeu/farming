@@ -479,7 +479,7 @@ const HalloweenPage = () => {
                   </h2>
                   <p className="text-gray-200 mb-6">{t('halloween.overview.p1')}</p>
                 
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
                     <div className="bg-gray-900/80 backdrop-blur-sm rounded-lg p-4 border border-orange-500/30 hover:border-orange-500/50 transition-all duration-200 shadow-lg">
                       <h3 className="text-white font-semibold mb-2">{t('halloween.cards.bags.title')}</h3>
                       <p className="text-gray-200 text-sm">{t('halloween.cards.bags.desc')}</p>
@@ -492,6 +492,29 @@ const HalloweenPage = () => {
                       <h3 className="text-white font-semibold mb-2">{t('halloween.cards.corn.title')}</h3>
                       <p className="text-gray-200 text-sm">{t('halloween.cards.corn.desc')}</p>
                     </div>
+                  </div>
+
+                  {/* Nueva sección para la guía del laberinto */}
+                  <div className="bg-orange-900/20 border border-orange-500/50 rounded-lg p-6">
+                    <h3 className="text-xl font-bold text-white mb-4 flex items-center">
+                      <span className="text-2xl mr-3">🎃</span>
+                      Guía Completa del Laberinto
+                    </h3>
+                    <p className="text-gray-200 mb-4">
+                      ¿Estás con ganas de gastar tu vida durante 3 semanas dentro de un laberinto maldiciendo a los dioses por que un tal Steve te persigue? 
+                      Pues estás en el sitio correcto.
+                    </p>
+                    <p className="text-gray-300 text-sm mb-6">
+                      En esta guía te enseñamos todo lo que necesitas saber para farmear el Laberinto de Halloween de manera eficiente, 
+                      incluyendo builds recomendadas, rutas de farmeo, estrategias de recompensas y consejos avanzados.
+                    </p>
+                    <a
+                      href="/festivals/halloween/labyrinth-guide"
+                      className="inline-flex items-center gap-2 px-6 py-3 bg-orange-600 hover:bg-orange-700 text-white rounded-lg transition-all duration-200 hover:scale-105 hover:shadow-lg font-semibold"
+                    >
+                      <span className="text-lg">🎯</span>
+                      Ver Guía del Laberinto
+                    </a>
                   </div>
                 </div>
               </div>
