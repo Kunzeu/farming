@@ -56,6 +56,16 @@ const LabyrinthGuidePage = () => {
   const [runaVelocidadData, setRunaVelocidadData] = useState<{name: string, icon: string, wikiUrl: string} | null>(null);
   const [relicVampirismData, setRelicVampirismData] = useState<{name: string, icon?: string, wikiUrl: string} | null>(null);
   const [relicSpeedData, setRelicSpeedData] = useState<{name: string, icon: string, wikiUrl: string} | null>(null);
+  const [wintersBlessingData, setWintersBlessingData] = useState<{name: string, icon: string, wikiUrl: string} | null>(null);
+  const [luckyDraketailData, setLuckyDraketailData] = useState<{name: string, icon: string, wikiUrl: string} | null>(null);
+  const [luckyFirecrackerData, setLuckyFirecrackerData] = useState<{name: string, icon: string, wikiUrl: string} | null>(null);
+  const [festivalGobblerBoostData, setFestivalGobblerBoostData] = useState<{name: string, icon: string, wikiUrl: string} | null>(null);
+  const [guildExperienceBannerData, setGuildExperienceBannerData] = useState<{name: string, icon: string, wikiUrl: string} | null>(null);
+  const [guildXPGainData, setGuildXPGainData] = useState<{name: string, icon: string, wikiUrl: string} | null>(null);
+  const [experiencedEnrichmentData, setExperiencedEnrichmentData] = useState<{name: string, icon: string, wikiUrl: string} | null>(null);
+  const [enlightenmentData, setEnlightenmentData] = useState<{name: string, icon: string, wikiUrl: string} | null>(null);
+  const [ancientCanthanSecretData, setAncientCanthanSecretData] = useState<{name: string, icon: string, wikiUrl: string} | null>(null);
+  const [restingData, setRestingData] = useState<{name: string, icon: string, wikiUrl: string} | null>(null);
   const [trait1833Name, setTrait1833Name] = useState<string>('Entrenamiento de loto');
   const [trait1833Data, setTrait1833Data] = useState<{name: string, icon: string, wikiUrl: string} | null>(null);
   const [channeledVigorData, setChanneledVigorData] = useState<{name: string, icon: string, wikiUrl: string} | null>(null);
@@ -66,20 +76,71 @@ const LabyrinthGuidePage = () => {
   const [shadowstepData, setShadowstepData] = useState<{name: string, wikiUrl: string, icon: string} | null>(null);
   const [infiltratorsArrowData, setInfiltratorsArrowData] = useState<{name: string, wikiUrl: string, icon: string} | null>(null);
   const [spiritShardsData, setSpiritShardsData] = useState<{name: string, icon: string, wikiUrl: string} | null>(null);
+  const [blackLionBoostData, setBlackLionBoostData] = useState<{name: string, icon: string, wikiUrl: string} | null>(null);
+  const [experienceBoostData, setExperienceBoostData] = useState<{name: string, icon: string, wikiUrl: string} | null>(null);
+  const [communalBonfireData, setCommunalBonfireData] = useState<{name: string, icon: string, wikiUrl: string} | null>(null);
+  const [zampacaramelosData, setZampacaramelosData] = useState<{name: string, icon: string, wikiUrl: string} | null>(null);
+  const [item20002Data, setItem20002Data] = useState<{name: string, icon: string, wikiUrl: string} | null>(null);
+  const [celebrationBoostData, setCelebrationBoostData] = useState<{name: string, icon: string, wikiUrl: string} | null>(null);
+  const [strawberryGhostData, setStrawberryGhostData] = useState<{name: string, icon: string, wikiUrl: string} | null>(null);
+  const [chatoyantElixirData, setChatoyantElixirData] = useState<{name: string, icon: string, wikiUrl: string} | null>(null);
+  const [zampazaithanmelosData, setZampazaithanmelosData] = useState<{name: string, icon: string, wikiUrl: string} | null>(null);
+  const [zampacoposData, setZampacoposData] = useState<{name: string, icon: string, wikiUrl: string} | null>(null);
 
   const sections = [
     { id: 'overview', label: t('halloween.labyrinth.sections.overview'), icon: Info },
     { id: 'builds', label: t('halloween.labyrinth.sections.builds'), icon: Sword },
     { id: 'routes', label: t('halloween.labyrinth.sections.routes'), icon: Map },
     { id: 'rewards', label: t('halloween.labyrinth.sections.rewards'), icon: Gift },
-    { id: 'tips', label: t('halloween.labyrinth.sections.tips'), icon: Star }
+    { id: 'advanced', label: t('halloween.labyrinth.advanced.title'), icon: TrendingUp }
   ];
 
   // Función para construir URL de wiki
   const buildWikiUrl = (itemName: string, itemType: 'item' | 'skill') => {
     const normalized = (lang || 'en').toLowerCase();
-    const wikiLang = normalized.startsWith('fr') ? 'fr' : normalized.startsWith('de') ? 'de' : 'en';
+    const wikiLang = normalized.startsWith('fr') ? 'fr' : normalized.startsWith('de') ? 'de' : normalized.startsWith('es') ? 'es' : 'en';
     const formattedName = (itemName || '').replace(/ /g, '_');
+    
+    // URLs específicas para el Potenciador del León Negro
+    if (formattedName.toLowerCase().includes('black_lion_booster') || formattedName.toLowerCase().includes('potenciador_del_león_negro')) {
+      if (wikiLang === 'fr') return 'https://wiki-fr.guildwars2.com/wiki/Augmentation_du_Lion_noir';
+      if (wikiLang === 'de') return 'https://wiki-de.guildwars2.com/wiki/Schwarzl%C3%B6wen-Verst%C3%A4rker';
+      if (wikiLang === 'es') return 'https://wiki.guildwars2.com/wiki/Black_Lion_Booster';
+      return 'https://wiki.guildwars2.com/wiki/Black_Lion_Booster';
+    }
+    
+    // URLs específicas para el Potenciador de Experiencia
+    if (formattedName.toLowerCase().includes('experience_booster') || formattedName.toLowerCase().includes('potenciador_de_experiencia')) {
+      if (wikiLang === 'fr') return 'https://wiki-fr.guildwars2.com/wiki/Augmentation_d%27exp%C3%A9rience';
+      if (wikiLang === 'de') return 'https://wiki-de.guildwars2.com/wiki/Erfahrungsverst%C3%A4rker';
+      if (wikiLang === 'es') return 'https://wiki.guildwars2.com/wiki/Experience_Booster_(fine)';
+      return 'https://wiki.guildwars2.com/wiki/Experience_Booster_(fine)';
+    }
+    
+    // URLs específicas para el Celebration Bonus
+    if (formattedName.toLowerCase().includes('celebration_bonus') || formattedName.toLowerCase().includes('potenciador_de_celebración')) {
+      if (wikiLang === 'fr') return 'https://wiki-fr.guildwars2.com/wiki/Bonus_de_c%C3%A9l%C3%A9bration';
+      if (wikiLang === 'de') return 'https://wiki-de.guildwars2.com/wiki/Festtagsbonus';
+      if (wikiLang === 'es') return 'https://wiki.guildwars2.com/wiki/Celebration_Bonus';
+      return 'https://wiki.guildwars2.com/wiki/Celebration_Bonus';
+    }
+    
+    // URLs específicas para el Strawberry Ghost
+    if (formattedName.toLowerCase().includes('strawberry_ghost') || formattedName.toLowerCase().includes('fantasma_de_fresa')) {
+      if (wikiLang === 'fr') return 'https://wiki-fr.guildwars2.com/wiki/Fant%C3%B4me_%C3%A0_la_fraise';
+      if (wikiLang === 'de') return 'https://wiki-de.guildwars2.com/wiki/Erdbeer-Geist';
+      if (wikiLang === 'es') return 'https://wiki.guildwars2.com/wiki/Strawberry_Ghost';
+      return 'https://wiki.guildwars2.com/wiki/Strawberry_Ghost';
+    }
+    
+    // URLs específicas para el Chatoyant Elixir
+    if (formattedName.toLowerCase().includes('chatoyant_elixir') || formattedName.toLowerCase().includes('elixir_chatoyant')) {
+      if (wikiLang === 'fr') return 'https://wiki-fr.guildwars2.com/wiki/%C3%89lixir_chatoyant';
+      if (wikiLang === 'de') return 'https://wiki-de.guildwars2.com/wiki/Schillernder_Elixier';
+      if (wikiLang === 'es') return 'https://wiki.guildwars2.com/wiki/Chatoyant_Elixir';
+      return 'https://wiki.guildwars2.com/wiki/Chatoyant_Elixir';
+    }
+    
     if (itemType === 'skill' || itemType === 'item') {
       if (wikiLang === 'fr') return `https://wiki-fr.guildwars2.com/wiki/${formattedName}`;
       if (wikiLang === 'de') return `https://wiki-de.guildwars2.com/wiki/${formattedName}`;
@@ -223,6 +284,323 @@ const LabyrinthGuidePage = () => {
       .then(d => {
         if (d && typeof d.icon === 'string' && d.icon) {
           setRelicVampirismData(prev => prev ? { ...prev, icon: d.icon } : { name, wikiUrl, icon: d.icon });
+        }
+      })
+      .catch(() => {});
+  }, [lang]);
+
+  // Winter's Blessing (ID 77656): nombre, icono y wiki por idioma
+  useEffect(() => {
+    const normalized = (lang || 'en').toLowerCase();
+    const langKey = normalized.startsWith('es') ? 'es' : normalized.startsWith('de') ? 'de' : normalized.startsWith('fr') ? 'fr' : 'en';
+    const nameByLang: Record<string, string> = {
+      en: 'Winter\'s Blessing',
+      de: 'Wintersegnung',
+      es: 'Bendición Invernal',
+      fr: 'Bénédiction hivernale',
+    };
+    const wikiByLang: Record<string, string> = {
+      en: 'https://wiki.guildwars2.com/wiki/Winter%27s_Blessing',
+      es: 'https://wiki.guildwars2.com/wiki/Winter%27s_Blessing',
+      de: 'https://wiki-de.guildwars2.com/wiki/Wintersegnung',
+      fr: 'https://wiki-fr.guildwars2.com/wiki/B%C3%A9n%C3%A9diction_hivernale',
+    };
+    const name = nameByLang[langKey];
+    const wikiUrl = wikiByLang[langKey];
+    setWintersBlessingData({ name, wikiUrl, icon: '' });
+    // Intentar obtener icono desde la API de items por ID (77656)
+    const apiLang = normalized.startsWith('es') ? 'es' : normalized.startsWith('de') ? 'de' : normalized.startsWith('fr') ? 'fr' : 'en';
+    fetch(`https://api.guildwars2.com/v2/items/77656?lang=${apiLang}`)
+      .then(r => r.ok ? r.json() : null)
+      .then(d => {
+        if (d && typeof d.icon === 'string' && d.icon) {
+          setWintersBlessingData(prev => prev ? { ...prev, icon: d.icon } : { name, wikiUrl, icon: d.icon });
+        }
+      })
+      .catch(() => {});
+  }, [lang]);
+
+  // Lucky Draketail (ID 77750): nombre, icono y wiki por idioma
+  useEffect(() => {
+    const normalized = (lang || 'en').toLowerCase();
+    const langKey = normalized.startsWith('es') ? 'es' : normalized.startsWith('de') ? 'de' : normalized.startsWith('fr') ? 'fr' : 'en';
+    const nameByLang: Record<string, string> = {
+      en: 'Lucky Draketail',
+      de: 'Glücks-Lindwurmschwanz',
+      es: 'Don de año nuevo',
+      fr: 'Queue de drake porte-bonheur',
+    };
+    const wikiByLang: Record<string, string> = {
+      en: 'https://wiki.guildwars2.com/wiki/Lucky_Draketail',
+      es: 'https://wiki.guildwars2.com/wiki/Lucky_Draketail',
+      de: 'https://wiki-de.guildwars2.com/wiki/Gl%C3%BCcks-Lindwurmschwanz',
+      fr: 'https://wiki-fr.guildwars2.com/wiki/Queue_de_drake_porte-bonheur',
+    };
+    const name = nameByLang[langKey];
+    const wikiUrl = wikiByLang[langKey];
+    setLuckyDraketailData({ name, wikiUrl, icon: '' });
+    // Intentar obtener icono desde la API de items por ID (77750)
+    const apiLang = normalized.startsWith('es') ? 'es' : normalized.startsWith('de') ? 'de' : normalized.startsWith('fr') ? 'fr' : 'en';
+    fetch(`https://api.guildwars2.com/v2/items/77750?lang=${apiLang}`)
+      .then(r => r.ok ? r.json() : null)
+      .then(d => {
+        if (d && typeof d.icon === 'string' && d.icon) {
+          setLuckyDraketailData(prev => prev ? { ...prev, icon: d.icon } : { name, wikiUrl, icon: d.icon });
+        }
+      })
+      .catch(() => {});
+  }, [lang]);
+
+  // Lucky Firecracker (ID 77762): nombre, icono y wiki por idioma
+  useEffect(() => {
+    const normalized = (lang || 'en').toLowerCase();
+    const langKey = normalized.startsWith('es') ? 'es' : normalized.startsWith('de') ? 'de' : normalized.startsWith('fr') ? 'fr' : 'en';
+    const nameByLang: Record<string, string> = {
+      en: 'Lucky Firecracker',
+      de: 'Glücksfeuerwerkskörper',
+      es: 'Bonificación de año nuevo',
+      fr: 'Pétard porte-bonheur',
+    };
+    const wikiByLang: Record<string, string> = {
+      en: 'https://wiki.guildwars2.com/wiki/Lucky_Firecracker',
+      es: 'https://wiki.guildwars2.com/wiki/Lucky_Firecracker',
+      de: 'https://wiki-de.guildwars2.com/wiki/Gl%C3%BCcksfeuerwerksk%C3%B6rper',
+      fr: 'https://wiki-fr.guildwars2.com/wiki/P%C3%A9tard_porte-bonheur',
+    };
+    const name = nameByLang[langKey];
+    const wikiUrl = wikiByLang[langKey];
+    setLuckyFirecrackerData({ name, wikiUrl, icon: '' });
+    // Intentar obtener icono desde la API de items por ID (77762)
+    const apiLang = normalized.startsWith('es') ? 'es' : normalized.startsWith('de') ? 'de' : normalized.startsWith('fr') ? 'fr' : 'en';
+    fetch(`https://api.guildwars2.com/v2/items/77762?lang=${apiLang}`)
+      .then(r => r.ok ? r.json() : null)
+      .then(d => {
+        if (d && typeof d.icon === 'string' && d.icon) {
+          setLuckyFirecrackerData(prev => prev ? { ...prev, icon: d.icon } : { name, wikiUrl, icon: d.icon });
+        }
+      })
+      .catch(() => {});
+  }, [lang]);
+
+  // Festival Gobbler Boost (Effect ID 60607): nombre, icono y wiki por idioma
+  useEffect(() => {
+    const normalized = (lang || 'en').toLowerCase();
+    const langKey = normalized.startsWith('es') ? 'es' : normalized.startsWith('de') ? 'de' : normalized.startsWith('fr') ? 'fr' : 'en';
+    const nameByLang: Record<string, string> = {
+      en: 'Festival Gobbler Boost',
+      de: 'Fest-Fresser-Schub',
+      es: 'Potenciador de zampador de festival',
+      fr: 'Amélioration goinfre du festival',
+    };
+    const wikiByLang: Record<string, string> = {
+      en: 'https://wiki.guildwars2.com/wiki/Festival_Gobbler_Boost',
+      es: 'https://wiki.guildwars2.com/wiki/Festival_Gobbler_Boost',
+      de: 'https://wiki-de.guildwars2.com/wiki/Fest-Fresser-Schub',
+      fr: 'https://wiki-fr.guildwars2.com/wiki/Amélioration_goinfre_du_festival',
+    };
+    const name = nameByLang[langKey];
+    const wikiUrl = wikiByLang[langKey];
+    // Usar el icono fijo de Dragon's Rage ya que es el icono oficial del efecto
+    const icon = 'https://wiki.guildwars2.com/images/a/aa/Dragon%27s_Rage.png';
+    setFestivalGobblerBoostData({ name, wikiUrl, icon });
+  }, [lang]);
+
+  // Guild Experience Banner Bonus: nombre, icono y wiki por idioma
+  useEffect(() => {
+    const normalized = (lang || 'en').toLowerCase();
+    const langKey = normalized.startsWith('es') ? 'es' : normalized.startsWith('de') ? 'de' : normalized.startsWith('fr') ? 'fr' : 'en';
+    const nameByLang: Record<string, string> = {
+      en: 'Guild Experience Banner Bonus',
+      de: 'Gilden-EP-Banner-Bonus',
+      es: 'Potenciador de estandarte de experiencia del clan',
+      fr: 'Bannière d\'expérience de guilde',
+    };
+    const wikiByLang: Record<string, string> = {
+      en: 'https://wiki.guildwars2.com/wiki/Guild_Experience_Banner_Bonus',
+      es: 'https://wiki.guildwars2.com/wiki/Guild_Experience_Banner_Bonus',
+      de: 'https://wiki-de.guildwars2.com/wiki/Gilden-EP-Banner-Bonus',
+      fr: 'https://wiki-fr.guildwars2.com/wiki/Bannière_d%27expérience_de_guilde',
+    };
+    const name = nameByLang[langKey];
+    const wikiUrl = wikiByLang[langKey];
+    // Usar el icono fijo del estandarte de experiencia
+    const icon = 'https://wiki.guildwars2.com/images/f/f4/5_Exp_Public_Banner.png';
+    setGuildExperienceBannerData({ name, wikiUrl, icon });
+  }, [lang]);
+
+  // Guild XP Gain: nombre, icono y wiki por idioma
+  useEffect(() => {
+    const normalized = (lang || 'en').toLowerCase();
+    const langKey = normalized.startsWith('es') ? 'es' : normalized.startsWith('de') ? 'de' : normalized.startsWith('fr') ? 'fr' : 'en';
+    const nameByLang: Record<string, string> = {
+      en: 'Guild XP Gain',
+      de: 'Gilden-Verstärkung: EP-Gewinn',
+      es: 'Ganancia de PE de clan',
+      fr: 'Gain d\'EXP de guilde',
+    };
+    const wikiByLang: Record<string, string> = {
+      en: 'https://wiki.guildwars2.com/wiki/Guild_XP_Gain',
+      es: 'https://wiki.guildwars2.com/wiki/Guild_XP_Gain',
+      de: 'https://wiki-de.guildwars2.com/wiki/Gilden-Verst%C3%A4rkung:_EP-Gewinn',
+      fr: 'https://wiki-fr.guildwars2.com/wiki/Gain_d%27EXP_de_guilde',
+    };
+    const name = nameByLang[langKey];
+    const wikiUrl = wikiByLang[langKey];
+    // Usar el icono fijo del tónico de dolyak
+    const icon = 'https://wiki.guildwars2.com/images/f/fe/Endless_Gift_Dolyak_Tonic.png';
+    setGuildXPGainData({ name, wikiUrl, icon });
+  }, [lang]);
+
+  // Experienced Enrichment (ID 39330): nombre, icono y wiki por idioma
+  useEffect(() => {
+    const normalized = (lang || 'en').toLowerCase();
+    const langKey = normalized.startsWith('es') ? 'es' : normalized.startsWith('de') ? 'de' : normalized.startsWith('fr') ? 'fr' : 'en';
+    const wikiByLang: Record<string, string> = {
+      en: 'https://wiki.guildwars2.com/wiki/Experienced_Enrichment',
+      es: 'https://wiki.guildwars2.com/wiki/Experienced_Enrichment',
+      de: 'https://wiki-de.guildwars2.com/wiki/Erfahrungsanreicherung',
+      fr: 'https://wiki-fr.guildwars2.com/wiki/Enrichissement_d%27expérience',
+    };
+    const wikiUrl = wikiByLang[langKey];
+    setExperiencedEnrichmentData({ name: '', wikiUrl, icon: '' });
+    // Intentar obtener nombre e icono desde la API de items por ID (39330)
+    const apiLang = normalized.startsWith('es') ? 'es' : normalized.startsWith('de') ? 'de' : normalized.startsWith('fr') ? 'fr' : 'en';
+    fetch(`https://api.guildwars2.com/v2/items/39330?lang=${apiLang}`)
+      .then(r => r.ok ? r.json() : null)
+      .then(d => {
+        if (d && typeof d.name === 'string' && d.name && typeof d.icon === 'string' && d.icon) {
+          setExperiencedEnrichmentData({ name: d.name, wikiUrl, icon: d.icon });
+        }
+      })
+      .catch(() => {});
+  }, [lang]);
+
+  // Enlightenment: nombre, icono fijo y wiki por idioma
+  useEffect(() => {
+    const normalized = (lang || 'en').toLowerCase();
+    const langKey = normalized.startsWith('es') ? 'es' : normalized.startsWith('de') ? 'de' : normalized.startsWith('fr') ? 'fr' : 'en';
+    const nameByLang: Record<string, string> = {
+      en: 'Enlightenment',
+      de: 'Erleuchtung',
+      es: 'Iluminación',
+      fr: 'Illumination',
+    };
+    const wikiByLang: Record<string, string> = {
+      en: 'https://wiki.guildwars2.com/wiki/Enlightenment',
+      es: 'https://wiki.guildwars2.com/wiki/Enlightenment',
+      de: 'https://wiki-de.guildwars2.com/wiki/Erleuchtung_(Effekt)',
+      fr: 'https://wiki-fr.guildwars2.com/wiki/Illumination',
+    };
+    const name = nameByLang[langKey];
+    const wikiUrl = wikiByLang[langKey];
+    // Usar un icono fijo para Enlightenment (puedes cambiar este por el icono correcto)
+    const icon = 'https://wiki.guildwars2.com/images/f/fa/Enlightenment.png';
+    setEnlightenmentData({ name, wikiUrl, icon });
+  }, [lang]);
+
+  // Ancient Canthan Secret: nombre, icono fijo y wiki por idioma
+  useEffect(() => {
+    const normalized = (lang || 'en').toLowerCase();
+    const langKey = normalized.startsWith('es') ? 'es' : normalized.startsWith('de') ? 'de' : normalized.startsWith('fr') ? 'fr' : 'en';
+    const nameByLang: Record<string, string> = {
+      en: 'Ancient Canthan Secret',
+      de: 'Alter Kantha-Tempel-Geheimnis',
+      es: 'Secreto ancestral cantha',
+      fr: 'Secret canthien ancien',
+    };
+    const wikiByLang: Record<string, string> = {
+      en: 'https://wiki.guildwars2.com/wiki/Ancient_Canthan_Secret_(effect)',
+      es: 'https://wiki.guildwars2.com/wiki/Ancient_Canthan_Secret_(effect)',
+      de: 'https://wiki-de.guildwars2.com/wiki/Alter_Kantha-Tempel-Geheimnis_(Effekt)',
+      fr: 'https://wiki-fr.guildwars2.com/wiki/Secret_canthien_ancien_(effet)',
+    };
+    const name = nameByLang[langKey];
+    const wikiUrl = wikiByLang[langKey];
+    // Usar el icono de Enlightenment ya que es el mismo efecto visual
+    const icon = 'https://wiki.guildwars2.com/images/f/fa/Enlightenment.png';
+    setAncientCanthanSecretData({ name, wikiUrl, icon });
+  }, [lang]);
+
+  // Resting: nombre, icono fijo y wiki por idioma
+  useEffect(() => {
+    const normalized = (lang || 'en').toLowerCase();
+    const langKey = normalized.startsWith('es') ? 'es' : normalized.startsWith('de') ? 'de' : normalized.startsWith('fr') ? 'fr' : 'en';
+    const nameByLang: Record<string, string> = {
+      en: 'Resting',
+      de: 'Ausruhen',
+      es: 'Descanso',
+      fr: 'Repos',
+    };
+    const wikiByLang: Record<string, string> = {
+      en: 'https://wiki.guildwars2.com/wiki/Resting',
+      es: 'https://wiki.guildwars2.com/wiki/Resting',
+      de: 'https://wiki-de.guildwars2.com/wiki/Ausruhen',
+      fr: 'https://wiki-fr.guildwars2.com/wiki/Repos',
+    };
+    const name = nameByLang[langKey];
+    const wikiUrl = wikiByLang[langKey];
+    // Usar el icono de Well Rested
+    const icon = 'https://wiki.guildwars2.com/images/3/32/Well_Rested.png';
+    setRestingData({ name, wikiUrl, icon });
+  }, [lang]);
+
+  // ZampaZaithanmelos (ID 93704): nombre, icono y wiki por idioma
+  useEffect(() => {
+    const normalized = (lang || 'en').toLowerCase();
+    const langKey = normalized.startsWith('es') ? 'es' : normalized.startsWith('de') ? 'de' : normalized.startsWith('fr') ? 'fr' : 'en';
+    const nameByLang: Record<string, string> = {
+      en: 'Zhaitaffy Gobbler',
+      de: 'Zhaikritze-Fresser',
+      es: 'ZampaZaithanmelos',
+      fr: 'Zhaitaffy Gobbler',
+    };
+    const wikiByLang: Record<string, string> = {
+      en: 'https://wiki.guildwars2.com/wiki/Zhaitaffy_Gobbler',
+      es: 'https://wiki.guildwars2.com/wiki/Zhaitaffy_Gobbler',
+      de: ' https://wiki-de.guildwars2.com/wiki/Zhaikritze-Fresser',
+      fr: 'https://wiki.guildwars2.com/wiki/Zhaitaffy_Gobbler',
+    };
+    const name = nameByLang[langKey];
+    const wikiUrl = wikiByLang[langKey];
+    setZampazaithanmelosData({ name, wikiUrl, icon: '' });
+    // Intentar obtener icono desde la API de items por ID (93704)
+    const apiLang = normalized.startsWith('es') ? 'es' : normalized.startsWith('de') ? 'de' : normalized.startsWith('fr') ? 'fr' : 'en';
+    fetch(`https://api.guildwars2.com/v2/items/93704?lang=${apiLang}`)
+      .then(r => r.ok ? r.json() : null)
+      .then(d => {
+        if (d && typeof d.icon === 'string' && d.icon) {
+          setZampazaithanmelosData(prev => prev ? { ...prev, icon: d.icon } : { name, wikiUrl, icon: d.icon });
+        }
+      })
+      .catch(() => {});
+  }, [lang]);
+
+  // Zampacopos (ID 92585): nombre, icono y wiki por idioma
+  useEffect(() => {
+    const normalized = (lang || 'en').toLowerCase();
+    const langKey = normalized.startsWith('es') ? 'es' : normalized.startsWith('de') ? 'de' : normalized.startsWith('fr') ? 'fr' : 'en';
+    const nameByLang: Record<string, string> = {
+      en: 'Snowflake Gobbler',
+      de: 'Schneeflocken-Fresser',
+      es: 'Zampacopos',
+      fr: 'Gobe-flocons',
+    };
+    const wikiByLang: Record<string, string> = {
+      en: 'https://wiki.guildwars2.com/wiki/Snowflake_Gobbler',
+      es: 'https://wiki.guildwars2.com/wiki/Snowflake_Gobbler ',
+      de: 'https://wiki-de.guildwars2.com/wiki/Schneeflocken-Fresser ',
+      fr: 'https://wiki-fr.guildwars2.com/wiki/Gobe-flocons',
+    };
+    const name = nameByLang[langKey];
+    const wikiUrl = wikiByLang[langKey];
+    setZampacoposData({ name, wikiUrl, icon: '' });
+    // Intentar obtener icono desde la API de items por ID (92585)
+    const apiLang = normalized.startsWith('es') ? 'es' : normalized.startsWith('de') ? 'de' : normalized.startsWith('fr') ? 'fr' : 'en';
+    fetch(`https://api.guildwars2.com/v2/items/92585?lang=${apiLang}`)
+      .then(r => r.ok ? r.json() : null)
+      .then(d => {
+        if (d && typeof d.icon === 'string' && d.icon) {
+          setZampacoposData(prev => prev ? { ...prev, icon: d.icon } : { name, wikiUrl, icon: d.icon });
         }
       })
       .catch(() => {});
@@ -770,6 +1148,126 @@ const LabyrinthGuidePage = () => {
     }
   };
 
+  // Función para obtener datos del Potenciador del León Negro
+  const fetchBlackLionBoostData = async () => {
+    try {
+      const response = await fetch(`https://api.guildwars2.com/v2/items/82060?lang=${lang}`);
+      const data = await response.json();
+      setBlackLionBoostData({
+        name: data.name,
+        icon: data.icon,
+        wikiUrl: buildWikiUrl(data.name, 'item')
+      });
+    } catch (error) {
+      // Error fetching black lion boost data
+    }
+  };
+
+  // Función para obtener datos del Potenciador de Experiencia
+  const fetchExperienceBoostData = async () => {
+    try {
+      const response = await fetch(`https://api.guildwars2.com/v2/items/19997?lang=${lang}`);
+      const data = await response.json();
+      setExperienceBoostData({
+        name: data.name,
+        icon: data.icon,
+        wikiUrl: buildWikiUrl(data.name, 'item')
+      });
+    } catch (error) {
+      // Error fetching experience boost data
+    }
+  };
+
+  // Función para obtener datos del Communal Boost Bonfire
+  const fetchCommunalBonfireData = async () => {
+    try {
+      const response = await fetch(`https://api.guildwars2.com/v2/items/41741?lang=${lang}`);
+      const data = await response.json();
+      setCommunalBonfireData({
+        name: data.name,
+        icon: data.icon,
+        wikiUrl: buildWikiUrl(data.name, 'item')
+      });
+    } catch (error) {
+      // Error fetching communal bonfire data
+    }
+  };
+
+  // Función para obtener datos del Zampacaramelos
+  const fetchZampacaramelosData = async () => {
+    try {
+      const response = await fetch(`https://api.guildwars2.com/v2/items/67393?lang=${lang}`);
+      const data = await response.json();
+      setZampacaramelosData({
+        name: data.name,
+        icon: data.icon,
+        wikiUrl: buildWikiUrl(data.name, 'item')
+      });
+    } catch (error) {
+      // Error fetching zampacaramelos data
+    }
+  };
+
+  // Función para obtener datos del item 20002
+  const fetchItem20002Data = async () => {
+    try {
+      const response = await fetch(`https://api.guildwars2.com/v2/items/20002?lang=${lang}`);
+      const data = await response.json();
+      setItem20002Data({
+        name: data.name,
+        icon: data.icon,
+        wikiUrl: buildWikiUrl(data.name, 'item')
+      });
+    } catch (error) {
+      // Error fetching item 20002 data
+    }
+  };
+
+  // Función para obtener datos del Potenciador de Celebración
+  const fetchCelebrationBoostData = async () => {
+    try {
+      const response = await fetch(`https://api.guildwars2.com/v2/items/67836?lang=${lang}`);
+      const data = await response.json();
+      setCelebrationBoostData({
+        name: data.name,
+        icon: data.icon,
+        wikiUrl: buildWikiUrl(data.name, 'item')
+      });
+    } catch (error) {
+      // Error fetching celebration boost data
+    }
+  };
+
+  // Función para obtener datos del Strawberry Ghost
+  const fetchStrawberryGhostData = async () => {
+    try {
+      const response = await fetch(`https://api.guildwars2.com/v2/items/36076?lang=${lang}`);
+      const data = await response.json();
+      setStrawberryGhostData({
+        name: data.name,
+        icon: data.icon,
+        wikiUrl: buildWikiUrl(data.name, 'item')
+      });
+    } catch (error) {
+      // Error fetching strawberry ghost data
+    }
+  };
+
+  // Función para obtener datos del Chatoyant Elixir
+  const fetchChatoyantElixirData = async () => {
+    try {
+      const response = await fetch(`https://api.guildwars2.com/v2/items/93241?lang=${lang}`);
+      const data = await response.json();
+      setChatoyantElixirData({
+        name: data.name,
+        icon: data.icon,
+        wikiUrl: buildWikiUrl(data.name, 'item')
+      });
+    } catch (error) {
+      // Error fetching chatoyant elixir data
+    }
+  };
+
 
   useEffect(() => {
     fetchItemData();
@@ -795,6 +1293,14 @@ const LabyrinthGuidePage = () => {
     fetchRuna100148Data();
     fetchRunaVelocidadData();
     fetchSpiritShardsData();
+    fetchBlackLionBoostData();
+    fetchExperienceBoostData();
+    fetchCommunalBonfireData();
+    fetchZampacaramelosData();
+    fetchItem20002Data();
+    fetchCelebrationBoostData();
+    fetchStrawberryGhostData();
+    fetchChatoyantElixirData();
   }, [lang]);
 
   return (
@@ -2670,7 +3176,7 @@ const LabyrinthGuidePage = () => {
                      <div className="bg-gray-800/60 border border-orange-500/30 rounded-lg p-4">
                        <h3 className="text-white font-semibold mb-4 flex items-center">
                          <AlertTriangle className="w-5 h-5 mr-2 text-red-400" />
-{t('halloween.labyrinth.tips.specific')}
+                      {t('halloween.labyrinth.tips.specific')}
                        </h3>
                        
                        <div className="space-y-4">
@@ -2769,7 +3275,7 @@ const LabyrinthGuidePage = () => {
                 <div className="bg-gray-900/80 backdrop-blur-sm border border-orange-500/30 rounded-lg p-6 shadow-2xl">
                   <h2 className="text-2xl font-bold text-white mb-6 flex items-center">
                     <Gift className="w-6 h-6 mr-3 text-orange-400" />
-{t('halloween.labyrinth.rewards.title')}
+                {t('halloween.labyrinth.rewards.title')}
                   </h2>
                   
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -2804,79 +3310,640 @@ const LabyrinthGuidePage = () => {
               </div>
             )}
 
-            {/* Tips Section */}
-            {selectedSection === 'tips' && (
+
+            {/* Advanced Tips Section */}
+            {selectedSection === 'advanced' && (
               <div className="space-y-8">
                 <div className="bg-gray-900/80 backdrop-blur-sm border border-orange-500/30 rounded-lg p-6 shadow-2xl">
                   <h2 className="text-2xl font-bold text-white mb-6 flex items-center">
-                    <Star className="w-6 h-6 mr-3 text-orange-400" />
-{t('halloween.labyrinth.tips.title')}
+                    <TrendingUp className="w-6 h-6 mr-3 text-orange-400" />
+                  {t('halloween.labyrinth.advanced.title')}
                   </h2>
                   
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div className="space-y-4">
-                      <h3 className="text-xl font-bold text-white">{t('halloween.labyrinth.tips.maximizeEfficiency')}</h3>
-                      <div className="space-y-3">
-                        <div className="flex items-start gap-3">
-                          <div className="w-2 h-2 bg-yellow-400 rounded-full mt-2 flex-shrink-0"></div>
-                          <div>
-                            <h4 className="text-white font-semibold">{t('halloween.labyrinth.tips.useBoosters.title')}</h4>
-                            <p className="text-gray-300 text-sm">{t('halloween.labyrinth.tips.useBoosters.description')}</p>
-                          </div>
-                        </div>
-                        <div className="flex items-start gap-3">
-                          <div className="w-2 h-2 bg-yellow-400 rounded-full mt-2 flex-shrink-0"></div>
-                          <div>
-                            <h4 className="text-white font-semibold">{t('halloween.labyrinth.tips.optimizeBuild.title')}</h4>
-                            <p className="text-gray-300 text-sm">{t('halloween.labyrinth.tips.optimizeBuild.description')}</p>
-                          </div>
-                        </div>
-                        <div className="flex items-start gap-3">
-                          <div className="w-2 h-2 bg-yellow-400 rounded-full mt-2 flex-shrink-0"></div>
-                          <div>
-                            <h4 className="text-white font-semibold">{t('halloween.labyrinth.tips.keepRhythm.title')}</h4>
-                            <p className="text-gray-300 text-sm">{t('halloween.labyrinth.tips.keepRhythm.description')}</p>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                    
-                    <div className="space-y-4">
-                      <h3 className="text-xl font-bold text-white">{t('halloween.labyrinth.tips.survival')}</h3>
-                      <div className="space-y-3">
-                        <div className="flex items-start gap-3">
-                          <div className="w-2 h-2 bg-red-400 rounded-full mt-2 flex-shrink-0"></div>
-                          <div>
-                            <h4 className="text-white font-semibold">{t('halloween.labyrinth.tips.watchOutSteve.title')}</h4>
-                            <p className="text-gray-300 text-sm">{t('halloween.labyrinth.tips.watchOutSteve.description')}</p>
-                          </div>
-                        </div>
-                        <div className="flex items-start gap-3">
-                          <div className="w-2 h-2 bg-red-400 rounded-full mt-2 flex-shrink-0"></div>
-                          <div>
-                            <h4 className="text-white font-semibold">{t('halloween.labyrinth.tips.keepDistance.title')}</h4>
-                            <p className="text-gray-300 text-sm">{t('halloween.labyrinth.tips.keepDistance.description')}</p>
-                          </div>
-                        </div>
-                        <div className="flex items-start gap-3">
-                          <div className="w-2 h-2 bg-red-400 rounded-full mt-2 flex-shrink-0"></div>
-                          <div>
-                            <h4 className="text-white font-semibold">{t('halloween.labyrinth.tips.useMap.title')}</h4>
-                            <p className="text-gray-300 text-sm">{t('halloween.labyrinth.tips.useMap.description')}</p>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
+                  <div className="space-y-8">
+                    {/* Maximizar Eficiencia */}
+                    <div className="bg-gradient-to-r from-purple-900/30 to-blue-900/30 border border-purple-500/30 rounded-lg p-6">
+                      <h3 className="text-xl font-bold text-white mb-4 flex items-center">
+                        <Zap className="w-6 h-6 mr-2 text-purple-400" />
+                    {t('halloween.labyrinth.advanced.maximizeEfficiency.title')}
+                      </h3>
+                      <p className="text-gray-300 mb-6">
+                    {t('halloween.labyrinth.advanced.maximizeEfficiency.description')}
+                      </p>
+                      
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        {/* Boosters Principales */}
+                        <div className="space-y-4">
+                          <h4 className="text-lg font-semibold text-purple-300 mb-3">
+                        {t('halloween.labyrinth.advanced.mainBoosters.title')}
+                          </h4>
+                          
+                          <div className="space-y-3">
+                            <div className="flex items-start gap-3 p-3 bg-gray-800/60 rounded-lg">
+                              <div className="w-2 h-2 bg-purple-400 rounded-full mt-2 flex-shrink-0"></div>
+                              <div className="flex-1">
+                                <div className="flex items-center gap-3 mb-2">
+                                  {blackLionBoostData?.icon && (
+                                    <Image
+                                      src={blackLionBoostData.icon}
+                                      alt={blackLionBoostData.name || 'Potenciador del León Negro'}
+                                      width={32}
+                                      height={32}
+                                      className="rounded"
+                                    />
+                                  )}
+                                  <h5 className="text-white font-semibold">
+                                    {blackLionBoostData ? (
+                                      <a href={blackLionBoostData.wikiUrl} target="_blank" rel="noopener noreferrer" className="text-purple-300 hover:text-purple-200 no-underline">
+                                        {blackLionBoostData.name}
+                                      </a>
+                                    ) : (
+                                      <span className="text-purple-300">{t('halloween.labyrinth.advanced.blackLionBoost.fallback')}</span>
+                                    )}
+                                  </h5>
+                                </div>
+                                <p className="text-gray-300 text-sm">{t('halloween.labyrinth.advanced.blackLionBoost.description')}</p>
+                              </div>
+                            </div>
 
-                  <div className="mt-8 bg-orange-900/20 border border-orange-500/30 rounded-lg p-4">
-                    <h3 className="text-orange-300 font-semibold mb-2 flex items-center">
-                      <TrendingUp className="w-5 h-5 mr-2" />
-                      {t('halloween.labyrinth.tips.finalProTip.title')}
-                    </h3>
-                    <p className="text-gray-300 text-sm">
-                      {t('halloween.labyrinth.tips.finalProTip.description')}
-                    </p>
+                            <div className="flex items-start gap-3 p-3 bg-gray-800/60 rounded-lg">
+                              <div className="w-2 h-2 bg-purple-400 rounded-full mt-2 flex-shrink-0"></div>
+                              <div className="flex-1">
+                                <div className="flex items-center gap-3 mb-2">
+                                  {experienceBoostData?.icon && (
+                                    <Image
+                                      src={"https://wiki.guildwars2.com/images/6/6a/Experience_Bonus_%28fifty_percent%29.png"}
+                                      alt={t('halloween.labyrinth.advanced.experienceBonus.alt')}
+                                      width={32}
+                                      height={32}
+                                      className="rounded"
+                                    />
+                                  )}
+                                  <h5 className="text-white font-semibold">
+                                    <a href={lang === 'es' ? 'https://wiki-es.guildwars2.com/wiki/50%25_de_bonificaci%C3%B3n_de_experiencia' : 
+                                       lang === 'fr' ? 'https://wiki-fr.guildwars2.com/wiki/Bonus_d\'exp%C3%A9rience_50%25' : 
+                                       lang === 'de' ? 'https://wiki-de.guildwars2.com/wiki/50%25_Erfahrungsbonus' : 
+                                       'https://wiki.guildwars2.com/wiki/50%25_Experience_Bonus'} 
+                                       target="_blank" rel="noopener noreferrer" className="text-purple-300 hover:text-purple-200 no-underline">
+{t('halloween.labyrinth.advanced.experienceBonus.alt')}
+                                    </a>
+                                  </h5>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                  {communalBonfireData?.icon && (
+                                    <Image
+                                      src={communalBonfireData.icon}
+                                      alt={communalBonfireData.name || 'Communal Boost Bonfire'}
+                                      width={20}
+                                      height={20}
+                                      className="rounded"
+                                    />
+                                  )}
+                                  <p className="text-gray-300 text-sm">
+                                    {lang === 'es' ? `50% de bonificación extra de ganancia de experiencia. Se obtiene de la ${communalBonfireData?.name || 'Communal Boost Bonfire'}.` : 
+                                     lang === 'fr' ? `50% de bonus supplémentaire de gain d'expérience. Obtenu de la ${communalBonfireData?.name || 'Communal Boost Bonfire'}.` : 
+                                     lang === 'de' ? `50% zusätzlicher Erfahrungsbonus-Gewinn. Erhalten von der ${communalBonfireData?.name || 'Communal Boost Bonfire'}.` : 
+                                     `50% extra experience bonus gain. Obtained from the ${communalBonfireData?.name || 'Communal Boost Bonfire'}.`}
+                                  </p>
+                                </div>
+                              </div>
+                            </div>
+
+                            <div className="flex items-start gap-3 p-3 bg-gray-800/60 rounded-lg">
+                              <div className="w-2 h-2 bg-purple-400 rounded-full mt-2 flex-shrink-0"></div>
+                              <div>
+                                <div className="flex items-center gap-3 mb-2">
+                                  <Image
+                                    src="https://wiki.guildwars2.com/images/4/44/Active_Kill_Streak%21.png"
+                                    alt={t('halloween.labyrinth.advanced.killStreak.alt')}
+                                    width={32}
+                                    height={32}
+                                    className="rounded"
+                                  />
+                                  <h5 className="text-white font-semibold">
+                                    <a href="https://wiki.guildwars2.com/wiki/Active_Kill_Streak!" target="_blank" rel="noopener noreferrer" className="text-purple-300 hover:text-purple-200 no-underline">
+{t('halloween.labyrinth.advanced.killStreak.alt')}
+                                    </a>
+                                  </h5>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                  {zampacaramelosData?.icon && (
+                                    <Image
+                                      src={zampacaramelosData.icon}
+                                      alt={zampacaramelosData.name || 'Zampacaramelos'}
+                                      width={20}
+                                      height={20}
+                                      className="rounded"
+                                    />
+                                  )}
+                                  <p className="text-gray-300 text-sm">
+                                    {lang === 'es' ? `10% extra de experiencia por cada carga (hasta 10 cargas). Se obtiene del ${zampacaramelosData?.name || 'Zampacaramelos'}.` : 
+                                     lang === 'fr' ? `10% d'expérience supplémentaire par pile (jusqu'à 10 piles). Obtenu du ${zampacaramelosData?.name || 'Zampacaramelos'}.` : 
+                                     lang === 'de' ? `10% zusätzliche Erfahrung pro Stapel (bis zu 10 Stapel). Erhalten vom ${zampacaramelosData?.name || 'Zampacaramelos'}.` : 
+                                     `10% extra experience per stack (up to 10 stacks). Obtained from ${zampacaramelosData?.name || 'Zampacaramelos'}.`}
+                                  </p>
+                                </div>
+                              </div>
+                            </div>
+
+                            <div className="flex items-start gap-3 p-3 bg-gray-800/60 rounded-lg">
+                              <div className="w-2 h-2 bg-purple-400 rounded-full mt-2 flex-shrink-0"></div>
+                              <div className="flex-1">
+                                <div className="flex items-center gap-3 mb-2">
+                                  {item20002Data?.icon && (
+                                    <Image
+                                      src={item20002Data.icon}
+                                      alt={item20002Data.name || 'Potenciador de Experiencia'}
+                                      width={32}
+                                      height={32}
+                                      className="rounded"
+                                    />
+                                  )}
+                                  <h5 className="text-white font-semibold">
+                                    {item20002Data ? (
+                                      <a href={item20002Data.wikiUrl} target="_blank" rel="noopener noreferrer" className="text-purple-300 hover:text-purple-200 no-underline">
+                                        {item20002Data.name}
+                                      </a>
+                                    ) : (
+                                      <span className="text-purple-300">{t('halloween.labyrinth.advanced.experienceBooster.fallback')}</span>
+                                    )}
+                                  </h5>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                  {zampacaramelosData?.icon && (
+                                    <Image
+                                      src={zampacaramelosData.icon}
+                                      alt={zampacaramelosData.name || 'ZampaZaithanmelos'}
+                                      width={20}
+                                      height={20}
+                                      className="rounded"
+                                    />
+                                  )}
+                                <p className="text-gray-300 text-sm">
+                                  {lang === 'es' ? `50% de experiencia extra. Se consigue principalmente del ${zampacaramelosData?.name || 'ZampaZaithanmelos'}` : 
+                                   lang === 'fr' ? `50% d'expérience supplémentaire. Principalement obtenu du ${zampacaramelosData?.name || 'ZampaZaithanmelos'}` : 
+                                   lang === 'de' ? `50% zusätzliche Erfahrung. Hauptsächlich erhalten vom ${zampacaramelosData?.name || 'ZampaZaithanmelos'}` : 
+                                   `50% extra experience. Mainly obtained from ${zampacaramelosData?.name || 'ZampaZaithanmelos'}`}
+                                </p>
+                                </div>
+                              </div>
+                            </div>
+
+                            <div className="flex items-start gap-3 p-3 bg-gray-800/60 rounded-lg">
+                              <div className="w-2 h-2 bg-purple-400 rounded-full mt-2 flex-shrink-0"></div>
+                              <div className="flex-1">
+                                <div className="flex items-center gap-3 mb-2">
+                                  {celebrationBoostData?.icon && (
+                                    <Image
+                                      src={celebrationBoostData.icon}
+                                      alt={celebrationBoostData.name || 'Potenciador de Celebración'}
+                                      width={32}
+                                      height={32}
+                                      className="rounded"
+                                    />
+                                  )}
+                                  <h5 className="text-white font-semibold">
+                                    {celebrationBoostData ? (
+                                      <a href={celebrationBoostData.wikiUrl} target="_blank" rel="noopener noreferrer" className="text-purple-300 hover:text-purple-200 no-underline">
+                                        {celebrationBoostData.name}
+                                      </a>
+                                    ) : (
+                                      <span className="text-purple-300">{t('halloween.labyrinth.advanced.celebrationBoost.fallback')}</span>
+                                    )}
+                                  </h5>
+                                </div>
+                                  <p className="text-gray-300 text-sm">{t('halloween.labyrinth.advanced.celebrationBoost.description')}</p>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Comida y Mejoras */}
+                        <div className="space-y-4">
+                          <h4 className="text-lg font-semibold text-purple-300 mb-3">
+                        {t('halloween.labyrinth.advanced.foodAndEnhancements.title')}
+                          </h4>
+                          
+                          <div className="space-y-3">
+                            <div className="flex items-start gap-3 p-3 bg-gray-800/60 rounded-lg">
+                              <div className="w-2 h-2 bg-green-400 rounded-full mt-2 flex-shrink-0"></div>
+                              <div className="flex-1">
+                                <div className="flex items-center gap-3 mb-2">
+                                  {strawberryGhostData?.icon && (
+                                    <Image
+                                      src={strawberryGhostData.icon}
+                                      alt={strawberryGhostData.name || 'Comida'}
+                                      width={32}
+                                      height={32}
+                                      className="rounded"
+                                    />
+                                  )}
+                                  <h5 className="text-white font-semibold">
+                                    {strawberryGhostData ? (
+                                      <a href={strawberryGhostData.wikiUrl} target="_blank" rel="noopener noreferrer" className="text-green-300 hover:text-green-200 no-underline">
+                                        {strawberryGhostData.name}
+                                      </a>
+                                    ) : (
+                                      <span className="text-green-300">{t('halloween.labyrinth.advanced.food.fallback')}</span>
+                                    )}
+                                  </h5>
+                                </div>
+                                <p className="text-gray-300 text-sm">{t('halloween.labyrinth.advanced.food.description')}</p>
+                              </div>
+                            </div>
+
+                            <div className="flex items-start gap-3 p-3 bg-gray-800/60 rounded-lg">
+                              <div className="w-2 h-2 bg-green-400 rounded-full mt-2 flex-shrink-0"></div>
+                              <div className="flex-1">
+                                <div className="flex items-center gap-3 mb-2">
+                                  {chatoyantElixirData?.icon && (
+                                    <Image
+                                      src={chatoyantElixirData.icon}
+                                      alt={chatoyantElixirData.name || 'Mejora'}
+                                      width={32}
+                                      height={32}
+                                      className="rounded"
+                                    />
+                                  )}
+                                  <h5 className="text-white font-semibold">
+                                    {chatoyantElixirData ? (
+                                      <a href={chatoyantElixirData.wikiUrl} target="_blank" rel="noopener noreferrer" className="text-green-300 hover:text-green-200 no-underline">
+                                        {chatoyantElixirData.name}
+                                      </a>
+                                    ) : (
+                                      <span className="text-green-300">{t('halloween.labyrinth.advanced.enhancement.fallback')}</span>
+                                    )}
+                                  </h5>
+                                </div>
+                                <p className="text-gray-300 text-sm">{t('halloween.labyrinth.advanced.enhancement.description')}</p>
+                              </div>
+                            </div>
+
+                            <div className="flex items-start gap-3 p-3 bg-gray-800/60 rounded-lg">
+                              <div className="w-2 h-2 bg-blue-400 rounded-full mt-2 flex-shrink-0"></div>
+                              <div className="flex-1">
+                                <div className="flex items-center gap-3 mb-2">
+                                  {wintersBlessingData?.icon && (
+                                    <Image
+                                      src={wintersBlessingData.icon}
+                                      alt={wintersBlessingData.name || 'Bendición Invernal'}
+                                      width={32}
+                                      height={32}
+                                      className="rounded"
+                                    />
+                                  )}
+                                  <h5 className="text-white font-semibold">
+                                    {wintersBlessingData ? (
+                                      <a href={wintersBlessingData.wikiUrl} target="_blank" rel="noopener noreferrer" className="text-blue-300 hover:text-blue-200 no-underline">
+                                        {wintersBlessingData.name}
+                                      </a>
+                                    ) : (
+                                      <span className="text-blue-300">{t('halloween.labyrinth.advanced.wintersBlessing.fallback')}</span>
+                                    )}
+                                  </h5>
+                                </div>
+                                <p className="text-gray-300 text-sm">{t('halloween.labyrinth.advanced.wintersBlessing.description')}</p>
+                              </div>
+                            </div>
+
+                            <div className="flex items-start gap-3 p-3 bg-gray-800/60 rounded-lg">
+                              <div className="w-2 h-2 bg-blue-400 rounded-full mt-2 flex-shrink-0"></div>
+                              <div className="flex-1">
+                                <div className="flex items-center gap-3 mb-2">
+                                  {luckyDraketailData?.icon && (
+                                    <Image
+                                      src={luckyDraketailData.icon}
+                                      alt={luckyDraketailData.name || 'Don de año nuevo'}
+                                      width={32}
+                                      height={32}
+                                      className="rounded"
+                                    />
+                                  )}
+                                  <h5 className="text-white font-semibold">
+                                    {luckyDraketailData ? (
+                                      <a href={luckyDraketailData.wikiUrl} target="_blank" rel="noopener noreferrer" className="text-blue-300 hover:text-blue-200 no-underline">
+                                        {luckyDraketailData.name}
+                                      </a>
+                                    ) : (
+                                      <span className="text-blue-300">Don de año nuevo</span>
+                                    )}
+                                  </h5>
+                                </div>
+                                <p className="text-gray-300 text-sm">5% de experiencia al usar petardos del año nuevo lunar.</p>
+                              </div>
+                            </div>
+
+                            <div className="flex items-start gap-3 p-3 bg-gray-800/60 rounded-lg">
+                              <div className="w-2 h-2 bg-blue-400 rounded-full mt-2 flex-shrink-0"></div>
+                              <div className="flex-1">
+                                <div className="flex items-center gap-3 mb-2">
+                                  {luckyFirecrackerData?.icon && (
+                                    <Image
+                                      src={luckyFirecrackerData.icon}
+                                      alt={luckyFirecrackerData.name || 'Bonificación de año nuevo'}
+                                      width={32}
+                                      height={32}
+                                      className="rounded"
+                                    />
+                                  )}
+                                  <h5 className="text-white font-semibold">
+                                    {luckyFirecrackerData ? (
+                                      <a href={luckyFirecrackerData.wikiUrl} target="_blank" rel="noopener noreferrer" className="text-blue-300 hover:text-blue-200 no-underline">
+                                        {luckyFirecrackerData.name}
+                                      </a>
+                                    ) : (
+                                      <span className="text-blue-300">Bonificación de año nuevo</span>
+                                    )}
+                                  </h5>
+                                </div>
+                                <p className="text-gray-300 text-sm">10% de experiencia. Se consigue con objeto especial del año nuevo lunar.</p>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Boosters de Festival */}
+                      <div className="mt-6">
+                        <h4 className="text-lg font-semibold text-orange-300 mb-3">
+{t('halloween.labyrinth.advanced.festivalBoosters.title')}
+                        </h4>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <div className="space-y-3">
+                            <div className="flex items-start gap-3 p-3 bg-gray-800/60 rounded-lg">
+                              <div className="w-2 h-2 bg-orange-400 rounded-full mt-2 flex-shrink-0"></div>
+                              <div className="flex-1">
+                                <div className="flex items-center gap-3 mb-2">
+                                  {festivalGobblerBoostData?.icon && (
+                                    <Image
+                                      src={festivalGobblerBoostData.icon}
+                                      alt={festivalGobblerBoostData.name || 'Potenciador de zampador de festival'}
+                                      width={32}
+                                      height={32}
+                                      className="rounded"
+                                    />
+                                  )}
+                                  <h5 className="text-white font-semibold">
+                                    {festivalGobblerBoostData ? (
+                                      <a href={festivalGobblerBoostData.wikiUrl} target="_blank" rel="noopener noreferrer" className="text-orange-300 hover:text-orange-200 no-underline">
+                                        {festivalGobblerBoostData.name}
+                                      </a>
+                                    ) : (
+                                      <span className="text-orange-300">Potenciador de zampador de festival</span>
+                                    )}
+                                  </h5>
+                                </div>
+                                <p className="text-gray-300 text-sm">
+                                  {lang === 'es' ? '25% de experiencia extra. Se obtiene con copos de nueve en el ' : 
+                                   lang === 'fr' ? '25% d\'expérience supplémentaire. Obtenu avec des flocons de neige dans le ' : 
+                                   lang === 'de' ? '25% zusätzliche Erfahrung. Erhalten mit Schneeflocken im ' : 
+                                   '25% extra experience. Obtained with snowflakes in '}
+                                  {zampacoposData ? (
+                                    <a href={zampacoposData.wikiUrl} target="_blank" rel="noopener noreferrer" className="text-orange-300 hover:text-orange-200 no-underline inline-flex items-center gap-1">
+                                      {zampacoposData.icon && (
+                                        <Image
+                                          src={zampacoposData.icon}
+                                          alt={zampacoposData.name}
+                                          width={16}
+                                          height={16}
+                                          className="rounded"
+                                        />
+                                      )}
+                                      {zampacoposData.name}
+                                    </a>
+                                  ) : (
+                                    <span className="text-orange-300">Zampacopos</span>
+                                  )}
+                                  {lang === 'es' ? ' o ' : 
+                                   lang === 'fr' ? ' ou ' : 
+                                   lang === 'de' ? ' oder ' : 
+                                   ' or '}
+                                  {zampazaithanmelosData ? (
+                                    <a href={zampazaithanmelosData.wikiUrl} target="_blank" rel="noopener noreferrer" className="text-orange-300 hover:text-orange-200 no-underline inline-flex items-center gap-1">
+                                      {zampazaithanmelosData.icon && (
+                                        <Image
+                                          src={zampazaithanmelosData.icon}
+                                          alt={zampazaithanmelosData.name}
+                                          width={16}
+                                          height={16}
+                                          className="rounded"
+                                        />
+                                      )}
+                                      {zampazaithanmelosData.name}
+                                    </a>
+                                  ) : (
+                                    <span className="text-orange-300">ZampaZaithanmelos</span>
+                                  )}
+                                  {lang === 'es' ? '.' : 
+                                   lang === 'fr' ? '.' : 
+                                   lang === 'de' ? '.' : 
+                                   '.'}
+                                </p>
+                              </div>
+                            </div>
+
+                            <div className="flex items-start gap-3 p-3 bg-gray-800/60 rounded-lg">
+                              <div className="w-2 h-2 bg-orange-400 rounded-full mt-2 flex-shrink-0"></div>
+                              <div className="flex-1">
+                                <div className="flex items-center gap-3 mb-2">
+                                  {guildExperienceBannerData?.icon && (
+                                    <Image
+                                      src={guildExperienceBannerData.icon}
+                                      alt={guildExperienceBannerData.name || 'Bonificador de estandarte de experiencia del clan'}
+                                      width={32}
+                                      height={32}
+                                      className="rounded"
+                                    />
+                                  )}
+                                  <h5 className="text-white font-semibold">
+                                    {guildExperienceBannerData ? (
+                                      <a href={guildExperienceBannerData.wikiUrl} target="_blank" rel="noopener noreferrer" className="text-orange-300 hover:text-orange-200 no-underline">
+                                        {guildExperienceBannerData.name}
+                                      </a>
+                                    ) : (
+                                      <span className="text-orange-300">Bonificador de estandarte de experiencia del clan</span>
+                                    )}
+                                  </h5>
+                                </div>
+                                  <p className="text-gray-300 text-sm">{lang === 'es' ? '15% extra de experiencia. Se obtiene usando estandarte del clan o de aniversario.' : 
+                                   lang === 'fr' ? '15% d\'expérience supplémentaire. Obtenu en utilisant le bannière de guilde ou d\'anniversaire.' : 
+                                   lang === 'de' ? '15% zusätzliche Erfahrung. Erhalten durch Verwenden des Gilden-Banners oder des Jubiläums-Banners.' : 
+                                   '15% extra experience. Obtained by using the guild banner or anniversary banner.'}</p>
+                              </div>
+                            </div>
+
+                            <div className="flex items-start gap-3 p-3 bg-gray-800/60 rounded-lg">
+                              <div className="w-2 h-2 bg-orange-400 rounded-full mt-2 flex-shrink-0"></div>
+                              <div className="flex-1">
+                                <div className="flex items-center gap-3 mb-2">
+                                  {guildXPGainData?.icon && (
+                                    <Image
+                                      src={guildXPGainData.icon}
+                                      alt={guildXPGainData.name || 'Ganancia de PE del clan'}
+                                      width={32}
+                                      height={32}
+                                      className="rounded"
+                                    />
+                                  )}
+                                  <h5 className="text-white font-semibold">
+                                    {guildXPGainData ? (
+                                      <a href={guildXPGainData.wikiUrl} target="_blank" rel="noopener noreferrer" className="text-orange-300 hover:text-orange-200 no-underline">
+                                        {guildXPGainData.name}
+                                      </a>
+                                    ) : (
+                                      <span className="text-orange-300">Ganancia de PE del clan</span>
+                                    )}
+                                  </h5>
+                                </div>
+                                    <p className="text-gray-300 text-sm">
+                                      {lang === 'es' ? '10% de experiencia extra. Se consigue con poción de clan.' : 
+                                       lang === 'fr' ? '10% d\'expérience supplémentaire. Obtenu avec la potion de clan.' : 
+                                       lang === 'de' ? '10% zusätzliche Erfahrung. Erhalten mit der Clan-Potion.' : 
+                                       '10% extra experience. Obtained with the clan potion.'}
+                                    </p>
+                              </div>
+                            </div>
+                          </div>
+
+                          <div className="space-y-3">
+                            <div className="flex items-start gap-3 p-3 bg-gray-800/60 rounded-lg">
+                              <div className="w-2 h-2 bg-yellow-400 rounded-full mt-2 flex-shrink-0"></div>
+                              <div className="flex-1">
+                                <div className="flex items-center gap-3 mb-2">
+                                  {experiencedEnrichmentData?.icon && (
+                                    <Image
+                                      src={experiencedEnrichmentData.icon}
+                                      alt={experiencedEnrichmentData.name || 'Enriquecimiento de experiencia'}
+                                      width={32}
+                                      height={32}
+                                      className="rounded"
+                                    />
+                                  )}
+                                  <h5 className="text-white font-semibold">
+                                    {experiencedEnrichmentData ? (
+                                      <a href={experiencedEnrichmentData.wikiUrl} target="_blank" rel="noopener noreferrer" className="text-yellow-300 hover:text-yellow-200 no-underline">
+                                        {experiencedEnrichmentData.name}
+                                      </a>
+                                    ) : (
+                                      <span className="text-yellow-300">Enriquecimiento de experiencia</span>
+                                    )}
+                                  </h5>
+                                </div>
+                                <p className="text-gray-300 text-sm">
+                                  {lang === 'es' ? '20% extra de experiencia. Infusión para amuletos. Se consigue en mercaderes de laureles.' : 
+                                   lang === 'fr' ? '20% d\'expérience supplémentaire. Infusion pour amulettes. Obtenu dans les marchands de lauriers.' : 
+                                   lang === 'de' ? '20% zusätzliche Erfahrung. Infusion für Amulette. Erhalten bei Händlern von Lorbeerblättern.' : 
+                                   '20% extra experience. Infusion for amulets. Obtained at laurel merchants.'}
+                                </p>
+                              </div>
+                            </div>
+
+                            <div className="flex items-start gap-3 p-3 bg-gray-800/60 rounded-lg">
+                              <div className="w-2 h-2 bg-yellow-400 rounded-full mt-2 flex-shrink-0"></div>
+                              <div className="flex-1">
+                                <div className="flex items-center gap-3 mb-2">
+                                  {enlightenmentData?.icon && (
+                                    <Image
+                                      src={enlightenmentData.icon}
+                                      alt={enlightenmentData.name || 'Iluminación'}
+                                      width={32}
+                                      height={32}
+                                      className="rounded"
+                                    />
+                                  )}
+                                  <h5 className="text-white font-semibold">
+                                    {enlightenmentData ? (
+                                      <a href={enlightenmentData.wikiUrl} target="_blank" rel="noopener noreferrer" className="text-yellow-300 hover:text-yellow-200 no-underline">
+                                        {enlightenmentData.name}
+                                      </a>
+                                    ) : (
+                                      <span className="text-yellow-300">Iluminación</span>
+                                    )}
+                                  </h5>
+                                </div>
+                                <p className="text-gray-300 text-sm">{lang === 'es' ? '20% extra de experiencia durante 6 horas. Se consigue completando el corazón de entrenamiento del monasterio de Seitung.' : 
+                                 lang === 'fr' ? '20% d\'expérience supplémentaire pendant 6 heures. Obtenu en complétant le cœur d\'entraînement du monastère de Seitung.' : 
+                                 lang === 'de' ? '20% zusätzliche Erfahrung während 6 Stunden. Erhalten durch Vervollständigen des Trainingskreises des Seitung-Monastärs.' : 
+                                 '20% extra experience for 6 hours. Obtained by completing the training heart of the Seitung monastery.'}</p>
+                              </div>
+                            </div>
+
+                            <div className="flex items-start gap-3 p-3 bg-gray-800/60 rounded-lg">
+                              <div className="w-2 h-2 bg-yellow-400 rounded-full mt-2 flex-shrink-0"></div>
+                              <div className="flex-1">
+                                <div className="flex items-center gap-3 mb-2">
+                                  {ancientCanthanSecretData?.icon && (
+                                    <Image
+                                      src={ancientCanthanSecretData.icon}
+                                      alt={ancientCanthanSecretData.name || 'Antiguo Secreto Canthaino'}
+                                      width={32}
+                                      height={32}
+                                      className="rounded"
+                                    />
+                                  )}
+                                  <h5 className="text-white font-semibold">
+                                    {ancientCanthanSecretData ? (
+                                      <a href={ancientCanthanSecretData.wikiUrl} target="_blank" rel="noopener noreferrer" className="text-yellow-300 hover:text-yellow-200 no-underline">
+                                        {ancientCanthanSecretData.name}
+                                      </a>
+                                    ) : (
+                                      <span className="text-yellow-300">Antiguo Secreto Canthaino</span>
+                                    )}
+                                  </h5>
+                                </div>
+                                <p className="text-gray-300 text-sm">{lang === 'es' ? '20% extra de experiencia durante 1 hora. Se compra en el mismo corazón de Seitung. 1 vez por día.' : 
+                                 lang === 'fr' ? '20% d\'expérience supplémentaire pendant 1 heure. Acheté au même cœur de Seitung. 1 fois par jour.' : 
+                                 lang === 'de' ? '20% zusätzliche Erfahrung während 1 Stunde. Gekauft im selben Trainingskreis von Seitung. 1 Mal pro Tag.' : 
+                                 '20% extra experience for 1 hour. Purchased at the same training heart of Seitung. 1 time per day.'}</p>
+                              </div>
+                            </div>
+
+                            <div className="flex items-start gap-3 p-3 bg-gray-800/60 rounded-lg">
+                              <div className="w-2 h-2 bg-yellow-400 rounded-full mt-2 flex-shrink-0"></div>
+                              <div className="flex-1">
+                                <div className="flex items-center gap-3 mb-2">
+                                  {restingData?.icon && (
+                                    <Image
+                                      src={restingData.icon}
+                                      alt={restingData.name || 'Descanso'}
+                                      width={32}
+                                      height={32}
+                                      className="rounded"
+                                    />
+                                  )}
+                                  <h5 className="text-white font-semibold">
+                                    {restingData ? (
+                                      <a href={restingData.wikiUrl} target="_blank" rel="noopener noreferrer" className="text-yellow-300 hover:text-yellow-200 no-underline">
+                                        {restingData.name}
+                                      </a>
+                                    ) : (
+                                      <span className="text-yellow-300">Descanso</span>
+                                    )}
+                                  </h5>
+                                </div>
+                                <p className="text-gray-300 text-sm">
+                                  {lang === 'es' ? 'Hasta 25% extra de experiencia durante 4 horas. Se obtiene dejando descansar el personaje en Piedra Arbórea, Torre del Brujo y Heredad.' : 
+                                   lang === 'fr' ? 'Jusqu\'à 25% d\'expérience supplémentaire pendant 4 heures. Obtenu en laissant le personnage se reposer sur la Pierre Arborea, La Tour du sorcier et Pavillon.' : 
+                                   lang === 'de' ? 'Bis zu 25% zusätzliche Erfahrung während 4 Stunden. Erhalten durch Lassen des Charakters in der Arborstein, Der Turm des Zauberers und Heimstätte.' : 
+                                   'Up to 25% extra experience for 4 hours. Obtained by leaving the character to rest on the Arborstone, the Witch\'s Tower and  Homesteads.'}
+                                </p>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Consejo Final */}
+                      <div className="mt-6 bg-gradient-to-r from-orange-900/30 to-red-900/30 border border-orange-500/30 rounded-lg p-4">
+                        <h4 className="text-orange-300 font-semibold mb-2 flex items-center">
+                          <Zap className="w-5 h-5 mr-2" />
+{t('halloween.labyrinth.advanced.maximumEfficiencyTip.title')}
+                        </h4>
+                        <p className="text-gray-300 text-sm">
+{t('halloween.labyrinth.advanced.maximumEfficiencyTip.description')}
+                        </p>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
