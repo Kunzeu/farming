@@ -333,11 +333,12 @@ const Navigation = () => {
 
   // Sección de Guías
   const guidesItems = [
-    { href: '/conversion-guide', label: t('nav.conversionGuide', 'Guía de Conversión'), icon: BookOpen },
+    { href: '/conversion-guide', label: t('conversionGuidePage.title', 'Guía de Conversión'), icon: BookOpen },
     { href: '/garden', label: t('gardenPage.titleShort', 'Jardín'), icon: Star },
     { href: '/gift-of-mastery', label: t('nav.giftOfMastery', 'Gift of Mastery'), icon: Award },
     { href: '/gift-of-jade-mastery', label: t('nav.giftOfJadeMastery', 'Gift of Jade Mastery'), icon: Award },
     { href: '/glossary', label: t('nav.glossary', 'Glosario'), icon: FileText },
+    { href: '/festivals/halloween/labyrinth-guide', label: t('pageTitles.halloweenLabyrinth', 'Guía del Laberinto de Halloween'), icon: BookOpen },
   ];
 
   // Sección de Herramientas

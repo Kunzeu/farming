@@ -394,8 +394,6 @@ const HalloweenPage = () => {
     item.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-
-
   return (
     <>
       <Navigation />
@@ -498,7 +496,7 @@ const HalloweenPage = () => {
                   <div className="bg-orange-900/20 border border-orange-500/50 rounded-lg p-6">
                     <h3 className="text-xl font-bold text-white mb-4 flex items-center">
                       <span className="text-2xl mr-3">🎃</span>
-                      {t('halloween.labyrinth.title')}
+                      {t('pageTitles.halloweenLabyrinth')}
                     </h3>
                     <p className="text-gray-200 mb-4">
                       {t('halloween.labyrinth.subtitle')}
