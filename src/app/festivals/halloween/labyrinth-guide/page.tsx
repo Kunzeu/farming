@@ -65,6 +65,7 @@ const LabyrinthGuidePage = () => {
   const [enduranceThiefData, setEnduranceThiefData] = useState<{name: string, wikiUrl: string, icon: string} | null>(null);
   const [shadowstepData, setShadowstepData] = useState<{name: string, wikiUrl: string, icon: string} | null>(null);
   const [infiltratorsArrowData, setInfiltratorsArrowData] = useState<{name: string, wikiUrl: string, icon: string} | null>(null);
+  const [spiritShardsData, setSpiritShardsData] = useState<{name: string, icon: string, wikiUrl: string} | null>(null);
 
   const sections = [
     { id: 'overview', label: t('halloween.labyrinth.sections.overview'), icon: Info },
@@ -754,6 +755,21 @@ const LabyrinthGuidePage = () => {
     }
   };
 
+  // Función para obtener datos de Esquirlas Espirituales
+  const fetchSpiritShardsData = async () => {
+    try {
+      const response = await fetch(`https://api.guildwars2.com/v2/items/69910?lang=${lang}`);
+      const data = await response.json();
+      setSpiritShardsData({
+        name: data.name,
+        icon: data.icon,
+        wikiUrl: buildWikiUrl(data.name, 'item')
+      });
+    } catch (error) {
+      // Error fetching spirit shards data
+    }
+  };
+
 
   useEffect(() => {
     fetchItemData();
@@ -778,6 +794,7 @@ const LabyrinthGuidePage = () => {
     fetchPrecisionData();
     fetchRuna100148Data();
     fetchRunaVelocidadData();
+    fetchSpiritShardsData();
   }, [lang]);
 
   return (
@@ -887,7 +904,29 @@ const LabyrinthGuidePage = () => {
                           {t('halloween.labyrinth.overview.goldPerHour')}
                         </h3>
                         <p className="text-gray-300 text-sm">
-                          {t('halloween.labyrinth.overview.goldPerHourDescription')}
+                          {t('halloween.labyrinth.overview.goldPerHourDescription').split('30 Esquirlas Espirituales').map((part, index) => (
+                            <span key={index}>
+                              {part}
+                              {index === 0 && (
+                                <>
+                                  <span className="inline-flex items-center gap-1">
+                                    30 
+                                    {spiritShardsData?.icon ? (
+                                      <Image
+                                        src={spiritShardsData.icon}
+                                        alt={spiritShardsData.name}
+                                        width={16}
+                                        height={16}
+                                        className="inline"
+                                      />
+                                    ) : (
+                                      'Esquirlas Espirituales'
+                                    )}
+                                  </span>
+                                </>
+                              )}
+                            </span>
+                          ))}
                         </p>
                       </div>
                     </div>
@@ -2528,11 +2567,10 @@ const LabyrinthGuidePage = () => {
                      <div className="bg-blue-900/20 border border-blue-500/30 rounded-lg p-4">
                        <h3 className="text-blue-300 font-semibold mb-2 flex items-center">
                          <Info className="w-5 h-5 mr-2" />
-                         Próximamente
+                         {t('halloween.labyrinth.comingSoon.title')}
                        </h3>
                        <p className="text-gray-300 text-sm">
-                         Si tu clase favorita no está en esta lista, no te preocupes. En los próximos días publicaremos builds específicas para cada clase, 
-                         asegurándonos de que todos los jugadores tengan opciones optimizadas para el Laberinto de Halloween.
+                         {t('halloween.labyrinth.comingSoon.description')}
                        </p>
                      </div>
                    </div>
@@ -2554,10 +2592,10 @@ const LabyrinthGuidePage = () => {
                     {t('halloween.labyrinth.content.routes')}
                      </p>
                      <p className="text-gray-200 mb-6 text-lg leading-relaxed">
-                       Una vez tenemos claro eso, es tan simple como seguir un camino y unos cuantos tips.
+                       {t('halloween.labyrinth.routes.mainRoute.description')}
                      </p>
                      <p className="text-gray-200 mb-6 text-lg leading-relaxed">
-                       El camino consiste en girar por el laberinto en el sentido de las agujas del reloj y entrando y saliendo al centro.
+                       {t('halloween.labyrinth.routes.clockwiseMovement.description')}
                      </p>
                    </div>
 
@@ -2565,39 +2603,38 @@ const LabyrinthGuidePage = () => {
                      <div className="bg-orange-900/20 border border-orange-500/30 rounded-lg p-4">
                        <h3 className="text-white font-semibold mb-3 flex items-center">
                          <Target className="w-5 h-5 mr-2 text-orange-400" />
-                         Concepto de Tagging
+                         {t('halloween.labyrinth.routes.taggingConcept.title')}
                        </h3>
                        <p className="text-gray-300 text-sm">
-                         El farmeo de tagging consiste en atacar a todos los enemigos para obtener loot, pero sin matarlos completamente. 
-                         Esto permite que otros jugadores también ataquen y todos reciban recompensas.
+                         {t('halloween.labyrinth.routes.taggingConcept.description')}
                        </p>
                      </div>
 
                      <div className="bg-gray-800/60 border border-orange-500/30 rounded-lg p-4">
                        <h3 className="text-white font-semibold mb-3 flex items-center">
                          <Map className="w-5 h-5 mr-2 text-green-400" />
-                         Ruta del Laberinto
+                         {t('halloween.labyrinth.routes.labyrinthRoute.title')}
                        </h3>
                        <div className="space-y-3">
                          <div className="flex items-start gap-3">
                            <div className="w-2 h-2 bg-orange-400 rounded-full mt-2 flex-shrink-0"></div>
                            <div>
-                             <h4 className="text-white font-semibold">Movimiento en sentido horario</h4>
-                             <p className="text-gray-300 text-sm">Gira por el laberinto siguiendo el sentido de las agujas del reloj para maximizar la cobertura de enemigos.</p>
+                             <h4 className="text-white font-semibold">{t('halloween.labyrinth.routes.clockwiseMovement.title')}</h4>
+                             <p className="text-gray-300 text-sm">{t('halloween.labyrinth.routes.clockwiseMovement.description')}</p>
                            </div>
                          </div>
                          <div className="flex items-start gap-3">
                            <div className="w-2 h-2 bg-orange-400 rounded-full mt-2 flex-shrink-0"></div>
                            <div>
-                             <h4 className="text-white font-semibold">Entrar y salir del centro</h4>
-                             <p className="text-gray-300 text-sm">No te limites al perímetro, entra al centro del laberinto para encontrar más enemigos y maximizar el farmeo.</p>
+                             <h4 className="text-white font-semibold">{t('halloween.labyrinth.routes.centerEntry.title')}</h4>
+                             <p className="text-gray-300 text-sm">{t('halloween.labyrinth.routes.centerEntry.description')}</p>
                            </div>
                          </div>
                          <div className="flex items-start gap-3">
                            <div className="w-2 h-2 bg-orange-400 rounded-full mt-2 flex-shrink-0"></div>
                            <div>
-                             <h4 className="text-white font-semibold">Mantén el ritmo constante</h4>
-                             <p className="text-gray-300 text-sm">Una vez que encuentres el ritmo, manténlo. Los enemigos respawnan regularmente en las mismas ubicaciones.</p>
+                             <h4 className="text-white font-semibold">{t('halloween.labyrinth.routes.constantRhythm.title')}</h4>
+                             <p className="text-gray-300 text-sm">{t('halloween.labyrinth.routes.constantRhythm.description')}</p>
                            </div>
                          </div>
                        </div>
@@ -2620,10 +2657,10 @@ const LabyrinthGuidePage = () => {
                          <div className="mt-3 bg-blue-900/20 border border-blue-500/30 rounded-lg p-3">
                            <h4 className="text-blue-300 font-semibold mb-2 flex items-center">
                              <Info className="w-4 h-4 mr-2" />
-                             Note for English speakers
+                             {t('halloween.labyrinth.routes.noteForEnglish.title')}
                            </h4>
                            <p className="text-gray-300 text-sm">
-                             The image is in Spanish: <strong>&quot;Puerta&quot;</strong> = <strong>&quot;Door&quot;</strong> | <strong>&quot;Inicio&quot;</strong> = <strong>&quot;Start&quot;</strong>
+                             {t('halloween.labyrinth.routes.noteForEnglish.description')}
                            </p>
                          </div>
                        </div>
@@ -2638,10 +2675,9 @@ const LabyrinthGuidePage = () => {
                        
                        <div className="space-y-4">
                          <div className="bg-orange-900/20 border border-orange-500/30 rounded-lg p-4">
-                           <h4 className="text-orange-300 font-semibold mb-2">🎯 Las 4 Puertas Importantes</h4>
+                           <h4 className="text-orange-300 font-semibold mb-2">🎯 {t('halloween.labyrinth.routes.importantDoors.title')}</h4>
                            <p className="text-gray-300 text-sm">
-                             Lo más importante es que sepamos que habrá muchas puertas pero solo 4 importantes que debemos abrir. 
-                             Esas 4 están indicadas en la imagen que tenemos encima. El resto lo mejor es ignorarlas y seguir corriendo.
+                             {t('halloween.labyrinth.routes.importantDoors.description')}
                            </p>
                          </div>
 
@@ -2649,9 +2685,9 @@ const LabyrinthGuidePage = () => {
                            <div className="flex items-start gap-3">
                              <div className="w-2 h-2 bg-orange-400 rounded-full mt-2 flex-shrink-0"></div>
                              <div>
-                               <h4 className="text-white font-semibold">Ruta principal</h4>
+                               <h4 className="text-white font-semibold">{t('halloween.labyrinth.routes.mainRoute.title')}</h4>
                                <p className="text-gray-300 text-sm">
-                                 Una vez que empezamos arriba a la derecha, vamos haciendo el proceso de la imagen. Hay una variante y es entrar y salir por los lados en vez de por arriba y abajo, pero vamos, que es lo mismo al final.
+                                 {t('halloween.labyrinth.routes.mainRoute.description')}
                                </p>
                              </div>
                            </div>
@@ -2659,9 +2695,9 @@ const LabyrinthGuidePage = () => {
                            <div className="flex items-start gap-3">
                              <div className="w-2 h-2 bg-orange-400 rounded-full mt-2 flex-shrink-0"></div>
                              <div>
-                               <h4 className="text-white font-semibold">Evitar legendarios</h4>
+                               <h4 className="text-white font-semibold">{t('halloween.labyrinth.routes.avoidLegendaries.title')}</h4>
                                <p className="text-gray-300 text-sm">
-                                 Siempre que pasemos por los legendarios es recomendable esquivarlos ya sea corriendo mucho, pasando lejos de ellos, haciéndonos invisibles o como podamos.
+                                 {t('halloween.labyrinth.routes.avoidLegendaries.description')}
                                </p>
                              </div>
                            </div>
@@ -2669,9 +2705,9 @@ const LabyrinthGuidePage = () => {
                            <div className="flex items-start gap-3">
                              <div className="w-2 h-2 bg-orange-400 rounded-full mt-2 flex-shrink-0"></div>
                              <div>
-                               <h4 className="text-white font-semibold">Esquina inferior izquierda</h4>
+                               <h4 className="text-white font-semibold">{t('halloween.labyrinth.routes.bottomLeftCorner.title')}</h4>
                                <p className="text-gray-300 text-sm">
-                                 En la esquina inferior izquierda, en caso de ver la puerta en el minimapa, iremos a por ella, de no ser así, recortaremos más cerca del interior para continuar hacia arriba.
+                                 {t('halloween.labyrinth.routes.bottomLeftCorner.description')}
                                </p>
                              </div>
                            </div>
@@ -2679,9 +2715,9 @@ const LabyrinthGuidePage = () => {
                            <div className="flex items-start gap-3">
                              <div className="w-2 h-2 bg-orange-400 rounded-full mt-2 flex-shrink-0"></div>
                              <div>
-                               <h4 className="text-white font-semibold">En las puertas</h4>
+                               <h4 className="text-white font-semibold">{t('halloween.labyrinth.routes.atDoors.title')}</h4>
                                <p className="text-gray-300 text-sm">
-                                 Cuando estemos en las puertas es importante hacer daño en área ya que los enemigos saldrán en tromba. Intentad NO empujar a nadie porque entonces podéis joder a todo el grupo.
+                                 {t('halloween.labyrinth.routes.atDoors.description')}
                                </p>
                              </div>
                            </div>
@@ -2689,25 +2725,25 @@ const LabyrinthGuidePage = () => {
                            <div className="flex items-start gap-3">
                              <div className="w-2 h-2 bg-orange-400 rounded-full mt-2 flex-shrink-0"></div>
                              <div>
-                               <h4 className="text-white font-semibold">El esqueleto con motosierra</h4>
+                               <h4 className="text-white font-semibold">{t('halloween.labyrinth.routes.chainsawSkeleton.title')}</h4>
                                <p className="text-gray-300 text-sm">
-                                 En caso de que salga el esqueleto con la motosierra y nos persiga, haced caso al comandante. Él decidirá si correr o pegarle, sea como sea, id todos juntos a donde él escoja.
+                                 {t('halloween.labyrinth.routes.chainsawSkeleton.description')}
                                </p>
                              </div>
                            </div>
                          </div>
 
                          <div className="bg-red-900/20 border border-red-500/30 rounded-lg p-4">
-                           <h4 className="text-red-300 font-semibold mb-2">⚠️ Comandantes Problemáticos</h4>
+                           <h4 className="text-red-300 font-semibold mb-2">⚠️ {t('halloween.labyrinth.routes.problematicCommanders.title')}</h4>
                            <p className="text-gray-300 text-sm">
-                             Hay algunos comandantes que hacen todas las puertas y los legendarios, el mayor TIP que os puedo dar es: <strong>Que huyáis de esos comandantes.</strong>
+                             {t('halloween.labyrinth.routes.problematicCommanders.description')}
                            </p>
                          </div>
 
                          <div className="bg-blue-900/20 border border-blue-500/30 rounded-lg p-4">
-                           <h4 className="text-blue-300 font-semibold mb-2">💡 Resumen Final</h4>
+                           <h4 className="text-blue-300 font-semibold mb-2">💡 {t('halloween.labyrinth.routes.finalSummary.title')}</h4>
                            <p className="text-gray-300 text-sm">
-                             Aparte de esto no hay mucho más que tener en cuenta. Recordad no hacer demasiado daño a los enemigos e ir equipados como toca.
+                             {t('halloween.labyrinth.routes.finalSummary.description')}
                            </p>
                          </div>
                        </div>
@@ -2716,11 +2752,10 @@ const LabyrinthGuidePage = () => {
                      <div className="bg-blue-900/20 border border-blue-500/30 rounded-lg p-4">
                        <h3 className="text-blue-300 font-semibold mb-2 flex items-center">
                          <Info className="w-5 h-5 mr-2" />
-                         Consejo Pro
+                         {t('halloween.labyrinth.routes.proTip.title')}
                        </h3>
                        <p className="text-gray-300 text-sm">
-                         La clave del éxito en el laberinto es la consistencia. Una vez que domines la ruta, podrás farmear de manera eficiente 
-                         sin pensar demasiado, permitiéndote concentrarte en otros aspectos como builds o conversación con el grupo.
+                         {t('halloween.labyrinth.routes.proTip.description')}
                        </p>
                      </div>
                    </div>
@@ -2785,22 +2820,22 @@ const LabyrinthGuidePage = () => {
                         <div className="flex items-start gap-3">
                           <div className="w-2 h-2 bg-yellow-400 rounded-full mt-2 flex-shrink-0"></div>
                           <div>
-                            <h4 className="text-white font-semibold">Usa boosters</h4>
-                            <p className="text-gray-300 text-sm">Magic Find, Experience, y otros boosters pueden aumentar significativamente tus ganancias.</p>
+                            <h4 className="text-white font-semibold">{t('halloween.labyrinth.tips.useBoosters.title')}</h4>
+                            <p className="text-gray-300 text-sm">{t('halloween.labyrinth.tips.useBoosters.description')}</p>
                           </div>
                         </div>
                         <div className="flex items-start gap-3">
                           <div className="w-2 h-2 bg-yellow-400 rounded-full mt-2 flex-shrink-0"></div>
                           <div>
-                            <h4 className="text-white font-semibold">Optimiza tu build</h4>
-                            <p className="text-gray-300 text-sm">Prioriza daño AoE y movilidad. Los enemigos son débiles pero numerosos.</p>
+                            <h4 className="text-white font-semibold">{t('halloween.labyrinth.tips.optimizeBuild.title')}</h4>
+                            <p className="text-gray-300 text-sm">{t('halloween.labyrinth.tips.optimizeBuild.description')}</p>
                           </div>
                         </div>
                         <div className="flex items-start gap-3">
                           <div className="w-2 h-2 bg-yellow-400 rounded-full mt-2 flex-shrink-0"></div>
                           <div>
-                            <h4 className="text-white font-semibold">Mantén el ritmo</h4>
-                            <p className="text-gray-300 text-sm">No te detengas a vender constantemente. Acumula y vende en lotes.</p>
+                            <h4 className="text-white font-semibold">{t('halloween.labyrinth.tips.keepRhythm.title')}</h4>
+                            <p className="text-gray-300 text-sm">{t('halloween.labyrinth.tips.keepRhythm.description')}</p>
                           </div>
                         </div>
                       </div>
@@ -2812,22 +2847,22 @@ const LabyrinthGuidePage = () => {
                         <div className="flex items-start gap-3">
                           <div className="w-2 h-2 bg-red-400 rounded-full mt-2 flex-shrink-0"></div>
                           <div>
-                            <h4 className="text-white font-semibold">Cuidado con Steve</h4>
-                            <p className="text-gray-300 text-sm">El jefe del laberinto puede aparecer en cualquier momento. Ten un plan de escape.</p>
+                            <h4 className="text-white font-semibold">{t('halloween.labyrinth.tips.watchOutSteve.title')}</h4>
+                            <p className="text-gray-300 text-sm">{t('halloween.labyrinth.tips.watchOutSteve.description')}</p>
                           </div>
                         </div>
                         <div className="flex items-start gap-3">
                           <div className="w-2 h-2 bg-red-400 rounded-full mt-2 flex-shrink-0"></div>
                           <div>
-                            <h4 className="text-white font-semibold">Mantén distancia</h4>
-                            <p className="text-gray-300 text-sm">Algunos enemigos tienen ataques que pueden matarte instantáneamente.</p>
+                            <h4 className="text-white font-semibold">{t('halloween.labyrinth.tips.keepDistance.title')}</h4>
+                            <p className="text-gray-300 text-sm">{t('halloween.labyrinth.tips.keepDistance.description')}</p>
                           </div>
                         </div>
                         <div className="flex items-start gap-3">
                           <div className="w-2 h-2 bg-red-400 rounded-full mt-2 flex-shrink-0"></div>
                           <div>
-                            <h4 className="text-white font-semibold">Usa el mapa</h4>
-                            <p className="text-gray-300 text-sm">El laberinto puede ser confuso. Usa el mapa para orientarte y encontrar rutas eficientes.</p>
+                            <h4 className="text-white font-semibold">{t('halloween.labyrinth.tips.useMap.title')}</h4>
+                            <p className="text-gray-300 text-sm">{t('halloween.labyrinth.tips.useMap.description')}</p>
                           </div>
                         </div>
                       </div>
@@ -2837,11 +2872,10 @@ const LabyrinthGuidePage = () => {
                   <div className="mt-8 bg-orange-900/20 border border-orange-500/30 rounded-lg p-4">
                     <h3 className="text-orange-300 font-semibold mb-2 flex items-center">
                       <TrendingUp className="w-5 h-5 mr-2" />
-                      Pro Tip Final
+                      {t('halloween.labyrinth.tips.finalProTip.title')}
                     </h3>
                     <p className="text-gray-300 text-sm">
-                      El Laberinto de Halloween es una de las actividades más rentables del juego, pero también una de las más repetitivas. 
-                      Si sientes que te estás volviendo loco, ¡toma un descanso! Tu salud mental es más importante que el oro virtual.
+                      {t('halloween.labyrinth.tips.finalProTip.description')}
                     </p>
                   </div>
                 </div>
