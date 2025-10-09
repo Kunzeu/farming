@@ -2106,6 +2106,10 @@
   "halloween.labyrinth.tips.finalProTip.description": "El Laberinto de Halloween es una de las actividades más rentables del juego, pero también una de las más repetitivas. Si sientes que te estás volviendo loco, ¡toma un descanso! Tu salud mental es más importante que el oro virtual.",
   "halloween.labyrinth.rewards.spiritShards.title": "Esquirlas Espirituales",
   "halloween.labyrinth.rewards.spiritShards.description": "Se consiguen aproximadamente 30 Esquirlas Espirituales por hora.",
-  "halloween.labyrinth.rewards.spiritShards.rate": "30 SS/hora"
+  "halloween.labyrinth.rewards.spiritShards.rate": "30 SS/hora",
+  "halloween.labyrinth.rewards.trickOrTreatBags.description": "El drop más común y valioso. Contiene materiales de Halloween.",
+  "halloween.labyrinth.rewards.candyCorn.description": "Moneda especial de Halloween para comprar items exclusivos.",
+  "halloween.labyrinth.rewards.rareItems.title": "Items Raros",
+  "halloween.labyrinth.rewards.rareItems.description": "Ocasionalmente puedes obtener items muy valiosos como infusiones."
 }
 

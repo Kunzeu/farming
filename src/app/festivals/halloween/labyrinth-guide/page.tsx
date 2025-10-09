@@ -84,6 +84,8 @@ const LabyrinthGuidePage = () => {
   const [celebrationBoostData, setCelebrationBoostData] = useState<{name: string, icon: string, wikiUrl: string} | null>(null);
   const [strawberryGhostData, setStrawberryGhostData] = useState<{name: string, icon: string, wikiUrl: string} | null>(null);
   const [chatoyantElixirData, setChatoyantElixirData] = useState<{name: string, icon: string, wikiUrl: string} | null>(null);
+  const [trickOrTreatBagsData, setTrickOrTreatBagsData] = useState<{name: string, icon: string, wikiUrl: string} | null>(null);
+  const [candyCornData, setCandyCornData] = useState<{name: string, icon: string, wikiUrl: string} | null>(null);
   const [zampazaithanmelosData, setZampazaithanmelosData] = useState<{name: string, icon: string, wikiUrl: string} | null>(null);
   const [zampacoposData, setZampacoposData] = useState<{name: string, icon: string, wikiUrl: string} | null>(null);
 
@@ -96,10 +98,32 @@ const LabyrinthGuidePage = () => {
   ];
 
   // Función para construir URL de wiki
-  const buildWikiUrl = (itemName: string, itemType: 'item' | 'skill') => {
+  const buildWikiUrl = (itemName: string, itemType: 'item' | 'skill', itemId?: number) => {
     const normalized = (lang || 'en').toLowerCase();
     const wikiLang = normalized.startsWith('fr') ? 'fr' : normalized.startsWith('de') ? 'de' : normalized.startsWith('es') ? 'es' : 'en';
     const formattedName = (itemName || '').replace(/ /g, '_');
+    
+    // URLs específicas por ID de item
+    if (itemId === 95421) { // Strawberry Ghost / Delicia de campamento casera
+      if (wikiLang === 'fr') return 'https://wiki-fr.guildwars2.com/wiki/Friandise_de_feu_de_camp_maison';
+      if (wikiLang === 'de') return 'https://wiki-de.guildwars2.com/wiki/Selbstgemachte_Lagerfeuer-Leckerei';
+      if (wikiLang === 'es') return 'https://wiki.guildwars2.com/wiki/Homemade_Campfire_Treat';
+      return 'https://wiki.guildwars2.com/wiki/Homemade_Campfire_Treat';
+    }
+    
+    if (itemId === 36038) { // Trick-or-Treat Bags
+      if (wikiLang === 'fr') return 'https://wiki-fr.guildwars2.com/wiki/Sac_de_bonbons';
+      if (wikiLang === 'de') return 'https://wiki-de.guildwars2.com/wiki/%22S%C3%BC%C3%9Fes_oder_Saures%22-Tasche';
+      if (wikiLang === 'es') return 'https://wiki.guildwars2.com/wiki/Trick-or-Treat_Bag';
+      return 'https://wiki.guildwars2.com/wiki/Trick-or-Treat_Bag';
+    }
+    
+    if (itemId === 36041) { // Candy Corn
+      if (wikiLang === 'fr') return 'hhttps://wiki-fr.guildwars2.com/wiki/Morceau_de_bonbon';
+      if (wikiLang === 'de') return 'https://wiki-de.guildwars2.com/wiki/St%C3%BCck_Candy-Corn';
+      if (wikiLang === 'es') return 'https://wiki.guildwars2.com/wiki/Piece_of_Candy_Corn';
+      return 'https://wiki.guildwars2.com/wiki/Candy_Corn';
+    }
     
     // URLs específicas para el Potenciador del León Negro
     if (formattedName.toLowerCase().includes('black_lion_booster') || formattedName.toLowerCase().includes('potenciador_del_león_negro')) {
@@ -127,10 +151,10 @@ const LabyrinthGuidePage = () => {
     
     // URLs específicas para el Strawberry Ghost
     if (formattedName.toLowerCase().includes('strawberry_ghost') || formattedName.toLowerCase().includes('fantasma_de_fresa')) {
-      if (wikiLang === 'fr') return 'https://wiki-fr.guildwars2.com/wiki/Fant%C3%B4me_%C3%A0_la_fraise';
-      if (wikiLang === 'de') return 'https://wiki-de.guildwars2.com/wiki/Erdbeer-Geist';
-      if (wikiLang === 'es') return 'https://wiki.guildwars2.com/wiki/Strawberry_Ghost';
-      return 'https://wiki.guildwars2.com/wiki/Strawberry_Ghost';
+      if (wikiLang === 'fr') return 'https://wiki-fr.guildwars2.com/wiki/Friandise_de_feu_de_camp_maison';
+      if (wikiLang === 'de') return 'https://wiki-de.guildwars2.com/wiki/Selbstgemachte_Lagerfeuer-Leckerei';
+      if (wikiLang === 'es') return 'https://wiki.guildwars2.com/wiki/Homemade_Campfire_Treat';
+      return 'https://wiki.guildwars2.com/wiki/Homemade_Campfire_Treat';
     }
     
     // URLs específicas para el Chatoyant Elixir
@@ -1238,18 +1262,18 @@ const LabyrinthGuidePage = () => {
     }
   };
 
-  // Función para obtener datos del Strawberry Ghost
+  // Función para obtener datos del Delicia de campamento casera
   const fetchStrawberryGhostData = async () => {
     try {
-      const response = await fetch(`https://api.guildwars2.com/v2/items/36076?lang=${lang}`);
+      const response = await fetch(`https://api.guildwars2.com/v2/items/95421?lang=${lang}`);
       const data = await response.json();
       setStrawberryGhostData({
         name: data.name,
         icon: data.icon,
-        wikiUrl: buildWikiUrl(data.name, 'item')
+        wikiUrl: buildWikiUrl(data.name, 'item', 95421)
       });
     } catch (error) {
-      // Error fetching strawberry ghost data
+      // Error fetching Delicia de campamento casera data
     }
   };
 
@@ -1265,6 +1289,36 @@ const LabyrinthGuidePage = () => {
       });
     } catch (error) {
       // Error fetching chatoyant elixir data
+    }
+  };
+
+  // Función para obtener datos de Trick-or-Treat Bags
+  const fetchTrickOrTreatBagsData = async () => {
+    try {
+      const response = await fetch(`https://api.guildwars2.com/v2/items/36038?lang=${lang}`);
+      const data = await response.json();
+      setTrickOrTreatBagsData({
+        name: data.name,
+        icon: data.icon,
+        wikiUrl: buildWikiUrl(data.name, 'item', 36038)
+      });
+    } catch (error) {
+      // Error fetching trick or treat bags data
+    }
+  };
+
+  // Función para obtener datos de Candy Corn
+  const fetchCandyCornData = async () => {
+    try {
+      const response = await fetch(`https://api.guildwars2.com/v2/items/36041?lang=${lang}`);
+      const data = await response.json();
+      setCandyCornData({
+        name: data.name,
+        icon: data.icon,
+        wikiUrl: buildWikiUrl(data.name, 'item', 36041)
+      });
+    } catch (error) {
+      // Error fetching candy corn data
     }
   };
 
@@ -1301,6 +1355,8 @@ const LabyrinthGuidePage = () => {
     fetchCelebrationBoostData();
     fetchStrawberryGhostData();
     fetchChatoyantElixirData();
+    fetchTrickOrTreatBagsData();
+    fetchCandyCornData();
   }, [lang]);
 
   return (
@@ -3283,24 +3339,60 @@ const LabyrinthGuidePage = () => {
                       <h3 className="text-xl font-bold text-white">{t('halloween.labyrinth.rewards.mainDrops')}</h3>
                       <div className="space-y-3">
                         <div className="flex items-center gap-3 p-3 bg-gray-800/60 rounded-lg">
-                          <Package className="w-5 h-5 text-orange-400" />
+                          {trickOrTreatBagsData?.icon ? (
+                            <Image
+                              src={trickOrTreatBagsData.icon}
+                              alt={trickOrTreatBagsData.name || 'Trick-or-Treat Bags'}
+                              width={20}
+                              height={20}
+                              className="rounded"
+                            />
+                          ) : (
+                            <Package className="w-5 h-5 text-orange-400" />
+                          )}
                           <div>
-                            <h4 className="text-white font-semibold">Trick-or-Treat Bags</h4>
-                            <p className="text-gray-300 text-sm">El drop más común y valioso. Contiene materiales de Halloween.</p>
+                            <h4 className="text-white font-semibold">
+                              {trickOrTreatBagsData ? (
+                                <a href={trickOrTreatBagsData.wikiUrl} target="_blank" rel="noopener noreferrer" className="text-orange-300 hover:text-orange-200 no-underline">
+                                  {trickOrTreatBagsData.name}
+                                </a>
+                              ) : (
+                                'Trick-or-Treat Bags'
+                              )}
+                            </h4>
+                            <p className="text-gray-300 text-sm">{t('halloween.labyrinth.rewards.trickOrTreatBags.description', 'El drop más común y valioso. Contiene materiales de Halloween.')}</p>
                           </div>
                         </div>
                         <div className="flex items-center gap-3 p-3 bg-gray-800/60 rounded-lg">
-                          <Coins className="w-5 h-5 text-yellow-400" />
+                          {candyCornData?.icon ? (
+                            <Image
+                              src={candyCornData.icon}
+                              alt={candyCornData.name || 'Candy Corn'}
+                              width={20}
+                              height={20}
+                              className="rounded"
+                            />
+                          ) : (
+                            <Coins className="w-5 h-5 text-yellow-400" />
+                          )}
                           <div>
-                            <h4 className="text-white font-semibold">Candy Corn</h4>
-                            <p className="text-gray-300 text-sm">Moneda especial de Halloween para comprar items exclusivos.</p>
+                            <h4 className="text-white font-semibold">
+                              {candyCornData ? (
+                                <a href={candyCornData.wikiUrl} target="_blank" rel="noopener noreferrer" className="text-yellow-300 hover:text-yellow-200 no-underline">
+                                  {candyCornData.name}
+                                </a>
+                              ) : (
+                                'Candy Corn'
+                              )}
+                            </h4>
+                            <p className="text-gray-300 text-sm">{t('halloween.labyrinth.rewards.candyCorn.description', 'Moneda especial de Halloween para comprar items exclusivos.')}</p>
                           </div>
                         </div>
                         <div className="flex items-center gap-3 p-3 bg-gray-800/60 rounded-lg">
                           <Star className="w-5 h-5 text-purple-400" />
                           <div>
-                            <h4 className="text-white font-semibold">Items Raros</h4>
-                            <p className="text-gray-300 text-sm">Ocasionalmente puedes obtener items muy valiosos como infusiones.</p>
+                            <h4 className="text-white font-semibold">{t('halloween.labyrinth.rewards.rareItems.title', 'Items Raros')}</h4>
+                            <p className="text-gray-300 text-sm">{t('halloween.labyrinth.rewards.rareItems.description', 'Ocasionalmente puedes obtener items muy valiosos como infusiones.')}</p>
                           </div>
                         </div>
                       </div>
@@ -3891,10 +3983,10 @@ const LabyrinthGuidePage = () => {
                                     )}
                                   </h5>
                                 </div>
-                                <p className="text-gray-300 text-sm">{lang === 'es' ? '20% extra de experiencia durante 1 hora. Se compra en el mismo corazón de Seitung. 1 vez por día.' : 
-                                 lang === 'fr' ? '20% d\'expérience supplémentaire pendant 1 heure. Acheté au même cœur de Seitung. 1 fois par jour.' : 
-                                 lang === 'de' ? '20% zusätzliche Erfahrung während 1 Stunde. Gekauft im selben Trainingskreis von Seitung. 1 Mal pro Tag.' : 
-                                 '20% extra experience for 1 hour. Purchased at the same training heart of Seitung. 1 time per day.'}</p>
+                                <p className="text-gray-300 text-sm">{lang === 'es' ? '20% extra de experiencia durante 1 hora. Se compra en el mismo corazón de Seitung. 24 por día.' : 
+                                 lang === 'fr' ? '20% d\'expérience supplémentaire pendant 1 heure. Acheté au même cœur de Seitung. 24 par jour.' : 
+                                 lang === 'de' ? '20% zusätzliche Erfahrung während 1 Stunde. Gekauft im selben Trainingskreis von Seitung. 24 pro Tag.' : 
+                                 '20% extra experience for 1 hour. Purchased at the same training heart of Seitung. 24 per day.'}</p>
                               </div>
                             </div>
 

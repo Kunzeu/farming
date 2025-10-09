@@ -2062,6 +2062,10 @@
   "halloween.labyrinth.rewards.spiritShards.title": "Geistessplitter",
   "halloween.labyrinth.rewards.spiritShards.description": "Du kannst ungefähr 30 Geistessplitter pro Stunde erhalten.",
   "halloween.labyrinth.rewards.spiritShards.rate": "30 SS/Stunde",
+  "halloween.labyrinth.rewards.trickOrTreatBags.description": "Der häufigste und wertvollste Drop. Enthält Halloween-Materialien.",
+  "halloween.labyrinth.rewards.candyCorn.description": "Spezielle Halloween-Währung zum Kauf exklusiver Gegenstände.",
+  "halloween.labyrinth.rewards.rareItems.title": "Seltene Gegenstände",
+  "halloween.labyrinth.rewards.rareItems.description": "Gelegentlich kannst du sehr wertvolle Gegenstände wie Infusionen erhalten.",
   "common.dueTo": "aufgrund von"
 
 }

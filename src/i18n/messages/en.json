@@ -2075,6 +2075,10 @@
   "halloween.labyrinth.rewards.spiritShards.title": "Spirit Shards",
   "halloween.labyrinth.rewards.spiritShards.description": "You can get approximately 30 Spirit Shards per hour.",
   "halloween.labyrinth.rewards.spiritShards.rate": "30 SS/hour",
+  "halloween.labyrinth.rewards.trickOrTreatBags.description": "The most common and valuable drop. Contains Halloween materials.",
+  "halloween.labyrinth.rewards.candyCorn.description": "Special Halloween currency to buy exclusive items.",
+  "halloween.labyrinth.rewards.rareItems.title": "Rare Items",
+  "halloween.labyrinth.rewards.rareItems.description": "Occasionally you can get very valuable items like infusions.",
   "common.dueTo": "due to"
 
 }

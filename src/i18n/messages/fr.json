@@ -2064,6 +2064,10 @@
   "halloween.labyrinth.rewards.spiritShards.title": "Éclats Spirituels",
   "halloween.labyrinth.rewards.spiritShards.description": "Vous pouvez obtenir environ 30 Éclats.",
   "halloween.labyrinth.rewards.spiritShards.rate": "30 ES/heure",
+  "halloween.labyrinth.rewards.trickOrTreatBags.description": "Le drop le plus commun et précieux. Contient des matériaux d'Halloween.",
+  "halloween.labyrinth.rewards.candyCorn.description": "Monnaie spéciale d'Halloween pour acheter des objets exclusifs.",
+  "halloween.labyrinth.rewards.rareItems.title": "Objets Rares",
+  "halloween.labyrinth.rewards.rareItems.description": "Occasionnellement, vous pouvez obtenir des objets très précieux comme des infusions.",
   "common.dueTo": "en raison de"
 
 }
