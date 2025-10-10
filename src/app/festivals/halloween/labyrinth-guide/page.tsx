@@ -88,6 +88,12 @@ const LabyrinthGuidePage = () => {
   const [candyCornData, setCandyCornData] = useState<{name: string, icon: string, wikiUrl: string} | null>(null);
   const [zampazaithanmelosData, setZampazaithanmelosData] = useState<{name: string, icon: string, wikiUrl: string} | null>(null);
   const [zampacoposData, setZampacoposData] = useState<{name: string, icon: string, wikiUrl: string} | null>(null);
+  const [sellosEnergiaData, setSellosEnergiaData] = useState<{name: string, icon: string, wikiUrl: string} | null>(null);
+  const [sellosPurificacionData, setSellosPurificacionData] = useState<{name: string, icon: string, wikiUrl: string} | null>(null);
+  const [runaEstrellasData, setRunaEstrellasData] = useState<{name: string, icon: string, wikiUrl: string} | null>(null);
+  const [glintData, setGlintData] = useState<{name: string, icon: string, wikiUrl: string} | null>(null);
+  const [facetaElementosData, setFacetaElementosData] = useState<{name: string, icon: string, wikiUrl: string} | null>(null);
+  const [facetaCaosData, setFacetaCaosData] = useState<{name: string, icon: string, wikiUrl: string} | null>(null);
 
   const sections = [
     { id: 'overview', label: t('halloween.labyrinth.sections.overview'), icon: Info },
@@ -96,6 +102,27 @@ const LabyrinthGuidePage = () => {
     { id: 'rewards', label: t('halloween.labyrinth.sections.rewards'), icon: Gift },
     { id: 'advanced', label: t('halloween.labyrinth.advanced.title'), icon: TrendingUp }
   ];
+
+  // Función para navegar a una sección con scroll suave
+  const navigateToSection = (sectionId: string, targetId?: string) => {
+    setSelectedSection(sectionId);
+    
+    // Si hay un targetId específico, hacer scroll a ese elemento
+    if (targetId) {
+      setTimeout(() => {
+        const element = document.getElementById(targetId);
+        if (element) {
+          const elementPosition = element.offsetTop;
+          const offsetPosition = elementPosition - 10;
+          window.scrollTo({
+            top: offsetPosition,
+            behavior: 'smooth'
+          });
+        }
+      }, 100); // Pequeño delay para asegurar que la sección se haya renderizado
+    }
+    // Si no hay targetId, solo cambiar la sección sin hacer scroll
+  };
 
   // Función para construir URL de wiki
   const buildWikiUrl = (itemName: string, itemType: 'item' | 'skill', itemId?: number) => {
@@ -1322,6 +1349,150 @@ const LabyrinthGuidePage = () => {
     }
   };
 
+  // Sellos de energía (ID 24607): nombre, icono y wiki por idioma
+  useEffect(() => {
+    const normalized = (lang || 'en').toLowerCase();
+    const langKey = normalized.startsWith('es') ? 'es' : normalized.startsWith('de') ? 'de' : normalized.startsWith('fr') ? 'fr' : 'en';
+    const nameByLang: Record<string, string> = {
+      'es': 'Sello superior de energía',
+      'en': 'Superior Sigil of Energy',
+      'fr': 'Cachet d\'énergie supérieur',
+      'de': 'Überlegenes Sigill der Energie'
+    };
+    const wikiByLang: Record<string, string> = {
+      'es': 'https://wiki.guildwars2.com/wiki/Superior_Sigil_of_Energy',
+      'en': 'https://wiki.guildwars2.com/wiki/Superior_Sigil_of_Energy',
+      'fr': 'https://wiki-fr.guildwars2.com/wiki/Cachet_d%27%C3%A9nergie_sup%C3%A9rieur',
+      'de': 'https://wiki-de.guildwars2.com/wiki/%C3%9Cberlegenes_Sigill_der_Reinigung'
+    };
+    
+    setSellosEnergiaData({
+      name: nameByLang[langKey] || nameByLang['en'],
+      icon: 'https://wiki.guildwars2.com/images/0/0f/Superior_Sigil_of_Energy.png',
+      wikiUrl: wikiByLang[langKey] || wikiByLang['en']
+    });
+  }, [lang]);
+
+  // Sello superior de purificación (ID 67340): nombre, icono y wiki por idioma
+  useEffect(() => {
+    const normalized = (lang || 'en').toLowerCase();
+    const langKey = normalized.startsWith('es') ? 'es' : normalized.startsWith('de') ? 'de' : normalized.startsWith('fr') ? 'fr' : 'en';
+    const nameByLang: Record<string, string> = {
+      'es': 'Sello superior de purificación',
+      'en': 'Superior Sigil of Cleansing',
+      'fr': 'Cachet de purification supérieur',
+      'de': 'Überlegenes Sigill der Reinigung'
+    };
+    const wikiByLang: Record<string, string> = {
+      'es': 'https://wiki.guildwars2.com/wiki/Superior_Sigil_of_Cleansing',
+      'en': 'https://wiki.guildwars2.com/wiki/Superior_Sigil_of_Cleansing',
+      'fr': 'https://wiki-fr.guildwars2.com/wiki/Cachet_de_purification_sup%C3%A9rieur',
+      'de': 'https://wiki-de.guildwars2.com/wiki/%C3%9Cberlegenes_Sigill_der_Reinigung'
+    };
+    
+    setSellosPurificacionData({
+      name: nameByLang[langKey] || nameByLang['en'],
+      icon: 'https://wiki.guildwars2.com/images/e/e7/Superior_Sigil_of_Cleansing.png',
+      wikiUrl: wikiByLang[langKey] || wikiByLang['en']
+    });
+  }, [lang]);
+
+  // Runa superior de las estrellas (ID 85713): nombre, icono y wiki por idioma
+  useEffect(() => {
+    const normalized = (lang || 'en').toLowerCase();
+    const langKey = normalized.startsWith('es') ? 'es' : normalized.startsWith('de') ? 'de' : normalized.startsWith('fr') ? 'fr' : 'en';
+    const nameByLang: Record<string, string> = {
+      'es': 'Runa superior de las estrellas',
+      'en': 'Superior Rune of the Stars',
+      'fr': 'Rune des étoiles supérieure',
+      'de': 'Überlegene Rune der Sterne'
+    };
+    const wikiByLang: Record<string, string> = {
+      'es': 'https://wiki.guildwars2.com/wiki/Superior_Rune_of_the_Stars',
+      'en': 'https://wiki.guildwars2.com/wiki/Superior_Rune_of_the_Stars',
+      'fr': 'https://wiki-fr.guildwars2.com/wiki/Rune_des_%C3%A9toiles_sup%C3%A9rieure',
+      'de': 'https://wiki-de.guildwars2.com/wiki/%C3%9Cberlegene_Rune_der_Sterne'
+    };
+    
+    setRunaEstrellasData({
+      name: nameByLang[langKey] || nameByLang['en'],
+      icon: 'https://wiki.guildwars2.com/images/8/86/Superior_Rune_of_the_Stars.png',
+      wikiUrl: wikiByLang[langKey] || wikiByLang['en']
+    });
+  }, [lang]);
+
+  // Postura de dragona legendaria (ID 28085): nombre, icono y wiki por idioma
+  useEffect(() => {
+    const normalized = (lang || 'en').toLowerCase();
+    const langKey = normalized.startsWith('es') ? 'es' : normalized.startsWith('de') ? 'de' : normalized.startsWith('fr') ? 'fr' : 'en';
+    const nameByLang: Record<string, string> = {
+      'es': 'Postura de dragona legendaria',
+      'en': 'Legendary Dragon Stance',
+      'fr': 'Posture du Dragon légendaire',
+      'de': 'Legendäre Drachenform'
+    };
+    const wikiByLang: Record<string, string> = {
+      'es': 'https://wiki.guildwars2.com/wiki/Legendary_Dragon_Stance',
+      'en': 'https://wiki.guildwars2.com/wiki/Legendary_Dragon_Stance',
+      'fr': 'https://wiki-fr.guildwars2.com/wiki/Posture_du_Dragon_l%C3%A9gendaire',
+      'de': 'https://wiki-de.guildwars2.com/wiki/%C3%9Cberlegene_Rune_der_Sterne'
+    };
+    
+    setGlintData({
+      name: nameByLang[langKey] || nameByLang['en'],
+      icon: 'https://wiki-es.guildwars2.com/images/0/0e/Postura_de_dragona_legendaria.png',
+      wikiUrl: wikiByLang[langKey] || wikiByLang['en']
+    });
+  }, [lang]);
+
+  // Faceta de los elementos (ID 27014): nombre, icono y wiki por idioma
+  useEffect(() => {
+    const normalized = (lang || 'en').toLowerCase();
+    const langKey = normalized.startsWith('es') ? 'es' : normalized.startsWith('de') ? 'de' : normalized.startsWith('fr') ? 'fr' : 'en';
+    const nameByLang: Record<string, string> = {
+      'es': 'Faceta de los elementos',
+      'en': 'Facet of Elements',
+      'fr': 'Facette des éléments',
+      'de': 'Aspekt der Elemente'
+    };
+    const wikiByLang: Record<string, string> = {
+      'es': 'https://wiki.guildwars2.com/wiki/Facet_of_Elements',
+      'en': 'https://wiki.guildwars2.com/wiki/Facet_of_Elements',
+      'fr': 'https://wiki-fr.guildwars2.com/wiki/Facette_des_%C3%A9l%C3%A9ments',
+      'de': 'https://wiki-de.guildwars2.com/wiki/Aspekt_der_Elemente'
+    };
+    
+    setFacetaElementosData({
+      name: nameByLang[langKey] || nameByLang['en'],
+      icon: 'https://wiki.guildwars2.com/images/c/ce/Facet_of_Elements.png',
+      wikiUrl: wikiByLang[langKey] || wikiByLang['en']
+    });
+  }, [lang]);
+
+  // Faceta del caos: nombre, icono y wiki por idioma
+  useEffect(() => {
+    const normalized = (lang || 'en').toLowerCase();
+    const langKey = normalized.startsWith('es') ? 'es' : normalized.startsWith('de') ? 'de' : normalized.startsWith('fr') ? 'fr' : 'en';
+    const nameByLang: Record<string, string> = {
+      'es': 'Faceta del caos',
+      'en': 'Facet of Chaos',
+      'fr': 'Facette du chaos',
+      'de': 'Aspekt des Chaos'
+    };
+    const wikiByLang: Record<string, string> = {
+      'es': 'https://wiki.guildwars2.com/wiki/Facet_of_Chaos',
+      'en': 'https://wiki.guildwars2.com/wiki/Facet_of_Chaos',
+      'fr': 'https://wiki-fr.guildwars2.com/wiki/Facette_du_chaos',
+      'de': 'https://wiki-de.guildwars2.com/wiki/Aspekt_des_Chaos'
+    };
+    
+    setFacetaCaosData({
+      name: nameByLang[langKey] || nameByLang['en'],
+      icon: 'https://wiki.guildwars2.com/images/c/c7/Facet_of_Chaos.png',
+      wikiUrl: wikiByLang[langKey] || wikiByLang['en']
+    });
+  }, [lang]);
+
 
   useEffect(() => {
     fetchItemData();
@@ -1412,7 +1583,7 @@ const LabyrinthGuidePage = () => {
             {sections.map((section) => (
               <button
                 key={section.id}
-                onClick={() => setSelectedSection(section.id)}
+                onClick={() => navigateToSection(section.id)}
                 className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all duration-200 ${
                   selectedSection === section.id
                     ? 'bg-orange-600/80 text-white border border-orange-400/50 shadow-lg'
@@ -1433,7 +1604,7 @@ const LabyrinthGuidePage = () => {
           >
             {/* Overview Section */}
             {selectedSection === 'overview' && (
-              <div className="space-y-8">
+              <div id="section-overview" className="space-y-8">
                 <div className="bg-gray-900/80 backdrop-blur-sm border border-orange-500/30 rounded-lg p-6 shadow-2xl">
                   <h2 className="text-2xl font-bold text-white mb-6 flex items-center">
                     <Info className="w-6 h-6 mr-3 text-orange-400" />
@@ -1443,7 +1614,7 @@ const LabyrinthGuidePage = () => {
                   <div className="prose prose-invert max-w-none">
                      <p className="text-gray-200 mb-6 text-lg leading-relaxed">
                      {t('halloween.labyrinth.overview.description')} <button 
-                       onClick={() => setSelectedSection('builds')}
+                       onClick={() => navigateToSection('builds')}
                        className="text-orange-400 hover:text-orange-300 underline font-semibold transition-colors duration-200"
                      >
                        {t('halloween.labyrinth.overview.bestBuilds')}
@@ -1509,7 +1680,7 @@ const LabyrinthGuidePage = () => {
 
              {/* Builds Section */}
              {selectedSection === 'builds' && (
-               <div className="space-y-8">
+               <div id="section-builds" className="space-y-8">
                  <div className="bg-gray-900/80 backdrop-blur-sm border border-orange-500/30 rounded-lg p-6 shadow-2xl">
                    <h2 className="text-2xl font-bold text-white mb-6 flex items-center">
                      <Sword className="w-6 h-6 mr-3 text-orange-400" />
@@ -1573,100 +1744,35 @@ const LabyrinthGuidePage = () => {
                        </h3>
                        <div className="space-y-3">
                          <button 
-                           onClick={() => {
-                             setSelectedSection('builds');
-                             setTimeout(() => {
-                               const element = document.getElementById('chatarrero-supervelocidad');
-                               if (element) {
-                                 const elementPosition = element.offsetTop;
-                                 const offsetPosition = elementPosition - 100; // 100px de offset
-                                 window.scrollTo({
-                                   top: offsetPosition,
-                                   behavior: 'smooth'
-                                 });
-                               }
-                             }, 100);
-                           }}
+                           onClick={() => navigateToSection('builds', 'chatarrero-supervelocidad')}
                            className="flex items-center gap-3 p-3 bg-gray-700/50 rounded-lg hover:bg-gray-700/70 transition-colors duration-200 w-full text-left"
                          >
                            <div className="w-2 h-2 bg-orange-400 rounded-full flex-shrink-0"></div>
                            <span className="text-gray-200 font-medium">{t('halloween.labyrinth.builds.scrapper')}</span>
                          </button>
                          <button 
-                           onClick={() => {
-                             setSelectedSection('builds');
-                             setTimeout(() => {
-                               const element = document.getElementById('abrasador-justicia');
-                               if (element) {
-                                 const elementPosition = element.offsetTop;
-                                 const offsetPosition = elementPosition - 100; // 100px de offset
-                                 window.scrollTo({
-                                   top: offsetPosition,
-                                   behavior: 'smooth'
-                                 });
-                               }
-                             }, 100);
-                           }}
+                           onClick={() => navigateToSection('builds', 'abrasador-justicia')}
                            className="flex items-center gap-3 p-3 bg-gray-700/50 rounded-lg hover:bg-gray-700/70 transition-colors duration-200 w-full text-left"
                          >
                            <div className="w-2 h-2 bg-orange-400 rounded-full flex-shrink-0"></div>
                            <span className="text-gray-200 font-medium">{t('halloween.labyrinth.builds.firebrand')}</span>
                          </button>
                          <button 
-                           onClick={() => {
-                             setSelectedSection('builds');
-                             setTimeout(() => {
-                               const element = document.getElementById('mirage-spammer');
-                               if (element) {
-                                 const elementPosition = element.offsetTop;
-                                 const offsetPosition = elementPosition - 100; // 100px de offset
-                                 window.scrollTo({
-                                   top: offsetPosition,
-                                   behavior: 'smooth'
-                                 });
-                               }
-                             }, 100);
-                           }}
+                           onClick={() => navigateToSection('builds', 'mirage-spammer')}
                            className="flex items-center gap-3 p-3 bg-gray-700/50 rounded-lg hover:bg-gray-700/70 transition-colors duration-200 w-full text-left"
                          >
                            <div className="w-2 h-2 bg-orange-400 rounded-full flex-shrink-0"></div>
                            <span className="text-gray-200 font-medium">{t('halloween.labyrinth.builds.mirage')}</span>
                          </button>
                          <button 
-                           onClick={() => {
-                             setSelectedSection('builds');
-                             setTimeout(() => {
-                               const element = document.getElementById('temerario-poder');
-                               if (element) {
-                                 const elementPosition = element.offsetTop;
-                                 const offsetPosition = elementPosition - 100; // 100px de offset
-                                 window.scrollTo({
-                                   top: offsetPosition,
-                                   behavior: 'smooth'
-                                 });
-                               }
-                             }, 100);
-                           }}
+                           onClick={() => navigateToSection('builds', 'temerario-poder')}
                            className="flex items-center gap-3 p-3 bg-gray-700/50 rounded-lg hover:bg-gray-700/70 transition-colors duration-200 w-full text-left"
                          >
                            <div className="w-2 h-2 bg-orange-400 rounded-full flex-shrink-0"></div>
                            <span className="text-gray-200 font-medium">{t('halloween.labyrinth.builds.daredevilPower')}</span>
                          </button>
                          <button 
-                           onClick={() => {
-                             setSelectedSection('builds');
-                             setTimeout(() => {
-                               const element = document.getElementById('temerario-condicion');
-                               if (element) {
-                                 const elementPosition = element.offsetTop;
-                                 const offsetPosition = elementPosition - 100; // 100px de offset
-                                 window.scrollTo({
-                                   top: offsetPosition,
-                                   behavior: 'smooth'
-                                 });
-                               }
-                             }, 100);
-                           }}
+                           onClick={() => navigateToSection('builds', 'temerario-condicion')}
                            className="flex items-center gap-3 p-3 bg-gray-700/50 rounded-lg hover:bg-gray-700/70 transition-colors duration-200 w-full text-left"
                          >
                            <div className="w-2 h-2 bg-orange-400 rounded-full flex-shrink-0"></div>
@@ -3082,9 +3188,215 @@ const LabyrinthGuidePage = () => {
                        <div className="space-y-2">
                         <p className="text-gray-200 text-sm leading-relaxed">{t('halloween.labyrinth.herald.p1')}</p>
                         <p className="text-gray-200 text-sm leading-relaxed">{t('halloween.labyrinth.herald.p2')}</p>
-                        <p className="text-gray-200 text-sm leading-relaxed">{t('halloween.labyrinth.herald.p3')}</p>
-                        <p className="text-gray-200 text-sm leading-relaxed">{t('halloween.labyrinth.herald.p4')}</p>
-                        <p className="text-gray-200 text-sm leading-relaxed">{t('halloween.labyrinth.herald.p5')}</p>
+                        <p className="text-gray-200 text-sm leading-relaxed">
+                          {(() => {
+                            const text = t('halloween.labyrinth.herald.p3');
+                            const normalized = (lang || 'en').toLowerCase();
+                            const langKey = normalized.startsWith('es') ? 'es' : normalized.startsWith('de') ? 'de' : normalized.startsWith('fr') ? 'fr' : 'en';
+                            
+                            // Textos a buscar en cada idioma para ambos sellos
+                            const energyTerms: Record<string, string> = {
+                              'es': 'sellos de energía',
+                              'en': 'Energy',
+                              'fr': 'd\'énergie',
+                              'de': 'Energiesiegel'
+                            };
+                            
+                            const cleansingTerms: Record<string, string> = {
+                              'es': 'purificación',
+                              'en': 'Cleansing',
+                              'fr': 'purification',
+                              'de': 'Reinigungssiegel'
+                            };
+                            
+                            const energyTerm = energyTerms[langKey] || energyTerms['en'];
+                            const cleansingTerm = cleansingTerms[langKey] || cleansingTerms['en'];
+                            
+                            // Crear un patrón que incluya ambos términos
+                            const combinedPattern = new RegExp(`(${energyTerm}|${cleansingTerm})`, 'g');
+                            const parts = text.split(combinedPattern);
+                            
+                            return parts.map((part, index) => {
+                              if (part === energyTerm) {
+                                return sellosEnergiaData ? (
+                                  <a 
+                                    key={`energy-${index}`}
+                                    href={sellosEnergiaData.wikiUrl}
+                                    target="_blank" 
+                                    rel="noopener noreferrer"
+                                    className="inline-flex items-center gap-1 hover:opacity-80 transition-opacity"
+                                  >
+                                    <Image
+                                      src={sellosEnergiaData.icon}
+                                      alt={sellosEnergiaData.name}
+                                      width={16}
+                                      height={16}
+                                      className="inline-block"
+                                    />
+                                    <span className="text-orange-300 font-semibold hover:text-orange-200 transition-colors">
+                                      {sellosEnergiaData.name}
+                                    </span>
+                                  </a>
+                                ) : (
+                                  <span key={`energy-${index}`} className="text-orange-300 font-semibold">{energyTerm}</span>
+                                );
+                              } else if (part === cleansingTerm) {
+                                return sellosPurificacionData ? (
+                                  <a 
+                                    key={`cleansing-${index}`}
+                                    href={sellosPurificacionData.wikiUrl}
+                                    target="_blank" 
+                                    rel="noopener noreferrer"
+                                    className="inline-flex items-center gap-1 hover:opacity-80 transition-opacity"
+                                  >
+                                    <Image
+                                      src={sellosPurificacionData.icon}
+                                      alt={sellosPurificacionData.name}
+                                      width={16}
+                                      height={16}
+                                      className="inline-block"
+                                    />
+                                    <span className="text-orange-300 font-semibold hover:text-orange-200 transition-colors">
+                                      {sellosPurificacionData.name}
+                                    </span>
+                                  </a>
+                                ) : (
+                                  <span key={`cleansing-${index}`} className="text-orange-300 font-semibold">{cleansingTerm}</span>
+                                );
+                              } else {
+                                return <span key={`text-${index}`}>{part}</span>;
+                              }
+                            });
+                          })()}
+                        </p>
+                        <p className="text-gray-200 text-sm leading-relaxed">
+                          {(() => {
+                            const text = t('halloween.labyrinth.herald.p4');
+                            const normalized = (lang || 'en').toLowerCase();
+                            const langKey = normalized.startsWith('es') ? 'es' : normalized.startsWith('de') ? 'de' : normalized.startsWith('fr') ? 'fr' : 'en';
+                            
+                            // Textos a buscar en cada idioma para "estrellas"
+                            const starTerms: Record<string, string> = {
+                              'es': 'estrellas',
+                              'en': 'Stars',
+                              'fr': 'étoiles',
+                              'de': 'Sterne'
+                            };
+                            
+                            const starTerm = starTerms[langKey] || starTerms['en'];
+                            const parts = text.split(starTerm);
+                            
+                            return parts.map((part, index, array) => (
+                              <span key={index}>
+                                {part}
+                                {index < array.length - 1 && runaEstrellasData ? (
+                                  <a 
+                                    href={runaEstrellasData.wikiUrl}
+                                    target="_blank" 
+                                    rel="noopener noreferrer"
+                                    className="inline-flex items-center gap-1 hover:opacity-80 transition-opacity"
+                                  >
+                                    <Image
+                                      src={runaEstrellasData.icon}
+                                      alt={runaEstrellasData.name}
+                                      width={16}
+                                      height={16}
+                                      className="inline-block"
+                                    />
+                                    <span className="text-orange-300 font-semibold hover:text-orange-200 transition-colors">
+                                      {runaEstrellasData.name}
+                                    </span>
+                                  </a>
+                                ) : (
+                                  index < array.length - 1 && (
+                                    <span className="text-orange-300 font-semibold">{starTerm}</span>
+                                  )
+                                )}
+                              </span>
+                            ));
+                          })()}
+                        </p>
+                        <p className="text-gray-200 text-sm leading-relaxed">
+                          {(() => {
+                            const text = t('halloween.labyrinth.herald.p5');
+                            const normalized = (lang || 'en').toLowerCase();
+                            const langKey = normalized.startsWith('es') ? 'es' : normalized.startsWith('de') ? 'de' : normalized.startsWith('fr') ? 'fr' : 'en';
+                            
+                            // Textos a buscar en cada idioma para ambos elementos
+                            const speedTerms: Record<string, string> = {
+                              'es': 'la de velocidad',
+                              'en': 'Speed,',
+                              'fr': 'vitesse,',
+                              'de': 'Geschwindigkeit,'
+                            };
+                            
+                            const glintTerms: Record<string, string> = {
+                              'es': 'Glint, la dragona',
+                              'en': 'Glint',
+                              'fr': 'Glint',
+                              'de': 'Glint'
+                            };
+                            
+                            const speedTerm = speedTerms[langKey] || speedTerms['en'];
+                            const glintTerm = glintTerms[langKey] || glintTerms['en'];
+                            
+                            // Crear un patrón que incluya ambos términos
+                            const combinedPattern = new RegExp(`(${speedTerm}|${glintTerm})`, 'g');
+                            const parts = text.split(combinedPattern);
+                            
+                            return parts.map((part, index) => {
+                              if (part === speedTerm) {
+                                return relicSpeedData ? (
+                                  <a 
+                                    key={`speed-${index}`}
+                                    href={relicSpeedData.wikiUrl}
+                                    target="_blank" 
+                                    rel="noopener noreferrer"
+                                    className="inline-flex items-center gap-1 hover:opacity-80 transition-opacity"
+                                  >
+                                    <Image
+                                      src={relicSpeedData.icon}
+                                      alt={relicSpeedData.name}
+                                      width={16}
+                                      height={16}
+                                      className="inline-block"
+                                    />
+                                    <span className="text-orange-300 font-semibold hover:text-orange-200 transition-colors">
+                                      {relicSpeedData.name}
+                                    </span>
+                                  </a>
+                                ) : (
+                                  <span key={`speed-${index}`} className="text-orange-300 font-semibold">{speedTerm}</span>
+                                );
+                              } else if (part === glintTerm) {
+                                return glintData ? (
+                                  <a 
+                                    key={`glint-${index}`}
+                                    href={glintData.wikiUrl}
+                                    target="_blank" 
+                                    rel="noopener noreferrer"
+                                    className="inline-flex items-center gap-1 hover:opacity-80 transition-opacity"
+                                  >
+                                    <Image
+                                      src={glintData.icon}
+                                      alt={glintData.name}
+                                      width={16}
+                                      height={16}
+                                      className="inline-block"
+                                    />
+                                    <span className="text-orange-300 font-semibold hover:text-orange-200 transition-colors">
+                                      {glintData.name}
+                                    </span>
+                                  </a>
+                                ) : (
+                                  <span key={`glint-${index}`} className="text-orange-300 font-semibold">{glintTerm}</span>
+                                );
+                              } else {
+                                return <span key={`text-${index}`}>{part}</span>;
+                              }
+                            });
+                          })()}
+                        </p>
                         <div className="space-y-2">
                           <div className="flex items-center justify-between">
                             <h4 className="text-white font-semibold flex items-center">
@@ -3119,7 +3431,87 @@ const LabyrinthGuidePage = () => {
                              onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = 'none'; }}
                            />
                           </div>
-                          <p className="text-gray-200 text-sm leading-relaxed">{t('halloween.labyrinth.herald.p6')}</p>
+                          <p className="text-gray-200 text-sm leading-relaxed">
+                            {(() => {
+                              const text = t('halloween.labyrinth.herald.p6');
+                              const normalized = (lang || 'en').toLowerCase();
+                              const langKey = normalized.startsWith('es') ? 'es' : normalized.startsWith('de') ? 'de' : normalized.startsWith('fr') ? 'fr' : 'en';
+                              
+                              // Textos a buscar en cada idioma para ambas facetas
+                              const facetaElementosTerms: Record<string, string> = {
+                                'es': 'elementos',
+                                'en': 'Elemental',
+                                'fr': 'éléments',
+                                'de': 'Elemente'
+                              };
+                              
+                              const facetaCaosTerms: Record<string, string> = {
+                                'es': 'caos',
+                                'en': 'Chaos',
+                                'fr': 'chaos',
+                                'de': 'Chaos'
+                              };
+                              
+                              const facetaElementosTerm = facetaElementosTerms[langKey] || facetaElementosTerms['en'];
+                              const facetaCaosTerm = facetaCaosTerms[langKey] || facetaCaosTerms['en'];
+                              
+                              // Crear un patrón que incluya ambos términos
+                              const combinedPattern = new RegExp(`(${facetaElementosTerm}|${facetaCaosTerm})`, 'g');
+                              const parts = text.split(combinedPattern);
+                              
+                              return parts.map((part, index) => {
+                                if (part === facetaElementosTerm) {
+                                  return facetaElementosData ? (
+                                    <a 
+                                      key={`elementos-${index}`}
+                                      href={facetaElementosData.wikiUrl}
+                                      target="_blank" 
+                                      rel="noopener noreferrer"
+                                      className="inline-flex items-center gap-1 hover:opacity-80 transition-opacity"
+                                    >
+                                      <Image
+                                        src={facetaElementosData.icon}
+                                        alt={facetaElementosData.name}
+                                        width={16}
+                                        height={16}
+                                        className="inline-block"
+                                      />
+                                      <span className="text-orange-300 font-semibold hover:text-orange-200 transition-colors">
+                                        {facetaElementosData.name}
+                                      </span>
+                                    </a>
+                                  ) : (
+                                    <span key={`elementos-${index}`} className="text-orange-300 font-semibold">{facetaElementosTerm}</span>
+                                  );
+                                } else if (part === facetaCaosTerm) {
+                                  return facetaCaosData ? (
+                                    <a 
+                                      key={`caos-${index}`}
+                                      href={facetaCaosData.wikiUrl}
+                                      target="_blank" 
+                                      rel="noopener noreferrer"
+                                      className="inline-flex items-center gap-1 hover:opacity-80 transition-opacity"
+                                    >
+                                      <Image
+                                        src={facetaCaosData.icon}
+                                        alt={facetaCaosData.name}
+                                        width={16}
+                                        height={16}
+                                        className="inline-block"
+                                      />
+                                      <span className="text-orange-300 font-semibold hover:text-orange-200 transition-colors">
+                                        {facetaCaosData.name}
+                                      </span>
+                                    </a>
+                                  ) : (
+                                    <span key={`caos-${index}`} className="text-orange-300 font-semibold">{facetaCaosTerm}</span>
+                                  );
+                                } else {
+                                  return <span key={`text-${index}`}>{part}</span>;
+                                }
+                              });
+                            })()}
+                          </p>
                           <p className="text-gray-200 text-sm leading-relaxed">{t('halloween.labyrinth.herald.p7')}</p>
                          </div>
                        </div>
@@ -3142,7 +3534,7 @@ const LabyrinthGuidePage = () => {
 
              {/* Routes Section */}
              {selectedSection === 'routes' && (
-               <div className="space-y-8">
+               <div id="section-routes" className="space-y-8">
                  <div className="bg-gray-900/80 backdrop-blur-sm border border-orange-500/30 rounded-lg p-6 shadow-2xl">
                    <h2 className="text-2xl font-bold text-white mb-6 flex items-center">
                      <Map className="w-6 h-6 mr-3 text-orange-400" />
@@ -3327,7 +3719,7 @@ const LabyrinthGuidePage = () => {
 
             {/* Rewards Section */}
             {selectedSection === 'rewards' && (
-              <div className="space-y-8">
+              <div id="section-rewards" className="space-y-8">
                 <div className="bg-gray-900/80 backdrop-blur-sm border border-orange-500/30 rounded-lg p-6 shadow-2xl">
                   <h2 className="text-2xl font-bold text-white mb-6 flex items-center">
                     <Gift className="w-6 h-6 mr-3 text-orange-400" />
@@ -3405,7 +3797,7 @@ const LabyrinthGuidePage = () => {
 
             {/* Advanced Tips Section */}
             {selectedSection === 'advanced' && (
-              <div className="space-y-8">
+              <div id="section-advanced" className="space-y-8">
                 <div className="bg-gray-900/80 backdrop-blur-sm border border-orange-500/30 rounded-lg p-6 shadow-2xl">
                   <h2 className="text-2xl font-bold text-white mb-6 flex items-center">
                     <TrendingUp className="w-6 h-6 mr-3 text-orange-400" />

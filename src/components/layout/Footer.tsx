@@ -162,20 +162,16 @@ export default function Footer() {
             </div>
             <div className="space-y-1">
               <Link href="/privacy-policy" className="block text-xs text-gray-400 hover:text-white transition-colors">
-                <span className="md:hidden">Privacidad</span>
-                <span className="hidden md:inline">{t('footer.privacyPolicy', 'Política de Privacidad')}</span>
+                {t('footer.privacyPolicy', 'Política de Privacidad')}
               </Link>
               <Link href="/terms-of-service" className="block text-xs text-gray-400 hover:text-white transition-colors">
-                <span className="md:hidden">Términos</span>
-                <span className="hidden md:inline">{t('footer.termsOfService', 'Términos de Servicio')}</span>
+                {t('footer.termsOfService', 'Términos de Servicio')}
               </Link>
               <Link href="/cookie-policy" className="block text-xs text-gray-400 hover:text-white transition-colors">
-                <span className="md:hidden">Cookies</span>
-                <span className="hidden md:inline">{t('footer.cookiePolicy', 'Política de Cookies')}</span>
+                {t('footer.cookiePolicy', 'Política de Cookies')}
               </Link>
               <Link href="/data-management" className="block text-xs text-gray-400 hover:text-white transition-colors">
-                <span className="md:hidden">Datos</span>
-                <span className="hidden md:inline">{t('footer.dataManagement', 'Gestión de Datos')}</span>
+                {t('footer.dataManagement', 'Gestión de Datos')}
               </Link>
             </div>
           </motion.div>
