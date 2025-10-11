@@ -79,7 +79,11 @@ interface Participant {
 const GiveawaysPage = () => {
   const { t, lang } = useI18n();
   const { isAuthenticated, user } = useAuth();
-  usePageTitle('pageTitles.giveaways', t('giveaways.title'));
+  
+  // Set page title
+  useEffect(() => {
+    document.title = `${t('giveaways.title')} - True Farming`;
+  }, [t]);
   
   const [giveaways, setGiveaways] = useState<Giveaway[]>([]);
   const [winners, setWinners] = useState<Winner[]>([]);
