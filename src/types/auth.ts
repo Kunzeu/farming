@@ -12,6 +12,7 @@ export interface User {
   preferences?: UserPreferences; // Para compatibilidad con el contexto actual
   isAdmin?: boolean; // Para compatibilidad con el contexto actual
   discordId?: string; // Discord ID for OAuth authentication
+  gw2ApiKey?: string; // Guild Wars 2 API key
 }
 
 export interface UserPreferences {

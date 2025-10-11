@@ -8,6 +8,8 @@ import Image from 'next/image';
 import Navigation from '@/components/layout/Navigation';
 import { usePageTitle } from '@/hooks/usePageTitle';
 import { useI18n } from '@/contexts/I18nContext';
+import ServiceUnavailableModal from '@/components/ui/ServiceUnavailableModal';
+import { useApiStatus } from '@/hooks/useApiStatus';
 
 interface WalletItem {
   id: number;
@@ -25,11 +27,13 @@ interface Currency {
 const WalletPage = () => {
   const { isAuthenticated } = useAuth();
   const { t } = useI18n();
+  const { hasApiIssues, isApiHealthy } = useApiStatus();
   usePageTitle('pageTitles.wallet', t('account.wallet', 'Wallet'));
   const [walletData, setWalletData] = useState<WalletItem[]>([]);
   const [currencies, setCurrencies] = useState<Currency[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  // No mostrar modal aquí; solo en /account
+  const [apiError, setApiError] = useState<string | null>(null);
+  const [isModalClosed, setIsModalClosed] = useState(false);
 
   // Important currency IDs (ordered with Spirit Shards after Coin)
   const importantCurrencyIds = useMemo(() => [
@@ -37,48 +41,6 @@ const WalletPage = () => {
   ], []);
 
   useEffect(() => {
-    const fetchWalletData = async () => {
-      try {
-        setIsLoading(true);
-        const apiKey = localStorage.getItem('gw2_api_key');
-        if (!apiKey || apiKey.trim().length < 10) {
-          // Sin API key: no llamamos, pero no mostramos modal en subpáginas
-          return;
-        }
-        
-        // Fetch wallet data
-        const walletResponse = await fetch(`/api/gw2/wallet?api_key=${apiKey}`);
-        if (walletResponse.ok) {
-          const walletData = await walletResponse.json();
-          // Filter only important currencies
-          const filteredWalletData = walletData.filter((item: WalletItem) => 
-            importantCurrencyIds.includes(item.id)
-          );
-          setWalletData(filteredWalletData);
-        } else {
-          console.error('Error response:', walletResponse.status, walletResponse.statusText);
-        }
-
-        // Fetch only important currencies data
-        const currenciesResponse = await fetch(`https://api.guildwars2.com/v2/currencies?ids=${importantCurrencyIds.join(',')}`, {
-          headers: {
-            'Accept': 'application/json',
-            'Accept-Encoding': 'gzip, deflate, br'
-          }
-        });
-        if (currenciesResponse.ok) {
-          const currenciesData = await currenciesResponse.json();
-          setCurrencies(currenciesData);
-        } else {
-          console.error('Error fetching currencies:', currenciesResponse.status, currenciesResponse.statusText);
-        }
-      } catch (error) {
-        console.error('Error fetching wallet:', error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
     if (isAuthenticated) {
       fetchWalletData();
     }
@@ -90,6 +52,66 @@ const WalletPage = () => {
     const copperRemaining = copper % 100;
     return `${gold}g ${silver}s ${copperRemaining}c`;
   };
+
+  // Reset modal closed state when API becomes healthy
+  useEffect(() => {
+    if (isApiHealthy) {
+      setIsModalClosed(false);
+    }
+  }, [isApiHealthy]);
+
+  const handleCloseModal = () => {
+    setApiError(null);
+    setIsModalClosed(true);
+  };
+
+  const fetchWalletData = async () => {
+    try {
+      setIsLoading(true);
+      setApiError(null);
+      const apiKey = localStorage.getItem('gw2_api_key');
+      if (!apiKey || apiKey.trim().length < 10) {
+        return;
+      }
+      
+      // Fetch wallet data
+      const walletResponse = await fetch(`/api/gw2/wallet?api_key=${apiKey}`);
+      if (walletResponse.ok) {
+        const walletData = await walletResponse.json();
+        const filteredWalletData = walletData.filter((item: WalletItem) => 
+          importantCurrencyIds.includes(item.id)
+        );
+        setWalletData(filteredWalletData);
+        } else {
+          console.error('Wallet API Error:', walletResponse.status, walletResponse.statusText);
+          if (walletResponse.status >= 500 || walletResponse.status === 0) {
+            setApiError(`API Error: ${walletResponse.status} ${walletResponse.statusText}`);
+          }
+        }
+
+      // Fetch only important currencies data
+      const currenciesResponse = await fetch(`https://api.guildwars2.com/v2/currencies?ids=${importantCurrencyIds.join(',')}`, {
+        headers: {
+          'Accept': 'application/json',
+          'Accept-Encoding': 'gzip, deflate, br'
+        }
+      });
+      if (currenciesResponse.ok) {
+        const currenciesData = await currenciesResponse.json();
+        setCurrencies(currenciesData);
+        } else {
+          console.error('Error fetching currencies:', currenciesResponse.status, currenciesResponse.statusText);
+          if (currenciesResponse.status >= 500 || currenciesResponse.status === 0) {
+            setApiError(`API Error: ${currenciesResponse.status} ${currenciesResponse.statusText}`);
+          }
+        }
+      } catch (error) {
+        console.error('Error fetching wallet:', error);
+        setApiError('Network error or service unavailable');
+      } finally {
+        setIsLoading(false);
+      }
+    };
 
   if (!isAuthenticated) {
     return (
@@ -165,6 +187,12 @@ const WalletPage = () => {
             </div>
          )}
       </div>
+
+      <ServiceUnavailableModal
+        isOpen={hasApiIssues && !isApiHealthy && !isModalClosed}
+        onClose={handleCloseModal}
+        description={apiError || undefined}
+      />
     </div>
   );
 };

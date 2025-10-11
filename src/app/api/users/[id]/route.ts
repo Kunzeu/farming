@@ -55,7 +55,8 @@ export async function GET(
       // Solo para casos especiales donde se necesita información completa
       const query = `
         SELECT id, email, username, role, is_active as "isActive",
-               created_at as "createdAt", updated_at as "updatedAt", discord_id as "discordId", preferences
+               created_at as "createdAt", updated_at as "updatedAt", discord_id as "discordId", 
+               gw2_api_key as "gw2ApiKey", preferences
         FROM users 
         WHERE id = $1
       `;
@@ -151,6 +152,11 @@ export async function PUT(
       values.push(body.discordId);
     }
     
+    if (body.gw2ApiKey !== undefined) {
+      updateFields.push(`gw2_api_key = $${paramIndex++}`);
+      values.push(body.gw2ApiKey);
+    }
+    
     if (body.preferences !== undefined) {
       updateFields.push(`preferences = $${paramIndex++}`);
       values.push(JSON.stringify(body.preferences));
@@ -171,7 +177,8 @@ export async function PUT(
       SET ${updateFields.join(', ')}
       WHERE id = $${paramIndex}
       RETURNING id, email, username, password, role, is_active as "isActive",
-                created_at as "createdAt", updated_at as "updatedAt", discord_id as "discordId", preferences
+                created_at as "createdAt", updated_at as "updatedAt", discord_id as "discordId", 
+                gw2_api_key as "gw2ApiKey", preferences
     `;
     
     

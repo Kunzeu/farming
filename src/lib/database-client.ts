@@ -40,6 +40,7 @@ export interface User {
   updatedAt: Date;
   isActive: boolean;
   discordId?: string; // ID de Discord para autenticación OAuth
+  gw2ApiKey?: string; // Guild Wars 2 API key
   preferences?: {
     theme?: 'dark' | 'light' | 'auto';
     language?: 'es' | 'en';

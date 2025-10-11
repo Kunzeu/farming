@@ -123,7 +123,8 @@ export async function GET(request: NextRequest) {
       
       const query = `
         SELECT id, email, username, role, is_active as "isActive",
-               created_at as "createdAt", updated_at as "updatedAt", discord_id as "discordId"
+               created_at as "createdAt", updated_at as "updatedAt", discord_id as "discordId",
+               gw2_api_key as "gw2ApiKey"
         FROM users 
         WHERE id = $1
       `;
@@ -145,7 +146,8 @@ export async function GET(request: NextRequest) {
       // Nota: Esto requeriría verificar que el usuario actual es admin
       const query = `
         SELECT id, email, username, role, is_active as "isActive",
-               created_at as "createdAt", updated_at as "updatedAt", discord_id as "discordId"
+               created_at as "createdAt", updated_at as "updatedAt", discord_id as "discordId",
+               gw2_api_key as "gw2ApiKey"
         FROM users 
         ORDER BY created_at DESC
       `;
@@ -226,13 +228,14 @@ export async function POST(request: NextRequest) {
     }
     
     const query = `
-      INSERT INTO users (id, email, username, password, role, is_active, discord_id)
-      VALUES ($1, $2, $3, $4, $5, $6, $7)
+      INSERT INTO users (id, email, username, password, role, is_active, discord_id, gw2_api_key)
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
       RETURNING id, email, username, password, role, is_active as "isActive",
-                created_at as "createdAt", updated_at as "updatedAt", discord_id as "discordId"
+                created_at as "createdAt", updated_at as "updatedAt", discord_id as "discordId",
+                gw2_api_key as "gw2ApiKey"
     `;
     
-    const values = [id, body.email, body.username, hashedPassword, body.role, body.isActive, body.discordId];
+    const values = [id, body.email, body.username, hashedPassword, body.role, body.isActive, body.discordId, body.gw2ApiKey || null];
     
     console.log('Creating user with values:', {
       id: id.substring(0, 8) + '...',

@@ -25,6 +25,7 @@ import {
   Award
 } from 'lucide-react';
 import LanguageSwitcher from '@/components/ui/LanguageSwitcher';
+import ApiStatusBanner from '@/components/ui/ApiStatusBanner';
 import { useI18n } from '@/contexts/I18nContext';
 
 // Componente de selector de idiomas flotante
@@ -368,8 +369,11 @@ const Navigation = () => {
           font-weight: 900;
           text-rendering: optimizeSpeed;
         }
-      `}</style>    
-      <nav className="bg-gray-900/95 backdrop-blur-md border-b border-gray-700/50 sticky top-0 z-50">
+      `}</style>
+      
+      <div className="sticky top-0 z-50">
+        <ApiStatusBanner />
+        <nav className="bg-gray-900/95 backdrop-blur-md border-b border-gray-700/50">
       <div className="max-w-8xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           {/* Logo - Esquina Izquierda */}
@@ -797,10 +801,14 @@ const Navigation = () => {
           </div>
         </div>
       </div>
-    </nav>
-     {/* Language Switcher Flotante */}
-     <div className="fixed top-16 left-2 sm:top-20 sm:left-4 z-50 transform-none will-change-auto">
-        <FloatingLanguageSwitcher />
+        </nav>
+        
+        {/* Language Switcher Flotante */}
+        <div className="relative">
+          <div className="absolute top-2 left-2 sm:top-4 sm:left-4 z-50 transform-none will-change-auto">
+            <FloatingLanguageSwitcher />
+          </div>
+        </div>
       </div>
     </>
   );

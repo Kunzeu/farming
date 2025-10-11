@@ -22,21 +22,33 @@ interface SearchResult {
 
 import { usePageTitle } from '@/hooks/usePageTitle';
 import { useI18n } from '@/contexts/I18nContext';
+import ServiceUnavailableModal from '@/components/ui/ServiceUnavailableModal';
+import { useApiStatus } from '@/hooks/useApiStatus';
 
 const SearchPage = () => {
   const { isAuthenticated } = useAuth();
   const { t, lang } = useI18n();
+  const { hasApiIssues, isApiHealthy } = useApiStatus();
   usePageTitle('pageTitles.search', t('pageTitles.search', 'Account Search'));
   const [searchTerm, setSearchTerm] = useState('');
   const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [searchScope, setSearchScope] = useState<'all' | 'bank' | 'characters' | 'storage'>('all');
-  // No modal aquí; solo en /account
+  const [apiError, setApiError] = useState<string | null>(null);
+  const [isModalClosed, setIsModalClosed] = useState(false);
+
+  // Reset modal closed state when API becomes healthy
+  useEffect(() => {
+    if (isApiHealthy) {
+      setIsModalClosed(false);
+    }
+  }, [isApiHealthy]);
 
   const handleSearch = useCallback(async () => {
     if (!searchTerm.trim()) return;
 
     setIsLoading(true);
+    setApiError(null);
     try {
       const apiKey = localStorage.getItem('gw2_api_key');
       if (!apiKey || apiKey.trim().length < 10) {
@@ -48,14 +60,19 @@ const SearchPage = () => {
         const data = await response.json();
         setSearchResults(data);
       } else {
-        console.error('Error response:', response.status, response.statusText);
+        console.error('Search API Error:', response.status, response.statusText);
+        if (response.status >= 500 || response.status === 0) {
+          setApiError(`API Error: ${response.status} ${response.statusText}`);
+        }
       }
     } catch (error) {
       console.error('Error searching:', error);
+      setApiError('Network error or service unavailable');
     } finally {
       setIsLoading(false);
     }
   }, [searchTerm, searchScope, lang]);
+
 
   useEffect(() => {
     if (searchTerm.trim()) {
@@ -217,7 +234,14 @@ const SearchPage = () => {
             <p className="text-gray-400">{t('search.emptyDesc', 'Try with other search terms')}</p>
           </div>
         )}
-        {/* Sin modal aquí; se muestra solo en /account */}
+        <ServiceUnavailableModal
+          isOpen={hasApiIssues && !isApiHealthy && !isModalClosed}
+          onClose={() => {
+            setApiError(null);
+            setIsModalClosed(true);
+          }}
+          description={apiError || undefined}
+        />
       </div>
     </div>
   );

@@ -10,6 +10,8 @@ import Image from 'next/image';
 import { usePageTitle } from '@/hooks/usePageTitle';
 import Navigation from '@/components/layout/Navigation';
 import { useI18n } from '@/contexts/I18nContext';
+import ServiceUnavailableModal from '@/components/ui/ServiceUnavailableModal';
+import { useApiStatus } from '@/hooks/useApiStatus';
 
 interface BankItem {
   id: number;
@@ -58,6 +60,7 @@ interface ItemDetails {
 const BankPage = () => {
   const { isAuthenticated } = useAuth();
   const { t, lang } = useI18n();
+  const { hasApiIssues, isApiHealthy } = useApiStatus();
   usePageTitle('pageTitles.bank', t('pageTitles.bank', 'Bank'));
   const [bankItems, setBankItems] = useState<(BankItem | null)[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -73,6 +76,15 @@ const BankPage = () => {
   const [isLoadingItemDetails, setIsLoadingItemDetails] = useState(false);
   const [hoverPosition, setHoverPosition] = useState({ x: 0, y: 0 });
   const [itemCache, setItemCache] = useState<Map<number, { details: ItemDetails; price?: ItemPrice }>>(new Map());
+  const [apiError, setApiError] = useState<string | null>(null);
+  const [isModalClosed, setIsModalClosed] = useState(false);
+
+  // Reset modal closed state when API becomes healthy
+  useEffect(() => {
+    if (isApiHealthy) {
+      setIsModalClosed(false);
+    }
+  }, [isApiHealthy]);
 
   // Simple formatter for i18n strings with placeholders like {used}
   const format = (template: string, params: Record<string, string | number>) =>
@@ -176,85 +188,92 @@ const BankPage = () => {
 
   const lastFetchedApiKeyRef = useRef<string | null>(null);
 
-                       useEffect(() => {
-       const fetchBankData = async () => {
-        try {
-           setIsLoading(true);
-          const apiKey = localStorage.getItem('gw2_api_key') || sessionStorage.getItem('gw2_api_key');
-           if (!apiKey || apiKey.trim().length < 10) {
-             return;
-           }
-           
-           // Avoid re-fetching if the same key was already fetched in this session
-          if (lastFetchedApiKeyRef.current === apiKey) {
-             setIsLoading(false);
-             return;
-           }
-           
-          const response = await fetch(`/api/gw2/bank?api_key=${apiKey}&lang=${lang}`);
-           if (response.ok) {
-             const data = await response.json();
-              setBankItems(data);
-              lastFetchedApiKeyRef.current = apiKey;
-              // Store in session to speed up navigations within the session
-              try { sessionStorage.setItem('gw2_api_key', apiKey); } catch {}
-              // Calculate prices after loading bank data
-              await calculateBankSummary(data);
-              // Pre-load item details for price display
-              
-                             // Pre-load item details inline
-               const validItems = data.filter((item: unknown): item is BankItem => item !== null);
-               const uniqueItemIds = [...new Set(validItems.map((item: BankItem) => item.id))];
-               
-               // Only load items that aren't already cached
-               const uncachedItems = uniqueItemIds.filter((id: unknown) => !itemCache.has(id as number));
-              
-              if (uncachedItems.length > 0) {
-                
-                // Load in batches to avoid overwhelming the API
-                const batchSize = 10;
-                for (let i = 0; i < uncachedItems.length; i += batchSize) {
-                  const batch = uncachedItems.slice(i, i + batchSize);
-                  
-                  try {
-                    // Fetch item details
-                  const detailsPromises = batch.map(id => 
-                    fetch(`https://api.guildwars2.com/v2/items/${id}?lang=${lang}`).then(res => res.json())
-                    );
-                    const details = await Promise.all(detailsPromises);
-                    
-                    // Fetch prices
-                    const pricesPromises = batch.map(id => 
-                      fetch(`https://api.guildwars2.com/v2/commerce/prices/${id}`).then(res => res.json()).catch(() => null)
-                    );
-                    const prices = await Promise.all(pricesPromises);
-                    
-                                         // Cache results
-                     batch.forEach((id: unknown, index) => {
-                       setItemCache(prev => new Map(prev).set(id as number, { 
-                         details: details[index], 
-                         price: prices[index] 
-                       }));
-                     });
-                    
-                  } catch (error) {}
-                }
-                
-              } else {
-              }
-           } else {
-           }
-         } catch (error) {
-         } finally {
-           setIsLoading(false);
-         }
-       };
-
-      if (isAuthenticated) {
-         fetchBankData();
-      } else {
+  const fetchBankData = async () => {
+    try {
+      setIsLoading(true);
+      setApiError(null);
+      const apiKey = localStorage.getItem('gw2_api_key') || sessionStorage.getItem('gw2_api_key');
+      if (!apiKey || apiKey.trim().length < 10) {
+        return;
       }
-    }, [isAuthenticated]);
+      
+      // Avoid re-fetching if the same key was already fetched in this session
+      if (lastFetchedApiKeyRef.current === apiKey) {
+        setIsLoading(false);
+        return;
+      }
+      
+      const response = await fetch(`/api/gw2/bank?api_key=${apiKey}&lang=${lang}`);
+      if (response.ok) {
+        const data = await response.json();
+        setBankItems(data);
+        lastFetchedApiKeyRef.current = apiKey;
+        // Store in session to speed up navigations within the session
+        try { sessionStorage.setItem('gw2_api_key', apiKey); } catch {}
+        // Calculate prices after loading bank data
+        await calculateBankSummary(data);
+        // Pre-load item details for price display
+        
+        // Pre-load item details inline
+        const validItems = data.filter((item: unknown): item is BankItem => item !== null);
+        const uniqueItemIds = [...new Set(validItems.map((item: BankItem) => item.id))];
+        
+        // Only load items that aren't already cached
+        const uncachedItems = uniqueItemIds.filter((id: unknown) => !itemCache.has(id as number));
+       
+        if (uncachedItems.length > 0) {
+          
+          // Load in batches to avoid overwhelming the API
+          const batchSize = 10;
+          for (let i = 0; i < uncachedItems.length; i += batchSize) {
+            const batch = uncachedItems.slice(i, i + batchSize);
+            
+            try {
+              // Fetch item details
+            const detailsPromises = batch.map(id => 
+              fetch(`https://api.guildwars2.com/v2/items/${id}?lang=${lang}`).then(res => res.json())
+              );
+            const details = await Promise.all(detailsPromises);
+            
+            // Fetch prices
+            const pricesPromises = batch.map(id => 
+              fetch(`https://api.guildwars2.com/v2/commerce/prices/${id}`).then(res => res.json()).catch(() => null)
+            );
+            const prices = await Promise.all(pricesPromises);
+            
+                                 // Cache results
+             batch.forEach((id: unknown, index) => {
+               setItemCache(prev => new Map(prev).set(id as number, { 
+                 details: details[index], 
+                 price: prices[index] 
+               }));
+             });
+            
+            } catch (error) {}
+          }
+          
+        } else {
+        }
+      } else {
+        console.error('Bank API error:', response.status, response.statusText);
+        if (response.status >= 500 || response.status === 0) {
+          setApiError(`API Error: ${response.status} ${response.statusText}`);
+        }
+      }
+    } catch (error) {
+      console.error('Error fetching bank data:', error);
+      setApiError('Network error or service unavailable');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      fetchBankData();
+    }
+  }, [isAuthenticated]);
 
   const filteredItems = bankItems.filter((item): item is BankItem => 
     item !== null && 
@@ -328,7 +347,7 @@ const BankPage = () => {
             totalSlots: items.length
           });
       } else {
-        console.error('Prices response not ok:', pricesResponse.status, pricesResponse.statusText);
+        console.error('Bank Prices API Error:', pricesResponse.status, pricesResponse.statusText);
       }
     } catch (error) {
       console.error('Error calculating bank summary:', error);
@@ -374,18 +393,7 @@ const BankPage = () => {
              />
            </div>
           <button
-            onClick={() => {
-              setIsLoading(true);
-              const apiKey = localStorage.getItem('gw2_api_key') || sessionStorage.getItem('gw2_api_key');
-              if (!apiKey || apiKey.trim().length < 10) return;
-              fetch(`/api/gw2/bank?api_key=${apiKey}`)
-                .then(res => res.json())
-                .then(async data => {
-                  setBankItems(data);
-                  await calculateBankSummary(data);
-                })
-                .finally(() => setIsLoading(false));
-            }}
+            onClick={fetchBankData}
             className="px-4 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors"
            >
             🔄 {t('common.refresh', 'Refresh')}
@@ -875,7 +883,14 @@ const BankPage = () => {
            </div>
          )}
 
-         
+         <ServiceUnavailableModal
+           isOpen={hasApiIssues && !isApiHealthy && !isModalClosed}
+           onClose={() => {
+             setApiError(null);
+             setIsModalClosed(true);
+           }}
+           description={apiError || undefined}
+         />
        </div>
      </div>
    );

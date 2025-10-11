@@ -12,7 +12,15 @@ import {
   Settings,
   Save,
   Edit,
-  Shield
+  Shield,
+  Key,
+  CheckCircle,
+  AlertCircle,
+  Eye,
+  EyeOff,
+  Copy,
+  Trash2,
+  ExternalLink
 } from 'lucide-react';
 import { usePageTitle } from '@/hooks/usePageTitle';
 import { useI18n } from '@/contexts/I18nContext';
@@ -35,6 +43,17 @@ export default function ProfilePage() {
     confirmPassword: ''
   });
 
+  // API Key states
+  const [apiKey, setApiKey] = useState('');
+  const [isApiKeyLoading, setIsApiKeyLoading] = useState(false);
+  const [isApiKeyValid, setIsApiKeyValid] = useState<boolean | null>(null);
+  const [apiKeyMessage, setApiKeyMessage] = useState('');
+  const [showApiKey, setShowApiKey] = useState(false);
+  const [accountName, setAccountName] = useState<string>('');
+  const [copyMessage, setCopyMessage] = useState('');
+  const [showDeleteApiKeyModal, setShowDeleteApiKeyModal] = useState(false);
+  const [hasApiKey, setHasApiKey] = useState(false);
+
   // Cargar preferencias cuando el usuario se carga
   useEffect(() => {
     if (user?.preferences) {
@@ -47,6 +66,38 @@ export default function ProfilePage() {
       });
     }
   }, [user?.preferences]);
+
+  // Cargar API key desde la base de datos
+  useEffect(() => {
+    const loadApiKey = async () => {
+      if (!user?.id) return;
+
+      try {
+        const response = await fetch(`/api/users/${user.id}/api-key?user_id=${user.id}`);
+        if (response.ok) {
+          const data = await response.json();
+          setHasApiKey(data.hasApiKey);
+          if (data.hasApiKey) {
+            // Get account info
+            const validateResponse = await fetch(`/api/users/${user.id}/validate-api?user_id=${user.id}`, {
+              method: 'POST'
+            });
+                   if (validateResponse.ok) {
+                     const validateData = await validateResponse.json();
+                     if (validateData.valid && validateData.accountInfo) {
+                       setAccountName(validateData.accountInfo.name);
+                       setIsApiKeyValid(true);
+                     }
+                   }
+          }
+        }
+      } catch (error) {
+        console.error('Error loading API key:', error);
+      }
+    };
+
+    loadApiKey();
+  }, [user?.id]);
 
   const memberSinceDate = user?.createdAt
     ? new Date(user.createdAt)
@@ -110,162 +161,263 @@ export default function ProfilePage() {
     }
   };
 
+  // API Key functions
+  const validateApiKey = async (key: string) => {
+    if (!key.trim()) return false;
+
+    try {
+      const response = await fetch(`/api/gw2/validate?api_key=${encodeURIComponent(key)}`);
+      return response.ok;
+    } catch {
+      return false;
+    }
+  };
+
+  const handleSaveApiKey = async () => {
+    if (!user?.id) {
+      setApiKeyMessage(t('profile.apiKey.accessRequired', 'Access Required'));
+      return;
+    }
+
+    setIsApiKeyLoading(true);
+    setApiKeyMessage('');
+
+    try {
+      const valid = await validateApiKey(apiKey);
+      setIsApiKeyValid(valid);
+
+      if (valid) {
+        // Save to database
+        const response = await fetch(`/api/users/${user.id}/api-key?user_id=${user.id}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ apiKey }),
+        });
+
+        if (response.ok) {
+          setHasApiKey(true);
+          setApiKeyMessage(t('profile.apiKey.saved', 'API key saved successfully'));
+          // Fetch account info
+          const validateResponse = await fetch(`/api/users/${user.id}/validate-api?user_id=${user.id}`, {
+            method: 'POST'
+          });
+          if (validateResponse.ok) {
+            const validateData = await validateResponse.json();
+            if (validateData.valid && validateData.accountInfo) {
+              setAccountName(validateData.accountInfo.name);
+            }
+          }
+        } else {
+          const errorData = await response.json();
+          setApiKeyMessage(errorData.error || t('profile.apiKey.errorSave', 'Error saving API key'));
+        }
+      } else {
+        setApiKeyMessage(t('profile.apiKey.invalid', 'Invalid API key. Check permissions.'));
+      }
+    } catch {
+      setIsApiKeyValid(false);
+      setApiKeyMessage(t('profile.apiKey.errorValidate', 'Error validating API key'));
+    } finally {
+      setIsApiKeyLoading(false);
+    }
+  };
+
+  const handleDeleteApiKey = async () => {
+    if (!user?.id) {
+      setApiKeyMessage(t('profile.apiKey.accessRequired', 'Access Required'));
+      return;
+    }
+
+    try {
+      const response = await fetch(`/api/users/${user.id}/api-key?user_id=${user.id}`, {
+        method: 'DELETE',
+      });
+
+      if (response.ok) {
+        // Clear all API key related data
+        setApiKey('');
+        setAccountName('');
+        setIsApiKeyValid(null);
+        setHasApiKey(false);
+        setApiKeyMessage('');
+        setShowApiKey(false);
+        
+        // Show success message
+        setApiKeyMessage(t('profile.apiKey.deleted', 'API key deleted successfully'));
+        setTimeout(() => setApiKeyMessage(''), 3000);
+      } else {
+        const errorData = await response.json();
+        setApiKeyMessage(errorData.error || t('profile.apiKey.errorDelete', 'Error deleting API key'));
+      }
+    } catch (error) {
+      console.error('Error deleting API key:', error);
+      setApiKeyMessage(t('profile.apiKey.errorDelete', 'Error deleting API key'));
+    }
+    
+    // Close modal
+    setShowDeleteApiKeyModal(false);
+  };
+
+  const handleCopyApiKey = async () => {
+    if (!apiKey) return;
+    
+    try {
+      await navigator.clipboard.writeText(apiKey);
+      setCopyMessage(t('profile.apiKey.copied', 'Copied!'));
+      setTimeout(() => setCopyMessage(''), 2000);
+    } catch (error) {
+      console.error('Failed to copy API key:', error);
+    }
+  };
+
+  const toggleShowApiKey = () => {
+    setShowApiKey(!showApiKey);
+  };
+
 
   return (
     <ProtectedRoute>
       <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
         <Navigation />
         
-        <main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           {/* Header Hero */}
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
-            className="text-center mb-10">
+            className="text-center mb-12">
             <div className="relative inline-block">
-              <h1 className="text-4xl font-black text-white mb-4 tracking-tight">
+              <h1 className="text-5xl font-black text-white mb-4 tracking-tight">
                 {t('profile.title')}
               </h1>
-              <div className="absolute -bottom-2 left-1/2 transform -translate-x-1/2 w-24 h-1 bg-gradient-to-r from-purple-500 via-pink-500 to-blue-500 rounded-full"></div>
+              <div className="absolute -bottom-2 left-1/2 transform -translate-x-1/2 w-32 h-1 bg-gradient-to-r from-purple-500 via-pink-500 to-blue-500 rounded-full"></div>
             </div>
-            <p className="text-lg text-gray-300 mt-6 max-w-xl mx-auto">
+            <p className="text-xl text-gray-300 mt-6 max-w-2xl mx-auto">
               {t('profile.subtitle')}
             </p>
           </motion.div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            {/* Información del Usuario - Diseño Card */}
-            <motion.div
-              initial={{ opacity: 0, x: -30 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.2 }}
-              className="lg:col-span-1">
-              <div className="bg-gradient-to-br from-gray-800/95 to-gray-900/95 backdrop-blur-xl rounded-2xl p-6 border border-gray-700/50 shadow-xl">
-                
-                <div className="text-center mb-6">
-                  <div className="w-24 h-24 mx-auto mb-4 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center shadow-xl border-2 border-white/10">
-                    <User className="w-10 h-10 text-white" />
+          {/* User Profile Card */}
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2 }}
+            className="mb-8">
+            <div className="bg-gradient-to-br from-gray-800/95 to-gray-900/95 backdrop-blur-xl rounded-3xl p-8 border border-gray-700/50 shadow-2xl">
+              <div className="flex flex-col lg:flex-row items-center lg:items-start gap-8">
+                {/* Avatar Section */}
+                <div className="text-center lg:text-left">
+                  <div className="relative inline-block">
+                    <div className="w-32 h-32 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center shadow-2xl border-4 border-white/20">
+                      <User className="w-16 h-16 text-white" />
+                    </div>
+                    <div className="absolute -bottom-2 -right-2 w-8 h-8 bg-green-500 rounded-full border-4 border-gray-900 flex items-center justify-center">
+                      <CheckCircle className="w-5 h-5 text-white" />
+                    </div>
                   </div>
-                  <h2 className="text-2xl font-black text-white mb-2 tracking-tight">{user?.username}</h2>
+                  <h2 className="text-3xl font-black text-white mt-4 mb-2 tracking-tight">{user?.username}</h2>
+                  <p className="text-gray-400 text-lg">{user?.email}</p>
                 </div>
 
-                <div className="space-y-4">
-                  <div className="group flex items-center gap-3 p-4 bg-gradient-to-r from-gray-700/40 to-gray-800/40 rounded-xl border border-gray-600/30 hover:border-blue-500/50 transition-all duration-300 hover:shadow-lg">
-                    <div className="w-10 h-10 bg-gradient-to-br from-blue-500/30 to-purple-500/30 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-                      <Mail className="w-5 h-5 text-blue-400" />
+                {/* User Stats */}
+                <div className="flex-1 grid grid-cols-1 md:grid-cols-3 gap-6">
+                  <div className="text-center lg:text-left">
+                    <div className="text-2xl font-bold text-blue-400 mb-1">
+                      {user?.lastLogin ? new Date(user.lastLogin).toLocaleDateString('es-ES') : 'N/A'}
                     </div>
-                    <div className="min-w-0 flex-1">
-                      <p className="text-gray-400 text-xs font-medium uppercase tracking-wider">{t('profile.email')}</p>
-                      <p className="text-white font-semibold text-sm break-all">{user?.email}</p>
-                    </div>
+                    <div className="text-gray-400 text-sm font-medium uppercase tracking-wider">{t('profile.lastAccess')}</div>
                   </div>
-
-                  <div className="group flex items-center gap-3 p-4 bg-gradient-to-r from-gray-700/40 to-gray-800/40 rounded-xl border border-gray-600/30 hover:border-purple-500/50 transition-all duration-300 hover:shadow-lg">
-                    <div className="w-10 h-10 bg-gradient-to-br from-purple-500/30 to-blue-500/30 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-                      <Calendar className="w-5 h-5 text-purple-400" />
+                  <div className="text-center lg:text-left">
+                    <div className="text-2xl font-bold text-purple-400 mb-1">
+                      {memberSinceDate
+                        ? memberSinceDate.toLocaleDateString(locale, {
+                            year: 'numeric',
+                            month: 'short'
+                          })
+                        : 'N/A'}
                     </div>
-                    <div className="min-w-0 flex-1">
-                      <p className="text-gray-400 text-xs font-medium uppercase tracking-wider">{t('profile.lastAccess')}</p>
-                      <p className="text-white font-semibold text-sm">
-                        {user?.lastLogin ? new Date(user.lastLogin).toLocaleDateString('es-ES') : 'N/A'}
-                      </p>
-                    </div>
+                    <div className="text-gray-400 text-sm font-medium uppercase tracking-wider">{t('profile.memberSince')}</div>
                   </div>
-
-                  <div className="group flex items-center gap-3 p-4 bg-gradient-to-r from-gray-700/40 to-gray-800/40 rounded-xl border border-gray-600/30 hover:border-blue-500/50 transition-all duration-300 hover:shadow-lg">
-                    <div className="w-10 h-10 bg-gradient-to-br from-blue-500/30 to-purple-500/30 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-                      <Calendar className="w-5 h-5 text-blue-400" />
+                  <div className="text-center lg:text-left">
+                    <div className="text-2xl font-bold text-green-400 mb-1">
+                      {hasApiKey ? t('profile.apiKey.connected', 'Connected') : t('profile.apiKey.notConnected', 'Not Connected')}
                     </div>
-                    <div className="min-w-0 flex-1">
-                      <p className="text-gray-400 text-xs font-medium uppercase tracking-wider">{t('profile.memberSince')}</p>
-                      <p className="text-white font-semibold text-sm">
-                        {memberSinceDate
-                          ? memberSinceDate.toLocaleDateString(locale, {
-                              year: 'numeric',
-                              month: 'long',
-                              day: 'numeric'
-                            })
-                          : t('profile.dateNotAvailable')}
-                      </p>
-                    </div>
+                    <div className="text-gray-400 text-sm font-medium uppercase tracking-wider">{t('profile.apiKey.gw2Api', 'GW2 API')}</div>
                   </div>
                 </div>
               </div>
-            </motion.div>
+            </div>
+          </motion.div>
 
-            {/* Panel de Configuración */}
+          {/* Settings Grid */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            {/* Password Settings */}
             <motion.div
-              initial={{ opacity: 0, x: 30 }}
+              initial={{ opacity: 0, x: -30 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.3 }}
-              className="lg:col-span-2">
+              className="space-y-6">
               
-              {/* Configuraciones Principales */}
-              <div className="bg-gradient-to-br from-gray-800/95 to-gray-900/95 backdrop-blur-xl rounded-2xl p-6 border border-gray-700/50 shadow-xl">
-                <div className="flex items-center justify-between mb-6">
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl flex items-center justify-center">
-                      <Settings className="w-5 h-5 text-white" />
-                    </div>
-                    <h3 className="text-2xl font-black text-white">{t('profile.settings')}</h3>
+              {/* Password Settings Card */}
+              <div className="bg-gradient-to-br from-gray-800/95 to-gray-900/95 backdrop-blur-xl rounded-3xl p-8 border border-gray-700/50 shadow-2xl">
+                <div className="flex items-center gap-4 mb-8">
+                  <div className="w-12 h-12 bg-gradient-to-br from-yellow-500 to-orange-600 rounded-2xl flex items-center justify-center">
+                    <Shield className="w-6 h-6 text-white" />
+                  </div>
+                  <div>
+                    <h3 className="text-2xl font-black text-white">{t('profile.changePassword')}</h3>
+                    <p className="text-gray-400">Update your account security</p>
                   </div>
                   <button
                     onClick={() => setIsEditing(!isEditing)}
-                    className="group inline-flex items-center gap-3 px-6 py-3 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white font-semibold rounded-lg transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105">
+                    className="ml-auto group inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white font-semibold rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105">
                     <Edit className="w-4 h-4 group-hover:rotate-12 transition-transform duration-300" />
                     <span>{isEditing ? t('profile.cancel') : t('profile.edit')}</span>
                   </button>
                 </div>
 
                 <div className="space-y-6">
-                  {/* Cambio de contraseña */}
-                  <div className="space-y-4">
-                    <div className="flex items-center gap-2">
-                      <Shield className="w-5 h-5 text-yellow-400" />
-                      <h4 className="text-lg font-bold text-white">{t('profile.changePassword')}</h4>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                      <label className="block text-gray-300 text-sm font-semibold mb-3">
+                        {t('profile.newPassword')}
+                      </label>
+                      <input
+                        type="password"
+                        value={passwordData.newPassword}
+                        onChange={(e) => setPasswordData({...passwordData, newPassword: e.target.value})}
+                        disabled={!isEditing}
+                        placeholder={t('profile.newPasswordPlaceholder')}
+                        className="w-full px-4 py-4 bg-gray-700/50 border border-gray-600/50 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent disabled:opacity-50 transition-all duration-300"
+                      />
                     </div>
-                    
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div>
-                        <label className="block text-gray-300 text-sm font-medium mb-2">
-                          {t('profile.newPassword')}
-                        </label>
-                        <input
-                          type="password"
-                          value={passwordData.newPassword}
-                          onChange={(e) => setPasswordData({...passwordData, newPassword: e.target.value})}
-                          disabled={!isEditing}
-                          placeholder={t('profile.newPasswordPlaceholder')}
-                          className="w-full px-3 py-3 bg-gray-700/50 border border-gray-600/50 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent disabled:opacity-50 transition-all duration-300"
-                        />
-                      </div>
 
-                      <div>
-                        <label className="block text-gray-300 text-sm font-medium mb-2">
-                          {t('profile.confirmPassword')}
-                        </label>
-                        <input
-                          type="password"
-                          value={passwordData.confirmPassword}
-                          onChange={(e) => setPasswordData({...passwordData, confirmPassword: e.target.value})}
-                          disabled={!isEditing}
-                          placeholder={t('profile.confirmPasswordPlaceholder')}
-                          className="w-full px-3 py-3 bg-gray-700/50 border border-gray-600/50 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent disabled:opacity-50 transition-all duration-300"
-                        />
-                      </div>
+                    <div>
+                      <label className="block text-gray-300 text-sm font-semibold mb-3">
+                        {t('profile.confirmPassword')}
+                      </label>
+                      <input
+                        type="password"
+                        value={passwordData.confirmPassword}
+                        onChange={(e) => setPasswordData({...passwordData, confirmPassword: e.target.value})}
+                        disabled={!isEditing}
+                        placeholder={t('profile.confirmPasswordPlaceholder')}
+                        className="w-full px-4 py-4 bg-gray-700/50 border border-gray-600/50 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent disabled:opacity-50 transition-all duration-300"
+                      />
                     </div>
                   </div>
 
-                  {/* Botón de guardar */}
                   {isEditing && (
                     <motion.div
                       initial={{ opacity: 0, y: 20 }}
                       animate={{ opacity: 1, y: 0 }}
-                      className="flex justify-center pt-4">
+                      className="flex justify-end pt-4">
                       <button
                         onClick={handleSave}
-                        className="group inline-flex items-center gap-3 px-6 py-3 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white font-semibold rounded-lg transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105">
-                        <Save className="w-4 h-4 group-hover:rotate-12 transition-transform duration-300" />
+                        className="group inline-flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-green-500 to-blue-600 hover:from-green-600 hover:to-blue-700 text-white font-semibold rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105">
+                        <Save className="w-5 h-5 group-hover:rotate-12 transition-transform duration-300" />
                         <span>{t('profile.saveChanges')}</span>
                       </button>
                     </motion.div>
@@ -273,8 +425,192 @@ export default function ProfilePage() {
                 </div>
               </div>
             </motion.div>
+
+            {/* API Key Settings */}
+            <motion.div
+              initial={{ opacity: 0, x: 30 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.4 }}
+              className="space-y-6">
+              
+              {/* API Key Card */}
+              <div className="bg-gradient-to-br from-gray-800/95 to-gray-900/95 backdrop-blur-xl rounded-2xl p-6 border border-gray-700/50 shadow-xl">
+                <div className="flex items-center gap-3 mb-6">
+                  <div className="w-10 h-10 bg-gradient-to-br from-green-500 to-blue-600 rounded-xl flex items-center justify-center">
+                    <Key className="w-5 h-5 text-white" />
+                  </div>
+                  <div>
+                    <h3 className="text-xl font-black text-white">{t('profile.apiKey.title', 'Guild Wars 2 API Key')}</h3>
+                    <p className="text-gray-400 text-sm">{t('profile.apiKey.subtitle', 'Connect your GW2 account for enhanced features')}</p>
+                  </div>
+                </div>
+
+                <div className="space-y-4">
+                  {/* Account Info Display */}
+                  {hasApiKey && accountName && (
+                    <div className="bg-gradient-to-r from-green-900/20 to-blue-900/20 rounded-xl p-4 border border-green-500/30">
+                      <div className="flex items-center justify-between mb-3">
+                        <span className="text-xs font-semibold text-green-400 uppercase tracking-wider">
+                          {t('profile.apiKey.status', 'API Key Status')}
+                        </span>
+                        <div className="flex items-center gap-2">
+                          <CheckCircle className="w-4 h-4 text-green-400" />
+                          <span className="text-xs text-green-400 font-semibold">{t('profile.apiKey.connected', 'Connected')}</span>
+                        </div>
+                      </div>
+                      {accountName && (
+                        <div className="flex items-center justify-between">
+                          <span className="text-xs font-medium text-gray-300">
+                            {t('profile.apiKey.accountName', 'Account Name')}
+                          </span>
+                          <span className="text-sm text-green-400 font-bold">{accountName}</span>
+                        </div>
+                      )}
+                    </div>
+                  )}
+
+                  {!hasApiKey && (
+                    <div className="bg-gradient-to-r from-gray-700/40 to-gray-800/40 rounded-xl p-4 border border-gray-600/30">
+                      <div className="flex items-center justify-between">
+                        <span className="text-xs font-semibold text-gray-300 uppercase tracking-wider">
+                          {t('profile.apiKey.status', 'API Key Status')}
+                        </span>
+                        <div className="flex items-center gap-2">
+                          <AlertCircle className="w-4 h-4 text-gray-400" />
+                          <span className="text-xs text-gray-400 font-semibold">{t('profile.apiKey.notConnected', 'Not Connected')}</span>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* API Key Input */}
+                  <div className="space-y-4">
+                    <div>
+                      <label className="block text-gray-300 text-sm font-semibold mb-2">
+                        {t('profile.apiKey.label', 'API Key')}
+                      </label>
+                      <div className="relative">
+                        <input
+                          type={showApiKey ? "text" : "password"}
+                          value={apiKey}
+                          onChange={(e) => setApiKey(e.target.value)}
+                          placeholder={t('profile.apiKey.placeholder', 'Enter your GW2 API key')}
+                          className="w-full px-4 py-3 pr-20 bg-gray-700/50 border border-gray-600/50 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300"
+                          autoComplete="off"
+                        />
+                        <div className="absolute right-2 top-1/2 transform -translate-y-1/2 flex space-x-1">
+                          <button
+                            type="button"
+                            onClick={toggleShowApiKey}
+                            className="p-1.5 text-gray-400 hover:text-white transition-colors rounded-lg hover:bg-gray-600/50"
+                            title={showApiKey ? t('profile.apiKey.hide', 'Hide') : t('profile.apiKey.show', 'Show')}
+                          >
+                            {showApiKey ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                          </button>
+                          {apiKey && (
+                            <button
+                              type="button"
+                              onClick={handleCopyApiKey}
+                              className="p-1.5 text-gray-400 hover:text-white transition-colors rounded-lg hover:bg-gray-600/50"
+                              title={t('profile.apiKey.copy', 'Copy')}
+                            >
+                              <Copy className="w-4 h-4" />
+                            </button>
+                          )}
+                        </div>
+                      </div>
+                      {copyMessage && (
+                        <div className="mt-2 text-xs text-green-400 font-medium">
+                          {copyMessage}
+                        </div>
+                      )}
+                    </div>
+                    
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                      <button
+                        onClick={handleSaveApiKey}
+                        disabled={isApiKeyLoading || !apiKey.trim()}
+                        className="group inline-flex items-center justify-center gap-1.5 px-4 py-2.5 bg-gradient-to-r from-green-500 to-blue-600 hover:from-green-600 hover:to-blue-700 text-white font-semibold rounded-lg transition-all duration-300 shadow-md hover:shadow-lg transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+                      >
+                        <Save className="w-4 h-4 group-hover:rotate-12 transition-transform duration-300" />
+                        <span className="text-sm">{isApiKeyLoading ? t('profile.apiKey.saving', 'Saving...') : t('profile.apiKey.save', 'Save API Key')}</span>
+                      </button>
+
+                      <a
+                        href="https://account.arena.net/applications"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="group inline-flex items-center justify-center gap-1.5 px-4 py-2.5 bg-gradient-to-r from-gray-600 to-gray-700 hover:from-gray-700 hover:to-gray-800 text-white font-semibold rounded-lg transition-all duration-300 shadow-md hover:shadow-lg transform hover:scale-105"
+                      >
+                        <ExternalLink className="w-4 h-4 group-hover:rotate-12 transition-transform duration-300" />
+                        <span className="text-sm">{t('profile.apiKey.getApiKey', 'Get API Key')}</span>
+                      </a>
+
+                      {hasApiKey && (
+                        <button
+                          onClick={() => setShowDeleteApiKeyModal(true)}
+                          disabled={isApiKeyLoading}
+                          className="group inline-flex items-center justify-center gap-1.5 px-4 py-2.5 bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white font-semibold rounded-lg transition-all duration-300 shadow-md hover:shadow-lg transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none sm:col-span-2"
+                        >
+                          <Trash2 className="w-4 h-4 group-hover:rotate-12 transition-transform duration-300" />
+                          <span className="text-sm">{t('profile.apiKey.delete', 'Delete API Key')}</span>
+                        </button>
+                      )}
+                    </div>
+                    
+                    {apiKeyMessage && (
+                      <div className={`flex items-center space-x-2 p-3 rounded-xl ${
+                        isApiKeyValid ? 'bg-green-900/20 text-green-400 border border-green-500/30' : 'bg-red-900/20 text-red-400 border border-red-500/30'
+                      }`}>
+                        {isApiKeyValid ? <CheckCircle className="w-4 h-4" /> : <AlertCircle className="w-4 h-4" />}
+                        <span className="text-sm font-medium">{apiKeyMessage}</span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </motion.div>
           </div>
         </main>
+
+        {/* Delete API Key Confirmation Modal */}
+        {showDeleteApiKeyModal && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              className="bg-gradient-to-br from-gray-800/95 to-gray-900/95 backdrop-blur-xl rounded-2xl p-6 max-w-md w-full mx-4 border border-gray-700/50 shadow-xl">
+              <div className="flex items-center space-x-3 mb-4">
+                <div className="w-10 h-10 bg-red-500/20 rounded-full flex items-center justify-center">
+                  <Trash2 className="w-5 h-5 text-red-400" />
+                </div>
+                <h3 className="text-lg font-semibold text-white">
+                  {t('profile.apiKey.deleteModal.title', 'Confirm Deletion')}
+                </h3>
+              </div>
+              
+              <p className="text-gray-300 mb-6">
+                {t('profile.apiKey.deleteModal.message', 'Are you sure you want to delete the API key? This action cannot be undone and you will lose access to GW2 account features.')}
+              </p>
+              
+              <div className="flex space-x-3 justify-end">
+                <button
+                  onClick={() => setShowDeleteApiKeyModal(false)}
+                  className="px-4 py-2 bg-gray-600 hover:bg-gray-500 text-white rounded-lg transition-colors"
+                >
+                  {t('profile.apiKey.deleteModal.cancel', 'Cancel')}
+                </button>
+                <button
+                  onClick={handleDeleteApiKey}
+                  className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors flex items-center space-x-2"
+                >
+                  <Trash2 className="w-4 h-4" />
+                  <span>{t('profile.apiKey.deleteModal.confirm', 'Yes, Delete')}</span>
+                </button>
+              </div>
+            </motion.div>
+          </div>
+        )}
       </div>
     </ProtectedRoute>
   );

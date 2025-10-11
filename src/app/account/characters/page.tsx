@@ -8,6 +8,8 @@ import Navigation from '@/components/layout/Navigation';
 import Image from 'next/image';
 import { usePageTitle } from '@/hooks/usePageTitle';
 import { useI18n } from '@/contexts/I18nContext';
+import ServiceUnavailableModal from '@/components/ui/ServiceUnavailableModal';
+import { useApiStatus } from '@/hooks/useApiStatus';
 
 interface Character {
   name: string;
@@ -50,6 +52,7 @@ interface Character {
 const CharactersPage = () => {
   const { isAuthenticated } = useAuth();
   const { t, lang } = useI18n();
+  const { hasApiIssues, isApiHealthy } = useApiStatus();
   usePageTitle('pageTitles.characters', t('pageTitles.characters', 'Characters'));
   const [characters, setCharacters] = useState<Character[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -61,6 +64,15 @@ const CharactersPage = () => {
   const [showModal, setShowModal] = useState(false);
   const [professions, setProfessions] = useState<Record<string, unknown>>({});
   const [specializations, setSpecializations] = useState<Record<string, unknown>>({});
+  const [apiError, setApiError] = useState<string | null>(null);
+  const [isModalClosed, setIsModalClosed] = useState(false);
+
+  // Reset modal closed state when API becomes healthy
+  useEffect(() => {
+    if (isApiHealthy) {
+      setIsModalClosed(false);
+    }
+  }, [isApiHealthy]);
 
   useEffect(() => {
     const checkApiKey = () => {
@@ -73,6 +85,7 @@ const CharactersPage = () => {
       try {
         setIsLoading(true);
         setError(null);
+        setApiError(null);
         
         const apiKey = checkApiKey();
         if (!apiKey || apiKey.trim().length < 10) {
@@ -93,9 +106,11 @@ const CharactersPage = () => {
           charactersData = await charactersResponse.json();
           setCharacters(charactersData);
         } else {
-          console.error('Error response:', charactersResponse.status, charactersResponse.statusText);
+          console.error('Characters API Error:', charactersResponse.status, charactersResponse.statusText);
           if (charactersResponse.status === 401) {
             setError('Invalid API key or insufficient permissions');
+          } else if (charactersResponse.status >= 500 || charactersResponse.status === 0) {
+            setApiError(`API Error: ${charactersResponse.status} ${charactersResponse.statusText}`);
           } else {
             setError('Error loading characters');
           }
@@ -104,6 +119,8 @@ const CharactersPage = () => {
         if (professionsResponse.ok) {
           const professionsData = await professionsResponse.json();
           setProfessions(professionsData);
+        } else if (professionsResponse.status >= 500 || professionsResponse.status === 0) {
+          setApiError(`API Error: ${professionsResponse.status} ${professionsResponse.statusText}`);
         }
 
         // Load specializations if characters were loaded successfully
@@ -119,15 +136,18 @@ const CharactersPage = () => {
               if (specializationsResponse.ok) {
                 const specializationsData = await specializationsResponse.json();
                 setSpecializations(specializationsData);
+              } else if (specializationsResponse.status >= 500 || specializationsResponse.status === 0) {
+                setApiError(`API Error: ${specializationsResponse.status} ${specializationsResponse.statusText}`);
               }
             } catch (error) {
               console.error('Error fetching specializations:', error);
+              setApiError('Network error or service unavailable');
             }
           }
         }
       } catch (error) {
         console.error('Error fetching characters:', error);
-        setError('Connection error loading characters');
+        setApiError('Network error or service unavailable');
       } finally {
         setIsLoading(false);
       }
@@ -137,6 +157,7 @@ const CharactersPage = () => {
       fetchCharactersData();
     }
   }, [isAuthenticated, lang]);
+
 
   const filteredCharacters = characters.filter(character => 
     character && character.name && character.name.toLowerCase().includes(searchTerm.toLowerCase())
@@ -393,7 +414,7 @@ const CharactersPage = () => {
                   {t('characters.apiKeyRequiredDesc', 'To view your characters, you need to configure your Guild Wars 2 API key.')}
                 </p>
                <Link 
-                 href="/account/settings" 
+                 href="/profile" 
                  className="inline-flex items-center px-4 py-2 bg-yellow-600 hover:bg-yellow-700 text-white rounded-lg text-sm transition-colors"
                >
                                     {t('characters.configureApiKey', 'Configure API Key')}
@@ -413,7 +434,7 @@ const CharactersPage = () => {
                 <p className="text-red-300 text-sm mb-3">{error}</p>
                 {error.includes('API key') && (
                                   <Link 
-                  href="/account/settings" 
+                  href="/profile" 
                   className="inline-flex items-center px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg text-sm transition-colors"
                 >
                   {t('characters.reviewConfiguration', 'Review Configuration')}
@@ -596,6 +617,15 @@ const CharactersPage = () => {
             </div>
           </div>
         )}
+
+        <ServiceUnavailableModal
+          isOpen={hasApiIssues && !isApiHealthy && !isModalClosed}
+          onClose={() => {
+            setApiError(null);
+            setIsModalClosed(true);
+          }}
+          description={apiError || undefined}
+        />
        </div>
      </div>
    );

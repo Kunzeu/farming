@@ -1637,29 +1637,35 @@ const LabyrinthGuidePage = () => {
                           {t('halloween.labyrinth.overview.goldPerHour')}
                         </h3>
                         <p className="text-gray-300 text-sm">
-                          {t('halloween.labyrinth.overview.goldPerHourDescription').split('30 Esquirlas Espirituales').map((part, index) => (
-                            <span key={index}>
-                              {part}
-                              {index === 0 && (
-                                <>
-                                  <span className="inline-flex items-center gap-1">
-                                    30 
-                                    {spiritShardsData?.icon ? (
-                                      <Image
-                                        src={spiritShardsData.icon}
-                                        alt={spiritShardsData.name}
-                                        width={16}
-                                        height={16}
-                                        className="inline"
-                                      />
-                                    ) : (
-                                      'Esquirlas Espirituales'
-                                    )}
-                                  </span>
-                                </>
-                              )}
-                            </span>
-                          ))}
+                          {(() => {
+                            const description = t('halloween.labyrinth.overview.goldPerHourDescription');
+                            const spiritShardsText = t('currency.spiritShards');
+                            const splitPattern = `30 ${spiritShardsText}`;
+                            
+                            return description.split(splitPattern).map((part, index) => (
+                              <span key={index}>
+                                {part}
+                                {index === 0 && (
+                                  <>
+                                    <span className="inline-flex items-center gap-1">
+                                      30 
+                                      {spiritShardsData?.icon ? (
+                                        <Image
+                                          src={spiritShardsData.icon}
+                                          alt={spiritShardsData.name}
+                                          width={16}
+                                          height={16}
+                                          className="inline"
+                                        />
+                                      ) : (
+                                        spiritShardsText
+                                      )}
+                                    </span>
+                                  </>
+                                )}
+                              </span>
+                            ));
+                          })()}
                         </p>
                       </div>
                     </div>

@@ -10,6 +10,8 @@ import Image from 'next/image';
 import Navigation from '@/components/layout/Navigation';
 import { usePageTitle } from '@/hooks/usePageTitle';
 import { useI18n } from '@/contexts/I18nContext';
+import ServiceUnavailableModal from '@/components/ui/ServiceUnavailableModal';
+import { useApiStatus } from '@/hooks/useApiStatus';
 
 interface Material {
   id: number;
@@ -23,34 +25,50 @@ interface Material {
 const StoragePage = () => {
   const { isAuthenticated } = useAuth();
   const { t } = useI18n();
+  const { hasApiIssues, isApiHealthy } = useApiStatus();
   usePageTitle('pageTitles.storage', t('pageTitles.storage', 'Material Storage'));
   const [materials, setMaterials] = useState<Material[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
+  const [apiError, setApiError] = useState<string | null>(null);
+  const [isModalClosed, setIsModalClosed] = useState(false);
 
+  // Reset modal closed state when API becomes healthy
   useEffect(() => {
-    const fetchMaterialsData = async () => {
-      try {
-        setIsLoading(true);
-        const apiKey = localStorage.getItem('gw2_api_key');
-        if (!apiKey || apiKey.trim().length < 10) {
-          return;
-        }
-        
-        const response = await fetch(`/api/gw2/materials?api_key=${apiKey}`);
-        if (response.ok) {
-          const data = await response.json();
-          setMaterials(data);
+    if (isApiHealthy) {
+      setIsModalClosed(false);
+    }
+  }, [isApiHealthy]);
+
+  const fetchMaterialsData = async () => {
+    try {
+      setIsLoading(true);
+      setApiError(null);
+      const apiKey = localStorage.getItem('gw2_api_key');
+      if (!apiKey || apiKey.trim().length < 10) {
+        return;
+      }
+      
+      const response = await fetch(`/api/gw2/materials?api_key=${apiKey}`);
+      if (response.ok) {
+        const data = await response.json();
+        setMaterials(data);
         } else {
-          console.error('Error response:', response.status, response.statusText);
+          console.error('Storage API Error:', response.status, response.statusText);
+          if (response.status >= 500 || response.status === 0) {
+            setApiError(`API Error: ${response.status} ${response.statusText}`);
+          }
         }
       } catch (error) {
         console.error('Error fetching materials:', error);
+        setApiError('Network error or service unavailable');
       } finally {
         setIsLoading(false);
       }
     };
 
+
+  useEffect(() => {
     if (isAuthenticated) {
       fetchMaterialsData();
     }
@@ -146,8 +164,6 @@ const StoragePage = () => {
           </div>
         )}
 
-        {/* Sin modal aquí; se muestra solo en /account */}
-
         {!isLoading && filteredMaterials.length === 0 && (
           <div className="text-center py-12">
             <Database className="w-16 h-16 text-gray-600 mx-auto mb-4" />
@@ -155,6 +171,15 @@ const StoragePage = () => {
             <p className="text-gray-400">{t('storage.emptyDesc', 'There are no materials in your storage')}</p>
           </div>
         )}
+
+        <ServiceUnavailableModal
+          isOpen={hasApiIssues && !isApiHealthy && !isModalClosed}
+          onClose={() => {
+            setApiError(null);
+            setIsModalClosed(true);
+          }}
+          description={apiError || undefined}
+        />
       </div>
     </div>
   );

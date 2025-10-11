@@ -10,7 +10,7 @@ import { Wallet, Settings, Search, Archive, Users, Boxes, X } from 'lucide-react
 import { useEffect, useState } from 'react';
 
 const cards = [
-  { href: '/account/settings', icon: Settings, titleKey: 'account.settings', fallback: 'Settings', descKey: 'account.settingsDesc', fallbackDesc: 'Manage your account preferences.' },
+  { href: '/profile', icon: Settings, titleKey: 'account.settings', fallback: 'Settings', descKey: 'account.settingsDesc', fallbackDesc: 'Manage your account preferences.' },
   { href: '/account/wallet', icon: Wallet, titleKey: 'account.wallet', fallback: 'Wallet', descKey: 'account.walletDesc', fallbackDesc: 'View your in-game currencies.' },
   { href: '/account/bank', icon: Boxes, titleKey: 'account.bank', fallback: 'Bank', descKey: 'account.bankDesc', fallbackDesc: 'Check bank items and materials.' },
   { href: '/account/storage', icon: Archive, titleKey: 'account.storage', fallback: 'Storage', descKey: 'account.storageDesc', fallbackDesc: 'Browse your material storage.' },
@@ -102,7 +102,7 @@ export default function AccountIndexPage() {
                     {t('common.later', 'Later')}
                   </button>
                   <Link
-                    href="/account/settings"
+                    href="/profile"
                     className="px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white">
                     {t('account.addApiKey', 'Add API key')}
                   </Link>

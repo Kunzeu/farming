@@ -44,6 +44,7 @@ export interface User {
   updatedAt: Date;
   isActive: boolean;
   discordId?: string; // ID de Discord para autenticación OAuth
+  gw2ApiKey?: string; // Guild Wars 2 API key
 }
 
 class DatabaseService {
