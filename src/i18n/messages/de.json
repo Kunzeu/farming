@@ -2147,7 +2147,16 @@
   "giveaways.joinDiscordServer": "Tritt unserem Discord-Server bei",
   "giveaways.followSocialMedia": "Folge uns in den sozialen Medien",
   
-  "pageTitles.giveaways": "Community-Verlosungen"
+  "pageTitles.giveaways": "Community-Verlosungen",
+  "pageTitles.opened": "Öffnbare Behälter",
+  "pageTitles.garden": "Garten",
+  "pageTitles.giftOfMastery": "Geschenk der Meisterschaft",
+  "pageTitles.giftOfJadeMastery": "Geschenk der Jade-Meisterschaft",
+  "pageTitles.trophy": "Trophäe",
+  "pageTitles.ectogambling": "Ecto-Glücksspiel",
+  
+  "giveaways.october2025.title": "Oktober-Edelstein-Verlosung",
+  "giveaways.october2025.description": "Unsere erste Community-Verlosung! Gewinne tolle In-Game-Preise inklusive Edelstein-Codes und Materialien!"
 
 }
 

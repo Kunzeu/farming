@@ -9,7 +9,7 @@ import Footer from "@/components/layout/Footer";
 import ScrollToTop from "@/components/ui/ScrollToTop";
 import CookieBanner from "@/components/ui/CookieBanner";
 import { Analytics } from "@vercel/analytics/next";
-import { generateMetadata } from "@/lib/metadata";
+import { generateMetadata, generateDynamicMetadata } from "@/lib/metadata";
 
 // Optimización de fuentes para Desktop
 const inter = Inter({ 
@@ -20,7 +20,7 @@ const inter = Inter({
 });
 
 // Exportar función de metadatos dinámicos
-export { generateMetadata };
+export { generateDynamicMetadata as generateMetadata };
 
 // Forzar Server-Side Rendering para metadatos dinámicos
 export const dynamic = 'force-dynamic';

@@ -6,6 +6,9 @@ export function middleware(request: NextRequest) {
   
   // Headers básicos de optimización para todas las páginas
   const pathname = request.nextUrl.pathname;
+  
+  // Pasar la ruta actual a los headers para metadata dinámico
+  response.headers.set('x-pathname', pathname);
 
   // Redirigir rutas basura compuestas solo por símbolos (/$, /&, etc.)
   const onlySymbols = /^[^a-zA-Z0-9\/_-]+$/;

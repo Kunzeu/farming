@@ -2149,7 +2149,16 @@
   "giveaways.joinDiscordServer": "Rejoignez notre serveur Discord",
   "giveaways.followSocialMedia": "Suivez-nous sur les réseaux sociaux",
   
-  "pageTitles.giveaways": "Concours Communautaires"
+  "pageTitles.giveaways": "Concours Communautaires",
+  "pageTitles.opened": "Conteneurs Ouvrables",
+  "pageTitles.garden": "Jardin",
+  "pageTitles.giftOfMastery": "Cadeau de Maîtrise",
+  "pageTitles.giftOfJadeMastery": "Cadeau de Maîtrise de Jade",
+  "pageTitles.trophy": "Trophée",
+  "pageTitles.ectogambling": "Jeu d'Ecto",
+  
+  "giveaways.october2025.title": "Concours de Gemmes d'Octobre",
+  "giveaways.october2025.description": "Notre premier concours communautaire ! Gagnez des prix incroyables en jeu incluant des codes de gemmes et des matériaux !"
 
 }
 

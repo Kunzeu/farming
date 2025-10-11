@@ -2191,6 +2191,15 @@
   "giveaways.joinDiscordServer": "Unirse a nuestro servidor de Discord",
   "giveaways.followSocialMedia": "Seguirnos en redes sociales",
   
-  "pageTitles.giveaways": "Sorteos Comunitarios"
+  "pageTitles.giveaways": "Sorteos Comunitarios",
+  "pageTitles.opened": "Contenedores Abribles",
+  "pageTitles.garden": "Jardín",
+  "pageTitles.giftOfMastery": "Regalo de Maestría",
+  "pageTitles.giftOfJadeMastery": "Regalo de Maestría de Jade",
+  "pageTitles.trophy": "Trofeo",
+  "pageTitles.ectogambling": "Apuestas de Ecto",
+  
+  "giveaways.october2025.title": "Sorteo de Gemas de Octubre",
+  "giveaways.october2025.description": "¡Nuestro primer sorteo comunitario! ¡Gana increíbles premios del juego incluyendo códigos de gemas y materiales!"
 }
 

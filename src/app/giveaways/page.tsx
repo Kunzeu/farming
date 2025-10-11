@@ -62,8 +62,8 @@ interface Participant {
 const mockGiveaways: Giveaway[] = [
   {
     id: 'October-2025',
-    title: 'October Gem Giveaway',
-    description: 'Our first community giveaway! Win amazing in-game prizes including gem codes and materials!',
+    title: 'October Gem Giveaway', // This will be replaced with translation in the component
+    description: 'Our first community giveaway! Win amazing in-game prizes including gem codes and materials!', // This will be replaced with translation in the component
     prizes: [
       { position: 1, prize: '1200 Gems', icon: 'gem' },
       { position: 2, prize: '800 Gems', icon: 'gem' },
@@ -99,7 +99,17 @@ const GiveawaysPage = () => {
   const { t } = useI18n();
   const { isAuthenticated, user } = useAuth();
   usePageTitle('pageTitles.giveaways', t('giveaways.title'));
-  const [giveaways, setGiveaways] = useState<Giveaway[]>(mockGiveaways);
+  
+  // Create translated giveaways
+  const getTranslatedGiveaways = (): Giveaway[] => {
+    return mockGiveaways.map(giveaway => ({
+      ...giveaway,
+      title: giveaway.id === 'October-2025' ? t('giveaways.october2025.title') : giveaway.title,
+      description: giveaway.id === 'October-2025' ? t('giveaways.october2025.description') : giveaway.description
+    }));
+  };
+  
+  const [giveaways, setGiveaways] = useState<Giveaway[]>(getTranslatedGiveaways());
   const [selectedGiveaway, setSelectedGiveaway] = useState<Giveaway | null>(null);
   const [participantCount, setParticipantCount] = useState(0);
   const [hasApiKey, setHasApiKey] = useState(false);
@@ -111,8 +121,9 @@ const GiveawaysPage = () => {
   // Load participant counts for giveaways
   const loadParticipantCounts = async () => {
     try {
+      const translatedGiveaways = getTranslatedGiveaways();
       const updatedGiveaways = await Promise.all(
-        giveaways.map(async (giveaway) => {
+        translatedGiveaways.map(async (giveaway) => {
           try {
             const response = await fetch(`/api/giveaways/count?giveawayId=${giveaway.id}`);
             if (response.ok) {
@@ -194,6 +205,11 @@ const GiveawaysPage = () => {
 
     checkApiKey();
   }, [isAuthenticated, user?.id]);
+
+  // Update giveaways when language changes
+  useEffect(() => {
+    setGiveaways(getTranslatedGiveaways());
+  }, [t]);
 
   // Load participant counts and user's participated giveaways on component mount
   useEffect(() => {

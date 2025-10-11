@@ -2160,7 +2160,16 @@
   "giveaways.joinDiscordServer": "Join our Discord server",
   "giveaways.followSocialMedia": "Follow us on social media",
   
-  "pageTitles.giveaways": "Community Giveaways"
+  "pageTitles.giveaways": "Community Giveaways",
+  "pageTitles.opened": "Openable Containers",
+  "pageTitles.garden": "Garden",
+  "pageTitles.giftOfMastery": "Gift of Mastery",
+  "pageTitles.giftOfJadeMastery": "Gift of Jade Mastery",
+  "pageTitles.trophy": "Trophy",
+  "pageTitles.ectogambling": "Ecto Gambling",
+  
+  "giveaways.october2025.title": "October Gem Giveaway",
+  "giveaways.october2025.description": "Our first community giveaway! Win amazing in-game prizes including gem codes and materials!"
 
 }
 
