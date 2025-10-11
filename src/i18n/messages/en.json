@@ -2134,7 +2134,6 @@
   "giveaways.fixApiKeyToParticipate": "Fix API Key to Participate",
   "giveaways.enterGiveaway": "Enter Giveaway",
   "giveaways.enterGiveawayButton": "Enter",
-  "giveaways.alreadyEntered": "Already Entered",
   "giveaways.loginToEnter": "Login to Enter",
   "giveaways.addApiKeyToEnter": "Add API Key to Enter",
   "giveaways.fixApiKeyToEnter": "Fix API Key to Enter",
@@ -2159,6 +2158,10 @@
   "giveaways.linkGw2ApiKey": "Link your GW2 API key to your account",
   "giveaways.joinDiscordServer": "Join our Discord server",
   "giveaways.followSocialMedia": "Follow us on social media",
+  "giveaways.october2025.description": "Our first community giveaway! Win amazing in-game prizes including gem codes and materials!",
+  "giveaways.october2025.title": "October Gem Giveaway - 2025",
+  "giveaways.loading": "Loading...",
+  "giveaways.alreadyEntered": "Already entered",
   
   "pageTitles.giveaways": "Community Giveaways",
   "pageTitles.opened": "Openable Containers",
@@ -2167,9 +2170,6 @@
   "pageTitles.giftOfJadeMastery": "Gift of Jade Mastery",
   "pageTitles.trophy": "Trophy",
   "pageTitles.ectogambling": "Ecto Gambling",
-  
-  "giveaways.october2025.title": "October Gem Giveaway",
-  "giveaways.october2025.description": "Our first community giveaway! Win amazing in-game prizes including gem codes and materials!"
-
+  "giveaways.gems": "Gems"
 }
 

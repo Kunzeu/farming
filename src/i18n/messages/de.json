@@ -2121,7 +2121,6 @@
   "giveaways.fixApiKeyToParticipate": "API-Schlüssel reparieren zum Teilnehmen",
   "giveaways.enterGiveaway": "Verlosung betreten",
   "giveaways.enterGiveawayButton": "Teilnehmen",
-  "giveaways.alreadyEntered": "Bereits Teilgenommen",
   "giveaways.loginToEnter": "Anmelden zum Teilnehmen",
   "giveaways.addApiKeyToEnter": "API-Schlüssel hinzufügen zum Teilnehmen",
   "giveaways.fixApiKeyToEnter": "API-Schlüssel reparieren zum Teilnehmen",
@@ -2146,6 +2145,10 @@
   "giveaways.linkGw2ApiKey": "Verknüpfe deinen GW2 API-Schlüssel mit deinem Konto",
   "giveaways.joinDiscordServer": "Tritt unserem Discord-Server bei",
   "giveaways.followSocialMedia": "Folge uns in den sozialen Medien",
+  "giveaways.october2025.description": "Unsere erste Community-Verlosung! Gewinne tolle In-Game-Preise inklusive Edelstein-Codes und Materialien!",
+  "giveaways.october2025.title": "Oktober-Edelstein-Verlosung - 2025",
+  "giveaways.loading": "Laden...",
+  "giveaways.alreadyEntered": "Bereits teilgenommen",
   
   "pageTitles.giveaways": "Community-Verlosungen",
   "pageTitles.opened": "Öffnbare Behälter",
@@ -2154,9 +2157,6 @@
   "pageTitles.giftOfJadeMastery": "Geschenk der Jade-Meisterschaft",
   "pageTitles.trophy": "Trophäe",
   "pageTitles.ectogambling": "Ecto-Glücksspiel",
-  
-  "giveaways.october2025.title": "Oktober-Edelstein-Verlosung",
-  "giveaways.october2025.description": "Unsere erste Community-Verlosung! Gewinne tolle In-Game-Preise inklusive Edelstein-Codes und Materialien!"
-
+  "giveaways.gems": "Edelsteine"
 }
 

@@ -2123,7 +2123,6 @@
   "giveaways.fixApiKeyToParticipate": "Réparer la Clé API pour Participer",
   "giveaways.enterGiveaway": "Entrer dans le Concours",
   "giveaways.enterGiveawayButton": "Participer",
-  "giveaways.alreadyEntered": "Déjà Participé",
   "giveaways.loginToEnter": "Se Connecter pour Participer",
   "giveaways.addApiKeyToEnter": "Ajouter la Clé API pour Participer",
   "giveaways.fixApiKeyToEnter": "Réparer la Clé API pour Participer",
@@ -2148,6 +2147,10 @@
   "giveaways.linkGw2ApiKey": "Liez votre clé API GW2 à votre compte",
   "giveaways.joinDiscordServer": "Rejoignez notre serveur Discord",
   "giveaways.followSocialMedia": "Suivez-nous sur les réseaux sociaux",
+  "giveaways.october2025.description": "Notre premier concours communautaire ! Gagnez des prix incroyables en jeu incluant des codes de gemmes et des matériaux !",
+  "giveaways.october2025.title": "Concours de Gemmes d'Octobre - 2025",
+  "giveaways.loading": "Chargement...",
+  "giveaways.alreadyEntered": "Déjà participé",
   
   "pageTitles.giveaways": "Concours Communautaires",
   "pageTitles.opened": "Conteneurs Ouvrables",
@@ -2156,9 +2159,6 @@
   "pageTitles.giftOfJadeMastery": "Cadeau de Maîtrise de Jade",
   "pageTitles.trophy": "Trophée",
   "pageTitles.ectogambling": "Jeu d'Ecto",
-  
-  "giveaways.october2025.title": "Concours de Gemmes d'Octobre",
-  "giveaways.october2025.description": "Notre premier concours communautaire ! Gagnez des prix incroyables en jeu incluant des codes de gemmes et des matériaux !"
-
+  "giveaways.gems": "Gemmes"
 }
 

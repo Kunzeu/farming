@@ -1,16 +1,42 @@
 import { NextRequest, NextResponse } from 'next/server';
 import pool from '@/lib/postgres-db';
 
-// GET /api/giveaways/participants - Get participants for a specific giveaway
+// GET /api/giveaways/participants - Get participants for a specific giveaway or user
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
     const giveawayId = searchParams.get('giveawayId');
     const userId = searchParams.get('userId');
 
-    if (!giveawayId) {
+    // If only userId is provided, get all participations for that user
+    if (userId && !giveawayId) {
+      const query = `
+        SELECT 
+          gp.*,
+          u.email as user_email
+        FROM giveaway_participants gp
+        JOIN users u ON gp.user_id = u.id
+        WHERE gp.user_id = $1
+        ORDER BY gp.participated_at DESC
+      `;
+      
+      const result = await pool.query(query, [userId]);
+      
+      const participants = result.rows.map(row => ({
+        id: row.id,
+        giveawayId: row.giveaway_id,
+        userId: row.user_id,
+        accountName: row.account_name,
+        participatedAt: row.participated_at
+      }));
+
+      return NextResponse.json({ participants });
+    }
+
+    // If neither giveawayId nor userId is provided, return error
+    if (!giveawayId && !userId) {
       return NextResponse.json(
-        { error: 'Giveaway ID is required' },
+        { error: 'Giveaway ID or User ID is required' },
         { status: 400 }
       );
     }
@@ -24,7 +50,7 @@ export async function GET(request: NextRequest) {
       WHERE gp.giveaway_id = $1
     `;
     
-    const params: (string | number)[] = [giveawayId];
+    const params: (string | number)[] = [giveawayId!]; // giveawayId is guaranteed to exist here
     let paramCount = 1;
 
     if (userId) {
