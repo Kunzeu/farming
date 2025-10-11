@@ -24,7 +24,7 @@ export async function GET(request: NextRequest) {
       WHERE gp.giveaway_id = $1
     `;
     
-    const params: any[] = [giveawayId];
+    const params: (string | number)[] = [giveawayId];
     let paramCount = 1;
 
     if (userId) {

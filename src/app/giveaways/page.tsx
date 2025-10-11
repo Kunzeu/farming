@@ -46,6 +46,19 @@ interface Giveaway {
   rules: string[];
 }
 
+interface AccountInfo {
+  id: string;
+  name: string;
+}
+
+interface Participant {
+  id: string;
+  giveawayId: string;
+  userId: string;
+  accountName: string;
+  participatedAt: string;
+}
+
 const mockGiveaways: Giveaway[] = [
   {
     id: 'October-2025',
@@ -91,7 +104,7 @@ const GiveawaysPage = () => {
   const [participantCount, setParticipantCount] = useState(0);
   const [hasApiKey, setHasApiKey] = useState(false);
   const [apiKeyValid, setApiKeyValid] = useState(false);
-  const [accountInfo, setAccountInfo] = useState<any>(null);
+  const [accountInfo, setAccountInfo] = useState<AccountInfo | null>(null);
   const [showParticipationSuccess, setShowParticipationSuccess] = useState(false);
   const [participatedAccounts, setParticipatedAccounts] = useState<Set<string>>(new Set());
 
@@ -126,7 +139,7 @@ const GiveawaysPage = () => {
       const response = await fetch(`/api/giveaways/participants?userId=${user.id}`);
       if (response.ok) {
         const data = await response.json();
-        const participatedSet = new Set(data.participants.map((p: any) => p.giveawayId));
+        const participatedSet = new Set(data.participants.map((p: Participant) => p.giveawayId));
         setParticipatedAccounts(participatedSet as Set<string>);
       }
     } catch (error) {
@@ -509,7 +522,7 @@ const GiveawaysPage = () => {
                       {selectedGiveaway.status === 'active' ? (
                         (() => {
                           const accountId = accountInfo?.id;
-                          const hasParticipated = accountId && participatedAccounts.has(accountId);
+                          const hasParticipated = Boolean(accountId && participatedAccounts.has(accountId));
                           
                           return (
                             <button
