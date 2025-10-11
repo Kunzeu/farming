@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import pool from '@/lib/postgres-db';
-import { getAllGiveaways, updateGiveawayStatuses } from '../../../config/giveaways';
+import { updateGiveawayStatuses } from '../../../config/giveaways';
 
 // GET /api/giveaways - Get all giveaways from configuration + participant counts from DB
-export async function GET(request: NextRequest) {
+export async function GET() {
   try {
     // Obtener sorteos desde configuración
     const configuredGiveaways = updateGiveawayStatuses();

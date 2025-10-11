@@ -8,8 +8,6 @@ import { usePageTitle } from '@/hooks/usePageTitle';
 import { useAuth } from '@/contexts/AuthContext';
 import { 
   Gift, 
-  Calendar, 
-  Users, 
   Gem, 
   Trophy, 
   Clock,
@@ -20,10 +18,7 @@ import {
   Award,
   Crown,
   Shield,
-  BookOpen,
-  ChevronRight,
   X,
-  TrendingUp,
   Activity
 } from 'lucide-react';
 import Link from 'next/link';
@@ -97,15 +92,30 @@ const GiveawaysPage = () => {
   const [participatedAccounts, setParticipatedAccounts] = useState<Set<string>>(new Set());
   const [isLoadingApiKey, setIsLoadingApiKey] = useState(true);
   const [isLoadingGiveaways, setIsLoadingGiveaways] = useState(true);
-  const [isLoadingWinners, setIsLoadingWinners] = useState(true);
   const [isLoadingParticipations, setIsLoadingParticipations] = useState(true);
   const [isSelectingWinners, setIsSelectingWinners] = useState(false);
   const [showSelectWinnersModal, setShowSelectWinnersModal] = useState(false);
   const [showWinnersResultModal, setShowWinnersResultModal] = useState(false);
   const [showErrorModal, setShowErrorModal] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
-  const [selectedWinners, setSelectedWinners] = useState<any[]>([]);
-  const [giveawayItems, setGiveawayItems] = useState<Record<string, any[]>>({});
+  const [selectedWinners, setSelectedWinners] = useState<Array<{
+    giveaway_id: string;
+    user_id: string;
+    account_name: string;
+    position: number;
+    prize_description: string;
+    prize_value: string;
+  }>>([]);
+  const [giveawayItems, setGiveawayItems] = useState<Record<string, Array<{
+    position: number;
+    prize: string;
+    icon: string;
+    itemId?: number;
+    quantity?: number;
+    itemName?: string;
+    itemIcon?: string;
+    gemPrize?: boolean;
+  }>>>({});
 
   // Load giveaways from API
   const loadGiveaways = async () => {
@@ -149,7 +159,6 @@ const GiveawaysPage = () => {
   // Load winners from API
   const loadWinners = async () => {
     try {
-      setIsLoadingWinners(true);
       const response = await fetch('/api/giveaways/winners?latest=true');
       if (response.ok) {
         const data = await response.json();
@@ -159,8 +168,6 @@ const GiveawaysPage = () => {
       }
     } catch (error) {
       console.error('Error loading winners:', error);
-    } finally {
-      setIsLoadingWinners(false);
     }
   };
 
@@ -284,23 +291,6 @@ const GiveawaysPage = () => {
     ));
   }, [participantCount]);
 
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'active': return 'text-green-400 bg-green-900/20';
-      case 'upcoming': return 'text-blue-400 bg-blue-900/20';
-      case 'ended': return 'text-gray-400 bg-gray-900/20';
-      default: return 'text-gray-400 bg-gray-900/20';
-    }
-  };
-
-  const getStatusIcon = (status: string) => {
-    switch (status) {
-      case 'active': return <CheckCircle className="w-4 h-4" />;
-      case 'upcoming': return <Clock className="w-4 h-4" />;
-      case 'ended': return <AlertCircle className="w-4 h-4" />;
-      default: return <Clock className="w-4 h-4" />;
-    }
-  };
 
   const getPrizeIcon = (icon: string) => {
     switch (icon) {
@@ -388,7 +378,7 @@ const GiveawaysPage = () => {
   };
 
   // Function to show select winners confirmation modal
-  const handleSelectWinnersClick = (giveawayId: string) => {
+  const handleSelectWinnersClick = () => {
     setShowSelectWinnersModal(true);
   };
 
@@ -434,14 +424,21 @@ const GiveawaysPage = () => {
   };
 
   const activeGiveaway = giveaways.find(g => g.status === 'active');
-  const totalParticipants = giveaways.reduce((sum, g) => sum + g.participantCount, 0);
-  const totalPrizes = giveaways.reduce((sum, g) => sum + g.prizes.length, 0);
 
   // Check if user is admin
   const isAdmin = user?.role === 'admin' || user?.isAdmin === true;
 
   // Function to render prize with dynamic item information
-  const renderPrize = (prize: any, giveawayId: string) => {
+  const renderPrize = (prize: {
+    position: number;
+    prize: string;
+    icon: string;
+    itemId?: number;
+    quantity?: number;
+    itemName?: string;
+    itemIcon?: string;
+    gemPrize?: boolean;
+  }, giveawayId: string) => {
     const items = giveawayItems[giveawayId] || [];
     const itemInfo = items.find(item => item.position === prize.position);
     
@@ -627,7 +624,7 @@ const GiveawaysPage = () => {
                 <div className="pt-4 border-t border-gray-700/60">
                   <p className="text-gray-400 text-sm mb-3">🔧 Administración</p>
                   <button
-                    onClick={() => handleSelectWinnersClick(activeGiveaway.id)}
+                    onClick={handleSelectWinnersClick}
                     disabled={isSelectingWinners || activeGiveaway.participantCount === 0}
                     className="inline-flex items-center gap-2 bg-yellow-600 hover:bg-yellow-700 disabled:bg-gray-600 disabled:cursor-not-allowed text-white font-semibold py-2 px-6 rounded-lg transition-colors"
                   >
@@ -835,7 +832,7 @@ const GiveawaysPage = () => {
                       {/* Admin Button - Only show for active giveaways and admins */}
                       {activeGiveaway && isAdmin && (
                         <button
-                          onClick={() => handleSelectWinnersClick(activeGiveaway.id)}
+                          onClick={handleSelectWinnersClick}
                           disabled={isSelectingWinners || activeGiveaway.participantCount === 0}
                           className="flex items-center gap-3 p-3 bg-yellow-600/20 hover:bg-yellow-600/30 disabled:bg-gray-600/20 disabled:cursor-not-allowed rounded-lg transition-colors w-full"
                         >

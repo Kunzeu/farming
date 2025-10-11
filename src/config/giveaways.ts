@@ -1,7 +1,6 @@
 // Configuración completa de sorteos
 // Modifica este archivo para cambiar cualquier aspecto de los sorteos
 
-import { getItem } from '@/lib/gw2-api';
 
 export interface Giveaway {
   id: string;
