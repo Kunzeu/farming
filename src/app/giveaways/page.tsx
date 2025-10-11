@@ -98,7 +98,7 @@ const mockGiveaways: Giveaway[] = [
 const GiveawaysPage = () => {
   const { t } = useI18n();
   const { isAuthenticated, user } = useAuth();
-  usePageTitle('pageTitles.giveaways', t('giveaways.title', 'Giveaways'));
+  usePageTitle('pageTitles.giveaways', t('giveaways.title'));
   const [giveaways, setGiveaways] = useState<Giveaway[]>(mockGiveaways);
   const [selectedGiveaway, setSelectedGiveaway] = useState<Giveaway | null>(null);
   const [participantCount, setParticipantCount] = useState(0);
@@ -323,9 +323,9 @@ const GiveawaysPage = () => {
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
         <div className="text-center mb-12">
-          <h1 className="text-4xl font-bold text-white mb-4">Community Lottery</h1>
+          <h1 className="text-4xl font-bold text-white mb-4">{t('giveaways.title')}</h1>
           <p className="text-xl text-gray-300 max-w-2xl mx-auto">
-            Participate in our monthly giveaways and win amazing in-game prizes!
+            {t('giveaways.subtitle')}
           </p>
         </div>
 
@@ -335,7 +335,7 @@ const GiveawaysPage = () => {
             <div className="text-center mb-8">
               <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-green-900/20 text-green-400 text-sm font-medium mb-4">
                 <CheckCircle className="w-4 h-4" />
-                Currently Active
+                {t('giveaways.currentlyActive')}
               </div>
               <h2 className="text-3xl font-bold text-white mb-2">{activeGiveaway.title}</h2>
               <p className="text-gray-300 text-lg">{activeGiveaway.description}</p>
@@ -347,25 +347,25 @@ const GiveawaysPage = () => {
                 <div className="text-3xl font-bold text-blue-400 mb-1">
                   {activeGiveaway.participants.toLocaleString()}
                 </div>
-                <div className="text-gray-400">Participants</div>
+                <div className="text-gray-400">{t('giveaways.participants')}</div>
               </div>
               <div className="text-center">
                 <div className="text-3xl font-bold text-green-400 mb-1">
                   {activeGiveaway.prizes.length}
                 </div>
-                <div className="text-gray-400">Prizes</div>
+                <div className="text-gray-400">{t('giveaways.prizes')}</div>
               </div>
               <div className="text-center">
                 <div className="text-3xl font-bold text-purple-400 mb-1">
                   {Math.ceil((new Date(activeGiveaway.endDate).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24))}
                 </div>
-                <div className="text-gray-400">Days Left</div>
+                <div className="text-gray-400">{t('giveaways.daysLeft')}</div>
               </div>
             </div>
 
             {/* Prizes */}
             <div className="mb-8">
-              <h3 className="text-xl font-semibold text-white mb-4 text-center">Prizes</h3>
+              <h3 className="text-xl font-semibold text-white mb-4 text-center">{t('giveaways.prizes')}</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {activeGiveaway.prizes.map((prize) => (
                   <div key={prize.position} className="flex items-center gap-3 p-4 bg-gray-700/50 rounded-lg">
@@ -388,14 +388,14 @@ const GiveawaysPage = () => {
                   href="/auth/login"
                   className="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-8 rounded-lg transition-colors"
                 >
-                  Login to Participate
+                  {t('giveaways.loginToParticipate')}
                 </Link>
               ) : !hasApiKey || !apiKeyValid ? (
                 <Link
                   href="/profile"
                   className="inline-flex items-center gap-2 bg-yellow-600 hover:bg-yellow-700 text-white font-semibold py-3 px-8 rounded-lg transition-colors"
                 >
-                  {hasApiKey ? 'Fix API Key' : 'Add API Key'} to Participate
+                  {hasApiKey ? t('giveaways.fixApiKeyToParticipate') : t('giveaways.addApiKeyToParticipate')}
                 </Link>
               ) : (
                 <button
@@ -403,7 +403,7 @@ const GiveawaysPage = () => {
                   className="inline-flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-8 rounded-lg transition-colors"
                 >
                   <Gift className="w-5 h-5" />
-                  Enter Giveaway
+                  {t('giveaways.enterGiveaway')}
                 </button>
               )}
             </div>
@@ -413,7 +413,7 @@ const GiveawaysPage = () => {
         {/* Upcoming Giveaways */}
         {giveaways.filter(g => g.status === 'upcoming').length > 0 && (
           <div className="mb-8">
-            <h2 className="text-2xl font-bold text-white mb-6">Upcoming Giveaways</h2>
+            <h2 className="text-2xl font-bold text-white mb-6">{t('giveaways.upcomingGiveaways')}</h2>
             <div className="space-y-4">
               {giveaways.filter(g => g.status === 'upcoming').map((giveaway) => (
                 <div key={giveaway.id} className="bg-gray-800/60 border border-gray-700/60 rounded-lg p-6">
@@ -422,15 +422,15 @@ const GiveawaysPage = () => {
                       <h3 className="text-lg font-semibold text-white">{giveaway.title}</h3>
                       <p className="text-gray-300">{giveaway.description}</p>
                       <div className="flex items-center gap-4 mt-2 text-sm text-gray-400">
-                        <span>Starts: {new Date(giveaway.startDate).toLocaleDateString()}</span>
+                        <span>{t('giveaways.starts')} {new Date(giveaway.startDate).toLocaleDateString()}</span>
                         <span>•</span>
-                        <span>{giveaway.prizes.length} prizes</span>
+                        <span>{giveaway.prizes.length} {t('giveaways.prizes')}</span>
                       </div>
                     </div>
                     <div className="text-right">
                       <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-900/20 text-blue-400 text-sm font-medium">
                         <Clock className="w-4 h-4" />
-                        Upcoming
+                        {t('giveaways.upcoming')}
                       </div>
                     </div>
                   </div>
@@ -461,7 +461,7 @@ const GiveawaysPage = () => {
               <div className="text-center mb-8">
                 <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-green-900/20 text-green-400 text-sm font-medium mb-4">
                   <CheckCircle className="w-4 h-4" />
-                  Currently Active
+                  {t('giveaways.currentlyActive')}
                 </div>
                 <h2 className="text-3xl font-bold text-white mb-2">{selectedGiveaway.title}</h2>
                 <p className="text-xl text-gray-300 max-w-3xl mx-auto mb-8">
@@ -473,19 +473,19 @@ const GiveawaysPage = () => {
                     <div className="text-2xl font-bold text-blue-400 mb-1">
                       {selectedGiveaway.participants.toLocaleString()}
                     </div>
-                    <div className="text-gray-400">Participants</div>
+                    <div className="text-gray-400">{t('giveaways.participants')}</div>
                   </div>
                   <div className="text-center">
                     <div className="text-2xl font-bold text-green-400 mb-1">
                       {selectedGiveaway.prizes.length}
                     </div>
-                    <div className="text-gray-400">Prizes</div>
+                    <div className="text-gray-400">{t('giveaways.prizes')}</div>
                   </div>
                   <div className="text-center">
                     <div className="text-2xl font-bold text-purple-400 mb-1">
                       {Math.ceil((new Date(selectedGiveaway.endDate).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24))}
                     </div>
-                    <div className="text-gray-400">Days Left</div>
+                    <div className="text-gray-400">{t('giveaways.daysLeft')}</div>
                   </div>
                 </div>
               </div>
@@ -494,7 +494,7 @@ const GiveawaysPage = () => {
                 {/* Prizes */}
                 <div className="lg:col-span-2">
                   <div className="bg-gray-800/60 border border-gray-700/60 rounded-2xl p-8">
-                    <h3 className="text-2xl font-bold text-white mb-6 text-center">Prizes</h3>
+                    <h3 className="text-2xl font-bold text-white mb-6 text-center">{t('giveaways.prizes')}</h3>
                     
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       {selectedGiveaway.prizes.map((prize) => (
@@ -516,7 +516,7 @@ const GiveawaysPage = () => {
                 <div className="space-y-6">
                   {/* Enter Giveaway */}
                   <div className="bg-gray-800/60 border border-gray-700/60 rounded-2xl p-6">
-                    <h3 className="text-xl font-bold text-white mb-4">Enter Giveaway</h3>
+                    <h3 className="text-xl font-bold text-white mb-4">{t('giveaways.enterGiveaway')}</h3>
                     
                     <div className="space-y-4">
                       {selectedGiveaway.status === 'active' ? (
@@ -539,14 +539,14 @@ const GiveawaysPage = () => {
                               }`}
                             >
                               {hasParticipated
-                                ? 'Already Entered'
+                                ? t('giveaways.alreadyEntered')
                                 : !isAuthenticated 
-                                ? 'Login to Enter'
+                                ? t('giveaways.loginToEnter')
                                 : !hasApiKey 
-                                ? 'Add API Key to Enter'
+                                ? t('giveaways.addApiKeyToEnter')
                                 : !apiKeyValid
-                                ? 'Fix API Key to Enter'
-                                : 'Enter Giveaway'
+                                ? t('giveaways.fixApiKeyToEnter')
+                                : t('giveaways.enterGiveawayButton')
                               }
                             </button>
                           );
@@ -556,13 +556,13 @@ const GiveawaysPage = () => {
                           disabled
                           className="w-full bg-gray-600 text-gray-400 font-semibold py-3 px-6 rounded-lg cursor-not-allowed"
                         >
-                          {selectedGiveaway.status === 'upcoming' ? 'Not Started Yet' : 'Giveaway Ended'}
+                          {selectedGiveaway.status === 'upcoming' ? t('giveaways.notStartedYet') : t('giveaways.giveawayEnded')}
                         </button>
                       )}
                       
                       <div className="text-center">
                         <p className="text-gray-400 text-sm">
-                          {selectedGiveaway.participants.toLocaleString()} participants
+                          {selectedGiveaway.participants.toLocaleString()} {t('giveaways.participants')}
                         </p>
                       </div>
                     </div>
@@ -570,16 +570,16 @@ const GiveawaysPage = () => {
 
                   {/* Quick Links */}
                   <div className="bg-gray-800/60 border border-gray-700/60 rounded-2xl p-6">
-                    <h3 className="text-xl font-bold text-white mb-4">Quick Links</h3>
+                    <h3 className="text-xl font-bold text-white mb-4">{t('giveaways.quickLinks')}</h3>
                     <div className="space-y-3">
                       <a
-                        href="https://discord.gg/your-discord"
+                        href="https://discord.com/invite/KQSrhA2qmx"
                         target="_blank"
                         rel="noopener noreferrer"
                         className="flex items-center gap-3 p-3 bg-purple-600/20 hover:bg-purple-600/30 rounded-lg transition-colors"
                       >
                         <ExternalLink className="w-5 h-5 text-purple-400" />
-                        <span className="text-white">Join Discord</span>
+                        <span className="text-white">{t('giveaways.joinDiscord')}</span>
                       </a>
                       
                       <Link
@@ -587,7 +587,7 @@ const GiveawaysPage = () => {
                         className="flex items-center gap-3 p-3 bg-blue-600/20 hover:bg-blue-600/30 rounded-lg transition-colors"
                       >
                         <Shield className="w-5 h-5 text-blue-400" />
-                        <span className="text-white">Link API Key</span>
+                        <span className="text-white">{t('giveaways.linkApiKey')}</span>
                       </Link>
                     </div>
                   </div>
@@ -618,20 +618,20 @@ const GiveawaysPage = () => {
                   <CheckCircle className="w-8 h-8 text-green-400" />
                 </div>
                 
-                <h3 className="text-2xl font-bold text-white mb-4">Successfully Entered!</h3>
+                <h3 className="text-2xl font-bold text-white mb-4">{t('giveaways.successfullyEntered')}</h3>
                 <p className="text-gray-300 mb-6">
-                  You have successfully entered the giveaway. Good luck!
+                  {t('giveaways.successMessage')}
                 </p>
                 
                 {accountInfo && (
                   <div className="bg-gray-800/60 border border-gray-700/60 rounded-lg p-4 mb-6">
-                    <h4 className="text-lg font-semibold text-white mb-2">Account Information</h4>
+                    <h4 className="text-lg font-semibold text-white mb-2">{t('giveaways.accountInformation')}</h4>
                     <div className="text-center">
                       <div className="text-2xl font-bold text-blue-400">
                         {accountInfo.name || 'N/A'}
                       </div>
                       <div className="text-gray-400 text-sm mt-1">
-                        Account Name
+                        {t('giveaways.accountName')}
                       </div>
                     </div>
                   </div>
@@ -642,7 +642,7 @@ const GiveawaysPage = () => {
                     onClick={() => setShowParticipationSuccess(false)}
                     className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg transition-colors"
                   >
-                    Close
+                    {t('giveaways.close')}
                   </button>
                   
                   <a
@@ -652,7 +652,7 @@ const GiveawaysPage = () => {
                     className="w-full border border-purple-600 text-purple-300 hover:bg-purple-700/20 font-medium py-2 px-4 rounded-lg transition-colors text-center flex items-center justify-center gap-2"
                   >
                     <ExternalLink className="w-4 h-4" />
-                    Join Discord for Updates
+                    {t('giveaways.joinDiscordForUpdates')}
                   </a>
                 </div>
               </div>
