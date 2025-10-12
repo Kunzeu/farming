@@ -149,6 +149,78 @@ const nextConfig = {
           },
         ],
       },
+      // Sin caché para APIs de usuarios (cambios inmediatos)
+      {
+        source: '/api/users/(.*)',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'no-cache, no-store, must-revalidate',
+          },
+          {
+            key: 'Pragma',
+            value: 'no-cache',
+          },
+          {
+            key: 'Expires',
+            value: '0',
+          },
+        ],
+      },
+      // Caché corto para APIs de auth (cambios frecuentes)
+      {
+        source: '/api/auth/(.*)',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'no-cache, no-store, must-revalidate',
+          },
+          {
+            key: 'Pragma',
+            value: 'no-cache',
+          },
+          {
+            key: 'Expires',
+            value: '0',
+          },
+        ],
+      },
+      // Caché corto para APIs de giveaways (cambios frecuentes)
+      {
+        source: '/api/giveaways/(.*)',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'no-cache, no-store, must-revalidate',
+          },
+          {
+            key: 'Pragma',
+            value: 'no-cache',
+          },
+          {
+            key: 'Expires',
+            value: '0',
+          },
+        ],
+      },
+      // Caché corto para APIs de farms (cambios frecuentes)
+      {
+        source: '/api/farms/(.*)',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'no-cache, no-store, must-revalidate',
+          },
+          {
+            key: 'Pragma',
+            value: 'no-cache',
+          },
+          {
+            key: 'Expires',
+            value: '0',
+          },
+        ],
+      },
       // Headers para optimizar scripts de terceros específicos
       {
         source: '/:path*',
@@ -224,10 +296,10 @@ const nextConfig = {
   },
   
   // Configuración de Webpack solo para producción
-  webpack: (config, { dev, isServer }) => {
+  webpack: async (config, { dev, isServer }) => {
     // Bundle Analyzer
     if (process.env.ANALYZE === 'true' && !isServer) {
-      const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer');
+      const { BundleAnalyzerPlugin } = await import('webpack-bundle-analyzer');
       config.plugins.push(
         new BundleAnalyzerPlugin({
           analyzerMode: 'static',
@@ -370,4 +442,4 @@ const nextConfig = {
   },
 };
 
-module.exports = nextConfig;
+export default nextConfig;
