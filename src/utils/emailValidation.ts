@@ -4,29 +4,29 @@
 const EMAIL_REGEX = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
 
 // Validación de formato de email
-export const validateEmailFormat = (email: string): { isValid: boolean; message: string } => {
+export const validateEmailFormat = (email: string, t?: (key: string) => string): { isValid: boolean; message: string } => {
   if (!email || email.trim() === '') {
-    return { isValid: false, message: 'Email is required' };
+    return { isValid: false, message: t ? t('validation.email.required') : 'Email is required' };
   }
 
   if (!EMAIL_REGEX.test(email)) {
-    return { isValid: false, message: 'Please enter a valid email format' };
+    return { isValid: false, message: t ? t('validation.email.invalid') : 'Please enter a valid email format' };
   }
 
   // Validaciones adicionales
   if (email.length > 254) {
-    return { isValid: false, message: 'Email is too long' };
+    return { isValid: false, message: t ? t('validation.email.tooLong') : 'Email is too long' };
   }
 
   if (email.includes('..') || email.includes('--')) {
-    return { isValid: false, message: 'Email contains invalid characters' };
+    return { isValid: false, message: t ? t('validation.email.invalidCharacters') : 'Email contains invalid characters' };
   }
 
   return { isValid: true, message: '' };
 };
 
 // Validación de email único (para registro)
-export const validateEmailUnique = async (email: string): Promise<{ isValid: boolean; message: string }> => {
+export const validateEmailUnique = async (email: string, t?: (key: string) => string): Promise<{ isValid: boolean; message: string }> => {
   try {
     const { getDbService } = await import('@/lib/database-switch');
     const dbService = await getDbService();
@@ -34,7 +34,7 @@ export const validateEmailUnique = async (email: string): Promise<{ isValid: boo
     const existingUser = await dbService.getUserByEmail(email);
     
     if (existingUser) {
-      return { isValid: false, message: 'This email is already registered' };
+      return { isValid: false, message: t ? t('validation.email.alreadyRegistered') : 'This email is already registered' };
     }
     
     return { isValid: true, message: '' };
@@ -46,20 +46,20 @@ export const validateEmailUnique = async (email: string): Promise<{ isValid: boo
 };
 
 // Validación completa de email (formato + único)
-export const validateEmailComplete = async (email: string): Promise<{ isValid: boolean; message: string }> => {
+export const validateEmailComplete = async (email: string, t?: (key: string) => string): Promise<{ isValid: boolean; message: string }> => {
   // Primero validar formato
-  const formatValidation = validateEmailFormat(email);
+  const formatValidation = validateEmailFormat(email, t);
   if (!formatValidation.isValid) {
     return formatValidation;
   }
 
   // Luego validar que sea único
-  return await validateEmailUnique(email);
+  return await validateEmailUnique(email, t);
 };
 
 // Validación simple para login (solo formato)
-export const validateEmailForLogin = (email: string): { isValid: boolean; message: string } => {
-  return validateEmailFormat(email);
+export const validateEmailForLogin = (email: string, t?: (key: string) => string): { isValid: boolean; message: string } => {
+  return validateEmailFormat(email, t);
 };
 
 // Función para limpiar y normalizar email

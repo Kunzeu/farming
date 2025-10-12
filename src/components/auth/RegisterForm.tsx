@@ -40,17 +40,17 @@ export default function RegisterForm() {
 
   const validatePassword = (password: string) => {
     if (password.length < 6) {
-      return { isValid: false, message: 'Password must be at least 6 characters long' };
+      return { isValid: false, message: t('validation.password.minLength') };
     }
     if (password.length > 50) {
-      return { isValid: false, message: 'Password cannot be longer than 50 characters' };
+      return { isValid: false, message: t('validation.password.maxLength') };
     }
     return { isValid: true, message: '' };
   };
 
   const validateConfirmPassword = (confirmPassword: string, password: string) => {
     if (confirmPassword !== password) {
-      return { isValid: false, message: 'Passwords do not match' };
+      return { isValid: false, message: t('validation.password.noMatch') };
     }
     return { isValid: true, message: '' };
   };
@@ -59,15 +59,15 @@ export default function RegisterForm() {
     switch (name) {
       case 'username':
         if (value.length < 3) {
-          return { isValid: false, message: 'Username must be at least 3 characters long' };
+          return { isValid: false, message: t('validation.username.minLength') };
         }
         if (value.length > 20) {
-          return { isValid: false, message: 'Username cannot be longer than 20 characters' };
+          return { isValid: false, message: t('validation.username.maxLength') };
         }
         return { isValid: true, message: '' };
 
       case 'email':
-        return validateEmailFormat(value);
+        return validateEmailFormat(value, t);
 
       case 'password':
         return validatePassword(value);
@@ -108,7 +108,7 @@ export default function RegisterForm() {
     // Validación adicional de email único
     let finalEmailValidation = emailValidation;
     if (emailValidation.isValid) {
-      finalEmailValidation = await validateEmailUnique(formData.email);
+      finalEmailValidation = await validateEmailUnique(formData.email, t);
     }
 
     setValidation({
