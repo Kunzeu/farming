@@ -221,6 +221,42 @@ const nextConfig = {
           },
         ],
       },
+      // Sin caché para páginas con metadatos dinámicos (slogans)
+      {
+        source: '/',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'no-cache, no-store, must-revalidate',
+          },
+          {
+            key: 'Pragma',
+            value: 'no-cache',
+          },
+          {
+            key: 'Expires',
+            value: '0',
+          },
+        ],
+      },
+      // Sin caché para páginas principales con metadatos dinámicos
+      {
+        source: '/(farming-routes|daily-routine|festivals|giveaways|admin|profile)',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'no-cache, no-store, must-revalidate',
+          },
+          {
+            key: 'Pragma',
+            value: 'no-cache',
+          },
+          {
+            key: 'Expires',
+            value: '0',
+          },
+        ],
+      },
       // Headers para optimizar scripts de terceros específicos
       {
         source: '/:path*',
@@ -296,17 +332,10 @@ const nextConfig = {
   },
   
   // Configuración de Webpack solo para producción
-  webpack: async (config, { dev, isServer }) => {
-    // Bundle Analyzer
-    if (process.env.ANALYZE === 'true' && !isServer) {
-      const { BundleAnalyzerPlugin } = await import('webpack-bundle-analyzer');
-      config.plugins.push(
-        new BundleAnalyzerPlugin({
-          analyzerMode: 'static',
-          openAnalyzer: false,
-          reportFilename: './bundle-analysis.html',
-        })
-      );
+  webpack: (config, { dev, isServer }) => {
+    // Bundle Analyzer deshabilitado en Vercel para evitar problemas de build
+    // Solo funciona en desarrollo local
+    if (process.env.ANALYZE === 'true' && !isServer && dev) {
     }
 
     // Configuración de source maps para mejor debugging
