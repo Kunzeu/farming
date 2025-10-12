@@ -3,7 +3,6 @@
 import { createContext, useContext, useReducer, useEffect, ReactNode, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { AuthState, User, LoginCredentials, RegisterCredentials } from '@/types/auth';
-import { validatePasswordStrength } from '@/lib/password-utils';
 
 
 // Estado inicial
@@ -181,10 +180,12 @@ function AuthProviderInternal({ children }: { children: ReactNode }) {
         throw new Error('Passwords do not match');
       }
 
-      // Validate password strength
-      const passwordValidation = validatePasswordStrength(credentials.password);
-      if (!passwordValidation.isValid) {
-        throw new Error(passwordValidation.errors.join(', '));
+      // Basic password validation (length only)
+      if (credentials.password.length < 6) {
+        throw new Error('Password must be at least 6 characters long');
+      }
+      if (credentials.password.length > 50) {
+        throw new Error('Password cannot be longer than 50 characters');
       }
 
       // Verificar si es el primer usuario para hacerlo admin

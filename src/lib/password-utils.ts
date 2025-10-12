@@ -4,9 +4,10 @@
 /**
  * Validate password strength (client-side validation)
  * @param password - Password to validate
+ * @param t - Translation function (optional)
  * @returns Object with validation result and errors
  */
-export function validatePasswordStrength(password: string): {
+export function validatePasswordStrength(password: string, t?: (key: string) => string): {
   isValid: boolean;
   errors: string[];
   score: number; // 0-4 (0 = very weak, 4 = very strong)
@@ -14,51 +15,69 @@ export function validatePasswordStrength(password: string): {
   const errors: string[] = [];
   let score = 0;
 
+  // Función de traducción por defecto (inglés)
+  const defaultT = (key: string) => {
+    const translations: Record<string, string> = {
+      'validation.password.strength.minLength': 'Password must be at least 8 characters',
+      'validation.password.strength.uppercase': 'Password must contain at least one uppercase letter',
+      'validation.password.strength.lowercase': 'Password must contain at least one lowercase letter',
+      'validation.password.strength.number': 'Password must contain at least one number',
+      'validation.password.strength.special': 'Password must contain at least one special character',
+      'validation.password.strength.common': 'Password is too common, please choose a more unique password'
+    };
+    return translations[key] || key;
+  };
+
+  const translate = t || defaultT;
+
   // Length check
   if (password.length < 8) {
-    errors.push('Password must be at least 8 characters long');
+    errors.push(translate('validation.password.strength.minLength'));
   } else if (password.length >= 12) {
     score += 1;
   }
 
   // Uppercase check
   if (!/[A-Z]/.test(password)) {
-    errors.push('Password must contain at least one uppercase letter');
+    errors.push(translate('validation.password.strength.uppercase'));
   } else {
     score += 1;
   }
 
   // Lowercase check
   if (!/[a-z]/.test(password)) {
-    errors.push('Password must contain at least one lowercase letter');
+    errors.push(translate('validation.password.strength.lowercase'));
   } else {
     score += 1;
   }
 
   // Number check
   if (!/\d/.test(password)) {
-    errors.push('Password must contain at least one number');
+    errors.push(translate('validation.password.strength.number'));
   } else {
     score += 1;
   }
 
   // Special character check
   if (!/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password)) {
-    errors.push('Password must contain at least one special character');
+    errors.push(translate('validation.password.strength.special'));
   } else {
     score += 1;
   }
 
-  // Common password check
-  const commonPasswords = [
-    'password', '123456', '123456789', 'qwerty', 'abc123', 
-    'password123', 'admin', 'letmein', 'welcome', 'monkey'
-  ];
+  // Common password check - deshabilitado para evitar confusión
+  // const commonPasswords = [
+  //   'password', '123456', '123456789', 'qwerty', 'abc123', 
+  //   'password123', 'admin', 'letmein', 'welcome', 'monkey',
+  //   '12345678', '123123', '111111', '000000', 'iloveyou',
+  //   'sunshine', 'princess', 'dragon', 'master', 'hello'
+  // ];
   
-  if (commonPasswords.includes(password.toLowerCase())) {
-    errors.push('Password is too common, please choose a more unique password');
-    score = Math.max(0, score - 2);
-  }
+  // // Solo marcar como común si es exactamente una de las contraseñas de la lista
+  // if (commonPasswords.includes(password.toLowerCase())) {
+  //   errors.push(translate('validation.password.strength.common'));
+  //   score = Math.max(0, score - 2);
+  // }
 
   return {
     isValid: errors.length === 0,

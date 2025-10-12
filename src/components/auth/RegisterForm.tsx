@@ -16,6 +16,7 @@ import {
   CheckCircle
 } from 'lucide-react';
 import { validateEmailFormat, validateEmailUnique } from '@/utils/emailValidation';
+import { validatePasswordStrength } from '@/lib/password-utils';
 import Link from 'next/link';
 
 export default function RegisterForm() {
@@ -38,6 +39,18 @@ export default function RegisterForm() {
     confirmPassword: { isValid: false, message: '' },
   });
 
+  const [passwordStrength, setPasswordStrength] = useState({
+    score: 0,
+    requirements: {
+      length: false,
+      uppercase: false,
+      lowercase: false,
+      number: false,
+      special: false,
+      notCommon: true
+    }
+  });
+
   const validatePassword = (password: string) => {
     if (password.length < 6) {
       return { isValid: false, message: t('validation.password.minLength') };
@@ -45,7 +58,32 @@ export default function RegisterForm() {
     if (password.length > 50) {
       return { isValid: false, message: t('validation.password.maxLength') };
     }
-    return { isValid: true, message: '' };
+    
+    // Usar validación de fortaleza para análisis detallado
+    const strengthResult = validatePasswordStrength(password, t);
+    
+    // Actualizar estado de fortaleza
+    setPasswordStrength({
+      score: strengthResult.score,
+      requirements: {
+        length: password.length >= 8,
+        uppercase: /[A-Z]/.test(password),
+        lowercase: /[a-z]/.test(password),
+        number: /\d/.test(password),
+        special: /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password),
+        notCommon: true // Siempre true para no mostrar el mensaje de común
+      }
+    });
+    
+    // Para el formulario, solo requerir longitud mínima básica (6 caracteres)
+    // La validación de fortaleza es solo informativa
+    // Solo mostramos errores de fortaleza si la contraseña cumple los requisitos básicos
+    let firstError = '';
+    if (password.length >= 6) {
+      // Solo mostrar errores de fortaleza si la contraseña es lo suficientemente larga
+      firstError = strengthResult.errors[0] || '';
+    }
+    return { isValid: password.length >= 6, message: firstError };
   };
 
   const validateConfirmPassword = (confirmPassword: string, password: string) => {
@@ -121,6 +159,18 @@ export default function RegisterForm() {
     // Verificar si todos los campos son válidos
     if (usernameValidation.isValid && finalEmailValidation.isValid && 
         passwordValidation.isValid && confirmPasswordValidation.isValid) {
+      
+      // Validación adicional de fortaleza de contraseña antes de enviar
+      const strengthResult = validatePasswordStrength(formData.password, t);
+      if (!strengthResult.isValid) {
+        // Mostrar el primer error de fortaleza
+        setValidation(prev => ({
+          ...prev,
+          password: { isValid: false, message: strengthResult.errors[0] }
+        }));
+        return;
+      }
+      
       await register(formData);
     }
   };
@@ -279,6 +329,68 @@ export default function RegisterForm() {
             </div>
             {formData.password && !validation.password.isValid && (
               <p className="text-red-400 text-xs mt-1">{validation.password.message}</p>
+            )}
+            
+            {/* Password Strength Indicator */}
+            {formData.password && (
+              <div className="mt-3 space-y-2">
+                {/* Strength Bar */}
+                <div className="flex items-center gap-2">
+                  <div className="flex-1 bg-gray-700 rounded-full h-2">
+                    <div 
+                      className={`h-2 rounded-full transition-all duration-300 ${
+                        passwordStrength.score === 0 ? 'w-0' :
+                        passwordStrength.score === 1 ? 'w-1/4 bg-red-500' :
+                        passwordStrength.score === 2 ? 'w-2/4 bg-orange-500' :
+                        passwordStrength.score === 3 ? 'w-3/4 bg-yellow-500' :
+                        'w-full bg-green-500'
+                      }`}
+                    />
+                  </div>
+                  <span className={`text-xs font-medium ${
+                    passwordStrength.score === 0 ? 'text-gray-400' :
+                    passwordStrength.score === 1 ? 'text-red-400' :
+                    passwordStrength.score === 2 ? 'text-orange-400' :
+                    passwordStrength.score === 3 ? 'text-yellow-400' :
+                    'text-green-400'
+                  }`}>
+                    {passwordStrength.score === 0 ? t('auth.passwordStrength.veryWeak', 'Very Weak') :
+                     passwordStrength.score === 1 ? t('auth.passwordStrength.weak', 'Weak') :
+                     passwordStrength.score === 2 ? t('auth.passwordStrength.fair', 'Fair') :
+                     passwordStrength.score === 3 ? t('auth.passwordStrength.good', 'Good') :
+                     t('auth.passwordStrength.strong', 'Strong')}
+                  </span>
+                </div>
+                
+                {/* Requirements Checklist */}
+                <div className="space-y-2">
+                  <p className="text-xs text-gray-400 italic">
+                    {t('auth.passwordStrength.recommended', 'Recomendado para mayor seguridad:')}
+                  </p>
+                  <div className="grid grid-cols-1 gap-1 text-xs">
+                    <div className={`flex items-center gap-2 ${passwordStrength.requirements.length ? 'text-green-400' : 'text-gray-400'}`}>
+                      <CheckCircle className={`w-3 h-3 ${passwordStrength.requirements.length ? 'text-green-400' : 'text-gray-600'}`} />
+                      <span>{t('validation.password.strength.minLength')}</span>
+                    </div>
+                    <div className={`flex items-center gap-2 ${passwordStrength.requirements.uppercase ? 'text-green-400' : 'text-gray-400'}`}>
+                      <CheckCircle className={`w-3 h-3 ${passwordStrength.requirements.uppercase ? 'text-green-400' : 'text-gray-600'}`} />
+                      <span>{t('validation.password.strength.uppercase')}</span>
+                    </div>
+                    <div className={`flex items-center gap-2 ${passwordStrength.requirements.lowercase ? 'text-green-400' : 'text-gray-400'}`}>
+                      <CheckCircle className={`w-3 h-3 ${passwordStrength.requirements.lowercase ? 'text-green-400' : 'text-gray-600'}`} />
+                      <span>{t('validation.password.strength.lowercase')}</span>
+                    </div>
+                    <div className={`flex items-center gap-2 ${passwordStrength.requirements.number ? 'text-green-400' : 'text-gray-400'}`}>
+                      <CheckCircle className={`w-3 h-3 ${passwordStrength.requirements.number ? 'text-green-400' : 'text-gray-600'}`} />
+                      <span>{t('validation.password.strength.number')}</span>
+                    </div>
+                    <div className={`flex items-center gap-2 ${passwordStrength.requirements.special ? 'text-green-400' : 'text-gray-400'}`}>
+                      <CheckCircle className={`w-3 h-3 ${passwordStrength.requirements.special ? 'text-green-400' : 'text-gray-600'}`} />
+                      <span>{t('validation.password.strength.special')}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
             )}
           </div>
 
