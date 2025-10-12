@@ -54,6 +54,18 @@ export async function GET(request: NextRequest) {
   const userId = searchParams.get('userId'); // Para obtener perfil específico
 
   try {
+    // Verificar autenticación para operaciones sensibles
+    const authHeader = request.headers.get('authorization');
+    const isAdminRequest = authHeader && authHeader.startsWith('Bearer admin-');
+    
+    // Si no es una búsqueda específica por email/username/discordId/userId, requiere admin
+    if (!email && !username && !discordId && !userId) {
+      if (!isAdminRequest) {
+        return NextResponse.json({ 
+          error: 'Unauthorized. Admin access required to list all users.' 
+        }, { status: 401 });
+      }
+    }
     if (email) {
       // Buscar por email (para login)
       const query = `

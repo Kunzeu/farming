@@ -153,7 +153,7 @@ class DatabaseClientService {
 
   // User methods
   async getAllUsers(): Promise<User[]> {
-    const response = await fetch('/api/users');
+    const response = await fetch('/api/admin/users');
     if (!response.ok) {
       throw new Error('Failed to fetch users');
     }
@@ -247,7 +247,7 @@ class DatabaseClientService {
   }
 
   async getUserByEmail(email: string): Promise<User | null> {
-    const response = await fetch(`/api/users?email=${encodeURIComponent(email)}`);
+    const response = await fetch(`/api/auth/search?email=${encodeURIComponent(email)}`);
     if (!response.ok) {
       if (response.status === 404) {
         return null;
@@ -265,7 +265,7 @@ class DatabaseClientService {
   }
 
   async getUserByUsername(username: string): Promise<User | null> {
-    const response = await fetch(`/api/users?username=${encodeURIComponent(username)}`);
+    const response = await fetch(`/api/auth/search?username=${encodeURIComponent(username)}`);
     if (!response.ok) {
       if (response.status === 404) {
         return null;
@@ -283,7 +283,7 @@ class DatabaseClientService {
   }
 
   async getUserByDiscordId(discordId: string): Promise<User | null> {
-    const response = await fetch(`/api/users?discordId=${encodeURIComponent(discordId)}`);
+    const response = await fetch(`/api/auth/search?discordId=${encodeURIComponent(discordId)}`);
     if (!response.ok) {
       if (response.status === 404) {
         return null;

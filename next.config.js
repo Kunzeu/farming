@@ -167,6 +167,24 @@ const nextConfig = {
           },
         ],
       },
+      // Sin caché para APIs de administración
+      {
+        source: '/api/admin/(.*)',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'no-cache, no-store, must-revalidate',
+          },
+          {
+            key: 'Pragma',
+            value: 'no-cache',
+          },
+          {
+            key: 'Expires',
+            value: '0',
+          },
+        ],
+      },
       // Caché corto para APIs de auth (cambios frecuentes)
       {
         source: '/api/auth/(.*)',
