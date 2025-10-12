@@ -18,20 +18,22 @@ const slogans = [
 ];
 
 interface SloganProps {
-  variant?: 'random' | 'rotating' | 'static';
+  variant?: 'random' | 'rotating' | 'static' | 'random-rotating';
   sloganIndex?: number;
   className?: string;
   showOnLoad?: boolean;
+  rotationInterval?: number;
 }
 
 export default function Slogan({ 
   variant = 'random', 
   sloganIndex = 0, 
   className = '',
-  showOnLoad = true
+  showOnLoad = true,
+  rotationInterval = 4000
 }: SloganProps) {
   const [currentSlogan, setCurrentSlogan] = useState('');
-  const [isVisible, setIsVisible] = useState(showOnLoad);
+  const [isVisible] = useState(showOnLoad);
 
   useEffect(() => {
     if (variant === 'random') {
@@ -42,6 +44,10 @@ export default function Slogan({
       setCurrentSlogan(slogans[sloganIndex % slogans.length]);
     } else if (variant === 'rotating') {
       setCurrentSlogan(slogans[0]);
+    } else if (variant === 'random-rotating') {
+      // Selecciona un slogan aleatorio inicial
+      const randomIndex = Math.floor(Math.random() * slogans.length);
+      setCurrentSlogan(slogans[randomIndex]);
     }
   }, [variant, sloganIndex]);
 
@@ -53,11 +59,19 @@ export default function Slogan({
           const nextIndex = (currentIndex + 1) % slogans.length;
           return slogans[nextIndex];
         });
-      }, 4000); // Cambia cada 4 segundos
+      }, rotationInterval);
+
+      return () => clearInterval(interval);
+    } else if (variant === 'random-rotating') {
+      const interval = setInterval(() => {
+        // Selecciona un slogan completamente aleatorio
+        const randomIndex = Math.floor(Math.random() * slogans.length);
+        setCurrentSlogan(slogans[randomIndex]);
+      }, rotationInterval);
 
       return () => clearInterval(interval);
     }
-  }, [variant]);
+  }, [variant, rotationInterval]);
 
   if (!isVisible) return null;
 
