@@ -945,7 +945,7 @@ export default function GiftOfMasteryPage() {
                 
                 <div className="mt-4 p-3 bg-yellow-900/20 border border-yellow-500/30 rounded-lg">
                   <div className="flex items-start space-x-3">
-                    <span className="text-yellow-400 font-bold text-lg">OPCIONAL:</span>
+                    <span className="text-yellow-400 font-bold text-lg">{t('common.optional', 'OPCIONAL')}:</span>
                     <div className="flex-1">
                       <MaterialItem 
                         materialKey="mysticClover" 

@@ -3426,9 +3426,9 @@ const CraftingPage = () => {
                         <div className="w-10 h-10 bg-green-600 rounded-lg flex items-center justify-center">
                           <TrendingUp className="w-5 h-5 text-green-300" />
                           </div>
-                        <h3 className="text-white font-semibold">Conversiones Rentables</h3>
+                        <h3 className="text-white font-semibold">{t('craftingPage.profitableConversions', 'Conversiones Rentables')}</h3>
                         </div>
-                      <p className="text-gray-300 text-sm">Convierte materiales T5 a T6 cuando la diferencia de precio sea favorable. Usa la tabla de conversiones para identificar oportunidades.</p>
+                      <p className="text-gray-300 text-sm">{t('craftingPage.profitableConversionsDesc', 'Convierte materiales T5 a T6 cuando la diferencia de precio sea favorable. Usa la tabla de conversiones para identificar oportunidades.')}</p>
                       </div>
                     
                     <div className="bg-gradient-to-r from-blue-800/30 to-blue-700/30 rounded-lg p-4 border border-blue-600/30">
@@ -3436,7 +3436,7 @@ const CraftingPage = () => {
                         <div className="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center">
                           <Zap className="w-5 h-5 text-blue-300" />
                   </div>
-                        <h3 className="text-white font-semibold">Magia Volátil</h3>
+                        <h3 className="text-white font-semibold">{t('craftingPage.volatileMagic', 'Magia Volátil')}</h3>
                       </div>
                       <p className="text-gray-300 text-sm">{t('craftingPage.volatileMagicStrategy', 'Gasta tu Magia Liberada en {trophyBoxes}, esto te ayudará a maximizar ganancias.').replace('{trophyBoxes}', tableItemNames[85725] || 'Cargamento de trofeos')}</p>
                 </div>
@@ -3446,7 +3446,7 @@ const CraftingPage = () => {
                         <div className="w-10 h-10 bg-purple-600 rounded-lg flex items-center justify-center">
                           <Star className="w-5 h-5 text-purple-300" />
                         </div>
-                        <h3 className="text-white font-semibold">Magia Liberada</h3>
+                        <h3 className="text-white font-semibold">{t('craftingPage.unboundMagic', 'Magia Liberada')}</h3>
                       </div>
                       <p className="text-gray-300 text-sm">{t('craftingPage.unboundMagicStrategy', 'Gasta tu Magia Liberada en {magicBoxes}, esto te ayudará a maximizar ganancias.').replace('{magicBoxes}', tableItemNames[79186] || 'Lote retorcido por la magia')}</p>
                     </div>
@@ -3456,9 +3456,9 @@ const CraftingPage = () => {
                         <div className="w-10 h-10 bg-yellow-600 rounded-lg flex items-center justify-center">
                           <BarChart3 className="w-5 h-5 text-yellow-300" />
                         </div>
-                        <h3 className="text-white font-semibold">Análisis de Datos</h3>
+                        <h3 className="text-white font-semibold">{t('craftingPage.dataAnalysis', 'Análisis de Datos')}</h3>
                       </div>
-                      <p className="text-gray-300 text-sm">Los datos se actualizan en tiempo real. Monitorea los cambios de precios para tomar decisiones informadas.</p>
+                      <p className="text-gray-300 text-sm">{t('craftingPage.dataAnalysisDesc', 'Los datos se actualizan en tiempo real. Monitorea los cambios de precios para tomar decisiones informadas.')}</p>
                     </div>
                   </div>
                 </div>
@@ -3467,7 +3467,7 @@ const CraftingPage = () => {
                 <div className="bg-gray-800/30 backdrop-blur-sm border border-gray-700 rounded-lg p-6">
                   <h3 className="text-xl font-bold text-white mb-4 flex items-center">
                     <AlertCircle className="w-5 h-5 mr-3 text-yellow-400" />
-                    Consejos Avanzados
+                    {t('craftingPage.advancedTips', 'Consejos Avanzados')}
                   </h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div className="space-y-3">
@@ -3481,8 +3481,8 @@ const CraftingPage = () => {
                       <div className="flex items-start gap-3">
                         <div className="w-2 h-2 bg-yellow-400 rounded-full mt-2 flex-shrink-0"></div>
                         <div>
-                          <h4 className="text-white font-semibold">Timing de Conversiones</h4>
-                          <p className="text-gray-300 text-sm">Convierte materiales cuando los precios T6 estén altos y los T5 bajos para maximizar ganancias.</p>
+                          <h4 className="text-white font-semibold">{t('craftingPage.conversionTiming', 'Timing de Conversiones')}</h4>
+                          <p className="text-gray-300 text-sm">{t('craftingPage.conversionTimingDesc', 'Convierte materiales cuando los precios T6 estén altos y los T5 bajos para maximizar ganancias.')}</p>
                         </div>
                       </div>
                     </div>
