@@ -432,14 +432,14 @@ const Navigation = () => {
               />
             </div>
             {/* Enlace de Giveaways */}
-            {/* <Link
+             <Link
               href="/giveaways"
               className="flex items-center space-x-2 text-green-300 px-3 py-2 rounded-lg bg-green-900/20 border border-green-700/30 hover:bg-green-800/30 hover:text-green-200 transition-all duration-200"
               title={t('nav.giveaways', 'Giveaways')}
             >
               <Gift className="w-4 h-4" />
               <span className="text-sm font-bold">{t('nav.giveaways', 'Giveaways')}</span>
-            </Link> */}
+            </Link>   
           </div>
 
           {/* Navigation Items + User Menu - Esquina Derecha */}

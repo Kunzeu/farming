@@ -51,6 +51,7 @@ interface BoxOpeningPrimaryItem {
   quantity: number;
   perBox: number;
   pricePerUnit?: number;
+  priceBuyPerUnit?: number;
 }
 
 const candyCornItems = [
@@ -184,6 +185,8 @@ const HalloweenPage = () => {
   const [availableItems, setAvailableItems] = useState<CalculatorItem[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedItems, setSelectedItems] = useState<Set<number>>(new Set());
+  // Precio TP de la Trick-or-Treat Bag (36038)
+  const [bagTPPrice, setBagTPPrice] = useState<{ buy: number; sell: number } | null>(null);
   
   // Estado para manejar inputs como strings durante la escritura
   const [inputValues, setInputValues] = useState<Record<number, string>>({});
@@ -341,6 +344,7 @@ const HalloweenPage = () => {
         quantity: countById[d.id] ?? 0,
         perBox: (countById[d.id] ?? 0) / TOTAL_OPENED_BOXES,
         pricePerUnit: pricesMap[d.id]?.sells?.unit_price ?? 0,
+        priceBuyPerUnit: pricesMap[d.id]?.buys?.unit_price ?? 0,
       }));
       setPrimaryItems(mapped);
     } catch (e) {
@@ -349,6 +353,33 @@ const HalloweenPage = () => {
       setPrimaryLoading(false);
     }
   }, [lang]);
+
+  // Cargar precio TP del ítem 36038 directamente desde la API de GW2 (al cargar y cada 5 min)
+  const fetchBagPrice = useCallback(async () => {
+    try {
+      const res = await fetch(`https://api.guildwars2.com/v2/commerce/prices/36038`, {
+        headers: {
+          'Accept': 'application/json',
+          'Accept-Encoding': 'gzip, deflate, br'
+        }
+      });
+      if (!res.ok) return;
+      const data = await res.json();
+      const buy = data?.buys?.unit_price || 0;
+      const sell = data?.sells?.unit_price || 0;
+      setBagTPPrice({ buy, sell });
+    } catch (e) {
+      console.error('Error cargando precio de la bolsa 36038:', e);
+    }
+  }, []);
+
+  useEffect(() => {
+    // Carga inicial
+    fetchBagPrice();
+    // Intervalo cada 5 minutos
+    const intervalId = setInterval(fetchBagPrice, 5 * 60 * 1000);
+    return () => clearInterval(intervalId);
+  }, [fetchBagPrice]);
 
   useEffect(() => {
     if (selectedSection === 'calculators') {
@@ -874,10 +905,66 @@ const HalloweenPage = () => {
                               </div>
                         <div className="bg-gray-800/60 rounded-lg p-3 text-center border border-orange-500/20 shadow-lg">
                           <div className="text-2xl font-bold text-yellow-400">
-                            {formatGoldSilverCopper(primaryItems.reduce((sum, i) => sum + i.quantity * (i.pricePerUnit || 0), 0))}
+                            {formatGoldSilverCopper(primaryItems.reduce((sum, i) => sum + Math.ceil(i.quantity * ((i.pricePerUnit || 0) * 0.85)), 0))}
                               </div>
-                          <div className="text-gray-200 text-sm">{t('halloween.stats.totalValue')}</div>
+                          <div className="text-gray-200 text-sm">{t('halloween.stats.totalValue')} (85%)</div>
                               </div>
+                      </div>
+
+                      {/* Contenedores extra: Precio TP, Open or Sell, Valor por bolsa */}
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mt-3">
+                        {/* Precio TP de la bolsa (Trick-or-Treat Bag) */}
+                        <div className="bg-gray-800/60 rounded-lg p-3 text-center border border-orange-500/20 shadow-lg">
+                          {(() => {
+                            const priceBuy = bagTPPrice?.buy || 0;
+                            return (
+                              <>
+                                <div className="text-2xl font-bold text-white">{formatGoldSilverCopper(priceBuy)}</div>
+                                <div className="text-gray-200 text-sm">{t('halloween.stats.priceTP', 'Precio TP')}</div>
+                              </>
+                            );
+                          })()}
+                        </div>
+
+                        {/* Open or Sell */}
+                        <div className="bg-gray-800/60 rounded-lg p-3 text-center border border-orange-500/20 shadow-lg">
+                          {(() => {
+                            const tpBuy = bagTPPrice?.buy || 0; // Precio TP (izquierda)
+                            const ev85 = primaryItems.reduce((sum, i) => {
+                              const price = i.pricePerUnit || 0;
+                              return sum + (i.perBox * Math.floor(price * 0.85));
+                            }, 0);
+                            const recommendOpen = ev85 > tpBuy;
+                            return (
+                              <>
+                                <div className={`text-2xl font-bold ${recommendOpen ? 'text-green-400' : 'text-red-400'}`}>
+                                  {recommendOpen ? t('halloween.stats.open', 'Abrir') : t('halloween.stats.sell', 'Vender')}
+                                </div>
+                                <div className="text-gray-200 text-xs mt-1">
+                                  {recommendOpen 
+                                    ? t('halloween.stats.openHint', 'Ahora mismo se recomienda Abrir.')
+                                    : t('halloween.stats.sellHint', 'Ahora mismo se recomienda Vender.')}
+                                </div>
+                              </>
+                            );
+                          })()}
+                        </div>
+
+                        {/* Valor por bolsa (EV al 85%) */}
+                        <div className="bg-gray-800/60 rounded-lg p-3 text-center border border-orange-500/20 shadow-lg">
+                          {(() => {
+                            const ev85 = primaryItems.reduce((sum, i) => {
+                              const price = i.pricePerUnit || 0;
+                              return sum + (i.perBox * Math.floor(price * 0.85));
+                            }, 0);
+                            return (
+                              <>
+                                <div className="text-2xl font-bold text-yellow-400">{formatGoldSilverCopper(Math.round(ev85))}</div>
+                                <div className="text-gray-200 text-sm">{t('halloween.stats.valuePerBag', 'Valor por bolsa (85%)')}</div>
+                              </>
+                            );
+                          })()}
+                        </div>
                       </div>
                     </div>
 
