@@ -601,16 +601,15 @@ const Navigation = () => {
                     </div>
                   )}
 
-                  {/* Mobile Auth Button */}
-                  {!isAuthenticated && (
-                    <div className="lg:hidden">
-                      <Link
-                        href="/login"
-                        className="px-4 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-all duration-200 font-medium shadow-md hover:shadow-lg text-xs">
-                        {t('auth.login', 'Login')}
-                      </Link>
-                    </div>
-                  )}
+                  {/* Mobile primary button spot: Show Giveaways with same desktop style */}
+                  <div className="lg:hidden">
+                    <Link
+                      href="/giveaways"
+                      className="flex items-center space-x-2 text-green-300 px-3 py-2 rounded-lg bg-green-900/20 border border-green-700/30 hover:bg-green-800/30 hover:text-green-200 transition-all duration-200">
+                      <Gift className="w-4 h-4" />
+                      <span className="text-xs font-bold">{t('nav.giveaways', 'Giveaways')}</span>
+                    </Link>
+                  </div>
                 </>
               )}
 
@@ -742,7 +741,7 @@ const Navigation = () => {
                         )}
                       </div>
                       
-                      {/* User Section for Mobile */}
+                      {/* User Section for Mobile (authenticated) */}
                       {isAuthenticated ? (
                         <>
                           <div className="border-t border-gray-700 my-2 pt-2">
@@ -799,7 +798,18 @@ const Navigation = () => {
                             )}
                           </div>
                         </>
-                      ) : null}
+                      ) : (
+                        // Mobile unauthenticated: show Login inside the hamburger menu
+                        <div className="border-t border-gray-700 my-2 pt-2">
+                          <Link
+                            href="/login"
+                            onClick={() => setIsMobileMenuOpen(false)}
+                            className="flex items-center space-x-3 px-3 py-3 text-gray-100 bg-blue-600/80 hover:bg-blue-700 rounded-md transition-colors duration-200">
+                            <User className="w-5 h-5" />
+                            <span className="font-semibold">{t('auth.login', 'Login')}</span>
+                          </Link>
+                        </div>
+                      )}
                     </div>
                   </motion.div>
                 )}
