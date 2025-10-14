@@ -11,11 +11,11 @@ import {
   Info
 } from 'lucide-react';
 import Link from 'next/link';
-import { festivalDates, getFestivalStatus } from '@/lib/festival-dates';
+import { festivalDates, getFestivalStatus, getFormattedDateRange } from '@/lib/festival-dates';
 import { usePageTitle } from '@/hooks/usePageTitle';
 import { useI18n } from '@/contexts/I18nContext';
 
-const getFestivals = () => [
+const getFestivals = (t: (key: string) => string) => [
   {
     id: 'lunar',
     nameKey: 'festivals.names.lunar',
@@ -23,8 +23,8 @@ const getFestivals = () => [
     icon: '🏮',
     color: 'from-red-500 to-yellow-600',
     status: getFestivalStatus(festivalDates.lunar.startDate, festivalDates.lunar.endDate, festivalDates.lunar.startTime, festivalDates.lunar.endTime, festivalDates.lunar.timezone),
-    startDate: festivalDates.lunar.startDateFormatted,
-    endDate: festivalDates.lunar.endDateFormatted,
+    startDate: getFormattedDateRange(festivalDates.lunar.startDate, festivalDates.lunar.endDate, t),
+    endDate: '', // No se usa por separado, se usa el rango completo
     features: [
       'festivals.features.lunar.luckyEnvelopes',
       'festivals.features.lunar.essenceLuck',
@@ -43,8 +43,8 @@ const getFestivals = () => [
     icon: '🐉',
     color: 'from-purple-500 to-pink-600',
     status: getFestivalStatus(festivalDates['dragon-bash'].startDate, festivalDates['dragon-bash'].endDate, festivalDates['dragon-bash'].startTime, festivalDates['dragon-bash'].endTime, festivalDates['dragon-bash'].timezone),
-    startDate: festivalDates['dragon-bash'].startDateFormatted,
-    endDate: festivalDates['dragon-bash'].endDateFormatted,
+    startDate: getFormattedDateRange(festivalDates['dragon-bash'].startDate, festivalDates['dragon-bash'].endDate, t),
+    endDate: '', // No se usa por separado, se usa el rango completo
     features: [
       'festivals.features.dragonBash.holographic',
       'festivals.features.dragonBash.racing',
@@ -63,8 +63,8 @@ const getFestivals = () => [
     icon: '🪂',
     color: 'from-green-500 to-blue-600',
     status: getFestivalStatus(festivalDates['four-winds'].startDate, festivalDates['four-winds'].endDate, festivalDates['four-winds'].startTime, festivalDates['four-winds'].endTime, festivalDates['four-winds'].timezone),
-    startDate: festivalDates['four-winds'].startDateFormatted,
-    endDate: festivalDates['four-winds'].endDateFormatted,
+    startDate: getFormattedDateRange(festivalDates['four-winds'].startDate, festivalDates['four-winds'].endDate, t),
+    endDate: '', // No se usa por separado, se usa el rango completo
     features: [
       'festivals.features.fourWinds.mountRaces',
       'festivals.features.fourWinds.bossBlitz',
@@ -83,8 +83,8 @@ const getFestivals = () => [
     icon: '🎃',
     color: 'from-orange-500 to-red-600',
     status: getFestivalStatus(festivalDates.halloween.startDate, festivalDates.halloween.endDate, festivalDates.halloween.startTime, festivalDates.halloween.endTime, festivalDates.halloween.timezone),
-    startDate: festivalDates.halloween.startDateFormatted,
-    endDate: festivalDates.halloween.endDateFormatted,
+    startDate: getFormattedDateRange(festivalDates.halloween.startDate, festivalDates.halloween.endDate, t),
+    endDate: '', // No se usa por separado, se usa el rango completo
     features: [
       'festivals.features.halloween.bags',
       'festivals.features.halloween.corn',
@@ -103,8 +103,8 @@ const getFestivals = () => [
     icon: '❄️',
     color: 'from-blue-500 to-cyan-600',
     status: getFestivalStatus(festivalDates.wintersday.startDate, festivalDates.wintersday.endDate, festivalDates.wintersday.startTime, festivalDates.wintersday.endTime, festivalDates.wintersday.timezone),
-    startDate: festivalDates.wintersday.startDateFormatted,
-    endDate: festivalDates.wintersday.endDateFormatted,
+    startDate: getFormattedDateRange(festivalDates.wintersday.startDate, festivalDates.wintersday.endDate, t),
+    endDate: '', // No se usa por separado, se usa el rango completo
     features: [
       'festivals.features.wintersday.gifts',
       'festivals.features.wintersday.wonderland',
@@ -134,7 +134,7 @@ const getStatusColor = (status: string) => {
 export default function FestivalsPage() {
   usePageTitle('pageTitles.festivals', 'Festivals');
   const { t } = useI18n();
-  const festivals = getFestivals();
+  const festivals = getFestivals(t);
   return (
     <>
       <Navigation />
@@ -188,7 +188,7 @@ export default function FestivalsPage() {
                     <div className="flex items-center gap-2 mb-6">
                       <Clock className="w-4 h-4 text-gray-500" />
                       <span className="text-gray-300 text-sm">
-                        {festival.startDate} - {festival.endDate}
+                        {festival.startDate}
                       </span>
                     </div>
 

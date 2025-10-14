@@ -45,7 +45,7 @@ interface DashboardCard {
   order: number
 }
 
-// Configuración inicial de las tarjetas - movida fuera del componente para evitar recreación
+// Configuración inicial de las tarjetas 
 const initialCards: DashboardCard[] = [
   {
     id: "farms",
@@ -279,8 +279,6 @@ export default function HomePage() {
     setOriginalCards(dashboardCards);
     saveDashboardConfig(dashboardCards);
     setIsEditMode(false);
-    // Mostrar notificación de éxito
-    // toast.success(t('dashboard.customizationSaved', 'Personalización guardada'));
   };
 
   const resetDashboard = () => {
@@ -288,8 +286,6 @@ export default function HomePage() {
     setOriginalCards(initialCards);
     saveDashboardConfig(initialCards);
     setIsEditMode(false);
-    // Mostrar notificación de éxito
-    // toast.success(t('dashboard.customizationReset', 'Dashboard restablecido'));
   };
 
   const toggleCardVisibility = (cardId: string) => {
@@ -316,7 +312,6 @@ export default function HomePage() {
     setDashboardCards(updatedCards);
   };
 
-  // Funciones de drag and drop
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handleDragStart = (e: any, index: number) => {
     setDraggedIndex(index);
@@ -350,7 +345,6 @@ export default function HomePage() {
   const activeFestivalEvents = getActiveFestivalEvents();
   const activeEvent = activeFestivalEvents[0]; // Mostrar el primer evento activo si hay múltiples
 
-  // Nota: lógica de próximo evento removida porque el CTA solo se muestra con evento activo
 
   return (
     <div>

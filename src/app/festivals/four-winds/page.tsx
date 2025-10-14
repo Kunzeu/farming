@@ -1019,7 +1019,18 @@ const FourWindsPage = () => {
                     <h3 className="text-lg sm:text-xl font-bold text-cyan-400 mb-2">{t('fourWinds.stats.title')}</h3>
                     <p className="text-xl sm:text-2xl font-bold text-white">{t('fourWinds.stats.boxesOpened')}</p>
                     <p className="text-gray-200 text-sm mt-2">{t('fourWinds.stats.desc')}</p>
-                    <p className="text-gray-300 text-xs mt-1">{t('fourWinds.stats.credit')}</p>
+                    <p className="text-gray-300 text-xs mt-1">
+                      {t('fourWinds.stats.credit').split('Vortus43')[0]}
+                      <a 
+                        href="https://www.twitch.tv/vortus43" 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        className="text-cyan-400 hover:text-cyan-300 underline transition-colors"
+                      >
+                        Vortus43
+                      </a>
+                      {t('fourWinds.stats.credit').split('Vortus43')[1]}
+                    </p>
                   </div>
                 </div>
 
@@ -1098,7 +1109,7 @@ const FourWindsPage = () => {
                     </div>
                   </div>
 
-                  <div>
+                  <div className="hidden">
                     <div className="flex items-center justify-between mb-3">
                       <h3 className="text-xl font-bold text-white flex items-center">
                         <Calculator className="w-6 h-6 mr-3 text-cyan-400" />

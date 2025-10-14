@@ -1,10 +1,9 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import Navigation from '@/components/layout/Navigation';
 import { useI18n } from '@/contexts/I18nContext';
-import { usePageTitle } from '@/hooks/usePageTitle';
 import { useAuth } from '@/contexts/AuthContext';
 import { 
   Gift, 
@@ -22,6 +21,7 @@ import {
   Activity
 } from 'lucide-react';
 import Link from 'next/link';
+import Image from 'next/image';
 
 interface Giveaway {
   id: string;
@@ -121,8 +121,24 @@ const GiveawaysPage = () => {
     gemPrize?: boolean;
   }>>>({});
 
+  // Load items information for a specific giveaway
+  const loadGiveawayItems = useCallback(async (giveawayId: string) => {
+    try {
+      const response = await fetch(`/api/giveaways/items?giveawayId=${giveawayId}&lang=${lang}`);
+      if (response.ok) {
+        const data = await response.json();
+        setGiveawayItems(prev => ({
+          ...prev,
+          [giveawayId]: data.items
+        }));
+      }
+    } catch (error) {
+      console.error(`Error loading items for giveaway ${giveawayId}:`, error);
+    }
+  }, [lang]);
+
   // Load giveaways from API
-  const loadGiveaways = async () => {
+  const loadGiveaways = useCallback(async () => {
     try {
       setIsLoadingGiveaways(true);
       const response = await fetch('/api/giveaways');
@@ -142,23 +158,7 @@ const GiveawaysPage = () => {
     } finally {
       setIsLoadingGiveaways(false);
     }
-  };
-
-  // Load items information for a specific giveaway
-  const loadGiveawayItems = async (giveawayId: string) => {
-    try {
-      const response = await fetch(`/api/giveaways/items?giveawayId=${giveawayId}&lang=${lang}`);
-      if (response.ok) {
-        const data = await response.json();
-        setGiveawayItems(prev => ({
-          ...prev,
-          [giveawayId]: data.items
-        }));
-      }
-    } catch (error) {
-      console.error(`Error loading items for giveaway ${giveawayId}:`, error);
-    }
-  };
+  }, [loadGiveawayItems]);
 
   // Load winners from API
   const loadWinners = async () => {
@@ -176,7 +176,7 @@ const GiveawaysPage = () => {
   };
 
   // Load user's participated giveaways
-  const loadParticipatedGiveaways = async () => {
+  const loadParticipatedGiveaways = useCallback(async () => {
     if (!user?.id) {
       setIsLoadingParticipations(false);
       return;
@@ -199,7 +199,7 @@ const GiveawaysPage = () => {
     } finally {
       setIsLoadingParticipations(false);
     }
-  };
+  }, [user?.id]);
 
   // Check if user has API key and get account info from database
   useEffect(() => {
@@ -258,6 +258,7 @@ const GiveawaysPage = () => {
   useEffect(() => {
     loadGiveaways();
     loadWinners();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Reload items when language changes
@@ -267,7 +268,7 @@ const GiveawaysPage = () => {
         loadGiveawayItems(giveaway.id);
       });
     }
-  }, [lang]);
+  }, [lang, giveaways, loadGiveawayItems]);
 
   // Load participated giveaways when user changes
   useEffect(() => {
@@ -277,7 +278,7 @@ const GiveawaysPage = () => {
       setParticipatedAccounts(new Set());
       setIsLoadingParticipations(false);
     }
-  }, [user?.id]);
+  }, [user?.id, loadParticipatedGiveaways]);
 
 
 
@@ -454,11 +455,13 @@ const GiveawaysPage = () => {
         
       return (
         <div className="flex items-center gap-2">
-          <img 
+          <Image 
             src={itemInfo.itemIcon} 
             alt={displayName}
+            width={24}
+            height={24}
             className="w-6 h-6 rounded"
-            onError={(e) => {
+            onError={(e: React.SyntheticEvent<HTMLImageElement, Event>) => {
               e.currentTarget.src = '/images/icons/raw.webp';
             }}
           />

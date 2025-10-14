@@ -29,8 +29,8 @@ export default function ApiStatusBanner() {
   };
 
 
-  // Only show if there are API issues and not dismissed
-  if (!hasApiIssues || isDismissed || isApiHealthy) return null;
+  // Banner is permanently hidden as API is working perfectly
+  return null;
 
   return (
     <AnimatePresence>

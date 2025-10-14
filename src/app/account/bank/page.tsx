@@ -346,8 +346,6 @@ const BankPage = () => {
             usedSlots: validItems.length,
             totalSlots: items.length
           });
-      } else {
-        console.error('Bank Prices API Error:', pricesResponse.status, pricesResponse.statusText);
       }
     } catch (error) {
       console.error('Error calculating bank summary:', error);

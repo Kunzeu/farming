@@ -9,7 +9,7 @@ import Footer from "@/components/layout/Footer";
 import ScrollToTop from "@/components/ui/ScrollToTop";
 import CookieBanner from "@/components/ui/CookieBanner";
 import { Analytics } from "@vercel/analytics/next";
-import { generateMetadata, generateDynamicMetadata } from "@/lib/metadata";
+import { generateDynamicMetadata } from "@/lib/metadata";
 
 // Optimización de fuentes para Desktop
 const inter = Inter({ 
@@ -46,7 +46,7 @@ export default function RootLayout({
           __html: `
             // Carga diferida de Google Ads para reducir JavaScript no utilizado
             function loadGoogleAds() {
-              if (window.adsbygoogle) return; // Ya cargado
+              if (typeof window === 'undefined' || window.adsbygoogle) return; // Ya cargado o SSR
               
               const script = document.createElement('script');
               script.async = true;
@@ -55,19 +55,22 @@ export default function RootLayout({
               document.head.appendChild(script);
             }
             
-            // Cargar Google Ads solo cuando sea necesario (scroll o interacción)
-            let adsLoaded = false;
-            function loadAdsOnInteraction() {
-              if (adsLoaded) return;
-              adsLoaded = true;
-              loadGoogleAds();
+            // Solo ejecutar en el cliente
+            if (typeof window !== 'undefined') {
+              // Cargar Google Ads solo cuando sea necesario (scroll o interacción)
+              let adsLoaded = false;
+              function loadAdsOnInteraction() {
+                if (adsLoaded) return;
+                adsLoaded = true;
+                loadGoogleAds();
+              }
+              
+              // Cargar después de 3 segundos o en la primera interacción
+              setTimeout(loadAdsOnInteraction, 3000);
+              document.addEventListener('scroll', loadAdsOnInteraction, { once: true });
+              document.addEventListener('click', loadAdsOnInteraction, { once: true });
+              document.addEventListener('touchstart', loadAdsOnInteraction, { once: true });
             }
-            
-            // Cargar después de 3 segundos o en la primera interacción
-            setTimeout(loadAdsOnInteraction, 3000);
-            document.addEventListener('scroll', loadAdsOnInteraction, { once: true });
-            document.addEventListener('click', loadAdsOnInteraction, { once: true });
-            document.addEventListener('touchstart', loadAdsOnInteraction, { once: true });
           `
         }} />
         

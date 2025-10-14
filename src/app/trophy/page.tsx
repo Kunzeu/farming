@@ -2404,8 +2404,7 @@ const CraftingPage = () => {
                         <p className="text-gray-300 mb-2">
                           <span className="text-purple-200 font-semibold">{t('craftingPage.analysisDataDesc2', '400k {magicBoxes} analizados').replace('{magicBoxes}', tableItemNames[79186] || 'Lote retorcido por la magia')}</span>
                         </p>
-                        <p className="text-gray-400 text-xs">
-                          {t('craftingPage.dataProvided', 'Datos proporcionados por Vortus43')}
+                        <p className="text-gray-400 text-xs" dangerouslySetInnerHTML={{ __html: t('craftingPage.dataProvided', 'Datos proporcionados por Vortus43') }}>
                         </p>
                       </div>
                       <div>
@@ -2537,7 +2536,7 @@ const CraftingPage = () => {
                          <strong>{t('craftingPage.table.dataSource', 'Fuente de Datos')}:</strong> {t('craftingPage.table.basedOn', 'Análisis basado en')}{' '}
                          <span className="text-blue-200 font-bold">500k {tableItemNames[85725] || 'Cargamento de trofeos'}</span> {t('craftingPage.table.opened', 'abiertos')}
                          <br />
-                         <span className="text-blue-400 text-xs">{t('craftingPage.table.dataCredit', 'Datacredit: Vortus43')}</span>
+                         <span className="text-blue-400 text-xs" dangerouslySetInnerHTML={{ __html: t('craftingPage.table.dataCredit', 'Datacredit: Vortus43') }}></span>
                        </div>
                      </div>
                    </div>
@@ -4977,7 +4976,7 @@ const CraftingPage = () => {
                         <strong>{t('craftingPage.table.dataSource', 'Fuente de Datos')}:</strong> {t('craftingPage.table.basedOn', 'Análisis basado en')}{' '}
                         <span className="text-blue-200 font-bold">400k {tableItemNames[79186] || 'Lote retorcido por la magia'}</span> {t('craftingPage.table.opened', 'abiertos')}
                         <br />
-                        <span className="text-blue-400 text-xs">{t('craftingPage.table.dataCredit', 'Datacredit: Vortus43')}</span>
+                        <span className="text-blue-400 text-xs" dangerouslySetInnerHTML={{ __html: t('craftingPage.table.dataCredit', 'Datacredit: Vortus43') }}></span>
                       </div>
                     </div>
                   </div>

@@ -21,8 +21,8 @@ export const festivalDates: Record<string, FestivalDate> = {
   lunar: {
     startDate: '2025-01-28',
     endDate: '2025-02-18',
-    startDateFormatted: 'January',
-    endDateFormatted: 'February',
+    startDateFormatted: 'months.january',
+    endDateFormatted: 'months.february',
     startTime: '11:00', // 11:00 AM Colombia (UTC-5)
     endTime: '11:00',
     timezone: 'America/Bogota'
@@ -30,8 +30,8 @@ export const festivalDates: Record<string, FestivalDate> = {
   'dragon-bash': {
     startDate: '2025-06-17',
     endDate: '2025-07-08',
-    startDateFormatted: 'June',
-    endDateFormatted: 'July',
+    startDateFormatted: 'months.june',
+    endDateFormatted: 'months.july',
     startTime: '11:00', // 11:00 AM Colombia (UTC-5)
     endTime: '11:00',
     timezone: 'America/Bogota'
@@ -39,8 +39,8 @@ export const festivalDates: Record<string, FestivalDate> = {
   'four-winds': {
     startDate: '2025-08-05',
     endDate: '2025-08-26',
-    startDateFormatted: 'August',
-    endDateFormatted: 'August',
+    startDateFormatted: 'months.august',
+    endDateFormatted: 'months.august',
     startTime: '11:00', // 11:00 AM Colombia (UTC-5)
     endTime: '11:00',
     timezone: 'America/Bogota'
@@ -48,8 +48,8 @@ export const festivalDates: Record<string, FestivalDate> = {
   halloween: {
     startDate: '2025-10-07',
     endDate: '2025-11-04',
-    startDateFormatted: 'October',
-    endDateFormatted: 'November',
+    startDateFormatted: 'months.october',
+    endDateFormatted: 'months.november',
     startTime: '11:00', // 11:00 AM Colombia (UTC-5)
     endTime: '11:00',
     timezone: 'America/Bogota'
@@ -57,12 +57,38 @@ export const festivalDates: Record<string, FestivalDate> = {
   wintersday: {
     startDate: '2025-12-16',
     endDate: '2026-01-06',
-    startDateFormatted: 'December',
-    endDateFormatted: 'January',
+    startDateFormatted: 'months.december',
+    endDateFormatted: 'months.january',
     startTime: '11:00', // 11:00 AM Colombia (UTC-5)
     endTime: '11:00',
     timezone: 'America/Bogota'
   }
+};
+
+// Función para obtener el nombre del mes traducido usando claves de traducción
+export const getMonthName = (date: string, t: (key: string) => string): string => {
+  const monthDate = new Date(date);
+  const monthIndex = monthDate.getMonth();
+  
+  const monthKeys = [
+    'months.january', 'months.february', 'months.march', 'months.april',
+    'months.may', 'months.june', 'months.july', 'months.august',
+    'months.september', 'months.october', 'months.november', 'months.december'
+  ];
+  
+  return t(monthKeys[monthIndex]);
+};
+
+// Función para obtener el rango de fechas formateado con traducción
+export const getFormattedDateRange = (startDate: string, endDate: string, t: (key: string) => string): string => {
+  const startMonth = getMonthName(startDate, t);
+  const endMonth = getMonthName(endDate, t);
+  
+  if (startMonth === endMonth) {
+    return startMonth;
+  }
+  
+  return `${startMonth} - ${endMonth}`;
 };
 
 // Función para crear una fecha con hora específica (normalizada a UTC internamente)
@@ -107,19 +133,9 @@ export const getFestivalStatus = (
   }
 };
 
-// Función para formatear fechas en formato legible
-export const formatDateRange = (startDate: string, endDate: string): string => {
-  const start = new Date(startDate);
-  const end = new Date(endDate);
-  
-  const startMonth = start.toLocaleDateString('es-ES', { month: 'long' });
-  const endMonth = end.toLocaleDateString('es-ES', { month: 'long' });
-  
-  if (startMonth === endMonth) {
-    return startMonth;
-  }
-  
-  return `${startMonth} - ${endMonth}`;
+// Función para formatear fechas en formato legible (mantiene compatibilidad)
+export const formatDateRange = (startDate: string, endDate: string, t: (key: string) => string): string => {
+  return getFormattedDateRange(startDate, endDate, t);
 };
 
 // Configuración de eventos de festivales con sus propiedades

@@ -106,7 +106,6 @@ const CharactersPage = () => {
           charactersData = await charactersResponse.json();
           setCharacters(charactersData);
         } else {
-          console.error('Characters API Error:', charactersResponse.status, charactersResponse.statusText);
           if (charactersResponse.status === 401) {
             setError('Invalid API key or insufficient permissions');
           } else if (charactersResponse.status >= 500 || charactersResponse.status === 0) {

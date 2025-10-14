@@ -22,15 +22,14 @@ import {
   ShoppingCart,
   Star,
   FileText,
-  Award
+  Award,
+  Gift
 } from 'lucide-react';
-import LanguageSwitcher from '@/components/ui/LanguageSwitcher';
-import ApiStatusBanner from '@/components/ui/ApiStatusBanner';
 import { useI18n } from '@/contexts/I18nContext';
 
 // Componente de selector de idiomas flotante
 const FloatingLanguageSwitcher = () => {
-  const { lang, setLang, t } = useI18n();
+  const { lang, setLang } = useI18n();
   const [isOpen, setIsOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
@@ -372,7 +371,6 @@ const Navigation = () => {
       `}</style>
       
       <div className="sticky top-0 z-50">
-        <ApiStatusBanner />
         <nav className="bg-gray-900/95 backdrop-blur-md border-b border-gray-700/50">
       <div className="max-w-8xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
@@ -399,7 +397,7 @@ const Navigation = () => {
           </div>
 
           {/* Reset Timers - After Logo */}
-          <div className="hidden lg:flex items-center space-x-4 ml-8">
+          <div className="hidden lg:flex items-center space-x-4">
             <div 
               className="flex items-center space-x-2 text-blue-300 px-3 py-2 rounded-lg bg-blue-900/20 border border-blue-700/30"
               title={t('nav.dailyReset', 'Reset Daily - Daily rewards, missions and achievements reset')}
@@ -419,7 +417,7 @@ const Navigation = () => {
               <TimerDisplay 
                 time={weeklyResetTime}
                 className="text-sm font-mono font-bold"
-                style={{ width: '6rem', minWidth: '6rem', display: 'inline-block', textAlign: 'center' }}
+                style={{ width: '5rem', minWidth: '5rem', display: 'inline-block', textAlign: 'center' }}
               />
             </div>
             <div 
@@ -433,6 +431,15 @@ const Navigation = () => {
                 style={{ width: '6rem', minWidth: '6rem', display: 'inline-block', textAlign: 'center' }}
               />
             </div>
+            {/* Enlace de Giveaways */}
+            {/* <Link
+              href="/giveaways"
+              className="flex items-center space-x-2 text-green-300 px-3 py-2 rounded-lg bg-green-900/20 border border-green-700/30 hover:bg-green-800/30 hover:text-green-200 transition-all duration-200"
+              title={t('nav.giveaways', 'Giveaways')}
+            >
+              <Gift className="w-4 h-4" />
+              <span className="text-sm font-bold">{t('nav.giveaways', 'Giveaways')}</span>
+            </Link> */}
           </div>
 
           {/* Navigation Items + User Menu - Esquina Derecha */}
@@ -755,7 +762,7 @@ const Navigation = () => {
                                   onClick={() => setIsMobileMenuOpen(false)}
                                   className="flex items-center space-x-3 px-3 py-3 text-gray-300 hover:text-white hover:bg-gray-700 rounded-md transition-colors duration-200">
                                   <User className="w-5 h-5" />
-                                  <span className="font-medium">Profile</span>
+                                  <span className="font-medium">{t('auth.profile', 'Profile')}</span>
                                 </Link>
                                 
 
@@ -766,7 +773,7 @@ const Navigation = () => {
                                     onClick={() => setIsMobileMenuOpen(false)}
                                     className="flex items-center space-x-3 px-3 py-3 text-purple-300 hover:text-purple-200 hover:bg-gray-700 rounded-md transition-colors duration-200">
                                     <Crown className="w-5 h-5" />
-                                    <span className="font-medium">Admin Panel</span>
+                                    <span className="font-medium">{t('auth.admin', 'Admin Panel')}</span>
                                   </Link>
                                 )}
                                 {(user?.role === 'moderator') && (
@@ -775,7 +782,7 @@ const Navigation = () => {
                                     onClick={() => setIsMobileMenuOpen(false)}
                                     className="flex items-center space-x-3 px-3 py-3 text-blue-300 hover:text-blue-200 hover:bg-gray-700 rounded-md transition-colors duration-200">
                                     <Shield className="w-5 h-5" />
-                                    <span className="font-medium">Moderation Panel</span>
+                                    <span className="font-medium">{t('auth.moderation', 'Moderation Panel')}</span>
                                   </Link>
                                 )}
                                 
@@ -786,7 +793,7 @@ const Navigation = () => {
                                   }}
                                   className="flex items-center space-x-3 px-3 py-3 text-red-400 hover:text-red-300 hover:bg-gray-700 rounded-md transition-colors duration-200 w-full text-left cursor-pointer">
                                   <LogOut className="w-5 h-5" />
-                                  <span className="font-medium">Logout</span>
+                                  <span className="font-medium">{t('auth.logout', 'Logout')}</span>
                                 </button>
                               </div>
                             )}

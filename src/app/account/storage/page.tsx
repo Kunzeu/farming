@@ -54,7 +54,6 @@ const StoragePage = () => {
         const data = await response.json();
         setMaterials(data);
         } else {
-          console.error('Storage API Error:', response.status, response.statusText);
           if (response.status >= 500 || response.status === 0) {
             setApiError(`API Error: ${response.status} ${response.statusText}`);
           }

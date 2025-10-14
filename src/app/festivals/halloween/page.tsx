@@ -43,6 +43,16 @@ interface CalculatorItem {
   total85: number;
 }
 
+
+interface BoxOpeningPrimaryItem {
+  id: number;
+  name: string;
+  icon: string;
+  quantity: number;
+  perBox: number;
+  pricePerUnit?: number;
+}
+
 const candyCornItems = [
   { id: 36059, name: '', icon: '' }, // Plastic Fangs
   { id: 36060, name: '', icon: '' }, // Chattering Skull
@@ -132,6 +142,18 @@ const candyCornItems = [
   { id: 36038, name: '', icon: '' }  // Trick-or-Treat Bag
 ];
 
+
+// IDs primarios para "Apertura de Cajas" de Halloween
+const BOX_OPENING_PRIMARY_IDS: number[] = [
+  36059, 36060, 36061, 36076, 36074, 36041, 67379, 36084, 36081, 67371, 67367, 67368, 36080, 36077, 79679, 79673, 79677, 67386, 67382, 67366, 79647, 67370, 67372, 67375, 71931, 48807, 48805, 48806, 36046, 36048, 36050, 36063, 36065, 36067, 67381, 79638, 79637, 79690, 76642, 76131, 71946, 70732, 89036, 89051, 88997, 79684, 24300, 24277, 24283, 24289, 24295, 24358, 24351, 24357, 36101, 36106, 36102, 36103, 67369, 67380, 36045, 36047, 36049, 36062, 36064, 36066, 67365, 67383, 76569, 88998, 89002, 36109, 36108, 36107, 36095, 72113, 92128, 89065, 79674, 36069, 36058, 36072, 85384, 89071, 24791, 89007, 45177, 46733, 46735, 43772, 46731, 45176, 36409, 36408, 36032, 36031, 45178, 45179
+];
+
+const BOX_OPENING_PRIMARY_COUNTS: number[] = [
+  277294, 277460, 277552, 19045, 19797, 962530, 4825, 9807, 9570, 21333, 20798, 20658, 10679, 13099, 13302, 13265, 13202, 9, 3, 9, 11, 11, 9, 17, 14, 26, 17, 6, 6, 14, 6, 6, 11, 9, 14, 6, 6, 11, 3, 17, 11, 11, 11, 26, 3, 14, 140, 260, 120, 290, 170, 200, 170, 230, 9, 17, 26, 34, 20, 11, 11, 14, 26, 29, 23, 23, 17, 43, 74, 43, 10725, 1682, 1399, 1630, 1519, 14, 9, 1, 2, 4, 5, 5, 11, 18, 11, 7, 14560, 69684, 65337, 352, 69469, 20272, 4831, 4893, 14223, 15358, 9718, 31
+];
+
+const TOTAL_OPENED_BOXES = 300000;
+
 // Clave para localStorage
 const HALLOWEEN_CALCULATOR_KEY = 'halloween_calculator_data';
 
@@ -170,12 +192,19 @@ const HalloweenPage = () => {
   const [sortField, setSortField] = useState<string>('name');
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
 
+  
+
+  // Estado para Items Obtenidos (IDs primarios)
+  const [primaryItems, setPrimaryItems] = useState<BoxOpeningPrimaryItem[]>([]);
+  const [primaryLoading, setPrimaryLoading] = useState(false);
+
   // Función para guardar datos en localStorage
   const saveCalculatorData = useCallback((data: CalculatorItem[]) => {
     if (typeof window !== 'undefined') {
       localStorage.setItem(HALLOWEEN_CALCULATOR_KEY, JSON.stringify(data));
     }
   }, []);
+
 
   const allItemIds = useMemo(() => [
     ...candyCornItems.map(item => item.id)
@@ -271,12 +300,73 @@ const HalloweenPage = () => {
     }
   }, []);
 
+
+  // Cargar nombres e iconos de los IDs primarios (Apertura de Cajas)
+  const fetchPrimaryItems = useCallback(async () => {
+    try {
+      if (BOX_OPENING_PRIMARY_IDS.length === 0) {
+        setPrimaryItems([]);
+        return;
+      }
+      setPrimaryLoading(true);
+      const ids = BOX_OPENING_PRIMARY_IDS.join(',');
+      const [itemsRes, pricesRes] = await Promise.all([
+        fetch(`https://api.guildwars2.com/v2/items?ids=${ids}&lang=${lang}`, {  
+          headers: {
+            'Accept': 'application/json',
+            'Accept-Encoding': 'gzip, deflate, br'
+          }
+        }),
+        fetch(`https://api.guildwars2.com/v2/commerce/prices?ids=${ids}&lang=${lang}`, {
+          headers: {
+            'Accept': 'application/json',
+            'Accept-Encoding': 'gzip, deflate, br'
+          }
+        })
+      ]);
+      if (!itemsRes.ok) return;
+      const data: Gw2Item[] = await itemsRes.json();
+      const pricesData: Gw2Price[] = pricesRes.ok ? await pricesRes.json() : [];
+      const pricesMap: Record<number, Gw2Price> = {};
+      pricesData.forEach((p) => { pricesMap[p.id] = p; });
+      // Construir mapa id -> cantidad
+      const countById: Record<number, number> = {};
+      BOX_OPENING_PRIMARY_IDS.forEach((id, idx) => {
+        countById[id] = BOX_OPENING_PRIMARY_COUNTS[idx] ?? 0;
+      });
+      const mapped: BoxOpeningPrimaryItem[] = data.map((d) => ({
+        id: d.id,
+        name: d.name,
+        icon: d.icon,
+        quantity: countById[d.id] ?? 0,
+        perBox: (countById[d.id] ?? 0) / TOTAL_OPENED_BOXES,
+        pricePerUnit: pricesMap[d.id]?.sells?.unit_price ?? 0,
+      }));
+      setPrimaryItems(mapped);
+    } catch (e) {
+      console.error('Error cargando items primarios:', e);
+    } finally {
+      setPrimaryLoading(false);
+    }
+  }, [lang]);
+
   useEffect(() => {
     if (selectedSection === 'calculators') {
       fetchHalloweenData();
       fetchCalculatorData();
     }
-  }, [selectedSection, fetchHalloweenData, fetchCalculatorData]);
+    if (selectedSection === 'box-opening') {
+      fetchPrimaryItems();
+    }
+  }, [selectedSection, fetchHalloweenData, fetchCalculatorData, fetchPrimaryItems]);
+
+  // Auto-actualización de ítems obtenidos cada 5 minutos
+  useEffect(() => {
+    const interval = setInterval(() => {
+      fetchPrimaryItems();
+    }, 5 * 60 * 1000);
+    return () => clearInterval(interval);
+  }, [fetchPrimaryItems]);
 
   const formatGoldSilverCopper = (copper: number) => {
     const gold = Math.floor(copper / 10000);
@@ -346,6 +436,7 @@ const HalloweenPage = () => {
     saveCalculatorData([]);
   };
 
+
   // Función para manejar el ordenamiento
   const handleSort = (field: string) => {
     if (sortField === field) {
@@ -393,6 +484,7 @@ const HalloweenPage = () => {
   const filteredAvailableItems = availableItems.filter(item =>
     item.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
 
   return (
     <>
@@ -444,6 +536,7 @@ const HalloweenPage = () => {
             {([
               { id: 'overview', label: t('festivals.tabs.overview'), icon: Info },
               { id: 'calculators', label: t('festivals.tabs.calculators'), icon: Calculator },
+              { id: 'box-opening', label: t('festivals.tabs.boxOpening'), icon: Package },
               { id: 'strategies', label: t('festivals.tabs.strategies'), icon: TrendingUp }
             ] as const).map((tab) => (
               <button
@@ -727,6 +820,102 @@ const HalloweenPage = () => {
 
 
 
+                </div>
+              </div>
+            )}
+
+            {/* Box Opening Section */}
+            {selectedSection === 'box-opening' && (
+              <div className="space-y-4">
+                <div className="bg-gray-900/80 backdrop-blur-sm border border-orange-500/30 rounded-lg p-4 shadow-2xl">
+                  <h2 className="text-2xl font-bold text-white mb-3 flex items-center">
+                      <Package className="w-6 h-6 mr-3 text-orange-400" />
+                    {t('halloween.boxOpening.title')}
+                  </h2>
+                  
+                  <div className="bg-gray-800/60 rounded-lg p-4 mb-4 border border-orange-500/20 shadow-lg">
+                    <div className="text-center">
+                      <h3 className="text-lg sm:text-xl font-bold text-orange-400 mb-2">{t('halloween.stats.title')}</h3>
+                      <p className="text-xl sm:text-2xl font-bold text-white">{TOTAL_OPENED_BOXES.toLocaleString()} {t('halloween.stats.boxesOpened')}</p>
+                      <p className="text-gray-300 text-xs mt-1">
+                        {t('halloween.stats.credit').split('Vortus43')[0]}
+                        <a 
+                          href="https://www.twitch.tv/vortus43" 
+                          target="_blank" 
+                          rel="noopener noreferrer"
+                          className="text-orange-400 hover:text-orange-300 underline transition-colors"
+                        >
+                          Vortus43
+                        </a>
+                        {t('halloween.stats.credit').split('Vortus43')[1]}
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="space-y-4">
+                    {/* Análisis de Resultados */}
+                    <div>
+                      <h3 className="text-xl font-bold text-white mb-3 flex items-center">
+                        <TrendingUp className="w-6 h-6 mr-3 text-orange-400" />
+                        {t('halloween.stats.resultsAnalysis')}
+                    </h3>
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                        <div className="bg-gray-800/60 rounded-lg p-3 text-center border border-orange-500/20 shadow-lg">
+                          <div className="text-2xl font-bold text-orange-400">
+                            {primaryItems.filter(i => i.quantity > 0).length.toLocaleString()}
+                          </div>
+                          <div className="text-gray-200 text-sm">{t('halloween.stats.uniqueItems')}</div>
+                          </div>
+                        <div className="bg-gray-800/60 rounded-lg p-3 text-center border border-orange-500/20 shadow-lg">
+                          <div className="text-2xl font-bold text-green-400">
+                            {primaryItems.reduce((sum, i) => sum + i.quantity, 0).toLocaleString()}
+                              </div>
+                          <div className="text-gray-200 text-sm">{t('halloween.stats.totalItems')}</div>
+                              </div>
+                        <div className="bg-gray-800/60 rounded-lg p-3 text-center border border-orange-500/20 shadow-lg">
+                          <div className="text-2xl font-bold text-yellow-400">
+                            {formatGoldSilverCopper(primaryItems.reduce((sum, i) => sum + i.quantity * (i.pricePerUnit || 0), 0))}
+                              </div>
+                          <div className="text-gray-200 text-sm">{t('halloween.stats.totalValue')}</div>
+                              </div>
+                      </div>
+                    </div>
+
+                    <div className="hidden">
+                      <div className="flex items-center justify-between mb-3">
+                        <h3 className="text-xl font-bold text-white flex items-center">
+                          <Calculator className="w-6 h-6 mr-3 text-orange-400" />
+                          {t('halloween.obtained.title')}
+                        </h3>
+                        <button
+                          onClick={fetchPrimaryItems}
+                          disabled={primaryLoading}
+                          className="flex items-center gap-2 px-3 py-1.5 bg-orange-600/80 hover:bg-orange-700/80 disabled:bg-gray-600/60 text-white rounded text-sm transition-all duration-200 hover:scale-105 border border-orange-500/50 disabled:border-gray-500/50"
+                        >
+                          <RefreshCw className={`w-4 h-4 ${primaryLoading ? 'animate-spin' : ''}`} />
+                          {t('common.refreshData', 'Refresh Data')}
+                        </button>
+                      </div>
+                      
+                      {primaryItems.length === 0 ? (
+                        <div className="bg-gray-800/50 rounded-lg border border-orange-500/20 overflow-hidden shadow-lg">
+                          <div className="p-4 text-center text-gray-300">
+                            <p>{primaryLoading ? t('common.loadingItems') : t('halloween.obtained.waiting')}</p>
+                            <p className="text-sm mt-2">{t('halloween.obtained.sendIds')}</p>
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="bg-gray-800/50 rounded-lg border border-orange-500/20 shadow-lg p-6">
+                          <div className="text-center">
+                            <p className="text-gray-300 text-sm mb-4">{t('halloween.obtained.summaryDesc')}</p>
+                            <div className="bg-orange-900/20 border border-orange-500/50 rounded-lg p-4">
+                              <p className="text-orange-200 text-sm font-medium">{t('halloween.obtained.proTip')}</p>
+                            </div>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </div>
                 </div>
               </div>
             )}

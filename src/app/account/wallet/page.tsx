@@ -83,7 +83,6 @@ const WalletPage = () => {
         );
         setWalletData(filteredWalletData);
         } else {
-          console.error('Wallet API Error:', walletResponse.status, walletResponse.statusText);
           if (walletResponse.status >= 500 || walletResponse.status === 0) {
             setApiError(`API Error: ${walletResponse.status} ${walletResponse.statusText}`);
           }

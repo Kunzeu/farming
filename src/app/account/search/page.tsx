@@ -60,7 +60,6 @@ const SearchPage = () => {
         const data = await response.json();
         setSearchResults(data);
       } else {
-        console.error('Search API Error:', response.status, response.statusText);
         if (response.status >= 500 || response.status === 0) {
           setApiError(`API Error: ${response.status} ${response.statusText}`);
         }

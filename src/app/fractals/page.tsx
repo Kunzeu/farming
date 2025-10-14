@@ -1041,8 +1041,7 @@ export default function FarmingTrackerPage() {
            <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white mb-3 md:mb-4">
              {t('farmingTracker.title')}
            </h1>
-           <p className="text-gray-300 text-sm sm:text-base md:text-lg">
-             {t('farmingTracker.subtitle')}
+           <p className="text-gray-300 text-sm sm:text-base md:text-lg" dangerouslySetInnerHTML={{ __html: t('farmingTracker.subtitle') }}>
            </p>
                   </div>
  
@@ -1145,7 +1144,7 @@ export default function FarmingTrackerPage() {
              </div>
 
              {/* Search and Update */}
-             <div className="bg-gray-900/80 backdrop-blur-sm border border-gray-700 rounded-lg p-6 shadow-2xl mb-8">
+             <div className="hidden bg-gray-900/80 backdrop-blur-sm border border-gray-700 rounded-lg p-6 shadow-2xl mb-8">
                <div className="flex flex-col md:flex-row gap-4 items-center">
                  {/* Search */}
                  <div className="flex-1">
@@ -1188,7 +1187,7 @@ export default function FarmingTrackerPage() {
              </div>
 
              {/* Items Table */}
-             <div className="bg-gray-900/80 backdrop-blur-sm border border-gray-700 rounded-lg shadow-2xl overflow-hidden">
+             <div className="hidden bg-gray-900/80 backdrop-blur-sm border border-gray-700 rounded-lg shadow-2xl overflow-hidden">
                <div className="p-6 border-b border-gray-700">
                  <h2 className="text-2xl font-bold text-white flex items-center">
                    <Package className="w-6 h-6 mr-3 text-green-400" />
@@ -1371,7 +1370,7 @@ export default function FarmingTrackerPage() {
              </div>
 
              {/* Search and Update */}
-             <div className="bg-gray-900/80 backdrop-blur-sm border border-gray-700 rounded-lg p-6 shadow-2xl mb-8">
+             <div className="hidden bg-gray-900/80 backdrop-blur-sm border border-gray-700 rounded-lg p-6 shadow-2xl mb-8">
                <div className="flex flex-col md:flex-row gap-4 items-center">
                  {/* Search */}
                  <div className="flex-1">
@@ -1414,7 +1413,7 @@ export default function FarmingTrackerPage() {
              </div>
 
              {/* Items Table */}
-             <div className="bg-gray-900/80 backdrop-blur-sm border border-gray-700 rounded-lg shadow-2xl overflow-hidden">
+             <div className="hidden bg-gray-900/80 backdrop-blur-sm border border-gray-700 rounded-lg shadow-2xl overflow-hidden">
                <div className="p-6 border-b border-gray-700">
                  <h2 className="text-2xl font-bold text-white flex items-center">
                    <Package className="w-6 h-6 mr-3 text-green-400" />
@@ -1597,7 +1596,7 @@ export default function FarmingTrackerPage() {
              </div>
 
              {/* Search and Update */}
-             <div className="bg-gray-900/80 backdrop-blur-sm border border-gray-700 rounded-lg p-6 shadow-2xl mb-8">
+             <div className="hidden bg-gray-900/80 backdrop-blur-sm border border-gray-700 rounded-lg p-6 shadow-2xl mb-8">
                <div className="flex flex-col md:flex-row gap-4 items-center">
                  {/* Search */}
                  <div className="flex-1">
@@ -1640,7 +1639,7 @@ export default function FarmingTrackerPage() {
              </div>
 
              {/* Items Table */}
-             <div className="bg-gray-900/80 backdrop-blur-sm border border-gray-700 rounded-lg shadow-2xl overflow-hidden">
+             <div className="hidden bg-gray-900/80 backdrop-blur-sm border border-gray-700 rounded-lg shadow-2xl overflow-hidden">
                <div className="p-6 border-b border-gray-700">
                  <h2 className="text-2xl font-bold text-white flex items-center">
                    <Package className="w-6 h-6 mr-3 text-green-400" />
@@ -1825,7 +1824,7 @@ export default function FarmingTrackerPage() {
              </div>
 
         {/* Search and Filters */}
-        <div className="bg-gray-900/80 backdrop-blur-sm border border-gray-700 rounded-lg p-6 shadow-2xl mb-8">
+        <div className="hidden bg-gray-900/80 backdrop-blur-sm border border-gray-700 rounded-lg p-6 shadow-2xl mb-8">
           <div className="flex flex-col md:flex-row gap-4 items-center">
             {/* Search */}
             <div className="flex-1">
@@ -1865,7 +1864,7 @@ export default function FarmingTrackerPage() {
         </div>
 
         {/* Items Container */}
-        <div className="bg-gray-900/80 backdrop-blur-sm border border-gray-700 rounded-lg shadow-2xl overflow-hidden">
+        <div className="hidden bg-gray-900/80 backdrop-blur-sm border border-gray-700 rounded-lg shadow-2xl overflow-hidden">
           <div className="p-6 border-b border-gray-700">
             <h2 className="text-2xl font-bold text-white flex items-center">
               <Package className="w-6 h-6 mr-3 text-blue-400" />
