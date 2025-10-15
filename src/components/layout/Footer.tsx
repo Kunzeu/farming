@@ -167,7 +167,7 @@ export default function Footer() {
               <Link href="/terms-of-service" className="block text-xs text-gray-400 hover:text-white transition-colors">
                 {t('footer.termsOfService', 'Términos de Servicio')}
               </Link>
-              <Link href="/cookie-policy" className="block text-xs text-gray-400 hover:text-white transition-colors">
+              <Link href="/cookies-info" className="block text-xs text-gray-400 hover:text-white transition-colors">
                 {t('footer.cookiePolicy', 'Política de Cookies')}
               </Link>
               <Link href="/data-management" className="block text-xs text-gray-400 hover:text-white transition-colors">

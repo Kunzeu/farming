@@ -170,8 +170,8 @@ export default function RootLayout({
               text-align: center;
             }
             .timer-container-mobile {
-              width: 5rem; /* w-20 */
-              min-width: 5rem;
+              width: 6rem; /* w-24 */
+              min-width: 6rem;
               display: inline-block;
               text-align: center;
             }

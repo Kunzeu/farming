@@ -42,7 +42,7 @@ export default function CookieBanner() {
                     {t('cookieBanner.privacyPolicy')}
                   </Link>
                   <Link 
-                    href="/cookie-policy" 
+                    href="/cookies-info" 
                     className="text-blue-400 hover:text-blue-300 text-sm"
                   >
                     {t('cookieBanner.cookiePolicy')}

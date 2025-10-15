@@ -64,7 +64,7 @@ const pageTitleMap: Record<string, string> = {
   '/ectogambling': 'pageTitles.ectogambling',
   '/privacy-policy': 'pageTitles.privacyPolicy',
   '/terms-of-service': 'pageTitles.termsOfService',
-  '/cookie-policy': 'pageTitles.cookiePolicy',
+  '/cookies-info': 'pageTitles.cookiePolicy',
   '/data-management': 'pageTitles.dataManagement',
 };
 

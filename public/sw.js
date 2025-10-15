@@ -1,6 +1,6 @@
-const CACHE_NAME = 'true-farming-v1.2';
-const STATIC_CACHE_NAME = 'true-farming-static-v1.2';
-const THIRD_PARTY_CACHE_NAME = 'true-farming-third-party-v1.2';
+const CACHE_NAME = 'true-farming-v1.3';
+const STATIC_CACHE_NAME = 'true-farming-static-v1.3';
+const THIRD_PARTY_CACHE_NAME = 'true-farming-third-party-v1.3';
 
 const CRITICAL_RESOURCES = [
   '/',
@@ -75,7 +75,8 @@ self.addEventListener('message', (event) => {
           const cacheInstance = await cache;
           await cacheInstance.put(url, response.clone());
         }
-      } catch (error) {
+      } catch {
+        // Silently fail if caching optimization fails
       }
     });
   }
@@ -95,9 +96,9 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // Estrategia para scripts y estilos propios
+  // Estrategia para scripts y estilos propios (stale-while-revalidate para evitar 404s de archivos antiguos)
   if ((url.pathname.startsWith('/_next/') || url.pathname.match(/\.(js|css)$/)) && url.hostname === location.hostname) {
-    event.respondWith(cacheFirstStrategy(request, CACHE_STRATEGIES.scripts));
+    event.respondWith(staleWhileRevalidateStrategy(request, CACHE_STRATEGIES.scripts));
     return;
   }
 
@@ -131,7 +132,7 @@ self.addEventListener('fetch', (event) => {
   }
 });
 
-// Cache First Strategy (mejor para recursos estáticos)
+// Cache First Strategy (mejor para recursos estáticos como imágenes)
 async function cacheFirstStrategy(request, strategy) {
   const cache = await caches.open(strategy.cacheName);
   const cachedResponse = await cache.match(request);
@@ -144,9 +145,12 @@ async function cacheFirstStrategy(request, strategy) {
     const networkResponse = await fetch(request);
     if (networkResponse.ok) {
       cache.put(request, networkResponse.clone());
+    } else if (networkResponse.status === 404) {
+      // No cachear 404s
+      return networkResponse;
     }
     return networkResponse;
-  } catch (error) {
+  } catch {
     return new Response('Recurso no disponible', { status: 404 });
   }
 }
@@ -160,14 +164,14 @@ async function networkFirstStrategy(request) {
       cache.put(request, networkResponse.clone());
     }
     return networkResponse;
-  } catch (error) {
+  } catch {
     const cache = await caches.open(CACHE_NAME);
     const cachedResponse = await cache.match(request);
     return cachedResponse || new Response('Página no disponible', { status: 404 });
   }
 }
 
-// Stale While Revalidate Strategy (mejor para terceros)
+// Stale While Revalidate Strategy (mejor para terceros y archivos de Next.js)
 async function staleWhileRevalidateStrategy(request, strategy) {
   const cache = await caches.open(strategy.cacheName);
   const cachedResponse = await cache.match(request);
@@ -178,9 +182,13 @@ async function staleWhileRevalidateStrategy(request, strategy) {
       const networkResponse = await fetch(request);
       if (networkResponse.ok) {
         cache.put(request, networkResponse.clone());
+      } else if (networkResponse.status === 404 && cachedResponse) {
+        // Si hay 404 y teníamos caché, eliminar el caché obsoleto
+        cache.delete(request);
       }
       return networkResponse;
-    } catch (error) {
+    } catch {
+      return cachedResponse || new Response('Recurso no disponible', { status: 404 });
     }
   };
   

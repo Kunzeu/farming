@@ -417,7 +417,7 @@ const Navigation = () => {
               <TimerDisplay 
                 time={weeklyResetTime}
                 className="text-sm font-mono font-bold"
-                style={{ width: '5rem', minWidth: '5rem', display: 'inline-block', textAlign: 'center' }}
+                style={{ width: '6rem', minWidth: '6rem', display: 'inline-block', textAlign: 'center' }}
               />
             </div>
             <div 
@@ -645,7 +645,7 @@ const Navigation = () => {
                             <TimerDisplay 
                               time={dailyResetTime}
                               className="text-xs font-mono font-bold"
-                              style={{ width: '5rem', minWidth: '5rem', display: 'inline-block', textAlign: 'center' }}
+                              style={{ width: '6rem', minWidth: '6rem', display: 'inline-block', textAlign: 'center' }}
                             />
                             <span className="text-xs text-blue-200 ml-auto">{t('nav.daily', 'Daily')}</span>
                           </div>
@@ -657,7 +657,7 @@ const Navigation = () => {
                             <TimerDisplay 
                               time={weeklyResetTime}
                               className="text-xs font-mono font-bold"
-                              style={{ width: '5rem', minWidth: '5rem', display: 'inline-block', textAlign: 'center' }}
+                              style={{ width: '6rem', minWidth: '6rem', display: 'inline-block', textAlign: 'center' }}
                             />
                             <span className="text-xs text-purple-200 ml-auto">{t('nav.weekly', 'Weekly')}</span>
                           </div>
@@ -669,7 +669,7 @@ const Navigation = () => {
                             <TimerDisplay 
                               time={specialEventTime}
                               className="text-xs font-mono font-bold"
-                              style={{ width: '5rem', minWidth: '5rem', display: 'inline-block', textAlign: 'center' }}
+                              style={{ width: '6rem', minWidth: '6rem', display: 'inline-block', textAlign: 'center' }}
                             />
                             <span className="text-xs text-amber-200 ml-auto">{t('nav.special', 'Special')}</span>
                           </div>

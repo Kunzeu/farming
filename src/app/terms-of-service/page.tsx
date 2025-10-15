@@ -1,14 +1,26 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { ArrowLeft, FileText, AlertTriangle, Shield, Users, Gavel } from 'lucide-react';
+import { ArrowLeft, FileText, AlertTriangle, Shield, Gavel, Users } from 'lucide-react';
 import Link from 'next/link';
 import { usePageTitle } from '@/hooks/usePageTitle';
 import { useI18n } from '@/contexts/I18nContext';
 
 export default function TermsOfServicePage() {
-  const { t } = useI18n();
+  const { t, lang } = useI18n();
   usePageTitle('pageTitles.termsOfService', 'Términos de Servicio');
+
+  // Formatear fecha según el idioma actual
+  const getLocaleDateString = () => {
+    const localeMap: Record<string, string> = {
+      'en': 'en-US',
+      'es': 'es-ES',
+      'de': 'de-DE',
+      'fr': 'fr-FR'
+    };
+    const locale = localeMap[lang] || 'en-US';
+    return new Date().toLocaleDateString(locale, { year: 'numeric', month: 'long', day: 'numeric' });
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 to-slate-800">
@@ -30,7 +42,7 @@ export default function TermsOfServicePage() {
             className="mt-4"
           >
             <h1 className="text-3xl font-bold text-white mb-2">{t('termsOfService.title')}</h1>
-            <p className="text-gray-300">{t('termsOfService.lastUpdated')}: {new Date().toLocaleDateString('es-ES')}</p>
+            <p className="text-gray-300">{t('termsOfService.lastUpdated')}: {getLocaleDateString()}</p>
           </motion.div>
         </div>
       </div>
