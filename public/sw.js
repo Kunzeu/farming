@@ -1,12 +1,10 @@
-const CACHE_NAME = 'true-farming-v1.5';
-const STATIC_CACHE_NAME = 'true-farming-static-v1.5';
-const THIRD_PARTY_CACHE_NAME = 'true-farming-third-party-v1.5';
+const CACHE_NAME = 'true-farming-v1.6';
+const STATIC_CACHE_NAME = 'true-farming-static-v1.6';
+const THIRD_PARTY_CACHE_NAME = 'true-farming-third-party-v1.6';
 
 const CRITICAL_RESOURCES = [
   '/',
   '/images/backgrounds/voe-background.webp', // LCP Image - Primera prioridad
-  '/images/icons/icon.webp',
-  '/images/backgrounds/GuildWars2.webp',
 ];
 
 // Configuración de caché por tipo de recurso

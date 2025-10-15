@@ -74,41 +74,17 @@ export default function RootLayout({
           `
         }} />
         
-        <link rel="preload" href="/images/icons/icon.webp" as="image" type="image/webp" />
+        {/* Preload solo para recursos críticos - Next.js maneja CSS automáticamente */}
         <link 
           rel="preload" 
           href="/images/backgrounds/voe-background.webp" 
           as="image" 
           type="image/webp"
+          fetchPriority="high"
         />
-        
-        {/* Meta tag para indicar imagen LCP crítica */}
-        <meta name="critical-resource" content="/images/backgrounds/voe-background.webp" />
-        
-        {/* Script para establecer fetchpriority en preload link */}
-        <script dangerouslySetInnerHTML={{
-          __html: `
-            document.addEventListener('DOMContentLoaded', function() {
-              var preloadLink = document.querySelector('link[href*="voe-background.webp"]');
-              if (preloadLink) {
-                preloadLink.setAttribute('fetchpriority', 'high');
-                preloadLink.setAttribute('imagesizes', '(max-width: 768px) 100vw, (max-width: 1200px) 100vw, 100vw');
-              }
-            });
-          `
-        }} />
-        
-        {/* Preload CSS crítico para reducir cadena de dependencias */}
-        <link rel="preload" as="style" href="/_next/static/css/026d059c552bd690.css" />
-        <link rel="preload" as="style" href="/_next/static/css/bbdc7fa9216ba259.css" />
         {/* CSS Crítico Inline - Above the fold */}
         <style dangerouslySetInnerHTML={{
           __html: `
-            /* CSS crítico para evitar bloqueo de renderizado */
-            link[href*="voe-background.webp"] {
-              fetch-priority: high;
-            }
-            
             /* Critical CSS para hero section y navigation */
             .min-h-screen {
               min-height: 100vh;
