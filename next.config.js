@@ -72,6 +72,31 @@ const nextConfig = {
   // Headers de seguridad y rendimiento
   async headers() {
     return [
+      // Headers para HTML - NO cachear para obtener siempre la versión más reciente
+      {
+        source: '/:path*',
+        has: [
+          {
+            type: 'header',
+            key: 'accept',
+            value: '(.*text/html.*)',
+          },
+        ],
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'no-cache, no-store, must-revalidate',
+          },
+          {
+            key: 'Pragma',
+            value: 'no-cache',
+          },
+          {
+            key: 'Expires',
+            value: '0',
+          },
+        ],
+      },
       {
         source: '/(.*)',
         headers: [

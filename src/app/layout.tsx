@@ -74,6 +74,11 @@ export default function RootLayout({
           `
         }} />
         
+        {/* Meta tags para prevenir caché de HTML */}
+        <meta httpEquiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+        <meta httpEquiv="Pragma" content="no-cache" />
+        <meta httpEquiv="Expires" content="0" />
+        
         {/* Preload solo para recursos críticos - Next.js maneja CSS automáticamente */}
         <link 
           rel="preload" 
