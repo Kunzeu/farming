@@ -1,6 +1,6 @@
-const CACHE_NAME = 'true-farming-v1.3';
-const STATIC_CACHE_NAME = 'true-farming-static-v1.3';
-const THIRD_PARTY_CACHE_NAME = 'true-farming-third-party-v1.3';
+const CACHE_NAME = 'true-farming-v1.5';
+const STATIC_CACHE_NAME = 'true-farming-static-v1.5';
+const THIRD_PARTY_CACHE_NAME = 'true-farming-third-party-v1.5';
 
 const CRITICAL_RESOURCES = [
   '/',
@@ -39,7 +39,14 @@ self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME)
       .then((cache) => {
-        return cache.addAll(CRITICAL_RESOURCES);
+        // Cachear recursos críticos, ignorando errores en archivos individuales
+        return Promise.allSettled(
+          CRITICAL_RESOURCES.map(url => 
+            cache.add(url).catch(() => {
+              // Silently fail individual resources
+            })
+          )
+        );
       })
       .then(() => self.skipWaiting())
   );
@@ -96,9 +103,9 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // Estrategia para scripts y estilos propios (stale-while-revalidate para evitar 404s de archivos antiguos)
+  // Estrategia para scripts y estilos propios (network-first para evitar archivos obsoletos)
   if ((url.pathname.startsWith('/_next/') || url.pathname.match(/\.(js|css)$/)) && url.hostname === location.hostname) {
-    event.respondWith(staleWhileRevalidateStrategy(request, CACHE_STRATEGIES.scripts));
+    event.respondWith(networkFirstWithValidation(request, CACHE_STRATEGIES.scripts));
     return;
   }
 
@@ -125,8 +132,8 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // Estrategia para páginas HTML
-  if (request.headers.get('accept').includes('text/html')) {
+  // Estrategia para páginas HTML (siempre red primero para obtener versiones frescas)
+  if (request.headers.get('accept') && request.headers.get('accept').includes('text/html')) {
     event.respondWith(networkFirstStrategy(request));
     return;
   }
@@ -143,31 +150,111 @@ async function cacheFirstStrategy(request, strategy) {
   
   try {
     const networkResponse = await fetch(request);
+    
     if (networkResponse.ok) {
-      cache.put(request, networkResponse.clone());
-    } else if (networkResponse.status === 404) {
-      // No cachear 404s
-      return networkResponse;
+      // Validar MIME type antes de cachear
+      const contentType = networkResponse.headers.get('content-type') || '';
+      const isValidMimeType = 
+        contentType.includes('javascript') ||
+        contentType.includes('css') ||
+        contentType.includes('json') ||
+        contentType.includes('image') ||
+        contentType.includes('font') ||
+        contentType.includes('woff');
+      
+      if (isValidMimeType) {
+        cache.put(request, networkResponse.clone());
+      }
     }
+    
     return networkResponse;
   } catch {
-    return new Response('Recurso no disponible', { status: 404 });
+    // Si falla el fetch, retornar error
+    return new Response('Network error', { 
+      status: 408, 
+      statusText: 'Request Timeout' 
+    });
   }
 }
 
-// Network First Strategy (mejor para HTML)
+// Network First Strategy (mejor para HTML - no cachear para obtener siempre referencias actualizadas)
 async function networkFirstStrategy(request) {
   try {
     const networkResponse = await fetch(request);
-    if (networkResponse.ok) {
-      const cache = await caches.open(CACHE_NAME);
-      cache.put(request, networkResponse.clone());
-    }
+    // No cachear HTML para evitar referencias a archivos CSS/JS antiguos
     return networkResponse;
   } catch {
     const cache = await caches.open(CACHE_NAME);
     const cachedResponse = await cache.match(request);
     return cachedResponse || new Response('Página no disponible', { status: 404 });
+  }
+}
+
+// Network First con validación de MIME type (para CSS/JS de Next.js)
+async function networkFirstWithValidation(request, strategy) {
+  const cache = await caches.open(strategy.cacheName);
+  
+  try {
+    const networkResponse = await fetch(request);
+    
+    if (networkResponse.ok) {
+      const contentType = networkResponse.headers.get('content-type') || '';
+      const url = new URL(request.url);
+      
+      // Validar que el MIME type coincida con el tipo de archivo
+      const isCss = url.pathname.endsWith('.css');
+      const isJs = url.pathname.endsWith('.js');
+      
+      const validMimeType = 
+        (isCss && (contentType.includes('text/css') || contentType.includes('text/stylesheet'))) ||
+        (isJs && (contentType.includes('javascript') || contentType.includes('application/javascript')));
+      
+      if (validMimeType) {
+        // Solo cachear si el MIME type es correcto
+        cache.put(request, networkResponse.clone());
+        return networkResponse;
+      } else if (isCss || isJs) {
+        // Si es un archivo CSS/JS pero tiene MIME type incorrecto, NO retornarlo
+        // Eliminar del caché si existe
+        cache.delete(request);
+        console.warn(`Rechazado archivo con MIME incorrecto: ${url.pathname} (${contentType})`);
+        return new Response('Invalid MIME type', { status: 415 });
+      }
+      
+      return networkResponse;
+    } else if (networkResponse.status === 404) {
+      // Si es 404, eliminar del caché
+      cache.delete(request);
+      return networkResponse;
+    }
+    
+    return networkResponse;
+  } catch {
+    // Si falla la red, intentar caché pero validar MIME type
+    const cachedResponse = await cache.match(request);
+    
+    if (cachedResponse) {
+      const contentType = cachedResponse.headers.get('content-type') || '';
+      const url = new URL(request.url);
+      const isCss = url.pathname.endsWith('.css');
+      const isJs = url.pathname.endsWith('.js');
+      
+      const validMimeType = 
+        (isCss && (contentType.includes('text/css') || contentType.includes('text/stylesheet'))) ||
+        (isJs && (contentType.includes('javascript') || contentType.includes('application/javascript')));
+      
+      if (validMimeType) {
+        return cachedResponse;
+      } else {
+        // Eliminar caché inválido
+        cache.delete(request);
+      }
+    }
+    
+    return new Response('Network error', { 
+      status: 408, 
+      statusText: 'Request Timeout' 
+    });
   }
 }
 
@@ -180,24 +267,58 @@ async function staleWhileRevalidateStrategy(request, strategy) {
   const fetchAndCache = async () => {
     try {
       const networkResponse = await fetch(request);
+      
       if (networkResponse.ok) {
-        cache.put(request, networkResponse.clone());
-      } else if (networkResponse.status === 404 && cachedResponse) {
-        // Si hay 404 y teníamos caché, eliminar el caché obsoleto
-        cache.delete(request);
+        // Validar MIME type antes de cachear
+        const contentType = networkResponse.headers.get('content-type') || '';
+        const isValidMimeType = 
+          contentType.includes('javascript') ||
+          contentType.includes('css') ||
+          contentType.includes('json') ||
+          contentType.includes('image');
+        
+        if (isValidMimeType) {
+          cache.put(request, networkResponse.clone());
+        }
+        return networkResponse;
+      } else if (networkResponse.status === 404) {
+        // Si hay 404, eliminar del caché si existe
+        if (cachedResponse) {
+          cache.delete(request);
+        }
+        return networkResponse;
       }
+      
       return networkResponse;
     } catch {
-      return cachedResponse || new Response('Recurso no disponible', { status: 404 });
+      // Si falla el fetch y tenemos caché, usar caché
+      if (cachedResponse) {
+        return cachedResponse;
+      }
+      // Si no hay caché, retornar error de red
+      return new Response('Network error', { 
+        status: 408, 
+        statusText: 'Request Timeout' 
+      });
     }
   };
   
   // Si hay respuesta en caché, devolverla inmediatamente y actualizar en background
   if (cachedResponse) {
-    fetchAndCache(); // No await - actualiza en background
+    // Actualizar en background pero capturar errores para evitar uncaught promises
+    fetchAndCache().catch(() => {
+      // Silently fail background update
+    });
     return cachedResponse;
   }
   
   // Si no hay caché, esperar por la red
-  return fetchAndCache();
+  try {
+    return await fetchAndCache();
+  } catch {
+    return new Response('Service unavailable', { 
+      status: 503, 
+      statusText: 'Service Unavailable' 
+    });
+  }
 }
