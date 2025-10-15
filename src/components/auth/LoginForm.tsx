@@ -191,6 +191,11 @@ export default function LoginForm() {
 
         {/* Links */}
         <div className="mt-6 text-center">
+          <p className="text-gray-400 text-sm mb-2">
+            <a href="/auth/forgot-password" className="text-blue-400 hover:text-blue-300 font-medium">
+              {t('auth.forgotPassword', '¿Olvidaste tu contraseña?')}
+            </a>
+          </p>
           <p className="text-gray-400 text-sm">
             {t('auth.noAccount', 'Don\'t have an account?')}{' '}
             <a href="/register" className="text-blue-400 hover:text-blue-300 font-medium">

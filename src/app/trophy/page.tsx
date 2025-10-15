@@ -138,6 +138,12 @@ const CraftingPage = () => {
   const [isLoadingPrices, setIsLoadingPrices] = useState(false);
   const [lastPriceUpdate, setLastPriceUpdate] = useState<Date | null>(null);
   
+  // Estado para la calculadora de Magia Volátil
+  const [userVolatileMagic, setUserVolatileMagic] = useState<string>('');
+  
+  // Estado para la calculadora de Magia Liberada
+  const [userUnboundMagic, setUserUnboundMagic] = useState<string>('');
+  
   // Estado para los nombres de los items de las tablas
   const [tableItemNames, setTableItemNames] = useState<Record<number, string>>({});
   
@@ -1992,6 +1998,23 @@ const CraftingPage = () => {
     return `${sign}${formattedGold}G ${formattedSilver}S ${formattedCopper}C`;
   }, []);
 
+  // Función para truncar el precio como lo hace formatGW2Price
+  const truncateGW2Price = useCallback((priceInGold: number) => {
+    if (priceInGold === 0 || Math.abs(priceInGold) < 0.0001) return 0;
+    
+    const isNegative = priceInGold < 0;
+    const absPrice = Math.abs(priceInGold);
+    
+    const gold = Math.floor(absPrice);
+    const silver = Math.floor((absPrice - gold) * 100);
+    const copper = Math.floor(((absPrice - gold) * 100 - silver) * 100);
+    
+    // Convertir de vuelta a gold con los valores truncados
+    const truncatedPrice = gold + (silver / 100) + (copper / 10000);
+    
+    return isNegative ? -truncatedPrice : truncatedPrice;
+  }, []);
+
   // Función para calcular el total de PrecioBASE de una tabla
   const calculateTableTotal = useCallback((itemIds: number[], droprate: number, isComunes: boolean = false) => {
     let total = 0;
@@ -2009,6 +2032,16 @@ const CraftingPage = () => {
     });
     return total;
   }, [calculateBasePrice, calculateBasePriceComunes, calculateVMProfitMax24357]);
+
+  // Función para calcular el Profit VM visual (mínimo) - truncado
+  const calculateProfitVMMin = useCallback(() => {
+    return ((calculateTableTotal(trofeosRarosIds, 1.0078) + calculateTableTotal(trofeosComunesIds, 4.99, true)) - 1) / 250;
+  }, [calculateTableTotal, trofeosRarosIds, trofeosComunesIds]);
+
+  // Función para calcular el Profit UM visual (mínimo) - truncado
+  const calculateProfitUMMin = useCallback(() => {
+    return (calculateTotalUMBasePrice() - 1) / 500;
+  }, [calculateTotalUMBasePrice]);
 
   const fetchConversionCalculations = useCallback(async (forceRefresh = false) => {
     setIsLoadingConversions(true);
@@ -2513,35 +2546,87 @@ const CraftingPage = () => {
                          </p>
                        </div>
                      </div>
-                     <div className="bg-gray-700 rounded p-2 sm:p-3 border border-gray-600 sm:col-span-2 lg:col-span-1">
-                       <h6 className="text-xs font-bold text-gray-300 mb-2 text-center">{t('craftingPage.table.profitVM', 'Profit VM')}</h6>
-                       <div className="text-center">
-                         <p className="text-blue-400 font-bold text-sm sm:text-lg">
-                           {t('craftingPage.table.min', 'Min')}: {isLoadingPrices ? <Loader2 className="w-3 h-3 sm:w-4 sm:h-4 animate-spin mx-auto" /> : formatGW2Price(
-                             ((calculateTableTotal(trofeosRarosIds, 1.0078) + calculateTableTotal(trofeosComunesIds, 4.99, true)) - 1) / 250
-                           )}
-                         </p>
-                         <p className="text-blue-400 font-bold text-sm sm:text-lg">
-                           {t('craftingPage.table.max', 'Max')}: {isLoadingPrices ? t('craftingPage.calculating', 'Calculando...') : formatGW2Price((calculateTotalProfitMax() - 1)/250)} {/* -1 = -10000 cobre */}
-                         </p>
-                       </div>
-                     </div>
+                    <div className="bg-gray-700 rounded p-2 sm:p-3 border border-gray-600 sm:col-span-2 lg:col-span-1">
+                      <h6 className="text-xs font-bold text-gray-300 mb-2 text-center">{t('craftingPage.table.profitVM', 'Profit VM')}</h6>
+                      <div className="text-center">
+                        <p className="text-blue-400 font-bold text-sm sm:text-lg">
+                          {t('craftingPage.table.min', 'Min')}: {isLoadingPrices ? <Loader2 className="w-3 h-3 sm:w-4 sm:h-4 animate-spin mx-auto" /> : formatGW2Price(
+                            calculateProfitVMMin()
+                          )}
+                        </p>
+                        <p className="text-blue-400 font-bold text-sm sm:text-lg">
+                          {t('craftingPage.table.max', 'Max')}: {isLoadingPrices ? t('craftingPage.calculating', 'Calculando...') : formatGW2Price((calculateTotalProfitMax() - 1)/250)} {/* -1 = -10000 cobre */}
+                        </p>
+                      </div>
+                    </div>
                    </div>
                    
-                   {/* Data Source Info */}
-                   <div className="bg-blue-900/20 backdrop-blur-sm border border-blue-700/30 rounded-lg p-3 sm:p-4 mb-4 sm:mb-6 md:mb-8">
-                     <div className="flex items-center gap-2 sm:gap-3">
-                       <div className="w-2 h-2 sm:w-3 sm:h-3 bg-blue-400 rounded-full animate-pulse flex-shrink-0"></div>
-                       <div className="text-blue-300 text-xs md:text-base">
-                         <strong>{t('craftingPage.table.dataSource', 'Fuente de Datos')}:</strong> {t('craftingPage.table.basedOn', 'Análisis basado en')}{' '}
-                         <span className="text-blue-200 font-bold">500k {tableItemNames[85725] || 'Cargamento de trofeos'}</span> {t('craftingPage.table.opened', 'abiertos')}
-                         <br />
-                         <span className="text-blue-400 text-xs" dangerouslySetInnerHTML={{ __html: t('craftingPage.table.dataCredit', 'Datacredit: Vortus43') }}></span>
-                       </div>
-                     </div>
-                   </div>
-                   
-                   {/* Precios actualizados */}
+                  {/* Calculadora de Magia Volátil */}
+                  <div className="bg-purple-900/20 backdrop-blur-sm border border-purple-700/30 rounded-lg p-4 sm:p-6 mb-4 sm:mb-6 md:mb-8">
+                    <div className="flex items-center gap-3 mb-4">
+                      <OptimizedImage 
+                        src="/images/expansions/volatile-magic.webp" 
+                        alt="Magia Volátil" 
+                        className="w-8 h-8"
+                      />
+                      <h3 className="text-lg sm:text-xl font-bold text-white">
+                        {t('craftingPage.volatileMagicCalculator', 'Calculadora de Magia Volátil')}
+                      </h3>
+                    </div>
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      {/* Input de cantidad */}
+                      <div className="bg-gray-800/50 rounded-lg p-4 border border-purple-600/30">
+                        <label className="block text-purple-300 text-sm font-semibold mb-2">
+                          {t('craftingPage.yourVolatileMagic', 'Tu Magia Volátil')}:
+                        </label>
+                        <input
+                          type="number"
+                          min="0"
+                          value={userVolatileMagic}
+                          onChange={(e) => setUserVolatileMagic(e.target.value)}
+                          placeholder="0"
+                          className="w-full bg-gray-700 border border-purple-500/50 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-purple-400 focus:ring-2 focus:ring-purple-400/50"
+                        />
+                      </div>
+                      
+                      {/* Resultado */}
+                      <div className="bg-gradient-to-r from-purple-800/30 to-purple-700/30 rounded-lg p-4 border border-purple-600/30">
+                        <h4 className="text-purple-300 text-sm font-semibold mb-2">
+                          {t('craftingPage.estimatedProfit', 'Profit Estimado')} ({t('craftingPage.table.min', 'Min')}):
+                        </h4>
+                        <p className="text-2xl sm:text-3xl font-bold text-purple-300">
+                          {isLoadingPrices ? (
+                            <Loader2 className="w-6 h-6 animate-spin" />
+                          ) : userVolatileMagic && parseFloat(userVolatileMagic) > 0 ? (
+                            formatGW2Price(
+                              truncateGW2Price(calculateProfitVMMin()) * parseFloat(userVolatileMagic)
+                            )
+                          ) : (
+                            formatGW2Price(0)
+                          )}
+                        </p>
+                        <p className="text-xs text-purple-400 mt-2">
+                          {t('craftingPage.basedOnProfitVM', 'Basado en Profit VM mínimo')}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Data Source Info */}
+                  <div className="bg-blue-900/20 backdrop-blur-sm border border-blue-700/30 rounded-lg p-3 sm:p-4 mb-4 sm:mb-6 md:mb-8">
+                    <div className="flex items-center gap-2 sm:gap-3">
+                      <div className="w-2 h-2 sm:w-3 sm:h-3 bg-blue-400 rounded-full animate-pulse flex-shrink-0"></div>
+                      <div className="text-blue-300 text-xs md:text-base">
+                        <strong>{t('craftingPage.table.dataSource', 'Fuente de Datos')}:</strong> {t('craftingPage.table.basedOn', 'Análisis basado en')}{' '}
+                        <span className="text-blue-200 font-bold">500k {tableItemNames[85725] || 'Cargamento de trofeos'}</span> {t('craftingPage.table.opened', 'abiertos')}
+                        <br />
+                        <span className="text-blue-400 text-xs" dangerouslySetInnerHTML={{ __html: t('craftingPage.table.dataCredit', 'Datacredit: Vortus43') }}></span>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  {/* Precios actualizados */}
                    <div className="bg-green-900/20 backdrop-blur-sm border border-green-700/30 rounded-lg p-3 sm:p-4 mb-4 sm:mb-6 md:mb-8">
                      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                        <div className="flex items-center gap-2 sm:gap-3">
@@ -2557,11 +2642,13 @@ const CraftingPage = () => {
                        >
                          <RefreshCw className={`w-3 h-3 sm:w-4 sm:h-4 ${isLoadingPrices ? 'animate-spin' : ''}`} />
                          {isLoadingPrices ? 'Actualizando...' : 'Actualizar'}
-                       </button>
-                     </div>
-                     
-                     {/* Sección de cálculos - OCULTA */}
-                     <div className="hidden">
+                      </button>
+                    </div>
+                    
+                    
+                    
+                    {/* Sección de cálculos - OCULTA */}
+                    <div className="hidden">
                        <div className="bg-gradient-to-r from-green-800/50 to-green-700/50 backdrop-blur-sm rounded-xl p-4 mb-6 border border-green-600/50">
                          <div className="flex items-center gap-3 mb-4">
                            <div className="w-2 h-2 bg-green-400 rounded-full"></div>
@@ -3989,10 +4076,62 @@ const CraftingPage = () => {
                       <h6 className="text-xs font-bold text-gray-300 mb-2 text-center">{t('craftingPage.table.profitUM', 'Profit UM')}</h6>
                       <div className="text-center">
                         <p className="text-blue-400 font-bold text-sm sm:text-lg">
-                          {t('craftingPage.table.min', 'Min')}: {isLoadingPrices ? <Loader2 className="w-3 h-3 sm:w-4 sm:h-4 animate-spin mx-auto" /> : formatGW2Price((calculateTotalUMBasePrice() - 1) / 500)}
+                          {t('craftingPage.table.min', 'Min')}: {isLoadingPrices ? <Loader2 className="w-3 h-3 sm:w-4 sm:h-4 animate-spin mx-auto" /> : formatGW2Price(calculateProfitUMMin())}
                         </p>
                         <p className="text-blue-400 font-bold text-sm sm:text-lg">
                           {t('craftingPage.table.max', 'Max')}: {isLoadingPrices ? t('craftingPage.calculating', 'Calculando...') : formatGW2Price((calculateTotalProfitMaxUM() - 1) / 500)}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  {/* Calculadora de Magia Liberada */}
+                  <div className="bg-cyan-900/20 backdrop-blur-sm border border-cyan-700/30 rounded-lg p-4 sm:p-6 mb-4 sm:mb-6 md:mb-8">
+                    <div className="flex items-center gap-3 mb-4">
+                      <OptimizedImage 
+                        src="/images/expansions/unbound-magic.webp" 
+                        alt="Magia Liberada" 
+                        className="w-8 h-8"
+                      />
+                      <h3 className="text-lg sm:text-xl font-bold text-white">
+                        {t('craftingPage.unboundMagicCalculator', 'Calculadora de Magia Liberada')}
+                      </h3>
+                    </div>
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      {/* Input de cantidad */}
+                      <div className="bg-gray-800/50 rounded-lg p-4 border border-cyan-600/30">
+                        <label className="block text-cyan-300 text-sm font-semibold mb-2">
+                          {t('craftingPage.yourUnboundMagic', 'Tu Magia Liberada')}:
+                        </label>
+                        <input
+                          type="number"
+                          min="0"
+                          value={userUnboundMagic}
+                          onChange={(e) => setUserUnboundMagic(e.target.value)}
+                          placeholder="0"
+                          className="w-full bg-gray-700 border border-cyan-500/50 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-cyan-400 focus:ring-2 focus:ring-cyan-400/50"
+                        />
+                      </div>
+                      
+                      {/* Resultado */}
+                      <div className="bg-gradient-to-r from-cyan-800/30 to-cyan-700/30 rounded-lg p-4 border border-cyan-600/30">
+                        <h4 className="text-cyan-300 text-sm font-semibold mb-2">
+                          {t('craftingPage.estimatedProfit', 'Profit Estimado')} ({t('craftingPage.table.min', 'Min')}):
+                        </h4>
+                        <p className="text-2xl sm:text-3xl font-bold text-cyan-300">
+                          {isLoadingPrices ? (
+                            <Loader2 className="w-6 h-6 animate-spin" />
+                          ) : userUnboundMagic && parseFloat(userUnboundMagic) > 0 ? (
+                            formatGW2Price(
+                              truncateGW2Price(calculateProfitUMMin()) * parseFloat(userUnboundMagic)
+                            )
+                          ) : (
+                            formatGW2Price(0)
+                          )}
+                        </p>
+                        <p className="text-xs text-cyan-400 mt-2">
+                          {t('craftingPage.basedOnProfitUM', 'Basado en Profit UM mínimo')}
                         </p>
                       </div>
                     </div>

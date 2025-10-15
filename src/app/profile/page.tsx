@@ -368,7 +368,7 @@ export default function ProfilePage() {
                   </div>
                   <div>
                     <h3 className="text-2xl font-black text-white">{t('profile.changePassword')}</h3>
-                    <p className="text-gray-400">Update your account security</p>
+                    <p className="text-gray-400">{t('profile.passwordSubtitle', 'Update your account security')}</p>
                   </div>
                   <button
                     onClick={() => setIsEditing(!isEditing)}
