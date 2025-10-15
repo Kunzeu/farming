@@ -1,6 +1,6 @@
-const CACHE_NAME = 'true-farming-v1.6';
-const STATIC_CACHE_NAME = 'true-farming-static-v1.6';
-const THIRD_PARTY_CACHE_NAME = 'true-farming-third-party-v1.6';
+const CACHE_NAME = 'true-farming-v1.7';
+const STATIC_CACHE_NAME = 'true-farming-static-v1.7';
+const THIRD_PARTY_CACHE_NAME = 'true-farming-third-party-v1.7';
 
 const CRITICAL_RESOURCES = [
   '/',
@@ -56,6 +56,7 @@ self.addEventListener('activate', (event) => {
     caches.keys().then((cacheNames) => {
       return Promise.all(
         cacheNames.map((cacheName) => {
+          // Eliminar TODOS los cachés que no sean los actuales
           if (cacheName !== CACHE_NAME && 
               cacheName !== STATIC_CACHE_NAME && 
               cacheName !== THIRD_PARTY_CACHE_NAME) {
@@ -63,12 +64,33 @@ self.addEventListener('activate', (event) => {
           }
         })
       );
-    }).then(() => self.clients.claim())
+    }).then(() => {
+      // Forzar que todas las pestañas usen este service worker inmediatamente
+      return self.clients.claim();
+    })
   );
 });
 
 // Escuchar mensajes para optimizaciones específicas
 self.addEventListener('message', (event) => {
+  // Forzar activación inmediata del nuevo service worker
+  if (event.data && event.data.type === 'SKIP_WAITING') {
+    self.skipWaiting();
+    return;
+  }
+  
+  // Limpiar todos los cachés
+  if (event.data && event.data.type === 'CLEAR_ALL_CACHES') {
+    event.waitUntil(
+      caches.keys().then((cacheNames) => {
+        return Promise.all(
+          cacheNames.map((cacheName) => caches.delete(cacheName))
+        );
+      })
+    );
+    return;
+  }
+  
   if (event.data && event.data.type === 'OPTIMIZE_CLOUDFLARE_CACHE') {
     const urls = event.data.urls || [];
     const cache = caches.open(THIRD_PARTY_CACHE_NAME);
@@ -215,8 +237,11 @@ async function networkFirstWithValidation(request, strategy) {
         // Si es un archivo CSS/JS pero tiene MIME type incorrecto, NO retornarlo
         // Eliminar del caché si existe
         cache.delete(request);
-        console.warn(`Rechazado archivo con MIME incorrecto: ${url.pathname} (${contentType})`);
-        return new Response('Invalid MIME type', { status: 415 });
+        // No cachear archivos con MIME type incorrecto
+        return new Response('Invalid MIME type', { 
+          status: 415,
+          statusText: 'Unsupported Media Type'
+        });
       }
       
       return networkResponse;
@@ -266,7 +291,7 @@ async function staleWhileRevalidateStrategy(request, strategy) {
     try {
       const networkResponse = await fetch(request);
       
-      if (networkResponse.ok) {
+      if (networkResponse && networkResponse.ok) {
         // Validar MIME type antes de cachear
         const contentType = networkResponse.headers.get('content-type') || '';
         const isValidMimeType = 
@@ -276,18 +301,27 @@ async function staleWhileRevalidateStrategy(request, strategy) {
           contentType.includes('image');
         
         if (isValidMimeType) {
-          cache.put(request, networkResponse.clone());
+          try {
+            await cache.put(request, networkResponse.clone());
+          } catch {
+            // Fallo al cachear, continuar sin error
+          }
         }
         return networkResponse;
-      } else if (networkResponse.status === 404) {
+      } else if (networkResponse && networkResponse.status === 404) {
         // Si hay 404, eliminar del caché si existe
-        if (cachedResponse) {
-          cache.delete(request);
+        try {
+          await cache.delete(request);
+        } catch {
+          // Fallo al eliminar caché, continuar
         }
         return networkResponse;
       }
       
-      return networkResponse;
+      return networkResponse || new Response('Network error', { 
+        status: 408, 
+        statusText: 'Request Timeout' 
+      });
     } catch {
       // Si falla el fetch y tenemos caché, usar caché
       if (cachedResponse) {
@@ -303,16 +337,24 @@ async function staleWhileRevalidateStrategy(request, strategy) {
   
   // Si hay respuesta en caché, devolverla inmediatamente y actualizar en background
   if (cachedResponse) {
-    // Actualizar en background pero capturar errores para evitar uncaught promises
-    fetchAndCache().catch(() => {
-      // Silently fail background update
-    });
+    // Actualizar en background de forma segura - NO esperar resultado
+    fetchAndCache()
+      .then(() => {
+        // Actualización exitosa
+      })
+      .catch(() => {
+        // Fallo silencioso en actualización background
+      });
     return cachedResponse;
   }
   
   // Si no hay caché, esperar por la red
   try {
-    return await fetchAndCache();
+    const response = await fetchAndCache();
+    return response || new Response('Service unavailable', { 
+      status: 503, 
+      statusText: 'Service Unavailable' 
+    });
   } catch {
     return new Response('Service unavailable', { 
       status: 503, 

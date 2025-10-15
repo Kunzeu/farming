@@ -225,10 +225,35 @@ export default function RootLayout({
                 navigator.serviceWorker.register('/sw.js')
                   .then(function(registration) {
                     // SW registrado con éxito
+                    // Si hay una actualización esperando, activarla inmediatamente
+                    if (registration.waiting) {
+                      registration.waiting.postMessage({ type: 'SKIP_WAITING' });
+                    }
+                    // Escuchar por nuevas actualizaciones
+                    registration.addEventListener('updatefound', function() {
+                      var newWorker = registration.installing;
+                      if (newWorker) {
+                        newWorker.addEventListener('statechange', function() {
+                          if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                            // Nuevo SW instalado, activar inmediatamente
+                            newWorker.postMessage({ type: 'SKIP_WAITING' });
+                          }
+                        });
+                      }
+                    });
                   })
                   .catch(function(error) {
                     // SW registration falló
                   });
+                
+                // Recargar página cuando el nuevo SW tome control
+                var refreshing = false;
+                navigator.serviceWorker.addEventListener('controllerchange', function() {
+                  if (!refreshing) {
+                    refreshing = true;
+                    window.location.reload();
+                  }
+                });
               });
             }
           `
