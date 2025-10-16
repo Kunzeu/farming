@@ -455,7 +455,7 @@ const JardinesPage = () => {
             className="text-center mb-12"
           >
             <div className="flex items-center justify-center mb-6">
-              <Link href="/trophy#volatile-magic" className="mr-4 p-2 bg-slate-700/50 hover:bg-slate-600/50 rounded-lg transition-colors">
+              <Link href="/magic#volatile-magic" className="mr-4 p-2 bg-slate-700/50 hover:bg-slate-600/50 rounded-lg transition-colors">
                 <ArrowLeft className="w-6 h-6 text-white" />
               </Link>
               <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">

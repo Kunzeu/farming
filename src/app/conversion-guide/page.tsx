@@ -348,7 +348,7 @@ export default function ConversionGuidePage() {
             {/* Botón Volver - Solo Desktop */}
             <div className="hidden lg:block mb-6">
               <Link 
-                href="/trophy"
+                href="/magic"
                 className="inline-flex items-center gap-2 px-4 py-2 bg-gray-700/50 hover:bg-gray-600/50 rounded-lg transition-colors text-gray-300 hover:text-white"
               >
                 <ArrowLeft className="w-4 h-4" />
@@ -702,7 +702,7 @@ export default function ConversionGuidePage() {
               className="text-center"
             >
               <Link
-                href="/trophy#conversions"
+                href="/magic#conversions"
                 className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-bold rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1"
               >
                 <Zap className="w-5 h-5" />

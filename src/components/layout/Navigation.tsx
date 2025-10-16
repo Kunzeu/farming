@@ -343,7 +343,7 @@ const Navigation = () => {
 
   // Sección de Herramientas
   const toolsItems = [
-    { href: '/trophy', label: t('dashboard.trophy.title', 'Trophy'), icon: FileText },
+    { href: '/magic', label: t('dashboard.magic.title', 'Magic'), icon: FileText },
     { href: '/festivals', label: t('nav.festivals', 'Festivales'), icon: Calendar },
     { href: '/fractals', label: t('dashboard.farmingTracker.title', 'Fractales'), icon: Map },
     { href: '/ectogambling', label: t('ectogamblingPage.title', 'Ectogambling'), icon: Star },

@@ -15,7 +15,7 @@ const defaultPreferences: DashboardPreferences = {
     'farms',
     'dailyRoutine',
     'salvaging',
-    'trophy',
+    'magic',
     'festivals',
     'farmingTracker',
     'glossary',
