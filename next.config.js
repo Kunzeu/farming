@@ -208,9 +208,31 @@ const nextConfig = {
           },
         ],
       },
-      // Headers específicos para archivos JavaScript
+      // Headers específicos para archivos CSS en chunks (debe ir antes de JS)
       {
-        source: '/_next/static/chunks/(.*)',
+        source: '/_next/static/chunks/(.*)\\.css',
+        headers: [
+          {
+            key: 'Content-Type',
+            value: 'text/css; charset=utf-8',
+          },
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=31536000, immutable',
+          },
+          {
+            key: 'CF-Transform',
+            value: 'off',
+          },
+          {
+            key: 'CF-Cache-Status',
+            value: 'HIT',
+          },
+        ],
+      },
+      // Headers específicos para archivos JavaScript en chunks
+      {
+        source: '/_next/static/chunks/(.*)\\.js',
         headers: [
           {
             key: 'Content-Type',

@@ -13,7 +13,9 @@ const slogans = [
   "Don't Say Fast, Say True",
   "The gold don't wait people",
   "My Doctor Says 'A good farmer is a true farmer'",
-  "600g/h? We show you that doesn't exist!"
+  "600g/h? We show you that doesn't exist!",
+  "True Farming: 2 + 2 = 4",
+  "Other webs: 2 + 2 = 84"
 ];
 
 // Función para obtener slogan aleatorio

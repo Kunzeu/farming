@@ -73,14 +73,15 @@ export default function ProfilePage() {
       if (!user?.id) return;
 
       try {
-        const response = await fetch(`/api/users/${user.id}/api-key?user_id=${user.id}`);
+        const response = await fetch(`/api/users/${user.id}/api-key?user_id=${user.id}`, { cache: 'no-store' });
         if (response.ok) {
           const data = await response.json();
           setHasApiKey(data.hasApiKey);
           if (data.hasApiKey) {
             // Get account info
             const validateResponse = await fetch(`/api/users/${user.id}/validate-api?user_id=${user.id}`, {
-              method: 'POST'
+              method: 'POST',
+              cache: 'no-store'
             });
                    if (validateResponse.ok) {
                      const validateData = await validateResponse.json();
@@ -166,7 +167,7 @@ export default function ProfilePage() {
     if (!key.trim()) return false;
 
     try {
-      const response = await fetch(`/api/gw2/validate?api_key=${encodeURIComponent(key)}`);
+      const response = await fetch(`/api/gw2/validate?api_key=${encodeURIComponent(key)}`, { cache: 'no-store' });
       return response.ok;
     } catch {
       return false;
@@ -199,9 +200,18 @@ export default function ProfilePage() {
         if (response.ok) {
           setHasApiKey(true);
           setApiKeyMessage(t('profile.apiKey.saved', 'API key saved successfully'));
+          // Confirmar inmediatamente desde el backend (evitar estado fantasma por caché)
+          try {
+            const confirmResp = await fetch(`/api/users/${user.id}/api-key?user_id=${user.id}`, { cache: 'no-store' });
+            if (confirmResp.ok) {
+              const confirmData = await confirmResp.json();
+              setHasApiKey(!!confirmData.hasApiKey);
+            }
+          } catch {}
           // Fetch account info
           const validateResponse = await fetch(`/api/users/${user.id}/validate-api?user_id=${user.id}`, {
-            method: 'POST'
+            method: 'POST',
+            cache: 'no-store'
           });
           if (validateResponse.ok) {
             const validateData = await validateResponse.json();

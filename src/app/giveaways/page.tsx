@@ -238,8 +238,8 @@ const GiveawaysPage = () => {
       }
 
       try {
-        // Get API key from database
-        const response = await fetch(`/api/users/${user.id}/api-key?user_id=${user.id}`);
+        // Get API key from database (no-store para evitar caché)
+        const response = await fetch(`/api/users/${user.id}/api-key?user_id=${user.id}`, { cache: 'no-store' });
         if (response.ok) {
           const data = await response.json();
           setHasApiKey(data.hasApiKey);
@@ -247,7 +247,8 @@ const GiveawaysPage = () => {
           if (data.hasApiKey) {
             // Validate API key and get account info
             const validateResponse = await fetch(`/api/users/${user.id}/validate-api?user_id=${user.id}`, {
-              method: 'POST'
+              method: 'POST',
+              cache: 'no-store'
             });
             
             if (validateResponse.ok) {
