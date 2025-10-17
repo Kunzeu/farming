@@ -2,12 +2,6 @@
 
 import { useState, useEffect, useCallback } from 'react';
 
-// Declarar tipo para la ventana global
-declare global {
-  interface Window {
-    farmingRoutesWindow?: Window;
-  }
-}
 import { motion } from 'framer-motion';
 import Image from 'next/image';
 import Navigation from '@/components/layout/Navigation';
@@ -113,64 +107,6 @@ export default function AdminPanel() {
     }
   };
   
-  // Función para revalidar caché y forzar actualización
-  const revalidateCache = async () => {
-    try {
-      const timestamp = Date.now();
-      const isProduction = process.env.NODE_ENV === 'production';
-      
-      // En producción, usar revalidación más agresiva
-      const revalidateUrl = isProduction 
-        ? `/api/revalidate?path=/farming-routes&force=true&t=${timestamp}`
-        : `/api/revalidate?path=/farming-routes&t=${timestamp}`;
-      
-      console.log('Revalidating cache:', revalidateUrl);
-      
-      await fetch(revalidateUrl, {
-        method: 'POST',
-        cache: 'no-store',
-        headers: {
-          'Cache-Control': 'no-cache, no-store, must-revalidate',
-          'Pragma': 'no-cache',
-          'Expires': '0',
-          'Surrogate-Control': 'no-store',
-          'CDN-Cache-Control': 'no-cache'
-        }
-      });
-      console.log('Cache revalidated for farming routes');
-      
-      // En producción, también intentar invalidar caché del navegador
-      if (isProduction && typeof window !== 'undefined') {
-        // Forzar recarga de la página actual para limpiar caché
-        try {
-          await fetch('/farming-routes', {
-            method: 'HEAD',
-            cache: 'no-store',
-            headers: {
-              'Cache-Control': 'no-cache, no-store, must-revalidate',
-              'Pragma': 'no-cache'
-            }
-          });
-        } catch (headError) {
-          console.warn('Could not invalidate browser cache:', headError);
-        }
-      }
-      
-      // Intentar abrir la página de farming routes en una nueva pestaña para forzar recarga
-      if (typeof window !== 'undefined') {
-        const farmingRoutesUrl = `${window.location.origin}/farming-routes?t=${Date.now()}&refresh=true`;
-        // Solo abrir si no está ya abierta
-        if (!window.farmingRoutesWindow || window.farmingRoutesWindow.closed) {
-          const newWindow = window.open(farmingRoutesUrl, '_blank');
-          if (newWindow) {
-            window.farmingRoutesWindow = newWindow;
-          }
-        }
-      }
-    } catch (revalidateError) {
-      console.warn('Could not revalidate farming routes page:', revalidateError);
-    }
-  };
   
   // Estados para crear farm
   const [selectedCurrencies, setSelectedCurrencies] = useState<string[]>(['gold']);
@@ -485,9 +421,6 @@ export default function AdminPanel() {
       setIsCreating(false);
       await loadFarms();
       
-      // Revalidar caché para que los cambios se vean inmediatamente
-      await revalidateCache();
-      
       showSuccess('¡Éxito!', `Farm "${newFarm.name}" creado exitosamente`);
     } catch (err) {
       console.error('Error creating farm:', err);
@@ -551,9 +484,6 @@ export default function AdminPanel() {
       setEditingFarm(null);
       await loadFarms();
       
-      // Revalidar caché para que los cambios se vean inmediatamente
-      await revalidateCache();
-      
       showSuccess('Updated!', `Farm "${farmName}" updated successfully`);
     } catch (err) {
       console.error('Error updating farm:', err);
@@ -572,23 +502,6 @@ export default function AdminPanel() {
       try {
         await dbService.deleteFarm(id);
         await loadFarms();
-        
-        // Revalidar caché para que los cambios se vean inmediatamente
-        try {
-          const timestamp = Date.now();
-          await fetch(`/api/revalidate?path=/farming-routes&t=${timestamp}`, {
-            method: 'POST',
-            cache: 'no-store',
-            headers: {
-              'Cache-Control': 'no-cache, no-store, must-revalidate',
-              'Pragma': 'no-cache',
-              'Expires': '0'
-            }
-          });
-          console.log('Cache revalidated for farming routes');
-        } catch (revalidateError) {
-          console.warn('Could not revalidate farming routes page:', revalidateError);
-        }
         
         showSuccess('¡Eliminado!', `Farm "${farmName}" eliminado correctamente`);
       } catch (err) {
