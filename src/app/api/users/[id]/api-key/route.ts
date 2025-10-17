@@ -37,6 +37,13 @@ export async function GET(
 
     const user = result.rows[0];
     
+    // Debug logs para producción
+    console.log(`[API Key GET] User ${id}:`, {
+      hasApiKey: !!user.gw2ApiKey,
+      apiKeyLength: user.gw2ApiKey?.length || 0,
+      apiKeyPreview: user.gw2ApiKey ? user.gw2ApiKey.substring(0, 8) + '...' : null
+    });
+    
     return NextResponse.json({
       hasApiKey: !!user.gw2ApiKey,
       apiKey: user.gw2ApiKey ? user.gw2ApiKey.substring(0, 8) + '...' : null // Solo mostrar los primeros 8 caracteres por seguridad
@@ -110,6 +117,13 @@ export async function PUT(
     }
 
     const user = result.rows[0];
+    
+    // Debug logs para producción
+    console.log(`[API Key PUT] User ${id} updated:`, {
+      success: true,
+      apiKeyLength: apiKey.length,
+      updatedAt: user.updatedAt
+    });
     
     return NextResponse.json({
       ...user,
