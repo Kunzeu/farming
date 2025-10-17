@@ -6,42 +6,63 @@ export async function POST(request: NextRequest) {
     const { searchParams } = new URL(request.url);
     const path = searchParams.get('path');
     const tag = searchParams.get('tag');
+    const force = searchParams.get('force') === 'true';
 
-    console.log('Revalidation request:', { path, tag });
+    console.log('Revalidation request:', { path, tag, force });
 
-    if (path) {
-      // Revalidar una ruta específica
-      revalidatePath(path);
-      console.log(`Revalidated path: ${path}`);
-    } else {
-      // Revalidar las rutas principales de farmeos
-      revalidatePath('/farming-routes');
-      revalidatePath('/admin');
-      revalidatePath('/moderator');
-      console.log('Revalidated main farming paths');
+    // Revalidar paths específicos
+    const pathsToRevalidate = path ? [path] : ['/farming-routes', '/admin', '/moderator'];
+    
+    for (const pathToRevalidate of pathsToRevalidate) {
+      try {
+        revalidatePath(pathToRevalidate, 'page');
+        revalidatePath(pathToRevalidate, 'layout');
+        console.log(`Revalidated path: ${pathToRevalidate}`);
+      } catch (pathError) {
+        console.warn(`Failed to revalidate path ${pathToRevalidate}:`, pathError);
+      }
     }
 
-    // También revalidar por tags si se especifica
-    if (tag) {
-      revalidateTag(tag);
-      console.log(`Revalidated tag: ${tag}`);
+    // Revalidar tags
+    const tagsToRevalidate = tag ? [tag] : ['farms', 'farming-routes', 'admin-farms'];
+    
+    for (const tagToRevalidate of tagsToRevalidate) {
+      try {
+        revalidateTag(tagToRevalidate);
+        console.log(`Revalidated tag: ${tagToRevalidate}`);
+      } catch (tagError) {
+        console.warn(`Failed to revalidate tag ${tagToRevalidate}:`, tagError);
+      }
     }
 
-    // Revalidar tags comunes de farmeos
-    revalidateTag('farms');
-    revalidateTag('farming-routes');
+    // Si es forzado, también revalidar todo
+    if (force) {
+      try {
+        revalidatePath('/', 'layout');
+        revalidateTag('all');
+        console.log('Force revalidated all paths and tags');
+      } catch (forceError) {
+        console.warn('Failed to force revalidate:', forceError);
+      }
+    }
 
     const response = NextResponse.json({ 
       revalidated: true, 
       now: Date.now(),
       path: path || 'farming-routes',
-      tag: tag || 'farms'
+      tag: tag || 'farms',
+      force,
+      pathsRevalidated: pathsToRevalidate,
+      tagsRevalidated: tagsToRevalidate
     });
 
-    // Agregar headers para evitar caché en la respuesta
-    response.headers.set('Cache-Control', 'no-store, no-cache, must-revalidate');
+    // Headers más agresivos para producción
+    response.headers.set('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
     response.headers.set('Pragma', 'no-cache');
     response.headers.set('Expires', '0');
+    response.headers.set('Surrogate-Control', 'no-store');
+    response.headers.set('CDN-Cache-Control', 'no-cache');
+    response.headers.set('Cloudflare-CDN-Cache-Control', 'no-cache');
 
     return response;
   } catch (error) {

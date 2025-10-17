@@ -55,20 +55,48 @@ export default function AdminPanel() {
   const revalidateCache = async () => {
     try {
       const timestamp = Date.now();
-      await fetch(`/api/revalidate?path=/farming-routes&t=${timestamp}`, {
+      const isProduction = process.env.NODE_ENV === 'production';
+      
+      // En producción, usar revalidación más agresiva
+      const revalidateUrl = isProduction 
+        ? `/api/revalidate?path=/farming-routes&force=true&t=${timestamp}`
+        : `/api/revalidate?path=/farming-routes&t=${timestamp}`;
+      
+      console.log('Revalidating cache:', revalidateUrl);
+      
+      await fetch(revalidateUrl, {
         method: 'POST',
         cache: 'no-store',
         headers: {
           'Cache-Control': 'no-cache, no-store, must-revalidate',
           'Pragma': 'no-cache',
-          'Expires': '0'
+          'Expires': '0',
+          'Surrogate-Control': 'no-store',
+          'CDN-Cache-Control': 'no-cache'
         }
       });
       console.log('Cache revalidated for farming routes');
       
+      // En producción, también intentar invalidar caché del navegador
+      if (isProduction && typeof window !== 'undefined') {
+        // Forzar recarga de la página actual para limpiar caché
+        try {
+          await fetch('/farming-routes', {
+            method: 'HEAD',
+            cache: 'no-store',
+            headers: {
+              'Cache-Control': 'no-cache, no-store, must-revalidate',
+              'Pragma': 'no-cache'
+            }
+          });
+        } catch (headError) {
+          console.warn('Could not invalidate browser cache:', headError);
+        }
+      }
+      
       // Intentar abrir la página de farming routes en una nueva pestaña para forzar recarga
       if (typeof window !== 'undefined') {
-        const farmingRoutesUrl = `${window.location.origin}/farming-routes?t=${Date.now()}`;
+        const farmingRoutesUrl = `${window.location.origin}/farming-routes?t=${Date.now()}&refresh=true`;
         // Solo abrir si no está ya abierta
         if (!window.farmingRoutesWindow || window.farmingRoutesWindow.closed) {
           const newWindow = window.open(farmingRoutesUrl, '_blank');

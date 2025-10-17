@@ -47,6 +47,8 @@ export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
   const userId = searchParams.get('userId'); // Para establecer el usuario actual para RLS
 
+  console.log('API /api/farms called with params:', { userId, searchParams: Object.fromEntries(searchParams) });
+
   try {
     // Si se proporciona userId, establecerlo para RLS
     if (userId) {
@@ -65,7 +67,10 @@ export async function GET(request: NextRequest) {
       ORDER BY f.created_at DESC
     `;
     
+    console.log('Executing query to fetch farms...');
     const result = await pool.query(query);
+    console.log('Query result:', result.rows.length, 'farms found');
+    
     const farms = result.rows.map(row => ({
       ...row,
       expansion: typeof row.expansion === 'string' ? JSON.parse(row.expansion) : row.expansion,
@@ -74,6 +79,7 @@ export async function GET(request: NextRequest) {
       updatedAt: new Date(row.updatedAt)
     }));
 
+    console.log('Processed farms:', farms.length);
     return NextResponse.json(farms);
   } catch (error) {
     console.error('Error fetching farms:', error);

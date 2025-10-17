@@ -94,21 +94,28 @@ export default function FarmingRoutes() {
 
   // Cargar rutas desde la base de datos
   const loadRoutes = useCallback(async () => {
-    if (!dbService) return;
+    if (!dbService) {
+      console.log('dbService not available yet');
+      return;
+    }
     try {
       setIsLoading(true);
       setError(null);
+      console.log('Loading farms from database...');
       
       // Cargar todos los farms y filtrar solo los aprobados
       const allRoutes = await dbService.getAllFarms();
+      console.log('Loaded farms:', allRoutes.length);
       const approvedRoutes = allRoutes.filter((route: FarmItem) => route.status === 'approved');
+      console.log('Approved farms:', approvedRoutes.length);
       setFarmingRoutes(approvedRoutes);
-    } catch {
+    } catch (error) {
+      console.error('Error loading routes:', error);
       setError(t('farmingRoutes.errorLoading', 'Error loading routes from database'));
     } finally {
       setIsLoading(false);
     }
-  }, [dbService]);
+  }, [dbService, t]);
 
   useEffect(() => {
     loadRoutes();

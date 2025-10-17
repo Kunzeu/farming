@@ -170,7 +170,7 @@ const nextConfig = {
         headers: [
           {
             key: 'Cache-Control',
-            value: 'no-cache, no-store, must-revalidate',
+            value: 'no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0',
           },
           {
             key: 'Pragma',
@@ -179,6 +179,18 @@ const nextConfig = {
           {
             key: 'Expires',
             value: '0',
+          },
+          {
+            key: 'Surrogate-Control',
+            value: 'no-store',
+          },
+          {
+            key: 'CDN-Cache-Control',
+            value: 'no-cache',
+          },
+          {
+            key: 'Cloudflare-CDN-Cache-Control',
+            value: 'no-cache',
           },
         ],
       },
@@ -260,7 +272,7 @@ const nextConfig = {
         headers: [
           {
             key: 'Cache-Control',
-            value: 'no-cache, no-store, must-revalidate',
+            value: 'no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0',
           },
           {
             key: 'Pragma',
@@ -269,6 +281,18 @@ const nextConfig = {
           {
             key: 'Expires',
             value: '0',
+          },
+          {
+            key: 'Surrogate-Control',
+            value: 'no-store',
+          },
+          {
+            key: 'CDN-Cache-Control',
+            value: 'no-cache',
+          },
+          {
+            key: 'Cloudflare-CDN-Cache-Control',
+            value: 'no-cache',
           },
         ],
       },

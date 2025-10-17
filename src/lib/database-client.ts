@@ -60,11 +60,31 @@ class DatabaseClientService {
 
   // Farm methods
   async getAllFarms(): Promise<FarmItem[]> {
-    const response = await fetch('/api/farms');
+    // Agregar timestamp para evitar caché
+    const timestamp = Date.now();
+    const url = `/api/farms?t=${timestamp}`;
+    console.log('Fetching farms from:', url);
+    
+    const response = await fetch(url, {
+      cache: 'no-store',
+      headers: {
+        'Cache-Control': 'no-cache, no-store, must-revalidate',
+        'Pragma': 'no-cache',
+        'Expires': '0'
+      }
+    });
+    
+    console.log('Response status:', response.status, response.ok);
+    
     if (!response.ok) {
-      throw new Error('Failed to fetch farms');
+      const errorText = await response.text();
+      console.error('Failed to fetch farms:', response.status, errorText);
+      throw new Error(`Failed to fetch farms: ${response.status} - ${errorText}`);
     }
+    
     const data = await response.json();
+    console.log('Received data:', data.length, 'farms');
+    
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     return data.map((farm: any) => ({
       ...farm,

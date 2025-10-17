@@ -6,6 +6,7 @@ export function middleware(request: NextRequest) {
   
   // Headers básicos de optimización para todas las páginas
   const pathname = request.nextUrl.pathname;
+  const isProduction = process.env.NODE_ENV === 'production';
   
   // Pasar la ruta actual a los headers para metadata dinámico
   response.headers.set('x-pathname', pathname);
@@ -16,8 +17,29 @@ export function middleware(request: NextRequest) {
     return NextResponse.redirect(new URL('/', request.url), 301);
   }
   
+  // Para APIs dinámicas - sin caché en producción
+  if (pathname.startsWith('/api/')) {
+    if (pathname.startsWith('/api/farms/') || 
+        pathname.startsWith('/api/revalidate/') ||
+        pathname.startsWith('/api/admin/') ||
+        pathname.startsWith('/api/users/') ||
+        pathname.startsWith('/api/auth/') ||
+        pathname.startsWith('/api/giveaways/')) {
+      
+      response.headers.set('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0');
+      response.headers.set('Pragma', 'no-cache');
+      response.headers.set('Expires', '0');
+      
+      if (isProduction) {
+        response.headers.set('Surrogate-Control', 'no-store');
+        response.headers.set('CDN-Cache-Control', 'no-cache');
+        response.headers.set('Cloudflare-CDN-Cache-Control', 'no-cache');
+      }
+    }
+  }
+  
   // Para assets estáticos - cache largo
-  if (pathname.match(/\.(js|css|png|jpg|jpeg|gif|webp|svg|ico|woff|woff2|ttf|eot)$/)) {
+  else if (pathname.match(/\.(js|css|png|jpg|jpeg|gif|webp|svg|ico|woff|woff2|ttf|eot)$/)) {
     response.headers.set('Cache-Control', 'public, max-age=31536000, immutable');
     response.headers.set('Cross-Origin-Resource-Policy', 'cross-origin');
   }
@@ -28,6 +50,15 @@ export function middleware(request: NextRequest) {
            pathname.startsWith('/account/') ||
            pathname.startsWith('/festivals/')) {
     response.headers.set('Cache-Control', 'public, max-age=60, stale-while-revalidate=300');
+  }
+  
+  // Para farming-routes - cache muy corto en producción
+  else if (pathname === '/farming-routes') {
+    if (isProduction) {
+      response.headers.set('Cache-Control', 'public, max-age=10, stale-while-revalidate=30');
+    } else {
+      response.headers.set('Cache-Control', 'public, max-age=30, stale-while-revalidate=60');
+    }
   }
   
   // Para página principal - cache muy corto
