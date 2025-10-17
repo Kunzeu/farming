@@ -1829,7 +1829,7 @@
   "giftOfJadeMasteryPage.notes.runicStones": "Pour les Pierres Runiques Gelées",
   "giftOfJadeMasteryPage.notes.extra": "Ceux-ci sont payés séparément en plus",
   "giftOfJadeMasteryPage.price.title": "Prix",
-  "giftOfJadeMasteryPage.price.current": "550g",
+  "giftOfJadeMasteryPage.price.current": "450/500 or",
   "giftOfJadeMasteryPage.price.updateNote": "Le prix sera mis à jour chaque fois qu'il change",
   "giftOfJadeMasteryPage.discord.title": "Discord",
   "giftOfJadeMasteryPage.discord.description": "Pour nous contacter et passer des commandes, rejoignez notre serveur Discord :",
@@ -1885,7 +1885,7 @@
   "giftOfJadeMasteryPage.process.step4Text": "Une fois la légendaire faite, elle sera envoyée à l'acheteur.",
   "giftOfJadeMasteryPage.process.step5Text": "Quand l'acheteur recevra la légendaire, il enverra le paiement convenu pour ce GOJM.",
   "giftOfJadeMasteryPage.process.noteText": "Quand 115 pièces et 115 ectos sont envoyés au vendeur, il devra forger jusqu'à ce que 38 trèfles sortent. Si des pièces et ectoplasmes restent, il les garderait comme TOUT ce qui sort de la forge. Si ce n'est pas suffisant, il devrait mettre ceux qui manquent de sa poche.",
-  "giftOfJadeMasteryPage.price.currentPrice": "550g",
+  "giftOfJadeMasteryPage.price.currentPrice": "450/500 or",
   
   "conversionGuidePage.title": "Guide de Conversion T6",
   "conversionGuidePage.subtitle": "Apprenez à maximiser vos profits avec les conversions de matériaux T5 vers T6 et la vente d'Éclats Spirituels",

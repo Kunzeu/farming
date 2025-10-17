@@ -1836,7 +1836,7 @@
   "giftOfJadeMasteryPage.notes.runicStones": "For Frozen Runic Stones",
   "giftOfJadeMasteryPage.notes.extra": "These are paid separately as extra",
   "giftOfJadeMasteryPage.price.title": "Price",
-  "giftOfJadeMasteryPage.price.current": "550g",
+  "giftOfJadeMasteryPage.price.current": "450/500 gold",
   "giftOfJadeMasteryPage.price.updateNote": "The price will be updated every time it changes",
   "giftOfJadeMasteryPage.discord.title": "Discord",
   "giftOfJadeMasteryPage.discord.description": "To contact us and place orders, join our Discord server:",
@@ -1892,7 +1892,7 @@
   "giftOfJadeMasteryPage.process.step4Text": "Once the legendary is made, it will be sent to the buyer.",
   "giftOfJadeMasteryPage.process.step5Text": "When the buyer receives the legendary, they will send the agreed payment for this GOJM.",
   "giftOfJadeMasteryPage.process.noteText": "When 115 coins and 115 ectos are sent to the seller, they will have to forge until 38 clovers come out. If coins and ectoplasms are left over, they would keep them just like EVERYTHING that comes out of the forge. If it doesn't reach, they would have to put the missing ones from their pocket.",
-  "giftOfJadeMasteryPage.price.currentPrice": "550g",
+  "giftOfJadeMasteryPage.price.currentPrice": "450/500 gold",
   
   "conversionGuidePage.title": "T6 Conversion Guide",
   "conversionGuidePage.subtitle": "Learn to maximize your profits with T5 to T6 material conversions and Spiritual Shard sales",

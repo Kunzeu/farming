@@ -1836,7 +1836,7 @@
   "giftOfJadeMasteryPage.notes.runicStones": "Für Gefrorene Runensteine",
   "giftOfJadeMasteryPage.notes.extra": "Diese werden separat als Extra bezahlt",
   "giftOfJadeMasteryPage.price.title": "Preis",
-  "giftOfJadeMasteryPage.price.current": "550g",
+  "giftOfJadeMasteryPage.price.current": "450/500 Gold",
   "giftOfJadeMasteryPage.price.updateNote": "Der Preis wird jedes Mal aktualisiert, wenn er sich ändert",
   "giftOfJadeMasteryPage.discord.title": "Discord",
   "giftOfJadeMasteryPage.discord.description": "Um uns zu kontaktieren und Bestellungen aufzugeben, trete unserem Discord-Server bei:",
@@ -1892,7 +1892,7 @@
   "giftOfJadeMasteryPage.process.step4Text": "Sobald die Legendäre fertig ist, wird sie an den Käufer gesendet.",
   "giftOfJadeMasteryPage.process.step5Text": "Wenn der Käufer die Legendäre erhält, wird er die vereinbarte Zahlung für dieses GOJM senden.",
   "giftOfJadeMasteryPage.process.noteText": "Wenn 115 Münzen und 115 Ektos an den Verkäufer gesendet werden, muss er so lange schmieden, bis 38 Kleeblätter herauskommen. Wenn Münzen und Ektoplasmen übrig bleiben, würde er sie behalten, genau wie ALLES, was aus der Schmiede kommt. Wenn es nicht reicht, müsste er die fehlenden aus eigener Tasche bezahlen.",
-  "giftOfJadeMasteryPage.price.currentPrice": "550g",
+  "giftOfJadeMasteryPage.price.currentPrice": "450/500 Gold",
   
   "conversionGuidePage.title": "T6 Konvertierungs-Leitfaden",
   "conversionGuidePage.subtitle": "Lernen Sie, Ihre Gewinne mit T5 zu T6 Materialkonvertierungen und Spirituelle Splitter-Verkäufen zu maximieren",

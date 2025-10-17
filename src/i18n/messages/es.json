@@ -1871,7 +1871,7 @@
   "giftOfJadeMasteryPage.notes.runicStones": "Para las Piedras Rúnicas Heladas",
   "giftOfJadeMasteryPage.notes.extra": "Estos se pagan a parte como extra",
   "giftOfJadeMasteryPage.price.title": "Precio",
-  "giftOfJadeMasteryPage.price.current": "550g",
+  "giftOfJadeMasteryPage.price.current": "450/500 oros",
   "giftOfJadeMasteryPage.price.updateNote": "El precio se irá actualizando cada vez que cambie",
   "giftOfJadeMasteryPage.discord.title": "Discord",
   "giftOfJadeMasteryPage.discord.description": "Para contactar con nosotros y hacer pedidos, únete a nuestro servidor de Discord:",
@@ -1927,7 +1927,7 @@
   "giftOfJadeMasteryPage.process.step4Text": "Una vez esté la legendaria hecha, se enviará al comprador.",
   "giftOfJadeMasteryPage.process.step5Text": "Cuando comprador reciba la legendaria, este mandará el pago acordado por este GOJM.",
   "giftOfJadeMasteryPage.process.noteText": "Cuando se manda las 115 monedas y 115 ectos al vendedor, este tendrá que tirar a forja hasta que salgan los 38 tréboles. Si sobrasen monedas y ectoplasmas se los quedaría igual que TODO lo que salga en la forja. Si NO llegase, tendría que poner los que faltan de su bolsillo.",
-  "giftOfJadeMasteryPage.price.currentPrice": "550g",
+  "giftOfJadeMasteryPage.price.currentPrice": "450/500 oros",
   
   "conversionGuidePage.title": "Guía de Conversiones T6",
   "conversionGuidePage.subtitle": "Aprende a maximizar tus ganancias con las conversiones de materiales T5 a T6 y la venta de Esquirlas Espirituales",
