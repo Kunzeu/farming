@@ -25,6 +25,7 @@ export interface FarmItem {
   status: 'pending' | 'approved' | 'rejected';
   createdBy: string; // ID del usuario que creó el farm
   createdByUsername?: string; // Username del creador (para mostrar)
+  order?: number; // Orden de visualización (menor número = más arriba)
   // Campos para compatibilidad hacia atrás
   estimatedGold?: string;
   estimatedSpirit?: string;
@@ -180,6 +181,7 @@ class DatabaseClientService {
     const data = await response.json();
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     return data.map((user: any) => {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const { password: _, ...safeUser } = user;
       return {
         ...safeUser,
@@ -208,6 +210,7 @@ class DatabaseClientService {
     }
     
     const data = await response.json();
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { password: _, ...safeUser } = data;
     return {
       ...safeUser,
@@ -237,7 +240,8 @@ class DatabaseClientService {
       }
       
       const data = await response.json();
-      const { password, ...safeUser } = data;
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { password: _, ...safeUser } = data;
       return {
         ...safeUser,
         createdAt: new Date(safeUser.createdAt),
@@ -294,6 +298,7 @@ class DatabaseClientService {
     }
     
     const data = await response.json();
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { password: _, ...safeUser } = data;
     return {
       ...safeUser,
@@ -312,6 +317,7 @@ class DatabaseClientService {
     }
     
     const data = await response.json();
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { password: _, ...safeUser } = data;
     return {
       ...safeUser,
@@ -346,6 +352,7 @@ class DatabaseClientService {
     }
     
     const data = await response.json();
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { password: _, ...safeUser } = data;
     return {
       ...safeUser,

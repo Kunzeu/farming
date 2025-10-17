@@ -12,7 +12,7 @@ import { motion } from 'framer-motion';
 import Image from 'next/image';
 import Navigation from '@/components/layout/Navigation';
 import AdminRoute from '@/components/auth/AdminRoute';
-import { Plus, Edit, Trash2, Save, X, Map, Clock, Users, CheckCircle, Calendar, User as UserIcon, AlertCircle, Copy, User } from 'lucide-react';
+import { Plus, Edit, Trash2, Save, X, Map, Clock, Users, CheckCircle, Calendar, User as UserIcon, AlertCircle, Copy, User, ChevronUp, ChevronDown } from 'lucide-react';
 import { validateEmailFormat } from '@/utils/emailValidation';
 import { useDatabase, FarmItem, User as UserType } from '@/hooks/useDatabase';
 import { useAuth } from '@/contexts/AuthContext';
@@ -50,6 +50,68 @@ export default function AdminPanel() {
   });
   const [editingFarm, setEditingFarm] = useState<FarmItem | null>(null);
   const [editingSelectedCurrencies, setEditingSelectedCurrencies] = useState<string[]>(['gold']);
+
+  // Función para mover farm hacia arriba
+  const moveFarmUp = async (farmId: string) => {
+    const currentIndex = farms.findIndex(farm => farm.id === farmId);
+    if (currentIndex <= 0) return; // Ya está en la parte superior
+
+    const newFarms = [...farms];
+    const farmToMove = newFarms[currentIndex];
+    const farmAbove = newFarms[currentIndex - 1];
+
+    // Intercambiar órdenes
+    const tempOrder = farmToMove.order ?? currentIndex;
+    farmToMove.order = farmAbove.order ?? currentIndex - 1;
+    farmAbove.order = tempOrder;
+
+    // Intercambiar posiciones en el array
+    [newFarms[currentIndex], newFarms[currentIndex - 1]] = [newFarms[currentIndex - 1], newFarms[currentIndex]];
+
+    setFarms(newFarms);
+
+    // Actualizar en la base de datos
+    try {
+      await dbService.updateFarm(farmId, { order: farmToMove.order });
+      await dbService.updateFarm(farmAbove.id, { order: farmAbove.order });
+      console.log('Orden actualizado exitosamente');
+    } catch (error) {
+      console.error('Error al actualizar el orden:', error);
+      // Revertir cambios en caso de error
+      loadFarms();
+    }
+  };
+
+  // Función para mover farm hacia abajo
+  const moveFarmDown = async (farmId: string) => {
+    const currentIndex = farms.findIndex(farm => farm.id === farmId);
+    if (currentIndex >= farms.length - 1) return; // Ya está en la parte inferior
+
+    const newFarms = [...farms];
+    const farmToMove = newFarms[currentIndex];
+    const farmBelow = newFarms[currentIndex + 1];
+
+    // Intercambiar órdenes
+    const tempOrder = farmToMove.order ?? currentIndex;
+    farmToMove.order = farmBelow.order ?? currentIndex + 1;
+    farmBelow.order = tempOrder;
+
+    // Intercambiar posiciones en el array
+    [newFarms[currentIndex], newFarms[currentIndex + 1]] = [newFarms[currentIndex + 1], newFarms[currentIndex]];
+
+    setFarms(newFarms);
+
+    // Actualizar en la base de datos
+    try {
+      await dbService.updateFarm(farmId, { order: farmToMove.order });
+      await dbService.updateFarm(farmBelow.id, { order: farmBelow.order });
+      console.log('Orden actualizado exitosamente');
+    } catch (error) {
+      console.error('Error al actualizar el orden:', error);
+      // Revertir cambios en caso de error
+      loadFarms();
+    }
+  };
   
   // Función para revalidar caché y forzar actualización
   const revalidateCache = async () => {
@@ -353,7 +415,13 @@ export default function AdminPanel() {
       const allFarms = await dbService.getAllFarms();
       // Solo mostrar farms aprobados en la sección "Farms"
       const approvedFarms = allFarms.filter((farm: FarmItem) => farm.status === 'approved');
-      setFarms(approvedFarms);
+      // Ordenar por el campo order (menor número = más arriba)
+      const sortedFarms = approvedFarms.sort((a, b) => {
+        const orderA = a.order ?? 999; // Si no tiene order, va al final
+        const orderB = b.order ?? 999;
+        return orderA - orderB;
+      });
+      setFarms(sortedFarms);
     } catch (err) {
       console.error('Error loading farms:', err);
     } finally {
@@ -392,7 +460,8 @@ export default function AdminPanel() {
         // Mapear nuevas recompensas a campos legacy para compatibilidad
         estimatedGold: newFarm.estimatedGold || newFarm.estimatedRewards.gold || '',
         estimatedSpirit: newFarm.estimatedSpirit || newFarm.estimatedRewards.spiritShards || '',
-        createdByRole: 'admin'
+        createdByRole: 'admin',
+        order: farms.length // Asignar order al final de la lista
       });
       
       // Limpiar formulario
@@ -1330,6 +1399,28 @@ export default function AdminPanel() {
                 )}
               </div>
               
+              {/* Botones de reordenamiento */}
+              <div className="flex gap-2 mb-3">
+                <button
+                  onClick={() => moveFarmUp(farm.id)}
+                  disabled={farms.findIndex(f => f.id === farm.id) === 0}
+                  className="flex-1 flex items-center justify-center gap-2 px-3 py-2 bg-gray-600 hover:bg-gray-700 disabled:bg-gray-800 disabled:opacity-50 text-white rounded-lg transition-colors"
+                  title="Mover hacia arriba"
+                >
+                  <ChevronUp className="w-4 h-4" />
+                  Subir
+                </button>
+                <button
+                  onClick={() => moveFarmDown(farm.id)}
+                  disabled={farms.findIndex(f => f.id === farm.id) === farms.length - 1}
+                  className="flex-1 flex items-center justify-center gap-2 px-3 py-2 bg-gray-600 hover:bg-gray-700 disabled:bg-gray-800 disabled:opacity-50 text-white rounded-lg transition-colors"
+                  title="Mover hacia abajo"
+                >
+                  <ChevronDown className="w-4 h-4" />
+                  Bajar
+                </button>
+              </div>
+
               <div className="flex gap-2">
                 <button
                   onClick={() => {

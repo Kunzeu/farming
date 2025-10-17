@@ -32,6 +32,7 @@ export interface FarmItem {
   status: 'pending' | 'approved' | 'rejected';
   createdBy: string; // ID del usuario que creó el farm
   createdByUsername?: string; // Username del creador (para mostrar)
+  order?: number; // Orden de visualización (menor número = más arriba)
 }
 
 export interface User {

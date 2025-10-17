@@ -108,7 +108,15 @@ export default function FarmingRoutes() {
       console.log('Loaded farms:', allRoutes.length);
       const approvedRoutes = allRoutes.filter((route: FarmItem) => route.status === 'approved');
       console.log('Approved farms:', approvedRoutes.length);
-      setFarmingRoutes(approvedRoutes);
+      
+      // Ordenar por el campo order (menor número = más arriba)
+      const sortedRoutes = approvedRoutes.sort((a, b) => {
+        const orderA = a.order ?? 999; // Si no tiene order, va al final
+        const orderB = b.order ?? 999;
+        return orderA - orderB;
+      });
+      
+      setFarmingRoutes(sortedRoutes);
     } catch (error) {
       console.error('Error loading routes:', error);
       setError(t('farmingRoutes.errorLoading', 'Error loading routes from database'));

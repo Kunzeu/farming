@@ -59,12 +59,12 @@ export async function GET(request: NextRequest) {
       SELECT f.id, f.name, f.description, f.estimated_time as "estimatedTime", 
              f.estimated_gold as "estimatedGold", f.estimated_spirit as "estimatedSpirit",
              f.estimated_rewards as "estimatedRewards", f.expansion, f.is_solo as "isSolo",
-             f.requires_squad as "requiresSquad", f.waypoint, f.selected, f.status, 
+             f.requires_squad as "requiresSquad", f.waypoint, f.selected, f."order", f.status,
              f.created_by as "createdBy", f.created_at as "createdAt", f.updated_at as "updatedAt",
              u.username as "createdByUsername"
       FROM farm_items f
       LEFT JOIN users u ON f.created_by = u.id
-      ORDER BY f.created_at DESC
+      ORDER BY f."order" ASC NULLS LAST, f.created_at DESC
     `;
     
     console.log('Executing query to fetch farms...');
@@ -156,12 +156,12 @@ export async function POST(request: NextRequest) {
     const query = `
       INSERT INTO farm_items (id, name, description, estimated_time, estimated_gold, 
                              estimated_spirit, estimated_rewards, expansion, is_solo, 
-                             requires_squad, waypoint, selected, status, created_by)
-      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)
+                             requires_squad, waypoint, selected, "order", status, created_by)
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15)
       RETURNING id, name, description, estimated_time as "estimatedTime", 
                 estimated_gold as "estimatedGold", estimated_spirit as "estimatedSpirit",
                 estimated_rewards as "estimatedRewards", expansion, is_solo as "isSolo",
-                requires_squad as "requiresSquad", waypoint, selected, status, 
+                requires_squad as "requiresSquad", waypoint, selected, "order", status, 
                 created_by as "createdBy", created_at as "createdAt", updated_at as "updatedAt"
     `;
     
@@ -185,6 +185,7 @@ export async function POST(request: NextRequest) {
       body.requiresSquad || false, // Nuevo campo: requiere squad
       body.waypoint || null, // Nuevo campo: waypoint
       body.selected || false, 
+      body.order || null, // Nuevo campo: orden
       status, 
       body.createdBy
     ];

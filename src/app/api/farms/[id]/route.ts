@@ -93,7 +93,11 @@ export async function PUT(
       paramIndex++;
     }
     
-
+    if (body.order !== undefined) {
+      updateFields.push(`"order" = $${paramIndex}`);
+      values.push(body.order);
+      paramIndex++;
+    }
     
     if (body.status !== undefined) {
       updateFields.push(`status = $${paramIndex}`);
@@ -129,7 +133,7 @@ export async function PUT(
       RETURNING id, name, description, estimated_time as "estimatedTime", 
                 estimated_gold as "estimatedGold", estimated_spirit as "estimatedSpirit",
                 estimated_rewards as "estimatedRewards", expansion, is_solo as "isSolo",
-                requires_squad as "requiresSquad", waypoint, selected, status, 
+                requires_squad as "requiresSquad", waypoint, selected, "order", status, 
                 created_by as "createdBy", created_at as "createdAt", updated_at as "updatedAt"
     `;
     
