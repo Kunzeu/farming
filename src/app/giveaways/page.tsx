@@ -175,26 +175,50 @@ const GiveawaysPage = () => {
     }
   };
 
-  // Load user's participated giveaways
+  // Load user's participated giveaways with caching
   const loadParticipatedGiveaways = useCallback(async () => {
     if (!user?.id) {
       setIsLoadingParticipations(false);
       return;
     }
     
+    // Check if we already have data and it's recent (within 30 seconds)
+    const cacheKey = `participated_${user.id}`;
+    const cached = localStorage.getItem(cacheKey);
+    const cacheTime = localStorage.getItem(`${cacheKey}_time`);
+    
+    if (cached && cacheTime) {
+      const timeDiff = Date.now() - parseInt(cacheTime);
+      if (timeDiff < 30000) { // 30 seconds cache
+        const participatedSet = new Set(JSON.parse(cached) as string[]);
+        setParticipatedAccounts(participatedSet);
+        setIsLoadingParticipations(false);
+        return;
+      }
+    }
+    
     try {
       setIsLoadingParticipations(true);
-      const response = await fetch(`/api/giveaways/participants?userId=${user.id}`);
+      const response = await fetch(`/api/giveaways/participants?userId=${user.id}`, {
+        cache: 'no-cache',
+        headers: {
+          'Cache-Control': 'no-cache, no-store, must-revalidate',
+        }
+      });
+      
       if (response.ok) {
         const data = await response.json();
         const participatedSet = new Set(data.participants.map((p: Participant) => p.giveawayId));
+        
+        // Cache the result
+        localStorage.setItem(cacheKey, JSON.stringify(Array.from(participatedSet)));
+        localStorage.setItem(`${cacheKey}_time`, Date.now().toString());
+        
         setParticipatedAccounts(participatedSet as Set<string>);
       } else {
-        console.error('Error loading participated giveaways:', response.status);
         setParticipatedAccounts(new Set());
       }
-    } catch (error) {
-      console.error('Error loading participated giveaways:', error);
+    } catch {
       setParticipatedAccounts(new Set());
     } finally {
       setIsLoadingParticipations(false);
@@ -272,13 +296,13 @@ const GiveawaysPage = () => {
 
   // Load participated giveaways when user changes
   useEffect(() => {
-    if (user?.id) {
+    if (user?.id && isAuthenticated) {
       loadParticipatedGiveaways();
     } else {
       setParticipatedAccounts(new Set());
       setIsLoadingParticipations(false);
     }
-  }, [user?.id, loadParticipatedGiveaways]);
+  }, [user?.id, isAuthenticated, loadParticipatedGiveaways]);
 
 
 
@@ -357,6 +381,11 @@ const GiveawaysPage = () => {
         const newParticipatedAccounts = new Set(participatedAccounts);
         newParticipatedAccounts.add(giveawayId);
         setParticipatedAccounts(newParticipatedAccounts);
+
+        // Update cache
+        const cacheKey = `participated_${user.id}`;
+        localStorage.setItem(cacheKey, JSON.stringify(Array.from(newParticipatedAccounts)));
+        localStorage.setItem(`${cacheKey}_time`, Date.now().toString());
 
         // Update the giveaway participants count immediately
         setGiveaways(prev => prev.map(giveaway => 
