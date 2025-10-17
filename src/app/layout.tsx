@@ -175,51 +175,9 @@ export default function RootLayout({
         
         {/* Eliminado script de optimización que podía reescribir links de CSS */}
         
-        {/* Service Worker para caché optimizado */}
-        <script dangerouslySetInnerHTML={{
-          __html: `
-            if ('serviceWorker' in navigator) {
-              window.addEventListener('load', function() {
-                navigator.serviceWorker.register('/sw.js')
-                  .then(function(registration) {
-                    // SW registrado con éxito
-                    // Si hay una actualización esperando, activarla inmediatamente
-                    if (registration.waiting) {
-                      registration.waiting.postMessage({ type: 'SKIP_WAITING' });
-                    }
-                    // Escuchar por nuevas actualizaciones
-                    registration.addEventListener('updatefound', function() {
-                      var newWorker = registration.installing;
-                      if (newWorker) {
-                        newWorker.addEventListener('statechange', function() {
-                          if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-                            // Nuevo SW instalado, activar inmediatamente
-                            newWorker.postMessage({ type: 'SKIP_WAITING' });
-                          }
-                        });
-                      }
-                    });
-                  })
-                  .catch(function(error) {
-                    // SW registration falló
-                  });
-                
-                // Recargar página cuando el nuevo SW tome control
-                var refreshing = false;
-                navigator.serviceWorker.addEventListener('controllerchange', function() {
-                  if (!refreshing) {
-                    refreshing = true;
-                    window.location.reload();
-                  }
-                });
-              });
-            }
-          `
-        }} />
         <meta name="google-site-verification" content="6QMoVlJ1hD8y5DCBubEKA5qv_oLb3O4EVRB8OS03LZU"/>
         <meta name="msapplication-TileColor" content="#c1272d" />
         <meta name="msapplication-TileImage" content="/images/icons/favicon.svg" />
-        <link rel="manifest" href="/manifest.json" />
         
         {/* Favicon adicionales para mejor compatibilidad móvil */}
         <link rel="icon" href="/images/icons/favicon.svg" type="image/svg+xml" />

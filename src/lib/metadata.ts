@@ -209,7 +209,6 @@ export async function generateDynamicMetadata(): Promise<Metadata> {
         },
       ],
     },
-    manifest: '/manifest.json',
     other: {
       'msapplication-TileColor': '#c1272d',
       'msapplication-config': '/browserconfig.xml',
