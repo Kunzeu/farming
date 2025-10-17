@@ -62,6 +62,10 @@ const nextConfig = {
     esmExternals: true,
   },
   
+  // Configuración para prevenir problemas con Cloudflare
+  poweredByHeader: false,
+  generateEtags: false,
+  
   // Compresión automática
   compress: true,
   
@@ -72,6 +76,24 @@ const nextConfig = {
   // Headers de seguridad y rendimiento
   async headers() {
     return [
+      // Headers específicos para prevenir reescritura de Cloudflare
+      {
+        source: '/_next/static/(.*)',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=31536000, immutable',
+          },
+          {
+            key: 'X-Content-Type-Options',
+            value: 'nosniff',
+          },
+          {
+            key: 'X-Frame-Options',
+            value: 'DENY',
+          },
+        ],
+      },
       // Headers para HTML - NO cachear para obtener siempre la versión más reciente
       {
         source: '/:path*',
@@ -176,6 +198,14 @@ const nextConfig = {
             key: 'Cache-Control',
             value: 'public, max-age=31536000, immutable',
           },
+          {
+            key: 'CF-Transform',
+            value: 'off',
+          },
+          {
+            key: 'CF-Cache-Status',
+            value: 'HIT',
+          },
         ],
       },
       // Headers específicos para archivos JavaScript
@@ -189,6 +219,14 @@ const nextConfig = {
           {
             key: 'Cache-Control',
             value: 'public, max-age=31536000, immutable',
+          },
+          {
+            key: 'CF-Transform',
+            value: 'off',
+          },
+          {
+            key: 'CF-Cache-Status',
+            value: 'HIT',
           },
         ],
       },
