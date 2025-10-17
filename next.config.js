@@ -55,7 +55,7 @@ const nextConfig = {
     optimizeServerReact: true,
     serverMinification: true,
     // Optimizaciones CSS para reducir cadenas críticas
-    optimizeCss: true,
+    // optimizeCss: true, // Deshabilitado temporalmente para resolver problema de MIME type
     // Optimizaciones de JavaScript
     webpackBuildWorker: true,
     // Tree shaking mejorado
@@ -158,6 +158,34 @@ const nextConfig = {
       {
         source: '/:path*\\.(js|css|woff|woff2|eot|ttf|otf)',
         headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=31536000, immutable',
+          },
+        ],
+      },
+      // Headers específicos para archivos CSS
+      {
+        source: '/_next/static/css/(.*)',
+        headers: [
+          {
+            key: 'Content-Type',
+            value: 'text/css; charset=utf-8',
+          },
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=31536000, immutable',
+          },
+        ],
+      },
+      // Headers específicos para archivos JavaScript
+      {
+        source: '/_next/static/chunks/(.*)',
+        headers: [
+          {
+            key: 'Content-Type',
+            value: 'application/javascript; charset=utf-8',
+          },
           {
             key: 'Cache-Control',
             value: 'public, max-age=31536000, immutable',
