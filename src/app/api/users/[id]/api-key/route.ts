@@ -47,6 +47,12 @@ export async function GET(
     return NextResponse.json({
       hasApiKey: !!user.gw2ApiKey,
       apiKey: user.gw2ApiKey ? user.gw2ApiKey.substring(0, 8) + '...' : null // Solo mostrar los primeros 8 caracteres por seguridad
+    }, {
+      headers: {
+        'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0',
+        'Pragma': 'no-cache',
+        'Expires': '0'
+      }
     });
 
   } catch (error) {
@@ -129,6 +135,12 @@ export async function PUT(
       ...user,
       createdAt: new Date(user.createdAt),
       updatedAt: new Date(user.updatedAt)
+    }, {
+      headers: {
+        'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0',
+        'Pragma': 'no-cache',
+        'Expires': '0'
+      }
     });
 
   } catch (error) {
@@ -179,6 +191,12 @@ export async function DELETE(
       ...user,
       createdAt: new Date(user.createdAt),
       updatedAt: new Date(user.updatedAt)
+    }, {
+      headers: {
+        'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0',
+        'Pragma': 'no-cache',
+        'Expires': '0'
+      }
     });
 
   } catch (error) {

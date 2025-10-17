@@ -67,7 +67,7 @@ export default function ProfilePage() {
     }
   }, [user?.preferences]);
 
-  // Cargar API key desde la base de datos
+  // Cargar API key desde la base de datos (sin validar automáticamente para evitar tráfico)
   useEffect(() => {
     const loadApiKey = async () => {
       if (!user?.id) return;
@@ -77,20 +77,7 @@ export default function ProfilePage() {
         if (response.ok) {
           const data = await response.json();
           setHasApiKey(data.hasApiKey);
-          if (data.hasApiKey) {
-            // Get account info
-            const validateResponse = await fetch(`/api/users/${user.id}/validate-api?user_id=${user.id}`, {
-              method: 'POST',
-              cache: 'no-store'
-            });
-                   if (validateResponse.ok) {
-                     const validateData = await validateResponse.json();
-                     if (validateData.valid && validateData.accountInfo) {
-                       setAccountName(validateData.accountInfo.name);
-                       setIsApiKeyValid(true);
-                     }
-                   }
-          }
+          // No validar automáticamente para reducir tráfico en producción
         }
       } catch (error) {
         console.error('Error loading API key:', error);
@@ -208,17 +195,7 @@ export default function ProfilePage() {
               setHasApiKey(!!confirmData.hasApiKey);
             }
           } catch {}
-          // Fetch account info
-          const validateResponse = await fetch(`/api/users/${user.id}/validate-api?user_id=${user.id}`, {
-            method: 'POST',
-            cache: 'no-store'
-          });
-          if (validateResponse.ok) {
-            const validateData = await validateResponse.json();
-            if (validateData.valid && validateData.accountInfo) {
-              setAccountName(validateData.accountInfo.name);
-            }
-          }
+          // No validar automáticamente para evitar tráfico adicional
         } else {
           const errorData = await response.json();
           setApiKeyMessage(errorData.error || t('profile.apiKey.errorSave', 'Error saving API key'));
@@ -231,6 +208,29 @@ export default function ProfilePage() {
       setApiKeyMessage(t('profile.apiKey.errorValidate', 'Error validating API key'));
     } finally {
       setIsApiKeyLoading(false);
+    }
+  };
+
+  // Validación opcional bajo demanda para obtener info de cuenta (reduce tráfico)
+  const handleValidateOnDemand = async () => {
+    if (!user?.id || !hasApiKey) return;
+    try {
+      const validateResponse = await fetch(`/api/users/${user.id}/validate-api?user_id=${user.id}`, {
+        method: 'POST',
+        cache: 'no-store'
+      });
+      if (validateResponse.ok) {
+        const validateData = await validateResponse.json();
+        if (validateData.valid && validateData.accountInfo) {
+          setAccountName(validateData.accountInfo.name);
+          setIsApiKeyValid(true);
+        } else {
+          setIsApiKeyValid(false);
+        }
+      }
+    } catch (e) {
+      console.error('On-demand validate error:', e);
+      setIsApiKeyValid(false);
     }
   };
 
