@@ -1,6 +1,13 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
+
+// Declarar tipo para la ventana global
+declare global {
+  interface Window {
+    farmingRoutesWindow?: Window;
+  }
+}
 import { motion } from 'framer-motion';
 import Image from 'next/image';
 import Navigation from '@/components/layout/Navigation';
@@ -43,6 +50,37 @@ export default function AdminPanel() {
   });
   const [editingFarm, setEditingFarm] = useState<FarmItem | null>(null);
   const [editingSelectedCurrencies, setEditingSelectedCurrencies] = useState<string[]>(['gold']);
+  
+  // Función para revalidar caché y forzar actualización
+  const revalidateCache = async () => {
+    try {
+      const timestamp = Date.now();
+      await fetch(`/api/revalidate?path=/farming-routes&t=${timestamp}`, {
+        method: 'POST',
+        cache: 'no-store',
+        headers: {
+          'Cache-Control': 'no-cache, no-store, must-revalidate',
+          'Pragma': 'no-cache',
+          'Expires': '0'
+        }
+      });
+      console.log('Cache revalidated for farming routes');
+      
+      // Intentar abrir la página de farming routes en una nueva pestaña para forzar recarga
+      if (typeof window !== 'undefined') {
+        const farmingRoutesUrl = `${window.location.origin}/farming-routes?t=${Date.now()}`;
+        // Solo abrir si no está ya abierta
+        if (!window.farmingRoutesWindow || window.farmingRoutesWindow.closed) {
+          const newWindow = window.open(farmingRoutesUrl, '_blank');
+          if (newWindow) {
+            window.farmingRoutesWindow = newWindow;
+          }
+        }
+      }
+    } catch (revalidateError) {
+      console.warn('Could not revalidate farming routes page:', revalidateError);
+    }
+  };
   
   // Estados para crear farm
   const [selectedCurrencies, setSelectedCurrencies] = useState<string[]>(['gold']);
@@ -351,13 +389,7 @@ export default function AdminPanel() {
       await loadFarms();
       
       // Revalidar caché para que los cambios se vean inmediatamente
-      try {
-        await fetch('/api/revalidate?path=/farming-routes', {
-          method: 'POST',
-        });
-      } catch (revalidateError) {
-        console.warn('Could not revalidate farming routes page:', revalidateError);
-      }
+      await revalidateCache();
       
       showSuccess('¡Éxito!', `Farm "${newFarm.name}" creado exitosamente`);
     } catch (err) {
@@ -423,13 +455,7 @@ export default function AdminPanel() {
       await loadFarms();
       
       // Revalidar caché para que los cambios se vean inmediatamente
-      try {
-        await fetch('/api/revalidate?path=/farming-routes', {
-          method: 'POST',
-        });
-      } catch (revalidateError) {
-        console.warn('Could not revalidate farming routes page:', revalidateError);
-      }
+      await revalidateCache();
       
       showSuccess('Updated!', `Farm "${farmName}" updated successfully`);
     } catch (err) {
@@ -452,9 +478,17 @@ export default function AdminPanel() {
         
         // Revalidar caché para que los cambios se vean inmediatamente
         try {
-          await fetch('/api/revalidate?path=/farming-routes', {
+          const timestamp = Date.now();
+          await fetch(`/api/revalidate?path=/farming-routes&t=${timestamp}`, {
             method: 'POST',
+            cache: 'no-store',
+            headers: {
+              'Cache-Control': 'no-cache, no-store, must-revalidate',
+              'Pragma': 'no-cache',
+              'Expires': '0'
+            }
           });
+          console.log('Cache revalidated for farming routes');
         } catch (revalidateError) {
           console.warn('Could not revalidate farming routes page:', revalidateError);
         }

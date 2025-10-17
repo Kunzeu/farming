@@ -164,13 +164,21 @@ const nextConfig = {
           },
         ],
       },
-      // Caché para archivos de datos de la API
+      // Sin caché para APIs de farms (cambios frecuentes) - DEBE IR PRIMERO
       {
-        source: '/api/(.*)',
+        source: '/api/farms/(.*)',
         headers: [
           {
             key: 'Cache-Control',
-            value: 'public, s-maxage=3600, stale-while-revalidate=86400',
+            value: 'no-cache, no-store, must-revalidate',
+          },
+          {
+            key: 'Pragma',
+            value: 'no-cache',
+          },
+          {
+            key: 'Expires',
+            value: '0',
           },
         ],
       },
@@ -246,9 +254,9 @@ const nextConfig = {
           },
         ],
       },
-      // Caché corto para APIs de farms (cambios frecuentes)
+      // Sin caché para API de revalidación
       {
-        source: '/api/farms/(.*)',
+        source: '/api/revalidate/(.*)',
         headers: [
           {
             key: 'Cache-Control',
@@ -261,6 +269,16 @@ const nextConfig = {
           {
             key: 'Expires',
             value: '0',
+          },
+        ],
+      },
+      // Caché para archivos de datos de la API (solo para APIs que no están arriba)
+      {
+        source: '/api/(.*)',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, s-maxage=3600, stale-while-revalidate=86400',
           },
         ],
       },
