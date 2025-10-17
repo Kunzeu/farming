@@ -1,4 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
+export const runtime = 'nodejs';
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
 import { pool } from '@/lib/postgres-db';
 
 // POST - Validar API key y obtener información de la cuenta
