@@ -64,7 +64,6 @@ class DatabaseClientService {
     // Agregar timestamp para evitar caché
     const timestamp = Date.now();
     const url = `/api/farms?t=${timestamp}`;
-    console.log('Fetching farms from:', url);
     
     const response = await fetch(url, {
       cache: 'no-store',
@@ -75,8 +74,6 @@ class DatabaseClientService {
       }
     });
     
-    console.log('Response status:', response.status, response.ok);
-    
     if (!response.ok) {
       const errorText = await response.text();
       console.error('Failed to fetch farms:', response.status, errorText);
@@ -84,7 +81,6 @@ class DatabaseClientService {
     }
     
     const data = await response.json();
-    console.log('Received data:', data.length, 'farms');
     
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     return data.map((farm: any) => ({

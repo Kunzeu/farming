@@ -353,8 +353,8 @@ const Navigation = () => {
   const toolsItems: NavItem[] = [
     { href: '/magic', label: t('dashboard.magic.title', 'Magic'), icon: 'volatile-magic', isImage: true },
     { href: '/festivals', label: t('nav.festivals', 'Festivales'), icon: 'Festival_Collections', isImage: true},
-    { href: '/fractals', label: t('dashboard.farmingTracker.title', 'Fractales'), icon: Map },
-    { href: '/ectogambling', label: t('ectogamblingPage.title', 'Ectogambling'), icon: Star },
+    { href: '/fractals', label: t('dashboard.farmingTracker.title', 'Fractales'), icon: 'fractal-relic', isImage: true },
+    { href: '/ectogambling', label: t('ectogamblingPage.title', 'Ectogambling'), icon: 'ecto', isImage: true },
     { href: '/opened', label: t('openedPage.title', 'Contenedores Abribles'), icon: Package },
 
     // Solo mostrar Buyout Calculator para admins
@@ -793,7 +793,7 @@ const Navigation = () => {
                                 className="flex items-center space-x-3 px-3 py-3 text-gray-300 hover:text-white hover:bg-gray-700 rounded-md transition-colors duration-200">
                                 {item.isImage ? (
                                   <Image 
-                                    src={item.icon === 'volatile-magic' ? `/images/expansions/${item.icon}.webp` : `/images/icons/${item.icon}.webp`} 
+                                    src={`/images/expansions/${item.icon}.webp`} 
                                     alt={item.label}
                                     width={20}
                                     height={20}

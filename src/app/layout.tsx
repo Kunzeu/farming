@@ -79,14 +79,6 @@ export default function RootLayout({
         <meta httpEquiv="Pragma" content="no-cache" />
         <meta httpEquiv="Expires" content="0" />
         
-        {/* Preload solo para recursos críticos - Next.js maneja CSS automáticamente */}
-        <link 
-          rel="preload" 
-          href="/images/backgrounds/voe-background.webp" 
-          as="image" 
-          type="image/webp"
-          fetchPriority="high"
-        />
         {/* CSS Crítico Inline - Above the fold */}
         <style dangerouslySetInnerHTML={{
           __html: `

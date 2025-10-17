@@ -9,11 +9,9 @@ export function useDatabase() {
   useEffect(() => {
     const initDb = async () => {
       try {
-        console.log('Initializing database service...');
         await dbClientService.init?.(); // Inicializar si tiene método init
         setDbService(dbClientService);
         setIsReady(true);
-        console.log('Database service initialized successfully');
       } catch (error) {
         console.error('Error inicializando base de datos:', error);
         setIsReady(false);
@@ -23,7 +21,6 @@ export function useDatabase() {
     initDb();
   }, []);
 
-  console.log('useDatabase - dbService:', !!dbService, 'isReady:', isReady);
   return { dbService, isReady };
 }
 

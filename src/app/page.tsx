@@ -3,6 +3,7 @@
 import { motion } from '@/lib/framer-motion-optimized'
 import Link from 'next/link'
 import Image from 'next/image'
+import Head from 'next/head'
 import Navigation from '@/components/layout/Navigation'
 import { 
   Package, 
@@ -348,6 +349,15 @@ export default function HomePage() {
 
   return (
     <div>
+        <Head>
+          <link 
+            rel="preload" 
+            href="/images/backgrounds/voe-background.webp" 
+            as="image" 
+            type="image/webp"
+            fetchPriority="high"
+          />
+        </Head>
         <Navigation />
       
       {/* Container principal */}
