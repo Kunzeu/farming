@@ -27,6 +27,14 @@ import {
 } from 'lucide-react';
 import { useI18n } from '@/contexts/I18nContext';
 
+// Tipos para los elementos de navegación
+interface NavItem {
+  href: string;
+  label: string;
+  icon: React.ComponentType<{ className?: string }> | string;
+  isImage?: boolean;
+}
+
 // Componente de selector de idiomas flotante
 const FloatingLanguageSwitcher = () => {
   const { lang, setLang } = useI18n();
@@ -325,14 +333,14 @@ const Navigation = () => {
   }, [isMobileMenuOpen, isUserMenuOpen]);
 
   const { t } = useI18n();
-  const navItems = [
+  const navItems: NavItem[] = [
     { href: '/', label: t('nav.home', 'Home'), icon: Home },
     { href: '/farming-routes', label: t('nav.farms', 'Farms'), icon: Map },
     { href: '/salvage', label: t('nav.salvaging', 'Salvaging'), icon: Package },
   ];
 
   // Sección de Guías
-  const guidesItems = [
+  const guidesItems: NavItem[] = [
     { href: '/conversion-guide', label: t('conversionGuidePage.title', 'Guía de Conversión'), icon: BookOpen },
     { href: '/garden', label: t('gardenPage.titleShort', 'Jardín'), icon: Star },
     { href: '/gift-of-mastery', label: t('nav.giftOfMastery', 'Gift of Mastery'), icon: Award },
@@ -342,9 +350,9 @@ const Navigation = () => {
   ];
 
   // Sección de Herramientas
-  const toolsItems = [
-    { href: '/magic', label: t('dashboard.magic.title', 'Magic'), icon: FileText },
-    { href: '/festivals', label: t('nav.festivals', 'Festivales'), icon: Calendar },
+  const toolsItems: NavItem[] = [
+    { href: '/magic', label: t('dashboard.magic.title', 'Magic'), icon: 'volatile-magic', isImage: true },
+    { href: '/festivals', label: t('nav.festivals', 'Festivales'), icon: 'Festival_Collections', isImage: true},
     { href: '/fractals', label: t('dashboard.farmingTracker.title', 'Fractales'), icon: Map },
     { href: '/ectogambling', label: t('ectogamblingPage.title', 'Ectogambling'), icon: Star },
     { href: '/opened', label: t('openedPage.title', 'Contenedores Abribles'), icon: Package },
@@ -451,7 +459,17 @@ const Navigation = () => {
                   key={item.href}
                   href={item.href}
                   className="flex items-center space-x-2 text-gray-300 hover:text-white transition-all duration-200 px-3 py-2 rounded-lg hover:bg-gray-800/50 hover:shadow-md">
-                  <item.icon className="w-4 h-4" />
+                  {item.isImage ? (
+                    <Image 
+                      src={`/images/expansions/${item.icon}.webp`} 
+                      alt={item.label}
+                      width={16}
+                      height={16}
+                      className="w-4 h-4"
+                    />
+                  ) : (
+                    <item.icon className="w-4 h-4" />
+                  )}
                   <span className="font-bold">{item.label}</span>
                 </Link>
               ))}
@@ -479,7 +497,17 @@ const Navigation = () => {
                         href={item.href}
                         className="flex items-center space-x-3 px-4 py-2 text-gray-300 hover:text-white hover:bg-gray-700 transition-colors"
                         onClick={() => handleGuidesMenuToggle(false)}>
-                        <item.icon className="w-4 h-4" />
+                        {item.isImage ? (
+                          <Image 
+                            src={`/images/expansions/${item.icon}.webp`} 
+                            alt={item.label}
+                            width={16}
+                            height={16}
+                            className="w-4 h-4"
+                          />
+                        ) : (
+                          <item.icon className="w-4 h-4" />
+                        )}
                         <span>{item.label}</span>
                       </Link>
                     ))}
@@ -510,7 +538,17 @@ const Navigation = () => {
                         href={item.href}
                         className="flex items-center space-x-3 px-4 py-2 text-gray-300 hover:text-white hover:bg-gray-700 transition-colors"
                         onClick={() => handleToolsMenuToggle(false)}>
-                        <item.icon className="w-4 h-4" />
+                        {item.isImage ? (
+                          <Image 
+                            src={`/images/expansions/${item.icon}.webp`} 
+                            alt={item.label}
+                            width={16}
+                            height={16}
+                            className="w-4 h-4"
+                          />
+                        ) : (
+                          <item.icon className="w-4 h-4" />
+                        )}
                         <span>{item.label}</span>
                       </Link>
                     ))}
@@ -682,7 +720,17 @@ const Navigation = () => {
                           href={item.href}
                           onClick={() => setIsMobileMenuOpen(false)}
                           className="flex items-center space-x-3 px-3 py-3 text-gray-300 hover:text-white hover:bg-gray-700 rounded-md transition-colors duration-200">
-                          <item.icon className="w-5 h-5" />
+                          {item.isImage ? (
+                            <Image 
+                              src={`/images/expansions/${item.icon}.webp`} 
+                              alt={item.label}
+                              width={20}
+                              height={20}
+                              className="w-5 h-5"
+                            />
+                          ) : (
+                            <item.icon className="w-5 h-5" />
+                          )}
                           <span className="font-medium">{item.label}</span>
                         </Link>
                       ))}
@@ -706,7 +754,17 @@ const Navigation = () => {
                                 href={item.href}
                                 onClick={() => setIsMobileMenuOpen(false)}
                                 className="flex items-center space-x-3 px-3 py-3 text-gray-300 hover:text-white hover:bg-gray-700 rounded-md transition-colors duration-200">
-                                <item.icon className="w-5 h-5" />
+                                {item.isImage ? (
+                                  <Image 
+                                    src={`/images/expansions/${item.icon}.webp`} 
+                                    alt={item.label}
+                                    width={20}
+                                    height={20}
+                                    className="w-5 h-5"
+                                  />
+                                ) : (
+                                  <item.icon className="w-5 h-5" />
+                                )}
                                 <span className="font-medium">{item.label}</span>
                               </Link>
                             ))}
@@ -733,7 +791,17 @@ const Navigation = () => {
                                 href={item.href}
                                 onClick={() => setIsMobileMenuOpen(false)}
                                 className="flex items-center space-x-3 px-3 py-3 text-gray-300 hover:text-white hover:bg-gray-700 rounded-md transition-colors duration-200">
-                                <item.icon className="w-5 h-5" />
+                                {item.isImage ? (
+                                  <Image 
+                                    src={`/images/expansions/${item.icon}.webp`} 
+                                    alt={item.label}
+                                    width={20}
+                                    height={20}
+                                    className="w-5 h-5"
+                                  />
+                                ) : (
+                                  <item.icon className="w-5 h-5" />
+                                )}
                                 <span className="font-medium">{item.label}</span>
                               </Link>
                             ))}

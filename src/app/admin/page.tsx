@@ -350,6 +350,15 @@ export default function AdminPanel() {
       setIsCreating(false);
       await loadFarms();
       
+      // Revalidar caché para que los cambios se vean inmediatamente
+      try {
+        await fetch('/api/revalidate?path=/farming-routes', {
+          method: 'POST',
+        });
+      } catch (revalidateError) {
+        console.warn('Could not revalidate farming routes page:', revalidateError);
+      }
+      
       showSuccess('¡Éxito!', `Farm "${newFarm.name}" creado exitosamente`);
     } catch (err) {
       console.error('Error creating farm:', err);
@@ -413,6 +422,15 @@ export default function AdminPanel() {
       setEditingFarm(null);
       await loadFarms();
       
+      // Revalidar caché para que los cambios se vean inmediatamente
+      try {
+        await fetch('/api/revalidate?path=/farming-routes', {
+          method: 'POST',
+        });
+      } catch (revalidateError) {
+        console.warn('Could not revalidate farming routes page:', revalidateError);
+      }
+      
       showSuccess('Updated!', `Farm "${farmName}" updated successfully`);
     } catch (err) {
       console.error('Error updating farm:', err);
@@ -431,6 +449,16 @@ export default function AdminPanel() {
       try {
         await dbService.deleteFarm(id);
         await loadFarms();
+        
+        // Revalidar caché para que los cambios se vean inmediatamente
+        try {
+          await fetch('/api/revalidate?path=/farming-routes', {
+            method: 'POST',
+          });
+        } catch (revalidateError) {
+          console.warn('Could not revalidate farming routes page:', revalidateError);
+        }
+        
         showSuccess('¡Eliminado!', `Farm "${farmName}" eliminado correctamente`);
       } catch (err) {
         console.error('Error deleting farm:', err);

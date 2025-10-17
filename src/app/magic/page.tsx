@@ -56,8 +56,14 @@ const OptimizedImage = ({ src, alt, className, priority = false }: {
   const [imageSrc, setImageSrc] = useState<string>('');
   const [isLoading, setIsLoading] = useState(true);
   const [hasError, setHasError] = useState(false);
+  const [retryCount, setRetryCount] = useState(0);
 
   useEffect(() => {
+    // Reset states when src changes
+    setIsLoading(true);
+    setHasError(false);
+    setRetryCount(0);
+
     // Si es una imagen local, usarla directamente
     if (src.startsWith('/images/')) {
       setImageSrc(src);
@@ -67,22 +73,34 @@ const OptimizedImage = ({ src, alt, className, priority = false }: {
 
     // Si es una imagen externa, intentar cargarla con optimizaciones
     if (src.startsWith('http')) {
-      // Para móvil, usar lazy loading por defecto
-      const isMobile = window.innerWidth <= 768;
-      if (!isMobile || priority) {
-        setImageSrc(src);
-        setIsLoading(false);
-      } else {
-        // En móvil, cargar solo cuando sea visible
-        setImageSrc(src);
-        setIsLoading(false);
-      }
+      setImageSrc(src);
+      setIsLoading(false);
     }
   }, [src, priority]);
 
+  const handleImageError = () => {
+    if (retryCount < 2) {
+      // Reintentar hasta 2 veces con un pequeño delay
+      setTimeout(() => {
+        setRetryCount(prev => prev + 1);
+        setHasError(false);
+        setIsLoading(true);
+        // Forzar recarga de la imagen
+        const newSrc = `${src}?retry=${retryCount + 1}&t=${Date.now()}`;
+        setImageSrc(newSrc);
+        setIsLoading(false);
+      }, 500 * (retryCount + 1));
+    } else {
+      setHasError(true);
+      setIsLoading(false);
+    }
+  };
+
   if (isLoading) {
     return (
-      <div className={`${className} bg-gray-700 animate-pulse rounded`} />
+      <div className={`${className} bg-gray-700 animate-pulse rounded flex items-center justify-center`}>
+        <div className="w-4 h-4 border-2 border-gray-500 border-t-transparent rounded-full animate-spin"></div>
+      </div>
     );
   }
 
@@ -106,6 +124,7 @@ const OptimizedImage = ({ src, alt, className, priority = false }: {
         priority={priority}
         loading={priority ? 'eager' : 'lazy'}
         quality={85}
+        onError={handleImageError}
       />
     );
   }
@@ -117,7 +136,8 @@ const OptimizedImage = ({ src, alt, className, priority = false }: {
       alt={alt}
       className={className}
       loading={priority ? 'eager' : 'lazy'}
-      onError={() => setHasError(true)}
+      onError={handleImageError}
+      onLoad={() => setIsLoading(false)}
       style={{
         width: '32px',
         height: '32px',
@@ -949,7 +969,7 @@ const CraftingPage = () => {
   const fetchTableItemNames = useCallback(async () => {
     try {
       // Dividir en lotes más pequeños para evitar errores de API
-      const batchSize = 50;
+      const batchSize = 25; // Reducir el tamaño del lote para mayor estabilidad
       const batches = [];
       for (let i = 0; i < tableItemIds.length; i += batchSize) {
         batches.push(tableItemIds.slice(i, i + batchSize));
@@ -959,39 +979,52 @@ const CraftingPage = () => {
       const allIcons: Record<number, string> = {};
       
       for (const batch of batches) {
-        try {
-          const itemsResponse = await fetch(`https://api.guildwars2.com/v2/items?ids=${batch.join(',')}&lang=${lang}`, {
-            headers: {
-              'Accept': 'application/json',
-              'Accept-Encoding': 'gzip, deflate, br'
-            }
-          });
-          
-          if (!itemsResponse.ok) {
-            // Error fetching batch, skipping
-            continue;
-          }
-          
-          const items = await itemsResponse.json();
-          
-          if (Array.isArray(items)) {
-            items.forEach((item: Gw2Item) => {
-              if (item && item.id && item.name) {
-                allNames[item.id] = item.name;
-                allIcons[item.id] = item.icon || '';
+        let retryCount = 0;
+        const maxRetries = 3;
+        
+        while (retryCount < maxRetries) {
+          try {
+            const itemsResponse = await fetch(`https://api.guildwars2.com/v2/items?ids=${batch.join(',')}&lang=${lang}`, {
+              headers: {
+                'Accept': 'application/json',
+                'Accept-Encoding': 'gzip, deflate, br'
               }
             });
+            
+            if (!itemsResponse.ok) {
+              throw new Error(`HTTP ${itemsResponse.status}`);
+            }
+            
+            const items = await itemsResponse.json();
+            
+            if (Array.isArray(items)) {
+              items.forEach((item: Gw2Item) => {
+                if (item && item.id && item.name) {
+                  allNames[item.id] = item.name;
+                  // Asegurar que el icono tenga el formato correcto
+                  if (item.icon) {
+                    allIcons[item.id] = item.icon;
+                  }
+                }
+              });
+            }
+            break; // Éxito, salir del bucle de reintentos
+          } catch (batchError) {
+            retryCount++;
+            if (retryCount >= maxRetries) {
+              console.warn(`Error fetching batch after ${maxRetries} retries:`, batchError);
+              break;
+            }
+            // Esperar antes del siguiente intento
+            await new Promise(resolve => setTimeout(resolve, 1000 * retryCount));
           }
-        } catch (batchError) {
-          // Error fetching batch, skipping
-          continue;
         }
       }
       
       setTableItemNames(allNames);
       setTableItemIcons(allIcons);
     } catch (error) {
-      // Error fetching table item names
+      console.error('Error fetching table item names:', error);
     }
   }, [tableItemIds, lang]);
 
@@ -2507,9 +2540,10 @@ const CraftingPage = () => {
                    <div className="text-center mb-6">
                      <div className="flex items-center justify-center gap-3">
                        <OptimizedImage 
-                         src={tableItemIcons[85725] || "https://render.guildwars2.com/file/6B604A6F7A5A4A4A4A4A4A4A4A4A4A4A4A4A4A4A/66950.png"} 
+                         src={tableItemIcons[85725] || "https://render.guildwars2.com/file/12280A76B8BF2B15ADFE092A0B9FF6EE442851EE/1894768.png"} 
                          alt={tableItemNames[85725] || 'Cargamento de trofeos'} 
                          className="w-8 h-8 sm:w-10 sm:h-10 flex-shrink-0"
+                         priority={true}
                        />
                        <h4 className="text-lg font-semibold text-white">
                          {tableItemNames[85725] || 'Cargamento de trofeos'}
