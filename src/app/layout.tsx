@@ -173,46 +173,7 @@ export default function RootLayout({
           `
         }} />
         
-        {/* Optimizaciones para carga asíncrona y caché */}
-        <script dangerouslySetInnerHTML={{
-          __html: `
-            // Función para cargar CSS de forma asíncrona
-            function loadCSS(href) {
-              var link = document.createElement('link');
-              link.rel = 'stylesheet';
-              link.href = href;
-              link.media = 'print';
-              link.onload = function() { this.media = 'all'; };
-              document.head.appendChild(link);
-            }
-            
-            // Optimizar caché de scripts de Cloudflare
-            window.addEventListener('load', function() {
-              // Cargar CSS adicional que no es crítico
-              var links = document.querySelectorAll('link[rel="preload"][as="style"]');
-              for (var i = 0; i < links.length; i++) {
-                if (!links[i].hasAttribute('data-loaded')) {
-                  links[i].rel = 'stylesheet';
-                  links[i].setAttribute('data-loaded', 'true');
-                }
-              }
-              
-              // Precargar scripts de Cloudflare críticos si están disponibles
-              if (typeof window.cloudflare !== 'undefined') {
-                // Configurar caché más agresivo para scripts de Cloudflare
-                if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
-                  navigator.serviceWorker.controller.postMessage({
-                    type: 'OPTIMIZE_CLOUDFLARE_CACHE',
-                    urls: [
-                      'https://static.cloudflareinsights.com/beacon.min.js',
-                      '/cdn-cgi/scripts/7089c43e/cloudflare-static/rocket-loader.min.js'
-                    ]
-                  });
-                }
-              }
-            });
-          `
-        }} />
+        {/* Eliminado script de optimización que podía reescribir links de CSS */}
         
         {/* Service Worker para caché optimizado */}
         <script dangerouslySetInnerHTML={{
