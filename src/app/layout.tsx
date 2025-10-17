@@ -286,23 +286,7 @@ export default function RootLayout({
         <link rel="alternate" hrefLang="x-default" href="https://www.true-farming.com" />
         <link rel="alternate" hrefLang="en" href="https://www.true-farming.com" />
         
-        {/* Open Graph Meta Tags */}
-        <meta property="og:image" content="/images/icons/icontag.webp" />
-        <meta property="og:image:width" content="1200" />
-        <meta property="og:image:height" content="630" />
-        <meta property="og:image:type" content="image/webp" />
-        <meta property="og:image:alt" content="True Farming - Guild Wars 2" />
-        
-        {/* Twitter Card Meta Tags */}
-        <meta name="twitter:image" content="/images/icons/icontag.webp" />
-        <meta name="twitter:image:alt" content="True Farming - Guild Wars 2" />
-        
-        {/* Additional Meta Tags */}
-        <meta name="image" content="/images/icons/icon.webp" />
-        <meta name="thumbnail" content="/images/icons/icon.webp" />
-        <meta name="twitter:image:alt" content="True Farming - Guild Wars 2" />
-        <meta name="twitter:image:width" content="1200" />
-        <meta name="twitter:image:height" content="630" />
+        {/* Meta tags adicionales específicos */}
         <meta name="twitter:site" content="@true-farming" />
         <meta name="twitter:creator" content="@true-farming"/>
       </head>
