@@ -14,7 +14,7 @@ const availableCards = [
   { id: 'farms', name: 'Rutas de Farming' },
   { id: 'dailyRoutine', name: 'Rutina Diaria' },
   { id: 'salvaging', name: 'Reciclaje' },
-    { id: 'magic', name: 'Análisis de Magia' },
+  { id: 'magic', name: 'Análisis de Magia' },
   { id: 'festivals', name: 'Festivales' },
   { id: 'farmingTracker', name: 'Fractales' },
   { id: 'glossary', name: 'Glosario' },

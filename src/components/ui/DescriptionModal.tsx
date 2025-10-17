@@ -103,7 +103,7 @@ export default function DescriptionModal({ isOpen, onClose, route }: Description
   const currencyMap = {
     gold: { icon: 'gold' as const, labelKey: 'currency.gold', suffix: '/h' },
     spiritShards: { icon: 'spirit-shard' as const, labelKey: 'currency.spiritShards', suffix: '/h' },
-    karma: { icon: 'karma' as const, labelKey: 'currency.karma', suffix: '/h' },
+    karma: { icon: 'karma' as const, labelKey: 'currency.karma', suffix: '' },
     fractalRelics: { icon: 'fractal-relic' as const, labelKey: 'currency.fractalRelics', suffix: '/h' },
     volatileMagic: { icon: 'volatile-magic' as const, labelKey: 'currency.volatileMagic', suffix: '/h' },
     unboundMagic: { icon: 'unbound-magic' as const, labelKey: 'currency.unboundMagic', suffix: '/h' },

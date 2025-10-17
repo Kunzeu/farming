@@ -793,7 +793,7 @@ const Navigation = () => {
                                 className="flex items-center space-x-3 px-3 py-3 text-gray-300 hover:text-white hover:bg-gray-700 rounded-md transition-colors duration-200">
                                 {item.isImage ? (
                                   <Image 
-                                    src={`/images/expansions/${item.icon}.webp`} 
+                                    src={item.icon === 'volatile-magic' ? `/images/expansions/${item.icon}.webp` : `/images/icons/${item.icon}.webp`} 
                                     alt={item.label}
                                     width={20}
                                     height={20}
