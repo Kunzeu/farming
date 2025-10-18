@@ -271,35 +271,32 @@ export default function DailyRoutine() {
   const getAllCurrencies = useCallback((farm: FarmItem): Array<{currency: string, value: string, config: typeof currencyConfig[keyof typeof currencyConfig]}> => {
     const currencies: Array<{currency: string, value: string, config: typeof currencyConfig[keyof typeof currencyConfig]}> = [];
     
-    // Verificar campos legacy primero
-    if (farm.estimatedGold && farm.estimatedGold.trim()) {
+    // Verificar campos en estimatedRewards PRIMERO (formato nuevo)
+    if (farm.estimatedRewards) {
+      Object.entries(farm.estimatedRewards).forEach(([currency, value]) => {
+        if (value && value.trim() && currencyConfig[currency as keyof typeof currencyConfig]) {
+          currencies.push({
+            currency,
+            value,
+            config: currencyConfig[currency as keyof typeof currencyConfig]
+          });
+        }
+      });
+    }
+    
+    // Verificar campos legacy SOLO si no hay equivalentes en estimatedRewards
+    if (farm.estimatedGold && farm.estimatedGold.trim() && !currencies.find(c => c.currency === 'gold')) {
       currencies.push({
         currency: 'gold',
         value: farm.estimatedGold,
         config: currencyConfig.gold
       });
     }
-    if (farm.estimatedSpirit && farm.estimatedSpirit.trim()) {
+    if (farm.estimatedSpirit && farm.estimatedSpirit.trim() && !currencies.find(c => c.currency === 'spiritShards')) {
       currencies.push({
         currency: 'spiritShards',
         value: farm.estimatedSpirit,
         config: currencyConfig.spiritShards
-      });
-    }
-    
-    // Verificar campos en estimatedRewards
-    if (farm.estimatedRewards) {
-      Object.entries(farm.estimatedRewards).forEach(([currency, value]) => {
-        if (value && value.trim() && currencyConfig[currency as keyof typeof currencyConfig]) {
-          // Evitar duplicados (priorizar legacy)
-          if (!currencies.find(c => c.currency === currency)) {
-            currencies.push({
-              currency,
-              value,
-              config: currencyConfig[currency as keyof typeof currencyConfig]
-            });
-          }
-        }
       });
     }
     

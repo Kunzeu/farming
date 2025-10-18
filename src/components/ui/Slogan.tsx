@@ -15,8 +15,7 @@ const slogans = [
   "The gold don't wait people",
   "My Doctor Says 'A good farmer is a true farmer'",
   "600g/h? We show you that doesn't exist!",
-  "True Farming: 2 + 2 = 4",
-  "Other webs: 2 + 2 = 84"
+  "True Farming: 2 + 2 = 4\nOther webs: 2 + 2 = 84",
 ];
 
 interface SloganProps {
