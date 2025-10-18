@@ -51,7 +51,7 @@ export default function DailyRoutine() {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedExpansions, setSelectedExpansions] = useState<Set<string>>(new Set());
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('list');
-  const [sortBy, setSortBy] = useState<'name' | 'time' | 'gold' | 'expansion'>('name');
+  const [sortBy, setSortBy] = useState<'name' | 'time' | 'gold' | 'expansion' | 'spiritShards' | 'karma' | 'riftEssences' | 'imperialFavor'>('name');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
   const [showFilters, setShowFilters] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
@@ -238,6 +238,66 @@ export default function DailyRoutine() {
           const expA = Array.isArray(a.expansion) ? a.expansion[0] : a.expansion;
           const expB = Array.isArray(b.expansion) ? b.expansion[0] : b.expansion;
           compareValue = expA.localeCompare(expB);
+          break;
+        case 'spiritShards':
+          // Solo ordenar farms que tienen esquirlas espirituales
+          const spiritA = a.estimatedRewards?.spiritShards?.trim() || a.estimatedSpirit?.trim();
+          const spiritB = b.estimatedRewards?.spiritShards?.trim() || b.estimatedSpirit?.trim();
+          
+          // Si uno tiene esquirlas y el otro no, el que tiene esquirlas va primero
+          if (spiritA && !spiritB) return -1;
+          if (!spiritA && spiritB) return 1;
+          if (!spiritA && !spiritB) return 0;
+          
+          // Si ambos tienen esquirlas, comparar valores
+          const spiritValueA = parseFloat(spiritA!.replace(/[^\d.]/g, '')) || 0;
+          const spiritValueB = parseFloat(spiritB!.replace(/[^\d.]/g, '')) || 0;
+          compareValue = spiritValueA - spiritValueB;
+          break;
+        case 'karma':
+          // Solo ordenar farms que tienen karma
+          const karmaA = a.estimatedRewards?.karma?.trim();
+          const karmaB = b.estimatedRewards?.karma?.trim();
+          
+          // Si uno tiene karma y el otro no, el que tiene karma va primero
+          if (karmaA && !karmaB) return -1;
+          if (!karmaA && karmaB) return 1;
+          if (!karmaA && !karmaB) return 0;
+          
+          // Si ambos tienen karma, comparar valores
+          const karmaValueA = parseFloat(karmaA!.replace(/[^\d.]/g, '')) || 0;
+          const karmaValueB = parseFloat(karmaB!.replace(/[^\d.]/g, '')) || 0;
+          compareValue = karmaValueA - karmaValueB;
+          break;
+        case 'riftEssences':
+          // Solo ordenar farms que tienen esencias de rift
+          const riftA = a.estimatedRewards?.riftEssences?.trim();
+          const riftB = b.estimatedRewards?.riftEssences?.trim();
+          
+          // Si uno tiene esencias y el otro no, el que tiene esencias va primero
+          if (riftA && !riftB) return -1;
+          if (!riftA && riftB) return 1;
+          if (!riftA && !riftB) return 0;
+          
+          // Si ambos tienen esencias, comparar valores
+          const riftValueA = parseFloat(riftA!.replace(/[^\d.]/g, '')) || 0;
+          const riftValueB = parseFloat(riftB!.replace(/[^\d.]/g, '')) || 0;
+          compareValue = riftValueA - riftValueB;
+          break;
+        case 'imperialFavor':
+          // Solo ordenar farms que tienen favor imperial
+          const favorA = a.estimatedRewards?.imperialFavor?.trim();
+          const favorB = b.estimatedRewards?.imperialFavor?.trim();
+          
+          // Si uno tiene favor y el otro no, el que tiene favor va primero
+          if (favorA && !favorB) return -1;
+          if (!favorA && favorB) return 1;
+          if (!favorA && !favorB) return 0;
+          
+          // Si ambos tienen favor, comparar valores
+          const favorValueA = parseFloat(favorA!.replace(/[^\d.]/g, '')) || 0;
+          const favorValueB = parseFloat(favorB!.replace(/[^\d.]/g, '')) || 0;
+          compareValue = favorValueA - favorValueB;
           break;
       }
       
@@ -508,13 +568,17 @@ export default function DailyRoutine() {
                   <div className="hidden sm:flex items-center gap-1">
                     <select
                       value={sortBy}
-                      onChange={(e) => setSortBy(e.target.value as 'name' | 'time' | 'gold' | 'expansion')}
+                      onChange={(e) => setSortBy(e.target.value as 'name' | 'time' | 'gold' | 'expansion' | 'spiritShards' | 'karma' | 'riftEssences' | 'imperialFavor')}
                       className="bg-gray-700 border border-gray-600 rounded-lg text-white text-sm px-3 py-2 focus:outline-none focus:border-blue-500"
                     >
                       <option value="name">{t('dailyRoutine.sortName', 'Name')}</option>
                       <option value="time">{t('dailyRoutine.sortTime', 'Time')}</option>
                       <option value="gold">{t('dailyRoutine.sortGold', 'Gold')}</option>
                       <option value="expansion">{t('dailyRoutine.sortExpansion', 'Expansion')}</option>
+                      <option value="spiritShards">{t('currency.spiritShards', 'Esquirlas Espirituales')}</option>
+                      <option value="karma">{t('currency.karma', 'Karma')}</option>
+                      <option value="riftEssences">{t('currency.riftEssences', 'Esencias de Rift')}</option>
+                      <option value="imperialFavor">{t('currency.imperialFavor', 'Favor Imperial')}</option>
                     </select>
                     <button
                       onClick={() => setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc')}

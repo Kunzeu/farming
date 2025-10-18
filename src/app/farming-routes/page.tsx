@@ -56,15 +56,15 @@ export default function FarmingRoutes() {
 
   // Mapeo de tipos de moneda a iconos y labels
   const currencyMap = {
-    gold: { icon: 'gold' as const, labelKey: 'currency.gold', suffix: '/h' },
-    spiritShards: { icon: 'spirit-shard' as const, labelKey: 'currency.spiritShards', suffix: '/h' },
+    gold: { icon: 'gold' as const, labelKey: 'currency.gold', suffix: '' },
+    spiritShards: { icon: 'spirit-shard' as const, labelKey: 'currency.spiritShards', suffix: '' },
     karma: { icon: 'karma' as const, labelKey: 'currency.karma', suffix: '' },
-    fractalRelics: { icon: 'fractal-relic' as const, labelKey: 'currency.fractalRelics', suffix: '/h' },
-    volatileMagic: { icon: 'volatile-magic' as const, labelKey: 'currency.volatileMagic', suffix: '/h' },
-    unboundMagic: { icon: 'unbound-magic' as const, labelKey: 'currency.unboundMagic', suffix: '/h' },
-    riftEssences: { icon: 'rift-essence' as const, labelKey: 'currency.riftEssences', suffix: '/h' },
-    mysticClovers: { icon: 'mystic-clover' as const, labelKey: 'currency.mysticClovers', suffix: '/h' },
-    imperialFavor: { icon: 'imperial-favor' as const, labelKey: 'currency.imperialFavor', suffix: '/h' }
+    fractalRelics: { icon: 'fractal-relic' as const, labelKey: 'currency.fractalRelics', suffix: '' },
+    volatileMagic: { icon: 'volatile-magic' as const, labelKey: 'currency.volatileMagic', suffix: '' },
+    unboundMagic: { icon: 'unbound-magic' as const, labelKey: 'currency.unboundMagic', suffix: '' },
+    riftEssences: { icon: 'rift-essence' as const, labelKey: 'currency.riftEssences', suffix: '' },
+    mysticClovers: { icon: 'mystic-clover' as const, labelKey: 'currency.mysticClovers', suffix: '' },
+    imperialFavor: { icon: 'imperial-favor' as const, labelKey: 'currency.imperialFavor', suffix: '' }
   };
 
   // Función para formatear oro correctamente

@@ -47,7 +47,6 @@ export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
   const userId = searchParams.get('userId'); // Para establecer el usuario actual para RLS
 
-  console.log('API /api/farms called with params:', { userId, searchParams: Object.fromEntries(searchParams) });
 
   try {
     // Si se proporciona userId, establecerlo para RLS

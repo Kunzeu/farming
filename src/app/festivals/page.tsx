@@ -11,6 +11,7 @@ import {
   Info
 } from 'lucide-react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { festivalDates, getFestivalStatus, getFormattedDateRange } from '@/lib/festival-dates';
 import { usePageTitle } from '@/hooks/usePageTitle';
 import { useI18n } from '@/contexts/I18nContext';
@@ -20,8 +21,8 @@ const getFestivals = (t: (key: string) => string) => [
     id: 'lunar',
     nameKey: 'festivals.names.lunar',
     descriptionKey: 'festivals.descriptions.lunar',
-    icon: '🏮',
-    color: 'from-red-500 to-yellow-600',
+    icon: '/images/festivals/Lunar_New_Year.webp',
+    color: 'from-red-900 to-red-500',
     status: getFestivalStatus(festivalDates.lunar.startDate, festivalDates.lunar.endDate, festivalDates.lunar.startTime, festivalDates.lunar.endTime, festivalDates.lunar.timezone),
     startDate: getFormattedDateRange(festivalDates.lunar.startDate, festivalDates.lunar.endDate, t),
     endDate: '', // No se usa por separado, se usa el rango completo
@@ -40,7 +41,7 @@ const getFestivals = (t: (key: string) => string) => [
     id: 'dragon-bash',
     nameKey: 'festivals.names.dragonBash',
     descriptionKey: 'festivals.descriptions.dragonBash',
-    icon: '🐉',
+    icon: '/images/festivals/Dragon_Bash.webp',
     color: 'from-purple-500 to-pink-600',
     status: getFestivalStatus(festivalDates['dragon-bash'].startDate, festivalDates['dragon-bash'].endDate, festivalDates['dragon-bash'].startTime, festivalDates['dragon-bash'].endTime, festivalDates['dragon-bash'].timezone),
     startDate: getFormattedDateRange(festivalDates['dragon-bash'].startDate, festivalDates['dragon-bash'].endDate, t),
@@ -60,7 +61,7 @@ const getFestivals = (t: (key: string) => string) => [
     id: 'four-winds',
     nameKey: 'festivals.names.fourWinds',
     descriptionKey: 'festivals.descriptions.fourWinds',
-    icon: '🪂',
+    icon: '/images/festivals/Four_Winds.webp',
     color: 'from-green-500 to-blue-600',
     status: getFestivalStatus(festivalDates['four-winds'].startDate, festivalDates['four-winds'].endDate, festivalDates['four-winds'].startTime, festivalDates['four-winds'].endTime, festivalDates['four-winds'].timezone),
     startDate: getFormattedDateRange(festivalDates['four-winds'].startDate, festivalDates['four-winds'].endDate, t),
@@ -80,7 +81,7 @@ const getFestivals = (t: (key: string) => string) => [
     id: 'halloween',
     nameKey: 'festivals.names.halloween',
     descriptionKey: 'festivals.descriptions.halloween',
-    icon: '🎃',
+    icon: '/images/festivals/Shadow_of_the_Mad_King.webp',
     color: 'from-orange-500 to-red-600',
     status: getFestivalStatus(festivalDates.halloween.startDate, festivalDates.halloween.endDate, festivalDates.halloween.startTime, festivalDates.halloween.endTime, festivalDates.halloween.timezone),
     startDate: getFormattedDateRange(festivalDates.halloween.startDate, festivalDates.halloween.endDate, t),
@@ -100,7 +101,7 @@ const getFestivals = (t: (key: string) => string) => [
     id: 'wintersday',
     nameKey: 'festivals.names.wintersday',
     descriptionKey: 'festivals.descriptions.wintersday',
-    icon: '❄️',
+    icon: '/images/festivals/Wintersday.webp',
     color: 'from-blue-500 to-cyan-600',
     status: getFestivalStatus(festivalDates.wintersday.startDate, festivalDates.wintersday.endDate, festivalDates.wintersday.startTime, festivalDates.wintersday.endTime, festivalDates.wintersday.timezone),
     startDate: getFormattedDateRange(festivalDates.wintersday.startDate, festivalDates.wintersday.endDate, t),
@@ -171,8 +172,18 @@ export default function FestivalsPage() {
                   <div className="bg-gray-900/80 backdrop-blur-sm border border-gray-700 rounded-lg p-6 hover:border-purple-500 transition-all duration-300 hover:transform hover:scale-105 flex flex-col h-full shadow-2xl">
                     {/* Header */}
                     <div className="flex items-center justify-between mb-4">
-                      <div className={`w-12 h-12 bg-gradient-to-br ${festival.color} rounded-lg flex items-center justify-center text-2xl`}>
-                        {festival.icon}
+                      <div className={`w-16 h-16 bg-gradient-to-br ${festival.color} rounded-lg flex items-center justify-center text-2xl overflow-hidden`}>
+                        {festival.icon.startsWith('/') ? (
+                          <Image 
+                            src={festival.icon} 
+                            alt={t(festival.nameKey)} 
+                            width={64}
+                            height={64}
+                            className="w-12 h-12 object-contain"
+                          />
+                        ) : (
+                          festival.icon
+                        )}
                       </div>
                       <span className={`px-2 py-1 rounded text-xs font-semibold ${getStatusColor(festival.status)}`}>
                          {t(`status.${festival.status}`)}
