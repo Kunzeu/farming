@@ -382,6 +382,23 @@ const HalloweenPage = () => {
   }, [fetchBagPrice]);
 
   useEffect(() => {
+    // Sincroniza la pestaña con el hash al cargar y cuando cambie
+    if (typeof window === 'undefined') return;
+    const applyHash = () => {
+      const hash = window.location.hash.replace('#', '');
+      if (hash === 'Box-Opening') {
+        setSelectedSection('box-opening');
+        setTimeout(() => {
+          document.getElementById('Box-Opening')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }, 0);
+      }
+    };
+    applyHash();
+    window.addEventListener('hashchange', applyHash);
+    return () => window.removeEventListener('hashchange', applyHash);
+  }, []);
+
+  useEffect(() => {
     if (selectedSection === 'calculators') {
       fetchHalloweenData();
       fetchCalculatorData();
@@ -564,15 +581,20 @@ const HalloweenPage = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
             className="flex flex-wrap justify-center gap-2 mb-8">
-            {([
+            {(([ 
               { id: 'overview', label: t('festivals.tabs.overview'), icon: Info },
               { id: 'calculators', label: t('festivals.tabs.calculators'), icon: Calculator },
               { id: 'box-opening', label: t('festivals.tabs.boxOpening'), icon: Package },
               { id: 'strategies', label: t('festivals.tabs.strategies'), icon: TrendingUp }
-            ] as const).map((tab) => (
+            ] as const)).map((tab) => (
               <button
                 key={tab.id}
-                onClick={() => setSelectedSection(tab.id)}
+                onClick={() => {
+                  setSelectedSection(tab.id);
+                  if (tab.id === 'box-opening' && typeof window !== 'undefined') {
+                    window.location.hash = 'Box-Opening';
+                  }
+                }}
                 className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all duration-200 ${
                   selectedSection === tab.id
                     ? 'bg-orange-600/80 text-white border border-orange-400/50 shadow-lg'
@@ -857,7 +879,7 @@ const HalloweenPage = () => {
 
             {/* Box Opening Section */}
             {selectedSection === 'box-opening' && (
-              <div className="space-y-4">
+              <div id="Box-Opening" className="space-y-4">
                 <div className="bg-gray-900/80 backdrop-blur-sm border border-orange-500/30 rounded-lg p-4 shadow-2xl">
                   <h2 className="text-2xl font-bold text-white mb-3 flex items-center">
                       <Package className="w-6 h-6 mr-3 text-orange-400" />

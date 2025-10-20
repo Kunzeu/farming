@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { Pool } from 'pg';
 import fs from 'fs';
 import path from 'path';
+import { hashPassword } from '@/lib/server/password-utils';
 
 // Cargar variables de entorno desde .env
 function loadEnvFile() {
@@ -134,7 +135,9 @@ export async function PUT(
     
     if (body.password !== undefined) {
       updateFields.push(`password = $${paramIndex++}`);
-      values.push(body.password);
+      // Hash the password before storing
+      const hashedPassword = await hashPassword(body.password);
+      values.push(hashedPassword);
     }
     
     if (body.role !== undefined) {

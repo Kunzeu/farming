@@ -22,7 +22,6 @@ import {
   ShoppingCart,
   Star,
   FileText,
-  Award,
   Gift
 } from 'lucide-react';
 import { useI18n } from '@/contexts/I18nContext';
@@ -343,10 +342,10 @@ const Navigation = () => {
   const guidesItems: NavItem[] = [
     { href: '/conversion-guide', label: t('conversionGuidePage.title', 'Guía de Conversión'), icon: BookOpen },
     { href: '/garden', label: t('gardenPage.titleShort', 'Jardín'), icon: Star },
-    { href: '/gift-of-mastery', label: t('nav.giftOfMastery', 'Gift of Mastery'), icon: Award },
-    { href: '/gift-of-jade-mastery', label: t('nav.giftOfJadeMastery', 'Gift of Jade Mastery'), icon: Award },
+    { href: '/gift-of-mastery', label: t('nav.giftOfMastery', 'Gift of Mastery'), icon: 'GOM', isImage: true },
+    { href: '/gift-of-jade-mastery', label: t('nav.giftOfJadeMastery', 'Gift of Jade Mastery'), icon: 'GOJM', isImage: true },
     { href: '/glossary', label: t('nav.glossary', 'Glosario'), icon: FileText },
-    { href: '/festivals/halloween/labyrinth-guide', label: t('pageTitles.halloweenLabyrinth', 'Guía del Laberinto de Halloween'), icon: BookOpen },
+    { href: '/festivals/halloween/labyrinth-guide', label: t('pageTitles.halloweenLabyrinth', 'Guía del Laberinto de Halloween'), icon: 'Shadow_of_the_Mad_King', isImage: true },
   ];
 
   // Sección de Herramientas
@@ -461,11 +460,11 @@ const Navigation = () => {
                   className="flex items-center space-x-2 text-gray-300 hover:text-white transition-all duration-200 px-3 py-2 rounded-lg hover:bg-gray-800/50 hover:shadow-md">
                   {item.isImage ? (
                     <Image 
-                      src={`/images/expansions/${item.icon}.webp`} 
+                      src={`/images/${item.icon === 'GOM' || item.icon === 'GOJM' ? 'assets' : item.icon === 'Shadow_of_the_Mad_King' ? 'festivals' : 'expansions'}/${item.icon}.webp`} 
                       alt={item.label}
-                      width={16}
-                      height={16}
-                      className="w-4 h-4"
+                      width={item.icon === 'Shadow_of_the_Mad_King' ? 80 : 64}
+                      height={item.icon === 'Shadow_of_the_Mad_King' ? 80 : 64}
+                      className={item.icon === 'Shadow_of_the_Mad_King' ? 'w-6 h-6' : 'w-4 h-4'}
                     />
                   ) : (
                     <item.icon className="w-4 h-4" />
@@ -499,11 +498,11 @@ const Navigation = () => {
                         onClick={() => handleGuidesMenuToggle(false)}>
                         {item.isImage ? (
                           <Image 
-                            src={`/images/expansions/${item.icon}.webp`} 
+                            src={`/images/${item.icon === 'GOM' || item.icon === 'GOJM' ? 'assets' : item.icon === 'Shadow_of_the_Mad_King' ? 'festivals' : 'expansions'}/${item.icon}.webp`} 
                             alt={item.label}
-                            width={16}
-                            height={16}
-                            className="w-4 h-4"
+                            width={item.icon === 'Shadow_of_the_Mad_King' ? 48 : 32}
+                            height={item.icon === 'Shadow_of_the_Mad_King' ? 48 : 32}
+                            className={item.icon === 'Shadow_of_the_Mad_King' ? 'w-6 h-6' : 'w-4 h-4'}
                           />
                         ) : (
                           <item.icon className="w-4 h-4" />
@@ -540,7 +539,7 @@ const Navigation = () => {
                         onClick={() => handleToolsMenuToggle(false)}>
                         {item.isImage ? (
                           <Image 
-                            src={`/images/expansions/${item.icon}.webp`} 
+                            src={`/images/${item.icon === 'GOM' || item.icon === 'GOJM' ? 'assets' : item.icon === 'Shadow_of_the_Mad_King' ? 'festivals' : 'expansions'}/${item.icon}.webp`} 
                             alt={item.label}
                             width={16}
                             height={16}
@@ -722,11 +721,11 @@ const Navigation = () => {
                           className="flex items-center space-x-3 px-3 py-3 text-gray-300 hover:text-white hover:bg-gray-700 rounded-md transition-colors duration-200">
                           {item.isImage ? (
                             <Image 
-                              src={`/images/expansions/${item.icon}.webp`} 
+                              src={`/images/${item.icon === 'GOM' || item.icon === 'GOJM' ? 'assets' : item.icon === 'Shadow_of_the_Mad_King' ? 'festivals' : 'expansions'}/${item.icon}.webp`} 
                               alt={item.label}
-                              width={20}
-                              height={20}
-                              className="w-5 h-5"
+                              width={item.icon === 'Shadow_of_the_Mad_King' ? 32 : 16}
+                              height={item.icon === 'Shadow_of_the_Mad_King' ? 32 : 16}
+                              className={item.icon === 'Shadow_of_the_Mad_King' ? 'w-8 h-8' : 'w-5 h-5'}
                             />
                           ) : (
                             <item.icon className="w-5 h-5" />
@@ -756,7 +755,7 @@ const Navigation = () => {
                                 className="flex items-center space-x-3 px-3 py-3 text-gray-300 hover:text-white hover:bg-gray-700 rounded-md transition-colors duration-200">
                                 {item.isImage ? (
                                   <Image 
-                                    src={`/images/expansions/${item.icon}.webp`} 
+                                    src={`/images/${item.icon === 'GOM' || item.icon === 'GOJM' ? 'assets' : item.icon === 'Shadow_of_the_Mad_King' ? 'festivals' : 'expansions'}/${item.icon}.webp`} 
                                     alt={item.label}
                                     width={20}
                                     height={20}
@@ -793,7 +792,7 @@ const Navigation = () => {
                                 className="flex items-center space-x-3 px-3 py-3 text-gray-300 hover:text-white hover:bg-gray-700 rounded-md transition-colors duration-200">
                                 {item.isImage ? (
                                   <Image 
-                                    src={`/images/expansions/${item.icon}.webp`} 
+                                    src={`/images/${item.icon === 'GOM' || item.icon === 'GOJM' ? 'assets' : item.icon === 'Shadow_of_the_Mad_King' ? 'festivals' : 'expansions'}/${item.icon}.webp`} 
                                     alt={item.label}
                                     width={20}
                                     height={20}
