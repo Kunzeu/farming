@@ -48,7 +48,7 @@ export default function FarmingTrackerPage() {
   const [itemDetails, setItemDetails] = useState<Record<number, { icon: string; currentPrice: number; buyPrice: number; name: string }>>({});
   const [loading, setLoading] = useState(true);
   const [lastUpdate, setLastUpdate] = useState<Date>(new Date());
-  const [activeSection, setActiveSection] = useState<'fractal' | 'initiate' | 'adept' | 'expert' | 'encryption'>('initiate');
+  const [activeSection, setActiveSection] = useState<'fractal' | 'T1' | 'T2' | 'T3' | 'T4'>('T1');
 
   // Constantes para el cálculo de trofeos
   const ENCRYPTION_DATA = {
@@ -822,14 +822,14 @@ export default function FarmingTrackerPage() {
     if (typeof window === 'undefined') return;
     const applyHash = () => {
       const hash = window.location.hash.replace('#', '');
-      if (hash === 'Fractal-Encryption') {
-        setActiveSection('encryption');
-      } else if (hash === 'initiate') {
-        setActiveSection('initiate');
-      } else if (hash === 'adept') {
-        setActiveSection('adept');
-      } else if (hash === 'expert') {
-        setActiveSection('expert');
+      if (hash === 'T4') {
+        setActiveSection('T4');
+      } else if (hash === 'T1') {
+        setActiveSection('T1');
+      } else if (hash === 'T2') {
+        setActiveSection('T2');
+      } else if (hash === 'T3') {
+        setActiveSection('T3');
       } else if (hash === 'fractal') {
         setActiveSection('fractal');
       }
@@ -1068,13 +1068,13 @@ export default function FarmingTrackerPage() {
              <div className="flex flex-wrap justify-center gap-2">
                <button
                  onClick={() => {
-                   setActiveSection('initiate');
+                   setActiveSection('T1');
                    if (typeof window !== 'undefined') {
-                     window.location.hash = 'initiate';
+                     window.location.hash = 'T1';
                    }
                  }}
                  className={`px-3 sm:px-4 md:px-6 py-2 md:py-3 rounded-lg font-semibold transition-all duration-200 text-sm md:text-base ${
-                   activeSection === 'initiate'
+                   activeSection === 'T1'
                      ? 'bg-green-600 text-white shadow-lg'
                      : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
                  }`}
@@ -1083,13 +1083,13 @@ export default function FarmingTrackerPage() {
                </button>
                <button
                  onClick={() => {
-                   setActiveSection('adept');
+                   setActiveSection('T2');
                    if (typeof window !== 'undefined') {
-                     window.location.hash = 'adept';
+                     window.location.hash = 'T2';
                    }
                  }}
                  className={`px-3 sm:px-4 md:px-6 py-2 md:py-3 rounded-lg font-semibold transition-all duration-200 text-sm md:text-base ${
-                   activeSection === 'adept'
+                   activeSection === 'T2'
                      ? 'bg-purple-600 text-white shadow-lg'
                      : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
                  }`}
@@ -1098,13 +1098,13 @@ export default function FarmingTrackerPage() {
                </button>
                <button
                  onClick={() => {
-                   setActiveSection('expert');
+                   setActiveSection('T3');
                    if (typeof window !== 'undefined') {
-                     window.location.hash = 'expert';
+                     window.location.hash = 'T3';
                    }
                  }}
                  className={`px-3 sm:px-4 md:px-6 py-2 md:py-3 rounded-lg font-semibold transition-all duration-200 text-sm md:text-base ${
-                   activeSection === 'expert'
+                   activeSection === 'T3'
                      ? 'bg-orange-600 text-white shadow-lg'
                      : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
                  }`}
@@ -1128,13 +1128,13 @@ export default function FarmingTrackerPage() {
                </button>
                <button
                  onClick={() => {
-                   setActiveSection('encryption');
+                   setActiveSection('T4');
                    if (typeof window !== 'undefined') {
-                     window.location.hash = 'Fractal-Encryption';
+                     window.location.hash = 'T4';
                    }
                  }}
                  className={`px-3 sm:px-4 md:px-6 py-2 md:py-3 rounded-lg font-semibold transition-all duration-200 text-sm md:text-base ${
-                   activeSection === 'encryption'
+                   activeSection === 'T4'
                      ? 'bg-teal-600 text-white shadow-lg'
                      : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
                  }`}
@@ -1148,9 +1148,9 @@ export default function FarmingTrackerPage() {
                   {/* Content based on active section */}
          
                    {/* Initiate Section (T1) */}
-         {activeSection === 'initiate' && (
+         {activeSection === 'T1' && (
            <>
-             <div id="initiate" className="invisible absolute -top-20"></div>
+             <div id="T1" className="invisible absolute -top-20"></div>
              {/* Stats Overview */}
              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-6 mb-6 md:mb-8">
                <div className="bg-gray-900/80 backdrop-blur-sm border border-gray-700 rounded-lg p-2 sm:p-3 shadow-2xl text-center sm:text-left">
@@ -1375,9 +1375,9 @@ export default function FarmingTrackerPage() {
          )}
 
          {/* Adept Section (T2) */}
-         {activeSection === 'adept' && (
+         {activeSection === 'T2' && (
            <>
-             <div id="adept" className="invisible absolute -top-20"></div>
+             <div id="T2" className="invisible absolute -top-20"></div>
              {/* Stats Overview */}
              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-6 mb-6 md:mb-8">
                <div className="bg-gray-900/80 backdrop-blur-sm border border-gray-700 rounded-lg p-2 sm:p-3 shadow-2xl text-center sm:text-left">
@@ -1602,9 +1602,9 @@ export default function FarmingTrackerPage() {
          )}
 
          {/* Expert Section (T3) */}
-         {activeSection === 'expert' && (
+         {activeSection === 'T3' && (
            <>
-             <div id="expert" className="invisible absolute -top-20"></div>
+             <div id="T3" className="invisible absolute -top-20"></div>
              {/* Stats Overview */}
              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-6 mb-6 md:mb-8">
                <div className="bg-gray-900/80 backdrop-blur-sm border border-gray-700 rounded-lg p-2 sm:p-3 shadow-2xl text-center sm:text-left">
@@ -2024,9 +2024,9 @@ export default function FarmingTrackerPage() {
          )}
 
          {/* Fractal Encryption Section */}
-         {activeSection === 'encryption' && (
+         {activeSection === 'T4' && (
            <>
-             <div id="Fractal-Encryption" className="invisible absolute -top-20"></div>
+             <div id="T4" className="invisible absolute -top-20"></div>
              {/* Data Source Info */}
              <div className="bg-blue-900/20 backdrop-blur-sm border border-blue-700/30 rounded-lg p-4 mb-6 md:mb-8">
                <div className="flex items-center gap-3">
