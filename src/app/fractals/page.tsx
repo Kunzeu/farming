@@ -43,12 +43,48 @@ export default function FarmingTrackerPage() {
   const { t, lang } = useI18n();
   
   const [searchTerm, setSearchTerm] = useState('');
-  const [sortBy, setSortBy] = useState('name');
+  const [sortBy, setSortBy] = useState('difference');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
   const [itemDetails, setItemDetails] = useState<Record<number, { icon: string; currentPrice: number; buyPrice: number; name: string }>>({});
   const [loading, setLoading] = useState(true);
   const [lastUpdate, setLastUpdate] = useState<Date>(new Date());
   const [activeSection, setActiveSection] = useState<'fractal' | 'initiate' | 'adept' | 'expert' | 'encryption'>('initiate');
+
+  // Constantes para el cálculo de trofeos
+  const ENCRYPTION_DATA = {
+    seliciZanar: { opened: 1000000, trophyRate: 1.285333 },
+    vortus: { opened: 1000000, trophyRate: 1.286211 },
+    shinymeta: { opened: 100000, trophyRate: 1.28752 }
+  };
+
+  // Función para calcular trofeos
+  const calculateTrophies = (encryptionsOpened: number, trophyRate: number): number => {
+    return Math.floor(encryptionsOpened * trophyRate);
+  };
+
+  // Cálculos de trofeos  
+  const trophyCalculations = {
+    seliciZanar: calculateTrophies(ENCRYPTION_DATA.seliciZanar.opened, ENCRYPTION_DATA.seliciZanar.trophyRate),
+    vortus: calculateTrophies(ENCRYPTION_DATA.vortus.opened, ENCRYPTION_DATA.vortus.trophyRate),
+    shinymeta: calculateTrophies(ENCRYPTION_DATA.shinymeta.opened, ENCRYPTION_DATA.shinymeta.trophyRate)
+  };
+
+  const totalTrophies = trophyCalculations.seliciZanar + trophyCalculations.vortus + trophyCalculations.shinymeta;
+
+
+
+  // Calcular porcentaje total: suma de trofeos reales / total encryptions abiertos
+  const totalEncryptions = ENCRYPTION_DATA.seliciZanar.opened + ENCRYPTION_DATA.vortus.opened + ENCRYPTION_DATA.shinymeta.opened;
+  const totalPercentage = ((totalTrophies / totalEncryptions) * 100).toFixed(2);
+
+  // Calcular porcentajes totales para cada item
+  const manuscriptTotalPercentage = ((600296 / totalEncryptions) * 100).toFixed(2);
+  const proofTotalPercentage = ((899638 / totalEncryptions) * 100).toFixed(2);
+  const treatiseTotalPercentage = ((600311 / totalEncryptions) * 100).toFixed(2);
+  const postulateTotalPercentage = ((600051 / totalEncryptions) * 100).toFixed(2);
+
+
+
 
   const farmingData: FarmingItem[] = useMemo(() => [
     // Fractales
@@ -67,6 +103,16 @@ export default function FarmingTrackerPage() {
     { id: 46739, name: 'Elonian Leather Square', beforeCount: 189, afterCount: 242, difference: 53, valueEach: 24699, valueTotal: 1309047, category: 'materials' },
     { id: 46741, name: 'Bolt of Damask', beforeCount: 178, afterCount: 250, difference: 72, valueEach: 12500, valueTotal: 900000, category: 'materials' },
     { id: 73034, name: 'Vial of Linseed Oil', beforeCount: 176, afterCount: 228, difference: 52, valueEach: 4616, valueTotal: 240032, category: 'materials' },
+    
+    // Materiales T5
+    { id: 24294, name: 'Vial of Powerful Blood', beforeCount: 0, afterCount: 339475, difference: 339475, category: 't5-materials' },
+    { id: 24341, name: 'Large Bone', beforeCount: 0, afterCount: 0, difference: 0, category: 't5-materials' },
+    { id: 24350, name: 'Large Claw', beforeCount: 0, afterCount: 0, difference: 0, category: 't5-materials' },
+    { id: 24288, name: 'Large Scale', beforeCount: 0, afterCount: 0, difference: 0, category: 't5-materials' },
+    { id: 24356, name: 'Large Fang', beforeCount: 0, afterCount: 0, difference: 0, category: 't5-materials' },
+    { id: 24299, name: 'Large Totem', beforeCount: 0, afterCount: 0, difference: 0, category: 't5-materials' },
+    { id: 24282, name: 'Large Venom Sac', beforeCount: 0, afterCount: 0, difference: 0, category: 't5-materials' },
+    { id: 24276, name: 'Pile of Crystalline Dust', beforeCount: 0, afterCount: 0, difference: 0, category: 't5-materials' },
     
     // Items de fractales
     { id: 71315, name: 'Prototype Alchemical Precipitate', beforeCount: 0, afterCount: 374, difference: 374, category: 'fractal-items' },
@@ -639,40 +685,48 @@ export default function FarmingTrackerPage() {
     ...raidChestData.map(item => item.id),
     ...strikeChestData.map(item => item.id),
     75919, // Fractal Encryption
+    75409, // Cracked Fractal Encryption
     // IDs de Trofeos para la tabla
     73478, // Manuscript
     75220, // Proof
     73848, // Treaties
     72336, // Postulate
+    79792, // Handful of Fractal Relics
+    74268, // Mini Professor Mew
+    67261, // New item
+    46733, // Dragonite Ore
+    46735, // Empyreal Fragment
+    46731, // Pile of Bloodstone Dust
+
     // Materiales T5 IDs
     24294, // Sangre
     24341, // Hueso
     24350, // Garra
-    24356, // Escama
-    24288, // Colmillo
+    24288, // Escama
+    24356, // Colmillo
     24299, // Totem
     24282, // Vesícula
     24276, // Polvo
-         // IDs faltantes para los cálculos
     24277, // Polvo adicional (usado en Total1 y Total2)
-     19721,  // Ectoplasm (usado en Total3)
-     19718,  // Empyreal Fragment (usado en item 46735)
+    19721,  // Ectoplasm (usado en Total3)
+    19718,  // Empyreal Fragment (usado en item 46735)
      // IDs para Cálculo 0.9 × 250
-     24295, 24358, 24351, 24357, 24289, 24300, 24283,
+    24295, 24358, 24351, 24357, 24289, 24300, 24283,
      // IDs para el cálculo oculto del item 43971 (19 IDs × 0.85 ÷ 19 - Aetherized weapons correctos)
-     44001, 44004, 44007, 44010, 44013, 44016, 44019, 44022, 44025, 44028, 44031, 44034, 44037, 44040, 44043, 44046, 44049, 44052, 44055,
+    44001, 44004, 44007, 44010, 44013, 44016, 44019, 44022, 44025, 44028, 44031, 44034, 44037, 44040, 44043, 44046, 44049, 44052, 44055,
      // ID para el cálculo oculto del item 46735 (Toxic Tuning Crystal)
-     48917,
+    48917,
      // ID para el item 83008 (Rare Unid)
-     83008,
+    83008,
      // ID para el cálculo oculto del item 49424 (+9 Agony Infusion)
-     49432,
+    49432,
      // ID para Reactivo termocatalítico (usado en +9 Agony Infusion)
      46747,
   ].filter(id => id > 0);
       
       // Eliminar duplicados
       const uniqueItemIds = [...new Set(allItemIds)];
+      
       
       if (uniqueItemIds.length === 0) {
         setLoading(false);
@@ -763,6 +817,28 @@ export default function FarmingTrackerPage() {
     return () => clearInterval(interval);
   }, [fetchItemDetails]);
 
+  // Manejo del hash para navegación directa a secciones
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const applyHash = () => {
+      const hash = window.location.hash.replace('#', '');
+      if (hash === 'Fractal-Encryption') {
+        setActiveSection('encryption');
+      } else if (hash === 'initiate') {
+        setActiveSection('initiate');
+      } else if (hash === 'adept') {
+        setActiveSection('adept');
+      } else if (hash === 'expert') {
+        setActiveSection('expert');
+      } else if (hash === 'fractal') {
+        setActiveSection('fractal');
+      }
+    };
+    applyHash();
+    window.addEventListener('hashchange', applyHash);
+    return () => window.removeEventListener('hashchange', applyHash);
+  }, []);
+
   // Calcular estadísticas
   const stats = useMemo(() => {
     const totalItems = farmingData.reduce((sum, item) => sum + Math.max(0, item.difference), 0);
@@ -796,74 +872,7 @@ export default function FarmingTrackerPage() {
     };
   }, [farmingData, itemDetails]);
 
-  // Función comentada ya que las secciones de Multiplicaciones y Cálculo 0.9 × 250 están ocultas
-  /*
-  const refreshItemPrice = useCallback(async (id: number) => {
-    try {
-      const pricesResponse = await fetch(`https://api.guildwars2.com/v2/commerce/prices?ids=${id}`, {
-        headers: {
-          'Accept': 'application/json',
-          'Accept-Encoding': 'gzip, deflate, br'
-        }
-      });
-      const prices = await pricesResponse.json();
-      const priceData = Array.isArray(prices) ? prices[0] : prices;
-      setItemDetails(prev => ({
-        ...prev,
-        [id]: {
-          icon: prev[id]?.icon || '',
-          name: prev[id]?.name || '',
-          currentPrice: priceData?.sells?.unit_price || prev[id]?.currentPrice || 0,
-          buyPrice: priceData?.buys?.unit_price || prev[id]?.buyPrice || 0,
-        }
-      }));
-      setLastUpdate(new Date());
-    } catch (error) {
-      console.error('Error refreshing item price:', id, error);
-    }
-  }, []);
-  */
-
-  // Función comentada ya que las secciones de Multiplicaciones y Cálculo 0.9 × 250 están ocultas
-  /*
-  const refreshItemPricesBulk = useCallback(async (ids: number[]) => {
-    try {
-      const validIds = Array.from(new Set((ids || []).filter((x) => x > 0)));
-      if (validIds.length === 0) return;
-      const [itemsResp, pricesResp] = await Promise.all([
-        fetch(`https://api.guildwars2.com/v2/items?ids=${validIds.join(',')}&lang=${lang}`, {
-          headers: { 'Accept': 'application/json', 'Accept-Encoding': 'gzip, deflate, br' }
-        }),
-        fetch(`https://api.guildwars2.com/v2/commerce/prices?ids=${validIds.join(',')}`, {
-          headers: { 'Accept': 'application/json', 'Accept-Encoding': 'gzip, deflate, br' }
-        }),
-      ]);
-      const itemsJson: Array<{ id: number; icon: string; name: string }> = await itemsResp.json();
-      const pricesJson: Array<GW2Price> = await pricesResp.json();
-      const priceById: Record<number, GW2Price> = {};
-      (Array.isArray(pricesJson) ? pricesJson : [pricesJson]).forEach((p) => {
-        if (p && typeof p.id === 'number') priceById[p.id] = p;
-      });
-      setItemDetails((prev) => {
-        const next: Record<number, { icon: string; currentPrice: number; buyPrice: number; name: string }> = { ...prev };
-        (Array.isArray(itemsJson) ? itemsJson : [itemsJson]).forEach((it) => {
-          const price = priceById[it.id];
-          next[it.id] = {
-            icon: it.icon || next[it.id]?.icon || '',
-            name: it.name || next[it.id]?.name || '',
-            currentPrice: price?.sells?.unit_price || next[it.id]?.currentPrice || 0,
-            buyPrice: price?.buys?.unit_price || next[it.id]?.buyPrice || 0,
-          };
-        });
-        return next;
-      });
-      setLastUpdate(new Date());
-    } catch (err) {
-      console.error('Error refreshing bulk item prices:', ids, err);
-    }
-  }, [lang]);
-  */
-
+  
   // OPTIMIZADO: Formateo de oro memoizado para evitar re-cálculos
   const formatGoldSilverCopper = useCallback((copper: number) => {
     const isNegative = copper < 0;
@@ -872,7 +881,7 @@ export default function FarmingTrackerPage() {
     const silver = Math.floor((absCopper % 10000) / 100);
     const copperRemainder = Math.round(absCopper % 100);
     const sign = isNegative ? '- ' : '';
-    return `${sign}${gold.toString().padStart(2, '0')}g ${silver.toString().padStart(2, '0')}s ${copperRemainder.toString().padStart(2, '0')}c`;
+    return `${sign}${gold.toString().padStart(2, '0')}G ${silver.toString().padStart(2, '0')}S ${copperRemainder.toString().padStart(2, '0')}C`;
   }, []);
 
   // Mapeo de IDs a nombres de traducción para los items de fractales
@@ -880,8 +889,8 @@ export default function FarmingTrackerPage() {
     24294: 'fractals.items.blood',    // Sangre
     24341: 'fractals.items.bone',     // Hueso
     24350: 'fractals.items.claw',     // Garra
-    24356: 'fractals.items.scale',    // Escama
-    24288: 'fractals.items.fang',     // Colmillo
+    24356: 'fractals.items.fang',     // Colmillo
+    24288: 'fractals.items.scale',    // Escama
     24299: 'fractals.items.totem',    // Tótem
     24282: 'fractals.items.venom',    // Vesícula
     24276: 'fractals.items.dust',     // Polvo
@@ -939,7 +948,7 @@ export default function FarmingTrackerPage() {
     const filtered = stats.itemsWithStats.filter(item => itemMatchesSearch(item, searchTerm));
 
     // Ordenar items
-    const sorted = [...filtered].sort((a, b) => {
+    const sorted = [...filtered].map((item, index) => ({ ...item, originalIndex: index })).sort((a, b) => {
       let aValue: string | number, bValue: string | number;
 
       switch (sortBy) {
@@ -973,11 +982,19 @@ export default function FarmingTrackerPage() {
       }
 
       if (sortOrder === 'asc') {
-        return aValue > bValue ? 1 : aValue < bValue ? -1 : 0;
+        if (aValue > bValue) return 1;
+        if (aValue < bValue) return -1;
+        return a.originalIndex - b.originalIndex; // Mantener orden original cuando son iguales
       } else {
-        return aValue < bValue ? 1 : aValue > bValue ? -1 : 0;
+        if (aValue < bValue) return 1;
+        if (aValue > bValue) return -1;
+        return a.originalIndex - b.originalIndex; // Mantener orden original cuando son iguales
       }
-    });
+    }).map(item => {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const { originalIndex, ...rest } = item;
+      return rest;
+    }); // Remover originalIndex del resultado final
 
     return sorted;
   }, [stats.itemsWithStats, searchTerm, sortBy, sortOrder, itemDetails, itemMatchesSearch]);
@@ -1050,7 +1067,12 @@ export default function FarmingTrackerPage() {
            <div className="bg-gray-900/80 backdrop-blur-sm border border-gray-700 rounded-lg p-2 shadow-2xl w-full max-w-3xl">
              <div className="flex flex-wrap justify-center gap-2">
                <button
-                 onClick={() => setActiveSection('initiate')}
+                 onClick={() => {
+                   setActiveSection('initiate');
+                   if (typeof window !== 'undefined') {
+                     window.location.hash = 'initiate';
+                   }
+                 }}
                  className={`px-3 sm:px-4 md:px-6 py-2 md:py-3 rounded-lg font-semibold transition-all duration-200 text-sm md:text-base ${
                    activeSection === 'initiate'
                      ? 'bg-green-600 text-white shadow-lg'
@@ -1060,7 +1082,12 @@ export default function FarmingTrackerPage() {
                  {t('farmingTracker.sections.initiate')}
                </button>
                <button
-                 onClick={() => setActiveSection('adept')}
+                 onClick={() => {
+                   setActiveSection('adept');
+                   if (typeof window !== 'undefined') {
+                     window.location.hash = 'adept';
+                   }
+                 }}
                  className={`px-3 sm:px-4 md:px-6 py-2 md:py-3 rounded-lg font-semibold transition-all duration-200 text-sm md:text-base ${
                    activeSection === 'adept'
                      ? 'bg-purple-600 text-white shadow-lg'
@@ -1070,7 +1097,12 @@ export default function FarmingTrackerPage() {
                  {t('farmingTracker.sections.adept')}
                </button>
                <button
-                 onClick={() => setActiveSection('expert')}
+                 onClick={() => {
+                   setActiveSection('expert');
+                   if (typeof window !== 'undefined') {
+                     window.location.hash = 'expert';
+                   }
+                 }}
                  className={`px-3 sm:px-4 md:px-6 py-2 md:py-3 rounded-lg font-semibold transition-all duration-200 text-sm md:text-base ${
                    activeSection === 'expert'
                      ? 'bg-orange-600 text-white shadow-lg'
@@ -1080,7 +1112,12 @@ export default function FarmingTrackerPage() {
                  {t('farmingTracker.sections.expert')}
                </button>
                <button
-                 onClick={() => setActiveSection('fractal')}
+                 onClick={() => {
+                   setActiveSection('fractal');
+                   if (typeof window !== 'undefined') {
+                     window.location.hash = 'fractal';
+                   }
+                 }}
                  className={`px-3 sm:px-4 md:px-6 py-2 md:py-3 rounded-lg font-semibold transition-all duration-200 text-sm md:text-base ${
                    activeSection === 'fractal'
                      ? 'bg-blue-600 text-white shadow-lg'
@@ -1090,7 +1127,12 @@ export default function FarmingTrackerPage() {
                  {t('farmingTracker.sections.fractal')}
                </button>
                <button
-                 onClick={() => setActiveSection('encryption')}
+                 onClick={() => {
+                   setActiveSection('encryption');
+                   if (typeof window !== 'undefined') {
+                     window.location.hash = 'Fractal-Encryption';
+                   }
+                 }}
                  className={`px-3 sm:px-4 md:px-6 py-2 md:py-3 rounded-lg font-semibold transition-all duration-200 text-sm md:text-base ${
                    activeSection === 'encryption'
                      ? 'bg-teal-600 text-white shadow-lg'
@@ -1108,6 +1150,7 @@ export default function FarmingTrackerPage() {
                    {/* Initiate Section (T1) */}
          {activeSection === 'initiate' && (
            <>
+             <div id="initiate" className="invisible absolute -top-20"></div>
              {/* Stats Overview */}
              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-6 mb-6 md:mb-8">
                <div className="bg-gray-900/80 backdrop-blur-sm border border-gray-700 rounded-lg p-2 sm:p-3 shadow-2xl text-center sm:text-left">
@@ -1144,7 +1187,7 @@ export default function FarmingTrackerPage() {
              </div>
 
              {/* Search and Update */}
-             <div className="hidden bg-gray-900/80 backdrop-blur-sm border border-gray-700 rounded-lg p-6 shadow-2xl mb-8">
+             <div className="bg-gray-900/80 backdrop-blur-sm border border-gray-700 rounded-lg p-6 shadow-2xl mb-8">
                <div className="flex flex-col md:flex-row gap-4 items-center">
                  {/* Search */}
                  <div className="flex-1">
@@ -1187,7 +1230,7 @@ export default function FarmingTrackerPage() {
              </div>
 
              {/* Items Table */}
-             <div className="hidden bg-gray-900/80 backdrop-blur-sm border border-gray-700 rounded-lg shadow-2xl overflow-hidden">
+             <div className="bg-gray-900/80 backdrop-blur-sm border border-gray-700 rounded-lg shadow-2xl overflow-hidden">
                <div className="p-6 border-b border-gray-700">
                  <h2 className="text-2xl font-bold text-white flex items-center">
                    <Package className="w-6 h-6 mr-3 text-green-400" />
@@ -1334,6 +1377,7 @@ export default function FarmingTrackerPage() {
          {/* Adept Section (T2) */}
          {activeSection === 'adept' && (
            <>
+             <div id="adept" className="invisible absolute -top-20"></div>
              {/* Stats Overview */}
              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-6 mb-6 md:mb-8">
                <div className="bg-gray-900/80 backdrop-blur-sm border border-gray-700 rounded-lg p-2 sm:p-3 shadow-2xl text-center sm:text-left">
@@ -1370,7 +1414,7 @@ export default function FarmingTrackerPage() {
              </div>
 
              {/* Search and Update */}
-             <div className="hidden bg-gray-900/80 backdrop-blur-sm border border-gray-700 rounded-lg p-6 shadow-2xl mb-8">
+             <div className="bg-gray-900/80 backdrop-blur-sm border border-gray-700 rounded-lg p-6 shadow-2xl mb-8">
                <div className="flex flex-col md:flex-row gap-4 items-center">
                  {/* Search */}
                  <div className="flex-1">
@@ -1413,7 +1457,7 @@ export default function FarmingTrackerPage() {
              </div>
 
              {/* Items Table */}
-             <div className="hidden bg-gray-900/80 backdrop-blur-sm border border-gray-700 rounded-lg shadow-2xl overflow-hidden">
+             <div className="bg-gray-900/80 backdrop-blur-sm border border-gray-700 rounded-lg shadow-2xl overflow-hidden">
                <div className="p-6 border-b border-gray-700">
                  <h2 className="text-2xl font-bold text-white flex items-center">
                    <Package className="w-6 h-6 mr-3 text-green-400" />
@@ -1560,6 +1604,7 @@ export default function FarmingTrackerPage() {
          {/* Expert Section (T3) */}
          {activeSection === 'expert' && (
            <>
+             <div id="expert" className="invisible absolute -top-20"></div>
              {/* Stats Overview */}
              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-6 mb-6 md:mb-8">
                <div className="bg-gray-900/80 backdrop-blur-sm border border-gray-700 rounded-lg p-2 sm:p-3 shadow-2xl text-center sm:text-left">
@@ -1596,7 +1641,7 @@ export default function FarmingTrackerPage() {
              </div>
 
              {/* Search and Update */}
-             <div className="hidden bg-gray-900/80 backdrop-blur-sm border border-gray-700 rounded-lg p-6 shadow-2xl mb-8">
+             <div className="bg-gray-900/80 backdrop-blur-sm border border-gray-700 rounded-lg p-6 shadow-2xl mb-8">
                <div className="flex flex-col md:flex-row gap-4 items-center">
                  {/* Search */}
                  <div className="flex-1">
@@ -1639,7 +1684,7 @@ export default function FarmingTrackerPage() {
              </div>
 
              {/* Items Table */}
-             <div className="hidden bg-gray-900/80 backdrop-blur-sm border border-gray-700 rounded-lg shadow-2xl overflow-hidden">
+             <div className="bg-gray-900/80 backdrop-blur-sm border border-gray-700 rounded-lg shadow-2xl overflow-hidden">
                <div className="p-6 border-b border-gray-700">
                  <h2 className="text-2xl font-bold text-white flex items-center">
                    <Package className="w-6 h-6 mr-3 text-green-400" />
@@ -1786,6 +1831,7 @@ export default function FarmingTrackerPage() {
          {/* Fractal Section (T4) - Master's Chest */}
          {activeSection === 'fractal' && (
            <>
+             <div id="fractal" className="invisible absolute -top-20"></div>
              {/* Stats Overview */}
              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-6 mb-6 md:mb-8">
                <div className="bg-gray-900/80 backdrop-blur-sm border border-gray-700 rounded-lg p-2 sm:p-3 shadow-2xl text-center sm:text-left">
@@ -1824,7 +1870,7 @@ export default function FarmingTrackerPage() {
              </div>
 
         {/* Search and Filters */}
-        <div className="hidden bg-gray-900/80 backdrop-blur-sm border border-gray-700 rounded-lg p-6 shadow-2xl mb-8">
+        <div className="bg-gray-900/80 backdrop-blur-sm border border-gray-700 rounded-lg p-6 shadow-2xl mb-8">
           <div className="flex flex-col md:flex-row gap-4 items-center">
             {/* Search */}
             <div className="flex-1">
@@ -1864,7 +1910,7 @@ export default function FarmingTrackerPage() {
         </div>
 
         {/* Items Container */}
-        <div className="hidden bg-gray-900/80 backdrop-blur-sm border border-gray-700 rounded-lg shadow-2xl overflow-hidden">
+        <div className="bg-gray-900/80 backdrop-blur-sm border border-gray-700 rounded-lg shadow-2xl overflow-hidden">
           <div className="p-6 border-b border-gray-700">
             <h2 className="text-2xl font-bold text-white flex items-center">
               <Package className="w-6 h-6 mr-3 text-blue-400" />
@@ -1980,878 +2026,649 @@ export default function FarmingTrackerPage() {
          {/* Fractal Encryption Section */}
          {activeSection === 'encryption' && (
            <>
+             <div id="Fractal-Encryption" className="invisible absolute -top-20"></div>
              {/* Data Source Info */}
              <div className="bg-blue-900/20 backdrop-blur-sm border border-blue-700/30 rounded-lg p-4 mb-6 md:mb-8">
                <div className="flex items-center gap-3">
                  <div className="w-3 h-3 bg-blue-400 rounded-full animate-pulse"></div>
                  <div className="text-blue-300 text-sm sm:text-base">
                    <strong>{t('fractals.dataSource.label')}</strong> {t('fractals.dataSource.description')}{' '}
-                   <span className="text-blue-200 font-bold">1M {t('fractals.dataSource.boxes')}</span> {t('fractals.dataSource.opened')}
+                   <span className="text-blue-200 font-bold">2.1M {itemDetails[75409]?.name || 'Cracked Fractal Encryption'}</span> {t('fractals.dataSource.opened')}. 
+                   500k Zanar, 500k Selici, 100k Shinymeta (<a href="https://www.reddit.com/r/Guildwars2/comments/khwj92/research_fractal_encryptions/" target="_blank" rel="noopener noreferrer" className="text-blue-200 hover:text-blue-100 underline">{t('fractals.dataSource.publicData')}</a>), 
+                   1M <a href="https://www.twitch.tv/vortus43" target="_blank" rel="noopener noreferrer" className="text-blue-200 hover:text-blue-100 underline">Vortus43</a>
                  </div>
                </div>
              </div>
              
-             {/* Trofeos */}
-             <div className="bg-gray-900/80 backdrop-blur-sm border border-gray-700 rounded-lg p-3 sm:p-4 md:p-6 shadow-2xl mb-6 md:mb-8">
-               <h3 className="text-lg sm:text-xl font-semibold text-white mb-3 md:mb-4">{t('fractals.sections.trophies')}</h3>
-              <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 md:gap-6">
-                <div className="lg:col-span-3 overflow-x-auto">
-                 <table className="w-full text-sm">
-                   <thead>
-                     <tr className="border-b border-gray-700 bg-gray-800/60">
-                       <th className="text-left p-2 sm:p-3 text-gray-200 font-semibold">{t('fractals.table.name')}</th>
-                       <th className="p-1 sm:p-2 text-gray-200 font-semibold">
-                         <div className="flex items-center justify-center">
-                           {itemDetails[73478]?.icon && (
-                             <Image 
-                               src={itemDetails[73478].icon} 
-                               alt={t('fractals.table.manuscript')}
-                               width={29} 
-                               height={29} 
-                               className="w-7 h-7"
-                             />
-                           )}
-                         </div>
-                       </th>
-                       <th className="p-1 sm:p-2 text-gray-200 font-semibold">
-                         <div className="flex items-center justify-center">
-                           {itemDetails[75220]?.icon && (
-                             <Image 
-                               src={itemDetails[75220].icon} 
-                               alt={t('fractals.table.proof')}
-                               width={29} 
-                               height={29} 
-                               className="w-7 h-7"
-                             />
-                           )}
-                         </div>
-                       </th>
-                       <th className="p-1 sm:p-2 text-gray-200 font-semibold">
-                         <div className="flex items-center justify-center">
-                           {itemDetails[73848]?.icon && (
-                             <Image 
-                               src={itemDetails[73848].icon} 
-                               alt={t('fractals.table.treaties')}
-                               width={29} 
-                               height={29} 
-                               className="w-7 h-7"
-                             />
-                           )}
-                         </div>
-                       </th>
-                       <th className="p-1 sm:p-2 text-gray-200 font-semibold">
-                         <div className="flex items-center justify-center">
-                           {itemDetails[72336]?.icon && (
-                             <Image 
-                               src={itemDetails[72336].icon} 
-                               alt={t('fractals.table.postulate')}
-                               width={29} 
-                               height={29} 
-                               className="w-7 h-7"
-                             />
-                           )}
-                         </div>
-                       </th>
-                     </tr>
-                   </thead>
-                   <tbody>
-                     <tr className="border-b border-gray-800">
-                       <td className="p-2 sm:p-3 text-gray-300 text-xs sm:text-sm">{t('fractals.table.basePrice')}</td>
-                       <td className="p-2 sm:p-3 text-center text-green-400 text-xs sm:text-sm">00G 60S 00C</td>
-                       <td className="p-2 sm:p-3 text-center text-green-400 text-xs sm:text-sm">00G 30S 00C</td>
-                       <td className="p-2 sm:p-3 text-center text-green-400 text-xs sm:text-sm">00G 25S 00C</td>
-                       <td className="p-2 sm:p-3 text-center text-green-400 text-xs sm:text-sm">00G 20S 00C</td>
-                     </tr>
-                      <tr>
-                       <td className="p-2 sm:p-3 text-gray-300 text-xs sm:text-sm">{t('fractals.table.ratio')}</td>
-                       <td className="p-2 sm:p-3 text-center text-gray-400 text-xs sm:text-sm">0.2854</td>
-                       <td className="p-2 sm:p-3 text-center text-gray-400 text-xs sm:text-sm">0.428</td>
-                       <td className="p-2 sm:p-3 text-center text-gray-400 text-xs sm:text-sm">0.2864</td>
-                       <td className="p-2 sm:p-3 text-center text-gray-400 text-xs sm:text-sm">0.2855</td>
-                     </tr>
-                   </tbody>
-                 </table>
-                </div>
-                <div className="lg:col-span-1 space-y-2">
-                  <div className="bg-amber-200/20 border border-amber-300/30 rounded-lg p-2">
-                    <div className="text-xs font-semibold text-amber-200">{t('fractals.calculations.totalPerBox')}</div>
-                    <div className="text-sm font-bold text-amber-300">00g 42s 83c</div>
-                  </div>
-                  <div className="bg-amber-200/20 border border-amber-300/30 rounded-lg p-2">
-                    <div className="text-xs font-semibold text-amber-200">{t('fractals.calculations.bestIncomePerBox')}</div>
-                    <div className="text-sm font-bold text-amber-300">
-                      {(() => {
-                        // precioFijo: valor base
-                        const precioFijo = 4283; // 00G 42S 83C en cobre (42×100 + 83 = 4,283)
-                        
-                        // Calcular los valores de Total Por Caja de T5
-                        const totalPorCajaT5_1 = (() => {
-                          const ratios: Record<number, number> = {
-                            24294: 0.3378375, 24341: 0.3378375, 24350: 0.3378375, 24356: 0.3378375,
-                            24288: 0.3378375, 24299: 0.3378375, 24282: 0.3378375, 24276: 0.3378375,
-                          };
-                          return [24294, 24341, 24350, 24356, 24288, 24299, 24282, 24276]
-                            .map((id) => (itemDetails[id]?.buyPrice || 0) * ratios[id])
-                            .reduce((sum, price) => sum + price, 0);
-                        })();
-                        
-                        const totalPorCajaT5_2 = (() => {
-                          const dynamicRows = [
-                            { qty: 1650, priceCopper: (itemDetails[24277]?.currentPrice || 0) * 0.9 },
-                            { qty: 1650, priceCopper: (itemDetails[24277]?.buyPrice || 0) },
-                            { qty: 892, priceCopper: (itemDetails[19721]?.currentPrice || 0) * 0.9 },
-                          ];
-                          
-                          const differences = dynamicRows.map(row => {
-                            const ids09 = [24295, 24358, 24351, 24357, 24289, 24300, 24283, 24277];
-                            const total09 = ids09
-                              .map(id => (itemDetails[id]?.currentPrice || 0) * 0.9 * 250)
-                              .reduce((sum, v) => sum + v, 0);
-                            
-                            const t5Ids = [24294, 24341, 24350, 24356, 24288, 24299, 24282];
-                            const t5x2000 = t5Ids
-                              .map(t5Id => (itemDetails[t5Id]?.buyPrice || 0) * 2000)
-                              .reduce((sum, price) => sum + price, 0);
-                          
-                            const mult = row.qty * row.priceCopper;
-                            const plusThirtyFiveGold = 350000;
-                            const combined = t5x2000 + mult + plusThirtyFiveGold;
-                            
-                            return total09 - combined;
-                          });
-                          
-                          const minDifference = Math.max(...differences);
-                          const totalPorCaja = (() => {
-                            const ratios: Record<number, number> = {
-                              24294: 0.3378375, 24341: 0.3378375, 24350: 0.3378375, 24356: 0.3378375,
-                              24288: 0.3378375, 24299: 0.3378375, 24282: 0.3378375, 24276: 0.3378375,
-                            };
-                            return [24294, 24341, 24350, 24356, 24288, 24299, 24282, 24276]
-                              .map((id) => (itemDetails[id]?.buyPrice || 0) * ratios[id])
-                              .reduce((sum, price) => sum + price, 0);
-                          })();
-                          
-                          return (minDifference / 14000) + totalPorCaja;
-                        })();
-                        
-                        // MAX entre los 2 TotalPorCajaT5
-                        const maxTotalPorCajaT5 = Math.max(totalPorCajaT5_1, totalPorCajaT5_2);
-                        
-                        // Calcular los valores de Total Por Caja de Otros Drops
-                        const totalPorCajaOtrosDrops_1 = (() => {
-                          const ratios = { 
-                            49424: 2.2637, 73248: 0.1, 70064: 0.0668, 74268: 0.02, 83008: 0.00017,
-                            46735: 1.0108, 43971: 0.0021
-                          } as Record<number, number>;
-                          
-                          const infusionPrice = (itemDetails[49424]?.currentPrice || 0) * 0.9;
-                          const otherItemsTotal = [73248, 70064, 74268, 83008].map((id) => {
-                            if (id === 83008) {
-                              const currentPrice = itemDetails[id]?.currentPrice || 0;
-                              const price85 = currentPrice * 0.85;
-                              const ratio = ratios[id] || 0;
-                              return Math.max(0.01, price85 * ratio);
-                            } else if (id === 49424) {
-                              return (itemDetails[id]?.currentPrice || 0) * 0.9 * (ratios[id] || 0);
-                            } else {
-                              return (itemDetails[id]?.buyPrice || 0) * (ratios[id] || 0);
-                            }
-                          }).reduce((sum, price) => sum + price, 0);
-                          
-                          return infusionPrice + otherItemsTotal;
-                        })();
-                        
-                        const totalPorCajaOtrosDrops_2 = (() => {
-                          const ratios = { 
-                            49424: 2.2637, 73248: 0.1, 70064: 0.0668, 74268: 0.02, 83008: 0.00017,
-                            46735: 1.0108, 43971: 0.0021
-                          } as Record<number, number>;
-                          
-                          return [49424, 73248, 70064, 74268, 83008].map((id) => {
-                            const precioMax = typeof window !== 'undefined' ? (window as { precioMaxValues?: Record<number, number> }).precioMaxValues?.[id] || 0 : 0;
-                            const ratio = ratios[id] || 0;
-                            return precioMax * ratio;
-                          }).reduce((sum, price) => sum + price, 0);
-                        })();
-                        
-                        // MAX entre las 2 líneas de OtrosDrops
-                        const maxTotalPorCajaOtrosDrops = Math.max(totalPorCajaOtrosDrops_1, totalPorCajaOtrosDrops_2);
-                        
-                        // Calcular Mejor Income Por Caja
-                        const mejorIncomePorCaja = precioFijo + maxTotalPorCajaT5 + maxTotalPorCajaOtrosDrops;
-                        
-                        return formatGoldSilverCopper(Math.round(mejorIncomePorCaja));
-                      })()}
-                    </div>
-                  </div>
-                </div>
-               </div>
-             </div>
-
-             {/* Materiales T5 */}
-             <div className="bg-gray-900/80 backdrop-blur-sm border border-gray-700 rounded-lg p-3 sm:p-4 md:p-6 shadow-2xl mb-6 md:mb-8">
-               <h3 className="text-lg sm:text-xl font-semibold text-white mb-3 md:mb-4">{t('fractals.sections.materialsT5')}</h3>
-              <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 md:gap-6">
-                <div className="lg:col-span-3 overflow-x-auto">
-                 <table className="w-full text-sm">
-                   <thead>
-                     <tr className="border-b border-gray-700 bg-gray-800/60">
-                       <th className="text-left p-1 text-gray-200 font-semibold">{t('fractals.table.name')}</th>
-                       <th className="p-1 text-gray-200 font-semibold">
-                         <div className="flex items-center justify-center">
-                           {itemDetails[24294]?.icon && (
-                             <Image 
-                               src={itemDetails[24294].icon} 
-                               alt={t(fractalItemNames[24294])}
-                               width={29} 
-                               height={29} 
-                               className="w-7 h-7"
-                             />
-                           )}
-                         </div>
-                       </th>
-                       <th className="p-1 text-gray-200 font-semibold">
-                         <div className="flex items-center justify-center">
-                           {itemDetails[24341]?.icon && (
-                             <Image 
-                               src={itemDetails[24341].icon} 
-                               alt={t(fractalItemNames[24341])}
-                               width={29} 
-                               height={29} 
-                               className="w-7 h-7"
-                             />
-                           )}
-                         </div>
-                       </th>
-                       <th className="p-1 text-gray-200 font-semibold">
-                         <div className="flex items-center justify-center">
-                           {itemDetails[24350]?.icon && (
-                             <Image 
-                               src={itemDetails[24350].icon} 
-                               alt={t(fractalItemNames[24350])}
-                               width={29} 
-                               height={29} 
-                               className="w-7 h-7"
-                             />
-                           )}
-                         </div>
-                       </th>
-                       <th className="p-1 text-gray-200 font-semibold">
-                         <div className="flex items-center justify-center">
-                           {itemDetails[24356]?.icon && (
-                             <Image 
-                               src={itemDetails[24356].icon} 
-                               alt={t(fractalItemNames[24356])}
-                               width={29} 
-                               height={29} 
-                               className="w-7 h-7"
-                             />
-                           )}
-                         </div>
-                       </th>
-                       <th className="p-1 text-gray-200 font-semibold">
-                         <div className="flex items-center justify-center">
-                           {itemDetails[24288]?.icon && (
-                             <Image 
-                               src={itemDetails[24288].icon} 
-                               alt={t(fractalItemNames[24288])}
-                               width={29} 
-                               height={29} 
-                               className="w-7 h-7"
-                             />
-                           )}
-                         </div>
-                       </th>
-                       <th className="p-1 text-gray-200 font-semibold">
-                         <div className="flex items-center justify-center">
-                           {itemDetails[24299]?.icon && (
-                             <Image 
-                               src={itemDetails[24299].icon} 
-                               alt={t(fractalItemNames[24299])}
-                               width={29} 
-                               height={29} 
-                               className="w-7 h-7"
-                             />
-                           )}
-                         </div>
-                       </th>
-                       <th className="p-1 text-gray-200 font-semibold">
-                         <div className="flex items-center justify-center">
-                           {itemDetails[24282]?.icon && (
-                             <Image 
-                               src={itemDetails[24282].icon} 
-                               alt={t(fractalItemNames[24282])}
-                               width={29} 
-                               height={29} 
-                               className="w-7 h-7"
-                             />
-                           )}
-                         </div>
-                       </th>
-                       <th className="p-1 text-gray-200 font-semibold">
-                         <div className="flex items-center justify-center">
-                           {itemDetails[24276]?.icon && (
-                             <Image 
-                               src={itemDetails[24276].icon} 
-                               alt={t(fractalItemNames[24276])}
-                               width={29} 
-                               height={29} 
-                               className="w-7 h-7"
-                             />
-                           )}
-                         </div>
-                       </th>
-                     </tr>
-                   </thead>
-                   <tbody>
-                     <tr className="border-b border-gray-800">
-                                               <td className="p-1 text-gray-300">{t('fractals.table.basePrice')}</td>
-                        {([24294, 24341, 24350, 24356, 24288, 24299, 24282, 24276] as number[]).map((id) => (
-                          <td key={id} className="p-1 text-center">
-                           <span className="text-green-400 whitespace-nowrap">
-                              {itemDetails[id]?.buyPrice ? formatGoldSilverCopper(itemDetails[id].buyPrice) : '00G 00S 00C'}
-                           </span>
-                       </td>
-                        ))}
-                      </tr>
-                      <tr className="border-b border-gray-800">
-                        <td className="p-1 text-gray-300">{t('fractals.table.maxPrice')}</td>
-                        {([24294, 24341, 24350, 24356, 24288, 24299, 24282, 24276] as number[]).map((id) => (
-                          <td key={id} className="p-1 text-center">
-                           <span className="text-green-400 whitespace-nowrap">
-                         {(() => {
-                                  // Calcular las 3 diferencias de la tabla de Multiplicaciones
-                                  const dynamicRows = [
-                                    { qty: 1650, priceCopper: (itemDetails[24277]?.currentPrice || 0) * 0.9 },
-                                    { qty: 1650, priceCopper: (itemDetails[24277]?.buyPrice || 0) },
-                                    { qty: 892, priceCopper: (itemDetails[19721]?.currentPrice || 0) * 0.9 },
-                                  ];
-                                
-                                const differences = dynamicRows.map(row => {
-                                  // Total del bloque 0.9 × 250
-                                  const ids09 = [24295, 24358, 24351, 24357, 24289, 24300, 24283, 24277];
-                                  const total09 = ids09
-                                    .map(id => (itemDetails[id]?.currentPrice || 0) * 0.9 * 250)
-                                    .reduce((sum, v) => sum + v, 0);
-                                  
-                                  // T5 × 2000 + Resultado + 35g
-                                  const t5Ids = [24294, 24341, 24350, 24356, 24288, 24299, 24282];
-                                  const t5x2000 = t5Ids
-                                    .map(t5Id => (itemDetails[t5Id]?.buyPrice || 0) * 2000)
-                             .reduce((sum, price) => sum + price, 0);
-                           
-                                  const mult = row.qty * row.priceCopper;
-                                  const plusThirtyFiveGold = 350000;
-                                  const combined = t5x2000 + mult + plusThirtyFiveGold;
-                                  
-                                  return total09 - combined;
-                                });
-                                
-                                // MAX(diferencia1, diferencia2, diferencia3) / 14000 + precioBase
-                                const maxDifference = Math.max(...differences);
-                                const precioBase = itemDetails[id]?.buyPrice || 0;
-                                const precioMax = (maxDifference / 14000) + precioBase;
-                                
-                                return formatGoldSilverCopper(Math.round(precioMax));
-                         })()}
-                           </span>
-                       </td>
-                        ))}
-                     </tr>
-                      {/* Fila T5 × 2000 - OCULTA EN FRONTEND */}
-                      {/* 
-                     <tr className="border-b border-gray-800">
-                        <td className="p-3 text-gray-300">T5 × 2000</td>
-                        {([24294, 24341, 24350, 24356, 24288, 24299, 24282, 24276] as number[]).map((id) => (
-                          <td key={id} className="p-3 text-center">
-                           <span className="text-green-400">
-                              {id !== 24276
-                                ? formatGoldSilverCopper((itemDetails[id]?.buyPrice || 0) * 2000)
-                                : '—'}
-                           </span>
-                       </td>
-                        ))}
-                     </tr>
-                      */}
-                      <tr>
-                       <td className="p-1 text-gray-300">{t('fractals.table.ratio')}</td>
-                        {Array.from({ length: 8 }).map((_, idx) => (
-                          <td key={idx} className="p-1 text-center text-gray-400">0.3378375</td>
-                        ))}
-                     </tr>
-                    </tbody>
-                  </table>
-                         </div>
-                <div className="lg:col-span-1 space-y-2">
-                  <div className="bg-amber-200/20 border border-amber-300/30 rounded-lg p-2">
-                    <div className="text-xs font-semibold text-amber-200">{t('fractals.calculations.totalPerBox')}</div>
-                    <div className="text-sm font-bold text-amber-300">
-                         {(() => {
-                           const ratios: Record<number, number> = {
-                          24294: 0.3378375,
-                          24341: 0.3378375,
-                          24350: 0.3378375,
-                          24356: 0.3378375,
-                          24288: 0.3378375,
-                          24299: 0.3378375,
-                          24282: 0.3378375,
-                          24276: 0.3378375,
-                        };
-                           const total = [24294, 24341, 24350, 24356, 24288, 24299, 24282, 24276]
-                          .map((id) => (itemDetails[id]?.buyPrice || 0) * ratios[id])
-                                   .reduce((sum, price) => sum + price, 0);
-                        return formatGoldSilverCopper(Math.round(total));
-                         })()}
-                    </div>
-                    <div className="text-sm font-bold text-amber-300">
-                         {(() => {
-                           // Calcular las 3 diferencias de la tabla de Multiplicaciones
-                           const dynamicRows = [
-                             { qty: 1650, priceCopper: (itemDetails[24277]?.currentPrice || 0) * 0.9 },
-                             { qty: 1650, priceCopper: (itemDetails[24277]?.buyPrice || 0) },
-                             { qty: 892, priceCopper: (itemDetails[19721]?.currentPrice || 0) * 0.9 },
-                           ];
-                         
-                         const differences = dynamicRows.map(row => {
-                           // Total del bloque 0.9 × 250
-                           const ids09 = [24295, 24358, 24351, 24357, 24289, 24300, 24283, 24277];
-                           const total09 = ids09
-                             .map(id => (itemDetails[id]?.currentPrice || 0) * 0.9 * 250)
-                             .reduce((sum, v) => sum + v, 0);
-                           
-                           // T5 × 2000 + Resultado + 35g
-                           const t5Ids = [24294, 24341, 24350, 24356, 24288, 24299, 24282];
-                           const t5x2000 = t5Ids
-                             .map(t5Id => (itemDetails[t5Id]?.buyPrice || 0) * 2000)
-                             .reduce((sum, price) => sum + price, 0);
-                         
-                           const mult = row.qty * row.priceCopper;
-                           const plusThirtyFiveGold = 350000;
-                           const combined = t5x2000 + mult + plusThirtyFiveGold;
-                           
-                           return total09 - combined;
-                         });
-                         
-                         // MAX(diferencia1, diferencia2, diferencia3) / 14000 + totalPorCaja
-                         const maxDifference = Math.max(...differences);
-                         const totalPorCaja = (() => {
-                           const ratios: Record<number, number> = {
-                             24294: 0.3378375, 24341: 0.3378375, 24350: 0.3378375, 24356: 0.3378375,
-                             24288: 0.3378375, 24299: 0.3378375, 24282: 0.3378375, 24276: 0.3378375,
-                           };
-                           return [24294, 24341, 24350, 24356, 24288, 24299, 24282, 24276]
-                             .map((id) => (itemDetails[id]?.buyPrice || 0) * ratios[id])
-                             .reduce((sum, price) => sum + price, 0);
-                         })();
-                         
-                         const resultado = (maxDifference / 14000) + totalPorCaja;
-                         
-                         return formatGoldSilverCopper(Math.round(resultado));
-                         })()}
-                    </div>
-                  </div>
-                                    {/* Sidebar Total T5 × 2000 - OCULTO EN FRONTEND */}
-                  {/* 
-                  <div className="bg-amber-200/20 border border-amber-300/30 rounded-lg p-4">
-                    <div className="text-sm font-semibold text-amber-200">Total T5 × 2000</div>
-                    <div className="text-lg font-bold text-amber-300">
-                         {(() => {
-                        const ids = [24294, 24341, 24350, 24356, 24288, 24299, 24282];
-                        const total = ids
-                          .map((id) => (itemDetails[id]?.buyPrice || 0) * 2000)
-                             .reduce((sum, price) => sum + price, 0);
-                        return formatGoldSilverCopper(Math.round(total));
-                         })()}
-                   </div>
-                  </div>
-                  */}
-                                   </div>
-                                   </div>
-                                   </div>
-
-             {/* Otros Drops */}
-             <div className="bg-gray-900/80 backdrop-blur-sm border border-gray-700 rounded-lg p-3 sm:p-4 md:p-6 shadow-2xl mb-6 md:mb-8">
-               <h3 className="text-lg sm:text-xl font-semibold text-white mb-3 md:mb-4">{t('fractals.sections.otherDrops')}</h3>
-              <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 md:gap-6">
-                <div className="lg:col-span-3 overflow-x-auto">
-                 <table className="w-full text-sm">
-                   <thead>
-                     <tr className="border-b border-gray-700 bg-gray-800/60">
-                       <th className="text-left p-1 sm:p-2 text-gray-200 font-semibold">{t('fractals.table.name')}</th>
-                       <th className="p-1 sm:p-2 text-gray-200 font-semibold">
-                         <div className="flex items-center justify-center">
-                           {itemDetails[49424]?.icon && (
-                             <Image 
-                               src={itemDetails[49424].icon} 
-                               alt={t('fractals.items.infusion')}
-                               width={30} 
-                               height={30} 
-                               className="w-6 h-6 sm:w-8 sm:h-8"
-                             />
-                           )}
-                         </div>
-                       </th>
-                       <th className="p-1 sm:p-2 text-gray-200 font-semibold">
-                         <div className="flex items-center justify-center">
-                           {itemDetails[70438]?.icon && (
-                             <Image 
-                               src={itemDetails[70438].icon} 
-                               alt={t('fractals.items.fractalKey')}
-                               width={30} 
-                               height={30} 
-                               className="w-6 h-6 sm:w-8 sm:h-8"
-                             />
-                           )}
-                         </div>
-                       </th>
-                       <th className="p-1 sm:p-2 text-gray-200 font-semibold">
-                         <div className="flex items-center justify-center">
-                           <Image 
-                             src="https://render.guildwars2.com/file/F435090B4D1205CD0491DA2D5D20A12FE2023B6E/740217.png"
-                             alt="Bag of Fractal Relics"
-                             width={30} 
-                             height={30} 
-                             className="w-6 h-6 sm:w-8 sm:h-8"
-                           />
-                         </div>
-                       </th>
-                       <th className="p-1 sm:p-2 text-gray-200 font-semibold">
-                         <div className="flex items-center justify-center">
-                           <Image 
-                             src="https://render.guildwars2.com/file/BAF43C0425BA631B9C49E771F9EB16E32C1E57E1/1203237.png"
-                             alt="Mini Professor Mew"
-                             width={30} 
-                             height={30} 
-                             className="w-6 h-6 sm:w-8 sm:h-8"
-                           />
-                         </div>
-                       </th>
-                       <th className="p-1 sm:p-2 text-gray-200 font-semibold">
-                         <div className="flex items-center justify-center">
-                             <Image 
-                               src="https://render.guildwars2.com/file/EF63A10BD2317CECCEA63A3B7E6555550B414C4E/1766399.png"
-                               alt="Rare Unid"
-                               width={30} 
-                               height={30} 
-                               className="w-6 h-6 sm:w-8 sm:h-8"
-                             />                           
-                         </div>
-                       </th>
-                       <th className="p-1 sm:p-2 text-gray-200 font-semibold">
-                         <div className="flex items-center justify-center">
-                             <Image 
-                               src="https://render.guildwars2.com/file/DE4779014F27DE027BDBE761607B220923DB03D5/631484.png" 
-                               alt="Empireos"
-                               width={31} 
-                               height={31} 
-                               className="w-6 h-6 sm:w-8 sm:h-8"
-                             />
-                         </div>
-                       </th>
-                       <th className="p-1 sm:p-2 text-gray-200 font-semibold">
-                         <div className="flex items-center justify-center" title="Aetherize Skins">
-                             <Image 
-                               src="https://render.guildwars2.com/file/C5DA0BE8047D800F72D9CE2B62E5036754D7E3DB/607547.png" 
-                               alt="Aetherize Skins"
-                               width={30} 
-                               height={30} 
-                               className="w-6 h-6 sm:w-8 sm:h-8"
-                             />
-                         </div>
-                       </th>
-                     </tr>
-                   </thead>
-                   <tbody>
-                     <tr className="border-b border-gray-800">
-                       <td className="p-1 text-gray-300">{t('fractals.table.basePrice')}</td>
-                       {([49424, 73248, 70064, 74268, 83008, 46735, 43971] as number[]).map((id) => (
-                         <td key={id} className="p-1 text-center">
-                           <span className="text-green-400 whitespace-nowrap">
-                              {id === 49424 
-                                ? (itemDetails[id]?.currentPrice ? formatGoldSilverCopper(Math.round((itemDetails[id].currentPrice || 0) * 0.9 * 2.2637)) : '00g 00s 00c')
-                                : id === 73248
-                                ? (itemDetails[id]?.currentPrice ? formatGoldSilverCopper(Math.round((itemDetails[id].currentPrice || 0) * 0.1)) : '00g 00s 00c')
-                                : id === 70064
-                                ? formatGoldSilverCopper(Math.round(30000 * 0.0668))
-                                : id === 83008
-                                ? (itemDetails[id]?.currentPrice ? formatGoldSilverCopper(Math.max(1, Math.round((itemDetails[id].currentPrice || 0) * 0.85 * 0.00017))) : '00g 00s 00c')
-                                : id === 46735
-                                ? (() => {
-                                    // Cálculo oculto: Total crafting cost ÷ 5 para Toxic Tuning Crystal
-                                    // Ingredientes: 3 Crystalline Dust + 5 Pristine Toxic Spore + 100 Empyreal Fragment
-                                    const crystallineDust = (itemDetails[24277]?.buyPrice || 0) * 3;
-                                    const toxicSpore = (itemDetails[48884]?.buyPrice || 0) * 5;
-                                    const empyrealFragment = (itemDetails[46735]?.buyPrice || 0)*100;
-                                    const totalCraftingCost = crystallineDust + toxicSpore + empyrealFragment;
-                                    const pricePerUnit = (totalCraftingCost / 5);
-                                    
-                                    // Nueva fórmula: (precio del toxin al 0.85 × 5) - resultado pricePerUnit
-                                    const toxinPrice = (itemDetails[48917]?.currentPrice || 0) * 0.85;
-                                    const finalPrice = ((toxinPrice * 5)- pricePerUnit);
-                                    
-                                    // Aplicar (resultadoFinal / 100) × ratio
-                                    const finalResult = (finalPrice / 100) * 1.0108;
-                                    
-                                    return formatGoldSilverCopper(Math.round(finalResult));
-                                  })()
-                                : id === 43971
-                                ? (() => {
-                                    // Cálculo oculto: Media de 19 IDs × 0.85 (Aetherized weapons correctos)
-                                    const ids = [44001, 44004, 44007, 44010, 44013, 44016, 44019, 44022, 44025, 44028, 44031, 44034, 44037, 44040, 44043, 44046, 44049, 44052, 44055];
-                                    const totalSum = ids.reduce((sum, itemId) => sum + ((itemDetails[itemId]?.currentPrice || 0) * 0.85), 0);
-                                    const averagePrice = totalSum / 19;
-                                    
-                                    // Aplicar ratio 0.0021 al promedio
-                                    const finalResult = averagePrice * 0.0021;
-                                    
-                                    return formatGoldSilverCopper(Math.round(finalResult));
-                                  })()
-                                : (itemDetails[id]?.buyPrice ? formatGoldSilverCopper(itemDetails[id].buyPrice) : '00g 00s 00c')
-                              }
-                           </span>
-                         </td>
-                       ))}
-                     </tr>
-                     {(() => {
-                       // Calcular y almacenar los valores de Precio Max para poder usarlos en el total
-                       const precioMaxValues: Record<number, number> = {
-                         49424: (() => {
-                           const reactivoTermocatalitico = 150 * 255;
-                           const infusionPlus1 = (itemDetails[49424]?.buyPrice || 0) * 256;
-                           const totalCraftingCost = reactivoTermocatalitico + infusionPlus1;
-                           const Agony9 = (itemDetails[49432]?.currentPrice || 0) * 0.85;
-                           const finalPrice = totalCraftingCost - Agony9;
-                           return (finalPrice / 256) ;
-                         })(),
-                         73248: (itemDetails[73248]?.currentPrice || 0) * 0.1,
-                         70064: 30000 * 0.0668,
-                         74268: (itemDetails[74268]?.currentPrice || 0) * 0.02,
-                         83008: (itemDetails[83008]?.currentPrice || 0) * 0.00017,
-                         46735: (() => {
-                           // Cálculo oculto: Total crafting cost ÷ 5 para Toxic Tuning Crystal
-                           // Ingredientes: 3 Crystalline Dust + 5 Pristine Toxic Spore + 100 Empyreal Fragment
-                           const crystallineDust = (itemDetails[24277]?.buyPrice || 0) * 3;
-                           const toxicSpore = (itemDetails[48884]?.buyPrice || 0) * 5;
-                           const empyrealFragment = (itemDetails[46735]?.buyPrice || 0) * 100;
-                           const totalCraftingCost = crystallineDust + toxicSpore + empyrealFragment;
-                           const pricePerUnit = (totalCraftingCost / 5);
-                           
-                           // Nueva fórmula: (precio del toxin al 0.85 × 5) - resultado pricePerUnit
-                           const toxinPrice = (itemDetails[48917]?.currentPrice || 0) * 0.85;
-                           const finalPrice = ((toxinPrice * 5) - pricePerUnit);
-                           
-                           // Aplicar (resultadoFinal / 100) × ratio
-                           const finalResult = (finalPrice / 100) * 1.0108;
-                           
-                           return finalResult;
-                         })(),
-                         43971: (() => {
-                           const ids = [44001, 44004, 44007, 44010, 44013, 44016, 44019, 44022, 44025, 44028, 44031, 44034, 44037, 44040, 44043, 44046, 44049, 44052, 44055];
-                           const totalSum = ids.reduce((sum, itemId) => sum + ((itemDetails[itemId]?.currentPrice || 0) * 0.85), 0);
-                           const averagePrice = totalSum / 19;
-                           return averagePrice * 0.0021;
-                         })()
-                       };
-                       
-                       // Almacenar los valores en una variable global para poder usarlos en el total
-                       if (typeof window !== 'undefined') {
-                         (window as { precioMaxValues?: Record<number, number> }).precioMaxValues = precioMaxValues;
-                       }
-                       
-                       return (
-                         <>
-                           <tr className="border-b border-gray-800">
-                             <td className="p-1 text-gray-300">{t('fractals.table.maxPrice')}</td>
-                             {([49424, 73248, 70064, 74268, 83008, 46735, 43971] as number[]).map((id) => (
-                               <td key={id} className="p-1 text-center">
-                                 <span className="text-green-400 whitespace-nowrap">
-                                    {(() => {
-                                      const value = precioMaxValues[id];
-                                      if (id === 49424 && value < 0) {
-                                        return `-${formatGoldSilverCopper(Math.abs(Math.round(value)))}`;
-                                      } else {
-                                        return formatGoldSilverCopper(Math.round(value));
-                                      }
-                                    })()}
-                                 </span>
-                               </td>
-                             ))}
-                           </tr>
-                         </>
-                       );
-                     })()}
-                     <tr>
-                       <td className="p-1 text-gray-300">{t('fractals.table.ratio')}</td>
-                       {[
-                         { id: 49424, ratio: 2.2637 },
-                         { id: 73248, ratio: 0.1 },
-                         { id: 70064, ratio: 0.0668 },
-                         { id: 74268, ratio: 0.02 },
-                         { id: 83008, ratio: 0.00017 },
-                         { id: 46735, ratio: 1.0108 },
-                         { id: 43971, ratio: 0.0021 },
-                       ].map((item) => (
-                         <td key={item.id} className="p-1 text-center text-gray-400">{item.ratio}</td>
-                       ))}
-                     </tr>
-                   </tbody>
-                 </table>
-                </div>
-                <div className="lg:col-span-1 space-y-2">
-                  <div className="bg-amber-200/20 border border-amber-300/30 rounded-lg p-2">
-                    <div className="text-xs font-semibold text-amber-200">{t('fractals.calculations.totalPerBoxOther')}</div>
-                    <div className="text-sm font-bold text-amber-300">
-                         {(() => {
-                           const ratios = { 
-                             49424: 2.2637, 
-                             73248: 0.1, 
-                             70064: 0.0668,
-                             74268: 0.02,
-                             83008: 0.00017,
-                             46735: 1.0108,
-                             43971: 0.0021
-                           } as Record<number, number>;
-                           
-                           const infusionPrice = (itemDetails[49424]?.currentPrice || 0) * 0.9;
-                           const otherItemsTotal = [73248, 70064, 74268, 83008].map((id) => {
-                               if (id === 83008) {
-                                 // Para 83008: sell * 0.85 * ratio, mínimo 0.01 cobre
-                                 const currentPrice = itemDetails[id]?.currentPrice || 0;
-                                 const price85 = currentPrice * 0.85;
-                                 const ratio = ratios[id] || 0;
-                                 const result = Math.max(0.01, price85 * ratio);
-                                 
-                                 return result;
-                               } else if (id === 49424) {
-                                 // Para 49424: currentPrice * 0.9 * ratio
-                                 return (itemDetails[id]?.currentPrice || 0) * 0.9 * (ratios[id] || 0);
-                               } else {
-                                 // Para otros items: buyPrice * ratio
-                                 return (itemDetails[id]?.buyPrice || 0) * (ratios[id] || 0);
-                               }
-                             })
-                             .reduce((sum, price) => sum + price, 0);
-                           
-                                                      const total = infusionPrice + otherItemsTotal;
-                           
-                           // Calcular Total por Caja precioMax: usar los valores ya calculados de precioMaxValues
-                           const totalMax = [49424, 73248, 70064, 74268, 83008].map((id) => {
-                             const precioMax = typeof window !== 'undefined' ? (window as { precioMaxValues?: Record<number, number> }).precioMaxValues?.[id] || 0 : 0;
-                             const ratio = ratios[id] || 0;
-                             const result = precioMax * ratio;
-                             
-                             return result;
-                           }).reduce((sum, price) => sum + price, 0);
-                           
-                           return (
-                             <>
-                               <div>{formatGoldSilverCopper(Math.round(total))}</div>
-                               <div>{formatGoldSilverCopper(Math.round(totalMax))}</div>
-                             </>
-                           );
-                         })()}
-                               </div>
-                                   </div>
-                                   </div>
-                                   </div>
-                                   </div>
-
-             {/* Multiplicaciones - OCULTO EN FRONTEND */}
-             {/* 
-             <div className="bg-gray-900/80 backdrop-blur-sm border border-gray-700 rounded-lg p-6 shadow-2xl mb-8">
-                 <div className="flex items-center justify-between mb-4">
-                   <h3 className="text-xl font-semibold text-white">Multiplicaciones</h3>
-                   <div className="flex items-center gap-2">
-                     <button
-                       onClick={() => refreshItemPrice(24277)}
-                       className="px-3 py-1.5 bg-teal-600 hover:bg-teal-700 text-white rounded-md text-sm"
-                     >
-                       Refrescar 24277
-                     </button>
-                     <button
-                       onClick={() => refreshItemPrice(19721)}
-                       className="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-md text-sm"
-                     >
-                       Refrescar 19721
-                     </button>
-                               </div>
-                                 </div>
+             {/* Fractal Encryptions */}
+             <div className="bg-cyan-900/20 backdrop-blur-sm border border-cyan-700/30 rounded-lg p-3 sm:p-4 md:p-6 shadow-2xl mb-6 md:mb-8">
+               <h3 className="text-lg sm:text-xl font-semibold text-cyan-300 mb-3 md:mb-4">
+                 {itemDetails[75919]?.name || 'Fractal Encryptions'}
+               </h3>
                <div className="overflow-x-auto">
-                 <table className="w-full text-sm">
+                 <table className="w-full min-w-[800px] text-sm">
                    <thead>
-                     <tr className="border-b border-gray-700 bg-gray-800/60">
-                         <th className="text-left p-3 text-gray-200 font-semibold">Cantidad</th>
-                         <th className="p-2 text-gray-200 font-semibold">Valor</th>
-                         <th className="p-2 text-gray-200 font-semibold">Resultado</th>
-                         <th className="p-2 text-gray-200 font-semibold">T5 × 2000 + Resultado + 35g</th>
-                         <th className="p-2 text-gray-200 font-semibold">Diferencia vs 0.9 × 250</th>
+                     <tr className="border-b border-cyan-700/50 bg-cyan-800/30">
+                       <th className="text-left p-2 sm:p-3 text-cyan-200 font-semibold"></th>
+                       <th className="p-2 sm:p-3 text-center text-yellow-200 font-semibold">{t('fractals.table.total')}</th>
+                       <th className="p-2 sm:p-3 text-center text-yellow-200 font-semibold">% Total</th>
+                       <th className="p-2 sm:p-3 text-center text-green-200 font-semibold">{t('fractals.table.price')}</th>
+                       <th className="p-2 sm:p-3 text-center text-blue-200 font-semibold">{t('fractals.table.value85')}</th>
                      </tr>
                    </thead>
                    <tbody>
-                       {(() => {
-                         const dynamicRows = [
-                           { qty: 1650, priceCopper: Math.round((itemDetails[24277]?.currentPrice || 0) * 0.9), display: itemDetails[24277]?.currentPrice ? formatGoldSilverCopper(itemDetails[24277].currentPrice * 0.9) : '—' },
-                           { qty: 1650, priceCopper: Math.round((itemDetails[24277]?.buyPrice || 0)), display: itemDetails[24277]?.buyPrice ? formatGoldSilverCopper(itemDetails[24277].buyPrice  ) : '—' },
-                           { qty: 892, priceCopper: Math.round((itemDetails[19721]?.currentPrice || 0) * 0.9), display: itemDetails[19721]?.currentPrice ? formatGoldSilverCopper(itemDetails[19721].currentPrice * 0.9) : '—' },
-                         ];
-                         return dynamicRows.map((row, idx) => (
-                           <tr key={idx} className="border-b border-gray-800">
-                             <td className="p-3 text-gray-300 font-semibold">{row.qty.toLocaleString()}</td>
-                             <td className="p-3 text-green-400">{row.display}</td>
-                             <td className="p-3 text-yellow-300 font-semibold">{formatGoldSilverCopper(row.qty * row.priceCopper)}</td>
-                             <td className="p-3 text-blue-300 font-semibold">
-                               {(() => {
-                                 const t5Ids = [24294, 24341, 24350, 24356, 24288, 24299, 24282];
-                                 const t5x2000 = t5Ids
-                                   .map((id: number) => (itemDetails[id]?.buyPrice || 0) * 2000)
-                                   .reduce((sum: number, price: number) => sum + price, 0);
-                                 const mult = row.qty * row.priceCopper;
-                                 const plusThirtyFiveGold = 350000; // 35g en cobre
-                                 return formatGoldSilverCopper(Math.round(t5x2000 + mult + plusThirtyFiveGold));
-                         })()}
-                       </td>
-                             <td className="p-3 text-red-300 font-semibold">
-                               {(() => {
-                                 // Total del bloque 0.9 × 250 (IDs provistas)
-                                 const ids09: number[] = [24295, 24358, 24351, 24357, 24289, 24300, 24283, 24277];
-                                 const total09 = ids09
-                                   .map((id: number) => Math.round((itemDetails[id]?.currentPrice || 0) * 0.9) * 250)
-                                   .reduce((sum: number, v: number) => sum + v, 0);
-                                 // Valor combinado de esta fila: T5×2000 + (qty×valor) + 35g
-                                 const t5Ids: number[] = [24294, 24341, 24350, 24356, 24288, 24299, 24282];
-                                 const t5x2000 = t5Ids
-                                   .map((id: number) => (itemDetails[id]?.buyPrice || 0) * 2000)
-                                   .reduce((sum: number, price: number) => sum + price, 0);
-                                 const mult = row.qty * row.priceCopper;
-                                 const plusThirtyFiveGold = 350000;
-                                 const combined = Math.round(t5x2000 + mult + plusThirtyFiveGold);
-                                 const diff = total09 - combined;
-                                 return formatGoldSilverCopper(diff);
-                               })()}
-                             </td>
+                     <tr className="border-b border-cyan-800/50">
+                       <td className="p-2 sm:p-3 text-cyan-300 font-semibold">{t('fractals.table.amountEncryptionsOpened')}</td>
+                       <td className="p-2 sm:p-3 text-center text-yellow-300 font-bold">{((ENCRYPTION_DATA.seliciZanar.opened + ENCRYPTION_DATA.vortus.opened + ENCRYPTION_DATA.shinymeta.opened) / 1000000).toFixed(1)}M</td>
+                       <td className="p-2 sm:p-3 text-center text-yellow-200 font-bold">100%</td>
+                       <td className="p-2 sm:p-3 text-center text-green-200 font-semibold">-</td>
+                       <td className="p-2 sm:p-3 text-center text-blue-200 font-semibold">-</td>
                      </tr>
-                         ));
-                       })()}
+                     <tr className="border-b border-yellow-800/50 bg-yellow-800/20">
+                       <td className="p-2 sm:p-3 text-yellow-300 font-semibold">{t('fractals.table.trophies')}</td>
+                       <td className="p-2 sm:p-3 text-center text-yellow-300 font-bold">{totalTrophies.toLocaleString()}</td>
+                       <td className="p-2 sm:p-3 text-center text-yellow-200 font-bold">{totalPercentage}%</td>
+                       <td className="p-2 sm:p-3 text-center text-green-200 font-semibold">-</td>
+                       <td className="p-2 sm:p-3 text-center text-blue-200 font-semibold">-</td>
+                     </tr>
+                     <tr className="border-b border-cyan-800/50">
+                       <td className="p-2 sm:p-3 text-cyan-300 font-semibold flex items-center gap-2">
+                         {itemDetails[73478]?.icon && (
+                           <Image 
+                             src={itemDetails[73478].icon} 
+                             alt={itemDetails[73478]?.name || "Manuscript"}
+                             width={24} 
+                             height={24} 
+                             className="w-6 h-6"
+                           />
+                         )}
+                         {itemDetails[73478]?.name?.split(' ')[0] || t('fractals.items.manuscripts')}
+                       </td>
+                       <td className="p-2 sm:p-3 text-center text-yellow-300 font-bold">600,296</td>
+                       <td className="p-2 sm:p-3 text-center text-yellow-200 font-bold">{manuscriptTotalPercentage}%</td>
+                       <td className="p-2 sm:p-3 text-center text-green-200 text-sm font-medium">{formatGoldSilverCopper(6000)}</td>
+                     </tr>
+                     <tr className="border-b border-cyan-800/50">
+                       <td className="p-2 sm:p-3 text-cyan-300 font-semibold flex items-center gap-2">
+                         {itemDetails[75220]?.icon && (
+                           <Image 
+                             src={itemDetails[75220].icon} 
+                             alt={itemDetails[75220]?.name || "Proof"}
+                             width={24} 
+                             height={24} 
+                             className="w-6 h-6"
+                           />
+                         )}
+                          {itemDetails[75220]?.name?.split(' ')[0] || t('fractals.items.proofs')}
+                       </td>
+                       <td className="p-2 sm:p-3 text-center text-yellow-300 font-bold">899,638</td>
+                       <td className="p-2 sm:p-3 text-center text-yellow-200 font-bold">{proofTotalPercentage}%</td>
+                       <td className="p-2 sm:p-3 text-center text-green-200 text-sm font-medium">{formatGoldSilverCopper(3000)}</td>
+                     </tr>
+                     <tr className="border-b border-cyan-800/50">
+                       <td className="p-2 sm:p-3 text-cyan-300 font-semibold flex items-center gap-2">
+                         {itemDetails[73848]?.icon && (
+                           <Image 
+                             src={itemDetails[73848].icon} 
+                             alt={itemDetails[73848]?.name || "Treatise"}
+                             width={24} 
+                             height={24} 
+                             className="w-6 h-6"
+                           />
+                         )}
+                          {itemDetails[73848]?.name?.split(' ')[0] || t('fractals.items.treatises')}
+                       </td>
+                       <td className="p-2 sm:p-3 text-center text-yellow-300 font-bold">600,311</td>
+                       <td className="p-2 sm:p-3 text-center text-yellow-200 font-bold">{treatiseTotalPercentage}%</td>
+                       <td className="p-2 sm:p-3 text-center text-green-200 text-sm font-medium">{formatGoldSilverCopper(2500)}</td>
+                     </tr>
+                     <tr>
+                       <td className="p-2 sm:p-3 text-cyan-300 font-semibold flex items-center gap-2">
+                         {itemDetails[72336]?.icon && (
+                           <Image 
+                             src={itemDetails[72336].icon} 
+                             alt={itemDetails[72336]?.name || "Postulate"}
+                             width={24} 
+                             height={24} 
+                             className="w-6 h-6"
+                           />
+                         )}
+                         {itemDetails[72336]?.name?.split(' ')[0] || t('fractals.items.postulates')}
+                       </td>
+                       <td className="p-2 sm:p-3 text-center text-yellow-300 font-bold">600,051</td>
+                       <td className="p-2 sm:p-3 text-center text-yellow-200 font-bold">{postulateTotalPercentage}%</td>
+                       <td className="p-2 sm:p-3 text-center text-green-200 text-sm font-medium">{formatGoldSilverCopper(2000)}</td>
+                     </tr>
+                     <tr className="border-b border-red-800/50 bg-red-800/20">
+                       <td className="p-2 sm:p-3 text-red-300 font-semibold">{t('fractals.table.t5CraftingMaterials')}</td>
+                       <td className="p-2 sm:p-3 text-center text-yellow-300 font-bold">{(() => {
+                         // Suma total de las tres columnas
+                         const seliciValues: Record<number, number> = {
+                           24294: 339475, // Vial of Powerful Blood
+                           24341: 334960, // Large Bone
+                           24350: 339190, // Large Claw
+                           24288: 339260, // Large Scale
+                           24356: 336540, // Large Fang
+                           24299: 338230, // Large Totem
+                           24282: 337195, // Large Venom Sac
+                           24276: 337825, // Pile of Crystalline Dust
+                         };
+                         const vortusValues: Record<number, number> = {
+                           24294: 338435, // Vial of Powerful Blood
+                           24341: 337705, // Large Bone
+                           24350: 335845, // Large Claw
+                           24288: 338365, // Large Scale
+                           24356: 337605, // Large Fang
+                           24299: 339345, // Large Totem
+                           24282: 338115, // Large Venom Sac
+                           24276: 337905, // Pile of Crystalline Dust
+                         };
+                         const shinymetaValues: Record<number, number> = {
+                           24294: 33785, // Vial of Powerful Blood
+                           24341: 33830, // Large Bone
+                           24350: 34545, // Large Claw
+                           24288: 33550, // Large Scale
+                           24356: 33505, // Large Fang
+                           24299: 33530, // Large Totem
+                           24282: 34035, // Large Venom Sac
+                           24276: 33720, // Pile of Crystalline Dust
+                         };
+                         const t5Ids = [24294, 24341, 24350, 24288, 24356, 24299, 24282, 24276];
+                         const total = t5Ids.reduce((sum, id) => 
+                           sum + (seliciValues[id] || 0) + (vortusValues[id] || 0) + (shinymetaValues[id] || 0), 0);
+                         return total.toLocaleString();
+                       })()}</td>
+                       <td className="p-2 sm:p-3 text-center text-yellow-200 font-bold">{(() => {
+                         const seliciValues: Record<number, number> = {
+                           24294: 339475, // Vial of Powerful Blood
+                           24341: 334960, // Large Bone
+                           24350: 339190, // Large Claw
+                           24288: 339260, // Large Scale
+                           24356: 336540, // Large Fang
+                           24299: 338230, // Large Totem
+                           24282: 337195, // Large Venom Sac
+                           24276: 337825, // Pile of Crystalline Dust
+                         };
+                         const vortusValues: Record<number, number> = {
+                           24294: 338435, // Vial of Powerful Blood
+                           24341: 337705, // Large Bone
+                           24350: 335845, // Large Claw
+                           24288: 338365, // Large Scale
+                           24356: 337605, // Large Fang
+                           24299: 339345, // Large Totem
+                           24282: 338115, // Large Venom Sac
+                           24276: 337905, // Pile of Crystalline Dust
+                         };
+                         const shinymetaValues: Record<number, number> = {
+                           24294: 33785, // Vial of Powerful Blood
+                           24341: 33830, // Large Bone
+                           24350: 34545, // Large Claw
+                           24288: 33550, // Large Scale
+                           24356: 33505, // Large Fang
+                           24299: 33530, // Large Totem
+                           24282: 34035, // Large Venom Sac
+                           24276: 33720, // Pile of Crystalline Dust
+                         };
+                         const t5Ids = [24294, 24341, 24350, 24288, 24356, 24299, 24282, 24276];
+                         const total = t5Ids.reduce((sum, id) => 
+                           sum + (seliciValues[id] || 0) + (vortusValues[id] || 0) + (shinymetaValues[id] || 0), 0);
+                         const totalEncryptions = ENCRYPTION_DATA.seliciZanar.opened + ENCRYPTION_DATA.vortus.opened + ENCRYPTION_DATA.shinymeta.opened;
+                         const percentage = total > 0 ? ((total / totalEncryptions) * 100).toFixed(2) : '0.00';
+                         return percentage + '%';
+                       })()}</td>
+                       <td className="p-2 sm:p-4 text-center text-green-200 font-semibold">-</td>
+                       <td className="p-2 sm:p-4 text-center text-blue-200 font-semibold">-</td>
+                     </tr>
+                     {[24294, 24341, 24350, 24356, 24288, 24299, 24282, 24276].map((id) => (
+                       <tr key={id} className="border-b border-cyan-800/50">
+                         <td className="p-2 sm:p-3 text-cyan-300 font-semibold flex items-center gap-2">
+                           {itemDetails[id]?.icon && (
+                             <Image 
+                               src={itemDetails[id].icon} 
+                               alt={t(fractalItemNames[id])}
+                               width={24} 
+                               height={24} 
+                               className="w-6 h-6"
+                             />
+                           )}
+                           {itemDetails[id]?.name || t(fractalItemNames[id])}
+                         </td>
+                         <td className="p-2 sm:p-3 text-center text-yellow-300 font-bold">{(() => {
+                           // Suma de las tres columnas para este material específico
+                           const seliciValues: Record<number, number> = {
+                             24294: 339475, // Vial of Powerful Blood
+                             24341: 334960, // Large Bone
+                             24350: 339190, // Large Claw
+                             24288: 339260, // Large Scale
+                             24356: 336540, // Large Fang
+                             24299: 338230, // Large Totem
+                             24282: 337195, // Large Venom Sac
+                             24276: 337825, // Pile of Crystalline Dust
+                           };
+                           const vortusValues: Record<number, number> = {
+                             24294: 338435, // Vial of Powerful Blood
+                             24341: 337705, // Large Bone
+                             24350: 335845, // Large Claw
+                             24288: 338365, // Large Scale
+                             24356: 337605, // Large Fang
+                             24299: 339345, // Large Totem
+                             24282: 338115, // Large Venom Sac
+                             24276: 337905, // Pile of Crystalline Dust
+                           };
+                           const shinymetaValues: Record<number, number> = {
+                             24294: 33785, // Vial of Powerful Blood
+                             24341: 33830, // Large Bone
+                             24350: 34545, // Large Claw
+                             24288: 33550, // Large Scale
+                             24356: 33505, // Large Fang
+                             24299: 33530, // Large Totem
+                             24282: 34035, // Large Venom Sac
+                             24276: 33720, // Pile of Crystalline Dust
+                           };
+                           const total = (seliciValues[id] || 0) + (vortusValues[id] || 0) + (shinymetaValues[id] || 0);
+                           return total.toLocaleString();
+                         })()}</td>
+                         <td className="p-2 sm:p-3 text-center text-yellow-200 font-bold">{(() => {
+                           const seliciValues: Record<number, number> = {
+                             24294: 339475, // Vial of Powerful Blood
+                             24341: 334960, // Large Bone
+                             24350: 339190, // Large Claw
+                             24288: 339260, // Large Scale
+                             24356: 336540, // Large Fang
+                             24299: 338230, // Large Totem
+                             24282: 337195, // Large Venom Sac
+                             24276: 337905, // Pile of Crystalline Dust
+                           };
+                           const vortusValues: Record<number, number> = {
+                             24294: 338435, // Vial of Powerful Blood
+                             24341: 337705, // Large Bone
+                             24350: 335845, // Large Claw
+                             24288: 338365, // Large Scale
+                             24356: 337605, // Large Fang
+                             24299: 339345, // Large Totem
+                             24282: 338115, // Large Venom Sac
+                             24276: 337905, // Pile of Crystalline Dust
+                           };
+                           const shinymetaValues: Record<number, number> = {
+                             24294: 33785, // Vial of Powerful Blood
+                             24341: 33830, // Large Bone
+                             24350: 34545, // Large Claw
+                             24288: 33550, // Large Scale
+                             24356: 33505, // Large Fang
+                             24299: 33530, // Large Totem
+                             24282: 34035, // Large Venom Sac
+                             24276: 33720, // Pile of Crystalline Dust
+                           };
+                           const total = (seliciValues[id] || 0) + (vortusValues[id] || 0) + (shinymetaValues[id] || 0);
+                           const totalEncryptions = ENCRYPTION_DATA.seliciZanar.opened + ENCRYPTION_DATA.vortus.opened + ENCRYPTION_DATA.shinymeta.opened;
+                           const percentage = total > 0 ? ((total / totalEncryptions) * 100).toFixed(2) : '0.00';
+                           return percentage + '%';
+                         })()}</td>
+                         <td className="p-2 sm:p-4 text-center text-green-200 font-semibold text-sm">
+                           {itemDetails[id]?.currentPrice ? formatGoldSilverCopper(itemDetails[id].currentPrice) : '00G 00S 00C'}
+                         </td>
+                         <td className="p-2 sm:p-4 text-center text-blue-200 font-semibold text-sm">
+                           {itemDetails[id]?.currentPrice ? formatGoldSilverCopper(Math.round(itemDetails[id].currentPrice * 0.85)) : '00G 00S 00C'}
+                         </td>
+                       </tr>
+                     ))}
+                     
+                     {/* Fila de +1 Agony Infusion */}
+                     <tr className="border-b border-cyan-800/50 bg-cyan-800/5">
+                         <td className="p-2 sm:p-3 text-cyan-300 font-semibold flex items-center gap-2">
+                         {itemDetails[49424]?.icon && (
+                           <Image 
+                             src={itemDetails[49424].icon} 
+                             alt="+1 Agony Infusion"
+                             width={24} 
+                             height={24} 
+                             className="w-6 h-6"
+                           />
+                         )}
+                         {itemDetails[49424]?.name || '+1 Agony Infusion'}
+                       </td>
+                       <td className="p-2 sm:p-3 text-center text-yellow-300 font-bold">{(() => {
+                         const seliciValue = 2263678;
+                         const vortusValue = 2264266;
+                         const shinymetaValue = 226740;
+                         const total = seliciValue + vortusValue + shinymetaValue;
+                         return total.toLocaleString();
+                       })()}</td>
+                         <td className="p-2 sm:p-3 text-center text-yellow-200 font-bold">{(() => {
+                           const seliciValue = 2263678;
+                           const vortusValue = 2264266;
+                           const shinymetaValue = 226740;
+                           const total = seliciValue + vortusValue + shinymetaValue;
+                           const totalEncryptions = ENCRYPTION_DATA.seliciZanar.opened + ENCRYPTION_DATA.vortus.opened + ENCRYPTION_DATA.shinymeta.opened;
+                           const percentage = ((total / totalEncryptions) * 100).toFixed(2);
+                           return percentage + '%';
+                         })()}</td>
+                       <td className="p-2 sm:p-4 text-center text-green-200 font-semibold text-sm">
+                         {itemDetails[49424]?.currentPrice ? formatGoldSilverCopper(itemDetails[49424].currentPrice) : '00G 00S 00C'}
+                       </td>
+                       <td className="p-2 sm:p-4 text-center text-blue-200 font-semibold text-sm">
+                         {itemDetails[49424]?.currentPrice ? formatGoldSilverCopper(Math.round(itemDetails[49424].currentPrice * 0.85)) : '00G 00S 00C'}
+                       </td>
+                     </tr>
+
+                     {/* Fractal Encryption Key*/}
+
+                     <tr className="border-b border-cyan-800/50 bg-cyan-800/5">
+                       <td className="p-2 sm:p-3 text-cyan-300 font-semibold flex items-center gap-2">
+                         {itemDetails[70438]?.icon && (
+                           <Image 
+                             src={itemDetails[70438].icon} 
+                             alt="Fractal Encryption Key"
+                             width={24} 
+                             height={24} 
+                             className="w-6 h-6"
+                           />
+                         )}
+                         {itemDetails[70438]?.name || 'Fractal Encryption Key'}
+                       </td>
+                       <td className="p-2 sm:p-3 text-center text-yellow-300 font-bold">{(() => {
+                         const seliciValue = 99812;
+                         const vortusValue = 2264266;
+                         const shinymetaValue = 226740;
+                         const total = seliciValue + vortusValue + shinymetaValue;
+                         return total.toLocaleString();
+                       })()}</td>
+                         <td className="p-2 sm:p-3 text-center text-yellow-200 font-bold">{(() => {
+                           const seliciValue = 2263678;
+                           const vortusValue = 2264266;
+                           const shinymetaValue = 226740;
+                           const total = seliciValue + vortusValue + shinymetaValue;
+                           const totalEncryptions = ENCRYPTION_DATA.seliciZanar.opened + ENCRYPTION_DATA.vortus.opened + ENCRYPTION_DATA.shinymeta.opened;
+                           const percentage = ((total / totalEncryptions) * 100).toFixed(2);
+                           return percentage + '%';
+                         })()}</td>
+                       <td className="p-2 sm:p-4 text-center text-green-200 font-semibold text-sm">
+                         {itemDetails[70438]?.currentPrice ? formatGoldSilverCopper(itemDetails[70438].currentPrice) : '00G 00S 00C'}
+                       </td>
+                       <td className="p-2 sm:p-4 text-center text-blue-200 font-semibold text-sm">
+                         {itemDetails[70438]?.currentPrice ? formatGoldSilverCopper(Math.round(itemDetails[70438].currentPrice * 0.85)) : '00G 00S 00C'}
+                       </td>
+                     </tr>
+                     
+                     {/* Handful of Fractal Relics*/}
+
+                     <tr className="border-b border-cyan-800/50 bg-cyan-800/5">
+                       <td className="p-2 sm:p-3 text-cyan-300 font-semibold flex items-center gap-2">
+                         {itemDetails[79792]?.icon && (
+                           <Image 
+                             src={itemDetails[79792].icon} 
+                             alt="Handful of Fractal Relics"
+                             width={24} 
+                             height={24} 
+                             className="w-6 h-6"
+                           />
+                         )}
+                         {itemDetails[79792]?.name || 'Handful of Fractal Relics'}
+                       </td>
+                       <td className="p-2 sm:p-3 text-center text-yellow-300 font-bold">{(() => {
+                         const seliciValue = 66795;
+                         const vortusValue = 67281;
+                         const shinymetaValue = 6883;
+                         const total = seliciValue + vortusValue + shinymetaValue;
+                         return total.toLocaleString();
+                       })()}</td>
+                         <td className="p-2 sm:p-3 text-center text-yellow-200 font-bold">{(() => {
+                           const seliciValue = 66795;
+                           const vortusValue = 67281;
+                           const shinymetaValue = 6883;
+                           const total = seliciValue + vortusValue + shinymetaValue;
+                           const totalEncryptions = ENCRYPTION_DATA.seliciZanar.opened + ENCRYPTION_DATA.vortus.opened + ENCRYPTION_DATA.shinymeta.opened;
+                           const percentage = ((total / totalEncryptions) * 100).toFixed(2);
+                           return percentage + '%';
+                         })()}</td>
+                       <td className="p-2 sm:p-4 text-center text-green-200 font-semibold text-sm">
+                         {itemDetails[79792]?.currentPrice ? formatGoldSilverCopper(itemDetails[79792].currentPrice) : '00G 00S 00C'}
+                       </td>
+                       <td className="p-2 sm:p-4 text-center text-blue-200 font-semibold text-sm">
+                         {itemDetails[79792]?.currentPrice ? formatGoldSilverCopper(Math.round(itemDetails[79792].currentPrice * 0.85)) : '00G 00S 00C'}
+                       </td>
+                     </tr>
+
+                     {/* Mini Professor Mew*/}
+
+                     <tr className="border-b border-cyan-800/50 bg-cyan-800/5">
+                       <td className="p-2 sm:p-3 text-cyan-300 font-semibold flex items-center gap-2">
+                         {itemDetails[74268]?.icon && (
+                           <Image 
+                             src={itemDetails[74268].icon} 
+                             alt="Mini Professor Mew"
+                             width={24} 
+                             height={24} 
+                             className="w-6 h-6"
+                           />
+                         )}
+                         {itemDetails[74268]?.name || 'Mini Professor Mew'}
+                       </td>
+                       <td className="p-2 sm:p-3 text-center text-yellow-300 font-bold">{(() => {
+                         const seliciValue = 66795;
+                         const vortusValue = 67281;
+                         const shinymetaValue = 6883;
+                         const total = seliciValue + vortusValue + shinymetaValue;
+                         return total.toLocaleString();
+                       })()}</td>
+                         <td className="p-2 sm:p-3 text-center text-yellow-200 font-bold">{(() => {
+                           const seliciValue = 66795;
+                           const vortusValue = 67281;
+                           const shinymetaValue = 6883;
+                           const total = seliciValue + vortusValue + shinymetaValue;
+                           const totalEncryptions = ENCRYPTION_DATA.seliciZanar.opened + ENCRYPTION_DATA.vortus.opened + ENCRYPTION_DATA.shinymeta.opened;
+                           const percentage = ((total / totalEncryptions) * 100).toFixed(2);
+                           return percentage + '%';
+                         })()}</td>
+                       <td className="p-2 sm:p-4 text-center text-green-200 font-semibold text-sm">
+                         {itemDetails[74268]?.currentPrice ? formatGoldSilverCopper(itemDetails[74268].currentPrice) : '00G 00S 00C'}
+                       </td>
+                       <td className="p-2 sm:p-4 text-center text-blue-200 font-semibold text-sm">
+                         {itemDetails[74268]?.currentPrice ? formatGoldSilverCopper(Math.round(itemDetails[74268].currentPrice * 0.85)) : '00G 00S 00C'}
+                       </td>
+                     </tr>
+
+                     {/* Item ID 67261 */}
+                     <tr className="border-b border-cyan-800/50 bg-cyan-800/5">
+                       <td className="p-2 sm:p-3 text-cyan-300 font-semibold flex items-center gap-2">
+                         {itemDetails[67261]?.icon && (
+                           <Image 
+                             src={itemDetails[67261].icon} 
+                             alt={itemDetails[67261]?.name || "Item 67261"}
+                             width={24} 
+                             height={24} 
+                             className="w-6 h-6"
+                           />
+                         )}
+                         {itemDetails[67261]?.name || 'Item 67261'}
+                       </td>
+                       <td className="p-2 sm:p-3 text-center text-yellow-300 font-bold">355</td>
+                       <td className="p-2 sm:p-3 text-center text-yellow-200 font-bold">{(() => {
+                         const totalEncryptions = ENCRYPTION_DATA.seliciZanar.opened + ENCRYPTION_DATA.vortus.opened + ENCRYPTION_DATA.shinymeta.opened;
+                         const percentage = ((355 / totalEncryptions) * 100).toFixed(2);
+                         return percentage + '%';
+                       })()}</td>
+                       <td className="p-2 sm:p-4 text-center text-green-200 font-semibold text-sm">
+                         {itemDetails[67261]?.currentPrice ? formatGoldSilverCopper(itemDetails[67261].currentPrice) : '00G 00S 00C'}
+                       </td>
+                       <td className="p-2 sm:p-4 text-center text-blue-200 font-semibold text-sm">
+                         {itemDetails[67261]?.currentPrice ? formatGoldSilverCopper(Math.round(itemDetails[67261].currentPrice * 0.85)) : '00G 00S 00C'}
+                       </td>
+                     </tr>
+
+                     {/* Ascended Materials */}
+                     <tr className="border-b border-purple-800/50 bg-purple-800/20">
+                       <td className="p-2 sm:p-3 text-purple-300 font-semibold">{t('fractals.table.ascendedMaterials')}</td>
+                       <td className="p-2 sm:p-3 text-center text-yellow-300 font-bold">6,365,460</td>
+                       <td className="p-2 sm:p-3 text-center text-yellow-200 font-bold">{(() => {
+                         const total = 6365460;
+                         const totalEncryptions = ENCRYPTION_DATA.seliciZanar.opened + ENCRYPTION_DATA.vortus.opened + ENCRYPTION_DATA.shinymeta.opened;
+                         const percentage = ((total / totalEncryptions) * 100).toFixed(2);
+                         return percentage + '%';
+                       })()}</td>
+                       <td className="p-2 sm:p-4 text-center text-green-200 font-semibold">-</td>
+                       <td className="p-2 sm:p-4 text-center text-blue-200 font-semibold">-</td>
+                     </tr>
+
+                     {/* Item ID 46733 */}
+                     <tr className="border-b border-cyan-800/50 bg-cyan-800/5">
+                       <td className="p-2 sm:p-3 text-cyan-300 font-semibold flex items-center gap-2">
+                         {itemDetails[46733]?.icon && (
+                           <Image 
+                             src={itemDetails[46733].icon} 
+                             alt={itemDetails[46733]?.name || "Item 46733"}
+                             width={24} 
+                             height={24} 
+                             className="w-6 h-6"
+                           />
+                         )}
+                         {itemDetails[46733]?.name || 'Item 46733'}
+                       </td>
+                       <td className="p-2 sm:p-3 text-center text-yellow-300 font-bold">2,117,577</td>
+                       <td className="p-2 sm:p-3 text-center text-yellow-200 font-bold">{(() => {
+                         const total = 2117577;
+                         const totalEncryptions = ENCRYPTION_DATA.seliciZanar.opened + ENCRYPTION_DATA.vortus.opened + ENCRYPTION_DATA.shinymeta.opened;
+                         const percentage = ((total / totalEncryptions) * 100).toFixed(2);
+                         return percentage + '%';
+                       })()}</td>
+                       <td className="p-2 sm:p-4 text-center text-green-200 font-semibold text-sm">
+                         {itemDetails[46733]?.currentPrice ? formatGoldSilverCopper(itemDetails[46733].currentPrice) : '00G 00S 00C'}
+                       </td>
+                       <td className="p-2 sm:p-4 text-center text-blue-200 font-semibold text-sm">
+                         {itemDetails[46733]?.currentPrice ? formatGoldSilverCopper(Math.round(itemDetails[46733].currentPrice * 0.85)) : '00G 00S 00C'}
+                       </td>
+                     </tr>
+
+                     {/* Item ID 46735 */}
+                     <tr className="border-b border-cyan-800/50 bg-cyan-800/5">
+                       <td className="p-2 sm:p-3 text-cyan-300 font-semibold flex items-center gap-2">
+                         {itemDetails[46735]?.icon && (
+                           <Image 
+                             src={itemDetails[46735].icon} 
+                             alt={itemDetails[46735]?.name || "Item 46735"}
+                             width={24} 
+                             height={24} 
+                             className="w-6 h-6"
+                           />
+                         )}
+                         {itemDetails[46735]?.name || 'Item 46735'}
+                       </td>
+                       <td className="p-2 sm:p-3 text-center text-yellow-300 font-bold">2,124,083</td>
+                       <td className="p-2 sm:p-3 text-center text-yellow-200 font-bold">{(() => {
+                         const total = 2124083;
+                         const totalEncryptions = ENCRYPTION_DATA.seliciZanar.opened + ENCRYPTION_DATA.vortus.opened + ENCRYPTION_DATA.shinymeta.opened;
+                         const percentage = ((total / totalEncryptions) * 100).toFixed(2);
+                         return percentage + '%';
+                       })()}</td>
+                       <td className="p-2 sm:p-4 text-center text-green-200 font-semibold text-sm">
+                         {itemDetails[46735]?.currentPrice ? formatGoldSilverCopper(itemDetails[46735].currentPrice) : '00G 00S 00C'}
+                       </td>
+                       <td className="p-2 sm:p-4 text-center text-blue-200 font-semibold text-sm">
+                         {itemDetails[46735]?.currentPrice ? formatGoldSilverCopper(Math.round(itemDetails[46735].currentPrice * 0.85)) : '00G 00S 00C'}
+                       </td>
+                     </tr>
+
+                     {/* Item ID 46731 */}
+                     <tr className="border-b border-cyan-800/50 bg-cyan-800/5">
+                       <td className="p-2 sm:p-3 text-cyan-300 font-semibold flex items-center gap-2">
+                         {itemDetails[46731]?.icon && (
+                           <Image 
+                             src={itemDetails[46731].icon} 
+                             alt={itemDetails[46731]?.name || "Item 46731"}
+                             width={24} 
+                             height={24} 
+                             className="w-6 h-6"
+                           />
+                         )}
+                         {itemDetails[46731]?.name || 'Item 46731'}
+                       </td>
+                       <td className="p-2 sm:p-3 text-center text-yellow-300 font-bold">2,123,800</td>
+                       <td className="p-2 sm:p-3 text-center text-yellow-200 font-bold">{(() => {
+                         const total = 2123800;
+                         const totalEncryptions = ENCRYPTION_DATA.seliciZanar.opened + ENCRYPTION_DATA.vortus.opened + ENCRYPTION_DATA.shinymeta.opened;
+                         const percentage = ((total / totalEncryptions) * 100).toFixed(2);
+                         return percentage + '%';
+                       })()}</td>
+                       <td className="p-2 sm:p-4 text-center text-green-200 font-semibold text-sm">
+                         {itemDetails[46731]?.currentPrice ? formatGoldSilverCopper(itemDetails[46731].currentPrice) : '00G 00S 00C'}
+                       </td>
+                       <td className="p-2 sm:p-4 text-center text-blue-200 font-semibold text-sm">
+                         {itemDetails[46731]?.currentPrice ? formatGoldSilverCopper(Math.round(itemDetails[46731].currentPrice * 0.85)) : '00G 00S 00C'}
+                       </td>
+                     </tr>
+
+                     {/* Aetherized Skins */}
+                     <tr className="border-b border-green-800/50 bg-green-800/20">
+                       <td className="p-2 sm:p-3 text-green-300 font-semibold flex items-center gap-2">
+                         <Image 
+                           src="https://render.guildwars2.com/file/C5DA0BE8047D800F72D9CE2B62E5036754D7E3DB/607547.png"
+                           alt={t('fractals.items.aetherizeSkins')}
+                           width={24} 
+                           height={24} 
+                           className="w-6 h-6"
+                         />
+                         {t('fractals.items.aetherizeSkins')}
+                       </td>
+                       <td className="p-2 sm:p-3 text-center text-yellow-300 font-bold">449</td>
+                       <td className="p-2 sm:p-3 text-center text-yellow-200 font-bold">{(() => {
+                         const total = 449;
+                         const totalEncryptions = ENCRYPTION_DATA.seliciZanar.opened + ENCRYPTION_DATA.vortus.opened + ENCRYPTION_DATA.shinymeta.opened;
+                         const percentage = ((total / totalEncryptions) * 100).toFixed(2);
+                         return percentage + '%';
+                       })()}</td>
+                       <td className="p-2 sm:p-4 text-center text-green-200 font-semibold text-sm">
+                         {itemDetails[46731]?.currentPrice ? formatGoldSilverCopper(itemDetails[46731].currentPrice) : '00G 00S 00C'}
+                       </td>
+                       <td className="p-2 sm:p-4 text-center text-blue-200 font-semibold text-sm">
+                         {itemDetails[46731]?.currentPrice ? formatGoldSilverCopper(Math.round(itemDetails[46731].currentPrice * 0.85)) : '00G 00S 00C'}
+                       </td>
+                     </tr>
+
+                     {/* Ascended Recipes */}
+                     <tr className="border-b border-pink-800/50 bg-pink-800/20">
+                       <td className="p-2 sm:p-3 text-pink-300 font-semibold flex items-center gap-2">
+                         <Image 
+                           src="https://render.guildwars2.com/file/162616E65F5D247791C12B0BA27442536637E1D8/631170.png"
+                           alt={t('fractals.items.ascendedRecipes')}
+                           width={24} 
+                           height={24} 
+                           className="w-6 h-6"
+                         />
+                         {t('fractals.items.ascendedRecipes')}
+                       </td>
+                       <td className="p-2 sm:p-3 text-center text-yellow-300 font-bold">15,804</td>
+                       <td className="p-2 sm:p-3 text-center text-yellow-200 font-bold">{(() => {
+                         const total = 15804;
+                         const totalEncryptions = ENCRYPTION_DATA.seliciZanar.opened + ENCRYPTION_DATA.vortus.opened + ENCRYPTION_DATA.shinymeta.opened;
+                         const percentage = ((total / totalEncryptions) * 100).toFixed(2);
+                         return percentage + '%';
+                       })()}</td>
+                       <td className="p-2 sm:p-4 text-center text-green-200 font-semibold text-sm">00G 00S 00C</td>
+                       <td className="p-2 sm:p-4 text-center text-blue-200 font-semibold text-sm">00G 00S 00C</td>
+                     </tr>
+
                    </tbody>
                  </table>
                </div>
              </div>
-             */}
 
-             {/* Profits */}
-             <div className="bg-gray-900/80 backdrop-blur-sm border border-gray-700 rounded-lg p-3 sm:p-4 md:p-6 shadow-2xl mb-6 md:mb-8">
-               <h3 className="text-lg sm:text-xl font-semibold text-white mb-3 md:mb-4">{t('fractals.sections.profits')}</h3>
-              <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 md:gap-6">
-                <div className="lg:col-span-3 overflow-x-auto">
-                 <table className="w-full text-sm">
+
+
+
+
+            {/* Profits */}
+            <div className="bg-cyan-900/20 backdrop-blur-sm border border-cyan-700/30 rounded-lg p-3 sm:p-4 md:p-6 shadow-2xl mb-6 md:mb-8">
+              <h3 className="text-lg sm:text-xl font-semibold text-cyan-300 mb-3 md:mb-4">{t('fractals.sections.profits')}</h3>
+              <div className="overflow-x-auto">
+                <table className="w-full min-w-[800px] text-sm">
                    <thead>
-                     <tr className="border-b border-gray-700 bg-gray-800/60">
-                       <th className="text-left p-1 sm:p-2 text-gray-200 font-semibold">{t('fractals.profits.table.boxKeyTypes')}</th>
-                       <th className="p-1 sm:p-2 text-gray-200 font-semibold">{t('fractals.profits.table.box')}</th>
-                       <th className="p-1 sm:p-2 text-gray-200 font-semibold">{t('fractals.profits.table.key')}</th>
-                       <th className="p-1 sm:p-2 text-gray-200 font-semibold">{t('fractals.profits.table.total')}</th>
-                       <th className="p-1 sm:p-2 text-gray-200 font-semibold">{t('fractals.profits.table.profitAvg')}</th>
-                       <th className="p-1 sm:p-2 text-gray-200 font-semibold">{t('fractals.profits.table.roi')}</th>
+                     <tr className="border-b border-cyan-700/50 bg-cyan-800/30">
+                       <th className="text-left p-2 text-cyan-200 font-semibold">{t('fractals.profits.table.boxKeyTypes')}</th>
+                       <th className="p-2 text-cyan-200 font-semibold">{t('fractals.profits.table.box')}</th>
+                       <th className="p-2 text-cyan-200 font-semibold">{t('fractals.profits.table.key')}</th>
+                       <th className="p-2 text-cyan-200 font-semibold">{t('fractals.profits.table.total')}</th>
+                       <th className="p-2 text-cyan-200 font-semibold">{t('fractals.profits.table.profitAvg')}</th>
+                       <th className="p-2 text-cyan-200 font-semibold">{t('fractals.profits.table.roi')}</th>
                      </tr>
                    </thead>
                    <tbody>
@@ -2893,14 +2710,14 @@ export default function FarmingTrackerPage() {
                           return 1.0;
                         })(), keyItemId: 73248, keyRatio: 1.0 },
                       ].map((row, idx) => (
-                        <tr key={idx} className="border-b border-gray-800">
-                          <td className="p-1 sm:p-2 text-gray-300 text-xs sm:text-sm">{row.label}</td>
-                          <td className="p-1 sm:p-2 text-center text-green-400 text-xs sm:text-sm">
+                        <tr key={idx} className="border-b border-cyan-800/50 hover:bg-cyan-800/20 transition-colors">
+                          <td className="p-2 text-cyan-200 text-sm font-medium">{row.label}</td>
+                          <td className="p-2 text-center text-green-400 text-sm">
                             <span className="whitespace-nowrap">
                               {itemDetails[row.boxItemId]?.currentPrice ? formatGoldSilverCopper(Math.round((row.boxItemId === 75919 && row.label === t('fractals.profits.boxKeyBuyOrder') ? (itemDetails[row.boxItemId]?.buyPrice || 0) : (itemDetails[row.boxItemId]?.currentPrice || 0)) * row.boxRatio)) : '—'}
                             </span>
                           </td>
-                          <td className="p-1 sm:p-2 text-center text-green-400 text-xs sm:text-sm">
+                          <td className="p-2 text-center text-green-400 text-sm">
                             <span className="whitespace-nowrap">
                               {itemDetails[row.keyItemId]?.currentPrice ? formatGoldSilverCopper(Math.round((() => {
                                 if (row.label === t('fractals.profits.boxMinKey20s')) return 2000;
@@ -2911,7 +2728,7 @@ export default function FarmingTrackerPage() {
                               })())) : '—'}
                             </span>
                           </td>
-                          <td className="p-1 sm:p-2 text-center text-blue-400 text-xs sm:text-sm">
+                          <td className="p-2 text-center text-blue-400 text-sm">
                             <span className="whitespace-nowrap">
                               {itemDetails[row.boxItemId]?.currentPrice ? formatGoldSilverCopper(Math.round((row.boxItemId === 75919 && row.label === t('fractals.profits.boxKeyBuyOrder') ? (itemDetails[row.boxItemId]?.buyPrice || 0) : (itemDetails[row.boxItemId]?.currentPrice || 0)) * row.boxRatio + (() => {
                                 if (row.label === t('fractals.profits.boxMinKey20s')) return 2000;
@@ -2922,7 +2739,7 @@ export default function FarmingTrackerPage() {
                               })())) : '—'}
                             </span>
                           </td>
-                          <td className="p-1 sm:p-2 text-center text-yellow-300 font-semibold text-xs sm:text-sm">
+                          <td className="p-2 text-center text-yellow-300 font-semibold text-sm">
                             <span className="whitespace-nowrap">
                               {itemDetails[row.boxItemId]?.currentPrice ? (() => {
                                 // Calcular el Total (Caja + Llave)
@@ -2935,12 +2752,12 @@ export default function FarmingTrackerPage() {
                                 })();
                                 
                                 // Calcular Mejor Income Por Caja (valor L19)
-                                const dynamicRows = [
+                                {/*const dynamicRows = [
                                   { qty: 1650, priceCopper: (itemDetails[24277]?.currentPrice || 0) * 0.9 },
                                   { qty: 1650, priceCopper: (itemDetails[24277]?.buyPrice || 0) },
                                   { qty: 892, priceCopper: (itemDetails[19721]?.currentPrice || 0) * 0.9 },
                                 ];
-                              
+                               */}
                                 // Profit AVG = Mejor Income Por Caja - Total
                                 const mejorIncomePorCaja = 4853; // 00G 48S 53C en cobre
                                 const profitAvg = mejorIncomePorCaja - total;
@@ -2949,7 +2766,7 @@ export default function FarmingTrackerPage() {
                               })() : '—'}
                             </span>
                           </td>
-                          <td className="p-1 sm:p-2 text-center text-purple-300 font-semibold text-xs sm:text-sm">
+                          <td className="p-2 text-center text-purple-300 font-semibold text-sm">
                             <span className="whitespace-nowrap">
                               {itemDetails[row.boxItemId]?.currentPrice ? (() => {
                                 const total = (row.boxItemId === 75919 && row.label === t('fractals.profits.boxKeyBuyOrder') ? (itemDetails[row.boxItemId]?.buyPrice || 0) : (itemDetails[row.boxItemId]?.currentPrice || 0)) * row.boxRatio + (() => {
@@ -2972,72 +2789,9 @@ export default function FarmingTrackerPage() {
                       ))}
                    </tbody>
                  </table>
-                </div>
-
                </div>
              </div>
 
-             {/* Cálculo 0.9 × 250 - OCULTO EN FRONTEND */}
-             {/* 
-             <div className="bg-gray-900/80 backdrop-blur-sm border border-gray-700 rounded-lg p-6 shadow-2xl mb-8">
-                 <div className="flex items-center justify-between mb-4">
-                   <h3 className="text-xl font-semibold text-white">Cálculo 0.9 × 250</h3>
-                   {(() => {
-                     const ids = [24295, 24358, 24351, 24357, 24289, 24300, 24283, 24277];
-                     return (
-                       <button
-                         onClick={() => refreshItemPricesBulk(ids)}
-                         className="px-3 py-1.5 bg-purple-600 hover:bg-purple-700 text-white rounded-md text-sm"
-                       >
-                         Refrescar IDs 0.9×250
-                       </button>
-                     );
-                   })()}
-                 </div>
-               <div className="overflow-x-auto">
-                 <table className="w-full text-sm">
-                   <thead>
-                     <tr className="border-b border-gray-700 bg-gray-800/60">
-                         <th className="text-left p-3 text-gray-200 font-semibold">Item</th>
-                         <th className="p-2 text-gray-200 font-semibold">Precio (sell)</th>
-                         <th className="p-2 text-gray-200 font-semibold">× 0.9</th>
-                         <th className="p-2 text-gray-200 font-semibold">× 250</th>
-                         <th className="p-2 text-gray-200 font-semibold">Resultado</th>
-                     </tr>
-                   </thead>
-                   <tbody>
-                       {(() => {
-                         const idsToSum: number[] = [24295, 24358, 24351, 24357, 24289, 24300, 24283, 24277];
-                         const rows = idsToSum.map((id) => {
-                           const price = itemDetails[id]?.currentPrice || 0;
-                           const price90 = Math.round(price * 0.9);
-                           const result = price90 * 250;
-                           return { id, price, price90, result };
-                         });
-                         const total = rows.reduce((sum, r) => sum + r.result, 0);
-                         return (
-                           <>
-                             {rows.map((r) => (
-                               <tr key={r.id} className="border-b border-gray-800">
-                                 <td className="p-3 text-gray-300">{itemDetails[r.id]?.name || r.id}</td>
-                                 <td className="p-3 text-center text-green-400">{r.price ? formatGoldSilverCopper(r.price) : '—'}</td>
-                                 <td className="p-3 text-center text-blue-400">{r.price ? formatGoldSilverCopper(r.price90) : '—'}</td>
-                                 <td className="p-3 text-center text-gray-300">250</td>
-                                 <td className="p-3 text-center text-yellow-300 font-semibold">{r.price ? formatGoldSilverCopper(r.result) : '—'}</td>
-                     </tr>
-                             ))}
-                             <tr>
-                               <td className="p-3 text-right text-gray-200 font-semibold" colSpan={4}>Total</td>
-                               <td className="p-3 text-center text-amber-300 font-bold">{formatGoldSilverCopper(total)}</td>
-                     </tr>
-                           </>
-                         );
-                       })()}
-                   </tbody>
-                 </table>
-               </div>
-             </div>
-             */}
            </>
          )}
        </main>

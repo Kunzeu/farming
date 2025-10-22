@@ -143,13 +143,13 @@ const FourWindsPage = () => {
   const [searchBoxTerm, setSearchBoxTerm] = useState('');
   
   // Estados para ordenamiento
-  const [sortField, setSortField] = useState<string>('name');
+  const [sortField, setSortField] = useState<string>('');
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
 
   // Estado para Items Obtenidos (IDs primarios)
   const [primaryItems, setPrimaryItems] = useState<BoxOpeningPrimaryItem[]>([]);
   const [primaryLoading, setPrimaryLoading] = useState(false);
-  const [primarySortField, setPrimarySortField] = useState<'id' | 'name' | 'quantity' | 'perBox'>('id');
+  const [primarySortField, setPrimarySortField] = useState<'id' | 'name' | 'quantity' | 'perBox' | 'value85'>('id');
   const [primarySortDirection, setPrimarySortDirection] = useState<'asc' | 'desc'>('asc');
 
   // Estado para Zephyrite Supply Box
@@ -297,6 +297,20 @@ const FourWindsPage = () => {
   }, [lang]);
 
   useEffect(() => {
+    // Sincroniza la pestaña con el hash al cargar y cuando cambie
+    if (typeof window === 'undefined') return;
+    const applyHash = () => {
+      const hash = window.location.hash.replace('#', '');
+      if (hash === 'Box-Opening') {
+        setSelectedSection('box-opening');
+      }
+    };
+    applyHash();
+    window.addEventListener('hashchange', applyHash);
+    return () => window.removeEventListener('hashchange', applyHash);
+  }, []);
+
+  useEffect(() => {
     fetchPrimaryItems();
     fetchZephyriteBoxName();
   }, [fetchPrimaryItems, fetchZephyriteBoxName, lang]);
@@ -309,16 +323,16 @@ const FourWindsPage = () => {
     return () => clearInterval(interval);
   }, [fetchPrimaryItems]);
 
-  const handlePrimarySort = (field: 'id' | 'name' | 'quantity' | 'perBox') => {
+  const handlePrimarySort = (field: 'id' | 'name' | 'quantity' | 'perBox' | 'value85') => {
     if (primarySortField === field) {
       setPrimarySortDirection(primarySortDirection === 'asc' ? 'desc' : 'asc');
     } else {
       setPrimarySortField(field);
-      setPrimarySortDirection('asc');
+      setPrimarySortDirection('desc');
     }
   };
 
-  const getPrimarySortIcon = (field: 'id' | 'name' | 'quantity' | 'perBox') => {
+  const getPrimarySortIcon = (field: 'id' | 'name' | 'quantity' | 'perBox' | 'value85') => {
     if (primarySortField !== field) return <ArrowUpDown className="w-3.5 h-3.5" />;
     return primarySortDirection === 'asc' ? <ArrowUp className="w-3.5 h-3.5" /> : <ArrowDown className="w-3.5 h-3.5" />;
   };
@@ -344,6 +358,9 @@ const FourWindsPage = () => {
       } else if (primarySortField === 'id') {
         aVal = indexById[a.id] ?? Number.MAX_SAFE_INTEGER;
         bVal = indexById[b.id] ?? Number.MAX_SAFE_INTEGER;
+      } else if (primarySortField === 'value85') {
+        aVal = Math.floor((a.pricePerUnit || 0) * 0.85);
+        bVal = Math.floor((b.pricePerUnit || 0) * 0.85);
       } else {
         aVal = a.perBox;
         bVal = b.perBox;
@@ -430,22 +447,23 @@ const FourWindsPage = () => {
 
   // Función para ordenar los items
   const sortedBoxCalculatorItems = useMemo(() => {
+    // Sin orden inicial: respetar el orden original
+    if (!sortField) return [...boxCalculatorItems];
+
     return [...boxCalculatorItems].sort((a, b) => {
       let aValue: string | number = a[sortField as keyof BoxCalculatorItem] as string | number;
       let bValue: string | number = b[sortField as keyof BoxCalculatorItem] as string | number;
-      
-      // Para campos numéricos, convertir a número
+
       if (['numPerBox', 'pricePerUnit', 'pricePerBox', 'myMaterials', 'resultingBoxes'].includes(sortField)) {
         aValue = Number(aValue);
         bValue = Number(bValue);
       }
-      
-      // Para campos de texto, convertir a minúsculas
+
       if (typeof aValue === 'string' && typeof bValue === 'string') {
         aValue = aValue.toLowerCase();
         bValue = bValue.toLowerCase();
       }
-      
+
       if (sortDirection === 'asc') {
         return aValue > bValue ? 1 : aValue < bValue ? -1 : 0;
       } else {
@@ -598,12 +616,17 @@ const FourWindsPage = () => {
           {([
             { id: 'overview', label: t('festivals.tabs.overview'), icon: Info },
             { id: 'calculators', label: t('festivals.tabs.calculators'), icon: Calculator },
-            { id: 'box-opening', label: t('festivals.tabs.boxOpening'), icon: Package },
+            { id: 'box-opening', label: t('festivals.tabs.boxOpening'), icon: Package, hash: 'Box-Opening' },
             { id: 'strategies', label: t('festivals.tabs.strategies'), icon: TrendingUp },
           ] as const).map((tab) => (
             <button
               key={tab.id}
-              onClick={() => setSelectedSection(tab.id)}
+              onClick={() => {
+                setSelectedSection(tab.id);
+                if (tab.id === 'box-opening' && typeof window !== 'undefined') {
+                  window.location.hash = 'Box-Opening';
+                }
+              }}
               className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all duration-200 ${
                 selectedSection === tab.id
                   ? 'bg-cyan-600/80 text-white border border-cyan-400/50 shadow-lg'
@@ -917,10 +940,10 @@ const FourWindsPage = () => {
                          </table>
                           <div className="md:hidden text-gray-400 text-xs mt-2 text-center">{t('common.swipeHint')}</div>
                       </div>
-                                         </div>
-                   </div>
-               </div>
-             </div>
+                  </div>
+                </div>
+              </div>
+            </div>
           )}
 
           {/* Strategies Section */}
@@ -1008,6 +1031,7 @@ const FourWindsPage = () => {
           {/* Box Opening Section */}
           {selectedSection === 'box-opening' && (
             <div className="space-y-4">
+              <div id="Box-Opening" className="invisible absolute -top-20"></div>
               <div className="bg-gray-900/80 backdrop-blur-sm border border-cyan-500/30 rounded-lg p-4 shadow-2xl">
                 <h2 className="text-2xl font-bold text-white mb-3 flex items-center">
                   <Package className="w-6 h-6 mr-3 text-cyan-400" />
@@ -1109,7 +1133,7 @@ const FourWindsPage = () => {
                     </div>
                   </div>
 
-                  <div className="hidden">
+                  <div className="">
                     <div className="flex items-center justify-between mb-3">
                       <h3 className="text-xl font-bold text-white flex items-center">
                         <Calculator className="w-6 h-6 mr-3 text-cyan-400" />
@@ -1139,7 +1163,14 @@ const FourWindsPage = () => {
                               <th onClick={() => handlePrimarySort('name')} className="text-left py-2.5 px-3 text-gray-200 font-semibold text-sm uppercase tracking-wider cursor-pointer select-none">
                                  <div className="flex items-center gap-1.5">{t('salvage.table.material')} {getPrimarySortIcon('name')}</div>
                               </th>
-                              <th className="text-center py-2.5 px-2 text-gray-200 font-semibold text-sm uppercase tracking-wider select-none">{t('fourWinds.table.value85', 'Value 85%')}</th>
+                              <th 
+                                onClick={() => handlePrimarySort('value85')} 
+                                className="text-center py-2.5 px-2 text-gray-200 font-semibold text-sm uppercase tracking-wider cursor-pointer hover:text-white transition-colors select-none"
+                              >
+                                <div className="flex items-center justify-center gap-1.5">
+                                  {t('fourWinds.table.value85', 'Value 85%')} {getPrimarySortIcon('value85')}
+                                </div>
+                              </th>
                               <th onClick={() => handlePrimarySort('quantity')} className="text-center py-2.5 px-2 text-gray-200 font-semibold text-sm uppercase tracking-wider cursor-pointer select-none">
                                  <div className="flex items-center justify-center gap-1.5">{t('table.quantity')} {getPrimarySortIcon('quantity')}</div>
                               </th>

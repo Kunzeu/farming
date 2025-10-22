@@ -194,6 +194,10 @@ const HalloweenPage = () => {
   // Estados para ordenamiento
   const [sortField, setSortField] = useState<string>('name');
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
+  
+  // Estados para ordenamiento de Items Obtenidos
+  const [primarySortField, setPrimarySortField] = useState<string>('quantity');
+  const [primarySortDirection, setPrimarySortDirection] = useState<'asc' | 'desc'>('desc');
 
   
 
@@ -388,9 +392,6 @@ const HalloweenPage = () => {
       const hash = window.location.hash.replace('#', '');
       if (hash === 'Box-Opening') {
         setSelectedSection('box-opening');
-        setTimeout(() => {
-          document.getElementById('Box-Opening')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        }, 0);
       }
     };
     applyHash();
@@ -503,6 +504,24 @@ const HalloweenPage = () => {
     return sortDirection === 'asc' ? <ArrowUp className="w-4 h-4" /> : <ArrowDown className="w-4 h-4" />;
   };
 
+  // Función para manejar el ordenamiento de Items Obtenidos
+  const handlePrimarySort = (field: string) => {
+    if (primarySortField === field) {
+      setPrimarySortDirection(primarySortDirection === 'asc' ? 'desc' : 'asc');
+    } else {
+      setPrimarySortField(field);
+      setPrimarySortDirection('desc');
+    }
+  };
+
+  // Función para obtener el icono de ordenamiento de Items Obtenidos
+  const getPrimarySortIcon = (field: string) => {
+    if (primarySortField !== field) {
+      return <ArrowUpDown className="w-4 h-4" />;
+    }
+    return primarySortDirection === 'asc' ? <ArrowUp className="w-4 h-4" /> : <ArrowDown className="w-4 h-4" />;
+  };
+
   // Función para ordenar los items
   const sortedCalculatorItems = useMemo(() => {
     return [...calculatorItems].sort((a, b) => {
@@ -532,6 +551,48 @@ const HalloweenPage = () => {
   const filteredAvailableItems = availableItems.filter(item =>
     item.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
+  // Función para ordenar los items de Items Obtenidos
+  const sortedPrimaryItems = useMemo(() => {
+    const filteredItems = primaryItems.filter(item => item.quantity > 0);
+    
+    return filteredItems.sort((a, b) => {
+      let aValue: string | number;
+      let bValue: string | number;
+
+      switch (primarySortField) {
+        case 'name':
+          aValue = a.name.toLowerCase();
+          bValue = b.name.toLowerCase();
+          break;
+        case 'quantity':
+          aValue = a.quantity;
+          bValue = b.quantity;
+          break;
+        case 'perBox':
+          aValue = a.perBox;
+          bValue = b.perBox;
+          break;
+        case 'price':
+          aValue = Math.floor((a.pricePerUnit || 0) * 0.85);
+          bValue = Math.floor((b.pricePerUnit || 0) * 0.85);
+          break;
+        case 'totalValue':
+          aValue = Math.floor(a.quantity * Math.floor((a.pricePerUnit || 0) * 0.85));
+          bValue = Math.floor(b.quantity * Math.floor((b.pricePerUnit || 0) * 0.85));
+          break;
+        default:
+          aValue = a.quantity;
+          bValue = b.quantity;
+      }
+
+      if (primarySortDirection === 'asc') {
+        return aValue > bValue ? 1 : aValue < bValue ? -1 : 0;
+      } else {
+        return aValue < bValue ? 1 : aValue > bValue ? -1 : 0;
+      }
+    });
+  }, [primaryItems, primarySortField, primarySortDirection]);
 
 
   return (
@@ -581,12 +642,12 @@ const HalloweenPage = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
             className="flex flex-wrap justify-center gap-2 mb-8">
-            {(([ 
+            {([
               { id: 'overview', label: t('festivals.tabs.overview'), icon: Info },
               { id: 'calculators', label: t('festivals.tabs.calculators'), icon: Calculator },
               { id: 'box-opening', label: t('festivals.tabs.boxOpening'), icon: Package },
               { id: 'strategies', label: t('festivals.tabs.strategies'), icon: TrendingUp }
-            ] as const)).map((tab) => (
+            ] as const).map((tab) => (
               <button
                 key={tab.id}
                 onClick={() => {
@@ -748,7 +809,7 @@ const HalloweenPage = () => {
                                 onClick={() => handleSort('price100')}
                               >
                                 <div className="flex items-center justify-center gap-1">
-                                   {t('table.price100')}
+                                   {t('table.price85')}
                                   {getSortIcon('price100')}
                                 </div>
                               </th>
@@ -879,7 +940,9 @@ const HalloweenPage = () => {
 
             {/* Box Opening Section */}
             {selectedSection === 'box-opening' && (
-              <div id="Box-Opening" className="space-y-4">
+              <>
+                <div id="Box-Opening" className="invisible absolute -top-20"></div>
+                <div className="space-y-4">
                 <div className="bg-gray-900/80 backdrop-blur-sm border border-orange-500/30 rounded-lg p-4 shadow-2xl">
                   <h2 className="text-2xl font-bold text-white mb-3 flex items-center">
                       <Package className="w-6 h-6 mr-3 text-orange-400" />
@@ -990,7 +1053,7 @@ const HalloweenPage = () => {
                       </div>
                     </div>
 
-                    <div className="hidden">
+                    <div>
                       <div className="flex items-center justify-between mb-3">
                         <h3 className="text-xl font-bold text-white flex items-center">
                           <Calculator className="w-6 h-6 mr-3 text-orange-400" />
@@ -1014,11 +1077,101 @@ const HalloweenPage = () => {
                           </div>
                         </div>
                       ) : (
-                        <div className="bg-gray-800/50 rounded-lg border border-orange-500/20 shadow-lg p-6">
-                          <div className="text-center">
-                            <p className="text-gray-300 text-sm mb-4">{t('halloween.obtained.summaryDesc')}</p>
-                            <div className="bg-orange-900/20 border border-orange-500/50 rounded-lg p-4">
-                              <p className="text-orange-200 text-sm font-medium">{t('halloween.obtained.proTip')}</p>
+                        <div className="bg-gray-800/50 rounded-lg border border-orange-500/20 shadow-lg">
+                          <div className="p-6">
+                            <div className="text-center mb-6">
+                              <p className="text-gray-300 text-sm mb-4">{t('halloween.obtained.summaryDesc')}</p>
+                              <div className="bg-orange-900/20 border border-orange-500/50 rounded-lg p-4">
+                                <p className="text-orange-200 text-sm font-medium">{t('halloween.obtained.proTip')}</p>
+                              </div>
+                            </div>
+                            
+                            {/* Tabla de Items Obtenidos */}
+                            <div className="overflow-x-auto">
+                              <table className="w-full text-sm">
+                                <thead>
+                                  <tr className="border-b border-gray-600">
+                                    <th 
+                                      className="text-left py-2 text-gray-300 cursor-pointer hover:text-white transition-colors"
+                                      onClick={() => handlePrimarySort('name')}
+                                    >
+                                      <div className="flex items-center gap-1">
+                                        {t('table.name')}
+                                        {getPrimarySortIcon('name')}
+                                      </div>
+                                    </th>
+                                    <th 
+                                      className="text-center py-2 text-gray-300 cursor-pointer hover:text-white transition-colors"
+                                      onClick={() => handlePrimarySort('quantity')}
+                                    >
+                                      <div className="flex items-center justify-center gap-1">
+                                        {t('table.quantity')}
+                                        {getPrimarySortIcon('quantity')}
+                                      </div>
+                                    </th>
+                                    <th 
+                                      className="text-center py-2 text-gray-300 cursor-pointer hover:text-white transition-colors"
+                                      onClick={() => handlePrimarySort('perBox')}
+                                    >
+                                      <div className="flex items-center justify-center gap-1">
+                                        {t('table.perBox')}
+                                        {getPrimarySortIcon('perBox')}
+                                      </div>
+                                    </th>
+                                    <th 
+                                      className="text-center py-2 text-gray-300 cursor-pointer hover:text-white transition-colors"
+                                      onClick={() => handlePrimarySort('price')}
+                                    >
+                                      <div className="flex items-center justify-center gap-1">
+                                      {t('table.price85')}
+                                      {getPrimarySortIcon('price')}
+                                      </div>
+                                    </th>
+                                    <th 
+                                      className="text-center py-2 text-gray-300 cursor-pointer hover:text-white transition-colors"
+                                      onClick={() => handlePrimarySort('totalValue')}
+                                    >
+                                      <div className="flex items-center justify-center gap-1">
+                                        {t('table.totalValue')} (825%)
+                                        {getPrimarySortIcon('totalValue')}
+                                      </div>
+                                    </th>
+                                  </tr>
+                                </thead>
+                                <tbody>
+                                  {sortedPrimaryItems.map((item) => (
+                                    <tr key={item.id} className="border-b border-gray-700">
+                                      <td className="py-2 text-white">
+                                        <div className="flex items-center gap-2">
+                                          {item.icon && (
+                                            <Image
+                                              src={item.icon}
+                                              alt={item.name}
+                                              width={28}
+                                              height={28}
+                                              className="rounded border border-gray-600"
+                                              onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = 'none'; }}
+                                            />
+                                          )}
+                                          <span className="text-sm">{item.name}</span>
+                                        </div>
+                                      </td>
+                                      <td className="py-2 text-center text-gray-300">
+                                        {item.quantity.toLocaleString()}
+                                      </td>
+                                      <td className="py-2 text-center text-gray-300">
+                                        {item.perBox.toFixed(6)}
+                                      </td>
+                                      <td className="py-2 text-center text-gray-300">
+                                        {formatGoldSilverCopper(Math.floor((item.pricePerUnit || 0) *0.85))}
+                                      </td>
+                                      <td className="py-2 text-center text-yellow-400 font-semibold">
+                                        {formatGoldSilverCopper(Math.floor(item.quantity * Math.floor((item.pricePerUnit || 0) * 0.85)))}
+                                      </td>
+                                    </tr>
+                                  ))}
+                                </tbody>
+                              </table>
                             </div>
                           </div>
                         </div>
@@ -1027,6 +1180,7 @@ const HalloweenPage = () => {
                   </div>
                 </div>
               </div>
+              </>
             )}
 
             {/* Strategies Section */}
