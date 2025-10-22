@@ -10,7 +10,8 @@ import {
   Coffee,
   Zap,
   Bot,
-  Globe
+  Globe,
+  Package
 } from 'lucide-react';
 
 
@@ -64,7 +65,7 @@ export default function Footer() {
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
         
         {/* Main Content */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 mb-6">
+        <div className="grid grid-cols-3 md:grid-cols-5 gap-5 md:gap-8 mb-8">
           
           {/* Apoyo */}
           <motion.div 
@@ -101,62 +102,62 @@ export default function Footer() {
 
           {/* Comunidad */}
           <motion.div 
-            className="text-center"
+            className="text-center ml-8"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.3 }}
           >
-            <div className="flex items-center gap-2 justify-center mb-2 md:mb-3">
+            <div className="flex items-center gap-2 mb-1 md:mb-2 ml-8">
               <Zap className="w-3 h-3 md:w-4 md:h-4 text-yellow-400" />
               <h3 className="text-white font-semibold text-sm md:text-base">{t('footer.communityContact', 'Comunidad')}</h3>
             </div>
-            <div className="space-y-1 md:space-y-2">
+            <div className="space-y-1 ml-8">
               <motion.a
                 href="https://discord.gg/KQSrhA2qmx"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center gap-2 md:gap-3 text-gray-300 hover:text-white transition-all duration-300 group justify-center"
+                className="flex items-center gap-2 text-gray-300 hover:text-white transition-all duration-300 group w-fit"
                 whileHover={{ x: 3 }}
               >
-                <DiscordIcon className="w-3 h-3 md:w-4 md:h-4 text-purple-400 group-hover:scale-110 transition-transform" />
+                <DiscordIcon className="w-3 h-3 md:w-4 md:h-4 text-purple-400 group-hover:scale-110 transition-transform flex-shrink-0" />
                 <span className="font-medium text-xs md:text-sm">Discord</span>
-                <ExternalLink className="w-2 h-2 md:w-3 md:h-3 opacity-0 group-hover:opacity-100 transition-opacity" />
+                <ExternalLink className="w-2 h-2 md:w-3 md:h-3 opacity-0 group-hover:opacity-100 transition-opacity ml-1" />
               </motion.a>
               
               <motion.a
                 href="https://x.com/TrueFarming"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center gap-2 text-gray-300 hover:text-white transition-all duration-300 group justify-center"
+                className="flex items-center gap-2 text-gray-300 hover:text-white transition-all duration-300 group w-fit"
                 whileHover={{ x: 3 }}
               >
-                <XIcon className="w-4 h-4 text-sky-400 group-hover:scale-110 transition-transform" />
+                <XIcon className="w-4 h-4 text-sky-400 group-hover:scale-110 transition-transform flex-shrink-0" />
                 <span className="font-medium text-xs md:text-sm">X</span>
-                <ExternalLink className="w-2 h-2 md:w-3 md:h-3 opacity-0 group-hover:opacity-100 transition-opacity" />
+                <ExternalLink className="w-2 h-2 md:w-3 md:h-3 opacity-0 group-hover:opacity-100 transition-opacity ml-1" />
               </motion.a>
               
               <motion.a
                 href="https://discord.com/oauth2/authorize?client_id=1328499706162315334"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center gap-2 text-gray-300 hover:text-white transition-all duration-300 group justify-center"
+                className="flex items-center gap-2 text-gray-300 hover:text-white transition-all duration-300 group w-fit"
                 whileHover={{ x: 3 }}
               >
-                <Bot className="w-4 h-4 text-indigo-400 group-hover:scale-110 transition-transform" />
+                <Bot className="w-4 h-4 text-indigo-400 group-hover:scale-110 transition-transform flex-shrink-0" />
                 <span className="font-medium text-xs md:text-sm">Bot</span>
-                <ExternalLink className="w-2 h-2 md:w-3 md:h-3 opacity-0 group-hover:opacity-100 transition-opacity" />
+                <ExternalLink className="w-2 h-2 md:w-3 md:h-3 opacity-0 group-hover:opacity-100 transition-opacity ml-1" />
               </motion.a>
             </div>
           </motion.div>
 
           {/* Legal */}
           <motion.div 
-            className="text-center"
+            className="text-left ml-9"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.4 }}
           >
-            <div className="flex items-center gap-2 justify-center mb-2 md:mb-3">
+            <div className="flex items-center gap-2 mb-2 md:mb-3">
               <ExternalLink className="w-3 h-3 md:w-4 md:h-4 text-blue-400" />
               <h3 className="text-white font-semibold text-sm md:text-base">{t('footer.legal', 'Legal')}</h3>
             </div>
@@ -176,12 +177,36 @@ export default function Footer() {
             </div>
           </motion.div>
 
-          {/* Idioma */}
+          {/* Changelog */}
           <motion.div 
             className="text-center"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.5 }}
+          >
+            <div className="flex items-center gap-2 justify-center mb-2 md:mb-3">
+              <Package className="w-3 h-3 md:w-4 md:h-4 text-blue-400" />
+              <h3 className="text-white font-semibold text-sm md:text-base">{t('footer.changelog', 'Actualizaciones')}</h3>
+            </div>
+            <div className="space-y-1">
+              <Link 
+                href="/changelog" 
+                className="block text-xs text-gray-400 hover:text-white transition-colors"
+              >
+                <div className="flex items-center gap-1 justify-center">
+                  <Zap className="w-3 h-3" />
+                  {t('footer.viewChangelog', 'Ver Changelog')}
+                </div>
+              </Link>
+            </div>
+          </motion.div>
+
+          {/* Idioma */}
+          <motion.div 
+            className="text-center"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.6 }}
           >
             <div className="flex items-center gap-2 justify-center mb-2 md:mb-3">
               <Globe className="w-3 h-3 md:w-4 md:h-4 text-green-400" />

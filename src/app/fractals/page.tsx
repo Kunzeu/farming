@@ -48,7 +48,7 @@ export default function FarmingTrackerPage() {
   const [itemDetails, setItemDetails] = useState<Record<number, { icon: string; currentPrice: number; buyPrice: number; name: string }>>({});
   const [loading, setLoading] = useState(true);
   const [lastUpdate, setLastUpdate] = useState<Date>(new Date());
-  const [activeSection, setActiveSection] = useState<'fractal' | 'T1' | 'T2' | 'T3' | 'T4'>('T1');
+  const [activeSection, setActiveSection] = useState<'T1' | 'T2' | 'T3' | 'T4' | 'fractal-encryptions'>('T1');
 
   // Constantes para el cálculo de trofeos
   const ENCRYPTION_DATA = {
@@ -822,16 +822,16 @@ export default function FarmingTrackerPage() {
     if (typeof window === 'undefined') return;
     const applyHash = () => {
       const hash = window.location.hash.replace('#', '');
-      if (hash === 'T4') {
-        setActiveSection('T4');
-      } else if (hash === 'T1') {
+      if (hash === 'T1') {
         setActiveSection('T1');
       } else if (hash === 'T2') {
         setActiveSection('T2');
       } else if (hash === 'T3') {
         setActiveSection('T3');
-      } else if (hash === 'fractal') {
-        setActiveSection('fractal');
+      } else if (hash === 'T4') {
+        setActiveSection('T4');
+      } else if (hash === 'fractal-encryptions') {
+        setActiveSection('fractal-encryptions');
       }
     };
     applyHash();
@@ -1113,13 +1113,13 @@ export default function FarmingTrackerPage() {
                </button>
                <button
                  onClick={() => {
-                   setActiveSection('fractal');
+                   setActiveSection('T4');
                    if (typeof window !== 'undefined') {
-                     window.location.hash = 'fractal';
+                     window.location.hash = 'T4';
                    }
                  }}
                  className={`px-3 sm:px-4 md:px-6 py-2 md:py-3 rounded-lg font-semibold transition-all duration-200 text-sm md:text-base ${
-                   activeSection === 'fractal'
+                   activeSection === 'T4'
                      ? 'bg-blue-600 text-white shadow-lg'
                      : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
                  }`}
@@ -1128,13 +1128,13 @@ export default function FarmingTrackerPage() {
                </button>
                <button
                  onClick={() => {
-                   setActiveSection('T4');
+                   setActiveSection('fractal-encryptions');
                    if (typeof window !== 'undefined') {
-                     window.location.hash = 'T4';
+                     window.location.hash = 'fractal-encryptions';
                    }
                  }}
                  className={`px-3 sm:px-4 md:px-6 py-2 md:py-3 rounded-lg font-semibold transition-all duration-200 text-sm md:text-base ${
-                   activeSection === 'T4'
+                   activeSection === 'fractal-encryptions'
                      ? 'bg-teal-600 text-white shadow-lg'
                      : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
                  }`}
@@ -1829,9 +1829,9 @@ export default function FarmingTrackerPage() {
          )}
 
          {/* Fractal Section (T4) - Master's Chest */}
-         {activeSection === 'fractal' && (
+         {activeSection === 'T4' && (
            <>
-             <div id="fractal" className="invisible absolute -top-20"></div>
+             <div id="T4" className="invisible absolute -top-20"></div>
              {/* Stats Overview */}
              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-6 mb-6 md:mb-8">
                <div className="bg-gray-900/80 backdrop-blur-sm border border-gray-700 rounded-lg p-2 sm:p-3 shadow-2xl text-center sm:text-left">
@@ -2024,9 +2024,9 @@ export default function FarmingTrackerPage() {
          )}
 
          {/* Fractal Encryption Section */}
-         {activeSection === 'T4' && (
+         {activeSection === 'fractal-encryptions' && (
            <>
-             <div id="T4" className="invisible absolute -top-20"></div>
+             <div id="fractal-encryptions" className="invisible absolute -top-20"></div>
              {/* Data Source Info */}
              <div className="bg-blue-900/20 backdrop-blur-sm border border-blue-700/30 rounded-lg p-4 mb-6 md:mb-8">
                <div className="flex items-center gap-3">
