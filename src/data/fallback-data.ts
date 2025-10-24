@@ -149,13 +149,23 @@ export const FALLBACK_ITEMS = {
   coldPotion: createFallbackItem(35747, "Cold Potion", "https://wiki.guildwars2.com/images/3/35/Potent_Potion_of_Ice_Brood_Slaying.png", "Fine"),
   hardPotion: createFallbackItem(35748, "Hard Potion", "https://wiki.guildwars2.com/images/thumb/4/49/Potent_Potion_of_Ogre_Slaying.png/40px-Potent_Potion_of_Ogre_Slaying.png", "Fine"),
 
-  item8868: createFallbackItem(8868, "Potent Potion of Sons of Svanir Slaying", "https://wiki.guildwars2.com/images/2/25/Potent_Potion_of_Sons_of_Svanir_Slaying.png", "Basic"),
-  item13436: createFallbackItem(13436, "Emerald Mithril Earring", "https://wiki.guildwars2.com/images/6/6d/Emerald_Mithril_Earring.png", "Fine"),
-  item13437: createFallbackItem(13437, "Beryl Mithril Earring", "https://wiki.guildwars2.com/images/6/62/Beryl_Mithril_Earring.png", "Fine"),
-  item13435: createFallbackItem(13435, "Chrysocola Mithril Earring", "https://wiki.guildwars2.com/images/c/c6/Chrysocola_Mithril_Earring.png", "Fine"),
-  item13438: createFallbackItem(13438, "Sapphire Mithril Earring", "https://wiki.guildwars2.com/images/b/b5/Sapphire_Mithril_Earring.png", "Rare"),
-  item104934: createFallbackItem(104934, "Peer Reviewed Research", "https://wiki.guildwars2.com/images/9/9c/Peer_Reviewed_Research.png", "Rare"),
-  item104934B: createFallbackItem(104934, "Peer Reviewed Research", "https://wiki.guildwars2.com/images/9/9c/Peer_Reviewed_Research.png", "Rare"),
+  // Research Notes específicos
+  copperIngot8868: createFallbackItem(8868, "Copper Ingot", "https://wiki.guildwars2.com/images/8/8a/Copper_Ingot.png", "Basic", 0),
+  silverIngot13436: createFallbackItem(13436, "Silver Ingot", "https://wiki.guildwars2.com/images/6/6d/Silver_Ingot.png", "Fine", 0),
+  goldIngot13437: createFallbackItem(13437, "Gold Ingot", "https://wiki.guildwars2.com/images/6/62/Gold_Ingot.png", "Fine", 0),
+  platinumIngot13435: createFallbackItem(13435, "Platinum Ingot", "https://wiki.guildwars2.com/images/c/c6/Platinum_Ingot.png", "Fine", 0),
+  mithrilIngot13438: createFallbackItem(13438, "Mithril Ingot", "https://wiki.guildwars2.com/images/b/b5/Mithril_Ingot.png", "Rare", 0),
+  elderWoodPlank104934: createFallbackItem(104934, "Elder Wood Plank", "https://wiki.guildwars2.com/images/9/9c/Elder_Wood_Plank.png", "Rare", 0),
+  elderWoodPlank104934B: createFallbackItem(104934, "Elder Wood Plank", "https://wiki.guildwars2.com/images/9/9c/Elder_Wood_Plank.png", "Rare", 0),
+
+  // Items específicos para Research Notes (con IDs correctos)
+  item8868: createFallbackItem(8868, "Copper Ingot", "https://wiki.guildwars2.com/images/8/8a/Copper_Ingot.png", "Basic", 0),
+  item13436: createFallbackItem(13436, "Silver Ingot", "https://wiki.guildwars2.com/images/6/6d/Silver_Ingot.png", "Fine", 0),
+  item13437: createFallbackItem(13437, "Gold Ingot", "https://wiki.guildwars2.com/images/6/62/Gold_Ingot.png", "Fine", 0),
+  item13435: createFallbackItem(13435, "Platinum Ingot", "https://wiki.guildwars2.com/images/c/c6/Platinum_Ingot.png", "Fine", 0),
+  item13438: createFallbackItem(13438, "Mithril Ingot", "https://wiki.guildwars2.com/images/b/b5/Mithril_Ingot.png", "Rare", 0),
+  item104934: createFallbackItem(104934, "Elder Wood Plank", "https://wiki.guildwars2.com/images/9/9c/Elder_Wood_Plank.png", "Rare", 0),
+  item104934B: createFallbackItem(104934, "Elder Wood Plank", "https://wiki.guildwars2.com/images/9/9c/Elder_Wood_Plank.png", "Rare", 0),
 
 };
 
