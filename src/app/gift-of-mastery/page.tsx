@@ -7,6 +7,7 @@ import { usePageTitle } from '@/hooks/usePageTitle'
 import { useI18n } from '@/contexts/I18nContext'
 import Navigation from '@/components/layout/Navigation'
 import Image from 'next/image'
+import { FALLBACK_ITEMS, isOfflineMode, setApiOffline, setApiOnline } from '@/data/fallback-data'
 
 interface GiftOfMasteryItem {
   id: number
@@ -118,73 +119,104 @@ export default function GiftOfMasteryPage() {
     return `https://${wikiDomain}/wiki/${itemName.replace(/\s+/g, '_')}`
   }
 
-  // Función para obtener materiales de la API
-  const fetchMaterials = async (lang: string) => {
-    try {
-      const gw2Lang = getGW2LangCode(lang)
-      const itemIds = Object.values(ITEM_IDS).join(',')
-      
-      const response = await fetch(`https://api.guildwars2.com/v2/items?ids=${itemIds}&lang=${gw2Lang}`, {
-        headers: {
-          'Accept': 'application/json',
-          'Accept-Encoding': 'gzip, deflate, br'
-        }
-      })
-      
-      if (!response.ok) {
-        throw new Error(`Failed to fetch materials: ${response.status}`)
-      }
-      
-      const items = await response.json()
-      
-      const materialsMap: Record<string, GiftOfMasteryItem> = {}
-      
-      if (Array.isArray(items)) {
-        items.forEach((item: GiftOfMasteryItem) => {
-          // Encontrar la clave correspondiente al ID
-          const key = Object.keys(ITEM_IDS).find(k => ITEM_IDS[k as keyof typeof ITEM_IDS] === item.id)
-          if (key) {
-            materialsMap[key] = item
-          }
-        })
-      }
-      setMaterials(materialsMap)
-    } catch (error) {
-      console.error('Error fetching materials:', error)
-      // Establecer un estado vacío para evitar que se quede cargando
-      setMaterials({})
-    }
-  }
 
   useEffect(() => {
+    // Función para obtener materiales de la API
+    const fetchMaterials = async (lang: string) => {
+      try {
+        const gw2Lang = getGW2LangCode(lang)
+        const itemIds = Object.values(ITEM_IDS).join(',')
+        
+        const response = await fetch(`https://api.guildwars2.com/v2/items?ids=${itemIds}&lang=${gw2Lang}`, {
+          headers: {
+            'Accept': 'application/json',
+            'Accept-Encoding': 'gzip, deflate, br'
+          },
+          signal: AbortSignal.timeout(15000) // 15 segundos timeout
+        })
+        
+        if (!response.ok) {
+          throw new Error(`Failed to fetch materials: ${response.status}`)
+        }
+        
+        const items = await response.json()
+        
+        const materialsMap: Record<string, GiftOfMasteryItem> = {}
+        
+        if (Array.isArray(items)) {
+          items.forEach((item: GiftOfMasteryItem) => {
+            // Encontrar la clave correspondiente al ID
+            const key = Object.keys(ITEM_IDS).find(k => ITEM_IDS[k as keyof typeof ITEM_IDS] === item.id)
+            if (key) {
+              materialsMap[key] = item
+            }
+          })
+        }
+        setMaterials(materialsMap)
+      } catch (error) {
+        console.error('Error fetching materials:', error)
+        // En caso de error, usar datos de fallback
+        setMaterials(FALLBACK_ITEMS)
+        throw error // Re-lanzar para que el catch principal lo maneje
+      }
+    }
+
     const fetchData = async () => {
       try {
         setLoading(true)
         setError(null)
 
-        const gw2Lang = getGW2LangCode(lang)
-        
-        // Obtener el item principal primero
-        const itemResponse = await fetch(`https://api.guildwars2.com/v2/items/19674?lang=${gw2Lang}`, {
-          headers: {
-            'Accept': 'application/json',
-            'Accept-Encoding': 'gzip, deflate, br'
-          }
-        })
-        
-        if (!itemResponse.ok) {
-          throw new Error('Failed to fetch item from GW2 API')
+        // Verificar si estamos en modo offline
+        if (isOfflineMode()) {
+          console.log('Using fallback data - API is offline')
+          setItem(FALLBACK_ITEMS.giftOfMastery)
+          setMaterials(FALLBACK_ITEMS)
+          setLoading(false)
+          return
         }
 
-        const data = await itemResponse.json()
-        setItem(data)
+        const gw2Lang = getGW2LangCode(lang)
         
-        // Luego obtener los materiales (sin bloquear la carga principal)
-        fetchMaterials(lang)
+        // Intentar obtener el item principal
+        try {
+          const itemResponse = await fetch(`https://api.guildwars2.com/v2/items/19674?lang=${gw2Lang}`, {
+            headers: {
+              'Accept': 'application/json',
+              'Accept-Encoding': 'gzip, deflate, br'
+            },
+            signal: AbortSignal.timeout(10000) // 10 segundos timeout
+          })
+          
+          if (!itemResponse.ok) {
+            throw new Error('Failed to fetch item from GW2 API')
+          }
+
+          const data = await itemResponse.json()
+          setItem(data)
+          setApiOnline() // Marcar API como online si funciona
+          
+        } catch (itemErr) {
+          console.warn('Failed to fetch item, using fallback:', itemErr)
+          setItem(FALLBACK_ITEMS.giftOfMastery)
+          setApiOffline() // Marcar API como offline
+        }
+        
+        // Intentar obtener los materiales
+        try {
+          await fetchMaterials(lang)
+        } catch (materialsErr) {
+          console.warn('Failed to fetch materials, using fallback:', materialsErr)
+          setMaterials(FALLBACK_ITEMS)
+          setApiOffline() // Marcar API como offline
+        }
         
       } catch (err) {
         console.error('Error fetching data:', err)
-        setError(err instanceof Error ? err.message : 'Unknown error')
+        // En caso de error total, usar datos de fallback
+        setItem(FALLBACK_ITEMS.giftOfMastery)
+        setMaterials(FALLBACK_ITEMS)
+        setApiOffline()
+        setError('API no disponible - mostrando datos de respaldo')
       } finally {
         setLoading(false)
       }
@@ -359,7 +391,7 @@ export default function GiftOfMasteryPage() {
     )
   }
 
-  if (error) {
+  if (error && !item) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-900 to-slate-800 flex flex-col">
         <Navigation />
@@ -384,6 +416,27 @@ export default function GiftOfMasteryPage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 to-slate-800 flex flex-col" style={{ scrollBehavior: 'smooth' }}>
         <Navigation />
+        
+        {/* Banner informativo cuando se usan datos de fallback */}
+        {error && item && (
+          <div className="bg-yellow-900/20 border-b border-yellow-500/30 px-4 py-3">
+            <div className="container mx-auto flex items-center justify-between">
+              <div className="flex items-center space-x-3">
+                <div className="w-2 h-2 bg-yellow-400 rounded-full animate-pulse"></div>
+                <p className="text-yellow-200 text-sm">
+                  <strong>Modo offline:</strong> Mostrando datos de respaldo. La API de GW2 está temporalmente deshabilitada.
+                </p>
+              </div>
+              <button 
+                onClick={() => window.location.reload()}
+                className="text-yellow-300 hover:text-yellow-100 text-sm underline"
+              >
+                Reintentar
+              </button>
+            </div>
+          </div>
+        )}
+        
       <div className="container mx-auto px-4 py-8 flex-1">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
           {/* Sidebar sticky - Desktop Only */}
