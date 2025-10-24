@@ -9,6 +9,7 @@ import Image from 'next/image';
 import { usePageTitle } from '@/hooks/usePageTitle';
 import { useI18n } from '@/contexts/I18nContext';
 import { useEffect, useState, useMemo } from 'react';
+import { FALLBACK_ITEMS, isOfflineMode, setApiOffline, setApiOnline } from '@/data/fallback-data';
 
 interface GW2Item {
   id: number;
@@ -85,13 +86,14 @@ export default function ResearchNotesPage() {
    const [price24350, setPrice24350] = useState<GW2Price | null>(null);
    const [price24299, setPrice24299] = useState<GW2Price | null>(null);
    const [price12156, setPrice12156] = useState<GW2Price | null>(null);
-       const [price19722, setPrice19722] = useState<GW2Price | null>(null);
-    const [price19729, setPrice19729] = useState<GW2Price | null>(null);
-    const [price19748, setPrice19748] = useState<GW2Price | null>(null);
-         const [price68063, setPrice68063] = useState<GW2Price | null>(null);
-     const [price24475, setPrice24475] = useState<GW2Price | null>(null);
+   const [price19722, setPrice19722] = useState<GW2Price | null>(null);
+   const [price19729, setPrice19729] = useState<GW2Price | null>(null);
+   const [price19748, setPrice19748] = useState<GW2Price | null>(null);
+   const [price68063, setPrice68063] = useState<GW2Price | null>(null);
+   const [price24475, setPrice24475] = useState<GW2Price | null>(null);
   
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
      const [sortField, setSortField] = useState<'craftingLevel' | 'level' | 'notes' | 'buyPrice' | 'sellPrice' | 'craftingCost' | 'pricePerNote'>('craftingLevel');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
   const [craftingPriceSide, setCraftingPriceSide] = useState<'buy' | 'sell'>('sell');
@@ -279,6 +281,58 @@ export default function ResearchNotesPage() {
     const fetchItems = async () => {
       try {
         setLoading(true);
+        setError(null);
+        
+        // Verificar si estamos en modo offline
+        if (isOfflineMode()) {
+          console.log('Using fallback data - API is offline')
+          
+          // Usar datos de fallback para items
+          setItem8868(FALLBACK_ITEMS.item8868 as any);
+          setItem13436(FALLBACK_ITEMS.item13436 as any);
+          setItem13437(FALLBACK_ITEMS.item13437 as any);
+          setItem13435(FALLBACK_ITEMS.item13435 as any);
+          setItem104934(FALLBACK_ITEMS.item104934 as any);
+          setItem104934B(FALLBACK_ITEMS.item104934B as any);
+          setItem13438(FALLBACK_ITEMS.item13438 as any);
+          
+          // Usar datos de fallback para precios (con precios en 0)
+          const fallbackPrice = {
+            id: 0,
+            whitelisted: false,
+            buys: { unit_price: 0, quantity: 0 },
+            sells: { unit_price: 0, quantity: 0 }
+          };
+          
+          setPrice8868(fallbackPrice as any);
+          setPrice13436(fallbackPrice as any);
+          setPrice13437(fallbackPrice as any);
+          setPrice13435(fallbackPrice as any);
+          setPrice104934(fallbackPrice as any);
+          setPrice104934B(fallbackPrice as any);
+          setPrice13438(fallbackPrice as any);
+          
+          // Usar datos de fallback para materiales
+          setPrice19700(fallbackPrice as any);
+          setPrice24473(fallbackPrice as any);
+          setPrice24519(fallbackPrice as any);
+          setPrice24511(fallbackPrice as any);
+          setPrice24277(fallbackPrice as any);
+          setPrice24351(fallbackPrice as any);
+          setPrice24300(fallbackPrice as any);
+          setPrice24276(fallbackPrice as any);
+          setPrice24350(fallbackPrice as any);
+          setPrice24299(fallbackPrice as any);
+          setPrice12156(fallbackPrice as any);
+          setPrice19722(fallbackPrice as any);
+          setPrice19729(fallbackPrice as any);
+          setPrice19748(fallbackPrice as any);
+          setPrice68063(fallbackPrice as any);
+          setPrice24475(fallbackPrice as any);
+          
+          setLoading(false);
+          return;
+        }
         
                           // Obtener información de todos los items
                      // OPTIMIZADO: Una sola llamada batch en lugar de 7 llamadas individuales
@@ -287,8 +341,14 @@ export default function ResearchNotesPage() {
             headers: {
               'Accept': 'application/json',
               'Accept-Encoding': 'gzip, deflate, br'
-            }
+            },
+            signal: AbortSignal.timeout(15000) // 15 segundos timeout
           });
+          
+          if (!itemsResponse.ok) {
+            throw new Error('Failed to fetch items from GW2 API');
+          }
+          
           const itemsData = await itemsResponse.json();
           
           // Mapear resultados por ID
@@ -323,6 +383,7 @@ export default function ResearchNotesPage() {
          setItem104934(item104934Data as any);
          setItem104934B(item104934BData as any);
          setItem13438(item13438Data as any);
+         setApiOnline(); // Marcar API como online
 
           // Obtener precios de todos los items
         // OPTIMIZADO: Una sola llamada de precios batch en lugar de 7 llamadas individuales
@@ -399,6 +460,49 @@ export default function ResearchNotesPage() {
         
       } catch (error) {
         console.error('Error fetching items:', error);
+        // En caso de error total, usar datos de fallback
+        setItem8868(FALLBACK_ITEMS.item8868 as any);
+        setItem13436(FALLBACK_ITEMS.item13436 as any);
+        setItem13437(FALLBACK_ITEMS.item13437 as any);
+        setItem13435(FALLBACK_ITEMS.item13435 as any);
+        setItem104934(FALLBACK_ITEMS.item104934 as any);
+        setItem104934B(FALLBACK_ITEMS.item104934B as any);
+        setItem13438(FALLBACK_ITEMS.item13438 as any);
+        
+        const fallbackPrice = {
+          id: 0,
+          whitelisted: false,
+          buys: { unit_price: 0, quantity: 0 },
+          sells: { unit_price: 0, quantity: 0 }
+        };
+        
+        setPrice8868(fallbackPrice as any);
+        setPrice13436(fallbackPrice as any);
+        setPrice13437(fallbackPrice as any);
+        setPrice13435(fallbackPrice as any);
+        setPrice104934(fallbackPrice as any);
+        setPrice104934B(fallbackPrice as any);
+        setPrice13438(fallbackPrice as any);
+        
+        setPrice19700(fallbackPrice as any);
+        setPrice24473(fallbackPrice as any);
+        setPrice24519(fallbackPrice as any);
+        setPrice24511(fallbackPrice as any);
+        setPrice24277(fallbackPrice as any);
+        setPrice24351(fallbackPrice as any);
+        setPrice24300(fallbackPrice as any);
+        setPrice24276(fallbackPrice as any);
+        setPrice24350(fallbackPrice as any);
+        setPrice24299(fallbackPrice as any);
+        setPrice12156(fallbackPrice as any);
+        setPrice19722(fallbackPrice as any);
+        setPrice19729(fallbackPrice as any);
+        setPrice19748(fallbackPrice as any);
+        setPrice68063(fallbackPrice as any);
+        setPrice24475(fallbackPrice as any);
+        
+        setApiOffline();
+        setError('API no disponible - mostrando datos de respaldo');
       } finally {
         setLoading(false);
       }
@@ -488,6 +592,27 @@ export default function ResearchNotesPage() {
   return (
     <>
       <Navigation />
+      
+      {/* Banner informativo cuando se usan datos de fallback */}
+      {error && (
+        <div className="bg-yellow-900/20 border-b border-yellow-500/30 px-4 py-3">
+          <div className="container mx-auto flex items-center justify-between">
+            <div className="flex items-center space-x-3">
+              <div className="w-2 h-2 bg-yellow-400 rounded-full animate-pulse"></div>
+              <p className="text-yellow-200 text-sm">
+                <strong>Modo offline:</strong> Mostrando datos de respaldo. La API de GW2 está temporalmente deshabilitada.
+              </p>
+            </div>
+            <button 
+              onClick={() => window.location.reload()}
+              className="text-yellow-300 hover:text-yellow-100 text-sm underline"
+            >
+              Reintentar
+            </button>
+          </div>
+        </div>
+      )}
+      
       <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
         <div className="max-w-7xl mx-auto p-4 sm:p-6">
           {/* Hero Section with Back Button */}
