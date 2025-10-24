@@ -8,6 +8,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import Navigation from '@/components/layout/Navigation';
 import { usePageTitle } from '@/hooks/usePageTitle';
+import { FALLBACK_ITEMS, isOfflineMode, setApiOffline, setApiOnline } from '@/data/fallback-data';
 
 interface ItemData {
   id: number;
@@ -159,69 +160,156 @@ export default function OrrianJewelryBoxPage() {
         setError(null);
         setNoMarketData(false);
 
-        // Fetch item data
-        const itemResponse = await fetch(`https://api.guildwars2.com/v2/items/39088?lang=${lang}`, {
-          headers: {
-            'Accept': 'application/json',
-            'Accept-Encoding': 'gzip, deflate, br'
-          }
-        });
-        if (!itemResponse.ok) throw new Error('Failed to fetch item data');
-        const itemData: ItemData = await itemResponse.json();
+        // Verificar si estamos en modo offline
+        if (isOfflineMode()) {
+          console.log('Using fallback data - API is offline')
+          setItemData(FALLBACK_ITEMS.orrianJewelryBox)
+          
+          // Crear drop items de fallback
+          const fallbackDropItems: DropItem[] = DROP_ITEM_IDS.map(id => {
+            const fallbackItem = Object.values(FALLBACK_ITEMS).find(item => item.id === id)
+            return {
+              id,
+              name: fallbackItem?.name || `Item ${id}`,
+              icon: fallbackItem?.icon || 'https://wiki.guildwars2.com/images/8/8a/Unidentifiable_Object.png',
+              quantity: ITEM_QUANTITIES[id] || 0,
+              buyPrice: 0,
+              sellPrice: 0
+            }
+          })
+          setDropItems(fallbackDropItems)
+          setLoading(false)
+          return
+        }
 
-        // Fetch drop items data
+        // Intentar obtener el item principal
+        try {
+          const itemResponse = await fetch(`https://api.guildwars2.com/v2/items/39088?lang=${lang}`, {
+            headers: {
+              'Accept': 'application/json',
+              'Accept-Encoding': 'gzip, deflate, br'
+            },
+            signal: AbortSignal.timeout(10000) // 10 segundos timeout
+          });
+          
+          if (!itemResponse.ok) {
+            throw new Error('Failed to fetch item data')
+          }
+          
+          const itemData: ItemData = await itemResponse.json()
+          setItemData(itemData)
+          setApiOnline() // Marcar API como online si funciona
+          
+        } catch (itemErr) {
+          console.warn('Failed to fetch item, using fallback:', itemErr)
+          setItemData(FALLBACK_ITEMS.orrianJewelryBox)
+          setApiOffline() // Marcar API como offline
+        }
+
+        // Intentar obtener los drop items
         try {
           const dropItemsResponse = await fetch(`https://api.guildwars2.com/v2/items?ids=${DROP_ITEM_IDS.join(',')}&lang=${lang}`, {
             headers: {
               'Accept': 'application/json',
               'Accept-Encoding': 'gzip, deflate, br'
-            }
+            },
+            signal: AbortSignal.timeout(15000) // 15 segundos timeout
           });
+          
           if (dropItemsResponse.ok) {
             const dropItemsData: ItemData[] = await dropItemsResponse.json();
-            // OPTIMIZADO: Fetch prices con compresión
-            const pricesResponse = await fetch(`https://api.guildwars2.com/v2/commerce/prices?ids=${DROP_ITEM_IDS.join(',')}`, {
-              headers: {
-                'Accept': 'application/json',
-                'Accept-Encoding': 'gzip, deflate, br'
+            
+            // Intentar obtener precios
+            try {
+              const pricesResponse = await fetch(`https://api.guildwars2.com/v2/commerce/prices?ids=${DROP_ITEM_IDS.join(',')}`, {
+                headers: {
+                  'Accept': 'application/json',
+                  'Accept-Encoding': 'gzip, deflate, br'
+                },
+                signal: AbortSignal.timeout(10000) // 10 segundos timeout
+              });
+              
+              let pricesData: PriceData[] = [];
+              if (pricesResponse.ok) {
+                pricesData = await pricesResponse.json();
               }
-            });
-            let pricesData: PriceData[] = [];
-            
-            if (pricesResponse.ok) {
-              pricesData = await pricesResponse.json();
-            }
-            
-            // Create price map for easy lookup
-            const priceMap = new Map<number, PriceData>();
-            pricesData.forEach(price => {
-              priceMap.set(price.id, price);
-            });
-            
-            const formattedDropItems: DropItem[] = dropItemsData.map(item => {
-              const price = priceMap.get(item.id);
-              return {
+              
+              // Create price map for easy lookup
+              const priceMap = new Map<number, PriceData>();
+              pricesData.forEach(price => {
+                priceMap.set(price.id, price);
+              });
+              
+              const formattedDropItems: DropItem[] = dropItemsData.map(item => {
+                const price = priceMap.get(item.id);
+                return {
+                  id: item.id,
+                  name: item.name,
+                  icon: item.icon,
+                  quantity: ITEM_QUANTITIES[item.id] || 0,
+                  buyPrice: price?.buys?.unit_price || 0,
+                  sellPrice: price?.sells?.unit_price || 0
+                };
+              });
+              setDropItems(formattedDropItems);
+              setApiOnline() // Marcar API como online
+              
+            } catch (priceErr) {
+              console.warn('Failed to fetch prices, using items without prices:', priceErr)
+              const formattedDropItems: DropItem[] = dropItemsData.map(item => ({
                 id: item.id,
                 name: item.name,
                 icon: item.icon,
                 quantity: ITEM_QUANTITIES[item.id] || 0,
-                buyPrice: price?.buys?.unit_price || 0,
-                sellPrice: price?.sells?.unit_price || 0
-              };
-            });
-            setDropItems(formattedDropItems);
+                buyPrice: 0,
+                sellPrice: 0
+              }));
+              setDropItems(formattedDropItems);
+              setApiOffline() // Marcar API como offline
+            }
+            
           } else {
-            console.error('Failed to fetch drop items:', dropItemsResponse.status);
-            setDropWarning(t('orrianJewelryBoxPage.dropWarning', 'No se pudieron cargar los drops. Mostrando cantidades preconfiguradas.'));
+            throw new Error('Failed to fetch drop items')
           }
+          
         } catch (dropErr) {
-          console.error('Error fetching drop items:', dropErr);
-          setDropWarning(t('orrianJewelryBoxPage.dropWarning', 'No se pudieron cargar los drops. Mostrando cantidades preconfiguradas.'));
+          console.warn('Failed to fetch drop items, using fallback:', dropErr)
+          // Crear drop items de fallback
+          const fallbackDropItems: DropItem[] = DROP_ITEM_IDS.map(id => {
+            const fallbackItem = Object.values(FALLBACK_ITEMS).find(item => item.id === id)
+            return {
+              id,
+              name: fallbackItem?.name || `Item ${id}`,
+              icon: fallbackItem?.icon || 'https://wiki.guildwars2.com/images/8/8a/Unidentifiable_Object.png',
+              quantity: ITEM_QUANTITIES[id] || 0,
+              buyPrice: 0,
+              sellPrice: 0
+            }
+          })
+          setDropItems(fallbackDropItems)
+          setApiOffline() // Marcar API como offline
         }
-
-        setItemData(itemData);
+        
       } catch (err) {
-        setError(err instanceof Error ? err.message : 'Unknown error occurred');
+        console.error('Error fetching data:', err)
+        // En caso de error total, usar datos de fallback
+        setItemData(FALLBACK_ITEMS.orrianJewelryBox)
+        
+        // Crear drop items de fallback
+        const fallbackDropItems: DropItem[] = DROP_ITEM_IDS.map(id => {
+          const fallbackItem = Object.values(FALLBACK_ITEMS).find(item => item.id === id)
+          return {
+            id,
+            name: fallbackItem?.name || `Item ${id}`,
+            icon: fallbackItem?.icon || 'https://wiki.guildwars2.com/images/8/8a/Unidentifiable_Object.png',
+            quantity: ITEM_QUANTITIES[id] || 0,
+            buyPrice: 0,
+            sellPrice: 0
+          }
+        })
+        setDropItems(fallbackDropItems)
+        setApiOffline()
+        setError('API no disponible - mostrando datos de respaldo')
       } finally {
         setLoading(false);
       }
@@ -357,19 +445,40 @@ export default function OrrianJewelryBoxPage() {
         </div>
       </div>
     </>
-  ), [error]);
+  ), [error, t]);
 
   if (loading) {
     return LoadingComponent;
   }
 
-  if (error || !itemData) {
+  if (error && !itemData) {
     return ErrorComponent;
   }
 
   return (
     <>
       <Navigation />
+      
+      {/* Banner informativo cuando se usan datos de fallback */}
+      {error && itemData && (
+        <div className="bg-yellow-900/20 border-b border-yellow-500/30 px-4 py-3">
+          <div className="container mx-auto flex items-center justify-between">
+            <div className="flex items-center space-x-3">
+              <div className="w-2 h-2 bg-yellow-400 rounded-full animate-pulse"></div>
+              <p className="text-yellow-200 text-sm">
+                <strong>Modo offline:</strong> Mostrando datos de respaldo. La API de GW2 está temporalmente deshabilitada.
+              </p>
+            </div>
+            <button 
+              onClick={() => window.location.reload()}
+              className="text-yellow-300 hover:text-yellow-100 text-sm underline"
+            >
+              Reintentar
+            </button>
+          </div>
+        </div>
+      )}
+      
       <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white">
         <div className="max-w-7xl mx-auto p-6">
           {/* Header con navegación */}
@@ -420,8 +529,8 @@ export default function OrrianJewelryBoxPage() {
               {/* Item Icon */}
               <div className="flex-shrink-0">
                 <Image 
-                  src={itemData.icon} 
-                  alt={itemData.name}
+                  src={itemData?.icon || 'https://wiki.guildwars2.com/images/8/8a/Orrian_Jewelry_Box.png'} 
+                  alt={itemData?.name || 'Orrian Jewelry Box'}
                   width={96}
                   height={96}
                   className="w-24 h-24 rounded-lg border-2 border-slate-600/50"
@@ -431,7 +540,7 @@ export default function OrrianJewelryBoxPage() {
               {/* Item Details */}
               <div className="flex-1 text-center md:text-left">
                 <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
-                  <h2 className="text-2xl font-bold mb-2 md:mb-0">{itemData.name}</h2>
+                  <h2 className="text-2xl font-bold mb-2 md:mb-0">{itemData?.name || 'Orrian Jewelry Box'}</h2>
                   {/* Botón desktop (inline con el título) */}
                   <a 
                     href={wikiUrl}
@@ -442,7 +551,7 @@ export default function OrrianJewelryBoxPage() {
                     {t('salvagePages.viewWiki', 'Ver Wiki')}
                   </a>
                 </div>
-                <p className="text-gray-300 mb-4">{itemData.description}</p>
+                <p className="text-gray-300 mb-4">{itemData?.description || 'A mysterious box found in the depths of Orr.'}</p>
                 {/* Botón móvil (debajo del texto) */}
                 <div className="flex justify-center md:hidden">
                   <a 
