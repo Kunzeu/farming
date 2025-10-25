@@ -22,6 +22,7 @@ const getFestivals = (t: (key: string) => string) => [
     nameKey: 'festivals.names.lunar',
     descriptionKey: 'festivals.descriptions.lunar',
     icon: '/images/festivals/Lunar_New_Year.webp',
+    background: '/images/backgrounds/Lunar%20New%20Year.webp',
     color: 'from-red-900 to-red-500',
     status: getFestivalStatus(festivalDates.lunar.startDate, festivalDates.lunar.endDate, festivalDates.lunar.startTime, festivalDates.lunar.endTime, festivalDates.lunar.timezone),
     startDate: getFormattedDateRange(festivalDates.lunar.startDate, festivalDates.lunar.endDate, t),
@@ -42,6 +43,7 @@ const getFestivals = (t: (key: string) => string) => [
     nameKey: 'festivals.names.dragonBash',
     descriptionKey: 'festivals.descriptions.dragonBash',
     icon: '/images/festivals/Dragon_Bash.webp',
+    background: '/images/backgrounds/Dragonbash.webp',
     color: 'from-purple-500 to-pink-600',
     status: getFestivalStatus(festivalDates['dragon-bash'].startDate, festivalDates['dragon-bash'].endDate, festivalDates['dragon-bash'].startTime, festivalDates['dragon-bash'].endTime, festivalDates['dragon-bash'].timezone),
     startDate: getFormattedDateRange(festivalDates['dragon-bash'].startDate, festivalDates['dragon-bash'].endDate, t),
@@ -62,6 +64,7 @@ const getFestivals = (t: (key: string) => string) => [
     nameKey: 'festivals.names.fourWinds',
     descriptionKey: 'festivals.descriptions.fourWinds',
     icon: '/images/festivals/Four_Winds.webp',
+    background: '/images/backgrounds/Fourwinds.webp',
     color: 'from-green-500 to-blue-600',
     status: getFestivalStatus(festivalDates['four-winds'].startDate, festivalDates['four-winds'].endDate, festivalDates['four-winds'].startTime, festivalDates['four-winds'].endTime, festivalDates['four-winds'].timezone),
     startDate: getFormattedDateRange(festivalDates['four-winds'].startDate, festivalDates['four-winds'].endDate, t),
@@ -82,6 +85,7 @@ const getFestivals = (t: (key: string) => string) => [
     nameKey: 'festivals.names.halloween',
     descriptionKey: 'festivals.descriptions.halloween',
     icon: '/images/festivals/Shadow_of_the_Mad_King.webp',
+    background: '/images/backgrounds/Halloween.webp',
     color: 'from-orange-500 to-red-600',
     status: getFestivalStatus(festivalDates.halloween.startDate, festivalDates.halloween.endDate, festivalDates.halloween.startTime, festivalDates.halloween.endTime, festivalDates.halloween.timezone),
     startDate: getFormattedDateRange(festivalDates.halloween.startDate, festivalDates.halloween.endDate, t),
@@ -102,6 +106,7 @@ const getFestivals = (t: (key: string) => string) => [
     nameKey: 'festivals.names.wintersday',
     descriptionKey: 'festivals.descriptions.wintersday',
     icon: '/images/festivals/Wintersday.webp',
+    background: '/images/backgrounds/wintersday.webp',
     color: 'from-blue-500 to-cyan-600',
     status: getFestivalStatus(festivalDates.wintersday.startDate, festivalDates.wintersday.endDate, festivalDates.wintersday.startTime, festivalDates.wintersday.endTime, festivalDates.wintersday.timezone),
     startDate: getFormattedDateRange(festivalDates.wintersday.startDate, festivalDates.wintersday.endDate, t),
@@ -169,47 +174,59 @@ export default function FestivalsPage() {
                 transition={{ delay: 0.3 + index * 0.1 }}
                 className="group">
                 <Link href={festival.path}>
-                  <div className="bg-gray-900/80 backdrop-blur-sm border border-gray-700 rounded-lg p-6 hover:border-purple-500 transition-all duration-300 hover:transform hover:scale-105 flex flex-col h-full shadow-2xl">
-                    {/* Header */}
-                    <div className="flex items-center justify-between mb-4">
-                      <div className={`w-16 h-16 bg-gradient-to-br ${festival.color} rounded-lg flex items-center justify-center text-2xl overflow-hidden`}>
-                        {festival.icon.startsWith('/') ? (
-                          <Image 
-                            src={festival.icon} 
-                            alt={t(festival.nameKey)} 
-                            width={64}
-                            height={64}
-                            className="w-12 h-12 object-contain"
-                          />
-                        ) : (
-                          festival.icon
-                        )}
-                      </div>
-                      <span className={`px-2 py-1 rounded text-xs font-semibold ${getStatusColor(festival.status)}`}>
-                         {t(`status.${festival.status}`)}
-                      </span>
-                    </div>
-
-                    {/* Content */}
-                    <h3 className="text-xl font-bold text-white mb-4 group-hover:text-purple-400 transition-colors">
-                      {t(festival.nameKey)}
-                    </h3>
-
-                    {/* Dates */}
-                    <div className="flex items-center gap-2 mb-6">
-                      <Clock className="w-4 h-4 text-gray-500" />
-                      <span className="text-gray-300 text-sm">
-                        {festival.startDate}
-                      </span>
-                    </div>
-
-                    {/* CTA */}
-                    <div className="mt-auto">
-                      <div className="flex items-center justify-between">
-                        <span className="text-purple-400 text-sm font-semibold">
-                          {t('cta.viewCalculator')}
+                  <div 
+                    className="relative overflow-hidden rounded-lg p-6 hover:border-purple-500 transition-all duration-300 hover:transform hover:scale-105 flex flex-col h-full shadow-2xl hover:shadow-purple-500/20 border border-gray-700"
+                    style={{
+                      backgroundImage: `url(${festival.background || festival.icon})`,
+                      backgroundSize: 'cover',
+                      backgroundPosition: 'center',
+                      backgroundRepeat: 'no-repeat'
+                    }}
+                  >
+                    {/* Overlay para mejorar legibilidad */}
+                    <div className="absolute inset-0 bg-black/60 backdrop-blur-sm"></div>
+                    <div className="relative z-10 flex flex-col h-full">
+                      {/* Header */}
+                      <div className="flex items-center justify-between mb-4">
+                        <div className={`w-16 h-16 bg-gradient-to-br ${festival.color} rounded-lg flex items-center justify-center text-2xl overflow-hidden shadow-lg border border-white/20`}>
+                          {festival.icon.startsWith('/') ? (
+                            <Image 
+                              src={festival.icon} 
+                              alt={t(festival.nameKey)} 
+                              width={64}
+                              height={64}
+                              className="w-12 h-12 object-contain"
+                            />
+                          ) : (
+                            festival.icon
+                          )}
+                        </div>
+                        <span className={`px-2 py-1 rounded text-xs font-semibold ${getStatusColor(festival.status)}`}>
+                           {t(`status.${festival.status}`)}
                         </span>
-                        <TrendingUp className="w-4 h-4 text-purple-400 group-hover:translate-x-1 transition-transform" />
+                      </div>
+
+                      {/* Content */}
+                      <h3 className="text-xl font-bold text-white mb-4 group-hover:text-purple-400 transition-colors">
+                        {t(festival.nameKey)}
+                      </h3>
+
+                      {/* Dates */}
+                      <div className="flex items-center gap-2 mb-6">
+                        <Clock className="w-4 h-4 text-gray-300" />
+                        <span className="text-gray-200 text-sm">
+                          {festival.startDate}
+                        </span>
+                      </div>
+
+                      {/* CTA */}
+                      <div className="mt-auto">
+                        <div className="flex items-center justify-between">
+                          <span className="text-purple-300 text-sm font-semibold">
+                            {t('cta.viewCalculator')}
+                          </span>
+                          <TrendingUp className="w-4 h-4 text-purple-300 group-hover:translate-x-1 transition-transform" />
+                        </div>
                       </div>
                     </div>
                   </div>

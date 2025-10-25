@@ -16,7 +16,7 @@ const WintersdayPage = () => {
     <div
       className="min-h-screen relative"
       style={{
-        backgroundImage: 'url(/images/backgrounds/winsterday.webp)',
+        backgroundImage: 'url(/images/backgrounds/wintersday.webp)',
         backgroundSize: 'cover',
         backgroundPosition: 'center',
         backgroundAttachment: 'fixed'
