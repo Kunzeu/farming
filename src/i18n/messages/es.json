@@ -892,6 +892,7 @@
   "gardenPage.sections.gardenTypes.plants": "Plantas",
   "gardenPage.sections.gardenTypes.mineral": "Mineral",
   "gardenPage.sections.gardenTypes.wood": "Madera",
+  "gardenPage.sections.gardenTypes.consortiumSickle": "Hoz de recolección del Consorcio",
   "gardenPage.sections.gardenTypes.unboundMining": "Rayo de minería de magia liberada",
   "gardenPage.sections.gardenTypes.unboundLogging": "Pulso de tala de magia liberada",
   "gardenPage.sections.gardenTypes.fusedMoltenSickle": "Hoz fundida fusionada",
