@@ -333,24 +333,6 @@ export default function GiftOfJadeMasteryPage() {
     }
   }
 
-  const getRarityColor = (rarity: string) => {
-    switch (rarity.toLowerCase()) {
-      case 'legendary':
-        return 'from-yellow-400 to-yellow-600'
-      case 'ascended':
-        return 'from-purple-400 to-purple-600'
-      case 'exotic':
-        return 'from-orange-400 to-orange-600'
-      case 'rare':
-        return 'from-blue-400 to-blue-600'
-      case 'masterwork':
-        return 'from-green-400 to-green-600'
-      case 'fine':
-        return 'from-teal-400 to-teal-600'
-      default:
-        return 'from-gray-400 to-gray-600'
-    }
-  }
 
   // Componente para mostrar un material con su icono y nombre
   const MaterialItem = ({ materialKey, quantity, note }: { materialKey: string, quantity: number, note?: string }) => {
@@ -432,19 +414,6 @@ export default function GiftOfJadeMasteryPage() {
     )
   }
 
-  const formatVendorValue = (value: number) => {
-    const gold = Math.floor(value / 10000)
-    const silver = Math.floor((value % 10000) / 100)
-    const copper = value % 100
-    
-    if (gold > 0) {
-      return `${gold}g ${silver}s ${copper}c`
-    } else if (silver > 0) {
-      return `${silver}s ${copper}c`
-    } else {
-      return `${copper}c`
-    }
-  }
 
 
   if (loading) {

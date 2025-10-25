@@ -19,7 +19,6 @@ import {
   Star,
   Loader2
 } from 'lucide-react';
-import GlossaryLink from '@/components/ui/GlossaryLink';
 import { usePageTitle } from '@/hooks/usePageTitle';
 import { useI18n } from '@/contexts/I18nContext';
 
@@ -235,7 +234,7 @@ const CraftingPage = () => {
       89182, 24824, 89258, 74202, 74978,
       // Lodestones y otros items de UM
       24305, 24310, 24315, 24320, 24325, 24330, 70842, 68942, 24335, 72504, 76491, 75654, 72315, 74988, 24762, 100429, 24815,
-      // Item para Cargamento de trofeos
+      // Item para Trophy Shipment
       85725
     ];
     
@@ -2424,7 +2423,7 @@ const CraftingPage = () => {
                     {t('craftingPage.t6Analysis', 'Análisis de Materiales T6')}
                   </h2>
                                       <p className="text-gray-300 mb-4">
-                    {t('craftingPage.t6AnalysisDesc', 'Esta calculadora analiza la rentabilidad de convertir materiales de Nivel 5 a Nivel 6, así como el valor de la Magia Volátil y Magia Liberada. Los datos se basan en análisis de 500k {trophyBoxes} y 400k {magicBoxes} abiertos.').replace('{trophyBoxes}', tableItemNames[85725] || 'Cargamento de trofeos').replace('{magicBoxes}', tableItemNames[79186] || 'Lote retorcido por la magia')}
+                    {t('craftingPage.t6AnalysisDesc', 'Esta calculadora analiza la rentabilidad de convertir materiales de Nivel 5 a Nivel 6, así como el valor de la Magia Volátil y Magia Liberada. Los datos se basan en análisis de 500k {trophyBoxes} y 400k {magicBoxes} abiertos.').replace('{trophyBoxes}', tableItemNames[85725] || 'Trophy Shipment').replace('{magicBoxes}', tableItemNames[79186] || 'Magic-Warped Bundle')}
                   </p>
                   
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
@@ -2443,7 +2442,7 @@ const CraftingPage = () => {
                         {t('craftingPage.volatileMagic', 'Magia Volátil')}
                       </h3>
                       <p className="text-gray-300 text-sm">
-                        {t('craftingPage.volatileMagicAnalysis', 'Análisis de valor de la Magia Volátil basado en 500k de {trophyBoxes} abiertos').replace('{trophyBoxes}', tableItemNames[85725] || 'Cargamento de trofeos')}
+                        {t('craftingPage.volatileMagicAnalysis', 'Análisis de valor de la Magia Volátil basado en 500k de {trophyBoxes} abiertos').replace('{trophyBoxes}', tableItemNames[85725] || 'Trophy Shipment')}
                       </p>
                     </div>
                     <div className="bg-gradient-to-r from-purple-800/30 to-purple-700/30 rounded-lg p-4 border border-purple-600/30">
@@ -2452,7 +2451,7 @@ const CraftingPage = () => {
                         {t('craftingPage.unboundMagic', 'Magia Liberada')}
                       </h3>
                       <p className="text-gray-300 text-sm">
-                        {t('craftingPage.unboundMagicAnalysis', 'Análisis de valor de la Magia Liberada basado en 400k de {magicBoxes} abiertos').replace('{magicBoxes}', tableItemNames[79186] || 'Lote retorcido por la magia')}
+                        {t('craftingPage.unboundMagicAnalysis', 'Análisis de valor de la Magia Liberada basado en 400k de {magicBoxes} abiertos').replace('{magicBoxes}', tableItemNames[79186] || 'Magic-Warped Bundle')}
                       </p>
                     </div>
                   </div>
@@ -2465,10 +2464,10 @@ const CraftingPage = () => {
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
                       <div>
                         <p className="text-gray-300 mb-2">
-                          <span className="text-blue-200 font-semibold">{t('craftingPage.analysisDataDesc', '500k {trophyBoxes} analizados').replace('{trophyBoxes}', tableItemNames[85725] || 'Cargamento de trofeos')}</span>
+                          <span className="text-blue-200 font-semibold">{t('craftingPage.analysisDataDesc', '500k {trophyBoxes} analizados').replace('{trophyBoxes}', tableItemNames[85725] || 'Trophy Shipment')}</span>
                         </p>
                         <p className="text-gray-300 mb-2">
-                          <span className="text-purple-200 font-semibold">{t('craftingPage.analysisDataDesc2', '400k {magicBoxes} analizados').replace('{magicBoxes}', tableItemNames[79186] || 'Lote retorcido por la magia')}</span>
+                          <span className="text-purple-200 font-semibold">{t('craftingPage.analysisDataDesc2', '400k {magicBoxes} analizados').replace('{magicBoxes}', tableItemNames[79186] || 'Magic-Warped Bundle')}</span>
                         </p>
                         <p className="text-gray-400 text-xs" dangerouslySetInnerHTML={{ __html: t('craftingPage.dataProvided', 'Datos proporcionados por Vortus43') }}>
                         </p>
@@ -2541,12 +2540,12 @@ const CraftingPage = () => {
                      <div className="flex items-center justify-center gap-3">
                        <OptimizedImage 
                          src={tableItemIcons[85725] || "https://render.guildwars2.com/file/12280A76B8BF2B15ADFE092A0B9FF6EE442851EE/1894768.png"} 
-                         alt={tableItemNames[85725] || 'Cargamento de trofeos'} 
+                         alt={tableItemNames[85725] || 'Trophy Shipment'} 
                          className="w-8 h-8 sm:w-10 sm:h-10 flex-shrink-0"
                          priority={true}
                        />
                        <h4 className="text-lg font-semibold text-white">
-                         {tableItemNames[85725] || 'Cargamento de trofeos'}
+                         {tableItemNames[85725] || 'Trophy Shipment'}
                        </h4>
                      </div>
                    </div>
@@ -2653,7 +2652,7 @@ const CraftingPage = () => {
                       <div className="w-2 h-2 sm:w-3 sm:h-3 bg-blue-400 rounded-full animate-pulse flex-shrink-0"></div>
                       <div className="text-blue-300 text-xs md:text-base">
                         <strong>{t('craftingPage.table.dataSource', 'Fuente de Datos')}:</strong> {t('craftingPage.table.basedOn', 'Análisis basado en')}{' '}
-                        <span className="text-blue-200 font-bold">500k {tableItemNames[85725] || 'Cargamento de trofeos'}</span> {t('craftingPage.table.opened', 'abiertos')}
+                        <span className="text-blue-200 font-bold">500k {tableItemNames[85725] || 'Trophy Shipment'}</span> {t('craftingPage.table.opened', 'abiertos')}
                         <br />
                         <span className="text-blue-400 text-xs" dangerouslySetInnerHTML={{ __html: t('craftingPage.table.dataCredit', 'Datacredit: Vortus43') }}></span>
                       </div>
@@ -3559,7 +3558,7 @@ const CraftingPage = () => {
                   </div>
                         <h3 className="text-white font-semibold">{t('craftingPage.volatileMagic', 'Magia Volátil')}</h3>
                       </div>
-                      <p className="text-gray-300 text-sm">{t('craftingPage.volatileMagicStrategy', 'Gasta tu Magia Liberada en {trophyBoxes}, esto te ayudará a maximizar ganancias.').replace('{trophyBoxes}', tableItemNames[85725] || 'Cargamento de trofeos')}</p>
+                      <p className="text-gray-300 text-sm">{t('craftingPage.volatileMagicStrategy', 'Gasta tu Magia Liberada en {trophyBoxes}, esto te ayudará a maximizar ganancias.').replace('{trophyBoxes}', tableItemNames[85725] || 'Trophy Shipment')}</p>
                 </div>
 
                     <div className="bg-gradient-to-r from-purple-800/30 to-purple-700/30 rounded-lg p-4 border border-purple-600/30">
@@ -3569,7 +3568,7 @@ const CraftingPage = () => {
                         </div>
                         <h3 className="text-white font-semibold">{t('craftingPage.unboundMagic', 'Magia Liberada')}</h3>
                       </div>
-                      <p className="text-gray-300 text-sm">{t('craftingPage.unboundMagicStrategy', 'Gasta tu Magia Liberada en {magicBoxes}, esto te ayudará a maximizar ganancias.').replace('{magicBoxes}', tableItemNames[79186] || 'Lote retorcido por la magia')}</p>
+                      <p className="text-gray-300 text-sm">{t('craftingPage.unboundMagicStrategy', 'Gasta tu Magia Liberada en {magicBoxes}, esto te ayudará a maximizar ganancias.').replace('{magicBoxes}', tableItemNames[79186] || 'Magic-Warped Bundle')}</p>
                     </div>
                     
                     <div className="bg-gradient-to-r from-yellow-800/30 to-yellow-700/30 rounded-lg p-4 border border-yellow-600/30">
@@ -3596,7 +3595,7 @@ const CraftingPage = () => {
                         <div className="w-2 h-2 bg-yellow-400 rounded-full mt-2 flex-shrink-0"></div>
                         <div>
                           <h4 className="text-white font-semibold">{t('craftingPage.droprateAnalysis', 'Análisis de Droprates')}</h4>
-                          <p className="text-gray-300 text-sm">{t('craftingPage.droprateAnalysisDesc', 'Los droprates están calculados con precisión basados en 500k {trophyBoxes} y 400k {magicBoxes} analizados. Confía en los datos para tomar decisiones.').replace('{trophyBoxes}', tableItemNames[85725] || 'Cargamento de trofeos').replace('{magicBoxes}', tableItemNames[79186] || 'Lote retorcido por la magia')}</p>
+                          <p className="text-gray-300 text-sm">{t('craftingPage.droprateAnalysisDesc', 'Los droprates están calculados con precisión basados en 500k {trophyBoxes} y 400k {magicBoxes} analizados. Confía en los datos para tomar decisiones.').replace('{trophyBoxes}', tableItemNames[85725] || 'Trophy Shipment').replace('{magicBoxes}', tableItemNames[79186] || 'Magic-Warped Bundle')}</p>
                         </div>
                       </div>
                       <div className="flex items-start gap-3">
@@ -3612,7 +3611,7 @@ const CraftingPage = () => {
                         <div className="w-2 h-2 bg-yellow-400 rounded-full mt-2 flex-shrink-0"></div>
                         <div>
                           <h4 className="text-white font-semibold">{t('craftingPage.currencyOptimization', 'Optimización de Divisas')}</h4>
-                          <p className="text-gray-300 text-sm">{t('craftingPage.currencyOptimizationDesc', 'Prioriza conversiones T6 con mayor Profit Max. Usa {trophyBoxes} para Magia Volátil y {magicBoxes} para Magia Liberada.').replace('{trophyBoxes}', tableItemNames[85725] || 'Cargamento de trofeos').replace('{magicBoxes}', tableItemNames[79186] || 'Lote retorcido por la magia')}</p>
+                          <p className="text-gray-300 text-sm">{t('craftingPage.currencyOptimizationDesc', 'Prioriza conversiones T6 con mayor Profit Max. Usa {trophyBoxes} para Magia Volátil y {magicBoxes} para Magia Liberada.').replace('{trophyBoxes}', tableItemNames[85725] || 'Trophy Shipment').replace('{magicBoxes}', tableItemNames[79186] || 'Magic-Warped Bundle')}</p>
                         </div>
                       </div>
                       <div className="flex items-start gap-3">
@@ -4072,12 +4071,12 @@ const CraftingPage = () => {
                   <div className="text-center mb-6">
                     <div className="flex items-center justify-center gap-3">
                       <OptimizedImage 
-                        src={tableItemIcons[79186] || "https://render.guildwars2.com/file/6B604A6F7A5A4A4A4A4A4A4A4A4A4A4A4A4A4A4A/66950.png"} 
-                        alt={tableItemNames[79186] || 'Lote retorcido por la magia'} 
+                        src={tableItemIcons[79186] || "https://wiki.guildwars2.com/images/f/ff/Magic-Warped_Bundle.png"} 
+                        alt={tableItemNames[79186] || 'Magic-Warped Bundle'} 
                         className="w-8 h-8 sm:w-10 sm:h-10 flex-shrink-0"
                       />
                       <h4 className="text-lg font-semibold text-white">
-                        {tableItemNames[79186] || 'Lote retorcido por la magia'}
+                        {tableItemNames[79186] || 'Magic-Warped Bundle'}
                       </h4>
                     </div>
                   </div>
@@ -5147,7 +5146,7 @@ const CraftingPage = () => {
                       <div className="w-2 h-2 sm:w-3 sm:h-3 bg-blue-400 rounded-full animate-pulse flex-shrink-0"></div>
                       <div className="text-blue-300 text-xs md:text-base">
                         <strong>{t('craftingPage.table.dataSource', 'Fuente de Datos')}:</strong> {t('craftingPage.table.basedOn', 'Análisis basado en')}{' '}
-                        <span className="text-blue-200 font-bold">400k {tableItemNames[79186] || 'Lote retorcido por la magia'}</span> {t('craftingPage.table.opened', 'abiertos')}
+                        <span className="text-blue-200 font-bold">400k {tableItemNames[79186] || 'Magic-Warped Bundle'}</span> {t('craftingPage.table.opened', 'abiertos')}
                         <br />
                         <span className="text-blue-400 text-xs" dangerouslySetInnerHTML={{ __html: t('craftingPage.table.dataCredit', 'Datacredit: Vortus43') }}></span>
                       </div>
