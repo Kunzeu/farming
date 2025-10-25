@@ -5,31 +5,35 @@ import { useState, useEffect } from 'react';
 import { 
   BookOpen, 
   ArrowLeft,
-  Coins,
-  Package,
   Zap,
   Star,
-  AlertCircle,
-  CheckCircle,
   Info,
-  TrendingUp,
-  RefreshCw,
-  Target,
   ShoppingCart,
-  Wrench,
   ArrowRight,
-  MessageCircle,
-  Lightbulb,
-  ChevronLeft,
-  ChevronRight,
-  X,
-  Loader2
+  X
 } from 'lucide-react';
 import { usePageTitle } from '@/hooks/usePageTitle';
 import { useI18n } from '@/contexts/I18nContext';
 import Navigation from '@/components/layout/Navigation';
 import Image from 'next/image';
 import Link from 'next/link';
+
+// IDs de los materiales T5 (constantes fuera del componente)
+const T5_MATERIAL_IDS = {
+  totem: 24299,
+  fang: 24288,
+  scale: 24356,
+  blood: 24294,
+  bone: 24341,
+  claw: 24350,
+  venom: 24282
+};
+
+// ID del polvo brillante
+const T6_DUST_ID = 24277;
+
+// ID de las piedras filosofales
+const PHILOSOPHER_STONE_ID = 20796;
 
 export default function ConversionGuidePage() {
   const { t, lang } = useI18n();
@@ -40,81 +44,9 @@ export default function ConversionGuidePage() {
   const [materialIcons, setMaterialIcons] = useState<Record<number, string>>({});
   const [materialNames, setMaterialNames] = useState<Record<number, string>>({});
   const [imageModalOpen, setImageModalOpen] = useState(false);
-  const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [modalImageSrc, setModalImageSrc] = useState('');
   const [modalImageAlt, setModalImageAlt] = useState('');
-  
-  // Array de imágenes disponibles
-  const images = [
-    {
-      src: "/thumbnails/weapons-table-1024x576.png", 
-      alt: t('conversionGuidePage.images.conversionTable')
-    },
-    {
-      src: "/thumbnails/legendariaw-1024x576.webp", 
-      alt: t('conversionGuidePage.images.mysticForge')
-    }
-  ];
 
-  // Funciones para navegar entre imágenes
-  const nextImage = () => {
-    setCurrentImageIndex((prev) => (prev + 1) % images.length);
-  };
-
-  const prevImage = () => {
-    setCurrentImageIndex((prev) => (prev - 1 + images.length) % images.length);
-  };
-
-  // IDs de los materiales T5
-  const T5_MATERIAL_IDS = {
-    totem: 24299,
-    fang: 24288,
-    scale: 24356,
-    blood: 24294,
-    bone: 24341,
-    claw: 24350,
-    venom: 24282
-  };
-
-  // ID del polvo brillante
-  const T6_DUST_ID = 24277;
-  
-  // ID de las piedras filosofales
-  const PHILOSOPHER_STONE_ID = 20796;
-
-  // Función para obtener los iconos y nombres de los materiales T5 y polvo brillante
-  const fetchMaterialIcons = async () => {
-    try {
-      const itemIds = [...Object.values(T5_MATERIAL_IDS), T6_DUST_ID, PHILOSOPHER_STONE_ID].join(',');
-      const response = await fetch(`https://api.guildwars2.com/v2/items?ids=${itemIds}&lang=${lang}`, {
-        headers: {
-          'Accept': 'application/json',
-          'Accept-Encoding': 'gzip, deflate, br'
-        }
-      });
-      
-      if (response.ok) {
-        const items = await response.json();
-        const icons: Record<number, string> = {};
-        const names: Record<number, string> = {};
-        
-        items.forEach((item: { id: number; icon?: string; name?: string }) => {
-          if (item.icon) {
-            icons[item.id] = item.icon;
-          }
-          if (item.name) {
-            names[item.id] = item.name;
-          }
-        });
-        
-        console.log('Material names loaded:', names);
-        setMaterialIcons(icons);
-        setMaterialNames(names);
-      }
-    } catch (error) {
-      console.error('Error fetching material icons:', error);
-    }
-  };
 
   // Función helper para obtener el nombre de un material
   const getMaterialName = (materialId: number, fallback: string) => {
@@ -137,6 +69,39 @@ export default function ConversionGuidePage() {
 
   // Cargar iconos de materiales al montar el componente y cuando cambie el idioma
   useEffect(() => {
+    const fetchMaterialIcons = async () => {
+      try {
+        const itemIds = [...Object.values(T5_MATERIAL_IDS), T6_DUST_ID, PHILOSOPHER_STONE_ID].join(',');
+        const response = await fetch(`https://api.guildwars2.com/v2/items?ids=${itemIds}&lang=${lang}`, {
+          headers: {
+            'Accept': 'application/json',
+            'Accept-Encoding': 'gzip, deflate, br'
+          }
+        });
+        
+        if (response.ok) {
+          const items = await response.json();
+          const icons: Record<number, string> = {};
+          const names: Record<number, string> = {};
+          
+          items.forEach((item: { id: number; icon?: string; name?: string }) => {
+            if (item.icon) {
+              icons[item.id] = item.icon;
+            }
+            if (item.name) {
+              names[item.id] = item.name;
+            }
+          });
+          
+          console.log('Material names loaded:', names);
+          setMaterialIcons(icons);
+          setMaterialNames(names);
+        }
+      } catch (error) {
+        console.error('Error fetching material icons:', error);
+      }
+    };
+
     fetchMaterialIcons();
   }, [lang]);
 

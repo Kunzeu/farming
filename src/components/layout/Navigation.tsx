@@ -21,7 +21,6 @@ import {
   Crown,
   ShoppingCart,
   Star,
-  FileText,
   Gift
 } from 'lucide-react';
 import { useI18n } from '@/contexts/I18nContext';
@@ -344,7 +343,7 @@ const Navigation = () => {
     { href: '/garden', label: t('gardenPage.titleShort', 'Jardín'), icon: Star },
     { href: '/gift-of-mastery', label: t('nav.giftOfMastery', 'Gift of Mastery'), icon: 'GOM', isImage: true },
     { href: '/gift-of-jade-mastery', label: t('nav.giftOfJadeMastery', 'Gift of Jade Mastery'), icon: 'GOJM', isImage: true },
-    { href: '/glossary', label: t('nav.glossary', 'Glosario'), icon: FileText },
+    { href: '/glossary', label: t('nav.glossary', 'Glosario'), icon: 'Glosary', isImage: true },
     { href: '/festivals/halloween/labyrinth-guide', label: t('pageTitles.halloweenLabyrinth', 'Guía del Laberinto de Halloween'), icon: 'Shadow_of_the_Mad_King', isImage: true },
   ];
 
@@ -354,7 +353,7 @@ const Navigation = () => {
     { href: '/festivals', label: t('nav.festivals', 'Festivales'), icon: 'Festival_Collections', isImage: true},
     { href: '/fractals', label: t('dashboard.farmingTracker.title', 'Fractales'), icon: 'fractal-relic', isImage: true },
     { href: '/ectogambling', label: t('ectogamblingPage.title', 'Ectogambling'), icon: 'ecto', isImage: true },
-    { href: '/opened', label: t('openedPage.title', 'Contenedores Abribles'), icon: Package },
+    { href: '/opened', label: t('openedPage.title', 'Contenedores Abribles'), icon: 'Community', isImage: true },
 
     // Solo mostrar Buyout Calculator para admins
     ...(user?.role === 'admin' ? [{ href: '/buyout', label: 'Buyout Calculator', icon: ShoppingCart }] : []),
@@ -498,7 +497,7 @@ const Navigation = () => {
                         onClick={() => handleGuidesMenuToggle(false)}>
                         {item.isImage ? (
                           <Image 
-                            src={`/images/${item.icon === 'GOM' || item.icon === 'GOJM' ? 'assets' : item.icon === 'Shadow_of_the_Mad_King' ? 'festivals' : 'expansions'}/${item.icon}.webp`} 
+                            src={`/images/${item.icon === 'GOM' || item.icon === 'GOJM' || item.icon === 'Glosary' || item.icon === 'Community' ? 'assets' : item.icon === 'Shadow_of_the_Mad_King' ? 'festivals' : 'expansions'}/${item.icon}.webp`} 
                             alt={item.label}
                             width={item.icon === 'Shadow_of_the_Mad_King' ? 48 : 32}
                             height={item.icon === 'Shadow_of_the_Mad_King' ? 48 : 32}
@@ -539,7 +538,7 @@ const Navigation = () => {
                         onClick={() => handleToolsMenuToggle(false)}>
                         {item.isImage ? (
                           <Image 
-                            src={`/images/${item.icon === 'GOM' || item.icon === 'GOJM' ? 'assets' : item.icon === 'Shadow_of_the_Mad_King' ? 'festivals' : 'expansions'}/${item.icon}.webp`} 
+                            src={`/images/${item.icon === 'GOM' || item.icon === 'GOJM' || item.icon === 'Glosary' || item.icon === 'Community' ? 'assets' : item.icon === 'Shadow_of_the_Mad_King' ? 'festivals' : 'expansions'}/${item.icon}.webp`} 
                             alt={item.label}
                             width={16}
                             height={16}
@@ -721,7 +720,7 @@ const Navigation = () => {
                           className="flex items-center space-x-3 px-3 py-3 text-gray-300 hover:text-white hover:bg-gray-700 rounded-md transition-colors duration-200">
                           {item.isImage ? (
                             <Image 
-                              src={`/images/${item.icon === 'GOM' || item.icon === 'GOJM' ? 'assets' : item.icon === 'Shadow_of_the_Mad_King' ? 'festivals' : 'expansions'}/${item.icon}.webp`} 
+                              src={`/images/${item.icon === 'GOM' || item.icon === 'GOJM' || item.icon === 'Glosary' || item.icon === 'Community' ? 'assets' : item.icon === 'Shadow_of_the_Mad_King' ? 'festivals' : 'expansions'}/${item.icon}.webp`} 
                               alt={item.label}
                               width={item.icon === 'Shadow_of_the_Mad_King' ? 32 : 16}
                               height={item.icon === 'Shadow_of_the_Mad_King' ? 32 : 16}
@@ -755,7 +754,7 @@ const Navigation = () => {
                                 className="flex items-center space-x-3 px-3 py-3 text-gray-300 hover:text-white hover:bg-gray-700 rounded-md transition-colors duration-200">
                                 {item.isImage ? (
                                   <Image 
-                                    src={`/images/${item.icon === 'GOM' || item.icon === 'GOJM' ? 'assets' : item.icon === 'Shadow_of_the_Mad_King' ? 'festivals' : 'expansions'}/${item.icon}.webp`} 
+                                    src={`/images/${item.icon === 'GOM' || item.icon === 'GOJM' || item.icon === 'Glosary' || item.icon === 'Community' ? 'assets' : item.icon === 'Shadow_of_the_Mad_King' ? 'festivals' : 'expansions'}/${item.icon}.webp`} 
                                     alt={item.label}
                                     width={20}
                                     height={20}
@@ -792,7 +791,7 @@ const Navigation = () => {
                                 className="flex items-center space-x-3 px-3 py-3 text-gray-300 hover:text-white hover:bg-gray-700 rounded-md transition-colors duration-200">
                                 {item.isImage ? (
                                   <Image 
-                                    src={`/images/${item.icon === 'GOM' || item.icon === 'GOJM' ? 'assets' : item.icon === 'Shadow_of_the_Mad_King' ? 'festivals' : 'expansions'}/${item.icon}.webp`} 
+                                    src={`/images/${item.icon === 'GOM' || item.icon === 'GOJM' || item.icon === 'Glosary' || item.icon === 'Community' ? 'assets' : item.icon === 'Shadow_of_the_Mad_King' ? 'festivals' : 'expansions'}/${item.icon}.webp`} 
                                     alt={item.label}
                                     width={20}
                                     height={20}

@@ -7,26 +7,19 @@ import Navigation from '@/components/layout/Navigation';
 import Image from 'next/image';
 import Link from 'next/link';
 import { 
-  TreePine, 
-  Flower2, 
-  Star,
   Zap,
   ArrowLeft,
   Coins,
   BookOpen,
   Info,
   Target,
-  Users,
   MapPin,
-  Calendar,
   CheckCircle,
   Hammer,
   Copy,
-  Menu,
   X,
   ChevronLeft,
-  ChevronRight,
-  Search
+  ChevronRight
 } from 'lucide-react';
 import { useI18n } from '@/contexts/I18nContext';
 import { usePageTitle } from '@/hooks/usePageTitle';
@@ -695,16 +688,18 @@ const JardinesPage = () => {
                       <div className="bg-slate-700/50 rounded-lg p-4 border border-slate-600/50 space-y-3">
                         {/* Hoz del Consorcio */}
                         <div className="flex items-center gap-3">
-                        {consortiumSickleData?.icon && (
                           <Image
-                            src={consortiumSickleData.icon}
-                            alt={consortiumSickleData.name}
+                            src={consortiumSickleData?.icon || "https://wiki-es.guildwars2.com/images/3/3e/Hoz_de_recolecci%C3%B3n_del_Consorcio.png"}
+                            alt={consortiumSickleData?.name || t('gardenPage.sections.gardenTypes.consortiumSickle')}
                             width={24}
                             height={24}
                             className="w-6 h-6"
                             unoptimized
+                            onError={(e) => {
+                              const target = e.target as HTMLImageElement;
+                              target.src = "https://wiki.guildwars2.com/images/3/3e/Consortium_Harvesting_Sickle.png";
+                            }}
                           />
-                        )}
                           <span className="text-emerald-300 font-medium text-sm">
                             {consortiumSickleData?.name || t('gardenPage.sections.gardenTypes.consortiumSickle')}
                           </span>
@@ -712,22 +707,45 @@ const JardinesPage = () => {
                         
                         {/* Herramienta Alternativa */}
                         <div className="flex items-center gap-3">
-                        {alternativeSickleData?.icon && (
                           <Image
-                            src={alternativeSickleData.icon}
-                            alt={alternativeSickleData.name}
+                            src={alternativeSickleData?.icon || "https://wiki.guildwars2.com/images/d/df/Eldritch_Horror_Harvesting_Tool.png"}
+                            alt={alternativeSickleData?.name || t('gardenPage.sections.gardenTypes.eldritchHorrorHarvestingTool')}
                             width={24}
                             height={24}
                             className="w-6 h-6"
                             unoptimized
+                            onError={(e) => {
+                              const target = e.target as HTMLImageElement;
+                              target.src = "https://wiki.guildwars2.com/images/d/df/Eldritch_Horror_Harvesting_Tool.png";
+                            }}
                           />
-                        )}
                           <span className="text-emerald-300 font-medium text-sm">
-                            {alternativeSickleData?.name || 'Herramienta Alternativa'}
+                            {alternativeSickleData?.name || t('gardenPage.sections.gardenTypes.eldritchHorrorHarvestingTool')}
+                          </span>
+                        </div>
+
+                        {/* Herramienta Alternativa */}
+                        <div className="flex items-center gap-3">
+                          <Image
+                            src={alternativeSickleData?.icon || "https://wiki.guildwars2.com/images/1/1b/Fused_Molten_Sickle.png"}
+                            alt={alternativeSickleData?.name || t('gardenPage.sections.gardenTypes.fusedMoltenSickle')}
+                            width={24}
+                            height={24}
+                            className="w-6 h-6"
+                            unoptimized
+                            onError={(e) => {
+                              const target = e.target as HTMLImageElement;
+                              target.src = "https://wiki.guildwars2.com/images/1/1b/Fused_Molten_Sickle.png";
+                            }}
+                          />
+                          <span className="text-emerald-300 font-medium text-sm">
+                            {alternativeSickleData?.name || t('gardenPage.sections.gardenTypes.fusedMoltenSickle')}
                           </span>
                         </div>
                       </div>
                     </div>
+
+                    
 
                     {/* Mineral */}
                     <div className="bg-slate-800/50 backdrop-blur-sm border border-slate-700/50 rounded-xl p-8 hover:border-emerald-500/50 transition-all duration-200">
@@ -746,16 +764,18 @@ const JardinesPage = () => {
                   </div>
                       <div className="bg-slate-700/50 rounded-lg p-4 border border-slate-600/50">
                         <div className="flex items-center gap-3">
-                        {unboundMiningData?.icon && (
                           <Image
-                            src={unboundMiningData.icon}
-                            alt={unboundMiningData.name}
+                            src={unboundMiningData?.icon || "https://wiki.guildwars2.com/images/f/f2/Unbound_Magic_Mining_Beam.png"}
+                            alt={unboundMiningData?.name || t('gardenPage.sections.gardenTypes.unboundMining')}
                             width={24}
                             height={24}
                             className="w-6 h-6"
                             unoptimized
+                            onError={(e) => {
+                              const target = e.target as HTMLImageElement;
+                              target.src = "https://wiki.guildwars2.com/images/f/f2/Unbound_Magic_Mining_Beam.png";
+                            }}
                           />
-                        )}
                           <span className="text-emerald-300 font-medium text-sm">
                             {unboundMiningData?.name || t('gardenPage.sections.gardenTypes.unboundMining')}
                           </span>
@@ -780,16 +800,18 @@ const JardinesPage = () => {
                       </div>
                       <div className="bg-slate-700/50 rounded-lg p-4 border border-slate-600/50">
                         <div className="flex items-center gap-3">
-          {unboundLoggingData?.icon && (
-            <Image
-              src={unboundLoggingData.icon}
-              alt={unboundLoggingData.name}
-              width={24}
-              height={24}
-              className="w-6 h-6"
-              unoptimized
-            />
-          )}
+                          <Image
+                            src={unboundLoggingData?.icon || "https://wiki.guildwars2.com/images/c/c5/Unbound_Magic_Logging_Pulse.png"}
+                            alt={unboundLoggingData?.name || t('gardenPage.sections.gardenTypes.unboundLogging')}
+                            width={24}
+                            height={24}
+                            className="w-6 h-6"
+                            unoptimized
+                            onError={(e) => {
+                              const target = e.target as HTMLImageElement;
+                              target.src = "https://wiki.guildwars2.com/images/c/c5/Unbound_Magic_Logging_Pulse.png";
+                            }}
+                          />
                     <span className="text-emerald-300 font-medium text-sm">
                       {unboundLoggingData?.name || t('gardenPage.sections.gardenTypes.unboundLogging')}
                     </span>
@@ -808,33 +830,19 @@ const JardinesPage = () => {
                 className="text-gray-300 text-lg mb-16 -mt-8"
               >
                 <p className="mb-4">
-                  {volatileMagicGlyphData ? (
-                    <>
-                      {lang === 'es' && "Necesitarás al menos 1 "}
-                      {lang === 'en' && "You will need at least 1 "}
-                      {lang === 'fr' && "Vous aurez besoin d'au moins 1 "}
-                      {lang === 'de' && "Du wirst mindestens 1 "}
-                      <span className="text-emerald-400 font-semibold inline-flex items-center gap-1">
-                        <Image
-                          src={volatileMagicGlyphData.icon}
-                          alt={volatileMagicGlyphData.name}
-                          width={16}
-                          height={16}
-                          className="rounded inline"
-                          unoptimized
-                        />
-                        {volatileMagicGlyphData.name}
-                      </span>
-                      {lang === 'es' && ", de media, este glifo te dará 6 de magia volátil por cada nodo."}
-                      {lang === 'en' && ", on average, this glyph will give you 6 volatile magic per node."}
-                      {lang === 'fr' && ", en moyenne, ce glyphe vous donnera 6 magie volatile par nœud."}
-                      {lang === 'de' && ", im Durchschnitt gibt dir diese Glyphe 6 Flüchtige Magie pro Knoten."}
-                    </>
-                  ) : (
-                    <>
-                      {t('gardenPage.sections.glyphs.info')}
-                    </>
-                  )}
+                  {t('gardenPage.sections.glyphs.requirement')}
+                  <span className="text-emerald-400 font-semibold inline-flex items-center gap-1">
+                    <Image
+                      src={volatileMagicGlyphData?.icon || "https://wiki-es.guildwars2.com/images/d/d2/Glifo_de_volatilidad.png"}
+                      alt={volatileMagicGlyphData?.name || t('gardenPage.sections.glyphs.fallbackName')}
+                      width={16}
+                      height={16}
+                      className="rounded inline"
+                      unoptimized
+                    />
+                    {volatileMagicGlyphData?.name || t('gardenPage.sections.glyphs.fallbackName')}
+                  </span>
+                  {t('gardenPage.sections.glyphs.benefit')}
                 </p>
               </motion.div>
 
