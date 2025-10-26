@@ -1,6 +1,6 @@
 'use client';
 
-import { createContext, useContext, useReducer, useEffect, ReactNode, useCallback } from 'react';
+import { createContext, useContext, useReducer, useEffect, ReactNode, useCallback, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { AuthState, User, LoginCredentials, RegisterCredentials } from '@/types/auth';
 
@@ -21,7 +21,7 @@ type AuthAction =
   | { type: 'AUTH_SUCCESS'; payload: { user: User; token: string } }
   | { type: 'AUTH_FAILURE'; payload: string }
   | { type: 'AUTH_LOGOUT' }
-
+  | { type: 'REFRESH_USER'; payload: User }
   | { type: 'CLEAR_ERROR' };
 
 // Reducer
@@ -59,6 +59,12 @@ function authReducer(state: AuthState, action: AuthAction): AuthState {
         error: null,
         invalidationMessage: null,
       };
+    case 'REFRESH_USER':
+      return {
+        ...state,
+        user: action.payload,
+        invalidationMessage: null,
+      };
 
     case 'CLEAR_ERROR':
       return {
@@ -80,6 +86,7 @@ interface AuthContextType extends AuthState {
   clearError: () => void;
   hasPermission: (role: 'admin' | 'moderator' | 'user') => boolean;
   updateUser: (updates: Partial<User>) => Promise<void>;
+  refreshUserData: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -88,6 +95,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 function AuthProviderInternal({ children }: { children: ReactNode }) {
   const [state, dispatch] = useReducer(authReducer, initialState);
   const router = useRouter();
+  const lastInteractionRef = useRef<number>(Date.now());
 
   // Verificar token al cargar
   useEffect(() => {
@@ -425,6 +433,110 @@ function AuthProviderInternal({ children }: { children: ReactNode }) {
     }
   }, [state.user, state.token]);
 
+  // Función para refrescar datos del usuario desde la base de datos
+  const refreshUserData = useCallback(async () => {
+    if (!state.user) return;
+
+    try {
+      const response = await fetch(`/api/users/${state.user.id}?full=true`, {
+        cache: 'no-store',
+        headers: {
+          'Cache-Control': 'no-cache, no-store, must-revalidate',
+          'Pragma': 'no-cache',
+        }
+      });
+
+      if (!response.ok) {
+        // Si el usuario no existe o fue desactivado, hacer logout
+        if (response.status === 404 || response.status === 403) {
+          localStorage.removeItem('gw2_token');
+          localStorage.removeItem('gw2_user');
+          dispatch({ type: 'AUTH_LOGOUT' });
+          return;
+        }
+        throw new Error('Failed to refresh user data');
+      }
+
+      const data = await response.json();
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const { password: _, ...safeUser } = data;
+      
+      const refreshedUser: User = {
+        ...state.user,
+        email: safeUser.email,
+        username: safeUser.username,
+        role: safeUser.role,
+        isActive: safeUser.isActive,
+        discordId: safeUser.discordId,
+        gw2ApiKey: safeUser.gw2ApiKey,
+        preferences: safeUser.preferences,
+        isAdmin: safeUser.role === 'admin',
+        joinDate: state.user.joinDate,
+        lastLogin: state.user.lastLogin,
+      };
+
+      // Actualizar localStorage
+      localStorage.setItem('gw2_user', JSON.stringify(refreshedUser));
+
+      // Verificar si hubo cambios críticos
+      const roleChanged = state.user.role !== refreshedUser.role;
+      const wasActive = state.user.isActive;
+      const nowActive = refreshedUser.isActive;
+
+      // Si el rol cambió o el usuario fue desactivado, forzar logout
+      if (roleChanged || (wasActive && !nowActive)) {
+        localStorage.removeItem('gw2_token');
+        localStorage.removeItem('gw2_user');
+        dispatch({ type: 'AUTH_LOGOUT' });
+        return;
+      }
+
+      // Actualizar el contexto con los nuevos datos
+      dispatch({
+        type: 'REFRESH_USER',
+        payload: refreshedUser
+      });
+    } catch (error) {
+      console.error('Error refreshing user data:', error);
+    }
+  }, [state.user]);
+
+  // Verificar y refrescar datos del usuario periódicamente
+  useEffect(() => {
+    if (!state.isAuthenticated || !state.user) return;
+
+    // Verificar cada 30 segundos si los datos del usuario han cambiado
+    const interval = setInterval(() => {
+      refreshUserData();
+    }, 30000);
+
+    // Verificar cuando el usuario vuelve a la pestaña (onFocus)
+    const handleFocus = () => {
+      refreshUserData();
+    };
+
+    // Verificar cuando hay interacción del usuario (cualquier click o tecla)
+    const handleUserInteraction = () => {
+      // Debounce: solo ejecutar una vez cada 5 segundos
+      const now = Date.now();
+      if (now - lastInteractionRef.current > 5000) {
+        lastInteractionRef.current = now;
+        refreshUserData();
+      }
+    };
+
+    window.addEventListener('focus', handleFocus);
+    window.addEventListener('click', handleUserInteraction);
+    window.addEventListener('keydown', handleUserInteraction);
+
+    return () => {
+      clearInterval(interval);
+      window.removeEventListener('focus', handleFocus);
+      window.removeEventListener('click', handleUserInteraction);
+      window.removeEventListener('keydown', handleUserInteraction);
+    };
+  }, [state.isAuthenticated, state.user, refreshUserData]);
+
   const value: AuthContextType = {
     ...state,
     login,
@@ -434,6 +546,7 @@ function AuthProviderInternal({ children }: { children: ReactNode }) {
     clearError,
     hasPermission,
     updateUser,
+    refreshUserData,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
@@ -472,6 +585,7 @@ export function useAuth() {
         clearError: () => {},
         hasPermission: () => false,
         updateUser: async () => {},
+        refreshUserData: async () => {},
       };
     }
     throw new Error('useAuth debe ser usado dentro de un AuthProvider');

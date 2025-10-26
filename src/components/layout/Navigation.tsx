@@ -335,16 +335,19 @@ const Navigation = () => {
     { href: '/', label: t('nav.home', 'Home'), icon: Home },
     { href: '/farming-routes', label: t('nav.farms', 'Farms'), icon: Map },
     { href: '/salvage', label: t('nav.salvaging', 'Salvaging'), icon: Package },
+
   ];
 
   // Sección de Guías
   const guidesItems: NavItem[] = [
-    { href: '/conversion-guide', label: t('conversionGuidePage.title', 'Guía de Conversión'), icon: BookOpen },
+    { href: '/conversion-guide', label: t('conversionGuidePage.title', 'Guía de Conversión'), icon: 'conversion-guide', isImage: true },
     { href: '/garden', label: t('gardenPage.titleShort', 'Jardín'), icon: Star },
     { href: '/gift-of-mastery', label: t('nav.giftOfMastery', 'Gift of Mastery'), icon: 'GOM', isImage: true },
     { href: '/gift-of-jade-mastery', label: t('nav.giftOfJadeMastery', 'Gift of Jade Mastery'), icon: 'GOJM', isImage: true },
     { href: '/glossary', label: t('nav.glossary', 'Glosario'), icon: 'Glosary', isImage: true },
     { href: '/festivals/halloween/labyrinth-guide', label: t('pageTitles.halloweenLabyrinth', 'Guía del Laberinto de Halloween'), icon: 'Shadow_of_the_Mad_King', isImage: true },
+    { href: '/alt-parking', label: t('nav.altParking', 'Alt Parking'), icon: Package }, 
+
   ];
 
   // Sección de Herramientas
@@ -497,7 +500,7 @@ const Navigation = () => {
                         onClick={() => handleGuidesMenuToggle(false)}>
                         {item.isImage ? (
                           <Image 
-                            src={`/images/${item.icon === 'GOM' || item.icon === 'GOJM' || item.icon === 'Glosary' || item.icon === 'Community' ? 'assets' : item.icon === 'Shadow_of_the_Mad_King' ? 'festivals' : 'expansions'}/${item.icon}.webp`} 
+                            src={`/images/${item.icon === 'GOM' || item.icon === 'GOJM' || item.icon === 'Glosary' || item.icon === 'Community' || item.icon === 'conversion-guide' ? 'assets' : item.icon === 'Shadow_of_the_Mad_King' ? 'festivals' : 'expansions'}/${item.icon}.${item.icon === 'conversion-guide' ? 'gif' : 'webp'}`} 
                             alt={item.label}
                             width={item.icon === 'Shadow_of_the_Mad_King' ? 48 : 32}
                             height={item.icon === 'Shadow_of_the_Mad_King' ? 48 : 32}

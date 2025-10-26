@@ -11,6 +11,7 @@ import CookieBanner from "@/components/ui/CookieBanner";
 import ApiWarningBanner from "@/components/ui/ApiWarningBanner";
 import { Analytics } from "@vercel/analytics/next";
 import { generateDynamicMetadata } from "@/lib/metadata";
+import { AdProvider } from "@/contexts/AdContext";
 
 // Optimización de fuentes para Desktop
 const inter = Inter({ 
@@ -45,6 +46,20 @@ export default function RootLayout({
         {/* Scripts de Google Ads optimizados - carga diferida */}
         <script dangerouslySetInnerHTML={{
           __html: `
+            // Función para verificar si el usuario es admin o moderator
+            function isUserAdmin() {
+              try {
+                const userData = localStorage.getItem('gw2_user');
+                if (!userData) return false;
+                
+                const user = JSON.parse(userData);
+                // Verificar si es admin o moderator
+                return user.role === 'admin' || user.role === 'moderator';
+              } catch (e) {
+                return false;
+              }
+            }
+            
             // Carga diferida de Google Ads para reducir JavaScript no utilizado
             function loadGoogleAds() {
               if (typeof window === 'undefined' || window.adsbygoogle) return; // Ya cargado o SSR
@@ -58,19 +73,24 @@ export default function RootLayout({
             
             // Solo ejecutar en el cliente
             if (typeof window !== 'undefined') {
-              // Cargar Google Ads solo cuando sea necesario (scroll o interacción)
-              let adsLoaded = false;
-              function loadAdsOnInteraction() {
-                if (adsLoaded) return;
-                adsLoaded = true;
-                loadGoogleAds();
-              }
+              // Verificar si el usuario es admin o moderator antes de cargar ads
+              const isAdmin = isUserAdmin();
               
-              // Cargar después de 3 segundos o en la primera interacción
-              setTimeout(loadAdsOnInteraction, 3000);
-              document.addEventListener('scroll', loadAdsOnInteraction, { once: true });
-              document.addEventListener('click', loadAdsOnInteraction, { once: true });
-              document.addEventListener('touchstart', loadAdsOnInteraction, { once: true });
+              // Cargar Google Ads solo si NO es admin o moderator
+              if (!isAdmin) {
+                let adsLoaded = false;
+                function loadAdsOnInteraction() {
+                  if (adsLoaded) return;
+                  adsLoaded = true;
+                  loadGoogleAds();
+                }
+                
+                // Cargar después de 3 segundos o en la primera interacción
+                setTimeout(loadAdsOnInteraction, 3000);
+                document.addEventListener('scroll', loadAdsOnInteraction, { once: true });
+                document.addEventListener('click', loadAdsOnInteraction, { once: true });
+                document.addEventListener('touchstart', loadAdsOnInteraction, { once: true });
+              }
             }
           `
         }} />
@@ -206,6 +226,7 @@ export default function RootLayout({
         <CookieConsentProvider>
           <AuthProvider>
             <I18nProvider>
+              <AdProvider>
               <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex flex-col">
                 <RoleChecker />
                 <ApiWarningBanner />
@@ -219,6 +240,7 @@ export default function RootLayout({
                 <CookieBanner />
                 <Analytics />
               </div>
+              </AdProvider>
             </I18nProvider>
           </AuthProvider>
         </CookieConsentProvider>

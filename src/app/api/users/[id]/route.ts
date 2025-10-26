@@ -69,11 +69,20 @@ export async function GET(
       }
       
       const row = result.rows[0];
-      return NextResponse.json({
-        ...row,
-        createdAt: new Date(row.createdAt),
-        updatedAt: new Date(row.updatedAt)
-      });
+      return NextResponse.json(
+        {
+          ...row,
+          createdAt: new Date(row.createdAt),
+          updatedAt: new Date(row.updatedAt)
+        },
+        {
+          headers: {
+            'Cache-Control': 'no-cache, no-store, must-revalidate',
+            'Pragma': 'no-cache',
+            'Expires': '0'
+          }
+        }
+      );
     } else {
       // Por defecto, solo información mínima para verificación de rol
       const query = `
@@ -89,10 +98,19 @@ export async function GET(
       }
       
       const row = result.rows[0];
-      return NextResponse.json({
-        role: row.role,
-        isActive: row.isActive
-      });
+      return NextResponse.json(
+        {
+          role: row.role,
+          isActive: row.isActive
+        },
+        {
+          headers: {
+            'Cache-Control': 'no-cache, no-store, must-revalidate',
+            'Pragma': 'no-cache',
+            'Expires': '0'
+          }
+        }
+      );
     }
     
   } catch (error) {

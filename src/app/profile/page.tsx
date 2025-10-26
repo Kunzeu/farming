@@ -7,9 +7,6 @@ import ProtectedRoute from '@/components/auth/ProtectedRoute';
 import { useAuth } from '@/contexts/AuthContext';
 import { 
   User, 
-  Mail, 
-  Calendar,
-  Settings,
   Save,
   Edit,
   Shield,
