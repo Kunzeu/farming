@@ -40,11 +40,7 @@ export function useRoleCheck() {
       if (storedUser && currentUser.role !== storedUser.role) {
         isProcessingChange.current = true;
         
-        // Actualizar el localStorage con el nuevo rol
-        const updatedUser = { ...storedUser, role: currentUser.role };
-        localStorage.setItem('gw2_user', JSON.stringify(updatedUser));
-        
-        // Actualizar el contexto sin recargar la página
+        // Actualizar el contexto sin recargar la página - refreshUserData actualizará localStorage
         await refreshUserData();
         
         // Resetear el flag después de un breve delay
@@ -65,11 +61,7 @@ export function useRoleCheck() {
           window.location.href = '/';
           return;
         } else {
-          // Usuario reactivado, actualizar localStorage
-          const updatedUser = { ...storedUser, isActive: currentUser.isActive };
-          localStorage.setItem('gw2_user', JSON.stringify(updatedUser));
-          
-          // Actualizar el contexto sin recargar la página
+          // Usuario reactivado, actualizar el contexto
           await refreshUserData();
           
           // Resetear el flag después de un breve delay

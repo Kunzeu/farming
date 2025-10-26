@@ -478,20 +478,19 @@ function AuthProviderInternal({ children }: { children: ReactNode }) {
       // Actualizar localStorage
       localStorage.setItem('gw2_user', JSON.stringify(refreshedUser));
 
-      // Verificar si hubo cambios críticos
-      const roleChanged = state.user.role !== refreshedUser.role;
+      // Verificar si el usuario fue desactivado
       const wasActive = state.user.isActive;
       const nowActive = refreshedUser.isActive;
 
-      // Si el rol cambió o el usuario fue desactivado, forzar logout
-      if (roleChanged || (wasActive && !nowActive)) {
+      // Solo hacer logout si el usuario fue desactivado
+      if (wasActive && !nowActive) {
         localStorage.removeItem('gw2_token');
         localStorage.removeItem('gw2_user');
         dispatch({ type: 'AUTH_LOGOUT' });
         return;
       }
 
-      // Actualizar el contexto con los nuevos datos
+      // Actualizar el contexto con los nuevos datos (incluso si cambió el rol)
       dispatch({
         type: 'REFRESH_USER',
         payload: refreshedUser

@@ -91,7 +91,7 @@ export default function RootLayout({
                 document.addEventListener('touchstart', loadAdsOnInteraction, { once: true });
               }
             }
-          `
+s          `
         }} />
         
         {/* Meta tags para prevenir caché de HTML */}
