@@ -35,3 +35,21 @@ body {
 .animate-fade-in {
   animation: fade-in 0.6s ease-out;
 }
+
+/* Prevenir que los anuncios dinámicos rompan el footer */
+footer {
+  position: relative;
+  margin-top: auto;
+}
+
+/* Asegurar que el contenido después del footer no afecte el layout */
+footer ~ * {
+  clear: both;
+}
+
+/* Contenedor para anuncios que pueden insertarse dinámicamente */
+.ads-container {
+  margin: 20px 0;
+  max-width: 100%;
+  overflow: hidden;
+}
