@@ -229,22 +229,65 @@ export default function RootLayout({
               const footer = document.querySelector('footer');
               if (!footer) return;
               
+              // Ocultar elementos hermanos del footer
               let nextElement = footer.nextElementSibling;
               while (nextElement) {
+                // Si es un ad o contiene un ad
                 if (nextElement.classList.contains('adsbygoogle') || 
-                    nextElement.querySelector('.adsbygoogle')) {
+                    nextElement.querySelector('.adsbygoogle') ||
+                    nextElement.style.backgroundColor === 'rgb(0, 0, 0)' ||
+                    nextElement.style.background === 'rgb(0, 0, 0)') {
                   nextElement.style.display = 'none';
                   nextElement.style.height = '0';
                   nextElement.style.visibility = 'hidden';
+                  nextElement.style.margin = '0';
+                  nextElement.style.padding = '0';
                 }
                 nextElement = nextElement.nextElementSibling;
               }
+              
+              // También buscar todos los ins.adsbygoogle después del footer
+              const allAds = document.querySelectorAll('ins.adsbygoogle');
+              allAds.forEach(ad => {
+                if (footer.compareDocumentPosition(ad) === Node.DOCUMENT_POSITION_FOLLOWING) {
+                  ad.closest('div')?.style.setProperty('display', 'none', 'important');
+                  ad.style.setProperty('display', 'none', 'important');
+                }
+              });
             }
             
-            // Ejecutar después de que cargue la página y ads
+            // Observer para detectar ads que se insertan dinámicamente
+            const observer = new MutationObserver(function(mutations) {
+              mutations.forEach(function(mutation) {
+                mutation.addedNodes.forEach(function(node) {
+                  if (node.nodeType === 1) { // Element node
+                    const element = node;
+                    if (element.classList && element.classList.contains('adsbygoogle')) {
+                      const footer = document.querySelector('footer');
+                      if (footer && footer.compareDocumentPosition(element) === Node.DOCUMENT_POSITION_FOLLOWING) {
+                        element.style.display = 'none';
+                        element.style.height = '0';
+                        element.style.visibility = 'hidden';
+                      }
+                    }
+                  }
+                });
+              });
+              removeBlackAds();
+            });
+            
+            // Observar cambios en el body
+            observer.observe(document.body, {
+              childList: true,
+              subtree: true
+            });
+            
+            // Ejecutar inicialmente y periódicamente
             window.addEventListener('load', removeBlackAds);
+            setTimeout(removeBlackAds, 500);
             setTimeout(removeBlackAds, 1000);
-            setInterval(removeBlackAds, 2000);
+            setTimeout(removeBlackAds, 2000);
+            setInterval(removeBlackAds, 3000);
           `
         }} />
       </body>

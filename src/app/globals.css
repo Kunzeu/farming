@@ -50,13 +50,21 @@ footer ~ div:has(ins[class*="adsbygoogle"]) {
   display: none !important;
   visibility: hidden !important;
   height: 0 !important;
+  max-height: 0 !important;
   margin: 0 !important;
   padding: 0 !important;
+  overflow: hidden !important;
 }
 
 /* Asegurar que el contenido después del footer no afecte el layout */
-footer ~ * {
+footer ~ *:not([class*="scroll"]):not(script) {
   clear: both;
+}
+
+/* Ocultar contenedores con background negro después del footer */
+footer ~ div[style*="background"],
+footer ~ div[style*="backgroundColor"] {
+  display: none !important;
 }
 
 /* Contenedor para anuncios que pueden insertarse dinámicamente */
@@ -67,6 +75,14 @@ footer ~ * {
 }
 
 /* Evitar espacios en blanco grandes después del footer */
-body > ins:last-of-type[class*="adsbygoogle"] {
+body > ins:last-of-type[class*="adsbygoogle"],
+body > div:last-child:has(ins[class*="adsbygoogle"]),
+div[style*="background-color"][style*="rgb(0, 0, 0)"],
+div[class*="ads"] {
   display: none !important;
+  visibility: hidden !important;
+  height: 0 !important;
+  max-height: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
 }
