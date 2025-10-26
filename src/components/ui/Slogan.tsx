@@ -78,15 +78,18 @@ export default function Slogan({
 
   return (
     <div className={`slogan-container ${className}`}>
-      <p className="transition-all duration-500 ease-in-out animate-fade-in">
-        {currentSlogan}
-      </p>
+      <p 
+        className="transition-all duration-500 ease-in-out animate-fade-in"
+        dangerouslySetInnerHTML={{ 
+          __html: currentSlogan.replace(/\n/g, '<br>') 
+        }}
+      />
     </div>
   );
 }
 
 // Función para obtener un slogan aleatorio (para metadatos)
-export function getRandomSlogan(): string {
+export function getRandomSlogan(): string { 
   return slogans[Math.floor(Math.random() * slogans.length)];
 }
 
