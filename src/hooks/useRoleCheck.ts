@@ -1,16 +1,16 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useCallback } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useDatabase } from '@/hooks/useDatabase';
 
 export function useRoleCheck() {
-  const { user, isAuthenticated } = useAuth();
+  const { user, isAuthenticated, refreshUserData } = useAuth();
   const { dbService } = useDatabase();
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
   const isProcessingChange = useRef(false);
 
-  const checkRole = async () => {
+  const checkRole = useCallback(async () => {
     // Evitar múltiples verificaciones simultáneas
     if (isProcessingChange.current || !user) {
       return;
@@ -44,8 +44,13 @@ export function useRoleCheck() {
         const updatedUser = { ...storedUser, role: currentUser.role };
         localStorage.setItem('gw2_user', JSON.stringify(updatedUser));
         
-        // Recargar la página para aplicar el nuevo rol
-        window.location.reload();
+        // Actualizar el contexto sin recargar la página
+        await refreshUserData();
+        
+        // Resetear el flag después de un breve delay
+        setTimeout(() => {
+          isProcessingChange.current = false;
+        }, 1000);
         return;
       }
 
@@ -63,14 +68,21 @@ export function useRoleCheck() {
           // Usuario reactivado, actualizar localStorage
           const updatedUser = { ...storedUser, isActive: currentUser.isActive };
           localStorage.setItem('gw2_user', JSON.stringify(updatedUser));
-          window.location.reload();
+          
+          // Actualizar el contexto sin recargar la página
+          await refreshUserData();
+          
+          // Resetear el flag después de un breve delay
+          setTimeout(() => {
+            isProcessingChange.current = false;
+          }, 1000);
           return;
         }
       }
-    } catch (error) {
+    } catch {
       // No hacer nada en caso de error, mantener la sesión actual
     }
-  };
+  }, [user, dbService, refreshUserData]);
 
   useEffect(() => {
     if (!isAuthenticated || !user || !dbService) {
@@ -89,7 +101,7 @@ export function useRoleCheck() {
         clearInterval(intervalRef.current);
       }
     };
-  }, [isAuthenticated, user, dbService]);
+  }, [isAuthenticated, user, dbService, checkRole]);
 
   // También verificar cuando la ventana vuelve a estar activa
   useEffect(() => {
@@ -109,5 +121,5 @@ export function useRoleCheck() {
     return () => {
       document.removeEventListener('visibilitychange', handleVisibilityChange);
     };
-  }, [isAuthenticated, user, dbService]);
+  }, [isAuthenticated, user, dbService, checkRole]);
 } 

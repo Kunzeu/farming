@@ -621,21 +621,19 @@ export default function AdminPanel() {
         isActive: editingUser.isActive
       });
       
-      // Invalidar sesión si el rol cambió o si el usuario fue desactivado
-      if (roleChanged || isActiveChanged) {
+      // Invalidar sesión SOLO si el usuario fue desactivado
+      if (isActiveChanged && !editingUser.isActive) {
         try {
-          const reason = roleChanged 
-            ? `Rol cambiado de ${currentUser?.role} a ${editingUser.role}`
-            : isActiveChanged && !editingUser.isActive 
-              ? 'Usuario desactivado'
-              : 'Usuario actualizado';
-          
+          const reason = 'Usuario desactivado';
           await dbService.invalidateUserSession(editingUser.id, reason);
-          showSuccess('Éxito', `Usuario actualizado correctamente. La sesión del usuario ha sido invalidada debido a cambios en ${roleChanged ? 'rol' : 'estado'}.`);
+          showSuccess('Éxito', 'Usuario desactivado correctamente. La sesión del usuario ha sido invalidada.');
         } catch (invalidateError) {
           console.warn('No se pudo invalidar la sesión del usuario:', invalidateError);
-          showSuccess('Éxito', 'Usuario actualizado correctamente. Nota: La sesión del usuario no pudo ser invalidada automáticamente.');
+          showSuccess('Éxito', 'Usuario actualizado correctamente.');
         }
+      } else if (roleChanged) {
+        // Solo informar que el rol cambió, pero NO invalidar la sesión
+        showSuccess('Éxito', `Usuario actualizado correctamente. El rol ha cambiado a ${editingUser.role}.`);
       } else {
         showSuccess('Éxito', 'Usuario actualizado correctamente.');
       }
