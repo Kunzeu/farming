@@ -140,8 +140,28 @@ export async function getItemInfo(itemId: number, lang: string = 'en'): Promise<
   }
 }
 
+// Función simple de traducción para usar en la API
+function getItemTranslation(itemId: number, lang: string): string {
+  const translations: Record<string, Record<number, string>> = {
+    'en': {
+      19721: 'Glob of Ectoplasm'
+    },
+    'es': {
+      19721: 'Pegote de Ectoplasma'
+    },
+    'de': {
+      19721: 'Ektoplasmakugel'
+    },
+    'fr': {
+      19721: 'Boule d\'Ectoplasme'
+    }
+  };
+  
+  return translations[lang]?.[itemId] || translations['en']?.[itemId] || `Item ${itemId}`;
+}
+
 // Función para obtener información de todos los items de un sorteo
-export async function getGiveawayItemsInfo(giveaway: Giveaway, lang: string = 'en'): Promise<Array<{
+export async function getGiveawayItemsInfo(giveaway: Giveaway, lang: string = 'en', t?: (key: string, fallback?: string) => string): Promise<Array<{
   position: number;
   prize: string;
   icon: 'gem' | 'package' | 'gold' | 'materials';
@@ -157,15 +177,26 @@ export async function getGiveawayItemsInfo(giveaway: Giveaway, lang: string = 'e
         // Para premios de gemas, usar el icono oficial de GW2
         return {
           ...prize,
-          itemName: `giveaways.gems`, // Clave de traducción
+          itemName: t ? t('giveaways.gems', 'Gems') : 'Gems',
           itemIcon: 'https://wiki.guildwars2.com/images/8/88/Gem_%28highres%29.png'
         };
       } else if (prize.itemId) {
         const itemInfo = await getItemInfo(prize.itemId, lang);
+        
+        // Si no hay API disponible, usar traducciones locales
+        if (!itemInfo) {
+          const translatedName = t ? t(`giveaways.items.${prize.itemId}`, prize.prize) : getItemTranslation(prize.itemId, lang);
+          return {
+            ...prize,
+            itemName: translatedName,
+            itemIcon: 'https://wiki.guildwars2.com/images/9/9b/Glob_of_Ectoplasm.png'
+          };
+        }
+        
         return {
           ...prize,
           itemName: itemInfo?.name || prize.prize,
-          itemIcon: itemInfo?.icon || '/images/icons/raw.webp'
+          itemIcon: itemInfo?.icon || 'https://wiki.guildwars2.com/images/9/9b/Glob_of_Ectoplasm.png'
         };
       }
       return prize;

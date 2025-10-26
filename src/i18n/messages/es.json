@@ -44,6 +44,8 @@
   "apiWarning.subtitle": "Esto significa que la mayoría de páginas en True Farming no cargarán durante este período.",
   "apiWarning.close": "Cerrar banner",
   
+  "giveaways.items.19721": "Pegote de Ectoplasma",
+  
   "pageTitles.changelog": "Actualizaciones",
   "changelog.subtitle": "Registro de actualizaciones, mejoras y correcciones",
   "changelog.footer": "Para reportar bugs o sugerir nuevas funciones, visita nuestro <a href='https://discord.com/invite/KQSrhA2qmx' target='_blank' rel='noopener noreferrer' class='text-blue-400 hover:text-blue-300 underline'>Discord</a>.",

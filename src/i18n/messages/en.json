@@ -43,6 +43,8 @@
   "apiWarning.subtitle": "This means most pages on True Farming won't load during this period.",
   "apiWarning.close": "Close banner",
   
+  "giveaways.items.19721": "Glob of Ectoplasm",
+  
   "pageTitles.changelog": "Changelog",
   "changelog.subtitle": "Record of updates, improvements and fixes",
   "changelog.footer": "To report bugs or suggest new features, visit our <a href='https://discord.com/invite/KQSrhA2qmx' target='_blank' rel='noopener noreferrer' class='text-blue-400 hover:text-blue-300 underline'>Discord</a>.",
