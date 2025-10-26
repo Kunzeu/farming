@@ -1,44 +1,22 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { pool } from '@/lib/postgres-db';
+import { authorizeRequest } from '@/lib/server/jwt-utils';
 
-// API interna para administradores - Lista todos los usuarios
+// API para administradores - Lista todos los usuarios
 export async function GET(request: NextRequest) {
   try {
-    // API interna para administradores - verificación simplificada
-    // En producción, esto debería tener autenticación JWT real
-    const referer = request.headers.get('referer');
-    const origin = request.headers.get('origin');
+    // Verificar autenticación y autorización (solo administradores)
+    const authResult = authorizeRequest(request, 'admin');
     
-    // Permitir peticiones desde el mismo dominio o localhost
-    const isAllowedOrigin = !origin || origin && (
-      origin.includes('true-farming.com') ||
-      origin.includes('localhost') ||
-      origin.includes('127.0.0.1') ||
-      origin.includes('vercel.app')
-    );
-    
-    const isAllowedReferer = !referer || referer && (
-      referer.includes('/admin') ||
-      referer.includes('localhost') ||
-      referer.includes('127.0.0.1') ||
-      referer.includes('true-farming.com') ||
-      referer.includes('vercel.app')
-    );
-    
-    // Permitir si es del origen correcto o tiene referer correcto
-    // En desarrollo, ser más permisivo
-    const isDev = process.env.NODE_ENV === 'development';
-    if (!isDev && !isAllowedOrigin && !isAllowedReferer) {
-      console.log('Unauthorized request:', { origin, referer });
+    if (!authResult.isAuthorized) {
+      console.log('Unauthorized admin users request:', authResult.error);
       return NextResponse.json({ 
-        error: 'Unauthorized. This endpoint is only accessible from the admin panel.' 
-      }, { status: 403 });
+        error: 'Unauthorized. Admin access required to list all users.',
+        details: authResult.error
+      }, { status: 401 });
     }
-    
-    // En desarrollo, permitir todas las peticiones
-    if (isDev) {
-      console.log('Development mode - allowing request');
-    }
+
+    console.log(`Admin user ${authResult.user?.username} (${authResult.user?.email}) accessing users list`);
 
     const query = `
       SELECT id, email, username, role, is_active as "isActive",

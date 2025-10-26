@@ -3,6 +3,7 @@ import { Pool } from 'pg';
 import fs from 'fs';
 import path from 'path';
 import { hashPassword } from '@/lib/server/password-utils';
+import { authorizeRequest, authenticateRequest } from '@/lib/server/jwt-utils';
 
 // Cargar variables de entorno desde .env
 function loadEnvFile() {
@@ -125,6 +126,27 @@ export async function PUT(
 ) {
   const { id } = await params;
   try {
+    // Verificar autenticación
+    const authResult = authenticateRequest(request);
+    
+    if (!authResult.isAuthenticated) {
+      return NextResponse.json({ 
+        error: 'Unauthorized. Authentication required to update user.',
+        details: authResult.error
+      }, { status: 401 });
+    }
+
+    const currentUser = authResult.user!;
+    
+    // Verificar permisos: solo el propio usuario o un admin puede actualizar
+    if (currentUser.userId !== id && currentUser.role !== 'admin') {
+      return NextResponse.json({ 
+        error: 'Forbidden. You can only update your own profile or be an admin.',
+      }, { status: 403 });
+    }
+
+    console.log(`User ${currentUser.username} updating user ${id}`);
+
     const body = await request.json();
     
     
@@ -134,6 +156,13 @@ export async function PUT(
       return NextResponse.json({ 
         error: 'Invalid role. Must be one of: user, admin, moderator' 
       }, { status: 400 });
+    }
+    
+    // Solo administradores pueden cambiar roles
+    if (body.role && currentUser.role !== 'admin') {
+      return NextResponse.json({ 
+        error: 'Forbidden. Only administrators can change user roles.' 
+      }, { status: 403 });
     }
     
     // Construir query dinámicamente
@@ -232,76 +261,93 @@ export async function DELETE(
 ) {
   const { id } = await params;
   
-  // Iniciar transacción
-  const client = await pool.connect();
-  
   try {
-    await client.query('BEGIN');
+    // Verificar autenticación y autorización (solo administradores)
+    const authResult = authorizeRequest(request, 'admin');
     
-    // Primero, obtener información del usuario para determinar su rol
-    const userQuery = 'SELECT username, role FROM users WHERE id = $1';
-    const userResult = await client.query(userQuery, [id]);
+    if (!authResult.isAuthorized) {
+      return NextResponse.json({ 
+        error: 'Unauthorized. Admin access required to delete users.',
+        details: authResult.error
+      }, { status: 401 });
+    }
+
+    console.log(`Admin user ${authResult.user?.username} deleting user ${id}`);
     
-    if (userResult.rows.length === 0) {
+    // Iniciar transacción
+    const client = await pool.connect();
+    
+    try {
+      await client.query('BEGIN');
+      
+      // Primero, obtener información del usuario para determinar su rol
+      const userQuery = 'SELECT username, role FROM users WHERE id = $1';
+      const userResult = await client.query(userQuery, [id]);
+      
+      if (userResult.rows.length === 0) {
+        await client.query('ROLLBACK');
+        return NextResponse.json({ error: 'User not found' }, { status: 404 });
+      }
+    
+      const username = userResult.rows[0].username;
+      const userRole = userResult.rows[0].role;
+      console.log(`Iniciando eliminación del usuario: ${username} (ID: ${id}, Rol: ${userRole})`);
+      
+      // Contar farms asociados para logging
+      const countQuery = 'SELECT COUNT(*) FROM farm_items WHERE created_by = $1';
+      const countResult = await client.query(countQuery, [id]);
+      const farmCount = parseInt(countResult.rows[0].count);
+      console.log(`Farms asociados encontrados: ${farmCount}`);
+      
+      let farmsPreserved = 0;
+      
+      // Solo admins y moderadores pueden tener farms, así que siempre preservar
+      if (farmCount > 0) {
+        // Preservar farms estableciendo created_by a NULL
+        const preserveFarmsQuery = 'UPDATE farm_items SET created_by = NULL WHERE created_by = $1';
+        const farmsResult = await client.query(preserveFarmsQuery, [id]);
+        farmsPreserved = farmsResult.rowCount || 0;
+        console.log(`Farms preservados para ${userRole}: ${farmsPreserved}`);
+      }
+      
+      // Ahora eliminar el usuario
+      const deleteUserQuery = 'DELETE FROM users WHERE id = $1 RETURNING *';
+      const userDeleteResult = await client.query(deleteUserQuery, [id]);
+      
+      if (userDeleteResult.rows.length === 0) {
+        await client.query('ROLLBACK');
+        return NextResponse.json({ error: 'User not found' }, { status: 404 });
+      }
+    
+      // Confirmar transacción
+      await client.query('COMMIT');
+      
+      console.log(`${userRole} ${username} eliminado exitosamente. ${farmsPreserved} farms preservados.`);
+    
+      return NextResponse.json({ 
+        message: 'User deleted successfully',
+        farmsDeleted: 0, // Siempre 0 ya que solo preservamos farms
+        farmsPreserved: farmsPreserved,
+        userRole: userRole
+      });
+      
+    } catch (error) {
+      // Revertir transacción en caso de error
       await client.query('ROLLBACK');
-      return NextResponse.json({ error: 'User not found' }, { status: 404 });
+      console.error('Error deleting user:', error);
+    
+      // Proporcionar mensaje de error más específico
+      let errorMessage = 'Error interno del servidor al eliminar usuario';
+      if (error instanceof Error) {
+        errorMessage = error.message;
+      }
+    
+      return NextResponse.json({ error: errorMessage }, { status: 500 });
+    } finally {
+      client.release();
     }
-    
-    const username = userResult.rows[0].username;
-    const userRole = userResult.rows[0].role;
-    console.log(`Iniciando eliminación del usuario: ${username} (ID: ${id}, Rol: ${userRole})`);
-    
-    // Contar farms asociados para logging
-    const countQuery = 'SELECT COUNT(*) FROM farm_items WHERE created_by = $1';
-    const countResult = await client.query(countQuery, [id]);
-    const farmCount = parseInt(countResult.rows[0].count);
-    console.log(`Farms asociados encontrados: ${farmCount}`);
-    
-    let farmsPreserved = 0;
-    
-    // Solo admins y moderadores pueden tener farms, así que siempre preservar
-    if (farmCount > 0) {
-      // Preservar farms estableciendo created_by a NULL
-      const preserveFarmsQuery = 'UPDATE farm_items SET created_by = NULL WHERE created_by = $1';
-      const farmsResult = await client.query(preserveFarmsQuery, [id]);
-      farmsPreserved = farmsResult.rowCount || 0;
-      console.log(`Farms preservados para ${userRole}: ${farmsPreserved}`);
-    }
-    
-    // Ahora eliminar el usuario
-    const deleteUserQuery = 'DELETE FROM users WHERE id = $1 RETURNING *';
-    const userDeleteResult = await client.query(deleteUserQuery, [id]);
-    
-    if (userDeleteResult.rows.length === 0) {
-      await client.query('ROLLBACK');
-      return NextResponse.json({ error: 'User not found' }, { status: 404 });
-    }
-    
-    // Confirmar transacción
-    await client.query('COMMIT');
-    
-    console.log(`${userRole} ${username} eliminado exitosamente. ${farmsPreserved} farms preservados.`);
-    
-    return NextResponse.json({ 
-      message: 'User deleted successfully',
-      farmsDeleted: 0, // Siempre 0 ya que solo preservamos farms
-      farmsPreserved: farmsPreserved,
-      userRole: userRole
-    });
-    
   } catch (error) {
-    // Revertir transacción en caso de error
-    await client.query('ROLLBACK');
-    console.error('Error deleting user:', error);
-    
-    // Proporcionar mensaje de error más específico
-    let errorMessage = 'Error interno del servidor al eliminar usuario';
-    if (error instanceof Error) {
-      errorMessage = error.message;
-    }
-    
-    return NextResponse.json({ error: errorMessage }, { status: 500 });
-  } finally {
-    client.release();
+    console.error('Error in DELETE user endpoint:', error);
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 } 

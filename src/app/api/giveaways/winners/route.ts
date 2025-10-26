@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import pool from '@/lib/postgres-db';
 import { getAllGiveaways } from '../../../../config/giveaways';
+import { authorizeRequest } from '@/lib/server/jwt-utils';
 
 // GET /api/giveaways/winners - Get winners
 export async function GET(request: NextRequest) {
@@ -68,6 +69,19 @@ export async function GET(request: NextRequest) {
 // POST /api/giveaways/winners - Announce winners (Admin only)
 export async function POST(request: NextRequest) {
   try {
+    // Verificar autenticación y autorización (solo administradores)
+    const authResult = authorizeRequest(request, 'admin');
+    
+    if (!authResult.isAuthorized) {
+      console.log('Unauthorized giveaway winners announcement:', authResult.error);
+      return NextResponse.json({ 
+        error: 'Unauthorized. Admin access required to announce winners.',
+        details: authResult.error
+      }, { status: 401 });
+    }
+
+    console.log(`Admin user ${authResult.user?.username} announcing giveaway winners`);
+
     const body = await request.json();
     const { giveawayId, winnersData } = body;
 

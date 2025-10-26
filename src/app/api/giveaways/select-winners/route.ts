@@ -1,9 +1,23 @@
 import { NextRequest, NextResponse } from 'next/server';
 import pool from '@/lib/postgres-db';
 import { getGiveawayById } from '../../../../config/giveaways';
+import { authorizeRequest } from '@/lib/server/jwt-utils';
 
 export async function POST(request: NextRequest) {
   try {
+    // Verificar autenticación y autorización (solo administradores)
+    const authResult = authorizeRequest(request, 'admin');
+    
+    if (!authResult.isAuthorized) {
+      console.log('Unauthorized giveaway winner selection:', authResult.error);
+      return NextResponse.json({ 
+        error: 'Unauthorized. Admin access required to select winners.',
+        details: authResult.error
+      }, { status: 401 });
+    }
+
+    console.log(`Admin user ${authResult.user?.username} selecting giveaway winners`);
+
     const body = await request.json();
     const { giveawayId } = body;
 

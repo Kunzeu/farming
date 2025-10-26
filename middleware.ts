@@ -1,12 +1,31 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
+import { SECURITY_CONFIG, getRequiredAuthLevel } from '@/lib/server/security-config';
 
 export function middleware(request: NextRequest) {
   const response = NextResponse.next();
   
   // Headers básicos de optimización para todas las páginas
   const pathname = request.nextUrl.pathname;
+  const method = request.method;
   const isProduction = process.env.NODE_ENV === 'production';
+
+  // Aplicar headers de seguridad a todas las respuestas
+  Object.entries(SECURITY_CONFIG.SECURITY_HEADERS).forEach(([key, value]) => {
+    response.headers.set(key, value);
+  });
+
+  // Logging de seguridad para rutas sensibles
+  if (pathname.startsWith('/api/')) {
+    const requiredAuthLevel = getRequiredAuthLevel(pathname, method);
+    const ip = request.headers.get('x-forwarded-for') || 
+              request.headers.get('x-real-ip') || 
+              'unknown';
+    
+    if (requiredAuthLevel !== 'none') {
+      console.log(`[SECURITY-MIDDLEWARE] ${method} ${pathname} - Required: ${requiredAuthLevel} - IP: ${ip}`);
+    }
+  }
   
   // Pasar la ruta actual a los headers para metadata dinámico
   response.headers.set('x-pathname', pathname);

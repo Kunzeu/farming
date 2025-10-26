@@ -54,15 +54,16 @@ export async function GET(request: NextRequest) {
   const userId = searchParams.get('userId'); // Para obtener perfil específico
 
   try {
-    // Verificar autenticación para operaciones sensibles
-    const authHeader = request.headers.get('authorization');
-    const isAdminRequest = authHeader && authHeader.startsWith('Bearer admin-');
-    
-    // Si no es una búsqueda específica por email/username/discordId/userId, requiere admin
+    // Si no es una búsqueda específica por email/username/discordId/userId, requiere autenticación admin
     if (!email && !username && !discordId && !userId) {
-      if (!isAdminRequest) {
+      // Importar la función de autorización
+      const { authorizeRequest } = await import('@/lib/server/jwt-utils');
+      const authResult = authorizeRequest(request, 'admin');
+      
+      if (!authResult.isAuthorized) {
         return NextResponse.json({ 
-          error: 'Unauthorized. Admin access required to list all users.' 
+          error: 'Unauthorized. Admin access required to list all users.',
+          details: authResult.error
         }, { status: 401 });
       }
     }

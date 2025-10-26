@@ -156,7 +156,8 @@ function AuthProviderInternal({ children }: { children: ReactNode }) {
         preferences: data.user.preferences
       };
 
-      const token = 'jwt_token_' + Date.now();
+      // Use the JWT token from the server response
+      const token = data.token;
 
       // Guardar en localStorage
       localStorage.setItem('gw2_token', token);
@@ -232,7 +233,9 @@ function AuthProviderInternal({ children }: { children: ReactNode }) {
         isAdmin: createdUser.role === 'admin'
       };
 
-      const mockToken = 'mock_jwt_token_' + Date.now();
+      // Para el registro, necesitaríamos llamar a una API que genere el token JWT
+      // Por ahora, usamos un token temporal hasta implementar la API de registro completa
+      const mockToken = 'temp_registration_token_' + Date.now();
 
       // Guardar en localStorage solo después de éxito en BD
       localStorage.setItem('gw2_token', mockToken);
@@ -359,7 +362,9 @@ function AuthProviderInternal({ children }: { children: ReactNode }) {
         }
       };
 
-      const token = 'discord_jwt_token_' + Date.now();
+      // Para Discord login, también necesitaríamos generar un token JWT real
+      // Por ahora, usamos un token temporal
+      const token = 'temp_discord_token_' + Date.now();
 
       // Guardar en localStorage
       localStorage.setItem('gw2_token', token);
