@@ -40,6 +40,18 @@ body {
 footer {
   position: relative;
   margin-top: auto;
+  flex-shrink: 0;
+}
+
+/* Ocultar espacio negro de anuncios después del footer */
+footer + ins[class*="adsbygoogle"],
+footer ~ ins[class*="adsbygoogle"],
+footer ~ div:has(ins[class*="adsbygoogle"]) {
+  display: none !important;
+  visibility: hidden !important;
+  height: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
 }
 
 /* Asegurar que el contenido después del footer no afecte el layout */
@@ -52,4 +64,9 @@ footer ~ * {
   margin: 20px 0;
   max-width: 100%;
   overflow: hidden;
+}
+
+/* Evitar espacios en blanco grandes después del footer */
+body > ins:last-of-type[class*="adsbygoogle"] {
+  display: none !important;
 }

@@ -222,6 +222,31 @@ export default function RootLayout({
             </I18nProvider>
           </AuthProvider>
         </CookieConsentProvider>
+        <script dangerouslySetInnerHTML={{
+          __html: `
+            // Eliminar espacios negros de anuncios después del footer
+            function removeBlackAds() {
+              const footer = document.querySelector('footer');
+              if (!footer) return;
+              
+              let nextElement = footer.nextElementSibling;
+              while (nextElement) {
+                if (nextElement.classList.contains('adsbygoogle') || 
+                    nextElement.querySelector('.adsbygoogle')) {
+                  nextElement.style.display = 'none';
+                  nextElement.style.height = '0';
+                  nextElement.style.visibility = 'hidden';
+                }
+                nextElement = nextElement.nextElementSibling;
+              }
+            }
+            
+            // Ejecutar después de que cargue la página y ads
+            window.addEventListener('load', removeBlackAds);
+            setTimeout(removeBlackAds, 1000);
+            setInterval(removeBlackAds, 2000);
+          `
+        }} />
       </body>
     </html>
   );
