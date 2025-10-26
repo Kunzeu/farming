@@ -11,7 +11,6 @@ import CookieBanner from "@/components/ui/CookieBanner";
 import ApiWarningBanner from "@/components/ui/ApiWarningBanner";
 import { Analytics } from "@vercel/analytics/next";
 import { generateDynamicMetadata } from "@/lib/metadata";
-import { AdProvider } from "@/contexts/AdContext";
 
 // Optimización de fuentes para Desktop
 const inter = Inter({ 
@@ -226,7 +225,6 @@ export default function RootLayout({
         <CookieConsentProvider>
           <AuthProvider>
             <I18nProvider>
-              <AdProvider>
               <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex flex-col">
                 <RoleChecker />
                 <ApiWarningBanner />
@@ -240,7 +238,6 @@ export default function RootLayout({
                 <CookieBanner />
                 <Analytics />
               </div>
-              </AdProvider>
             </I18nProvider>
           </AuthProvider>
         </CookieConsentProvider>
