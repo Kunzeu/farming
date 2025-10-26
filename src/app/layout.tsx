@@ -8,6 +8,7 @@ import RoleChecker from "@/components/RoleChecker";
 import Footer from "@/components/layout/Footer";
 import ScrollToTop from "@/components/ui/ScrollToTop";
 import CookieBanner from "@/components/ui/CookieBanner";
+import ApiWarningBanner from "@/components/ui/ApiWarningBanner";
 import { Analytics } from "@vercel/analytics/next";
 import { generateDynamicMetadata } from "@/lib/metadata";
 
@@ -207,6 +208,7 @@ export default function RootLayout({
             <I18nProvider>
               <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex flex-col">
                 <RoleChecker />
+                <ApiWarningBanner />
                 <div className="flex-1">
                   {children}
                 </div>
