@@ -33,24 +33,24 @@ const ApiWarningBanner = () => {
         animate={{ opacity: 1, y: 0 }}
         exit={{ opacity: 0, y: -50 }}
         transition={{ duration: 0.3 }}
-        className="bg-gradient-to-r from-slate-800 to-slate-700 text-white shadow-lg border-b border-slate-600"
+        className="bg-gradient-to-r from-yellow-500 to-yellow-600 text-black shadow-lg border-b border-yellow-400"
       >
-        <div className="container mx-auto px-4 py-3">
+        <div className="container mx-auto px-6 py-5">
           <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-3">
-              <AlertTriangle className="w-5 h-5 flex-shrink-0 text-yellow-400" />
-              <div className="text-sm font-medium">
-                <span className="font-bold">{t('apiWarning.title')}</span>
+            <div className="flex items-center space-x-4">
+              <AlertTriangle className="w-7 h-7 flex-shrink-0 text-black" />
+              <div className="text-lg font-semibold">
+                <span className="font-black text-black">{t('apiWarning.title')}</span>
                 <br />
-                <span className="text-slate-200">{t('apiWarning.subtitle')}</span>
+                <span className="text-black font-semibold">{t('apiWarning.subtitle')}</span>
               </div>
             </div>
             <button
               onClick={() => setIsVisible(false)}
-              className="ml-4 p-1 rounded-full hover:bg-white/20 transition-colors duration-200 flex-shrink-0"
+              className="ml-4 p-2 rounded-full hover:bg-black/10 transition-colors duration-200 flex-shrink-0"
               aria-label={t('apiWarning.close')}
             >
-              <X className="w-4 h-4" />
+              <X className="w-5 h-5 text-black" />
             </button>
           </div>
         </div>
