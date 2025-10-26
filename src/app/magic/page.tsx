@@ -10,7 +10,6 @@ import {
   BookOpen, 
   TrendingUp, 
   Package, 
-  Coins,
   RefreshCw,
   Info,
   AlertCircle,
@@ -128,15 +127,19 @@ const OptimizedImage = ({ src, alt, className, priority = false }: {
     );
   }
 
-  // Para imágenes externas, usar img normal con optimizaciones
+  // Para imágenes externas, usar Image de Next.js
   return (
-    <img
+    <Image
       src={imageSrc}
       alt={alt}
       className={className}
+      width={32}
+      height={32}
+      priority={priority}
       loading={priority ? 'eager' : 'lazy'}
+      quality={85}
+      unoptimized={true}
       onError={handleImageError}
-      onLoad={() => setIsLoading(false)}
       style={{
         width: '32px',
         height: '32px',
@@ -193,9 +196,6 @@ const CraftingPage = () => {
     { id: 24300, name: '', t5Id: 24299 }, // Elaborate Totem
     { id: 24283, name: '', t5Id: 24282 }, // Powerful Venom Sac
   ], []);
-
-  // Estado para materiales T6 con nombres actualizados desde la API
-  const [updatedT6Materials, setUpdatedT6Materials] = useState(t6Materials);
 
   // Materials for T5 to T6 conversion
   const conversionMaterials = useMemo(() => ({
@@ -673,11 +673,9 @@ const CraftingPage = () => {
   const calculateItem48917Price = useCallback(() => {
     // Intentar primero con 48917, luego con 7839 como fallback
     let item = itemPrices?.[48917];
-    let itemId = 48917;
     
     if (!item) {
       item = itemPrices?.[7839];
-      itemId = 7839;
     }
     
     if (!item) {
@@ -878,9 +876,8 @@ const CraftingPage = () => {
     return resultadoConDroprate;
   }, [calculateResultadoFinalCuartaSeccion]);
 
-  // IDs de items para Magia Liberada (LS3)
+  // IDs de items para Magia Liberada (LS3) - Solo raros por ahora
   const trofeosRarosUMIds = useMemo(() => [24295, 24358, 24351, 24357, 24289, 24300, 24283, 24277], []); // Mismos T6
-  const trofeosComunesUMIds = useMemo(() => [24294, 24341, 24350, 24356, 24288, 24299, 24282, 24276], []); // Mismos T5
 
   // Función para calcular la suma total de ProfitMax de todas las secciones
   const calculateTotalProfitMax = useCallback(() => {
@@ -909,6 +906,7 @@ const CraftingPage = () => {
     const totalProfitMax = profitMaxRaros  + profitMaxTerceraSeccion + profitMaxCuartaSeccion + profitMaxQuintaSeccion + profitMaxSextaSeccion + profitMaxSeptimaSeccion + totalCaja;
   
     return totalProfitMax;
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [calculateResultadoFinalConDroprate, calculateResultadoFinalConDroprateTerceraSeccion, calculateResultadoFinalConDroprateCuartaSeccion, calculateResultadoFinalConDroprateQuintaSeccion, calculateResultadoFinalConDroprateSextaSeccion, calculateResultadoFinalConDroprateSeptimaSeccion]);
 
   // Función para obtener precios de los items de las tablas
@@ -947,7 +945,7 @@ const CraftingPage = () => {
               }
             });
           }
-        } catch (batchError) {
+        } catch {
           // Error fetching prices batch, skipping
           continue;
         }
@@ -956,7 +954,7 @@ const CraftingPage = () => {
       setItemPrices(allPrices);
       setLastPriceUpdate(new Date());
       
-    } catch (error) {
+    } catch {
       // Error fetching table item prices
     } finally {
       setIsLoadingPrices(false);
@@ -1219,21 +1217,22 @@ const CraftingPage = () => {
     }
   }, [calculateResultadoFinalSeccion24289]);
 
-  const calculateVMProfitMax = useCallback((itemId: number) => {
-    // Para el item 24357, usar el cálculo dinámico específico para VM
-    if (itemId === 24357) {
-      return calculateVMProfitMax24357();
-    }
-    
-    // Para el item 24289, usar el cálculo dinámico específico para VM
-    if (itemId === 24289) {
-      return calculateVMProfitMax24289();
-    }
-    
-    // Para otros items, usar el precio base con droprate de VM
-    const droprate = 1.0078; // Droprate estándar de VM
-    return calculateBasePrice(itemId, droprate);
-  }, [calculateVMProfitMax24357, calculateVMProfitMax24289, calculateBasePrice]);
+  // Función no usada actualmente - comentada
+  // const calculateVMProfitMax = useCallback((itemId: number) => {
+  //   // Para el item 24357, usar el cálculo dinámico específico para VM
+  //   if (itemId === 24357) {
+  //     return calculateVMProfitMax24357();
+  //   }
+  //   
+  //   // Para el item 24289, usar el cálculo dinámico específico para VM
+  //   if (itemId === 24289) {
+  //     return calculateVMProfitMax24289();
+  //   }
+  //   
+  //   // Para otros items, usar el precio base con droprate de VM
+  //   const droprate = 1.0078; // Droprate estándar de VM
+  //   return calculateBasePrice(itemId, droprate);
+  // }, [calculateVMProfitMax24357, calculateVMProfitMax24289, calculateBasePrice]);
 
   const calculateUMProfitMax24289 = useCallback(() => {
     const resultadoFinal = calculateResultadoFinalSeccion24289(); // I22
@@ -1282,20 +1281,19 @@ const CraftingPage = () => {
     return resultadoFinal >= 0 ? (resultadoFinal / cantidad) * droprate : 0;
   }, [calculateResultadoFinalSeptimaSeccion]);
 
-  // Función para calcular el ProfitMax del item 76179 (Freshwater Pearl) siguiendo el patrón de UM
-  const calculateVMProfitMax76179 = useCallback(() => {
-    const resultadoFinal = calculateResultadoFinalQuintaSeccion(); // Usar la misma sección que otros items UM
-    const droprate = 0.01625; // Droprate de 0.01625
-    const cantidadFija = 5; // Cantidad fija como en otras funciones UM
-    
-    // Aplicar la fórmula condicional: SI(resultadoFinal >= 0, (resultadoFinal / cantidadFija) * droprate, 0)
-    if (resultadoFinal >= 1) {
-      const resultadoConDroprate = (resultadoFinal / cantidadFija) * droprate;
-      return resultadoConDroprate;
-    } else {
-      return 0;
-    }
-  }, [calculateResultadoFinalQuintaSeccion]);
+  // Función no usada actualmente - comentada
+  // const calculateVMProfitMax76179 = useCallback(() => {
+  //   const resultadoFinal = calculateResultadoFinalQuintaSeccion();
+  //   const droprate = 0.01625;
+  //   const cantidadFija = 5;
+  //   
+  //   if (resultadoFinal >= 1) {
+  //     const resultadoConDroprate = (resultadoFinal / cantidadFija) * droprate;
+  //     return resultadoConDroprate;
+  //   } else {
+  //     return 0;
+  //   }
+  // }, [calculateResultadoFinalQuintaSeccion]);
 
   // Funciones para calcular precios de items específicos para Freshwater Pearl (76179)
   const calculateItem89271x48Price = useCallback(() => {
@@ -1384,50 +1382,51 @@ const CraftingPage = () => {
     return (price.buys.unit_price * 12) / 10000; // buy * 12, 10000 cobre = 1 oro
   }, [itemPrices]);
 
-  // Funciones para Nueva Sección 24357
-  const calculateItem24357x5Price = useCallback(() => {
-    const price = itemPrices[24357];
-    if (!price) return 0;
-    return (price.buys.unit_price * 5) / 10000; // buy * 5
-  }, [itemPrices]);
+  // Funciones para Nueva Sección 24357 - no usadas actualmente
+  // const calculateItem24357x5Price = useCallback(() => {
+  //   const price = itemPrices[24357];
+  //   if (!price) return 0;
+  //   return (price.buys.unit_price * 5) / 10000;
+  // }, [itemPrices]);
 
-  const calculateItem89216x1Price24357 = useCallback(() => {
-    const price = itemPrices[89216];
-    if (!price) return 0;
-    return (price.buys.unit_price * 1) / 10000; // buy * 1
-  }, [itemPrices]);
+  // const calculateItem89216x1Price24357 = useCallback(() => {
+  //   const price = itemPrices[89216];
+  //   if (!price) return 0;
+  //   return (price.buys.unit_price * 1) / 10000;
+  // }, [itemPrices]);
 
-  const calculateItem19721x5Price24357 = useCallback(() => {
-    const price = itemPrices[19721];
-    if (!price) return 0;
-    return (price.sells.unit_price * 5 * 0.9) / 10000; // sell * 5 * 0.9
-  }, [itemPrices]);
+  // const calculateItem19721x5Price24357 = useCallback(() => {
+  //   const price = itemPrices[19721];
+  //   if (!price) return 0;
+  //   return (price.sells.unit_price * 5 * 0.9) / 10000;
+  // }, [itemPrices]);
 
-  const calculateItem24815Price = useCallback(() => {
-    const price = itemPrices[24815];
-    if (!price) return 0;
-    return (price.sells.unit_price * 0.85) / 10000; // sell * 0.85
-  }, [itemPrices]);
+  // Funciones no usadas actualmente - comentadas
+  // const calculateItem24815Price = useCallback(() => {
+  //   const price = itemPrices[24815];
+  //   if (!price) return 0;
+  //   return (price.sells.unit_price * 0.85) / 10000;
+  // }, [itemPrices]);
 
-  const calculateSumaTotalSeccion24357 = useCallback(() => {
-    return calculateItem89271x12Price() + calculateItem24357x5Price() + calculateItem89216x1Price24357() + calculateItem19721x5Price24357();
-  }, [calculateItem89271x12Price, calculateItem24357x5Price, calculateItem89216x1Price24357, calculateItem19721x5Price24357]);
+  // const calculateSumaTotalSeccion24357 = useCallback(() => {
+  //   return calculateItem89271x12Price() + calculateItem24357x5Price() + calculateItem89216x1Price24357() + calculateItem19721x5Price24357();
+  // }, [calculateItem89271x12Price, calculateItem24357x5Price, calculateItem89216x1Price24357, calculateItem19721x5Price24357]);
 
-  const calculateResultadoFinalSeccion24357 = useCallback(() => {
-    return calculateItem24815Price() - calculateSumaTotalSeccion24357();
-  }, [calculateItem24815Price, calculateSumaTotalSeccion24357]);
+  // const calculateResultadoFinalSeccion24357 = useCallback(() => {
+  //   return calculateItem24815Price() - calculateSumaTotalSeccion24357();
+  // }, [calculateItem24815Price, calculateSumaTotalSeccion24357]);
 
-  const calculateResultadoFinalConDroprateSeccion24357 = useCallback(() => {
-    const resultadoFinal = calculateResultadoFinalSeccion24357();
-    const droprate = 0.436; // Droprate fijo para UM
-    
-    // Aplicar la fórmula condicional: SI(resultadoFinal>=1, (resultadoFinal*0.436), "0")
-    if (resultadoFinal >= 1) {
-      return droprate * resultadoFinal;
-    } else {
-      return 0;
-    }
-  }, [calculateResultadoFinalSeccion24357]);
+  // Función no usada actualmente - comentada
+  // const calculateResultadoFinalConDroprateSeccion24357 = useCallback(() => {
+  //   const resultadoFinal = calculateResultadoFinalSeccion24357();
+  //   const droprate = 0.436;
+  //   
+  //   if (resultadoFinal >= 1) {
+  //     return droprate * resultadoFinal;
+  //   } else {
+  //     return 0;
+  //   }
+  // }, [calculateResultadoFinalSeccion24357]);
 
 
   const calculateItem89258x1Price = useCallback(() => {
@@ -1488,11 +1487,12 @@ const CraftingPage = () => {
 
 
 
-  const calculateItem74202x10Price = useCallback(() => {
-    const price = itemPrices[74202];
-    if (!price) return 0;
-    return (price.sells.unit_price * 10) / 10000; // sell * 10, 10000 cobre = 1 oro
-  }, [itemPrices]);
+  // Función no usada actualmente - comentada
+  // const calculateItem74202x10Price = useCallback(() => {
+  //   const price = itemPrices[74202];
+  //   if (!price) return 0;
+  //   return (price.sells.unit_price * 10) / 10000;
+  // }, [itemPrices]);
 
   const calculateItem24310x1Price = useCallback(() => {
     const price = itemPrices[24310];
@@ -1544,7 +1544,7 @@ const CraftingPage = () => {
     } else {
       return 0; // Si S64 < 1, retornar 0
     }
-  }, [calculateItem74978Price, calculateItem68942x1Price, calculateItem24310x1Price, calculateItem89271x5Price, calculateItem24305x1Price, calculateItem89258x1Price, calculateItem19721x5Price]);
+  }, [calculateItem74978Price, calculateItem68942x1Price, calculateItem24310x1Price, calculateItem89271x5Price, calculateItem89182x3Price, calculateItem24305x1Price, calculateItem89258x1Price, calculateItem19721x5Price]);
 
 
   // Función para calcular el RESULTADO FINAL de Freshwater Pearl (76179)
@@ -1930,7 +1930,7 @@ const CraftingPage = () => {
     // Convertir de cobre a oro (dividir por 10000)
     const valueInCopper = profitMaxValues[itemId] || 0;
     return valueInCopper / 10000;
-  }, [calculateResultadoFinalConDroprate76179]);
+  }, [calculateResultadoFinalConDroprate76179, calculateResultadoFinalConDroprate70957, calculateResultadoFinalConDroprate24824, calculateResultadoFinalConDroprate74978, calculateResultadoFinalConDroprate24868, calculateResultadoFinalConDroprateNuevaSeccion, calculateResultadoFinalConDroprateSeccionRapida, calculateResultadoFinalConDroprateNuevaSeccion2, calculateResultadoFinalConDroprateNuevaSeccion3, calculateResultadoFinalConDroprateNuevaSeccion4, calculateResultadoFinalConDroprateNuevaSeccion5, calculateResultadoFinalConDroprateNuevaSeccion6, calculateResultadoFinalConDroprate19721, calculateUMProfitMax24357]);
 
   // Función para calcular el RESULTADO FINAL CON DROPRATE para Magia Liberada (similar a VM)
   const calculateResultadoFinalConDroprateUM = useCallback(() => {
@@ -1956,6 +1956,7 @@ const CraftingPage = () => {
 
   const calculateTrofeosRarosUM = useCallback(() => {
     return calculateTableTotal(trofeosRarosUMIds, 0.436);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [trofeosRarosUMIds]);
 
   const calculateItemsIndividualesUM = useCallback(() => {
@@ -2160,7 +2161,6 @@ const CraftingPage = () => {
         ...material,
         name: itemsMap[material.id]?.name || material.name || `Item ${material.id}`
       }));
-      setUpdatedT6Materials(updatedT6Materials);
 
       // Get prices for comparison
       const ectoplasmPrice = pricesMap[conversionMaterials.ectoplasm]?.sells?.unit_price || 0;
@@ -2207,7 +2207,7 @@ const CraftingPage = () => {
       });
 
       setConversionData(calculatedConversions);
-    } catch (error) {
+    } catch {
       // Error fetching conversion data
       // Aquí podrías agregar un toast o notificación de error
       // toast.error('Error al cargar datos de conversión');
@@ -2239,12 +2239,8 @@ const CraftingPage = () => {
   useEffect(() => {
     const handleHashChange = () => {
       const hash = window.location.hash.substring(1); // Remover el #
-      if (hash && ['overview', 'conversions', 'materials', 'unbound', 'strategies', 'volatile-magic'].includes(hash)) {
-        if (hash === 'volatile-magic') {
-          setSelectedSection('materials');
-        } else {
-          setSelectedSection(hash);
-        }
+      if (hash && ['overview', 'conversions', 'volatile-magic', 'unbound-magic', 'strategies'].includes(hash)) {
+        setSelectedSection(hash);
       }
     };
 
@@ -2303,32 +2299,33 @@ const CraftingPage = () => {
 
 
 
-  const craftingTips = [
-    {
-      title: 'Efficient Leveling',
-      description: 'Craft items you can sell to recover costs while leveling up',
-      icon: TrendingUp,
-      color: 'text-green-400'
-    },
-    {
-      title: 'Cheap Materials',
-      description: 'Buy materials during low demand periods to save gold',
-      icon: Coins,
-      color: 'text-yellow-400'
-    },
-    {
-      title: 'Profitable Recipes',
-      description: 'Focus on recipes that have good demand on the Trading Post',
-      icon: BarChart3,
-      color: 'text-blue-400'
-    },
-    {
-      title: 'Conversions',
-      description: 'Convert lower tier materials to higher tier when profitable',
-      icon: Zap,
-      color: 'text-purple-400'
-    }
-  ];
+  // Array no usado actualmente - comentado
+  // const craftingTips = [
+  //   {
+  //     title: 'Efficient Leveling',
+  //     description: 'Craft items you can sell to recover costs while leveling up',
+  //     icon: TrendingUp,
+  //     color: 'text-green-400'
+  //   },
+  //   {
+  //     title: 'Cheap Materials',
+  //     description: 'Buy materials during low demand periods to save gold',
+  //     icon: Coins,
+  //     color: 'text-yellow-400'
+  //   },
+  //   {
+  //     title: 'Profitable Recipes',
+  //     description: 'Focus on recipes that have good demand on the Trading Post',
+  //     icon: BarChart3,
+  //     color: 'text-blue-400'
+  //   },
+  //   {
+  //     title: 'Conversions',
+  //     description: 'Convert lower tier materials to higher tier when profitable',
+  //     icon: Zap,
+  //     color: 'text-purple-400'
+  //   }
+  // ];
 
   return (
     <>
@@ -2389,13 +2386,16 @@ const CraftingPage = () => {
             {[
               { id: 'overview', label: t('craftingPage.overview', 'Overview'), icon: Info },
               { id: 'conversions', label: t('craftingPage.conversions', 'Conversions'), icon: RefreshCw },
-              { id: 'materials', label: t('craftingPage.volatileMagic', 'Magia Volatil'), icon: Package },
-              { id: 'unbound', label: t('craftingPage.unboundMagic', 'Magia Liberada'), icon: Package },
+              { id: 'volatile-magic', label: t('craftingPage.volatileMagic', 'Magia Volatil'), icon: Package },
+              { id: 'unbound-magic', label: t('craftingPage.unboundMagic', 'Magia Liberada'), icon: Package },
               { id: 'strategies', label: t('craftingPage.strategies', 'Strategies'), icon: TrendingUp },
             ].map((tab) => (
               <button
                 key={tab.id}
-                onClick={() => setSelectedSection(tab.id)}
+                onClick={() => {
+                  setSelectedSection(tab.id);
+                  window.location.hash = tab.id;
+                }}
                 className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-colors duration-200 ${
                   selectedSection === tab.id
                     ? 'bg-purple-600 text-white'
@@ -2489,7 +2489,7 @@ const CraftingPage = () => {
 
 
             {/* Materials Section */}
-            {selectedSection === 'materials' && (
+            {selectedSection === 'volatile-magic' && (
               <div className="space-y-8">
                 <div className="bg-gray-800/50 backdrop-blur-sm border border-gray-700 rounded-lg p-6">
                   <h2 className="text-2xl font-bold text-white mb-6 flex items-center">
@@ -3801,7 +3801,7 @@ const CraftingPage = () => {
             )}
 
             {/* Unbound Magic Section */}
-            {selectedSection === 'unbound' && (
+            {selectedSection === 'unbound-magic' && (
               <div className="space-y-8">
                 <div className="bg-gray-800/50 backdrop-blur-sm border border-gray-700 rounded-lg p-6">
                   <h2 className="text-2xl font-bold text-white mb-6 flex items-center">

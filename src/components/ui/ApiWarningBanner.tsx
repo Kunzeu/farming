@@ -33,7 +33,7 @@ const ApiWarningBanner = () => {
         animate={{ opacity: 1, y: 0 }}
         exit={{ opacity: 0, y: -50 }}
         transition={{ duration: 0.3 }}
-        className="bg-gradient-to-r from-yellow-500 to-yellow-600 text-black shadow-lg border-b border-yellow-400"
+        className="bg-gradient-to-r from-yellow-500 to-yellow-500 text-black shadow-lg border-b border-yellow-400"
       >
         <div className="container mx-auto px-6 py-5">
           <div className="flex items-center justify-between">
