@@ -54,9 +54,16 @@ Una aplicación web moderna y completa para optimizar tu experiencia de farming 
 ### 🎯 **Calculadoras Especializadas**
 - **Cajas de Joyas Orrianas**: Análisis de rentabilidad y conversión de karma
 - **Rutinas Diarias**: Optimización de actividades diarias para farming
-- **Buyout Calculator**: Análisis de compras masivas y su rentabilidad
-- **Crafting Calculator**: Optimización de crafting y materiales
 - **Research Notes**: Calculadora para notas de investigación
+
+### 🎁 **Sistema de Giveaways**
+- **Sorteos Automáticos**: Sistema completo de gestión de sorteos
+- **Premios en Tiempo Real**: Información de premios con traducciones automáticas
+- **Fallback Inteligente**: Traducciones locales cuando la API no está disponible
+
+### ⚠️ **Sistema de Notificaciones**
+- **Banner Automático**: Notificaciones automáticas sobre mantenimiento de API
+- **Ocultación Inteligente**: Se oculta automáticamente cuando la API se reactiva
 
 ## 🛠️ Stack Tecnológico
 
@@ -76,8 +83,8 @@ Una aplicación web moderna y completa para optimizar tu experiencia de farming 
 ### **Características Técnicas**
 - **Responsive**: Diseño mobile-first optimizado
 - **Performance**: Optimización de carga y rendimiento
-- **SEO**: Optimizado para motores de búsqueda
-- **PWA Ready**: Preparado para aplicación web progresiva
+- **Multiidioma**: Soporte para 4 idiomas (ES, EN, DE, FR)
+- **Fallback Inteligente**: Traducciones locales cuando la API no está disponible
 
 ## 🚀 Instalación y Configuración
 
@@ -181,7 +188,6 @@ La aplicación soporta múltiples idiomas:
 ### **Guild Wars 2 API**
 - **Items**: Información detallada de items y sus propiedades
 - **Precios**: Datos del Trading Post en tiempo real
-- **Eventos**: Estados de eventos mundiales y festivales
 - **Personajes**: Información de personajes y bancos
 - **Billetera**: Datos de monedas y materiales
 
@@ -212,23 +218,20 @@ GET /v2/tokeninfo               # Información del token
 - **Navigation**: Navegación intuitiva y responsive
 - **Forms**: Formularios con validación y feedback visual
 
+
 ## 🔮 Roadmap y Próximas Características
 
-### **Corto Plazo (1-2 meses)**
-- [ ] **Sistema de Usuarios Funcional**: Perfiles básicos y preferencias
-- [ ] **Notificaciones Push**: Alertas de precios y eventos importantes
-- [ ] **Widgets Personalizables**: Dashboard completamente personalizable
-- [ ] **Modo Offline**: Funcionalidad básica sin conexión a internet
-- [ ] **Trading Post Analytics**: Análisis avanzado del mercado
+### **✅ Funcionalidades Completadas**
+- ✅ **Sistema de Notificaciones**: Banner automático con ocultación inteligente
+- ✅ **Traducciones de Fallback**: Sistema de traducciones locales para items
+- ✅ **Sistema de Giveaways**: Gestión completa de sorteos con traducciones
+- ✅ **Mejoras en Slogans**: Soporte para saltos de línea dinámicos
 
-### **Mediano Plazo (3-6 meses)**
-- [ ] **PWA Completa**: Aplicación web progresiva con instalación
-- [ ] **API Backend Propia**: Servidor para datos adicionales y análisis
-- [ ] **Integración con Discord**: Bot para notificaciones y comandos
-- [ ] **Análisis Avanzado**: Gráficos de precios y tendencias temporales
+### **Próximas Funcionalidades**
+- [ ] **Sistema de Usuarios**: Perfiles básicos y preferencias personalizadas
+- [ ] **Trading Post Analytics**: Análisis avanzado del mercado con gráficos
+- [ ] **PWA Completa**: Aplicación web progresiva con instalación offline
 - [ ] **Sistema de Cuentas**: Gestión completa de usuarios y perfiles
-
-### **Largo Plazo (6+ meses)**
 - [ ] **Más Calculadoras**: Salvaging para otros tipos de items
 - [ ] **Historial de Precios**: Base de datos histórica de precios
 - [ ] **Machine Learning**: Predicciones de precios y tendencias
@@ -237,71 +240,38 @@ GET /v2/tokeninfo               # Información del token
 ## 🤝 Contribuir al Proyecto
 
 ### **Cómo Contribuir**
-
-1. **Fork el proyecto** en GitHub
-2. **Crea una rama** para tu feature (`git checkout -b feature/AmazingFeature`)
-3. **Commit tus cambios** (`git commit -m 'Add some AmazingFeature'`)
-4. **Push a la rama** (`git push origin feature/AmazingFeature`)
+1. **Fork** el proyecto en GitHub
+2. **Crea una rama** para tu feature (`git checkout -b feature/nueva-funcionalidad`)
+3. **Commit** tus cambios (`git commit -m 'Agregar nueva funcionalidad'`)
+4. **Push** a la rama (`git push origin feature/nueva-funcionalidad`)
 5. **Abre un Pull Request** con descripción detallada
 
 ### **Áreas de Contribución**
-- 🐛 **Bug Fixes**: Corrección de errores y problemas
-- ✨ **Nuevas Features**: Implementación de nuevas funcionalidades
-- 📚 **Documentación**: Mejora de documentación y guías
-- 🎨 **UI/UX**: Mejoras en diseño y experiencia de usuario
-- 🧪 **Testing**: Pruebas y testing del código
-- 🌐 **Traducciones**: Nuevos idiomas y mejoras en traducciones
-- 🔧 **Calculadoras**: Nuevas calculadoras y optimizaciones
+- 🐛 **Bug Fixes**: Corrección de errores
+- ✨ **Nuevas Features**: Implementación de funcionalidades
+- 📚 **Documentación**: Mejora de documentación
+- 🎨 **UI/UX**: Mejoras en diseño
+- 🌐 **Traducciones**: Nuevos idiomas
+- 🔧 **Calculadoras**: Nuevas calculadoras
 
-### **Estándares de Código**
-- **TypeScript**: Uso obligatorio de tipos
-- **ESLint**: Seguir las reglas de linting configuradas
-- **Prettier**: Formateo automático del código
-- **Commits**: Mensajes de commit descriptivos y claros
+## 📞 Contacto
 
-## 📝 Licencia
-
-Este proyecto está bajo la **Licencia MIT**. Ver el archivo `LICENSE` para más detalles.
-
-## 🙏 Agradecimientos
-
-### **Desarrolladores y Comunidad**
-- **ArenaNet**: Por proporcionar la API oficial de Guild Wars 2
-- **Comunidad GW2**: Por el feedback constante y sugerencias valiosas
-- **Contribuidores**: Todos los que han contribuido al proyecto
-
-### **Tecnologías y Herramientas**
-- **Next.js Team**: Por el framework increíble y App Router
-- **Tailwind CSS**: Por el sistema de diseño utility-first
-- **Framer Motion**: Por las animaciones fluidas y profesionales
-- **GW2 Wiki**: Por los datos de drop rates e información del juego
-
-## 📞 Contacto y Soporte
-
-### **Desarrollador Principal**
 - **GitHub**: [@Kunzeu](https://github.com/kunzeu)
-- **Discord**: Disponible en el servidor de True Farming
-
-### **Canales de Soporte**
 - **Issues**: Reporta bugs y solicita features en GitHub
-- **Discussions**: Participa en discusiones de la comunidad
-- **Wiki**: Documentación detallada del proyecto
+- **Discord**: [True Farming](https://discord.com/invite/KQSrhA2qmx)
 
 ---
 
 ## 🎯 **¿Por qué True Farming?**
 
-True Farming nace de la necesidad de tener **herramientas centralizadas y profesionales** para optimizar el farming en Guild Wars 2. A diferencia de otras soluciones dispersas, ofrecemos:
+True Farming ofrece **herramientas centralizadas y profesionales** para optimizar el farming en Guild Wars 2:
 
-- 🎯 **Todo en un lugar**: Todas las herramientas que necesitas en una sola aplicación
-- ⚡ **Tiempo Real**: Datos actualizados constantemente desde la API oficial
-- 📱 **Multiplataforma**: Funciona perfectamente en desktop y móvil
-- 🌐 **Multiidioma**: Soporte completo para la comunidad internacional
+- 🎯 **Todo en un lugar**: Todas las herramientas necesarias en una aplicación
+- ⚡ **Tiempo Real**: Datos actualizados desde la API oficial
+- 📱 **Multiplataforma**: Funciona en desktop y móvil
+- 🌐 **Multiidioma**: Soporte para la comunidad internacional
 - 🔧 **Mantenido**: Actualizaciones constantes y soporte activo
-- 🎮 **Específico para GW2**: Diseñado específicamente para las necesidades del juego
 
 **¡Optimiza tu farming y maximiza tus ganancias en Guild Wars 2!** 🎮✨
 
 ---
-
-*Desarrollado con ❤️ para la comunidad de Guild Wars 2*
