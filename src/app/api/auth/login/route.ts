@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { comparePassword } from '@/lib/server/password-utils';
+import { generateToken } from '@/lib/server/jwt-utils';
 import { pool } from '@/lib/postgres-db';
 
 export async function POST(request: NextRequest) {
@@ -73,11 +74,22 @@ export async function POST(request: NextRequest) {
       }, { status: 401 });
     }
 
-    // Return user data (without password)
+    // Generate JWT token
+    const token = generateToken({
+      userId: user.id,
+      email: user.email,
+      username: user.username,
+      role: user.role,
+      isActive: user.isActive
+    });
+
+    // Return user data (without password) and JWT token
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { password: _, ...userWithoutPassword } = user;
     
     return NextResponse.json({
       user: userWithoutPassword,
+      token: token,
       message: 'Login successful'
     });
 

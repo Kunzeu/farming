@@ -1,4 +1,23 @@
 // Cliente para API de base de datos (funciona en browser)
+
+// Función helper para obtener headers con autenticación JWT
+function getAuthHeaders(): HeadersInit {
+  const headers: HeadersInit = {
+    'Content-Type': 'application/json'
+  };
+  
+  // Obtener token de localStorage si existe
+  // IMPORTANTE: El token se guarda como 'gw2_token' en el AuthContext
+  if (typeof window !== 'undefined') {
+    const token = localStorage.getItem('gw2_token');
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
+    }
+  }
+  
+  return headers;
+}
+
 export interface FarmItem {
   id: string;
   name: string;
@@ -93,9 +112,7 @@ class DatabaseClientService {
   async createFarm(farm: Omit<FarmItem, 'id' | 'createdAt' | 'updatedAt'> & { createdByRole: string }): Promise<FarmItem> {
     const response = await fetch('/api/farms', {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
+      headers: getAuthHeaders(),
       body: JSON.stringify(farm),
     });
     
@@ -126,9 +143,7 @@ class DatabaseClientService {
     
     const response = await fetch(`/api/farms/${id}`, {
       method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-      },
+      headers: getAuthHeaders(),
       body: JSON.stringify(updates),
     });
     
@@ -155,6 +170,7 @@ class DatabaseClientService {
     
     const response = await fetch(`/api/farms/${id}`, {
       method: 'DELETE',
+      headers: getAuthHeaders(),
     });
     
     
@@ -170,10 +186,15 @@ class DatabaseClientService {
 
   // User methods
   async getAllUsers(): Promise<User[]> {
-    const response = await fetch('/api/admin/users');
+    const response = await fetch('/api/admin/users', {
+      headers: getAuthHeaders()
+    });
+    
     if (!response.ok) {
-      throw new Error('Failed to fetch users');
+      const errorData = await response.json().catch(() => ({}));
+      throw new Error(errorData.error || 'Failed to fetch users');
     }
+    
     const data = await response.json();
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     return data.map((user: any) => {
@@ -219,9 +240,7 @@ class DatabaseClientService {
     try {
       const response = await fetch(`/api/users/${id}`, {
         method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: getAuthHeaders(),
         body: JSON.stringify(updates),
       });
       
@@ -252,6 +271,7 @@ class DatabaseClientService {
   async deleteUser(id: string): Promise<{ farmsDeleted: number; farmsPreserved: number; userRole: string }> {
     const response = await fetch(`/api/users/${id}`, {
       method: 'DELETE',
+      headers: getAuthHeaders(),
     });
     
     if (!response.ok) {

@@ -156,7 +156,8 @@ function AuthProviderInternal({ children }: { children: ReactNode }) {
         preferences: data.user.preferences
       };
 
-      const token = 'jwt_token_' + Date.now();
+      // Use the JWT token from the server response
+      const token = data.token;
 
       // Guardar en localStorage
       localStorage.setItem('gw2_token', token);
@@ -180,46 +181,31 @@ function AuthProviderInternal({ children }: { children: ReactNode }) {
     dispatch({ type: 'AUTH_START' });
 
     try {
-      // Simulación de API - en producción esto sería una llamada real
-      await new Promise(resolve => setTimeout(resolve, 1000));
-
-      // Basic validation
-      if (credentials.password !== credentials.confirmPassword) {
-        throw new Error('Passwords do not match');
-      }
-
-      // Basic password validation (length only)
-      if (credentials.password.length < 6) {
-        throw new Error('Password must be at least 6 characters long');
-      }
-      if (credentials.password.length > 50) {
-        throw new Error('Password cannot be longer than 50 characters');
-      }
-
-      // Verificar si es el primer usuario para hacerlo admin
-      const { getDbService: getDbServiceForCheck } = await import('@/lib/database-switch');
-      const dbServiceForCheck = await getDbServiceForCheck();
-      const existingUsers = await dbServiceForCheck.getAllUsers();
-      
-      const isFirstUser = existingUsers.length === 0;
-      
-      // Primero crear en base de datos para validar duplicados
-      const { getDbService } = await import('@/lib/database-switch');
-      const dbService = await getDbService();
-      
-      const createdUser = await dbService.createUser({
-        email: credentials.email,
-        username: credentials.username,
-        password: credentials.password, // Will be hashed server-side
-        role: isFirstUser ? 'admin' : 'user',
-        isActive: true
+      // Llamar a la API de registro real
+      const response = await fetch('/api/auth/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(credentials),
       });
 
-      // Solo si la creación fue exitosa, proceder con el login
-      const mockUser: User = {
-        ...createdUser,
-        joinDate: createdUser.createdAt?.toISOString() || new Date().toISOString(),
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Registration failed');
+      }
+
+      // Crear objeto de usuario
+      const user: User = {
+        id: data.user.id,
+        username: data.user.username,
+        email: data.user.email,
+        role: data.user.role,
+        isActive: data.user.isActive,
+        joinDate: data.user.createdAt ? (typeof data.user.createdAt === 'string' ? data.user.createdAt : data.user.createdAt.toISOString()) : new Date().toISOString(),
         lastLogin: new Date().toISOString(),
+        isAdmin: data.user.role === 'admin',
         preferences: {
           theme: 'dark',
           language: 'es',
@@ -228,19 +214,19 @@ function AuthProviderInternal({ children }: { children: ReactNode }) {
             eventReminders: true,
             buildUpdates: false
           }
-        },
-        isAdmin: createdUser.role === 'admin'
+        }
       };
 
-      const mockToken = 'mock_jwt_token_' + Date.now();
+      // Usar el JWT token real del servidor
+      const token = data.token;
 
-      // Guardar en localStorage solo después de éxito en BD
-      localStorage.setItem('gw2_token', mockToken);
-      localStorage.setItem('gw2_user', JSON.stringify(mockUser));
+      // Guardar en localStorage
+      localStorage.setItem('gw2_token', token);
+      localStorage.setItem('gw2_user', JSON.stringify(user));
 
       dispatch({
         type: 'AUTH_SUCCESS',
-        payload: { user: mockUser, token: mockToken },
+        payload: { user, token },
       });
     } catch (error) {
       // Limpiar localStorage en caso de error
@@ -359,7 +345,9 @@ function AuthProviderInternal({ children }: { children: ReactNode }) {
         }
       };
 
-      const token = 'discord_jwt_token_' + Date.now();
+      // Para Discord login, también necesitaríamos generar un token JWT real
+      // Por ahora, usamos un token temporal
+      const token = 'temp_discord_token_' + Date.now();
 
       // Guardar en localStorage
       localStorage.setItem('gw2_token', token);

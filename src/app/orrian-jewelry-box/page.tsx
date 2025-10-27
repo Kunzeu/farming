@@ -119,10 +119,8 @@ export default function OrrianJewelryBoxPage() {
     return 'https://wiki.guildwars2.com/wiki/Orrian_Jewelry_Box';
   }, [lang]);
   const [itemData, setItemData] = useState<ItemData | null>(null);
-  const [priceData, setPriceData] = useState<PriceData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [noMarketData, setNoMarketData] = useState(false);
   const [dropItems, setDropItems] = useState<DropItem[]>([]);
   const [dropWarning, setDropWarning] = useState<string | null>(null);
   const [nameSortOrder, setNameSortOrder] = useState<'asc' | 'desc'>('asc');
@@ -158,7 +156,6 @@ export default function OrrianJewelryBoxPage() {
       try {
         setLoading(true);
         setError(null);
-        setNoMarketData(false);
 
         // Verificar si estamos en modo offline
         if (isOfflineMode()) {
@@ -372,23 +369,6 @@ export default function OrrianJewelryBoxPage() {
         return total + (item.quantity * karmaValue);
       }
       return total;
-    }, 0);
-  }, [dropItems]);
-
-  // Total de oro recuperado (en cobre) sumando precio efectivo * cantidad
-  const totalGoldRecoveredCopper = useMemo(() => {
-    return dropItems.reduce((total, item) => {
-      // Solo contamos valores monetarios (sellPrice o favor). Karma no es oro
-      const unit = item.sellPrice || FAVOR_VALUES[item.id] || 0;
-      return total + unit * item.quantity;
-    }, 0);
-  }, [dropItems]);
-
-  // Suma total de cantidades SOLO de ítems cuyo Total Ganado se muestra en monedas (precio o favor)
-  const totalQuantityCoins = useMemo(() => {
-    return dropItems.reduce((sum, item) => {
-      const hasMonetaryTotal = Boolean(item.sellPrice) || Boolean(FAVOR_VALUES[item.id]);
-      return hasMonetaryTotal ? sum + item.quantity : sum;
     }, 0);
   }, [dropItems]);
 
