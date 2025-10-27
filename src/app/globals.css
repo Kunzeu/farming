@@ -65,3 +65,20 @@ footer + div:not([class*="scroll"]):not([id*="scroll"]) {
   max-width: 100%;
   overflow: hidden;
 }
+
+/* Prevenir que Google Ads u otras extensiones apliquen enlaces automáticos */
+.no-link-decoration,
+.no-link-decoration *,
+.no-link-decoration a,
+.no-link-decoration span,
+.no-link-decoration div {
+  text-decoration: none !important;
+  border-bottom: none !important;
+  cursor: default !important;
+}
+
+.no-link-decoration a:hover,
+.no-link-decoration span:hover {
+  text-decoration: none !important;
+  border-bottom: none !important;
+}

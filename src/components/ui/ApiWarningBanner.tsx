@@ -33,13 +33,13 @@ const ApiWarningBanner = () => {
         animate={{ opacity: 1, y: 0 }}
         exit={{ opacity: 0, y: -50 }}
         transition={{ duration: 0.3 }}
-        className="bg-gradient-to-r from-yellow-500 to-yellow-500 text-black shadow-lg border-b border-yellow-400"
+        className="bg-gradient-to-r from-yellow-500 to-yellow-500 text-black shadow-lg border-b border-yellow-400 no-link-decoration"
       >
         <div className="container mx-auto px-6 py-5">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
               <AlertTriangle className="w-7 h-7 flex-shrink-0 text-black" />
-              <div className="text-lg font-semibold">
+              <div className="text-lg font-semibold [&_*]:!no-underline [&_*]:!border-b-0">
                 <span className="font-black text-black">{t('apiWarning.title')}</span>
                 <br />
                 <span className="text-black font-semibold">{t('apiWarning.subtitle')}</span>

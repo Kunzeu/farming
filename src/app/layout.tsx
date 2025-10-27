@@ -45,20 +45,6 @@ export default function RootLayout({
         {/* Scripts de Google Ads optimizados - carga diferida */}
         <script dangerouslySetInnerHTML={{
           __html: `
-            // Función para verificar si el usuario es admin o moderator
-            function isUserAdmin() {
-              try {
-                const userData = localStorage.getItem('gw2_user');
-                if (!userData) return false;
-                
-                const user = JSON.parse(userData);
-                // Verificar si es admin o moderator
-                return user.role === 'admin' || user.role === 'moderator';
-              } catch (e) {
-                return false;
-              }
-            }
-            
             // Carga diferida de Google Ads para reducir JavaScript no utilizado
             function loadGoogleAds() {
               if (typeof window === 'undefined' || window.adsbygoogle) return; // Ya cargado o SSR
@@ -72,26 +58,20 @@ export default function RootLayout({
             
             // Solo ejecutar en el cliente
             if (typeof window !== 'undefined') {
-              // Verificar si el usuario es admin o moderator antes de cargar ads
-              const isAdmin = isUserAdmin();
-              
-              // Cargar Google Ads solo si NO es admin o moderator
-              if (!isAdmin) {
-                let adsLoaded = false;
-                function loadAdsOnInteraction() {
-                  if (adsLoaded) return;
-                  adsLoaded = true;
-                  loadGoogleAds();
-                }
-                
-                // Cargar después de 3 segundos o en la primera interacción
-                setTimeout(loadAdsOnInteraction, 3000);
-                document.addEventListener('scroll', loadAdsOnInteraction, { once: true });
-                document.addEventListener('click', loadAdsOnInteraction, { once: true });
-                document.addEventListener('touchstart', loadAdsOnInteraction, { once: true });
+              let adsLoaded = false;
+              function loadAdsOnInteraction() {
+                if (adsLoaded) return;
+                adsLoaded = true;
+                loadGoogleAds();
               }
+              
+              // Cargar después de 3 segundos o en la primera interacción
+              setTimeout(loadAdsOnInteraction, 3000);
+              document.addEventListener('scroll', loadAdsOnInteraction, { once: true });
+              document.addEventListener('click', loadAdsOnInteraction, { once: true });
+              document.addEventListener('touchstart', loadAdsOnInteraction, { once: true });
             }
-s          `
+          `
         }} />
         
         {/* Meta tags para prevenir caché de HTML */}
