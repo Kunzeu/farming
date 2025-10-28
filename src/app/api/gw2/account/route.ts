@@ -1,10 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
 
+export const runtime = 'nodejs';
+
 const GW2_API_BASE = 'https://api.guildwars2.com/v2';
 
 // Simple cache for account data
 const accountCache = new Map<string, { data: unknown; expiry: number }>();
-const CACHE_TTL = 5 * 60 * 1000; // 5 minutes
+const CACHE_TTL = 15 * 60 * 1000; // 15 minutos - cache agresivo
 
 async function fetchWith429Retry(url: string, options: RequestInit = {}): Promise<Response> {
   let retries = 0;
@@ -28,6 +30,7 @@ async function fetchWith429Retry(url: string, options: RequestInit = {}): Promis
 }
 
 export async function GET(request: NextRequest) {
+  const start = performance.now();
   try {
     const apiKey = request.nextUrl.searchParams.get('api_key') || 
                    request.headers.get('x-api-key');
@@ -72,9 +75,13 @@ export async function GET(request: NextRequest) {
       expiry: Date.now() + CACHE_TTL
     });
 
+    const duration = performance.now() - start;
+    console.log(`[API] /gw2/account ejecutado en ${duration.toFixed(2)}ms`);
+    
     return NextResponse.json(accountData);
   } catch (error) {
-    console.error('Account API error:', error);
+    const duration = performance.now() - start;
+    console.error(`[API] /gw2/account Error después de ${duration.toFixed(2)}ms:`, error);
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }

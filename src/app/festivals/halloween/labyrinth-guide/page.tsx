@@ -8,16 +8,11 @@ import {
   ArrowLeft,
   Info,
   Sword,
-  Shield,
   Zap,
-  Heart,
   Coins,
-  Clock,
   Map,
-  Users,
   Target,
   AlertTriangle,
-  CheckCircle,
   Star,
   TrendingUp,
   Package,
@@ -53,7 +48,7 @@ const LabyrinthGuidePage = () => {
   const [fuerzaData, setFuerzaData] = useState<{name: string, icon: string, wikiUrl: string} | null>(null);
   const [precisionData, setPrecisionData] = useState<{name: string, icon: string, wikiUrl: string} | null>(null);
   const [runa100148Data, setRuna100148Data] = useState<{name: string, icon: string, wikiUrl: string} | null>(null);
-  const [runaVelocidadData, setRunaVelocidadData] = useState<{name: string, icon: string, wikiUrl: string} | null>(null);
+  // const [runaVelocidadData, setRunaVelocidadData] = useState<{name: string, icon: string, wikiUrl: string} | null>(null); // No usado actualmente
   const [relicVampirismData, setRelicVampirismData] = useState<{name: string, icon?: string, wikiUrl: string} | null>(null);
   const [relicSpeedData, setRelicSpeedData] = useState<{name: string, icon: string, wikiUrl: string} | null>(null);
   const [wintersBlessingData, setWintersBlessingData] = useState<{name: string, icon: string, wikiUrl: string} | null>(null);
@@ -804,21 +799,21 @@ const LabyrinthGuidePage = () => {
     return `https://wiki.guildwars2.com/wiki/Superior_Sigil_of_Stamina`;
   };
 
-  // Función para obtener nombres traducidos de habilidades
-  const getTranslatedName = (itemType: 'epilogo-cenizas'): string => {
-    if (itemType === 'epilogo-cenizas') {
-      if (lang === 'es') {
-        return 'Epílogo: Las cenizas de los justos';
-      } else if (lang === 'fr') {
-        return 'Épilogue : Les cendres des justes';
-      } else if (lang === 'de') {
-        return 'Epilog: Die Asche der Gerechten';
-      } else {
-        return 'Epilogue: Ashes of the Just';
-      }
-    }
-    return '';
-  };
+  // Función para obtener nombres traducidos de habilidades (comentada - no se usa actualmente)
+  // const getTranslatedName = (itemType: 'epilogo-cenizas'): string => {
+  //   if (itemType === 'epilogo-cenizas') {
+  //     if (lang === 'es') {
+  //       return 'Epílogo: Las cenizas de los justes';
+  //     } else if (lang === 'fr') {
+  //       return 'Épilogue : Les cendres des justes';
+  //     } else if (lang === 'de') {
+  //       return 'Epilog: Die Asche der Gerechten';
+  //     } else {
+  //       return 'Epilogue: Ashes of the Just';
+  //     }
+  //   }
+  //   return '';
+  // };
 
   // Función para obtener datos del item
   const fetchItemData = async () => {
@@ -830,7 +825,7 @@ const LabyrinthGuidePage = () => {
         icon: data.icon,
         wikiUrl: buildWikiUrl(data.name, 'item')
       });
-    } catch (error) {
+    } catch {
       // Error fetching item data
     }
   };
@@ -845,7 +840,7 @@ const LabyrinthGuidePage = () => {
         icon: data.icon,
         wikiUrl: buildWikiUrl(data.name, 'skill')
       });
-    } catch (error) {
+    } catch {
       // Error fetching skill data
     }
   };
@@ -860,7 +855,7 @@ const LabyrinthGuidePage = () => {
         icon: data.icon,
         wikiUrl: buildSigilWikiUrl('vitality')
       });
-    } catch (error) {
+    } catch {
       // Error fetching vitality data
     }
   };
@@ -875,7 +870,7 @@ const LabyrinthGuidePage = () => {
         icon: data.icon,
         wikiUrl: buildSigilWikiUrl('fire')
       });
-    } catch (error) {
+    } catch {
       // Error fetching fire data
     }
   };
@@ -889,7 +884,7 @@ const LabyrinthGuidePage = () => {
         name: data.name,
         icon: data.icon
       });
-    } catch (error) {
+    } catch {
       // Error fetching baluarte data
     }
   };
@@ -903,7 +898,7 @@ const LabyrinthGuidePage = () => {
         name: data.name,
         icon: data.icon
       });
-    } catch (error) {
+    } catch {
       // Error fetching funcional data
     }
   };
@@ -917,7 +912,7 @@ const LabyrinthGuidePage = () => {
         name: data.name,
         icon: data.icon
       });
-    } catch (error) {
+    } catch {
       // Error fetching medico data
     }
   };
@@ -931,7 +926,7 @@ const LabyrinthGuidePage = () => {
         name: data.name,
         icon: data.icon
       });
-    } catch (error) {
+    } catch {
       // Error fetching furtivo data
     }
   };
@@ -946,7 +941,7 @@ const LabyrinthGuidePage = () => {
         icon: data.icon,
         wikiUrl: buildSigilWikiUrl('vampirismo')
       });
-    } catch (error) {
+    } catch {
       // Error fetching vampirismo data
     }
   };
@@ -961,7 +956,7 @@ const LabyrinthGuidePage = () => {
         name: data.name,
         icon: data.icon
       });
-    } catch (error) {
+    } catch {
       // Error fetching tercer tomo data
     }
   };
@@ -976,7 +971,7 @@ const LabyrinthGuidePage = () => {
         icon: data.icon,
         wikiUrl: buildSigilWikiUrl('tomo-justicia')
       });
-    } catch (error) {
+    } catch {
       // Error fetching primer tomo data
     }
   };
@@ -998,7 +993,7 @@ const LabyrinthGuidePage = () => {
         icon: data.icon,
         wikiUrl: wikiByLang[langKey]
       });
-    } catch (error) {
+    } catch {
       // Error fetching habilidad 1 data
     }
   };
@@ -1020,7 +1015,7 @@ const LabyrinthGuidePage = () => {
         icon: data.icon,
         wikiUrl: wikiByLang[langKey]
       });
-    } catch (error) {
+    } catch {
       // Error fetching mantra data
     }
   };
@@ -1042,7 +1037,7 @@ const LabyrinthGuidePage = () => {
         icon: data.icon,
         wikiUrl: wikiByLang[langKey]
       });
-    } catch (error) {
+    } catch {
       // Error fetching sello data
     }
   };
@@ -1064,7 +1059,7 @@ const LabyrinthGuidePage = () => {
         icon: data.icon,
         wikiUrl: wikiByLang[langKey]
       });
-    } catch (error) {
+    } catch {
       // Error fetching habilidad 2 data
     }
   };
@@ -1086,7 +1081,7 @@ const LabyrinthGuidePage = () => {
         icon: data.icon,
         wikiUrl: wikiByLang[langKey]
       });
-    } catch (error) {
+    } catch {
       // Error fetching habilidad 3 data
     }
   };
@@ -1108,7 +1103,7 @@ const LabyrinthGuidePage = () => {
         icon: data.icon,
         wikiUrl: wikiByLang[langKey]
       });
-    } catch (error) {
+    } catch {
       // Error fetching habilidad 4 data
     }
   };
@@ -1122,7 +1117,7 @@ const LabyrinthGuidePage = () => {
         icon: data.icon,
         wikiUrl: `https://wiki.guildwars2.com/wiki/${data.name.replace(/ /g, '_')}`
       });
-    } catch (error) {
+    } catch {
       // Error fetching runa 24836 data
     }
   };
@@ -1136,7 +1131,7 @@ const LabyrinthGuidePage = () => {
         icon: data.icon,
         wikiUrl: `https://wiki.guildwars2.com/wiki/${data.name.replace(/ /g, '_')}`
       });
-    } catch (error) {
+    } catch {
       // Error fetching fuerza data
     }
   };
@@ -1150,7 +1145,7 @@ const LabyrinthGuidePage = () => {
         icon: data.icon,
         wikiUrl: `https://wiki.guildwars2.com/wiki/${data.name.replace(/ /g, '_')}`
       });
-    } catch (error) {
+    } catch {
       // Error fetching precision data
     }
   };
@@ -1164,22 +1159,23 @@ const LabyrinthGuidePage = () => {
         icon: data.icon,
         wikiUrl: `https://wiki.guildwars2.com/wiki/${data.name.replace(/ /g, '_')}`
       });
-    } catch (error) {
+    } catch {
       // Error fetching runa 100148 data
     }
   };
 
-  // Función para obtener datos de Runa de Velocidad
+  // Función para obtener datos de Runa de Velocidad (comentada - no se usa actualmente)
   const fetchRunaVelocidadData = async () => {
     try {
-      const response = await fetch(`https://api.guildwars2.com/v2/items/100148?lang=${lang}`);
-      const data = await response.json();
-      setRunaVelocidadData({
-        name: data.name,
-        icon: data.icon,
-        wikiUrl: buildSigilWikiUrl('velocidad')
-      });
-    } catch (error) {
+      // const response = await fetch(`https://api.guildwars2.com/v2/items/100148?lang=${lang}`);
+      // const data = await response.json();
+      // runaVelocidadData preparado pero no usado actualmente
+      // setRunaVelocidadData({
+      //   name: data.name,
+      //   icon: data.icon,
+      //   wikiUrl: buildSigilWikiUrl('velocidad')
+      // });
+    } catch {
       // Error fetching runa velocidad data
     }
   };
@@ -1194,7 +1190,7 @@ const LabyrinthGuidePage = () => {
         icon: data.icon,
         wikiUrl: buildWikiUrl(data.name, 'item')
       });
-    } catch (error) {
+    } catch {
       // Error fetching spirit shards data
     }
   };
@@ -1209,7 +1205,7 @@ const LabyrinthGuidePage = () => {
         icon: data.icon,
         wikiUrl: buildWikiUrl(data.name, 'item')
       });
-    } catch (error) {
+    } catch {
       // Error fetching black lion boost data
     }
   };
@@ -1224,7 +1220,7 @@ const LabyrinthGuidePage = () => {
         icon: data.icon,
         wikiUrl: buildWikiUrl(data.name, 'item')
       });
-    } catch (error) {
+    } catch {
       // Error fetching experience boost data
     }
   };
@@ -1239,7 +1235,7 @@ const LabyrinthGuidePage = () => {
         icon: data.icon,
         wikiUrl: buildWikiUrl(data.name, 'item')
       });
-    } catch (error) {
+    } catch {
       // Error fetching communal bonfire data
     }
   };
@@ -1254,7 +1250,7 @@ const LabyrinthGuidePage = () => {
         icon: data.icon,
         wikiUrl: buildWikiUrl(data.name, 'item')
       });
-    } catch (error) {
+    } catch {
       // Error fetching zampacaramelos data
     }
   };
@@ -1269,7 +1265,7 @@ const LabyrinthGuidePage = () => {
         icon: data.icon,
         wikiUrl: buildWikiUrl(data.name, 'item')
       });
-    } catch (error) {
+    } catch {
       // Error fetching item 20002 data
     }
   };
@@ -1284,7 +1280,7 @@ const LabyrinthGuidePage = () => {
         icon: data.icon,
         wikiUrl: buildWikiUrl(data.name, 'item')
       });
-    } catch (error) {
+    } catch {
       // Error fetching celebration boost data
     }
   };
@@ -1299,7 +1295,7 @@ const LabyrinthGuidePage = () => {
         icon: data.icon,
         wikiUrl: buildWikiUrl(data.name, 'item', 95421)
       });
-    } catch (error) {
+    } catch {
       // Error fetching Delicia de campamento casera data
     }
   };
@@ -1314,7 +1310,7 @@ const LabyrinthGuidePage = () => {
         icon: data.icon,
         wikiUrl: buildWikiUrl(data.name, 'item')
       });
-    } catch (error) {
+    } catch {
       // Error fetching chatoyant elixir data
     }
   };
@@ -1329,7 +1325,7 @@ const LabyrinthGuidePage = () => {
         icon: data.icon,
         wikiUrl: buildWikiUrl(data.name, 'item', 36038)
       });
-    } catch (error) {
+    } catch {
       // Error fetching trick or treat bags data
     }
   };
@@ -1344,7 +1340,7 @@ const LabyrinthGuidePage = () => {
         icon: data.icon,
         wikiUrl: buildWikiUrl(data.name, 'item', 36041)
       });
-    } catch (error) {
+    } catch {
       // Error fetching candy corn data
     }
   };
@@ -1528,6 +1524,7 @@ const LabyrinthGuidePage = () => {
     fetchChatoyantElixirData();
     fetchTrickOrTreatBagsData();
     fetchCandyCornData();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [lang]);
 
   return (

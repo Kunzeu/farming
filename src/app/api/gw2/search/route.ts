@@ -1,10 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
 
+export const runtime = 'nodejs';
+
 const GW2_API_BASE = 'https://api.guildwars2.com/v2';
 
 // Simple cache for search results
 const searchCache = new Map<string, { data: unknown; expiry: number }>();
-const CACHE_TTL = 5 * 60 * 1000; // 5 minutes
+const CACHE_TTL = 15 * 60 * 1000; // 15 minutos - cache agresivo
 
 async function fetchWith429Retry(url: string, options: RequestInit = {}): Promise<Response> {
   let retries = 0;

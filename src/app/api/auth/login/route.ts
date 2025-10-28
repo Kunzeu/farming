@@ -3,6 +3,8 @@ import { comparePassword } from '@/lib/server/password-utils';
 import { generateToken } from '@/lib/server/jwt-utils';
 import { pool } from '@/lib/postgres-db';
 
+export const runtime = 'nodejs';
+
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();

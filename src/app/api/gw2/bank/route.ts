@@ -1,12 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server';
 
+export const runtime = 'nodejs';
+
 const GW2_API_BASE = 'https://api.guildwars2.com/v2';
 
 // Simple in-memory cache with TTL per apiKey
 type CacheEntry = { expiresAt: number; data: unknown };
 const bankCache = new Map<string, CacheEntry>();
 const inflight = new Map<string, Promise<unknown>>();
-const BANK_TTL_MS = 30_000; // 30s to mitigate rate limits while staying fresh
+const BANK_TTL_MS = 30 * 60 * 1000; // 30 minutos - cache agresivo
 
 async function fetchWith429Retry(url: string, init?: RequestInit): Promise<Response> {
   let attempt = 0;
@@ -25,6 +27,7 @@ async function fetchWith429Retry(url: string, init?: RequestInit): Promise<Respo
 }
 
 export async function GET(request: NextRequest) {
+  const start = performance.now();
   try {
     const apiKey = request.nextUrl.searchParams.get('api_key') || 
                    request.headers.get('x-api-key');
@@ -97,12 +100,15 @@ export async function GET(request: NextRequest) {
 
     try {
       const data = await fetchPromise;
+      const duration = performance.now() - start;
+      console.log(`[API] /gw2/bank ejecutado en ${duration.toFixed(2)}ms`);
       return NextResponse.json(data as unknown);
     } finally {
       inflight.delete(apiKey);
     }
   } catch (error) {
-    console.error('Error fetching bank data:', error);
+    const duration = performance.now() - start;
+    console.error(`[API] /gw2/bank Error después de ${duration.toFixed(2)}ms:`, error);
     return NextResponse.json(
       { 
         error: 'Failed to fetch bank data',

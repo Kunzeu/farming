@@ -1,8 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server';
 
+export const runtime = 'nodejs';
+
 const GW2_API_BASE = 'https://api.guildwars2.com/v2';
 
+// Cache in-memory para reducir carga
+const walletCache = new Map<string, { data: unknown; expiry: number }>();
+const WALLET_TTL_MS = 10 * 60 * 1000; // 10 minutos
+
 export async function GET(request: NextRequest) {
+  const start = performance.now();
   try {
     // Get API key from query params or headers
     const apiKey = request.nextUrl.searchParams.get('api_key') || 
@@ -13,6 +20,13 @@ export async function GET(request: NextRequest) {
         { error: 'API key required' },
         { status: 400 }
       );
+    }
+
+    // Check cache first
+    const cached = walletCache.get(apiKey);
+    const now = Date.now();
+    if (cached && cached.expiry > now) {
+      return NextResponse.json(cached.data);
     }
 
     // Fetch wallet data from GW2 API
@@ -28,9 +42,16 @@ export async function GET(request: NextRequest) {
 
     const walletData = await response.json();
 
+    // Update cache
+    walletCache.set(apiKey, { data: walletData, expiry: now + WALLET_TTL_MS });
+
+    const duration = performance.now() - start;
+    console.log(`[API] /gw2/wallet ejecutado en ${duration.toFixed(2)}ms`);
+
     return NextResponse.json(walletData);
   } catch (error) {
-    console.error('Error fetching wallet data:', error);
+    const duration = performance.now() - start;
+    console.error(`[API] /gw2/wallet Error después de ${duration.toFixed(2)}ms:`, error);
     return NextResponse.json(
       { 
         error: 'Failed to fetch wallet data',

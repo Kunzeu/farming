@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { pool } from '@/lib/postgres-db';
 import { authorizeRequest } from '@/lib/server/jwt-utils';
 
+export const runtime = 'nodejs';
+
 // API para administradores - Lista todos los usuarios
 export async function GET(request: NextRequest) {
   try {

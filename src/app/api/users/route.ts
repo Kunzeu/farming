@@ -5,6 +5,8 @@ import fs from 'fs';
 import path from 'path';
 import { hashPassword } from '@/lib/server/password-utils';
 
+export const runtime = 'nodejs';
+
 // Cargar variables de entorno desde .env
 function loadEnvFile() {
   const envPath = path.join(process.cwd(), '.env');

@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { Pool } from 'pg';
 
+export const runtime = 'nodejs';
+
 // Configuración de la base de datos
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,

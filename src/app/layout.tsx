@@ -9,7 +9,7 @@ import Footer from "@/components/layout/Footer";
 import ScrollToTop from "@/components/ui/ScrollToTop";
 import CookieBanner from "@/components/ui/CookieBanner";
 import ApiWarningBanner from "@/components/ui/ApiWarningBanner";
-import { Analytics } from "@vercel/analytics/next";
+// import { Analytics } from "@vercel/analytics/next"; // Deshabilitado para reducir carga
 import { generateDynamicMetadata } from "@/lib/metadata";
 
 // Optimización de fuentes para Desktop
@@ -216,7 +216,7 @@ export default function RootLayout({
                 </div>
                 <ScrollToTop />
                 <CookieBanner />
-                <Analytics />
+                {/* <Analytics /> Deshabilitado para reducir carga */}
               </div>
             </I18nProvider>
           </AuthProvider>

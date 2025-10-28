@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getGiveawayById, getGiveawayItemsInfo } from '../../../../config/giveaways';
 
+export const runtime = 'nodejs';
+
 // GET /api/giveaways/items - Get items information for a specific giveaway
 export async function GET(request: NextRequest) {
   try {

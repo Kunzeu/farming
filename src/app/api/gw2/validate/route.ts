@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 
+export const runtime = 'nodejs';
+
 const GW2_API_BASE = 'https://api.guildwars2.com/v2';
 
 export async function GET(request: NextRequest) {

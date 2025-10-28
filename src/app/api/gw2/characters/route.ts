@@ -1,8 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
 
+export const runtime = 'nodejs';
+
 const GW2_API_BASE = 'https://api.guildwars2.com/v2';
 
 export async function GET(request: NextRequest) {
+  const start = performance.now();
   try {
     const apiKey = request.nextUrl.searchParams.get('api_key') || 
                    request.headers.get('x-api-key');
@@ -27,9 +30,10 @@ export async function GET(request: NextRequest) {
 
     const characterNames = await charactersResponse.json();
 
-    // Luego obtenemos la información detallada de cada personaje
+    // OPTIMIZADO: Hacer solo 1 llamada por personaje (sin inventarios para reducir carga)
+    // Si necesitas inventarios, puedes hacerlo en el frontend después de cargar los personajes
     const charactersData = await Promise.all(
-      characterNames.map(async (characterName: string) => {
+      characterNames.slice(0, 5).map(async (characterName: string) => { // Limitar a 5 personajes
         try {
           const characterResponse = await fetch(
             `${GW2_API_BASE}/characters/${encodeURIComponent(characterName)}?access_token=${apiKey}`,
@@ -42,38 +46,7 @@ export async function GET(request: NextRequest) {
 
           if (characterResponse.ok) {
             const characterData = await characterResponse.json();
-            
-            // También obtenemos el inventario del personaje
-            try {
-              const inventoryResponse = await fetch(
-                `${GW2_API_BASE}/characters/${encodeURIComponent(characterName)}/inventory?access_token=${apiKey}`,
-                {
-                  headers: {
-                    'Accept': 'application/json',
-                  },
-                }
-              );
-
-              if (inventoryResponse.ok) {
-                const inventoryData = await inventoryResponse.json();
-                return {
-                  ...characterData,
-                  inventory: inventoryData
-                };
-              } else {
-                console.error(`Error fetching inventory for ${characterName}:`, inventoryResponse.status);
-                return {
-                  ...characterData,
-                  inventory: null
-                };
-              }
-            } catch (inventoryError) {
-              console.error(`Error fetching inventory for ${characterName}:`, inventoryError);
-              return {
-                ...characterData,
-                inventory: null
-              };
-            }
+            return characterData;
           } else {
             console.error(`Error fetching character ${characterName}:`, characterResponse.status);
             return null;
@@ -88,9 +61,13 @@ export async function GET(request: NextRequest) {
     // Filtramos los personajes que se pudieron cargar correctamente
     const validCharacters = charactersData.filter(character => character !== null);
 
+    const duration = performance.now() - start;
+    console.log(`[API] /gw2/characters ejecutado en ${duration.toFixed(2)}ms`);
+
     return NextResponse.json(validCharacters);
   } catch (error) {
-    console.error('Error fetching characters data:', error);
+    const duration = performance.now() - start;
+    console.error(`[API] /gw2/characters Error después de ${duration.toFixed(2)}ms:`, error);
     return NextResponse.json(
       { 
         error: 'Failed to fetch characters data',

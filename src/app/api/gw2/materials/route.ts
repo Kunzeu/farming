@@ -1,8 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server';
 
+export const runtime = 'nodejs';
+
 const GW2_API_BASE = 'https://api.guildwars2.com/v2';
 
+// Cache in-memory para reducir carga
+const materialsCache = new Map<string, { data: unknown; expiry: number }>();
+const MATERIALS_TTL_MS = 15 * 60 * 1000; // 15 minutos
+
 export async function GET(request: NextRequest) {
+  const start = performance.now();
   try {
     const apiKey = request.nextUrl.searchParams.get('api_key') || 
                    request.headers.get('x-api-key');
@@ -12,6 +19,13 @@ export async function GET(request: NextRequest) {
         { error: 'API key required' },
         { status: 400 }
       );
+    }
+
+    // Check cache first
+    const cached = materialsCache.get(apiKey);
+    const now = Date.now();
+    if (cached && cached.expiry > now) {
+      return NextResponse.json(cached.data);
     }
 
     const response = await fetch(`${GW2_API_BASE}/account/materials?access_token=${apiKey}`, {
@@ -46,13 +60,26 @@ export async function GET(request: NextRequest) {
           };
         });
         
+        // Update cache with enriched data
+        materialsCache.set(apiKey, { data: enrichedMaterialsData, expiry: now + MATERIALS_TTL_MS });
+        
+        const duration = performance.now() - start;
+        console.log(`[API] /gw2/materials ejecutado en ${duration.toFixed(2)}ms`);
+        
         return NextResponse.json(enrichedMaterialsData);
       }
     }
 
+    // Update cache with basic data
+    materialsCache.set(apiKey, { data: materialsData, expiry: now + MATERIALS_TTL_MS });
+
+    const duration = performance.now() - start;
+    console.log(`[API] /gw2/materials ejecutado en ${duration.toFixed(2)}ms`);
+
     return NextResponse.json(materialsData);
   } catch (error) {
-    console.error('Error fetching materials data:', error);
+    const duration = performance.now() - start;
+    console.error(`[API] /gw2/materials Error después de ${duration.toFixed(2)}ms:`, error);
     return NextResponse.json(
       { 
         error: 'Failed to fetch materials data',
