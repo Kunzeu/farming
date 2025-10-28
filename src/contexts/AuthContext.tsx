@@ -451,7 +451,7 @@ function AuthProviderInternal({ children }: { children: ReactNode }) {
 
       // Normalizar estado para tiers gratuitos
       if (patreonStatus == null && patreonTier === 'Free') {
-        patreonStatus = 'free' as unknown as typeof patreonStatus;
+        patreonStatus = null; // Mantener null en lugar de "free"
       }
 
       // Buscar o crear usuario en la base de datos
@@ -692,7 +692,7 @@ function AuthProviderInternal({ children }: { children: ReactNode }) {
 
       // Normalizar estado para tiers gratuitos
       if (patreonStatus == null && patreonTier === 'Free') {
-        patreonStatus = 'free' as unknown as typeof patreonStatus;
+        patreonStatus = null; // Mantener null en lugar de "free"
       }
 
       // Actualizar usuario actual con información de Patreon
@@ -717,7 +717,7 @@ function AuthProviderInternal({ children }: { children: ReactNode }) {
         if (!persistRes.ok) {
           const text = await persistRes.text();
           console.error('Persist Patreon link failed (linkPatreon):', persistRes.status, text);
-          // No lanzar error, solo loguear para no interrumpir el flujo
+            // No lanzar error, solo loguear para no interrumpir el flujo
         }
       } catch {}
 
