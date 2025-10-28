@@ -1,19 +1,21 @@
 'use client';
 
 import { useAuth } from '@/contexts/AuthContext';
+import { useState } from 'react';
 import { useI18n } from '@/contexts/I18nContext';
 import { CheckCircle, AlertCircle, ExternalLink, Link, Crown } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 export default function PatreonSection() {
-  const { user } = useAuth();
+  const { user, unlinkPatreon } = useAuth();
+  const [isUnlinking, setIsUnlinking] = useState(false);
   const { t } = useI18n();
 
   const hasPatreon = !!user?.patreonId;
   const isActivePatron = user?.patreonStatus === 'active_patron';
 
   // Verificar si el tier es de pago válido
-  const validPatreonTiers = ['Basic Supporter', 'Premium Supporter', 'VIP Supporter', 'Supporter Básico', 'Supporter Premium', 'Supporter VIP'];
+  const validPatreonTiers = ['Bronze', 'Silver', 'Gold', 'Legends'];
   const hasValidTier = user?.patreonTier && validPatreonTiers.includes(user.patreonTier);
   const displayTier = hasValidTier ? user.patreonTier : null;
 
@@ -24,9 +26,28 @@ export default function PatreonSection() {
       ? `${window.location.origin}` 
       : 'https://www.true-farming.com';
     
-    const redirectUri = process.env.NEXT_PUBLIC_PATREON_REDIRECT_URI || `${baseUrl}/auth/patreon/link`;
-    const patreonAuthUrl = `https://www.patreon.com/oauth2/authorize?response_type=code&client_id=${process.env.NEXT_PUBLIC_PATREON_CLIENT_ID}&redirect_uri=${encodeURIComponent(redirectUri)}&scope=identity identity[email] identity.memberships`;
+    const redirectUri = process.env.NEXT_PUBLIC_PATREON_REDIRECT_URI || `${baseUrl}/auth/patreon/callback`;
+    const clientId = process.env.NEXT_PUBLIC_PATREON_CLIENT_ID;
+    // Debug: comparar con el log del servidor (prefijo del clientId y redirect)
+    try {
+      console.log('Patreon auth config (client):', {
+        clientIdPrefix: clientId ? `${clientId.substring(0, 10)}...` : 'Missing',
+        redirectUri
+      });
+    } catch {}
+    const state = 'link';
+    const patreonAuthUrl = `https://www.patreon.com/oauth2/authorize?response_type=code&client_id=${clientId}&redirect_uri=${encodeURIComponent(redirectUri)}&scope=identity identity[email] identity.memberships&state=${encodeURIComponent(state)}`;
     window.location.href = patreonAuthUrl;
+  };
+
+  const handleUnlinkPatreon = async () => {
+    if (isUnlinking) return;
+    try {
+      setIsUnlinking(true);
+      await unlinkPatreon();
+    } finally {
+      setIsUnlinking(false);
+    }
   };
 
   const getPatreonStatusColor = () => {
@@ -183,14 +204,24 @@ export default function PatreonSection() {
               </a>
             </>
           ) : (
-            <a
-              href="https://www.patreon.com/KunzeuLabs"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="group inline-flex items-center justify-center gap-2 px-4 py-3 bg-gradient-to-r from-[#FF424D] to-[#E03238] hover:from-[#E03238] hover:to-[#C02830] text-white font-semibold rounded-lg transition-all duration-300 shadow-md hover:shadow-lg transform hover:scale-105">
-              <ExternalLink className="w-4 h-4 group-hover:rotate-12 transition-transform duration-300" />
-              <span className="text-sm">{t('profile.patreon.managePatreon', 'Gestionar en Patreon')}</span>
-            </a>
+            <div className="flex items-center gap-2">
+              <a
+                href="https://www.patreon.com/KunzeuLabs"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="group inline-flex items-center justify-center gap-2 px-4 py-3 bg-gradient-to-r from-[#FF424D] to-[#E03238] hover:from-[#E03238] hover:to-[#C02830] text-white font-semibold rounded-lg transition-all duration-300 shadow-md hover:shadow-lg transform hover:scale-105">
+                <ExternalLink className="w-4 h-4 group-hover:rotate-12 transition-transform duration-300" />
+                <span className="text-sm">{t('profile.patreon.managePatreon', 'Gestionar en Patreon')}</span>
+              </a>
+              <button
+                onClick={handleUnlinkPatreon}
+                disabled={isUnlinking}
+                className="group inline-flex items-center justify-center gap-2 px-4 py-3 bg-gray-700 hover:bg-gray-600 text-white font-semibold rounded-lg transition-all duration-300 shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                <Link className="w-4 h-4 rotate-45 group-hover:rotate-90 transition-transform duration-300" />
+                <span className="text-sm">{t('profile.patreon.unlink', 'Desvincular')}</span>
+              </button>
+            </div>
           )}
         </div>
 

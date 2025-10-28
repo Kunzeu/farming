@@ -30,6 +30,15 @@ export async function POST(request: NextRequest) {
       redirectUri: redirectUri || 'Missing',
       host: host
     });
+    const codePreview = typeof code === 'string' ? `${code.slice(0, 6)}...${code.slice(-6)}` : null;
+    console.log('Patreon token request debug:', {
+      hasCode: !!code,
+      codeLength: typeof code === 'string' ? code.length : null,
+      codePreview,
+      redirectUriUsed: redirectUri,
+      referer: request.headers.get('referer') || null,
+      origin: request.headers.get('origin') || null,
+    });
 
     if (!clientId || !clientSecret) {
       console.error('Missing Patreon OAuth environment variables:', {

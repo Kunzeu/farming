@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState, useCallback, Suspense } from 'react';
+import { useEffect, useState, useCallback, Suspense, useRef } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
 import { Loader2, CheckCircle, XCircle } from 'lucide-react';
@@ -8,14 +8,21 @@ import { Loader2, CheckCircle, XCircle } from 'lucide-react';
 function PatreonCallbackContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const { loginWithPatreon } = useAuth();
+  const { user, loginWithPatreon, linkPatreon } = useAuth();
   const [status, setStatus] = useState<'loading' | 'success' | 'error'>('loading');
   const [message, setMessage] = useState('');
 
+  const hasRunRef = useRef(false);
+
   const handlePatreonCallback = useCallback(async () => {
+    if (hasRunRef.current) return; // Evitar múltiples ejecuciones y 'invalid_grant'
+    hasRunRef.current = true;
     const code = searchParams.get('code');
     const error = searchParams.get('error');
+    const state = searchParams.get('state');
 
+    const codePreview = code ? `${code.slice(0, 6)}...${code.slice(-6)}` : null;
+    console.log('Patreon callback received:', { code: !!code, codePreview, error, state });
 
     if (error) {
       console.error('Patreon OAuth error:', error);
@@ -34,8 +41,13 @@ function PatreonCallbackContent() {
     }
 
     try {
-      // Llamar a la función de login con Patreon
-      await loginWithPatreon(code);
+      console.log('Starting Patreon authentication with code preview:', codePreview);
+      // Si hay usuario autenticado, usar flujo de vinculación; si no, flujo de login
+      if (state === 'link' || user) {
+        await linkPatreon(code);
+      } else {
+        await loginWithPatreon(code);
+      }
       setStatus('success');
       setMessage('¡Autenticación exitosa! Redirigiendo...');
       setTimeout(() => router.push('/'), 2000);
@@ -45,7 +57,7 @@ function PatreonCallbackContent() {
       setMessage(`Error al procesar la autenticación: ${error instanceof Error ? error.message : 'Error desconocido'}`);
       setTimeout(() => router.push('/login'), 3000);
     }
-  }, [searchParams, loginWithPatreon, router]);
+  }, [searchParams, user, loginWithPatreon, linkPatreon, router]);
 
   useEffect(() => {
     handlePatreonCallback();
