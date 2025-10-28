@@ -14,10 +14,21 @@ export default function PatreonSection() {
   const hasPatreon = !!user?.patreonId;
   const isActivePatron = user?.patreonStatus === 'active_patron';
 
-  // Verificar si el tier es de pago válido
-  const validPatreonTiers = ['Bronze', 'Silver', 'Gold', 'Legends'];
-  const hasValidTier = user?.patreonTier && validPatreonTiers.includes(user.patreonTier);
-  const displayTier = hasValidTier ? user.patreonTier : null;
+  // Verificar si el tier es de pago válido o free
+  const validPatreonTiers = ['Bronze', 'Silver', 'Gold', 'Legends', 'Free'];
+  const userTier = user?.patreonTier?.trim(); // Limpiar espacios
+  const hasValidTier = userTier && validPatreonTiers.some(tier => tier.toLowerCase() === userTier.toLowerCase());
+  // Normalizar capitalización del tier para display
+  const displayTier = hasValidTier ? (userTier.charAt(0).toUpperCase() + userTier.slice(1).toLowerCase()) : null;
+  
+  // Log para debug
+  console.log('Patreon Debug:', { 
+    hasPatreon, 
+    userTier, 
+    patreonStatus: user?.patreonStatus,
+    hasValidTier, 
+    displayTier 
+  });
 
   const handleLinkPatreon = () => {
     // Detectar el entorno actual y usar la URL de redirección apropiada
@@ -103,26 +114,19 @@ export default function PatreonSection() {
               </div>
             </div>
             
-            {displayTier && (
-              <div className="flex items-center justify-between">
-                <span className="text-xs font-medium text-gray-300">
-                  {t('profile.patreon.tier', 'Nivel')}
-                </span>
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-medium text-gray-300">
+                {t('profile.patreon.subscription', 'Suscripción')}
+              </span>
+              {displayTier ? (
                 <span className="text-sm text-[#FF424D] font-bold">{displayTier}</span>
-              </div>
-            )}
-
-            {!displayTier && hasPatreon && (
-              <div className="flex items-center justify-between">
-                <span className="text-xs font-medium text-gray-300">
-                  {t('profile.patreon.subscription', 'Suscripción')}
-                </span>
+              ) : (
                 <span className="text-sm text-gray-400">{t('profile.patreon.noActiveSubscription', 'Sin suscripción activa')}</span>
-              </div>
-            )}
+              )}
+            </div>
 
             {/* Benefits */}
-            {isActivePatron && (
+            {displayTier && displayTier.toLowerCase() !== 'free' && (
               <div className="mt-4 pt-4 border-t border-gray-700">
                 <h4 className="text-sm font-semibold text-white mb-2">
                   {t('profile.patreon.benefits', 'Beneficios Activos')}

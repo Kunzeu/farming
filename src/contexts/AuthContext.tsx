@@ -346,6 +346,12 @@ function AuthProviderInternal({ children }: { children: ReactNode }) {
         ...updatedUser
       };
 
+      console.log('updateUser - Nuevo usuario:', { 
+        patreonId: newUser.patreonId,
+        patreonTier: newUser.patreonTier,
+        patreonStatus: newUser.patreonStatus 
+      });
+
       // Guardar en localStorage
       localStorage.setItem('gw2_user', JSON.stringify(newUser));
 
@@ -489,8 +495,8 @@ function AuthProviderInternal({ children }: { children: ReactNode }) {
             email: patreonUser.attributes.email,
             username: patreonUser.attributes.vanity || patreonUser.attributes.full_name || `patreon_${patreonUser.id}`,
             patreonId: patreonUser.id,
-            patreonTier: patreonTier || undefined,
-            patreonStatus: patreonStatus || undefined,
+            patreonTier: patreonTier ?? undefined,
+            patreonStatus: patreonStatus ?? null,
             role: 'user',
             isActive: true,
           });
@@ -698,8 +704,8 @@ function AuthProviderInternal({ children }: { children: ReactNode }) {
       // Actualizar usuario actual con información de Patreon
       await updateUser({
         patreonId: patreonUser.id,
-        patreonTier: patreonTier || undefined,
-        patreonStatus: patreonStatus || undefined,
+        patreonTier: patreonTier ?? undefined,
+        patreonStatus: patreonStatus ?? null,
       });
 
       // Persistir en BD inmediatamente por email
@@ -721,13 +727,16 @@ function AuthProviderInternal({ children }: { children: ReactNode }) {
         }
       } catch {}
 
-
+      // Refrescar datos del usuario después de la vinculación
+      setTimeout(() => {
+        refreshUserData();
+      }, 500);
 
     } catch (error) {
       console.error('Error linking Patreon:', error);
       throw error;
     }
-  }, [state.user, updateUser]);
+  }, [state.user, updateUser, refreshUserData]);
 
   // Desvincular cuenta de Patreon del usuario actual
   const unlinkPatreon = useCallback(async () => {
@@ -945,6 +954,10 @@ function AuthProviderInternal({ children }: { children: ReactNode }) {
         lastLogin: state.user.lastLogin,
       };
 
+      console.log('refreshUserData - Usuario actualizado:', { 
+        fromAPI: { patreonId: safeUser.patreonId, patreonTier: safeUser.patreonTier, patreonStatus: safeUser.patreonStatus },
+        final: { patreonId: refreshedUser.patreonId, patreonTier: refreshedUser.patreonTier, patreonStatus: refreshedUser.patreonStatus }
+      });
 
       // Actualizar localStorage
       localStorage.setItem('gw2_user', JSON.stringify(refreshedUser));
