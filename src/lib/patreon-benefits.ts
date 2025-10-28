@@ -74,11 +74,24 @@ export function hasBenefit(user: User | null, benefit: PatreonBenefit): boolean 
 }
 
 /**
- * Obtiene todos los beneficios del usuario
+ * Obtiene todos los beneficios del usuario (solo si es patrón activo)
  */
 export function getUserBenefits(user: User | null): PatreonBenefit[] {
   if (!isActivePatron(user)) return [];
   
+  const tier = getUserPatreonTier(user);
+  if (!tier) return [];
+  
+  const tierConfig = PATREON_TIERS[tier as keyof typeof PATREON_TIERS];
+  if (!tierConfig) return [];
+  
+  return tierConfig.benefits;
+}
+
+/**
+ * Obtiene los beneficios del tier del usuario (independientemente del estado de patrón activo)
+ */
+export function getTierBenefits(user: User | null): PatreonBenefit[] {
   const tier = getUserPatreonTier(user);
   if (!tier) return [];
   

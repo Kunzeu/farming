@@ -22,7 +22,6 @@ function PatreonCallbackContent() {
     const state = searchParams.get('state');
 
     const codePreview = code ? `${code.slice(0, 6)}...${code.slice(-6)}` : null;
-    console.log('Patreon callback received:', { code: !!code, codePreview, error, state });
 
     if (error) {
       console.error('Patreon OAuth error:', error);

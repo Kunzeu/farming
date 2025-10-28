@@ -5,6 +5,7 @@ import { useState } from 'react';
 import { useI18n } from '@/contexts/I18nContext';
 import { CheckCircle, AlertCircle, ExternalLink, Link, Crown } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { getTierBenefits } from '@/lib/patreon-benefits';
 
 export default function PatreonSection() {
   const { user, unlinkPatreon } = useAuth();
@@ -17,7 +18,24 @@ export default function PatreonSection() {
   // Verificar si el tier es de pago válido
   const validPatreonTiers = ['Bronze', 'Silver', 'Gold', 'Legends'];
   const hasValidTier = user?.patreonTier && validPatreonTiers.includes(user.patreonTier);
-  const displayTier = hasValidTier ? user.patreonTier : null;
+  const displayTier = user?.patreonTier || null; // Mostrar cualquier tier, no solo los válidos
+  
+  // Obtener beneficios del tier del usuario
+  const userBenefits = getTierBenefits(user);
+
+  // Mapear beneficios a texto legible
+  const getBenefitText = (benefit: string) => {
+    const benefitMap: Record<string, string> = {
+      'no_ads': t('profile.patreon.benefit.noAds', 'Sin anuncios'),
+      'exclusive_content': t('profile.patreon.benefit.exclusiveContent', 'Contenido exclusivo'),
+      'discord_role': t('profile.patreon.benefit.discordRole', 'Rol especial en Discord'),
+      'priority_support': t('profile.patreon.benefit.prioritySupport', 'Soporte prioritario'),
+      'early_access': t('profile.patreon.benefit.earlyAccess', 'Acceso temprano'),
+      'custom_features': t('profile.patreon.benefit.customFeatures', 'Características personalizadas'),
+      'api_access': t('profile.patreon.benefit.apiAccess', 'Acceso a API')
+    };
+    return benefitMap[benefit] || benefit;
+  };
 
   const handleLinkPatreon = () => {
     // Detectar el entorno actual y usar la URL de redirección apropiada
@@ -108,7 +126,11 @@ export default function PatreonSection() {
                 <span className="text-xs font-medium text-gray-300">
                   {t('profile.patreon.tier', 'Nivel')}
                 </span>
-                <span className="text-sm text-[#FF424D] font-bold">{displayTier}</span>
+                <span className={`text-sm font-bold ${
+                  hasValidTier ? 'text-[#FF424D]' : 'text-gray-400'
+                }`}>
+                  {displayTier}
+                </span>
               </div>
             )}
 
@@ -122,28 +144,18 @@ export default function PatreonSection() {
             )}
 
             {/* Benefits */}
-            {isActivePatron && (
+            {displayTier && userBenefits.length > 0 && (
               <div className="mt-4 pt-4 border-t border-gray-700">
                 <h4 className="text-sm font-semibold text-white mb-2">
-                  {t('profile.patreon.benefits', 'Beneficios Activos')}
+                  {t('profile.patreon.benefits', 'Beneficios')}
                 </h4>
                 <ul className="space-y-1">
-                  <li className="flex items-center gap-2 text-xs text-gray-300">
-                    <CheckCircle className="w-3 h-3 text-green-400" />
-                    <span>{t('profile.patreon.benefit1', 'Acceso a contenido exclusivo')}</span>
-                  </li>
-                  <li className="flex items-center gap-2 text-xs text-gray-300">
-                    <CheckCircle className="w-3 h-3 text-green-400" />
-                    <span>{t('profile.patreon.benefit2', 'Sin anuncios')}</span>
-                  </li>
-                  <li className="flex items-center gap-2 text-xs text-gray-300">
-                    <CheckCircle className="w-3 h-3 text-green-400" />
-                    <span>{t('profile.patreon.benefit3', 'Rol especial en Discord')}</span>
-                  </li>
-                  <li className="flex items-center gap-2 text-xs text-gray-300">
-                    <CheckCircle className="w-3 h-3 text-green-400" />
-                    <span>{t('profile.patreon.benefit4', 'Prioridad en soporte')}</span>
-                  </li>
+                  {userBenefits.map((benefit, index) => (
+                    <li key={index} className="flex items-center gap-2 text-xs text-gray-300">
+                      <CheckCircle className="w-3 h-3 text-green-400" />
+                      <span>{getBenefitText(benefit)}</span>
+                    </li>
+                  ))}
                 </ul>
               </div>
             )}
