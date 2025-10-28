@@ -717,6 +717,7 @@ function AuthProviderInternal({ children }: { children: ReactNode }) {
         if (!persistRes.ok) {
           const text = await persistRes.text();
           console.error('Persist Patreon link failed (linkPatreon):', persistRes.status, text);
+          // No lanzar error, solo loguear para no interrumpir el flujo
         }
       } catch {}
 

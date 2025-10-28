@@ -9,6 +9,8 @@ export async function POST(request: NextRequest) {
     const origin = request.headers.get('origin') || '';
     const referer = request.headers.get('referer') || '';
 
+    console.log('Patreon link request:', { origin, referer });
+
     const allowedOrigin = origin.includes('localhost') || origin.includes('127.0.0.1') || origin.includes('true-farming.com');
     const allowedReferer = referer.includes('/auth/patreon') || referer.includes('/profile') || referer.includes('localhost') || referer.includes('true-farming.com');
 
