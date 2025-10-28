@@ -82,6 +82,8 @@ interface AuthContextType extends AuthState {
   login: (credentials: LoginCredentials) => Promise<void>;
   register: (credentials: RegisterCredentials) => Promise<void>;
   loginWithDiscord: (code: string) => Promise<void>;
+  loginWithPatreon: (code: string) => Promise<void>;
+  linkPatreon: (code: string) => Promise<void>;
   logout: () => void;
   clearError: () => void;
   hasPermission: (role: 'admin' | 'moderator' | 'user') => boolean;
@@ -249,6 +251,238 @@ function AuthProviderInternal({ children }: { children: ReactNode }) {
     // Redirigir a la página principal
     router.push('/');
   }, [router]);
+
+  // Función de login/registro con Patreon
+  const loginWithPatreon = useCallback(async (code: string) => {
+    dispatch({ type: 'AUTH_START' });
+
+    try {
+      console.log('Starting Patreon login with code:', code.substring(0, 10) + '...');
+      
+      // Intercambiar el código por un token de acceso
+      const tokenResponse = await fetch('/api/auth/patreon/token', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ code }),
+      });
+
+      if (!tokenResponse.ok) {
+        const errorData = await tokenResponse.json();
+        console.error('Patreon token error:', errorData);
+        throw new Error(errorData.error || 'Error al obtener token de Patreon');
+      }
+
+      const { access_token } = await tokenResponse.json();
+      console.log('Patreon token obtained successfully');
+
+      // Obtener información del usuario de Patreon y su membresía
+      const identityResponse = await fetch('/api/auth/patreon/identity', {
+        headers: {
+          Authorization: `Bearer ${access_token}`,
+        },
+      });
+
+      if (!identityResponse.ok) {
+        const errorData = await identityResponse.text();
+        console.error('Patreon identity error:', errorData);
+        throw new Error('Error al obtener información del usuario');
+      }
+
+      const patreonData = await identityResponse.json();
+      const patreonUser = patreonData.data;
+      const included = patreonData.included || [];
+      
+      console.log('Patreon user info obtained:', { 
+        id: patreonUser.id, 
+        email: patreonUser.attributes.email,
+        full_name: patreonUser.attributes.full_name 
+      });
+
+      // Extraer información de la membresía
+      let patreonStatus = null;
+      let patreonTier = null;
+      
+      // Buscar la membresía activa
+      const membership = included.find((item: any) => item.type === 'member');
+      if (membership && membership.attributes) {
+        patreonStatus = membership.attributes.patron_status;
+        
+        // Buscar el tier
+        const tierRelationship = membership.relationships?.currently_entitled_tiers?.data?.[0];
+        if (tierRelationship) {
+          const tier = included.find((item: any) => 
+            item.type === 'tier' && item.id === tierRelationship.id
+          );
+          if (tier) {
+            patreonTier = tier.attributes.title;
+          }
+        }
+      }
+
+      // Buscar o crear usuario en la base de datos
+      const { getDbService } = await import('@/lib/database-switch');
+      const dbService = await getDbService();
+
+      // Buscar usuario existente por Patreon ID
+      console.log('Searching for user with Patreon ID:', patreonUser.id);
+      let dbUser = await dbService.getUserByPatreonId(patreonUser.id);
+
+      if (!dbUser) {
+        console.log('User not found, creating new user...');
+        // Crear nuevo usuario
+        const createdUser = await dbService.createUser({
+          email: patreonUser.attributes.email,
+          username: patreonUser.attributes.vanity || patreonUser.attributes.full_name || `patreon_${patreonUser.id}`,
+          patreonId: patreonUser.id,
+          patreonTier: patreonTier,
+          patreonStatus: patreonStatus,
+          role: 'user',
+          isActive: true,
+        });
+        
+        console.log('User created successfully:', createdUser.id);
+        dbUser = createdUser;
+      } else {
+        console.log('Existing user found:', dbUser.id);
+        // Actualizar información de Patreon
+        dbUser = await dbService.updateUser(dbUser.id, {
+          patreonTier: patreonTier,
+          patreonStatus: patreonStatus,
+        });
+      }
+
+      if (!dbUser) {
+        throw new Error('Error al crear/obtener usuario de Patreon');
+      }
+
+      // Crear objeto de usuario para el contexto
+      const user: User = {
+        id: dbUser.id,
+        username: dbUser.username,
+        email: dbUser.email,
+        role: dbUser.role,
+        isActive: dbUser.isActive,
+        joinDate: dbUser.createdAt?.toISOString() || new Date().toISOString(),
+        lastLogin: new Date().toISOString(),
+        isAdmin: dbUser.role === 'admin',
+        patreonId: patreonUser.id,
+        patreonTier: patreonTier,
+        patreonStatus: patreonStatus,
+        preferences: {
+          theme: 'dark',
+          language: 'es',
+          notifications: {
+            priceAlerts: true,
+            eventReminders: true,
+            buildUpdates: false
+          }
+        }
+      };
+
+      // Generar token JWT (similar al login con Discord)
+      const token = 'temp_patreon_token_' + Date.now();
+
+      // Guardar en localStorage
+      localStorage.setItem('gw2_token', token);
+      localStorage.setItem('gw2_user', JSON.stringify(user));
+
+      dispatch({
+        type: 'AUTH_SUCCESS',
+        payload: { user, token }
+      });
+
+    } catch (error) {
+      dispatch({
+        type: 'AUTH_FAILURE',
+        payload: error instanceof Error ? error.message : 'Patreon authentication error',
+      });
+    }
+  }, []);
+
+  // Función para vincular cuenta de Patreon a usuario existente
+  const linkPatreon = useCallback(async (code: string) => {
+    if (!state.user) {
+      throw new Error('Debes iniciar sesión primero');
+    }
+
+    try {
+      console.log('Linking Patreon account with code:', code.substring(0, 10) + '...');
+      
+      // Intercambiar el código por un token de acceso
+      const tokenResponse = await fetch('/api/auth/patreon/token', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ code }),
+      });
+
+      if (!tokenResponse.ok) {
+        const errorData = await tokenResponse.json();
+        console.error('Patreon token error:', errorData);
+        throw new Error(errorData.error || 'Error al obtener token de Patreon');
+      }
+
+      const { access_token } = await tokenResponse.json();
+      console.log('Patreon token obtained successfully');
+
+      // Obtener información del usuario de Patreon
+      const identityResponse = await fetch('/api/auth/patreon/identity', {
+        headers: {
+          Authorization: `Bearer ${access_token}`,
+        },
+      });
+
+      if (!identityResponse.ok) {
+        const errorData = await identityResponse.text();
+        console.error('Patreon identity error:', errorData);
+        throw new Error('Error al obtener información del usuario');
+      }
+
+      const patreonData = await identityResponse.json();
+      const patreonUser = patreonData.data;
+      const included = patreonData.included || [];
+      
+      console.log('Patreon user info obtained for linking:', { 
+        id: patreonUser.id, 
+        email: patreonUser.attributes.email 
+      });
+
+      // Extraer información de la membresía
+      let patreonStatus = null;
+      let patreonTier = null;
+      
+      const membership = included.find((item: any) => item.type === 'member');
+      if (membership && membership.attributes) {
+        patreonStatus = membership.attributes.patron_status;
+        
+        const tierRelationship = membership.relationships?.currently_entitled_tiers?.data?.[0];
+        if (tierRelationship) {
+          const tier = included.find((item: any) => 
+            item.type === 'tier' && item.id === tierRelationship.id
+          );
+          if (tier) {
+            patreonTier = tier.attributes.title;
+          }
+        }
+      }
+
+      // Actualizar usuario actual con información de Patreon
+      await updateUser({
+        patreonId: patreonUser.id,
+        patreonTier: patreonTier,
+        patreonStatus: patreonStatus,
+      });
+
+      console.log('Patreon account linked successfully');
+
+    } catch (error) {
+      console.error('Error linking Patreon:', error);
+      throw error;
+    }
+  }, [state.user, updateUser]);
 
   // Función de login con Discord
   const loginWithDiscord = useCallback(async (code: string) => {
@@ -457,6 +691,9 @@ function AuthProviderInternal({ children }: { children: ReactNode }) {
         isActive: safeUser.isActive,
         discordId: safeUser.discordId,
         gw2ApiKey: safeUser.gw2ApiKey,
+        patreonId: safeUser.patreonId,
+        patreonTier: safeUser.patreonTier,
+        patreonStatus: safeUser.patreonStatus,
         preferences: safeUser.preferences,
         isAdmin: safeUser.role === 'admin',
         joinDate: state.user.joinDate,
@@ -529,6 +766,8 @@ function AuthProviderInternal({ children }: { children: ReactNode }) {
     login,
     register,
     loginWithDiscord,
+    loginWithPatreon,
+    linkPatreon,
     logout,
     clearError,
     hasPermission,
@@ -568,6 +807,8 @@ export function useAuth() {
         login: async () => {},
         register: async () => {},
         loginWithDiscord: async () => {},
+        loginWithPatreon: async () => {},
+        linkPatreon: async () => {},
         logout: () => {},
         clearError: () => {},
         hasPermission: () => false,

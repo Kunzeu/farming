@@ -61,6 +61,9 @@ export interface User {
   isActive: boolean;
   discordId?: string; // ID de Discord para autenticación OAuth
   gw2ApiKey?: string; // Guild Wars 2 API key
+  patreonId?: string; // ID de Patreon para autenticación OAuth
+  patreonTier?: string; // Tier de membresía de Patreon
+  patreonStatus?: 'active_patron' | 'declined_patron' | 'former_patron' | null; // Estado de membresía de Patreon
   preferences?: {
     theme?: 'dark' | 'light' | 'auto';
     language?: 'es' | 'en';
@@ -325,6 +328,25 @@ class DatabaseClientService {
 
   async getUserByDiscordId(discordId: string): Promise<User | null> {
     const response = await fetch(`/api/auth/search?discordId=${encodeURIComponent(discordId)}`);
+    if (!response.ok) {
+      if (response.status === 404) {
+        return null;
+      }
+      throw new Error('Failed to fetch user');
+    }
+    
+    const data = await response.json();
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { password: _, ...safeUser } = data;
+    return {
+      ...safeUser,
+      createdAt: new Date(safeUser.createdAt),
+      updatedAt: new Date(safeUser.updatedAt)
+    };
+  }
+
+  async getUserByPatreonId(patreonId: string): Promise<User | null> {
+    const response = await fetch(`/api/auth/search?patreonId=${encodeURIComponent(patreonId)}`);
     if (!response.ok) {
       if (response.status === 404) {
         return null;
