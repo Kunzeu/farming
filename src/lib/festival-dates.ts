@@ -55,8 +55,8 @@ export const festivalDates: Record<string, FestivalDate> = {
     timezone: 'America/Bogota'
   },
   wintersday: {
-    startDate: '2025-12-16',
-    endDate: '2026-01-06',
+    startDate: '2025-12-09',
+    endDate: '2026-01-02',
     startDateFormatted: 'months.december',
     endDateFormatted: 'months.january',
     startTime: '11:00', // 11:00 AM Colombia (UTC-5)

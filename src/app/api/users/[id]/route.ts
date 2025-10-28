@@ -214,6 +214,20 @@ export async function PUT(
       updateFields.push(`preferences = $${paramIndex++}`);
       values.push(JSON.stringify(body.preferences));
     }
+
+    // Soporte para vinculación de Patreon
+    if (body.patreonId !== undefined) {
+      updateFields.push(`patreon_id = $${paramIndex++}`);
+      values.push(body.patreonId);
+    }
+    if (body.patreonTier !== undefined) {
+      updateFields.push(`patreon_tier = $${paramIndex++}`);
+      values.push(body.patreonTier);
+    }
+    if (body.patreonStatus !== undefined) {
+      updateFields.push(`patreon_status = $${paramIndex++}`);
+      values.push(body.patreonStatus);
+    }
     
     if (updateFields.length === 0) {
       return NextResponse.json({ error: 'No fields to update' }, { status: 400 });
@@ -231,7 +245,8 @@ export async function PUT(
       WHERE id = $${paramIndex}
       RETURNING id, email, username, password, role, is_active as "isActive",
                 created_at as "createdAt", updated_at as "updatedAt", discord_id as "discordId", 
-                gw2_api_key as "gw2ApiKey", preferences
+                gw2_api_key as "gw2ApiKey", preferences,
+                patreon_id as "patreonId", patreon_tier as "patreonTier", patreon_status as "patreonStatus"
     `;
     
     
