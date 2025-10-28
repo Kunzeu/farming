@@ -458,12 +458,13 @@ function AuthProviderInternal({ children }: { children: ReactNode }) {
       const { getDbService } = await import('@/lib/database-switch');
       const dbService = await getDbService();
 
-      // Primero: si ya estás autenticado y el email coincide, reutilizar ese usuario (evita 404 por patreonId aún no guardado)
+      // Primero: si ya estás autenticado, vincular Patreon al usuario actual (ignorar email de Patreon)
       let dbUser: DbUser | null = null;
-      if (state.user && state.user.email === patreonUser.attributes.email) {
+      if (state.user) {
+        // Usuario logueado: vincular Patreon al usuario actual
         dbUser = {
           id: state.user.id,
-          email: state.user.email,
+          email: state.user.email, // Mantener email original del usuario
           username: state.user.username,
           role: (state.user.role ?? 'user'),
           isActive: state.user.isActive,
@@ -476,9 +477,8 @@ function AuthProviderInternal({ children }: { children: ReactNode }) {
           patreonStatus: state.user.patreonStatus ?? null,
           preferences: state.user.preferences,
         } as DbUser;
-      }
-      // Si no hay usuario en memoria o el email no coincide, intentar por Patreon ID
-      if (!dbUser) {
+      } else {
+        // No hay usuario logueado: buscar por Patreon ID o crear nuevo
         dbUser = await dbService.getUserByPatreonId(patreonUser.id);
       }
 
