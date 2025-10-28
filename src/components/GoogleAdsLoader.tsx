@@ -24,11 +24,8 @@ export default function GoogleAdsLoader() {
       loadGoogleAds();
     }
     
-    // Cargar después de 3 segundos o en la primera interacción
-    setTimeout(loadAdsOnInteraction, 3000);
-    document.addEventListener('scroll', loadAdsOnInteraction, { once: true });
-    document.addEventListener('click', loadAdsOnInteraction, { once: true });
-    document.addEventListener('touchstart', loadAdsOnInteraction, { once: true });
+    // Cargar inmediatamente cuando se carga la página
+    loadAdsOnInteraction();
   }, []);
 
   return null; // No renderiza nada

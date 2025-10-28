@@ -194,37 +194,35 @@ export default function RootLayout({
         </CookieConsentProvider>
         <script dangerouslySetInnerHTML={{
           __html: `
-            // Eliminar solo espacios negros vacíos después del footer
-            function removeBlackSpace() {
-              const footer = document.querySelector('footer');
-              if (!footer) return;
+            // Bloquear contenido no deseado relacionado con gold selling
+            function blockUnwantedContent() {
+              // Buscar y ocultar elementos que contengan texto no deseado
+              const unwantedTerms = ['gold selling', 'GW2 gold', 'buy gold', 'sell gold', 'RMT'];
               
-              // Solo buscar el primer elemento después del footer
-              let nextElement = footer.nextElementSibling;
-              
-              if (nextElement) {
-                // Detectar si es un espacio negro (background negro o tiene ads vacíos)
-                const bgColor = window.getComputedStyle(nextElement).backgroundColor;
-                const hasBlackBg = bgColor === 'rgb(0, 0, 0)' || bgColor === 'rgba(0, 0, 0, 0)' || bgColor === 'black';
-                const hasAdClass = nextElement.classList?.contains('adsbygoogle');
-                
-                // Solo ocultar si es un background negro sin contenido útil
-                if (hasBlackBg || hasAdClass) {
-                  nextElement.style.display = 'none';
-                  nextElement.style.height = '0';
-                  nextElement.style.visibility = 'hidden';
-                  nextElement.style.margin = '0';
-                  nextElement.style.padding = '0';
-                }
-              }
+              unwantedTerms.forEach(term => {
+                const elements = document.querySelectorAll('*');
+                elements.forEach(element => {
+                  if (element.textContent && element.textContent.toLowerCase().includes(term.toLowerCase())) {
+                    // Si es un anuncio de Google, ocultarlo completamente
+                    if (element.classList.contains('adsbygoogle') || element.closest('.adsbygoogle')) {
+                      element.style.display = 'none';
+                      element.style.visibility = 'hidden';
+                      element.style.height = '0';
+                      element.style.width = '0';
+                      element.style.overflow = 'hidden';
+                    }
+                  }
+                });
+              });
             }
             
-            // Ejecutar solo una vez cuando la página cargue completamente
-            window.addEventListener('load', function() {
-              setTimeout(removeBlackSpace, 1000);
-              setTimeout(removeBlackSpace, 2000);
-              setTimeout(removeBlackSpace, 3000);
-            });
+            // Ejecutar inmediatamente y periódicamente
+            blockUnwantedContent();
+            setInterval(blockUnwantedContent, 2000);
+            
+            // También ejecutar cuando se cargan nuevos elementos
+            const observer = new MutationObserver(blockUnwantedContent);
+            observer.observe(document.body, { childList: true, subtree: true });
           `
         }} />
         

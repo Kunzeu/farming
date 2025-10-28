@@ -21,9 +21,9 @@ export default function GoogleAd({
   const adRef = useRef<HTMLModElement>(null);
   const { isLoaded, isLoading } = useLazyScript({
     src: 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2746156864243335',
-    delay: 2000,
-    triggerOnInteraction: true,
-    triggerOnScroll: true
+    delay: 1000, // Delay mínimo para evitar micro clics
+    triggerOnInteraction: false, // Deshabilitar carga en interacción
+    triggerOnScroll: false // Deshabilitar carga en scroll
   });
 
   useEffect(() => {
@@ -51,6 +51,8 @@ export default function GoogleAd({
       data-ad-slot={adSlot}
       data-ad-format={adFormat}
       data-full-width-responsive="true"
+      data-ad-safe="true"
+      data-ad-clickable="false"
     />
   );
 }

@@ -449,9 +449,19 @@ function AuthProviderInternal({ children }: { children: ReactNode }) {
         }
       }
 
-      // Normalizar estado para tiers gratuitos
-      if (patreonStatus == null && patreonTier === 'Free') {
-        patreonStatus = null; // Mantener null en lugar de "free"
+      // Normalizar estado para diferentes tipos de usuarios
+      if (patreonTier === 'Free') {
+        // Usuario Free: no tiene suscripción de pago
+        patreonStatus = null; // Mantener null para usuarios Free
+      } else if (patreonTier && !patreonStatus) {
+        // Usuario con tier de pago pero sin status: probablemente problema de sincronización
+        console.warn('Usuario con tier de pago pero sin patreonStatus:', {
+          tier: patreonTier,
+          status: patreonStatus,
+          patreonId: patreonUser.id
+        });
+        // Mantener el tier pero marcar como inactivo hasta que se sincronice
+        patreonStatus = 'former_patron';
       }
 
       // Buscar o crear usuario en la base de datos

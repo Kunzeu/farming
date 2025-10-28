@@ -20,6 +20,17 @@ export default function PatreonSection() {
   const hasValidTier = user?.patreonTier && validPatreonTiers.includes(user.patreonTier);
   const displayTier = user?.patreonTier || null; // Mostrar cualquier tier, no solo los válidos
   
+  // Determinar el estado de visualización
+  const getSubscriptionStatus = () => {
+    if (!hasPatreon) return 'no_patreon';
+    if (displayTier === 'Free') return 'free_user';
+    if (isActivePatron) return 'active_patron';
+    if (displayTier && validPatreonTiers.includes(displayTier)) return 'inactive_patron';
+    return 'unknown';
+  };
+  
+  const subscriptionStatus = getSubscriptionStatus();
+  
   // Obtener beneficios del tier del usuario
   const userBenefits = getTierBenefits(user);
 
@@ -139,7 +150,12 @@ export default function PatreonSection() {
                 <span className="text-xs font-medium text-gray-300">
                   {t('profile.patreon.subscription', 'Suscripción')}
                 </span>
-                <span className="text-sm text-gray-400">{t('profile.patreon.noActiveSubscription', 'Sin suscripción activa')}</span>
+                <span className="text-sm text-gray-400">
+                  {subscriptionStatus === 'free_user' 
+                    ? t('profile.patreon.freeUser', 'Usuario Free')
+                    : t('profile.patreon.noActiveSubscription', 'Sin suscripción activa')
+                  }
+                </span>
               </div>
             )}
 
