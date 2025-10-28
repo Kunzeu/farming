@@ -42,10 +42,14 @@ function PatreonCallbackContent() {
 
     try {
       console.log('Starting Patreon authentication with code preview:', codePreview);
-      // Si hay usuario autenticado, usar flujo de vinculación; si no, flujo de login
-      if (state === 'link' || user) {
+      
+      // Verificar si hay sesión válida (localStorage + contexto)
+      const hasValidSession = user || (typeof window !== 'undefined' && localStorage.getItem('gw2_user') && localStorage.getItem('gw2_token'));
+      
+      if (state === 'link' && hasValidSession) {
         await linkPatreon(code);
       } else {
+        // Fallback seguro: si no hay sesión (o state distinto), autenticar/crear usuario
         await loginWithPatreon(code);
       }
       setStatus('success');
