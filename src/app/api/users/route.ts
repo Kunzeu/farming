@@ -197,20 +197,20 @@ export async function POST(request: NextRequest) {
       }, { status: 400 });
     }
     
-    // Para usuarios regulares (no Discord), validar contraseña
-    if (!body.discordId && !body.password) {
+    // Para usuarios regulares (no OAuth), validar contraseña
+    if (!body.discordId && !body.patreonId && !body.password) {
       return NextResponse.json({ 
         error: 'Contraseña es requerida para usuarios regulares' 
       }, { status: 400 });
     }
     
-    // Validar que email, username y discordId sean únicos
+    // Validar que email, username, discordId y patreonId sean únicos
     const checkQuery = `
-      SELECT email, username, discord_id FROM users 
-      WHERE email = $1 OR username = $2 OR (discord_id = $3 AND $3 IS NOT NULL)
+      SELECT email, username, discord_id, patreon_id FROM users 
+      WHERE email = $1 OR username = $2 OR (discord_id = $3 AND $3 IS NOT NULL) OR (patreon_id = $4 AND $4 IS NOT NULL)
     `;
     
-    const checkResult = await pool.query(checkQuery, [body.email, body.username, body.discordId]);
+    const checkResult = await pool.query(checkQuery, [body.email, body.username, body.discordId, body.patreonId]);
     
     if (checkResult.rows.length > 0) {
       const existingUser = checkResult.rows[0];
@@ -226,6 +226,9 @@ export async function POST(request: NextRequest) {
       } else if (existingUser.discord_id === body.discordId) {
         errorMessage = 'Esta cuenta de Discord ya está vinculada';
         field = 'discordId';
+      } else if (existingUser.patreon_id === body.patreonId) {
+        errorMessage = 'Esta cuenta de Patreon ya está vinculada';
+        field = 'patreonId';
       }
       
       return NextResponse.json({ 
@@ -243,33 +246,66 @@ export async function POST(request: NextRequest) {
     }
     
     const query = `
-      INSERT INTO users (id, email, username, password, role, is_active, discord_id, gw2_api_key)
-      VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+      INSERT INTO users (id, email, username, password, role, is_active, discord_id, gw2_api_key, patreon_id, patreon_tier, patreon_status)
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
       RETURNING id, email, username, password, role, is_active as "isActive",
                 created_at as "createdAt", updated_at as "updatedAt", discord_id as "discordId",
-                gw2_api_key as "gw2ApiKey"
+                gw2_api_key as "gw2ApiKey", patreon_id as "patreonId", patreon_tier as "patreonTier", patreon_status as "patreonStatus"
     `;
     
-    const values = [id, body.email, body.username, hashedPassword, body.role, body.isActive, body.discordId, body.gw2ApiKey || null];
+    const values = [
+      id, 
+      body.email, 
+      body.username, 
+      hashedPassword, 
+      body.role || 'user', 
+      body.isActive !== undefined ? body.isActive : true, 
+      body.discordId || null, 
+      body.gw2ApiKey || null,
+      body.patreonId || null,
+      body.patreonTier || null,
+      body.patreonStatus || null
+    ];
     
     console.log('Creating user with values:', {
       id: id.substring(0, 8) + '...',
       email: body.email,
       username: body.username,
       hasPassword: !!hashedPassword,
-      role: body.role,
-      isActive: body.isActive,
-      discordId: body.discordId
+      role: body.role || 'user',
+      isActive: body.isActive !== undefined ? body.isActive : true,
+      discordId: body.discordId || null,
+      patreonId: body.patreonId || null,
+      patreonTier: body.patreonTier || null,
+      patreonStatus: body.patreonStatus || null
     });
     
     const result = await pool.query(query, values);
     const row = result.rows[0];
+    
+    console.log('User created, row returned from database:', {
+      id: row.id,
+      email: row.email,
+      username: row.username,
+      patreonId: row.patreonId,
+      patreonTier: row.patreonTier,
+      patreonStatus: row.patreonStatus
+    });
     
     const user = {
       ...row,
       createdAt: new Date(row.createdAt),
       updatedAt: new Date(row.updatedAt)
     };
+    
+    console.log('User object to return:', {
+      id: user.id,
+      email: user.email,
+      username: user.username,
+      patreonId: user.patreonId,
+      patreonTier: user.patreonTier,
+      patreonStatus: user.patreonStatus
+    });
 
     return NextResponse.json(user);
   } catch (error) {

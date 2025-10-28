@@ -13,6 +13,9 @@ export interface User {
   isAdmin?: boolean; // Para compatibilidad con el contexto actual
   discordId?: string; // Discord ID for OAuth authentication
   gw2ApiKey?: string; // Guild Wars 2 API key
+  patreonId?: string; // Patreon ID for OAuth authentication
+  patreonTier?: string; // Patreon membership tier
+  patreonStatus?: 'active_patron' | 'declined_patron' | 'former_patron' | null; // Patreon membership status
 }
 
 export interface UserPreferences {

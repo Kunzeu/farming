@@ -21,6 +21,7 @@ import {
 } from 'lucide-react';
 import { usePageTitle } from '@/hooks/usePageTitle';
 import { useI18n } from '@/contexts/I18nContext';
+import PatreonSection from '@/components/auth/PatreonSection';
 
 export default function ProfilePage() {
   const { user } = useAuth();
@@ -205,29 +206,6 @@ export default function ProfilePage() {
       setApiKeyMessage(t('profile.apiKey.errorValidate', 'Error validating API key'));
     } finally {
       setIsApiKeyLoading(false);
-    }
-  };
-
-  // Validación opcional bajo demanda para obtener info de cuenta (reduce tráfico)
-  const handleValidateOnDemand = async () => {
-    if (!user?.id || !hasApiKey) return;
-    try {
-      const validateResponse = await fetch(`/api/users/${user.id}/validate-api?user_id=${user.id}`, {
-        method: 'POST',
-        cache: 'no-store'
-      });
-      if (validateResponse.ok) {
-        const validateData = await validateResponse.json();
-        if (validateData.valid && validateData.accountInfo) {
-          setAccountName(validateData.accountInfo.name);
-          setIsApiKeyValid(true);
-        } else {
-          setIsApiKeyValid(false);
-        }
-      }
-    } catch (e) {
-      console.error('On-demand validate error:', e);
-      setIsApiKeyValid(false);
     }
   };
 
@@ -577,6 +555,11 @@ export default function ProfilePage() {
                 </div>
               </div>
             </motion.div>
+          </div>
+
+          {/* Patreon Section */}
+          <div className="mt-8">
+            <PatreonSection />
           </div>
         </main>
 

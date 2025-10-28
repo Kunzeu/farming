@@ -4,6 +4,23 @@ import { createContext, useContext, useReducer, useEffect, ReactNode, useCallbac
 import { useRouter } from 'next/navigation';
 import { AuthState, User, LoginCredentials, RegisterCredentials } from '@/types/auth';
 
+// Tipos para la API de Patreon
+interface PatreonResource {
+  type: string;
+  id: string;
+  attributes: {
+    email?: string;
+    full_name?: string;
+    vanity?: string;
+    patron_status?: 'active_patron' | 'declined_patron' | 'former_patron' | null;
+    title?: string;
+  };
+  relationships?: {
+    currently_entitled_tiers?: {
+      data: Array<{ type: string; id: string }>;
+    };
+  };
+}
 
 // Estado inicial
 const initialState: AuthState = {
@@ -82,6 +99,8 @@ interface AuthContextType extends AuthState {
   login: (credentials: LoginCredentials) => Promise<void>;
   register: (credentials: RegisterCredentials) => Promise<void>;
   loginWithDiscord: (code: string) => Promise<void>;
+  loginWithPatreon: (code: string) => Promise<void>;
+  linkPatreon: (code: string) => Promise<void>;
   logout: () => void;
   clearError: () => void;
   hasPermission: (role: 'admin' | 'moderator' | 'user') => boolean;
@@ -106,6 +125,7 @@ function AuthProviderInternal({ children }: { children: ReactNode }) {
       if (token && userData) {
         try {
           const user = JSON.parse(userData);
+          
           dispatch({
             type: 'AUTH_SUCCESS',
             payload: { user, token },
@@ -250,12 +270,282 @@ function AuthProviderInternal({ children }: { children: ReactNode }) {
     router.push('/');
   }, [router]);
 
+  // Función para actualizar usuario
+  const updateUser = useCallback(async (updates: Partial<User>) => {
+    if (!state.user) return;
+
+    try {
+      const { getDbService } = await import('@/lib/database-switch');
+      const dbService = await getDbService();
+
+      // Actualizar en la base de datos
+      const updatedUser = await dbService.updateUser(state.user.id, updates);
+
+      // Actualizar en el contexto
+      const newUser = {
+        ...state.user,
+        ...updatedUser
+      };
+
+      // Guardar en localStorage
+      localStorage.setItem('gw2_user', JSON.stringify(newUser));
+
+      dispatch({
+        type: 'AUTH_SUCCESS',
+        payload: { user: newUser, token: state.token || '' }
+      });
+    } catch (error) {
+      console.error('Error updating user:', error);
+      throw error;
+    }
+  }, [state.user, state.token]);
+
+  // Función de login/registro con Patreon
+  const loginWithPatreon = useCallback(async (code: string) => {
+    dispatch({ type: 'AUTH_START' });
+
+    try {
+      
+      // Intercambiar el código por un token de acceso
+      const tokenResponse = await fetch('/api/auth/patreon/token', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ code }),
+      });
+
+      if (!tokenResponse.ok) {
+        const errorData = await tokenResponse.json();
+        console.error('Patreon token error:', errorData);
+        throw new Error(errorData.error || 'Error al obtener token de Patreon');
+      }
+
+      const { access_token } = await tokenResponse.json();
+
+
+      // Obtener información del usuario de Patreon y su membresía
+      const identityResponse = await fetch('/api/auth/patreon/identity', {
+        headers: {
+          Authorization: `Bearer ${access_token}`,
+        },
+      });
+
+      if (!identityResponse.ok) {
+        const errorData = await identityResponse.text();
+        console.error('Patreon identity error:', errorData);
+        throw new Error('Error al obtener información del usuario');
+      }
+
+      const patreonData = await identityResponse.json();
+      const patreonUser = patreonData.data;
+      const included = patreonData.included || [];
+      
+      // Extraer información de la membresía
+      let patreonStatus: 'active_patron' | 'declined_patron' | 'former_patron' | null = null;
+      let patreonTier: string | undefined = undefined;
+      
+      // Buscar la membresía activa
+      const membership = included.find((item: PatreonResource) => item.type === 'member');
+      if (membership && membership.attributes) {
+        patreonStatus = membership.attributes.patron_status;
+        
+        // Buscar el tier
+        const tierRelationship = membership.relationships?.currently_entitled_tiers?.data?.[0];
+        if (tierRelationship) {
+          const tier = included.find((item: PatreonResource) => 
+            item.type === 'tier' && item.id === tierRelationship.id
+          );
+          if (tier && tier.attributes) {
+            patreonTier = tier.attributes.title;
+
+          }
+        }
+      } else {
+
+      }
+
+      // Buscar o crear usuario en la base de datos
+      const { getDbService } = await import('@/lib/database-switch');
+      const dbService = await getDbService();
+
+      // Buscar usuario existente por Patreon ID
+
+      let dbUser = await dbService.getUserByPatreonId(patreonUser.id);
+
+      if (!dbUser) {
+
+        
+        try {
+          // Crear nuevo usuario
+          const createdUser = await dbService.createUser({
+            email: patreonUser.attributes.email,
+            username: patreonUser.attributes.vanity || patreonUser.attributes.full_name || `patreon_${patreonUser.id}`,
+            patreonId: patreonUser.id,
+            patreonTier: patreonTier || undefined,
+            patreonStatus: patreonStatus || undefined,
+            role: 'user',
+            isActive: true,
+          });
+          
+
+          
+          dbUser = createdUser;
+        } catch (createError) {
+          console.error('Error creating user:', createError);
+          throw createError;
+        }
+      } else {
+
+        
+        // En lugar de actualizar en la BD (que requiere autenticación),
+        // simplemente sobrescribir los datos localmente con la info actual de Patreon
+        // La actualización en BD se hará cuando el usuario use la app normalmente
+      }
+
+      if (!dbUser) {
+        throw new Error('Error al crear/obtener usuario de Patreon');
+      }
+
+      const dbUserWithPatreon = dbUser as User & { patreonId?: string; patreonTier?: string; patreonStatus?: 'active_patron' | 'declined_patron' | 'former_patron' | null };
+      
+
+      // Crear objeto de usuario para el contexto
+      // Usar los datos más recientes de Patreon obtenidos en este login
+      const user: User = {
+        id: dbUser.id,
+        username: dbUser.username,
+        email: dbUser.email,
+        role: dbUser.role,
+        isActive: dbUser.isActive,
+        joinDate: dbUser.createdAt?.toISOString() || new Date().toISOString(),
+        lastLogin: new Date().toISOString(),
+        isAdmin: dbUser.role === 'admin',
+        // Usar los datos más recientes de Patreon de este login, o los de la BD
+        patreonId: dbUserWithPatreon.patreonId || patreonUser.id,
+        patreonTier: patreonTier ?? dbUserWithPatreon.patreonTier ?? undefined,
+        // Guardar patreonStatus incluso si es null (no usar undefined)
+        patreonStatus: patreonStatus !== null ? patreonStatus : dbUserWithPatreon.patreonStatus ?? null,
+        preferences: dbUser.preferences || {
+          theme: 'dark',
+          language: 'es',
+          notifications: {
+            priceAlerts: true,
+            eventReminders: true,
+            buildUpdates: false
+          }
+        }
+      };
+
+
+      // Generar token JWT (similar al login con Discord)
+      const token = 'temp_patreon_token_' + Date.now();
+
+      // Verificar qué se va a guardar
+
+      
+      // Guardar en localStorage
+      localStorage.setItem('gw2_token', token);
+      localStorage.setItem('gw2_user', JSON.stringify(user));
+
+      dispatch({
+        type: 'AUTH_SUCCESS',
+        payload: { user, token }
+      });
+
+    } catch (error) {
+      dispatch({
+        type: 'AUTH_FAILURE',
+        payload: error instanceof Error ? error.message : 'Patreon authentication error',
+      });
+    }
+  }, []);
+
+  // Función para vincular cuenta de Patreon a usuario existente
+  const linkPatreon = useCallback(async (code: string) => {
+    if (!state.user) {
+      throw new Error('Debes iniciar sesión primero');
+    }
+
+    try {
+
+      
+      // Intercambiar el código por un token de acceso
+      const tokenResponse = await fetch('/api/auth/patreon/token', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ code }),
+      });
+
+      if (!tokenResponse.ok) {
+        const errorData = await tokenResponse.json();
+        console.error('Patreon token error:', errorData);
+        throw new Error(errorData.error || 'Error al obtener token de Patreon');
+      }
+
+      const { access_token } = await tokenResponse.json();
+
+
+      // Obtener información del usuario de Patreon
+      const identityResponse = await fetch('/api/auth/patreon/identity', {
+        headers: {
+          Authorization: `Bearer ${access_token}`,
+        },
+      });
+
+      if (!identityResponse.ok) {
+        const errorData = await identityResponse.text();
+        console.error('Patreon identity error:', errorData);
+        throw new Error('Error al obtener información del usuario');
+      }
+
+      const patreonData = await identityResponse.json();
+      const patreonUser = patreonData.data;
+      const included = patreonData.included || [];
+      
+
+      // Extraer información de la membresía
+      let patreonStatus: 'active_patron' | 'declined_patron' | 'former_patron' | null = null;
+      let patreonTier: string | undefined = undefined;
+      
+      const membership = included.find((item: PatreonResource) => item.type === 'member');
+      if (membership && membership.attributes) {
+        patreonStatus = membership.attributes.patron_status;
+        
+        const tierRelationship = membership.relationships?.currently_entitled_tiers?.data?.[0];
+        if (tierRelationship) {
+          const tier = included.find((item: PatreonResource) => 
+            item.type === 'tier' && item.id === tierRelationship.id
+          );
+          if (tier && tier.attributes) {
+            patreonTier = tier.attributes.title;
+          }
+        }
+      }
+
+      // Actualizar usuario actual con información de Patreon
+      await updateUser({
+        patreonId: patreonUser.id,
+        patreonTier: patreonTier || undefined,
+        patreonStatus: patreonStatus || undefined,
+      });
+
+
+
+    } catch (error) {
+      console.error('Error linking Patreon:', error);
+      throw error;
+    }
+  }, [state.user, updateUser]);
+
   // Función de login con Discord
   const loginWithDiscord = useCallback(async (code: string) => {
     dispatch({ type: 'AUTH_START' });
 
     try {
-      console.log('Starting Discord login with code:', code.substring(0, 10) + '...');
+
       
       // Intercambiar el código por un token de acceso
       const tokenResponse = await fetch('/api/auth/discord/token', {
@@ -273,7 +563,7 @@ function AuthProviderInternal({ children }: { children: ReactNode }) {
       }
 
       const { access_token } = await tokenResponse.json();
-      console.log('Discord token obtained successfully');
+
 
       // Obtener información del usuario de Discord
       const userResponse = await fetch('https://discord.com/api/users/@me', {
@@ -289,7 +579,7 @@ function AuthProviderInternal({ children }: { children: ReactNode }) {
       }
 
       const discordUser = await userResponse.json();
-      console.log('Discord user info obtained:', { id: discordUser.id, username: discordUser.username, email: discordUser.email });
+
   
 
       // Buscar o crear usuario en la base de datos
@@ -297,12 +587,12 @@ function AuthProviderInternal({ children }: { children: ReactNode }) {
       const dbService = await getDbService();
 
       // Buscar usuario existente por Discord ID
-      console.log('Searching for user with Discord ID:', discordUser.id);
+
       let dbUser = await dbService.getUserByDiscordId(discordUser.id);
       
 
       if (!dbUser) {
-        console.log('User not found, creating new user...');
+
         // Crear nuevo usuario
         const createdUser = await dbService.createUser({
           email: discordUser.email,
@@ -312,11 +602,11 @@ function AuthProviderInternal({ children }: { children: ReactNode }) {
           isActive: true,
         });
         
-        console.log('User created successfully:', createdUser.id);
+
         // Usar el usuario recién creado
         dbUser = createdUser;
       } else {
-        console.log('Existing user found:', dbUser.id);
+
       }
 
       if (!dbUser) {
@@ -391,39 +681,11 @@ function AuthProviderInternal({ children }: { children: ReactNode }) {
     return false;
   }, [state.user]);
 
-  // Función para actualizar usuario
-  const updateUser = useCallback(async (updates: Partial<User>) => {
-    if (!state.user) return;
-
-    try {
-      const { getDbService } = await import('@/lib/database-switch');
-      const dbService = await getDbService();
-
-      // Actualizar en la base de datos
-      const updatedUser = await dbService.updateUser(state.user.id, updates);
-
-      // Actualizar en el contexto
-      const newUser = {
-        ...state.user,
-        ...updatedUser
-      };
-
-      // Guardar en localStorage
-      localStorage.setItem('gw2_user', JSON.stringify(newUser));
-
-      dispatch({
-        type: 'AUTH_SUCCESS',
-        payload: { user: newUser, token: state.token || '' }
-      });
-    } catch (error) {
-      console.error('Error updating user:', error);
-      throw error;
-    }
-  }, [state.user, state.token]);
-
   // Función para refrescar datos del usuario desde la base de datos
   const refreshUserData = useCallback(async () => {
     if (!state.user) return;
+
+
 
     try {
       const response = await fetch(`/api/users/${state.user.id}?full=true`, {
@@ -446,6 +708,8 @@ function AuthProviderInternal({ children }: { children: ReactNode }) {
       }
 
       const data = await response.json();
+      
+      
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const { password: _, ...safeUser } = data;
       
@@ -457,11 +721,15 @@ function AuthProviderInternal({ children }: { children: ReactNode }) {
         isActive: safeUser.isActive,
         discordId: safeUser.discordId,
         gw2ApiKey: safeUser.gw2ApiKey,
+        patreonId: safeUser.patreonId,
+        patreonTier: safeUser.patreonTier,
+        patreonStatus: safeUser.patreonStatus,
         preferences: safeUser.preferences,
         isAdmin: safeUser.role === 'admin',
         joinDate: state.user.joinDate,
         lastLogin: state.user.lastLogin,
       };
+
 
       // Actualizar localStorage
       localStorage.setItem('gw2_user', JSON.stringify(refreshedUser));
@@ -487,6 +755,15 @@ function AuthProviderInternal({ children }: { children: ReactNode }) {
       console.error('Error refreshing user data:', error);
     }
   }, [state.user]);
+
+  // Refrescar datos del usuario inmediatamente después de autenticarse
+  useEffect(() => {
+    if (state.isAuthenticated && state.user) {
+      // Refrescar datos inmediatamente para obtener info actualizada de Patreon, etc.
+      refreshUserData();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [state.isAuthenticated]); // Solo cuando se autentica inicialmente
 
   // Verificar y refrescar datos del usuario periódicamente
   useEffect(() => {
@@ -529,6 +806,8 @@ function AuthProviderInternal({ children }: { children: ReactNode }) {
     login,
     register,
     loginWithDiscord,
+    loginWithPatreon,
+    linkPatreon,
     logout,
     clearError,
     hasPermission,
@@ -568,6 +847,8 @@ export function useAuth() {
         login: async () => {},
         register: async () => {},
         loginWithDiscord: async () => {},
+        loginWithPatreon: async () => {},
+        linkPatreon: async () => {},
         logout: () => {},
         clearError: () => {},
         hasPermission: () => false,
@@ -579,3 +860,4 @@ export function useAuth() {
   }
   return context;
 } 
+

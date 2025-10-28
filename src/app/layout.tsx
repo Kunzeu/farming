@@ -11,6 +11,7 @@ import CookieBanner from "@/components/ui/CookieBanner";
 import ApiWarningBanner from "@/components/ui/ApiWarningBanner";
 // import { Analytics } from "@vercel/analytics/next"; // Deshabilitado para reducir carga
 import { generateDynamicMetadata } from "@/lib/metadata";
+import GoogleAdsLoader from '@/components/GoogleAdsLoader';
 
 // Optimización de fuentes para Desktop
 const inter = Inter({ 
@@ -42,37 +43,7 @@ export default function RootLayout({
         <link rel="dns-prefetch" href="https://render.guildwars2.com" />
         <link rel="dns-prefetch" href="https://wiki.guildwars2.com" />
         
-        {/* Scripts de Google Ads optimizados - carga diferida */}
-        <script dangerouslySetInnerHTML={{
-          __html: `
-            // Carga diferida de Google Ads para reducir JavaScript no utilizado
-            function loadGoogleAds() {
-              if (typeof window === 'undefined' || window.adsbygoogle) return; // Ya cargado o SSR
-              
-              const script = document.createElement('script');
-              script.async = true;
-              script.src = 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2746156864243335';
-              script.crossOrigin = 'anonymous';
-              document.head.appendChild(script);
-            }
-            
-            // Solo ejecutar en el cliente
-            if (typeof window !== 'undefined') {
-              let adsLoaded = false;
-              function loadAdsOnInteraction() {
-                if (adsLoaded) return;
-                adsLoaded = true;
-                loadGoogleAds();
-              }
-              
-              // Cargar después de 3 segundos o en la primera interacción
-              setTimeout(loadAdsOnInteraction, 3000);
-              document.addEventListener('scroll', loadAdsOnInteraction, { once: true });
-              document.addEventListener('click', loadAdsOnInteraction, { once: true });
-              document.addEventListener('touchstart', loadAdsOnInteraction, { once: true });
-            }
-          `
-        }} />
+        {/* Google Ads Script - se carga dinámicamente en el cliente */}
         
         {/* Meta tags para prevenir caché de HTML */}
         <meta httpEquiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
@@ -256,6 +227,9 @@ export default function RootLayout({
             });
           `
         }} />
+        
+        {/* Google Ads Loader */}
+        <GoogleAdsLoader />
       </body>
     </html>
   );

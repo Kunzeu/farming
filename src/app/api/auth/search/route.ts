@@ -9,6 +9,7 @@ export async function GET(request: NextRequest) {
   const email = searchParams.get('email');
   const username = searchParams.get('username');
   const discordId = searchParams.get('discordId');
+  const patreonId = searchParams.get('patreonId');
 
   try {
     // API interna para autenticación - verificación simplificada
@@ -43,7 +44,8 @@ export async function GET(request: NextRequest) {
       // Buscar por email (para login)
       const query = `
         SELECT id, email, username, password, role, is_active as "isActive",
-               created_at as "createdAt", updated_at as "updatedAt", discord_id as "discordId"
+               created_at as "createdAt", updated_at as "updatedAt", discord_id as "discordId",
+               patreon_id as "patreonId", patreon_tier as "patreonTier", patreon_status as "patreonStatus"
         FROM users 
         WHERE email = $1
       `;
@@ -64,7 +66,8 @@ export async function GET(request: NextRequest) {
       // Buscar por username
       const query = `
         SELECT id, email, username, role, is_active as "isActive",
-               created_at as "createdAt", updated_at as "updatedAt", discord_id as "discordId"
+               created_at as "createdAt", updated_at as "updatedAt", discord_id as "discordId",
+               patreon_id as "patreonId", patreon_tier as "patreonTier", patreon_status as "patreonStatus"
         FROM users 
         WHERE username = $1
       `;
@@ -85,12 +88,34 @@ export async function GET(request: NextRequest) {
       // Buscar por Discord ID
       const query = `
         SELECT id, email, username, role, is_active as "isActive",
-               created_at as "createdAt", updated_at as "updatedAt", discord_id as "discordId"
+               created_at as "createdAt", updated_at as "updatedAt", discord_id as "discordId",
+               patreon_id as "patreonId", patreon_tier as "patreonTier", patreon_status as "patreonStatus"
         FROM users 
         WHERE discord_id = $1
       `;
       
       const result = await pool.query(query, [discordId]);
+      if (result.rows.length === 0) {
+        return NextResponse.json({ error: 'User not found' }, { status: 404 });
+      }
+      
+      const row = result.rows[0];
+      return NextResponse.json({
+        ...row,
+        createdAt: new Date(row.createdAt),
+        updatedAt: new Date(row.updatedAt)
+      });
+    } else if (patreonId) {
+      // Buscar por Patreon ID
+      const query = `
+        SELECT id, email, username, role, is_active as "isActive",
+               created_at as "createdAt", updated_at as "updatedAt", discord_id as "discordId",
+               patreon_id as "patreonId", patreon_tier as "patreonTier", patreon_status as "patreonStatus"
+        FROM users 
+        WHERE patreon_id = $1
+      `;
+      
+      const result = await pool.query(query, [patreonId]);
       if (result.rows.length === 0) {
         return NextResponse.json({ error: 'User not found' }, { status: 404 });
       }

@@ -60,7 +60,8 @@ export async function GET(
       const query = `
         SELECT id, email, username, role, is_active as "isActive",
                created_at as "createdAt", updated_at as "updatedAt", discord_id as "discordId", 
-               gw2_api_key as "gw2ApiKey", preferences
+               gw2_api_key as "gw2ApiKey", preferences,
+               patreon_id as "patreonId", patreon_tier as "patreonTier", patreon_status as "patreonStatus"
         FROM users 
         WHERE id = $1
       `;
