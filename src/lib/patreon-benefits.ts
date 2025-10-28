@@ -31,12 +31,12 @@ export const PATREON_TIERS = {
   },
   // Tier gold - 10€/mes
   'Gold': {
-    benefits: ['no_ads', 'exclusive_content', 'discord_role', 'priority_support', 'early_access', 'custom_features', 'api_access'] as PatreonBenefit[],
+    benefits: ['no_ads', 'exclusive_content', 'discord_role', 'priority_support', 'early_access', 'custom_features'] as PatreonBenefit[],
     displayName: 'Gold',
     color: '#FFD700',
   }, // Tier legends - 20€/mes
   'Legends': {
-    benefits: ['no_ads', 'exclusive_content', 'discord_role', 'priority_support', 'early_access', 'custom_features', 'api_access'] as PatreonBenefit[],
+    benefits: ['no_ads', 'exclusive_content', 'discord_role', 'priority_support', 'early_access', 'custom_features'] as PatreonBenefit[],
     displayName: 'Legends',
     color: '#FFD700',
   },

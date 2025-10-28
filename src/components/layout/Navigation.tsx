@@ -254,8 +254,8 @@ const Navigation = () => {
 
     const calculateSpecialEvent = () => {
       const now = new Date();
-      // 28 de octubre de 2025 a las 11:00 UTC
-      const endTime = new Date('2025-10-28T16:00:00.000Z');
+      // 03 de febrero de 2026 a las 11:00 UTC
+      const endTime = new Date('2026-02-03T11:00:00.000Z');
       
       const diff = endTime.getTime() - now.getTime();
       
@@ -431,7 +431,7 @@ const Navigation = () => {
             </div>
             <div 
               className="flex items-center space-x-2 text-amber-300 px-3 py-2 rounded-lg bg-amber-900/20 border border-amber-700/30"
-              title={t('nav.specialEvent', 'Special Event - Ends October 28, 2025 at 11:00 UTC')}
+              title={t('nav.specialEvent', "Wizard's Vault Reset - Special missions reset")}
             >
               <Star className="w-4 h-4" />
               <TimerDisplay 
@@ -702,7 +702,7 @@ const Navigation = () => {
                           </div>
                           <div 
                             className="flex items-center space-x-2 text-amber-300 px-3 py-2 rounded-lg bg-amber-900/20 border border-amber-700/30"
-                            title={t('nav.specialEvent', 'Special Event - Ends October 28, 2025 at 11:00 UTC')}
+                            title={t('nav.specialEvent', "Wizard's Vault Reset - Special missions reset")}
                           >
                             <Star className="w-4 h-4" />
                             <TimerDisplay 
