@@ -14,20 +14,22 @@ export default function PatreonSection() {
   const hasPatreon = !!user?.patreonId;
   const isActivePatron = user?.patreonStatus === 'active_patron';
 
-  // Verificar si el tier es de pago válido o free
-  const validPatreonTiers = ['Bronze', 'Silver', 'Gold', 'Legends', 'Free'];
+  // Normalizar el tier para display (siempre mostrar si existe)
   const userTier = user?.patreonTier?.trim(); // Limpiar espacios
-  const hasValidTier = userTier && validPatreonTiers.some(tier => tier.toLowerCase() === userTier.toLowerCase());
-  // Normalizar capitalización del tier para display
-  const displayTier = hasValidTier ? (userTier.charAt(0).toUpperCase() + userTier.slice(1).toLowerCase()) : null;
+  const displayTier = userTier ? (userTier.charAt(0).toUpperCase() + userTier.slice(1).toLowerCase()) : null;
+  
+  // Verificar si es un tier de pago (para mostrar beneficios)
+  const paidTiers = ['bronze', 'silver', 'gold', 'legends'];
+  const isPaidTier = displayTier && paidTiers.includes(displayTier.toLowerCase());
   
   // Log para debug
   console.log('Patreon Debug:', { 
     hasPatreon, 
+    rawTier: user?.patreonTier,
     userTier, 
-    patreonStatus: user?.patreonStatus,
-    hasValidTier, 
-    displayTier 
+    displayTier,
+    isPaidTier,
+    patreonStatus: user?.patreonStatus
   });
 
   const handleLinkPatreon = () => {
@@ -126,7 +128,7 @@ export default function PatreonSection() {
             </div>
 
             {/* Benefits */}
-            {displayTier && displayTier.toLowerCase() !== 'free' && (
+            {isPaidTier && (
               <div className="mt-4 pt-4 border-t border-gray-700">
                 <h4 className="text-sm font-semibold text-white mb-2">
                   {t('profile.patreon.benefits', 'Beneficios Activos')}
