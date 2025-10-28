@@ -598,7 +598,21 @@ function AuthProviderInternal({ children }: { children: ReactNode }) {
 
   // Función para vincular cuenta de Patreon a usuario existente
   const linkPatreon = useCallback(async (code: string) => {
-    if (!state.user) {
+    // Verificar sesión en contexto o localStorage como fallback
+    let currentUser = state.user;
+    if (!currentUser && typeof window !== 'undefined') {
+      const storedUser = localStorage.getItem('gw2_user');
+      const storedToken = localStorage.getItem('gw2_token');
+      if (storedUser && storedToken) {
+        try {
+          currentUser = JSON.parse(storedUser);
+        } catch {
+          // Ignorar error de parsing
+        }
+      }
+    }
+    
+    if (!currentUser) {
       throw new Error('Debes iniciar sesión primero');
     }
 
@@ -694,7 +708,7 @@ function AuthProviderInternal({ children }: { children: ReactNode }) {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            email: state.user.email,
+            email: currentUser.email,
             patreonId: patreonUser.id,
             patreonTier: patreonTier ?? null,
             patreonStatus: patreonStatus ?? null
