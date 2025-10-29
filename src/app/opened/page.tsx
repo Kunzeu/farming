@@ -1,7 +1,7 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { Package, Gift } from 'lucide-react';
+import { Package } from 'lucide-react';
 import Navigation from '@/components/layout/Navigation';
 import Link from 'next/link'
 import Image from 'next/image';

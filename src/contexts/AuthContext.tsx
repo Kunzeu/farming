@@ -112,6 +112,82 @@ interface AuthContextType extends AuthState {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
+// Interfaz para la respuesta de Patreon Identity API
+interface PatreonIdentityResponse {
+  data: PatreonResource;
+  included?: PatreonResource[];
+}
+
+// Función auxiliar para extraer información de Patreon de forma consistente
+function extractPatreonInfo(patreonData: PatreonIdentityResponse) {
+  const included = patreonData.included || [];
+  
+  // DEBUG: Log completo de la respuesta de Patreon
+  console.log('🔍 DEBUG Patreon Identity Response:', {
+    data: patreonData.data,
+    included: included,
+    relationships: patreonData.data?.relationships
+  });
+  
+  // Buscar la membresía activa según documentación de Patreon
+  const membership = included.find((item: PatreonResource) => item.type === 'member');
+  
+  console.log('🔍 DEBUG Membership found:', {
+    membership,
+    membershipAttributes: membership?.attributes,
+    membershipRelationships: membership?.relationships
+  });
+  
+  let patreonStatus: 'active_patron' | 'declined_patron' | 'former_patron' | null = null;
+  let patreonTier: string | undefined = undefined;
+  
+  if (membership && membership.attributes) {
+    // Obtener patron_status según documentación
+    patreonStatus = membership.attributes.patron_status || null;
+    
+    // Buscar el tier usando relationships según documentación
+    const tierRelationship = membership.relationships?.currently_entitled_tiers?.data?.[0];
+    
+    console.log('🔍 DEBUG Tier Relationship:', {
+      tierRelationship,
+      allTierRelationships: membership.relationships?.currently_entitled_tiers?.data
+    });
+    
+    if (tierRelationship) {
+      // Buscar el tier en included usando el ID de la relationship
+      const tier = included.find((item: PatreonResource) => 
+        item.type === 'tier' && item.id === tierRelationship.id
+      );
+      
+      console.log('🔍 DEBUG Tier found:', {
+        tierId: tierRelationship.id,
+        tier,
+        tierAttributes: tier?.attributes
+      });
+      
+      if (tier && tier.attributes) {
+        // Obtener title del tier según documentación
+        patreonTier = tier.attributes.title;
+        console.log('✅ DEBUG Tier title extracted:', patreonTier);
+      }
+    } else {
+      console.log('❌ DEBUG No tier relationship found');
+    }
+  } else {
+    console.log('❌ DEBUG No membership found');
+  }
+  
+  console.log('🔍 DEBUG Final extracted data:', {
+    patreonStatus,
+    patreonTier
+  });
+  
+  return { 
+    patreonStatus: patreonStatus || null, 
+    patreonTier: patreonTier || undefined 
+  };
+}
+
 // Provider interno que usa hooks
 function AuthProviderInternal({ children }: { children: ReactNode }) {
   const [state, dispatch] = useReducer(authReducer, initialState);
@@ -425,48 +501,29 @@ function AuthProviderInternal({ children }: { children: ReactNode }) {
 
       const patreonData = await identityResponse.json();
       const patreonUser = patreonData.data;
-      const included = patreonData.included || [];
       
-      // Extraer información de la membresía
-      let patreonStatus: 'active_patron' | 'declined_patron' | 'former_patron' | null = null;
-      let patreonTier: string | undefined = undefined;
-      
-      // Buscar la membresía activa
-      const membership = included.find((item: PatreonResource) => item.type === 'member');
-      
-      if (membership && membership.attributes) {
-        patreonStatus = membership.attributes.patron_status;
-        
-        // Buscar el tier
-        const tierRelationship = membership.relationships?.currently_entitled_tiers?.data?.[0];
-        
-        if (tierRelationship) {
-          const tier = included.find((item: PatreonResource) => 
-            item.type === 'tier' && item.id === tierRelationship.id
-          );
-          
-          if (tier && tier.attributes) {
-            patreonTier = tier.attributes.title;
-          }
-        } else {
-        }
-      } else {
-        console.log('⚠️ No se encontró membership en la respuesta de Patreon');
-      }
-
-      // DEBUG: Log de valores extraídos antes de normalizar
+      // Usar función auxiliar para extraer información de forma consistente
+      const { patreonStatus, patreonTier } = extractPatreonInfo(patreonData);
 
       // Normalizar estado para diferentes tipos de usuarios
+      let finalStatus = patreonStatus;
+      const finalTier = patreonTier;
+      
       if (patreonTier === 'Free') {
         // Usuario Free: no tiene suscripción de pago
-        patreonStatus = null; // Mantener null para usuarios Free
+        finalStatus = null; // Mantener null para usuarios Free
       } else if (patreonTier && !patreonStatus) {
         // Usuario con tier de pago pero sin status: probablemente problema de sincronización
         // Mantener el tier pero marcar como inactivo hasta que se sincronice
-        patreonStatus = 'former_patron';
+        finalStatus = 'former_patron';
       }
 
-      // DEBUG: Log de valores finales antes de guardar
+      console.log('🔍 DEBUG Login final values:', {
+        originalStatus: patreonStatus,
+        originalTier: patreonTier,
+        finalStatus,
+        finalTier
+      });
 
       // Buscar o crear usuario en la base de datos
       const { getDbService } = await import('@/lib/database-switch');
@@ -503,8 +560,8 @@ function AuthProviderInternal({ children }: { children: ReactNode }) {
             email: patreonUser.attributes.email,
             username: patreonUser.attributes.vanity || patreonUser.attributes.full_name || `patreon_${patreonUser.id}`,
             patreonId: patreonUser.id,
-            patreonTier: patreonTier || undefined,
-            patreonStatus: patreonStatus || undefined,
+        patreonTier: finalTier || undefined,
+        patreonStatus: finalStatus || undefined,
             role: 'user',
             isActive: true,
           });
@@ -575,8 +632,8 @@ function AuthProviderInternal({ children }: { children: ReactNode }) {
           body: JSON.stringify({
             email: dbUser.email,
             patreonId: patreonUser.id,
-            patreonTier: patreonTier ?? null,
-            patreonStatus: patreonStatus ?? null
+            patreonTier: finalTier ?? null,
+            patreonStatus: finalStatus ?? null
           })
         });
         if (!persistRes.ok) {
@@ -682,63 +739,39 @@ function AuthProviderInternal({ children }: { children: ReactNode }) {
 
       const patreonData = await identityResponse.json();
       const patreonUser = patreonData.data;
-      const included = patreonData.included || [];
       
-      // DEBUG: Log completo de la respuesta de Patreon para linkPatreon
-
-      // Extraer información de la membresía
-      let patreonStatus: 'active_patron' | 'declined_patron' | 'former_patron' | null = null;
-      let patreonTier: string | undefined = undefined;
-      
-      // Buscar la membresía activa según documentación de Patreon
-      const membership = included.find((item: PatreonResource) => item.type === 'member');
-      
-      if (membership && membership.attributes) {
-        // Obtener patron_status según documentación
-        patreonStatus = membership.attributes.patron_status;
-        
-        // Buscar el tier usando relationships según documentación
-        const tierRelationship = membership.relationships?.currently_entitled_tiers?.data?.[0];
-        
-        if (tierRelationship) {
-          // Buscar el tier en included usando el ID de la relationship
-          const tier = included.find((item: PatreonResource) => 
-            item.type === 'tier' && item.id === tierRelationship.id
-          );
-          
-          if (tier && tier.attributes) {
-            // Obtener title del tier según documentación
-            patreonTier = tier.attributes.title;
-          }
-        } else {
-          console.log('⚠️ LINK - No se encontró tier relationship en membership');
-          console.log('🔗 LINK - Membership relationships:', membership.relationships);
-        }
-      } else {
-        console.log('⚠️ LINK - No se encontró membership en la respuesta de Patreon');
-        console.log('🔗 LINK - Included items disponibles:', included.map((item: PatreonResource) => ({ type: item.type, id: item.id })));
-      }
-
+      // Usar función auxiliar para extraer información de forma consistente
+      const { patreonStatus, patreonTier } = extractPatreonInfo(patreonData);
 
       // Normalizar estado para tiers gratuitos
+      let finalStatus = patreonStatus;
+      const finalTier = patreonTier;
+      
       if (patreonStatus == null && patreonTier === 'Free') {
-        patreonStatus = null; // Mantener null en lugar de "free"
+        finalStatus = null; // Mantener null en lugar de "free"
       }
+
+      console.log('🔍 DEBUG Link final values:', {
+        originalStatus: patreonStatus,
+        originalTier: patreonTier,
+        finalStatus,
+        finalTier
+      });
 
 
       // Actualizar usuario actual con información de Patreon
       await updateUser({
         patreonId: patreonUser.id,
-        patreonTier: patreonTier || undefined,
-        patreonStatus: patreonStatus || undefined,
+        patreonTier: finalTier || undefined,
+        patreonStatus: finalStatus || undefined,
       });
 
       // DEBUG: Log de datos que se van a guardar en BD
       const persistData = {
         email: currentUser.email,
         patreonId: patreonUser.id,
-        patreonTier: patreonTier ?? null,
-        patreonStatus: patreonStatus ?? null
+        patreonTier: finalTier ?? null,
+        patreonStatus: finalStatus ?? null
       };
       
 

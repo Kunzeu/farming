@@ -224,61 +224,41 @@ export default function RootLayout({
             const observer = new MutationObserver(blockUnwantedContent);
             observer.observe(document.body, { childList: true, subtree: true });
             
-            // Función para probar API de Patreon directamente
-            window.testPatreonAPI = function() {
-              console.log('🧪 Probando API de Patreon directamente...');
+            // Función temporal para probar verificación por email
+            window.testEmailVerification = function() {
+              console.log('🧪 Desvinculando Patreon para probar verificación por email...');
               
-              // Simular token de acceso (en producción sería real)
-              const testToken = 'test_access_token_' + Date.now();
+              // Obtener usuario actual del localStorage
+              const userStr = localStorage.getItem('gw2_user');
+              if (!userStr) {
+                console.log('❌ No hay usuario logueado');
+                return;
+              }
               
-              fetch('/api/auth/patreon/identity', {
-                headers: {
-                  'Authorization': 'Bearer ' + testToken
-                }
-              })
-              .then(response => response.json())
-              .then(data => {
-                console.log('🔍 Respuesta de API de Patreon:', data);
-              })
-              .catch(error => {
-                console.error('❌ Error en API de Patreon:', error);
-              });
+              const user = JSON.parse(userStr);
+              console.log('👤 Usuario actual:', user);
+              
+              // Limpiar datos de Patreon del usuario
+              const updatedUser = {
+                ...user,
+                patreonId: null,
+                patreonTier: null,
+                patreonStatus: null
+              };
+              
+              // Actualizar localStorage
+              localStorage.setItem('gw2_user', JSON.stringify(updatedUser));
+              console.log('✅ Patreon desvinculado. Recarga la página para ver el botón de verificación por email.');
+              
+              // Recargar página
+              setTimeout(() => {
+                window.location.reload();
+              }, 1000);
             };
             
             console.log('💡 Función de prueba disponible:');
-            console.log('  - window.testPatreonAPI() - Probar API de Patreon directamente');
+            console.log('  - window.testEmailVerification() - Desvincular Patreon para probar verificación por email');
             
-            // Función para actualizar manualmente el usuario Kunzeu
-            window.fixKunzeuUser = function(tier = 'Bronze') {
-              console.log('🔧 Actualizando usuario Kunzeu manualmente con tier:', tier);
-              
-              const updateData = {
-                email: 'johnfmedrano@gmail.com',
-                patreonId: '135531951',
-                patreonTier: tier,
-                patreonStatus: tier === 'Free' ? null : 'active_patron'
-              };
-              
-              fetch('/api/auth/patreon/link', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(updateData)
-              })
-              .then(response => response.json())
-              .then(data => {
-                console.log('✅ Usuario Kunzeu actualizado:', data);
-                window.location.reload();
-              })
-              .catch(error => {
-                console.error('❌ Error actualizando Kunzeu:', error);
-              });
-            };
-            
-            console.log('💡 Función de corrección disponible:');
-            console.log('  - window.fixKunzeuUser("Bronze") - Actualizar Kunzeu a Bronze');
-            console.log('  - window.fixKunzeuUser("Gold") - Actualizar Kunzeu a Gold');
-            console.log('  - window.fixKunzeuUser("Silver") - Actualizar Kunzeu a Silver');
-            console.log('  - window.fixKunzeuUser("Free") - Actualizar Kunzeu a Free');
           `
         }} />
         
