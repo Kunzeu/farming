@@ -21,6 +21,14 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const { email, patreonId, patreonTier, patreonStatus } = body as { email?: string; patreonId?: string; patreonTier?: string | null; patreonStatus?: 'active_patron' | 'declined_patron' | 'former_patron' | null };
 
+    // DEBUG: Log datos recibidos en el servidor
+    console.log('🔗 SERVER - Datos recibidos en /api/auth/patreon/link:', {
+      email,
+      patreonId,
+      patreonTier,
+      patreonStatus
+    });
+
     if (!email || !patreonId) {
       return NextResponse.json({ error: 'email y patreonId son requeridos' }, { status: 400 });
     }
@@ -42,10 +50,19 @@ export async function POST(request: NextRequest) {
     );
 
     if (result.rows.length === 0) {
+      console.log('🔗 SERVER - Usuario no encontrado para email:', email);
       return NextResponse.json({ error: 'User not found' }, { status: 404 });
     }
 
     const row = result.rows[0];
+    console.log('🔗 SERVER - Usuario actualizado exitosamente:', {
+      id: row.id,
+      email: row.email,
+      patreonId: row.patreonId,
+      patreonTier: row.patreonTier,
+      patreonStatus: row.patreonStatus
+    });
+
     return NextResponse.json({
       ...row,
       createdAt: new Date(row.createdAt),
