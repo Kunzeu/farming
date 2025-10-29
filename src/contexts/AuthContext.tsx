@@ -427,78 +427,46 @@ function AuthProviderInternal({ children }: { children: ReactNode }) {
       const patreonUser = patreonData.data;
       const included = patreonData.included || [];
       
-      // DEBUG: Log completo de la respuesta de Patreon
-      console.log('🔍 Respuesta completa de Patreon:', {
-        data: patreonUser,
-        included: included.map((item: PatreonResource) => ({
-          type: item.type,
-          id: item.id,
-          attributes: item.attributes
-        }))
-      });
-      
       // Extraer información de la membresía
       let patreonStatus: 'active_patron' | 'declined_patron' | 'former_patron' | null = null;
       let patreonTier: string | undefined = undefined;
       
       // Buscar la membresía activa
       const membership = included.find((item: PatreonResource) => item.type === 'member');
-      console.log('🔍 Membership encontrada:', membership);
       
       if (membership && membership.attributes) {
         patreonStatus = membership.attributes.patron_status;
-        console.log('🔍 Patreon Status:', patreonStatus);
         
         // Buscar el tier
         const tierRelationship = membership.relationships?.currently_entitled_tiers?.data?.[0];
-        console.log('🔍 Tier Relationship:', tierRelationship);
         
         if (tierRelationship) {
           const tier = included.find((item: PatreonResource) => 
             item.type === 'tier' && item.id === tierRelationship.id
           );
-          console.log('🔍 Tier encontrado:', tier);
           
           if (tier && tier.attributes) {
             patreonTier = tier.attributes.title;
-            console.log('🔍 Tier Title:', patreonTier);
           }
         } else {
-          console.log('⚠️ No se encontró tier relationship en membership');
         }
       } else {
         console.log('⚠️ No se encontró membership en la respuesta de Patreon');
       }
 
       // DEBUG: Log de valores extraídos antes de normalizar
-      console.log('🔍 Valores extraídos de Patreon:', {
-        patreonTier,
-        patreonStatus,
-        patreonId: patreonUser.id
-      });
 
       // Normalizar estado para diferentes tipos de usuarios
       if (patreonTier === 'Free') {
         // Usuario Free: no tiene suscripción de pago
         patreonStatus = null; // Mantener null para usuarios Free
-        console.log('✅ Usuario Free detectado');
       } else if (patreonTier && !patreonStatus) {
         // Usuario con tier de pago pero sin status: probablemente problema de sincronización
-        console.warn('⚠️ Usuario con tier de pago pero sin patreonStatus:', {
-          tier: patreonTier,
-          status: patreonStatus,
-          patreonId: patreonUser.id
-        });
         // Mantener el tier pero marcar como inactivo hasta que se sincronice
         patreonStatus = 'former_patron';
       }
 
       // DEBUG: Log de valores finales antes de guardar
-      console.log('🔍 Valores finales para guardar:', {
-        patreonTier,
-        patreonStatus,
-        patreonId: patreonUser.id
-      });
 
       // Buscar o crear usuario en la base de datos
       const { getDbService } = await import('@/lib/database-switch');
@@ -717,14 +685,6 @@ function AuthProviderInternal({ children }: { children: ReactNode }) {
       const included = patreonData.included || [];
       
       // DEBUG: Log completo de la respuesta de Patreon para linkPatreon
-      console.log('🔗 LINK - Respuesta completa de Patreon:', {
-        data: patreonUser,
-        included: included.map((item: PatreonResource) => ({
-          type: item.type,
-          id: item.id,
-          attributes: item.attributes
-        }))
-      });
 
       // Extraer información de la membresía
       let patreonStatus: 'active_patron' | 'declined_patron' | 'former_patron' | null = null;
@@ -732,28 +692,23 @@ function AuthProviderInternal({ children }: { children: ReactNode }) {
       
       // Buscar la membresía activa según documentación de Patreon
       const membership = included.find((item: PatreonResource) => item.type === 'member');
-      console.log('🔗 LINK - Membership encontrada:', membership);
       
       if (membership && membership.attributes) {
         // Obtener patron_status según documentación
         patreonStatus = membership.attributes.patron_status;
-        console.log('🔗 LINK - Patreon Status:', patreonStatus);
         
         // Buscar el tier usando relationships según documentación
         const tierRelationship = membership.relationships?.currently_entitled_tiers?.data?.[0];
-        console.log('🔗 LINK - Tier Relationship:', tierRelationship);
         
         if (tierRelationship) {
           // Buscar el tier en included usando el ID de la relationship
           const tier = included.find((item: PatreonResource) => 
             item.type === 'tier' && item.id === tierRelationship.id
           );
-          console.log('🔗 LINK - Tier encontrado:', tier);
           
           if (tier && tier.attributes) {
             // Obtener title del tier según documentación
             patreonTier = tier.attributes.title;
-            console.log('🔗 LINK - Tier Title:', patreonTier);
           }
         } else {
           console.log('⚠️ LINK - No se encontró tier relationship en membership');
@@ -764,25 +719,12 @@ function AuthProviderInternal({ children }: { children: ReactNode }) {
         console.log('🔗 LINK - Included items disponibles:', included.map((item: PatreonResource) => ({ type: item.type, id: item.id })));
       }
 
-      // DEBUG: Log de valores extraídos antes de normalizar
-      console.log('🔗 LINK - Valores extraídos de Patreon:', {
-        patreonTier,
-        patreonStatus,
-        patreonId: patreonUser.id
-      });
 
       // Normalizar estado para tiers gratuitos
       if (patreonStatus == null && patreonTier === 'Free') {
         patreonStatus = null; // Mantener null en lugar de "free"
-        console.log('✅ LINK - Usuario Free detectado');
       }
 
-      // DEBUG: Log de valores finales antes de guardar
-      console.log('🔗 LINK - Valores finales para guardar:', {
-        patreonTier,
-        patreonStatus,
-        patreonId: patreonUser.id
-      });
 
       // Actualizar usuario actual con información de Patreon
       await updateUser({
@@ -799,7 +741,6 @@ function AuthProviderInternal({ children }: { children: ReactNode }) {
         patreonStatus: patreonStatus ?? null
       };
       
-      console.log('🔗 LINK - Enviando datos a /api/auth/patreon/link:', persistData);
 
       // Persistir en BD inmediatamente por email
       try {
@@ -809,11 +750,7 @@ function AuthProviderInternal({ children }: { children: ReactNode }) {
           body: JSON.stringify(persistData)
         });
         if (!persistRes.ok) {
-          const text = await persistRes.text();
-          console.error('❌ LINK - Persist Patreon link failed:', persistRes.status, text);
-        } else {
-          const responseData = await persistRes.json();
-          console.log('✅ LINK - Patreon link persistido exitosamente:', responseData);
+          await persistRes.text();
         }
       } catch {}
 

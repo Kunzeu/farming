@@ -44,37 +44,6 @@ export async function GET(request: NextRequest) {
 
     const identityData = await identityResponse.json();
 
-    // DEBUG: Log completo de la respuesta de Patreon en el servidor
-    console.log('🔍 SERVER - Respuesta completa de Patreon:', {
-      data: identityData.data,
-      included: identityData.included?.map((item: { type: string; id: string; attributes?: Record<string, unknown>; relationships?: Record<string, unknown> }) => ({
-        type: item.type,
-        id: item.id,
-        attributes: item.attributes
-      }))
-    });
-
-    // Extraer información de la membresía en el servidor
-    const included = identityData.included || [];
-    const membership = included.find((item: { type: string; id: string; attributes?: Record<string, unknown>; relationships?: Record<string, unknown> }) => item.type === 'member');
-    
-    if (membership) {
-      console.log('🔍 SERVER - Membership encontrada:', membership);
-      const patreonStatus = membership.attributes?.patron_status;
-      console.log('🔍 SERVER - Patreon Status:', patreonStatus);
-      
-      const tierRelationship = membership.relationships?.currently_entitled_tiers;
-      if (tierRelationship?.data?.length > 0) {
-        const tierId = tierRelationship.data[0].id;
-        const tier = included.find((item: { type: string; id: string; attributes?: Record<string, unknown>; relationships?: Record<string, unknown> }) => item.type === 'tier' && item.id === tierId);
-        if (tier) {
-          console.log('🔍 SERVER - Tier encontrado:', tier);
-          const patreonTier = tier.attributes?.title;
-          console.log('🔍 SERVER - Tier Title:', patreonTier);
-        }
-      }
-    }
-
     return NextResponse.json(identityData);
 
   } catch (error) {
