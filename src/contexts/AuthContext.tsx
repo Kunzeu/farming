@@ -719,7 +719,7 @@ function AuthProviderInternal({ children }: { children: ReactNode }) {
       // DEBUG: Log completo de la respuesta de Patreon para linkPatreon
       console.log('🔗 LINK - Respuesta completa de Patreon:', {
         data: patreonUser,
-        included: included.map(item => ({
+        included: included.map((item: PatreonResource) => ({
           type: item.type,
           id: item.id,
           attributes: item.attributes
