@@ -31,7 +31,11 @@ export async function GET(request: NextRequest) {
 
     if (!identityResponse.ok) {
       const errorData = await identityResponse.text();
-      console.error('Error obteniendo identidad de Patreon:', errorData);
+      console.error('❌ Error obteniendo identidad de Patreon:', {
+        status: identityResponse.status,
+        statusText: identityResponse.statusText,
+        errorData: errorData
+      });
       return NextResponse.json(
         { error: 'Error al obtener información del usuario de Patreon' },
         { status: 400 }

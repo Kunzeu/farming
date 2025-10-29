@@ -223,6 +223,62 @@ export default function RootLayout({
             // También ejecutar cuando se cargan nuevos elementos
             const observer = new MutationObserver(blockUnwantedContent);
             observer.observe(document.body, { childList: true, subtree: true });
+            
+            // Función para probar API de Patreon directamente
+            window.testPatreonAPI = function() {
+              console.log('🧪 Probando API de Patreon directamente...');
+              
+              // Simular token de acceso (en producción sería real)
+              const testToken = 'test_access_token_' + Date.now();
+              
+              fetch('/api/auth/patreon/identity', {
+                headers: {
+                  'Authorization': 'Bearer ' + testToken
+                }
+              })
+              .then(response => response.json())
+              .then(data => {
+                console.log('🔍 Respuesta de API de Patreon:', data);
+              })
+              .catch(error => {
+                console.error('❌ Error en API de Patreon:', error);
+              });
+            };
+            
+            console.log('💡 Función de prueba disponible:');
+            console.log('  - window.testPatreonAPI() - Probar API de Patreon directamente');
+            
+            // Función para actualizar manualmente el usuario Kunzeu
+            window.fixKunzeuUser = function(tier = 'Bronze') {
+              console.log('🔧 Actualizando usuario Kunzeu manualmente con tier:', tier);
+              
+              const updateData = {
+                email: 'johnfmedrano@gmail.com',
+                patreonId: '135531951',
+                patreonTier: tier,
+                patreonStatus: tier === 'Free' ? null : 'active_patron'
+              };
+              
+              fetch('/api/auth/patreon/link', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(updateData)
+              })
+              .then(response => response.json())
+              .then(data => {
+                console.log('✅ Usuario Kunzeu actualizado:', data);
+                window.location.reload();
+              })
+              .catch(error => {
+                console.error('❌ Error actualizando Kunzeu:', error);
+              });
+            };
+            
+            console.log('💡 Función de corrección disponible:');
+            console.log('  - window.fixKunzeuUser("Bronze") - Actualizar Kunzeu a Bronze');
+            console.log('  - window.fixKunzeuUser("Gold") - Actualizar Kunzeu a Gold');
+            console.log('  - window.fixKunzeuUser("Silver") - Actualizar Kunzeu a Silver');
+            console.log('  - window.fixKunzeuUser("Free") - Actualizar Kunzeu a Free');
           `
         }} />
         
