@@ -224,40 +224,6 @@ export default function RootLayout({
             const observer = new MutationObserver(blockUnwantedContent);
             observer.observe(document.body, { childList: true, subtree: true });
             
-            // Función temporal para probar verificación por email
-            window.testEmailVerification = function() {
-              console.log('🧪 Desvinculando Patreon para probar verificación por email...');
-              
-              // Obtener usuario actual del localStorage
-              const userStr = localStorage.getItem('gw2_user');
-              if (!userStr) {
-                console.log('❌ No hay usuario logueado');
-                return;
-              }
-              
-              const user = JSON.parse(userStr);
-              console.log('👤 Usuario actual:', user);
-              
-              // Limpiar datos de Patreon del usuario
-              const updatedUser = {
-                ...user,
-                patreonId: null,
-                patreonTier: null,
-                patreonStatus: null
-              };
-              
-              // Actualizar localStorage
-              localStorage.setItem('gw2_user', JSON.stringify(updatedUser));
-              console.log('✅ Patreon desvinculado. Recarga la página para ver el botón de verificación por email.');
-              
-              // Recargar página
-              setTimeout(() => {
-                window.location.reload();
-              }, 1000);
-            };
-            
-            console.log('💡 Función de prueba disponible:');
-            console.log('  - window.testEmailVerification() - Desvincular Patreon para probar verificación por email');
             
           `
         }} />
