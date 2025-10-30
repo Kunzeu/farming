@@ -32,6 +32,7 @@ const JardinesPage = () => {
   const [unboundMiningData, setUnboundMiningData] = useState<{name: string, icon: string} | null>(null);
   const [unboundLoggingData, setUnboundLoggingData] = useState<{name: string, icon: string} | null>(null);
   const [alternativeSickleData, setAlternativeSickleData] = useState<{name: string, icon: string} | null>(null);
+  const [alternativeMSickleData, setAlternativeMSickleData] = useState<{name: string, icon: string} | null>(null);
   const [itemBoosterData, setItemBoosterData] = useState<{name: string, icon: string} | null>(null);
   const [guildBannerData, setGuildBannerData] = useState<{name: string, icon: string} | null>(null);
   const [xpBoosterData, setXpBoosterData] = useState<{name: string, icon: string} | null>(null);
@@ -135,6 +136,9 @@ const JardinesPage = () => {
               break;
             case 102000:
               setAlternativeSickleData(itemData);
+              break;
+            case 67032:
+              setAlternativeMSickleData(itemData);
               break;
             case 20003:
               setItemBoosterData(itemData);
@@ -727,8 +731,8 @@ const JardinesPage = () => {
                         {/* Herramienta Alternativa */}
                         <div className="flex items-center gap-3">
                           <Image
-                            src={alternativeSickleData?.icon || "https://wiki.guildwars2.com/images/1/1b/Fused_Molten_Sickle.png"}
-                            alt={alternativeSickleData?.name || t('gardenPage.sections.gardenTypes.fusedMoltenSickle')}
+                            src={alternativeMSickleData?.icon || "https://wiki.guildwars2.com/images/1/1b/Fused_Molten_Sickle.png"}
+                            alt={alternativeMSickleData?.name || t('gardenPage.sections.gardenTypes.fusedMoltenSickle')}
                             width={24}
                             height={24}
                             className="w-6 h-6"
