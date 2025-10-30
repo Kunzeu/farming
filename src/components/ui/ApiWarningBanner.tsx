@@ -13,9 +13,9 @@ const ApiWarningBanner = () => {
   useEffect(() => {
     // Fechas de desactivación de la API
     // Viernes 24 de octubre a las 10:00 AM hora del Pacífico (UTC-7)
-    const apiDisableDate = new Date('2025-10-24T10:00:00-07:00');
+    const apiDisableDate = new Date('2025-10-24T11:00:00-07:00');
     // Jueves 30 de octubre a las 10:00 AM hora del Pacífico (UTC-7)
-    const apiReenableDate = new Date('2025-10-30T10:00:00-07:00');
+    const apiReenableDate = new Date('2025-10-30T11:00:00-07:00');
     
     const now = new Date();
     

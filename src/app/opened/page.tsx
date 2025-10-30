@@ -1,17 +1,91 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { Package } from 'lucide-react';
+import { Package} from 'lucide-react';
 import Navigation from '@/components/layout/Navigation';
 import Link from 'next/link'
 import Image from 'next/image';
 import { usePageTitle } from '@/hooks/usePageTitle';
 import { useI18n } from '@/contexts/I18nContext';
+import { useState, useEffect, useCallback } from 'react';
+
+interface GW2Item {
+  id: number;
+  name: string;
+  icon: string;
+  type: string;
+  rarity: string;
+  level: number;
+  vendor_value: number;
+  game_types: string[];
+  flags: string[];
+  restrictions: string[];
+  chat_link: string;
+  description?: string;
+}
 
 export default function OpenedPage() {
   usePageTitle('pageTitles.opened', 'Contenedores Abribles');
-  const { t } = useI18n();
+  const { t, lang } = useI18n();
+  const defaultCofferIcon = 'https://wiki.guildwars2.com/images/thumb/2/2e/Unlocked_Rift_Essence_Coffer.png/40px-Unlocked_Rift_Essence_Coffer.png';
+  const [riftEssenceCoffer, setRiftEssenceCoffer] = useState<{name: string, icon: string} | null>({
+    name: t('opened.essence.unlockedCoffer', 'Unlocked Rift Essence Coffer'),
+    icon: defaultCofferIcon
+  });
 
+  // Función para obtener los datos del Rift Essence Coffer según el idioma
+  const fetchRiftEssenceCoffer = useCallback(async (language: string) => {
+    const delaysMs = [250, 500, 1000];
+    for (let attempt = 0; attempt < delaysMs.length; attempt++) {
+      try {
+        const response = await fetch(`https://api.guildwars2.com/v2/items?ids=101266&lang=${language}`);
+        if (!response.ok) {
+          // Reintentar en 5xx o 429
+          if (response.status >= 500 || response.status === 429) throw new Error(`HTTP ${response.status}`);
+          // Para otros códigos, no reintentar y usar fallback traducido
+          setRiftEssenceCoffer({
+            name: t('opened.essence.unlockedCoffer', 'Unlocked Rift Essence Coffer'),
+            icon: defaultCofferIcon
+          });
+          return;
+        }
+        const contentType = response.headers.get('content-type') || '';
+        if (!contentType.includes('application/json')) {
+          throw new Error('non-JSON');
+        }
+        const data: GW2Item[] = await response.json();
+        if (data && data.length > 0) {
+          const cofferData = data[0];
+          setRiftEssenceCoffer({ name: cofferData.name, icon: cofferData.icon });
+        }
+        return;
+      } catch (err) {
+        // Esperar y reintentar salvo último intento
+        if (attempt < delaysMs.length - 1) {
+          await new Promise(r => setTimeout(r, delaysMs[attempt]));
+          continue;
+        }
+        console.warn('GW2 API: usando fallback para Rift Essence Coffer', err);
+      }
+    }
+    // Fallback traducido si todos los intentos fallan
+    setRiftEssenceCoffer({
+      name: t('opened.essence.unlockedCoffer', 'Unlocked Rift Essence Coffer'),
+      icon: defaultCofferIcon
+    });
+  }, [t]);
+
+  // Efecto para cargar los datos cuando cambie el idioma
+  useEffect(() => {
+    if (lang) {
+      // Establecer inmediatamente el fallback traducido al cambiar idioma
+      setRiftEssenceCoffer({
+        name: t('opened.essence.unlockedCoffer', 'Unlocked Rift Essence Coffer'),
+        icon: defaultCofferIcon
+      });
+      fetchRiftEssenceCoffer(lang);
+    }
+  }, [lang, fetchRiftEssenceCoffer, t]);
 
   return (
     <>
@@ -88,47 +162,89 @@ export default function OpenedPage() {
             </div>
           </motion.div>
 
-          {/* Four Winds Prize Bag */}
-          <div className="flex justify-center">
-            <div className="w-full max-w-md">
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.3 }}
-                className="group">
-                <Link href="/opened/four-winds">
-                  <div className="bg-gradient-to-br from-purple-500/20 to-purple-600/20 backdrop-blur-sm rounded-xl p-6 border border-purple-500/30 hover:scale-105 transition-all duration-300 cursor-pointer">
-                    <div className="flex items-center gap-4 mb-4">
-                      <div className="w-12 h-12 bg-gradient-to-br from-purple-500/20 to-purple-600/20 rounded-lg flex items-center justify-center border border-purple-500/30 overflow-hidden">
-                        <Image 
-                          src="https://render.guildwars2.com/file/556EDAB564D0341502AB1E129F0303C0F739A4AC/2718778.png" 
-                          alt={t('fourWindsPrizeBag.title', 'Four Winds Prize Bag')}
+          {/* Contenedores Disponibles */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto">
+            {/* Four Winds Prize Bag */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.3 }}
+              className="group">
+              <Link href="/opened/four-winds">
+                <div className="bg-gradient-to-br from-purple-500/20 to-purple-600/20 backdrop-blur-sm rounded-xl p-6 border border-purple-500/30 hover:scale-105 transition-all duration-300 cursor-pointer">
+                  <div className="flex items-center gap-4 mb-4">
+                    <div className="w-12 h-12 bg-gradient-to-br from-purple-500/20 to-purple-600/20 rounded-lg flex items-center justify-center border border-purple-500/30 overflow-hidden">
+                      <Image 
+                        src="https://render.guildwars2.com/file/556EDAB564D0341502AB1E129F0303C0F739A4AC/2718778.png" 
+                        alt={t('fourWindsPrizeBag.title', 'Four Winds Prize Bag')}
+                        width={40}
+                        height={40}
+                        className="w-10 h-10 object-contain"
+                      />
+                    </div>
+                    <div>
+                      <h3 className="text-xl font-bold text-purple-400 group-hover:text-white transition-colors">
+                        {t('fourWindsPrizeBag.title', 'Four Winds Prize Bag')}
+                      </h3>
+                    </div>
+                  </div>
+                  
+                  <div className="mt-4 flex items-center justify-between">
+                    <span className="text-sm font-medium text-purple-400 group-hover:text-white transition-colors">
+                      {t('salvagePage.explore', 'Explorar')}
+                    </span>
+                    <div className="w-6 h-6 rounded-full bg-gradient-to-br from-purple-500/20 to-purple-600/20 flex items-center justify-center group-hover:scale-110 transition-transform">
+                      <svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                      </svg>
+                    </div>
+                  </div>
+                </div>
+              </Link>
+            </motion.div>
+
+            {/* Unlocked Rift Essence Coffer */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.4 }}
+              className="group">
+              <Link href="/opened/essence">
+                <div className="bg-gradient-to-br from-cyan-500/20 to-blue-600/20 backdrop-blur-sm rounded-xl p-6 border border-cyan-500/30 hover:scale-105 transition-all duration-300 cursor-pointer">
+                  <div className="flex items-center gap-4 mb-4">
+                    <div className="w-12 h-12 bg-gradient-to-br from-cyan-500/20 to-blue-600/20 rounded-lg flex items-center justify-center border border-cyan-500/30 overflow-hidden">
+                      {riftEssenceCoffer ? (
+                         <Image 
+                           src={riftEssenceCoffer.icon || 'https://wiki.guildwars2.com/images/thumb/2/2e/Unlocked_Rift_Essence_Coffer.png/40px-Unlocked_Rift_Essence_Coffer.png'} 
+                           alt={t('opened.essence.unlockedCoffer', 'Unlocked Rift Essence Coffer')}
                           width={40}
                           height={40}
                           className="w-10 h-10 object-contain"
                         />
-                      </div>
-                      <div>
-                        <h3 className="text-xl font-bold text-purple-400 group-hover:text-white transition-colors">
-                          {t('fourWindsPrizeBag.title', 'Four Winds Prize Bag')}
-                        </h3>
-                      </div>
+                      ) : (
+                        <Package className="w-8 h-8 text-cyan-400" />
+                      )}
                     </div>
-                    
-                    <div className="mt-4 flex items-center justify-between">
-                      <span className="text-sm font-medium text-purple-400 group-hover:text-white transition-colors">
-                        {t('salvagePage.explore', 'Explorar')}
-                      </span>
-                      <div className="w-6 h-6 rounded-full bg-gradient-to-br from-purple-500/20 to-purple-600/20 flex items-center justify-center group-hover:scale-110 transition-transform">
-                        <svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                        </svg>
-                      </div>
+                    <div>
+                      <h3 className="text-xl font-bold text-cyan-400 group-hover:text-white transition-colors">
+                        {riftEssenceCoffer ? riftEssenceCoffer.name : 'Cargando...'}
+                      </h3>
                     </div>
                   </div>
-                </Link>
-              </motion.div>
-            </div>
+                  
+                  <div className="mt-4 flex items-center justify-between">
+                    <span className="text-sm font-medium text-cyan-400 group-hover:text-white transition-colors">
+                      {t('salvagePage.explore', 'Explorar')}
+                    </span>
+                    <div className="w-6 h-6 rounded-full bg-gradient-to-br from-cyan-500/20 to-blue-600/20 flex items-center justify-center group-hover:scale-110 transition-transform">
+                      <svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                      </svg>
+                    </div>
+                  </div>
+                </div>
+              </Link>
+            </motion.div>
           </div>
 
         </div>

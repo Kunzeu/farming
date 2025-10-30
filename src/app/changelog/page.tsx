@@ -34,6 +34,23 @@ const ChangelogPage = () => {
 
   const changelogData: ChangelogEntry[] = [
     {
+      version: '2.1.1',
+      date: '2025-10-30',
+      type: 'minor',
+      changes: [
+        {
+          type: 'feature',
+          title: t('changelog.opened.essence', 'Opened - Sección Essence'),
+          description: t('changelog.opened.essence.desc', 'Nueva sección de Essence dentro de Opened con guía y recompensas')
+        },
+        {
+          type: 'feature',
+          title: t('changelog.alt.parking', 'Alt Parking - Guía de ubicaciones'),
+          description: t('changelog.alt.parking.desc', 'Nueva sección Alt Parking con ubicaciones y rutas recomendadas')
+        }
+      ]
+    },
+    {
       version: '2.1.0',
       date: '2025-10-22',
       type: 'major',

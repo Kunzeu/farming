@@ -346,7 +346,7 @@ const Navigation = () => {
     { href: '/gift-of-jade-mastery', label: t('nav.giftOfJadeMastery', 'Gift of Jade Mastery'), icon: 'GOJM', isImage: true },
     { href: '/glossary', label: t('nav.glossary', 'Glosario'), icon: 'Glosary', isImage: true },
     { href: '/festivals/halloween/labyrinth-guide', label: t('pageTitles.halloweenLabyrinth', 'Guía del Laberinto de Halloween'), icon: 'Shadow_of_the_Mad_King', isImage: true },
-    // { href: '/alt-parking', label: t('nav.altParking', 'Alt Parking'), icon: Package }, 
+    { href: '/alt-parking', label: t('nav.altParking', 'Alt Parking'), icon: 'Explorer', isImage: true }, 
 
   ];
 
@@ -462,7 +462,7 @@ const Navigation = () => {
                   className="flex items-center space-x-2 text-gray-300 hover:text-white transition-all duration-200 px-3 py-2 rounded-lg hover:bg-gray-800/50 hover:shadow-md">
                   {item.isImage ? (
                     <Image 
-                      src={`/images/${item.icon === 'GOM' || item.icon === 'GOJM' ? 'assets' : item.icon === 'Shadow_of_the_Mad_King' ? 'festivals' : 'expansions'}/${item.icon}.webp`} 
+                      src={`/images/${item.icon === 'GOM' || item.icon === 'GOJM' || item.icon === 'Explorer' ? 'assets' : item.icon === 'Shadow_of_the_Mad_King' ? 'festivals' : 'expansions'}/${item.icon}.webp`} 
                       alt={item.label}
                       width={item.icon === 'Shadow_of_the_Mad_King' ? 80 : 64}
                       height={item.icon === 'Shadow_of_the_Mad_King' ? 80 : 64}
@@ -500,7 +500,7 @@ const Navigation = () => {
                         onClick={() => handleGuidesMenuToggle(false)}>
                         {item.isImage ? (
                           <Image 
-                            src={`/images/${item.icon === 'GOM' || item.icon === 'GOJM' || item.icon === 'Glosary' || item.icon === 'Community' || item.icon === 'conversion-guide' ? 'assets' : item.icon === 'Shadow_of_the_Mad_King' ? 'festivals' : 'expansions'}/${item.icon}.${item.icon === 'conversion-guide' ? 'gif' : 'webp'}`} 
+                            src={`/images/${item.icon === 'GOM' || item.icon === 'GOJM' || item.icon === 'Glosary' || item.icon === 'Community' || item.icon === 'conversion-guide' || item.icon === 'Explorer' ? 'assets' : item.icon === 'Shadow_of_the_Mad_King' ? 'festivals' : 'expansions'}/${item.icon}.${item.icon === 'conversion-guide' ? 'gif' : 'webp'}`} 
                             alt={item.label}
                             width={item.icon === 'Shadow_of_the_Mad_King' ? 48 : 32}
                             height={item.icon === 'Shadow_of_the_Mad_King' ? 48 : 32}
@@ -541,7 +541,7 @@ const Navigation = () => {
                         onClick={() => handleToolsMenuToggle(false)}>
                         {item.isImage ? (
                           <Image 
-                            src={`/images/${item.icon === 'GOM' || item.icon === 'GOJM' || item.icon === 'Glosary' || item.icon === 'Community' ? 'assets' : item.icon === 'Shadow_of_the_Mad_King' ? 'festivals' : 'expansions'}/${item.icon}.webp`} 
+                            src={`/images/${item.icon === 'GOM' || item.icon === 'GOJM' || item.icon === 'Glosary' || item.icon === 'Community' || item.icon === 'Explorer' ? 'assets' : item.icon === 'Shadow_of_the_Mad_King' ? 'festivals' : 'expansions'}/${item.icon}.webp`} 
                             alt={item.label}
                             width={16}
                             height={16}
@@ -723,7 +723,7 @@ const Navigation = () => {
                           className="flex items-center space-x-3 px-3 py-3 text-gray-300 hover:text-white hover:bg-gray-700 rounded-md transition-colors duration-200">
                           {item.isImage ? (
                             <Image 
-                              src={`/images/${item.icon === 'GOM' || item.icon === 'GOJM' || item.icon === 'Glosary' || item.icon === 'Community' ? 'assets' : item.icon === 'Shadow_of_the_Mad_King' ? 'festivals' : 'expansions'}/${item.icon}.webp`} 
+                              src={`/images/${item.icon === 'GOM' || item.icon === 'GOJM' || item.icon === 'Glosary' || item.icon === 'Community' || item.icon === 'Explorer' ? 'assets' : item.icon === 'Shadow_of_the_Mad_King' ? 'festivals' : 'expansions'}/${item.icon}.webp`} 
                               alt={item.label}
                               width={item.icon === 'Shadow_of_the_Mad_King' ? 32 : 16}
                               height={item.icon === 'Shadow_of_the_Mad_King' ? 32 : 16}
@@ -757,7 +757,7 @@ const Navigation = () => {
                                 className="flex items-center space-x-3 px-3 py-3 text-gray-300 hover:text-white hover:bg-gray-700 rounded-md transition-colors duration-200">
                                 {item.isImage ? (
                                   <Image 
-                                    src={`/images/${item.icon === 'GOM' || item.icon === 'GOJM' || item.icon === 'Glosary' || item.icon === 'Community' ? 'assets' : item.icon === 'Shadow_of_the_Mad_King' ? 'festivals' : 'expansions'}/${item.icon}.webp`} 
+                                    src={`/images/${item.icon === 'GOM' || item.icon === 'GOJM' || item.icon === 'Glosary' || item.icon === 'Community' || item.icon === 'Explorer' ? 'assets' : item.icon === 'Shadow_of_the_Mad_King' ? 'festivals' : 'expansions'}/${item.icon}.webp`} 
                                     alt={item.label}
                                     width={20}
                                     height={20}
@@ -794,7 +794,7 @@ const Navigation = () => {
                                 className="flex items-center space-x-3 px-3 py-3 text-gray-300 hover:text-white hover:bg-gray-700 rounded-md transition-colors duration-200">
                                 {item.isImage ? (
                                   <Image 
-                                    src={`/images/${item.icon === 'GOM' || item.icon === 'GOJM' || item.icon === 'Glosary' || item.icon === 'Community' ? 'assets' : item.icon === 'Shadow_of_the_Mad_King' ? 'festivals' : 'expansions'}/${item.icon}.webp`} 
+                                    src={`/images/${item.icon === 'GOM' || item.icon === 'GOJM' || item.icon === 'Glosary' || item.icon === 'Community' || item.icon === 'Explorer' ? 'assets' : item.icon === 'Shadow_of_the_Mad_King' ? 'festivals' : 'expansions'}/${item.icon}.webp`}
                                     alt={item.label}
                                     width={20}
                                     height={20}
