@@ -93,7 +93,6 @@ export function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: [
-    '/((?!api|_next/static|_next/image|favicon.ico|robots.txt|sitemap.xml|ads.txt).*)',
-  ],
+  // Desactivado para reducir Edge Requests; headers ya están en next.config.js
+  matcher: [],
 };
