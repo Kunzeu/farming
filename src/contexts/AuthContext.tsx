@@ -15,6 +15,7 @@ interface PatreonResource {
     vanity?: string;
     patron_status?: 'active_patron' | 'declined_patron' | 'former_patron' | null;
     title?: string;
+    currently_entitled_amount_cents?: number;
   };
   relationships?: {
     currently_entitled_tiers?: {
@@ -127,10 +128,12 @@ function extractPatreonInfo(patreonData: PatreonIdentityResponse) {
   
   let patreonStatus: 'active_patron' | 'declined_patron' | 'former_patron' | null = null;
   let patreonTier: string | undefined = undefined;
+  let entitledAmountCents = 0;
   
   if (membership && membership.attributes) {
     // Obtener patron_status según documentación
     patreonStatus = membership.attributes.patron_status || null;
+    entitledAmountCents = Number(membership.attributes.currently_entitled_amount_cents || 0);
     
     // Buscar el tier usando relationships según documentación
     const tierRelationship = membership.relationships?.currently_entitled_tiers?.data?.[0];
@@ -145,6 +148,11 @@ function extractPatreonInfo(patreonData: PatreonIdentityResponse) {
         // Obtener title del tier según documentación
         patreonTier = tier.attributes.title;
       }
+    }
+
+    // Si no viene patron_status pero hay tier o amount > 0, considerarlo activo
+    if (!patreonStatus && (patreonTier || entitledAmountCents > 0)) {
+      patreonStatus = 'active_patron';
     }
   }
   
@@ -468,20 +476,13 @@ function AuthProviderInternal({ children }: { children: ReactNode }) {
       const patreonData = await identityResponse.json();
       const patreonUser = patreonData.data;
       
-      // Usar función auxiliar para extraer información de forma consistente
+      // Usar función auxiliar y normalizar
       const { patreonStatus, patreonTier } = extractPatreonInfo(patreonData);
-
-      // Normalizar estado para diferentes tipos de usuarios
       let finalStatus = patreonStatus;
       const finalTier = patreonTier;
-      
-      if (patreonTier === 'Free') {
-        // Usuario Free: no tiene suscripción de pago
-        finalStatus = null; // Mantener null para usuarios Free
-      } else if (patreonTier && !patreonStatus) {
-        // Usuario con tier de pago pero sin status: probablemente problema de sincronización
-        // Mantener el tier pero marcar como inactivo hasta que se sincronice
-        finalStatus = 'former_patron';
+      // Si hay tier y no es Free, pero status viene vacío, considerar activo
+      if (!finalStatus && finalTier && finalTier.toLowerCase() !== 'free') {
+        finalStatus = 'active_patron';
       }
 
 
@@ -700,15 +701,12 @@ function AuthProviderInternal({ children }: { children: ReactNode }) {
       const patreonData = await identityResponse.json();
       const patreonUser = patreonData.data;
       
-      // Usar función auxiliar para extraer información de forma consistente
+      // Usar función auxiliar y normalizar
       const { patreonStatus, patreonTier } = extractPatreonInfo(patreonData);
-
-      // Normalizar estado para tiers gratuitos
       let finalStatus = patreonStatus;
       const finalTier = patreonTier;
-      
-      if (patreonStatus == null && patreonTier === 'Free') {
-        finalStatus = null; // Mantener null en lugar de "free"
+      if (!finalStatus && finalTier && finalTier.toLowerCase() !== 'free') {
+        finalStatus = 'active_patron';
       }
 
 

@@ -25,20 +25,37 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'email y patreonId son requeridos' }, { status: 400 });
     }
 
-    // Actualizar por email (evita requerir JWT en este flujo específico controlado)
+    // Determinar el rol objetivo basado en tier/status
+    const tierNormalized = (patreonTier || '').trim().toLowerCase();
+    const isPaid = patreonStatus === 'active_patron' && tierNormalized !== '' && tierNormalized !== 'free';
+    // Mapeo a roles internos: Bronze, Silver, Gold, Legends
+    const mapRoleFromTier = (tierName: string): string => {
+      if (!tierName) return 'user';
+      const name = tierName.toLowerCase();
+      if (/(legend|legends)/.test(name)) return 'legends';
+      if (/gold/.test(name)) return 'gold';
+      if (/silver/.test(name)) return 'silver';
+      if (/bronze/.test(name)) return 'bronze';
+      // Si es de pago pero no coincide exactamente, asignar el mínimo de pago
+      return 'bronze';
+    };
+    const nextRole = isPaid ? mapRoleFromTier(tierNormalized) : 'user';
+
+    // Actualizar por email con role condicional (no degradar admins/moderators)
     const result = await pool.query(
       `UPDATE users
        SET patreon_id = $1,
            patreon_tier = $2::text,
            patreon_status = $3::text,
            patreon_active = CASE WHEN $3::text = 'active_patron' THEN TRUE ELSE FALSE END,
+           role = CASE WHEN role IN ('admin','moderator') THEN role ELSE $5 END,
            updated_at = NOW()
        WHERE email = $4
        RETURNING id, email, username, role, is_active as "isActive",
                  created_at as "createdAt", updated_at as "updatedAt",
                  discord_id as "discordId", gw2_api_key as "gw2ApiKey",
                  patreon_id as "patreonId", patreon_tier as "patreonTier", patreon_status as "patreonStatus", patreon_active as "patreonActive", preferences`,
-      [patreonId, patreonTier ?? null, patreonStatus ?? null, email]
+      [patreonId, patreonTier ?? null, patreonStatus ?? null, email, nextRole]
     );
 
     if (result.rows.length === 0) {
