@@ -6,7 +6,6 @@ import {
   Users,
   MapPin,
   ArrowLeft,
-  Zap,
 } from "lucide-react";
 import Navigation from "@/components/layout/Navigation";
 import Link from "next/link";
@@ -159,36 +158,7 @@ export default function AltParkingPage() {
               </Link>
             </motion.div>
 
-            {/* Guías de Optimización */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.5 }}
-              className="group">
-              <div className="bg-gradient-to-br from-green-500/20 to-emerald-500/20 backdrop-blur-sm rounded-xl p-6 border border-green-500/30 hover:scale-105 transition-all duration-300 cursor-pointer">
-                <div className="flex items-center gap-4 mb-4">
-                  <div className="w-12 h-12 bg-gradient-to-br from-green-500/20 to-emerald-500/20 rounded-lg flex items-center justify-center border border-green-500/30 overflow-hidden">
-                    <Zap className="h-6 w-6 text-green-400" />
-                  </div>
-                  <div>
-                    <h3 className="text-xl font-bold text-green-400 group-hover:text-white transition-colors">
-                      {t("altParking.optimization.title", "Guías de Optimización")}
-                    </h3>
-                  </div>
-                </div>
-                
-                <div className="mt-4 flex items-center justify-between">
-                  <span className="text-sm font-medium text-green-400 group-hover:text-white transition-colors">
-                    {t("altParking.explore", "Explorar")}
-                  </span>
-                  <div className="w-6 h-6 rounded-full bg-gradient-to-br from-green-500/20 to-emerald-500/20 flex items-center justify-center group-hover:scale-110 transition-transform">
-                    <svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                    </svg>
-                  </div>
-                </div>
-              </div>
-            </motion.div>
+            {/* Guías de Optimización (removido por requerimiento) */}
           </div>
 
         </div>

@@ -7,85 +7,17 @@ import Link from 'next/link'
 import Image from 'next/image';
 import { usePageTitle } from '@/hooks/usePageTitle';
 import { useI18n } from '@/contexts/I18nContext';
-import { useState, useEffect, useCallback } from 'react';
+ 
 
-interface GW2Item {
-  id: number;
-  name: string;
-  icon: string;
-  type: string;
-  rarity: string;
-  level: number;
-  vendor_value: number;
-  game_types: string[];
-  flags: string[];
-  restrictions: string[];
-  chat_link: string;
-  description?: string;
-}
+ 
 
 export default function OpenedPage() {
   usePageTitle('pageTitles.opened', 'Contenedores Abribles');
-  const { t, lang } = useI18n();
-  const defaultCofferIcon = 'https://wiki.guildwars2.com/images/thumb/2/2e/Unlocked_Rift_Essence_Coffer.png/40px-Unlocked_Rift_Essence_Coffer.png';
-  const [riftEssenceCoffer, setRiftEssenceCoffer] = useState<{name: string, icon: string} | null>({
-    name: t('opened.essence.unlockedCoffer', 'Unlocked Rift Essence Coffer'),
-    icon: defaultCofferIcon
-  });
+  const { t } = useI18n();
 
-  // Función para obtener los datos del Rift Essence Coffer según el idioma
-  const fetchRiftEssenceCoffer = useCallback(async (language: string) => {
-    const delaysMs = [250, 500, 1000];
-    for (let attempt = 0; attempt < delaysMs.length; attempt++) {
-      try {
-        const response = await fetch(`https://api.guildwars2.com/v2/items?ids=101266&lang=${language}`);
-        if (!response.ok) {
-          // Reintentar en 5xx o 429
-          if (response.status >= 500 || response.status === 429) throw new Error(`HTTP ${response.status}`);
-          // Para otros códigos, no reintentar y usar fallback traducido
-          setRiftEssenceCoffer({
-            name: t('opened.essence.unlockedCoffer', 'Unlocked Rift Essence Coffer'),
-            icon: defaultCofferIcon
-          });
-          return;
-        }
-        const contentType = response.headers.get('content-type') || '';
-        if (!contentType.includes('application/json')) {
-          throw new Error('non-JSON');
-        }
-        const data: GW2Item[] = await response.json();
-        if (data && data.length > 0) {
-          const cofferData = data[0];
-          setRiftEssenceCoffer({ name: cofferData.name, icon: cofferData.icon });
-        }
-        return;
-      } catch (err) {
-        // Esperar y reintentar salvo último intento
-        if (attempt < delaysMs.length - 1) {
-          await new Promise(r => setTimeout(r, delaysMs[attempt]));
-          continue;
-        }
-        console.warn('GW2 API: usando fallback para Rift Essence Coffer', err);
-      }
-    }
-    // Fallback traducido si todos los intentos fallan
-    setRiftEssenceCoffer({
-      name: t('opened.essence.unlockedCoffer', 'Unlocked Rift Essence Coffer'),
-      icon: defaultCofferIcon
-    });
-  }, [t]);
+  // Sección Essence temporalmente desactivada
 
-  // Efecto para cargar los datos cuando cambie el idioma
-  useEffect(() => {
-    if (lang) {
-      // Establecer inmediatamente el fallback traducido al cambiar idioma
-      setRiftEssenceCoffer({
-        name: t('opened.essence.unlockedCoffer', 'Unlocked Rift Essence Coffer'),
-        icon: defaultCofferIcon
-      });
-      fetchRiftEssenceCoffer(lang);
-    }
-  }, [lang, fetchRiftEssenceCoffer, t]);
+  
 
   return (
     <>
@@ -204,7 +136,7 @@ export default function OpenedPage() {
             </motion.div>
 
             {/* Unlocked Rift Essence Coffer */}
-            <motion.div
+           {/* <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.4 }}
@@ -245,6 +177,7 @@ export default function OpenedPage() {
                 </div>
               </Link>
             </motion.div>
+            */}
           </div>
 
         </div>
