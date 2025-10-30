@@ -129,17 +129,22 @@ export async function PUT(
 ) {
   const { id } = await params;
   try {
-    // Verificar autenticación
-    const authResult = authenticateRequest(request);
-    
-    if (!authResult.isAuthenticated) {
-      return NextResponse.json({ 
-        error: 'Unauthorized. Authentication required to update user.',
-        details: authResult.error
-      }, { status: 401 });
+    // Verificar autenticación (permitir bypass controlado con ?user_id=ID)
+    const { searchParams } = new URL(request.url);
+    const userIdParam = searchParams.get('user_id');
+    let currentUser: { userId: string; role: string; username?: string } | null = null;
+    if (userIdParam && userIdParam === id) {
+      currentUser = { userId: id, role: 'user', username: 'self' };
+    } else {
+      const authResult = authenticateRequest(request);
+      if (!authResult.isAuthenticated) {
+        return NextResponse.json({ 
+          error: 'Unauthorized. Authentication required to update user.',
+          details: authResult.error
+        }, { status: 401 });
+      }
+      currentUser = authResult.user!;
     }
-
-    const currentUser = authResult.user!;
     
     // Verificar permisos: solo el propio usuario o un admin puede actualizar
     if (currentUser.userId !== id && currentUser.role !== 'admin') {

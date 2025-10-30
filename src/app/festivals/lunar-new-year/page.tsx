@@ -334,6 +334,15 @@ const LunarNewYearPage = () => {
     });
   }, [envelopeItems, envelopeSortField, envelopeSortDirection]);
 
+  // Totales calculados para Divine Envelopes
+  const envelopeTotalValue = useMemo(() => {
+    return envelopeItems.reduce((sum, i) => sum + Math.ceil(i.quantity * (i.pricePerUnit || 0)), 0);
+  }, [envelopeItems]);
+  const envelopeValuePerEnvelope = useMemo(() => {
+    if (!TOTAL_OPENED_DIVINE_ENVELOPES) return 0;
+    return Math.floor(envelopeTotalValue / TOTAL_OPENED_DIVINE_ENVELOPES);
+  }, [envelopeTotalValue]);
+
   // Obtener los nombres de los items desde la API
   useEffect(() => {
     const fetchItemNames = async () => {
@@ -383,6 +392,15 @@ const LunarNewYearPage = () => {
       fetchEnvelopeData();
     }
   }, [selectedSection, fetchEnvelopeData]);
+
+  // Totales calculados para Red Bags
+  const redBagTotalValue = useMemo(() => {
+    return redBagItems.reduce((sum, i) => sum + Math.ceil(i.quantity * (i.pricePerUnit || 0)), 0);
+  }, [redBagItems]);
+  const redBagValuePerBag = useMemo(() => {
+    if (!TOTAL_OPENED_RED_BAGS) return 0;
+    return Math.floor(redBagTotalValue / TOTAL_OPENED_RED_BAGS);
+  }, [redBagTotalValue]);
 
   // Auto-actualización cada 5 minutos
   useEffect(() => {
@@ -610,7 +628,7 @@ const LunarNewYearPage = () => {
                          </div>
                        </div>
                      </div>
-                     <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                    <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
                        <div className="bg-gray-800/60 rounded-lg p-3 text-center border border-red-500/20 shadow-lg">
                          <div className="text-2xl font-bold text-red-400">
                            {redBagItems.filter(i => i.quantity > 0).length.toLocaleString()}
@@ -625,10 +643,17 @@ const LunarNewYearPage = () => {
                        </div>
                        <div className="bg-gray-800/60 rounded-lg p-3 text-center border border-red-500/20 shadow-lg">
                          <div className="text-2xl font-bold text-yellow-400">
-                           {formatGoldSilverCopper(redBagItems.reduce((sum, i) => sum + Math.ceil(i.quantity * (i.pricePerUnit || 0)), 0))}
+                          {formatGoldSilverCopper(redBagTotalValue)}
                          </div>
                          <div className="text-gray-200 text-sm">{t("lunarNewYear.boxOpening.totalValue")}</div>
                        </div>
+
+                      <div className="bg-gray-800/60 rounded-lg p-3 text-center border border-red-500/20 shadow-lg">
+                        <div className="text-2xl font-bold text-yellow-400">
+                          {formatGoldSilverCopper(redBagValuePerBag)}
+                        </div>
+                        <div className="text-gray-200 text-sm">{t("lunarNewYear.boxOpening.valuePerBag", "Valor por saco (85%)")}</div>
+                      </div>
                      </div>
 
                    </div>
@@ -816,7 +841,7 @@ const LunarNewYearPage = () => {
                         </div>
                        </div>
                      </div>
-                     <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                    <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
                        <div className="bg-gray-800/60 rounded-lg p-3 text-center border border-red-500/20 shadow-lg">
                          <div className="text-2xl font-bold text-red-400">
                            {envelopeItems.filter(i => i.quantity > 0).length.toLocaleString()}
@@ -831,9 +856,16 @@ const LunarNewYearPage = () => {
                        </div>
                        <div className="bg-gray-800/60 rounded-lg p-3 text-center border border-red-500/20 shadow-lg">
                          <div className="text-2xl font-bold text-yellow-400">
-                           {formatGoldSilverCopper(envelopeItems.reduce((sum, i) => sum + Math.ceil(i.quantity * (i.pricePerUnit || 0)), 0))}
+                           {formatGoldSilverCopper(envelopeTotalValue)}
                          </div>
                          <div className="text-gray-200 text-sm">{t("lunarNewYear.envelopeOpening.totalValue")}</div>
+                       </div>
+
+                       <div className="bg-gray-800/60 rounded-lg p-3 text-center border border-red-500/20 shadow-lg">
+                         <div className="text-2xl font-bold text-yellow-400">
+                           {formatGoldSilverCopper(envelopeValuePerEnvelope)}
+                         </div>
+                         <div className="text-gray-200 text-sm">{t("lunarNewYear.envelopeOpening.valuePerEnvelope", "Valor por sobre")}</div>
                        </div>
                      </div>
 

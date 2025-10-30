@@ -107,6 +107,14 @@ export default function DraconisMonsLocationPage() {
     name: string;
     icon: string;
   } | null>(null);
+  const [exoticData, setExoticData] = useState<{
+    name: string;
+    icon: string;
+  } | null>(null);
+  const [rareData, setRareData] = useState<{
+    name: string;
+    icon: string;
+  } | null>(null);
   const [empyrealData, setEmpyrealData] = useState<{
     name: string;
     icon: string;
@@ -174,6 +182,38 @@ export default function DraconisMonsLocationPage() {
     };
 
     fetchYellowUnidsData();
+  }, [t]);
+
+  // Obtener datos del ítem exótico (ID 27022) desde la API
+  useEffect(() => {
+    const fetchExoticData = async () => {
+      try {
+        const response = await fetch(`https://api.guildwars2.com/v2/items/27022?lang=${t('language', 'en')}`);
+        if (response.ok) {
+          const data = await response.json();
+          setExoticData({ name: data.name, icon: data.icon });
+        }
+      } catch (error) {
+        console.error('Error fetching Exotic item (27022):', error);
+      }
+    };
+    fetchExoticData();
+  }, [t]);
+
+  // Obtener datos del ítem raro (ID 41668) desde la API
+  useEffect(() => {
+    const fetchRareData = async () => {
+      try {
+        const response = await fetch(`https://api.guildwars2.com/v2/items/41668?lang=${t('language', 'en')}`);
+        if (response.ok) {
+          const data = await response.json();
+          setRareData({ name: data.name, icon: data.icon });
+        }
+      } catch (error) {
+        console.error('Error fetching Rare item (41668):', error);
+      }
+    };
+    fetchRareData();
   }, [t]);
 
   // Obtener datos de los Empyreal Fragments desde la API
@@ -592,6 +632,40 @@ export default function DraconisMonsLocationPage() {
                                 {t(reward.nameKey, "Unbound Magic")}
                               </span>
                             </div>
+                          ) : reward.nameKey === "altParking.rewards.exotic" ? (
+                            <div className="flex items-center gap-2">
+                              <Image 
+                                src={exoticData?.icon || "https://wiki.guildwars2.com/images/0/07/X7-10_Alpha.png"}
+                                alt={exoticData?.name || "Exotic Item"}
+                                width={32}
+                                height={32}
+                                className="rounded"
+                                onError={(e) => {
+                                  const target = e.target as HTMLImageElement;
+                                  target.src = "https://wiki.guildwars2.com/images/0/07/X7-10_Alpha.png";
+                                }}
+                              />
+                              <span className="text-white font-medium">
+                                {t(reward.nameKey, "Exotic Item")}
+                              </span>
+                            </div>
+                          ) : reward.nameKey === "altParking.rewards.rare" ? (
+                            <div className="flex items-center gap-2">
+                              <Image 
+                                src={rareData?.icon || "https://wiki.guildwars2.com/images/6/6b/Fine_Greatsword.png"}
+                                alt={rareData?.name || "Rare Item"}
+                                width={32}
+                                height={32}
+                                className="rounded"
+                                onError={(e) => {
+                                  const target = e.target as HTMLImageElement;
+                                  target.src = "https://wiki.guildwars2.com/images/6/6b/Fine_Greatsword.png";
+                                }}
+                              />
+                              <span className="text-white font-medium">
+                                {t(reward.nameKey, "Rare Item")}
+                              </span>
+                            </div>
                           ) : (
                             <span className="text-white font-medium">{t(reward.nameKey, "Recompensa")}</span>
                           )}
@@ -604,7 +678,7 @@ export default function DraconisMonsLocationPage() {
                       </td>
                       <td className="py-3 px-4 text-right">
                         <span className="text-green-400 font-semibold">
-                          {formatNumber(reward.avgPerCharacter)}
+                          {`${formatNumber(reward.avgPerCharacter)} %`}
                         </span>
                       </td>
                     </motion.tr>

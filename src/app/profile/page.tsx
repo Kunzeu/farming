@@ -41,6 +41,13 @@ export default function ProfilePage() {
     confirmPassword: ''
   });
 
+  // Username change state
+  const [newUsername, setNewUsername] = useState<string>('');
+  const [showUsernameConfirm, setShowUsernameConfirm] = useState(false);
+  useEffect(() => {
+    setNewUsername(user?.username || '');
+  }, [user?.username]);
+
   // API Key states
   const [apiKey, setApiKey] = useState('');
   const [isApiKeyLoading, setIsApiKeyLoading] = useState(false);
@@ -144,6 +151,31 @@ export default function ProfilePage() {
     } catch (error) {
       console.error('Error saving preferences:', error);
       alert(t('profile.saveError'));
+    }
+  };
+
+  const handleSaveUsername = async () => {
+    try {
+      if (!user?.id) return;
+      const trimmed = newUsername.trim();
+      if (!trimmed) {
+        alert(t('profile.username.required', 'El nombre de usuario es requerido'));
+        return;
+      }
+      if (trimmed.length < 3) {
+        alert(t('profile.username.tooShort', 'Mínimo 3 caracteres'));
+        return;
+      }
+      const { getDbService } = await import('@/lib/database-switch');
+      const dbService = await getDbService();
+      await dbService.updateUser(user.id, { username: trimmed });
+      const updatedUser = { ...user, username: trimmed };
+      localStorage.setItem('gw2_user', JSON.stringify(updatedUser));
+      setShowUsernameConfirm(false);
+      alert(t('profile.username.updated', 'Nombre de usuario actualizado'));
+    } catch (e) {
+      console.error('Error updating username', e);
+      alert(t('profile.username.updateError', 'No se pudo actualizar el nombre de usuario'));
     }
   };
 
@@ -338,6 +370,47 @@ export default function ProfilePage() {
 
           {/* Settings Grid */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            {/* Username Settings */}
+            <motion.div
+              initial={{ opacity: 0, x: -30 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.25 }}
+              className="space-y-6">
+              <div className="bg-gradient-to-br from-gray-800/95 to-gray-900/95 backdrop-blur-xl rounded-3xl p-8 border border-gray-700/50 shadow-2xl">
+                <div className="flex items-center gap-4 mb-6">
+                  <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl flex items-center justify-center">
+                    <Edit className="w-6 h-6 text-white" />
+                  </div>
+                  <div>
+                    <h3 className="text-2xl font-black text-white">{t('profile.username.title', 'Cambiar nombre de usuario')}</h3>
+                    <p className="text-gray-400">{t('profile.username.subtitle', 'Este es el nombre visible en la plataforma')}</p>
+                  </div>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
+                  <div className="md:col-span-2">
+                    <label className="block text-gray-300 text-sm font-semibold mb-2">
+                      {t('profile.username.label', 'Nombre de usuario')}
+                    </label>
+                    <input
+                      type="text"
+                      value={newUsername}
+                      onChange={(e) => setNewUsername(e.target.value)}
+                      placeholder={t('profile.username.placeholder', 'Tu nuevo nombre...')}
+                      className="w-full px-4 py-3 bg-gray-700/50 border border-gray-600/50 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300"
+                    />
+                  </div>
+                  <div className="md:col-span-1">
+                    <button
+                      onClick={() => setShowUsernameConfirm(true)}
+                      className="w-full inline-flex items-center justify-center gap-2 px-4 py-3 bg-gradient-to-r from-green-500 to-blue-600 hover:from-green-600 hover:to-blue-700 text-white font-semibold rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl"
+                    >
+                      <Save className="w-4 h-4" />
+                      <span>{t('profile.username.save', 'Guardar')}</span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
             {/* Password Settings */}
             <motion.div
               initial={{ opacity: 0, x: -30 }}
@@ -596,6 +669,43 @@ export default function ProfilePage() {
                 >
                   <Trash2 className="w-4 h-4" />
                   <span>{t('profile.apiKey.deleteModal.confirm', 'Yes, Delete')}</span>
+                </button>
+              </div>
+            </motion.div>
+          </div>
+        )}
+
+        {/* Username Confirmation Modal */}
+        {showUsernameConfirm && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              className="bg-gradient-to-br from-gray-800/95 to-gray-900/95 backdrop-blur-xl rounded-2xl p-6 max-w-md w-full mx-4 border border-gray-700/50 shadow-xl">
+              <div className="flex items-center space-x-3 mb-4">
+                <div className="w-10 h-10 bg-blue-500/20 rounded-full flex items-center justify-center">
+                  <Edit className="w-5 h-5 text-blue-400" />
+                </div>
+                <h3 className="text-lg font-semibold text-white">
+                  {t('profile.username.confirm.title', 'Confirmar cambio de nombre')}
+                </h3>
+              </div>
+              <p className="text-gray-300 mb-6">
+                {t('profile.username.confirm.message', '¿Deseas cambiar tu nombre a {username}?').replace('{username}', newUsername.trim())}
+              </p>
+              <div className="flex space-x-3 justify-end">
+                <button
+                  onClick={() => setShowUsernameConfirm(false)}
+                  className="px-4 py-2 bg-gray-600 hover:bg-gray-500 text-white rounded-lg transition-colors"
+                >
+                  {t('profile.username.confirm.cancel', 'Cancelar')}
+                </button>
+                <button
+                  onClick={handleSaveUsername}
+                  className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors flex items-center space-x-2"
+                >
+                  <Save className="w-4 h-4" />
+                  <span>{t('profile.username.confirm.accept', 'Confirmar')}</span>
                 </button>
               </div>
             </motion.div>

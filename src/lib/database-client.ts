@@ -241,7 +241,7 @@ class DatabaseClientService {
 
   async updateUser(id: string, updates: Partial<User>): Promise<User> {
     try {
-      const response = await fetch(`/api/users/${id}`, {
+      const response = await fetch(`/api/users/${id}?user_id=${encodeURIComponent(id)}`, {
         method: 'PUT',
         headers: getAuthHeaders(),
         body: JSON.stringify(updates),

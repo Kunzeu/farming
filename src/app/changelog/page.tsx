@@ -47,6 +47,19 @@ const ChangelogPage = () => {
           type: 'feature',
           title: t('changelog.alt.parking', 'Alt Parking - Guía de ubicaciones'),
           description: t('changelog.alt.parking.desc', 'Nueva sección Alt Parking con ubicaciones y rutas recomendadas')
+        },
+        {
+          type: 'feature',
+          title: t('changelog.profile.username', 'Perfil - Cambio de nombre de usuario'),
+          description: t('changelog.profile.username.desc', 'Nuevo panel para cambiar el nombre de usuario')
+        },
+        {
+          type: 'feature',
+          title: t('changelog.lny.opening', 'Año Nuevo Lunar - Cálculos de apertura'),
+          description: t(
+            'changelog.lny.opening.desc',
+            'Cálculos de apertura de sobres y cajas del Año Nuevo Lunar'
+          )
         }
       ]
     },
@@ -167,7 +180,9 @@ const ChangelogPage = () => {
                   onClick={() => setSelectedVersion(selectedVersion === entry.version ? null : entry.version)}
                   className="text-gray-400 hover:text-white transition-colors text-sm"
                 >
-                  {selectedVersion === entry.version ? 'Ocultar detalles' : 'Ver detalles'}
+                  {selectedVersion === entry.version
+                    ? t('changelog.toggle.hide', 'Hide details')
+                    : t('changelog.toggle.show', 'View details')}
                 </button>
               </div>
 
@@ -201,30 +216,30 @@ const ChangelogPage = () => {
                   className="mt-4 pt-4 border-t border-gray-700/50"
                 >
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                    <div className="text-center">
-                      <div className="text-2xl font-bold text-green-400">
-                        {entry.changes.filter(c => c.type === 'feature').length}
-                      </div>
-                      <div className="text-xs text-gray-400">Nuevas Funciones</div>
+                  <div className="text-center">
+                    <div className="text-2xl font-bold text-green-400">
+                      {entry.changes.filter(c => c.type === 'feature').length}
                     </div>
-                    <div className="text-center">
-                      <div className="text-2xl font-bold text-red-400">
-                        {entry.changes.filter(c => c.type === 'bugfix').length}
-                      </div>
-                      <div className="text-xs text-gray-400">Correcciones</div>
+                    <div className="text-xs text-gray-400">{t('changelog.stats.features', 'New Features')}</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-2xl font-bold text-red-400">
+                      {entry.changes.filter(c => c.type === 'bugfix').length}
                     </div>
-                    <div className="text-center">
-                      <div className="text-2xl font-bold text-blue-400">
-                        {entry.changes.filter(c => c.type === 'improvement').length}
-                      </div>
-                      <div className="text-xs text-gray-400">Mejoras</div>
+                    <div className="text-xs text-gray-400">{t('changelog.stats.bugfixes', 'Bug fixes')}</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-2xl font-bold text-blue-400">
+                      {entry.changes.filter(c => c.type === 'improvement').length}
                     </div>
-                    <div className="text-center">
-                      <div className="text-2xl font-bold text-orange-400">
-                        {entry.changes.filter(c => c.type === 'breaking').length}
-                      </div>
-                      <div className="text-xs text-gray-400">Cambios Importantes</div>
+                    <div className="text-xs text-gray-400">{t('changelog.stats.improvements', 'Improvements')}</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-2xl font-bold text-orange-400">
+                      {entry.changes.filter(c => c.type === 'breaking').length}
                     </div>
+                    <div className="text-xs text-gray-400">{t('changelog.stats.breaking', 'Breaking changes')}</div>
+                  </div>
                   </div>
                 </motion.div>
               )}

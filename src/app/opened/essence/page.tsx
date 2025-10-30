@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { motion } from "framer-motion";
 import Image from "next/image";
 import {
@@ -185,7 +185,7 @@ export default function RiftEssenceCofferPage() {
     const silver = Math.floor((copper % 10000) / 100);
     const copperRemainder = copper % 100;
     
-    return `${gold}G ${silver.toString().padStart(2, '0')}S ${copperRemainder.toString().padStart(2, '0')}C`;
+    return `${gold.toString().padStart(2, '0')}G ${silver.toString().padStart(2, '0')}S ${copperRemainder.toString().padStart(2, '0')}C`;
   };
 
   // Función para ordenar los items
@@ -379,6 +379,20 @@ export default function RiftEssenceCofferPage() {
       fetchItemPrices();
     }
   }, [lang]);
+
+  // Auto-refresco cada 5 minutos (300000 ms)
+  const refreshData = useCallback(() => {
+    if (!lang) return;
+    fetchItems(lang);
+    fetchItemPrices();
+  }, [lang]);
+
+  useEffect(() => {
+    const intervalId = setInterval(() => {
+      refreshData();
+    }, 300000);
+    return () => clearInterval(intervalId);
+  }, [refreshData]);
 
   return (
     <>
@@ -762,6 +776,11 @@ export default function RiftEssenceCofferPage() {
                             )}
                           </p>
                         </div>
+                        <div className="mt-3 bg-emerald-900/20 border border-emerald-500/40 rounded-lg p-3">
+                          <p className="text-emerald-200 text-sm">
+                            {t('riftEssenceCoffer.note.crafting', 'Nota: Crafteando con')} {itemDetails[46735]?.name || 'Empyreal Fragment'} {t('riftEssenceCoffer.note.canIncreaseProfit', 'se puede aumentar el profit.')} 
+                          </p>
+                        </div>
                       </div>
 
                       {/* Tabla de Contenido */}
@@ -927,7 +946,9 @@ export default function RiftEssenceCofferPage() {
                                     {stats.percentagePerCoffer}
                                   </td>
                                   <td className="py-2 text-center text-yellow-400 font-semibold">
-                                    {itemPrices[item.id]?.sell ? `${Math.round(itemPrices[item.id].sell).toLocaleString()} c` : "N/A"}
+                                    {itemPrices[item.id]?.sell
+                                      ? formatCurrency(Math.round(itemPrices[item.id].sell * 0.85))
+                                      : "00G 00S 00C"}
                                   </td>
                                 </tr>
                               );
@@ -973,7 +994,9 @@ export default function RiftEssenceCofferPage() {
                                     {stats.percentagePerCoffer}
                                   </td>
                                   <td className="py-2 text-center text-yellow-400 font-semibold">
-                                    {itemPrices[item.id]?.sell ? `${Math.round(itemPrices[item.id].sell).toLocaleString()} c` : "N/A"}
+                                    {itemPrices[item.id]?.sell
+                                      ? formatCurrency(Math.round(itemPrices[item.id].sell * 0.85))
+                                      : "00G 00S 00C"}
                                   </td>
                                 </tr>
                               );
