@@ -117,7 +117,7 @@ export default function AdminPanel() {
     estimatedGold: '',
     estimatedSpirit: '',
     estimatedRewards: {} as Record<string, string>,
-    expansion: [] as ('core' | 'hot' | 'pof' | 'eod' | 'soto' | 'jw')[],
+    expansion: [] as ('core' | 'hot' | 'pof' | 'eod' | 'soto' | 'jw' | 'voe')[],
     waypoint: '',
     isSolo: false,
     requiresSquad: false,
@@ -303,7 +303,7 @@ export default function AdminPanel() {
 
 
   // Manejar selección múltiple de expansiones
-  const handleExpansionToggle = (expansionValue: 'core' | 'hot' | 'pof' | 'eod' | 'soto' | 'jw', isEdit = false) => {
+  const handleExpansionToggle = (expansionValue: 'core' | 'hot' | 'pof' | 'eod' | 'soto' | 'jw' | 'voe', isEdit = false) => {
     if (isEdit && editingFarm) {
       // Asegurar que expansion sea un array
       const currentExpansions = Array.isArray(editingFarm.expansion) 
@@ -408,7 +408,7 @@ export default function AdminPanel() {
         estimatedGold: '',
         estimatedSpirit: '',
         estimatedRewards: {},
-        expansion: [] as ('core' | 'hot' | 'pof' | 'eod' | 'soto' | 'jw')[],
+        expansion: [] as ('core' | 'hot' | 'pof' | 'eod' | 'soto' | 'jw' | 'voe')[],
         isSolo: false,
         requiresSquad: false,
         waypoint: '',
@@ -936,13 +936,14 @@ export default function AdminPanel() {
                   { value: 'pof', label: 'Path of Fire' },
                   { value: 'eod', label: 'End of Dragons' },
                   { value: 'soto', label: 'Secrets of the Obscure' },
-                  { value: 'jw', label: 'Janthir Wilds' }
+                  { value: 'jw', label: 'Janthir Wilds' },
+                  { value: 'voe', label: 'Visions of Eternity' }
                 ].map((expansion) => (
                   <label key={expansion.value} className="flex items-center gap-2 p-2 bg-gray-700 rounded-lg border border-gray-600 hover:border-purple-500 cursor-pointer">
                     <input
                       type="checkbox"
-                      checked={newFarm.expansion.includes(expansion.value as 'core' | 'hot' | 'pof' | 'eod' | 'soto' | 'jw')}
-                      onChange={() => handleExpansionToggle(expansion.value as 'core' | 'hot' | 'pof' | 'eod' | 'soto' | 'jw')}
+                      checked={newFarm.expansion.includes(expansion.value as 'core' | 'hot' | 'pof' | 'eod' | 'soto' | 'jw' | 'voe')}
+                      onChange={() => handleExpansionToggle(expansion.value as 'core' | 'hot' | 'pof' | 'eod' | 'soto' | 'jw' | 'voe')}
                       className="w-4 h-4 text-purple-600 bg-gray-700 border-gray-600 rounded focus:ring-purple-500"
                     />
                     <span className="text-white text-sm">{expansion.label}</span>
@@ -1158,13 +1159,14 @@ export default function AdminPanel() {
                   { value: 'pof', label: 'Path of Fire' },
                   { value: 'eod', label: 'End of Dragons' },
                   { value: 'soto', label: 'Secrets of the Obscure' },
-                  { value: 'jw', label: 'Janthir Wilds' }
+                  { value: 'jw', label: 'Janthir Wilds' },
+                  { value: 'voe', label: 'Visions of Eternity' }
                 ].map((expansion) => (
                   <label key={expansion.value} className="flex items-center gap-2 p-2 bg-gray-700 rounded-lg border border-gray-600 hover:border-purple-500 cursor-pointer">
                     <input
                       type="checkbox"
-                      checked={(Array.isArray(editingFarm.expansion) ? editingFarm.expansion : [editingFarm.expansion]).includes(expansion.value as 'core' | 'hot' | 'pof' | 'eod' | 'soto' | 'jw')}
-                      onChange={() => handleExpansionToggle(expansion.value as 'core' | 'hot' | 'pof' | 'eod' | 'soto' | 'jw', true)}
+                      checked={(Array.isArray(editingFarm.expansion) ? editingFarm.expansion : [editingFarm.expansion]).includes(expansion.value as 'core' | 'hot' | 'pof' | 'eod' | 'soto' | 'jw' | 'voe')}
+                      onChange={() => handleExpansionToggle(expansion.value as 'core' | 'hot' | 'pof' | 'eod' | 'soto' | 'jw' | 'voe', true)}
                       className="w-4 h-4 text-purple-600 bg-gray-700 border-gray-600 rounded focus:ring-purple-500"
                     />
                     <span className="text-white text-sm">{expansion.label}</span>

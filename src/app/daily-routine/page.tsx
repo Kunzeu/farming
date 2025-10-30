@@ -188,7 +188,8 @@ export default function DailyRoutine() {
 
   // Obtener todas las expansiones únicas
   const allExpansions = useMemo(() => {
-    const expansions = new Set<string>();
+    // Mostrar siempre las expansiones conocidas, aunque no existan farms aún
+    const expansions = new Set<string>(['core','hot','pof','eod','soto','jw','voe']);
     farms.forEach(farm => {
       const farmExpansions = Array.isArray(farm.expansion) ? farm.expansion : [farm.expansion];
       farmExpansions.forEach(exp => expansions.add(exp));
@@ -631,7 +632,7 @@ export default function DailyRoutine() {
                           : 'bg-gray-700/50 border-gray-600 text-gray-300 hover:bg-gray-600'
                       }`}
                     >
-                      <ExpansionIcon expansion={expansion as 'core' | 'hot' | 'pof' | 'eod' | 'soto' | 'jw'} size="sm" variant="compact" />
+                      <ExpansionIcon expansion={expansion as 'core' | 'hot' | 'pof' | 'eod' | 'soto' | 'jw' | 'voe'} size="sm" variant="compact" />
                       <span className="capitalize">{expansion}</span>
                     </button>
                   ))}

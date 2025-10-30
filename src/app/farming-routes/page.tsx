@@ -131,8 +131,56 @@ export default function FarmingRoutes() {
 
   // Filtrar rutas
   const filteredRoutes = farmingRoutes.filter(route => {
-    const matchesSearch = route.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         route.description.toLowerCase().includes(searchQuery.toLowerCase());
+    const normalize = (s: string) => s.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+    const qn = normalize(searchQuery.trim());
+
+    // Búsqueda por nombre/descr. (normalizada)
+    const textMatch =
+      normalize(route.name).includes(qn) ||
+      normalize(route.description).includes(qn);
+
+    // Búsqueda por divisas (sin ordenar resultados)
+    // Aliases multilenguaje (ES/EN/DE/FR simples) -> clave canónica de estimatedRewards
+    const currencyAliases: Record<string, keyof typeof currencyMap> = {
+      // Gold
+      gold: 'gold', oro: 'gold', g: 'gold', münze: 'gold', munze: 'gold', goldmunzen: 'gold', or: 'gold',
+      // Spirit Shards
+      spirit: 'spiritShards', shards: 'spiritShards', 'spirit shards': 'spiritShards', espiritu: 'spiritShards', espiritul: 'spiritShards', esquirlas: 'spiritShards', geister: 'spiritShards', scherben: 'spiritShards', geisterscherben: 'spiritShards', 'eclats esprit': 'spiritShards', "eclats d esprit": 'spiritShards',
+      // Karma
+      karma: 'karma',
+      // Fractal Relics
+      relics: 'fractalRelics', fractal: 'fractalRelics', 'fractal relics': 'fractalRelics', 'reliquias fractales': 'fractalRelics', fraktalrelikte: 'fractalRelics', 'reliques fractales': 'fractalRelics',
+      // Volatile Magic
+      volatile: 'volatileMagic', 'volatile magic': 'volatileMagic', 'magia volatil': 'volatileMagic', 'fluchtige magie': 'volatileMagic', 'magie volatile': 'volatileMagic',
+      // Unbound Magic
+      unbound: 'unboundMagic', 'unbound magic': 'unboundMagic', 'magia desatada': 'unboundMagic', 'ungebundene magie': 'unboundMagic', 'magie deliee': 'unboundMagic', 'magie non liee': 'unboundMagic',
+      // Rift Essences
+      rift: 'riftEssences', essences: 'riftEssences', 'rift essences': 'riftEssences', 'esencias de fisura': 'riftEssences', 'riss essenzen': 'riftEssences', 'essences de faille': 'riftEssences',
+      // Imperial Favor
+      imperial: 'imperialFavor', favor: 'imperialFavor', 'imperial favor': 'imperialFavor', 'favor imperial': 'imperialFavor', 'kaiserliche gunst': 'imperialFavor', 'faveur imperiale': 'imperialFavor'
+    };
+
+    // Detectar si la query apunta a una divisa conocida (normalizada)
+    let currencyMatch = false;
+    if (qn.length > 0) {
+      for (const alias in currencyAliases) {
+        const an = normalize(alias);
+        if (an.includes(qn) || qn.includes(an)) {
+          const key = currencyAliases[alias];
+          const rewards = route.estimatedRewards as Partial<Record<keyof typeof currencyMap, unknown>> | undefined;
+          const value = rewards?.[key];
+          const hasNew = typeof value === 'string' ? value.trim().length > 0 : Boolean(value);
+          const hasLegacyGold = key === 'gold' && Boolean(route.estimatedGold && route.estimatedGold.trim());
+          const hasLegacySpirit = key === 'spiritShards' && Boolean(route.estimatedSpirit && route.estimatedSpirit.trim());
+          if (hasNew || hasLegacyGold || hasLegacySpirit) {
+            currencyMatch = true;
+            break;
+          }
+        }
+      }
+    }
+
+    const matchesSearch = textMatch || currencyMatch;
     
     // Si no hay expansiones seleccionadas, mostrar todas
     if (selectedExpansions.length === 0) {
@@ -144,7 +192,7 @@ export default function FarmingRoutes() {
     
     // Verificar que la ruta requiera TODAS las expansiones seleccionadas
     const matchesExpansions = selectedExpansions.every(selectedExp => 
-      routeExpansions.includes(selectedExp as 'core' | 'hot' | 'pof' | 'eod' | 'soto' | 'jw')
+      routeExpansions.includes(selectedExp as 'core' | 'hot' | 'pof' | 'eod' | 'soto' | 'jw' | 'voe')
     );
     
     return matchesSearch && matchesExpansions;
@@ -243,7 +291,7 @@ export default function FarmingRoutes() {
 
             {/* Expansion Filter - Multiple Selection */}
             <div className="flex flex-wrap gap-2 justify-center">
-              {(['core', 'hot', 'pof', 'eod', 'soto', 'jw'] as const).map((expansion) => (
+              {(['core', 'hot', 'pof', 'eod', 'soto', 'jw', 'voe'] as const).map((expansion) => (
                 <button
                   key={expansion}
                   onClick={() => handleExpansionToggle(expansion)}
@@ -268,13 +316,7 @@ export default function FarmingRoutes() {
               )}
             </div>
 
-            {/* Reload Button */}
-            <button
-              onClick={loadRoutes}
-              className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white rounded-lg transition-all duration-200 shadow-lg hover:shadow-xl">
-              <RefreshCw className="w-4 h-4" />
-              {t('button.reload', 'Reload')}
-            </button>
+            {/* Reload Button removed */}
           </div>
         </motion.div>
 
@@ -366,7 +408,7 @@ export default function FarmingRoutes() {
                   </div>
                   <div className="flex gap-1">
                     {(Array.isArray(route.expansion) ? route.expansion : [route.expansion]).map((exp) => (
-                      <ExpansionIcon key={exp} expansion={exp as 'core' | 'hot' | 'pof' | 'eod' | 'soto' | 'jw'} size="md" variant="compact" />
+                      <ExpansionIcon key={exp} expansion={exp as 'core' | 'hot' | 'pof' | 'eod' | 'soto' | 'jw' | 'voe'} size="md" variant="compact" />
                     ))}
                   </div>
                 </div>

@@ -14,7 +14,7 @@ export interface FarmItem {
     laurels?: string;
     otherCurrency?: string;
   };
-  expansion: ('core' | 'hot' | 'pof' | 'eod' | 'soto' | 'jw')[]; // Cambiar a array para múltiples expansiones
+  expansion: ('core' | 'hot' | 'pof' | 'eod' | 'soto' | 'jw' | 'voe')[]; // Cambiar a array para múltiples expansiones
   isSolo: boolean;
   requiresSquad: boolean;
   waypoint?: string;

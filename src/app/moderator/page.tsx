@@ -194,12 +194,8 @@ export default function ModeratorPanel() {
     { value: 'imperialFavor', label: 'Imperial Favor', icon: 'imperial-favor' as const, placeholder: '50' }
   ];
 
-  const getIconForCurrency = (currency: string) => {
-    const option = currencyOptions.find(c => c.value === currency);
-    return option?.icon || 'gold';
-  };
-
-  const handleExpansionToggle = (expansionValue: 'core' | 'hot' | 'pof' | 'eod' | 'soto' | 'jw') => {
+ 
+  const handleExpansionToggle = (expansionValue: 'core' | 'hot' | 'pof' | 'eod' | 'soto' | 'jw' | 'voe') => {
     const currentExpansions = newFarm.expansion;
     const newExpansions = currentExpansions.includes(expansionValue)
       ? currentExpansions.filter(exp => exp !== expansionValue)
@@ -677,13 +673,14 @@ export default function ModeratorPanel() {
                   { value: 'pof', label: 'Path of Fire' },
                   { value: 'eod', label: 'End of Dragons' },
                   { value: 'soto', label: 'Secrets of the Obscure' },
-                  { value: 'jw', label: 'Janthir Wilds' }
+                  { value: 'jw', label: 'Janthir Wilds' },
+                  { value: 'voe', label: 'Visions of Eternity' }
                 ].map((expansion) => (
                   <label key={expansion.value} className="flex items-center gap-2 p-2 bg-slate-700 rounded-lg border border-slate-600 hover:border-blue-500 cursor-pointer">
                     <input
                       type="checkbox"
-                      checked={newFarm.expansion.includes(expansion.value as 'core' | 'hot' | 'pof' | 'eod' | 'soto' | 'jw')}
-                      onChange={() => handleExpansionToggle(expansion.value as 'core' | 'hot' | 'pof' | 'eod' | 'soto' | 'jw')}
+                      checked={newFarm.expansion.includes(expansion.value as 'core' | 'hot' | 'pof' | 'eod' | 'soto' | 'jw' | 'voe')}
+                      onChange={() => handleExpansionToggle(expansion.value as 'core' | 'hot' | 'pof' | 'eod' | 'soto' | 'jw' | 'voe')}
                       className="w-4 h-4 text-blue-600 bg-slate-700 border-slate-600 rounded focus:ring-blue-500"
                     />
                     <span className="text-white text-sm">{expansion.label}</span>
@@ -1213,17 +1210,18 @@ export default function ModeratorPanel() {
                        { value: 'pof', label: 'Path of Fire' },
                        { value: 'eod', label: 'End of Dragons' },
                        { value: 'soto', label: 'Secrets of the Obscure' },
-                       { value: 'jw', label: 'Janthir Wilds' }
+                       { value: 'jw', label: 'Janthir Wilds' },
+                       { value: 'voe', label: 'Visions of Eternity' }
                      ].map((expansion) => (
                        <label key={expansion.value} className="flex items-center gap-2 p-2 bg-slate-700 rounded-lg border border-slate-600 hover:border-blue-500 cursor-pointer">
                          <input
                            type="checkbox"
-                           checked={Array.isArray(editingFarm.expansion) ? editingFarm.expansion.includes(expansion.value as 'core' | 'hot' | 'pof' | 'eod' | 'soto' | 'jw') : editingFarm.expansion === expansion.value}
+                           checked={Array.isArray(editingFarm.expansion) ? editingFarm.expansion.includes(expansion.value as 'core' | 'hot' | 'pof' | 'eod' | 'soto' | 'jw' | 'voe') : editingFarm.expansion === expansion.value}
                            onChange={() => {
                              const currentExpansions = Array.isArray(editingFarm.expansion) ? editingFarm.expansion : [editingFarm.expansion];
-                             const newExpansions = currentExpansions.includes(expansion.value as 'core' | 'hot' | 'pof' | 'eod' | 'soto' | 'jw')
+                             const newExpansions = currentExpansions.includes(expansion.value as 'core' | 'hot' | 'pof' | 'eod' | 'soto' | 'jw' | 'voe')
                                ? currentExpansions.filter(exp => exp !== expansion.value)
-                               : [...currentExpansions, expansion.value as 'core' | 'hot' | 'pof' | 'eod' | 'soto' | 'jw'];
+                               : [...currentExpansions, expansion.value as 'core' | 'hot' | 'pof' | 'eod' | 'soto' | 'jw' | 'voe'];
                              setEditingFarm({...editingFarm, expansion: newExpansions});
                            }}
                            className="w-4 h-4 text-blue-600 bg-slate-700 border-slate-600 rounded focus:ring-blue-500"

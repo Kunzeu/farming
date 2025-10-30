@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import Image from 'next/image';
 
 interface ExpansionIconProps {
-  expansion: 'core' | 'hot' | 'pof' | 'eod' | 'soto' | 'jw';
+  expansion: 'core' | 'hot' | 'pof' | 'eod' | 'soto' | 'jw' | 'voe';
   showName?: boolean;
   size?: 'xs' | 'sm' | 'md' | 'lg';
   variant?: 'default' | 'compact' | 'card';
@@ -50,6 +50,14 @@ const expansionData = {
     textColor: 'text-blue-300',
     icon: '/images/expansions/jw.webp',
     fallbackIcon: '🏔️'
+  },
+  voe: {
+    name: 'Visions of Eternity',
+    color: 'bg-blue-600',
+    textColor: 'text-blue-300',
+    // No hay icono específico en expansions; usamos el background existente
+    icon: '/images/expansions/voe.webp',
+    fallbackIcon: '🌀'
   }
 };
 

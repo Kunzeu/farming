@@ -34,7 +34,7 @@ export interface FarmItem {
     mysticClovers?: string;
     imperialFavor?: string;
   };
-  expansion: ('core' | 'hot' | 'pof' | 'eod' | 'soto' | 'jw')[];
+  expansion: ('core' | 'hot' | 'pof' | 'eod' | 'soto' | 'jw' | 'voe')[];
   isSolo: boolean;
   requiresSquad: boolean;
   waypoint?: string;
