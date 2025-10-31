@@ -379,7 +379,7 @@ const Navigation = () => {
         }
       `}</style>
       
-      <div className="sticky top-0 z-50">
+      <div className="relative z-50">
         <nav className="bg-gray-900/95 backdrop-blur-md border-b border-gray-700/50">
       <div className="max-w-8xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
@@ -462,7 +462,7 @@ const Navigation = () => {
                   className="flex items-center space-x-2 text-gray-300 hover:text-white transition-all duration-200 px-3 py-2 rounded-lg hover:bg-gray-800/50 hover:shadow-md">
                   {item.isImage ? (
                     <Image 
-                      src={`/images/${item.icon === 'GOM' || item.icon === 'GOJM' || item.icon === 'Explorer' ? 'assets' : item.icon === 'Shadow_of_the_Mad_King' ? 'festivals' : 'expansions'}/${item.icon}.webp`} 
+                      src={`/images/${item.icon === 'GOM' || item.icon === 'GOJM' || item.icon === 'Explorer' ? 'assets' : item.icon === 'Shadow_of_the_Mad_King' ? 'festivals' : 'expansions'}/${item.icon}.webp${item.icon === 'Explorer' ? '?v=2' : ''}`} 
                       alt={item.label}
                       width={item.icon === 'Shadow_of_the_Mad_King' ? 80 : 64}
                       height={item.icon === 'Shadow_of_the_Mad_King' ? 80 : 64}
@@ -500,7 +500,7 @@ const Navigation = () => {
                         onClick={() => handleGuidesMenuToggle(false)}>
                         {item.isImage ? (
                           <Image 
-                            src={`/images/${item.icon === 'GOM' || item.icon === 'GOJM' || item.icon === 'Glosary' || item.icon === 'Community' || item.icon === 'conversion-guide' || item.icon === 'Explorer' ? 'assets' : item.icon === 'Shadow_of_the_Mad_King' ? 'festivals' : 'expansions'}/${item.icon}.${item.icon === 'conversion-guide' ? 'gif' : 'webp'}`} 
+                            src={`/images/${item.icon === 'GOM' || item.icon === 'GOJM' || item.icon === 'Glosary' || item.icon === 'Community' || item.icon === 'conversion-guide' || item.icon === 'Explorer' ? 'assets' : item.icon === 'Shadow_of_the_Mad_King' ? 'festivals' : 'expansions'}/${item.icon}.${item.icon === 'conversion-guide' ? 'gif' : 'webp'}${item.icon === 'Explorer' ? '?v=2' : ''}`} 
                             alt={item.label}
                             width={item.icon === 'Shadow_of_the_Mad_King' ? 48 : 32}
                             height={item.icon === 'Shadow_of_the_Mad_King' ? 48 : 32}
@@ -723,7 +723,7 @@ const Navigation = () => {
                           className="flex items-center space-x-3 px-3 py-3 text-gray-300 hover:text-white hover:bg-gray-700 rounded-md transition-colors duration-200">
                           {item.isImage ? (
                             <Image 
-                              src={`/images/${item.icon === 'GOM' || item.icon === 'GOJM' || item.icon === 'Glosary' || item.icon === 'Community' || item.icon === 'Explorer' ? 'assets' : item.icon === 'Shadow_of_the_Mad_King' ? 'festivals' : 'expansions'}/${item.icon}.webp`} 
+                              src={`/images/${item.icon === 'GOM' || item.icon === 'GOJM' || item.icon === 'Glosary' || item.icon === 'Community' || item.icon === 'Explorer' ? 'assets' : item.icon === 'Shadow_of_the_Mad_King' ? 'festivals' : 'expansions'}/${item.icon}.webp${item.icon === 'Explorer' ? '?v=2' : ''}`} 
                               alt={item.label}
                               width={item.icon === 'Shadow_of_the_Mad_King' ? 32 : 16}
                               height={item.icon === 'Shadow_of_the_Mad_King' ? 32 : 16}
@@ -896,6 +896,7 @@ const Navigation = () => {
           </div>
         </div>
       </div>
+      
     </>
   );
 };

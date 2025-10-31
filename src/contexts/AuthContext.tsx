@@ -166,7 +166,12 @@ function extractPatreonInfo(patreonData: PatreonIdentityResponse) {
 function AuthProviderInternal({ children }: { children: ReactNode }) {
   const [state, dispatch] = useReducer(authReducer, initialState);
   const router = useRouter();
-  const lastInteractionRef = useRef<number>(Date.now());
+  
+  const lastUserRefreshRef = useRef<number>(0);
+  const didInitialRefreshRef = useRef<boolean>(false);
+  const inflightRefreshRef = useRef<Promise<void> | null>(null);
+  const lastSummaryRef = useRef<{ hasApiKey: boolean; apiKeyValid: boolean | null } | null>(null);
+  const refreshThrottleMs = 120000; // 2 minutos para deduplicar refrescos
 
   // Verificar token al cargar
   useEffect(() => {
@@ -262,36 +267,14 @@ function AuthProviderInternal({ children }: { children: ReactNode }) {
         }
         // Refrescar datos luego de persistir
         setTimeout(() => {
-          // Best-effort refresh
-          fetch(`/api/users/${user.id}?full=true`, { cache: 'no-store' })
+          // Best-effort ligero: solo leer summary para snapshot inicial; evitar full
+          fetch(`/api/users/${user.id}/summary`, { cache: 'no-store' })
             .then(r => r.ok ? r.json() : null)
-            .then(data => {
-              if (data) {
-                const safe = (() => {
-                  // Omitir password de forma segura
-                  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-                  const { password, ...rest } = data as Record<string, unknown>;
-                  return rest as typeof data;
-                })();
-                const refreshed: User = {
-                  ...user,
-                  email: safe.email,
-                  username: safe.username,
-                  role: safe.role,
-                  isActive: safe.isActive,
-                  discordId: safe.discordId,
-                  gw2ApiKey: safe.gw2ApiKey,
-                  patreonId: safe.patreonId ?? user.patreonId,
-                  patreonTier: safe.patreonTier ?? user.patreonTier,
-                  patreonStatus: (safe.patreonStatus !== undefined ? safe.patreonStatus : user.patreonStatus) ?? null,
-                  preferences: safe.preferences,
-                  isAdmin: safe.role === 'admin',
-                  joinDate: user.joinDate,
-                  lastLogin: user.lastLogin
-                };
-                localStorage.setItem('gw2_user', JSON.stringify(refreshed));
-                dispatch({ type: 'REFRESH_USER', payload: refreshed });
-              }
+            .then(s => {
+              if (!s) return;
+              try {
+                sessionStorage.setItem('gw2_user_last_summary', JSON.stringify({ hasApiKey: !!s.hasApiKey, apiKeyValid: s.apiKeyValid ?? null }));
+              } catch {}
             })
             .catch(() => {});
         }, 300);
@@ -916,11 +899,18 @@ function AuthProviderInternal({ children }: { children: ReactNode }) {
   // Función para refrescar datos del usuario desde la base de datos
   const refreshUserData = useCallback(async () => {
     if (!state.user) return;
+    const currentUser = state.user as User;
+    // Throttle y coalescencia de llamadas
+    const now = Date.now();
+    if (now - lastUserRefreshRef.current < refreshThrottleMs && inflightRefreshRef.current) {
+      try { await inflightRefreshRef.current; } catch {}
+      return;
+    }
+    lastUserRefreshRef.current = now;
 
-
-
-    try {
-      const response = await fetch(`/api/users/${state.user.id}?full=true`, {
+    const doRefresh = (async () => {
+      try {
+      const response = await fetch(`/api/users/${currentUser.id}?full=true`, {
         cache: 'no-store',
         headers: {
           'Cache-Control': 'no-cache, no-store, must-revalidate',
@@ -946,7 +936,7 @@ function AuthProviderInternal({ children }: { children: ReactNode }) {
       const { password: _, ...safeUser } = data;
       
       const refreshedUser: User = {
-        ...state.user,
+        ...currentUser,
         email: safeUser.email,
         username: safeUser.username,
         role: safeUser.role,
@@ -954,13 +944,13 @@ function AuthProviderInternal({ children }: { children: ReactNode }) {
         discordId: safeUser.discordId,
         gw2ApiKey: safeUser.gw2ApiKey,
         // Si la API devuelve null/undefined, conservar lo que ya tengamos en memoria
-        patreonId: safeUser.patreonId ?? state.user.patreonId,
-        patreonTier: safeUser.patreonTier ?? state.user.patreonTier,
-        patreonStatus: (safeUser.patreonStatus !== undefined ? safeUser.patreonStatus : state.user.patreonStatus) ?? null,
+        patreonId: safeUser.patreonId ?? currentUser.patreonId,
+        patreonTier: safeUser.patreonTier ?? currentUser.patreonTier,
+        patreonStatus: (safeUser.patreonStatus !== undefined ? safeUser.patreonStatus : currentUser.patreonStatus) ?? null,
         preferences: safeUser.preferences,
         isAdmin: safeUser.role === 'admin',
-        joinDate: state.user.joinDate,
-        lastLogin: state.user.lastLogin,
+        joinDate: currentUser.joinDate,
+        lastLogin: currentUser.lastLogin,
       };
 
 
@@ -968,7 +958,7 @@ function AuthProviderInternal({ children }: { children: ReactNode }) {
       localStorage.setItem('gw2_user', JSON.stringify(refreshedUser));
 
       // Verificar si el usuario fue desactivado
-      const wasActive = state.user.isActive;
+      const wasActive = currentUser.isActive;
       const nowActive = refreshedUser.isActive;
 
       // Solo hacer logout si el usuario fue desactivado
@@ -984,55 +974,106 @@ function AuthProviderInternal({ children }: { children: ReactNode }) {
         type: 'REFRESH_USER',
         payload: refreshedUser
       });
-    } catch (error) {
-      console.error('Error refreshing user data:', error);
-    }
+      try { sessionStorage.setItem('gw2_user_full_refreshed_at', String(Date.now())); } catch {}
+      } catch (error) {
+        console.error('Error refreshing user data:', error);
+      }
+    })();
+    inflightRefreshRef.current = doRefresh;
+    await doRefresh;
+    inflightRefreshRef.current = null;
   }, [state.user]);
 
-  // Refrescar datos del usuario inmediatamente después de autenticarse
+  // Refresco ligero: usa summary y solo baja el user completo si cambia algo relevante
+  const refreshUserSummary = useCallback(async () => {
+    if (!state.user) return;
+    const currentUser = state.user as User;
+    try {
+      // Saltar si hubo un full refresh hace menos de 2 minutos
+      try {
+        const lastFull = Number(sessionStorage.getItem('gw2_user_full_refreshed_at') || '0');
+        if (Date.now() - lastFull < refreshThrottleMs) {
+          const resp = await fetch(`/api/users/${currentUser.id}/summary`, { cache: 'no-store' });
+          if (resp.ok) {
+            const data = await resp.json();
+            lastSummaryRef.current = { hasApiKey: !!data.hasApiKey, apiKeyValid: data.apiKeyValid ?? null };
+            try { sessionStorage.setItem('gw2_user_last_summary', JSON.stringify(lastSummaryRef.current)); } catch {}
+          }
+          return;
+        }
+      } catch {}
+
+      // Inicializar snapshot desde sessionStorage si no existe aún
+      if (!lastSummaryRef.current) {
+        try {
+          const snapshot = sessionStorage.getItem('gw2_user_last_summary');
+          if (snapshot) lastSummaryRef.current = JSON.parse(snapshot);
+        } catch {}
+      }
+
+      const resp = await fetch(`/api/users/${currentUser.id}/summary`, { cache: 'no-store' });
+      if (!resp.ok) return;
+      const data = await resp.json();
+      const current = lastSummaryRef.current;
+      const next = { hasApiKey: !!data.hasApiKey, apiKeyValid: data.apiKeyValid ?? null } as { hasApiKey: boolean; apiKeyValid: boolean | null };
+      // Solo disparar full cuando cambia hasApiKey (apiKeyValid puede fluctuar por salud externa)
+      const changed = !current || current.hasApiKey !== next.hasApiKey;
+      lastSummaryRef.current = next;
+      try { sessionStorage.setItem('gw2_user_last_summary', JSON.stringify(next)); } catch {}
+      if (changed) {
+        await refreshUserData();
+      }
+    } catch {}
+  }, [state.user, refreshUserData]);
+
+  // Refrescar datos del usuario inmediatamente después de autenticarse (una vez por sesión)
   useEffect(() => {
     if (state.isAuthenticated && state.user) {
-      // Refrescar datos inmediatamente para obtener info actualizada de Patreon, etc.
-      refreshUserData();
+      // Evitar doble ejecución en React StrictMode (dev) o remounts rápidos
+      if (didInitialRefreshRef.current) {
+        return;
+      }
+      didInitialRefreshRef.current = true;
+      try {
+        const key = 'gw2_user_initial_refresh_at';
+        const raw = sessionStorage.getItem(key);
+        const last = raw ? Number(raw) : 0;
+        const now = Date.now();
+        // Evitar refrescos repetidos al cambiar de página (dedupe 3 min por sesión)
+        if (!last || now - last > 180000) {
+          sessionStorage.setItem(key, String(now));
+          // Usar summary primero; si cambia, internamente hará el full
+          refreshUserSummary();
+        }
+      } catch {
+        // Fallback si sessionStorage no está disponible
+        refreshUserSummary();
+      }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [state.isAuthenticated]); // Solo cuando se autentica inicialmente
 
-  // Verificar y refrescar datos del usuario periódicamente
+  // Verificar y refrescar datos del usuario periódicamente (baja frecuencia) usando summary
   useEffect(() => {
     if (!state.isAuthenticated || !state.user) return;
 
-    // Verificar cada 30 segundos si los datos del usuario han cambiado
+    // Verificar cada 5 minutos
     const interval = setInterval(() => {
-      refreshUserData();
-    }, 30000);
+      refreshUserSummary();
+    }, 300000);
 
     // Verificar cuando el usuario vuelve a la pestaña (onFocus)
     const handleFocus = () => {
-      refreshUserData();
-    };
-
-    // Verificar cuando hay interacción del usuario (cualquier click o tecla)
-    const handleUserInteraction = () => {
-      // Debounce: solo ejecutar una vez cada 5 segundos
-      const now = Date.now();
-      if (now - lastInteractionRef.current > 5000) {
-        lastInteractionRef.current = now;
-        refreshUserData();
-      }
+      refreshUserSummary();
     };
 
     window.addEventListener('focus', handleFocus);
-    window.addEventListener('click', handleUserInteraction);
-    window.addEventListener('keydown', handleUserInteraction);
 
     return () => {
       clearInterval(interval);
       window.removeEventListener('focus', handleFocus);
-      window.removeEventListener('click', handleUserInteraction);
-      window.removeEventListener('keydown', handleUserInteraction);
     };
-  }, [state.isAuthenticated, state.user, refreshUserData]);
+  }, [state.isAuthenticated, state.user, refreshUserSummary]);
 
   const value: AuthContextType = {
     ...state,

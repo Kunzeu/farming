@@ -101,13 +101,10 @@ export default function FarmingRoutes() {
     try {
       setIsLoading(true);
       setError(null);
-      console.log('Loading farms from database...');
       
       // Cargar todos los farms y filtrar solo los aprobados
       const allRoutes = await dbService.getAllFarms();
-      console.log('Loaded farms:', allRoutes.length);
       const approvedRoutes = allRoutes.filter((route: FarmItem) => route.status === 'approved');
-      console.log('Approved farms:', approvedRoutes.length);
       
       // Ordenar por el campo order (menor número = más arriba)
       const sortedRoutes = approvedRoutes.sort((a, b) => {

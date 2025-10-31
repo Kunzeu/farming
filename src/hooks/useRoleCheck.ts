@@ -22,7 +22,11 @@ export function useRoleCheck() {
         return;
       }
 
-      const currentUser = await dbService.getUserById(user.id);
+      // Usar summary ligero en lugar de descargar el usuario completo
+      const resp = await fetch(`/api/users/${user.id}/summary`, { cache: 'no-store' });
+      if (!resp.ok) return;
+      const summary = await resp.json();
+      const currentUser = { role: summary.role as string, isActive: Boolean(summary.isActive) };
       
       if (!currentUser) {
         // El usuario fue eliminado, limpiar localStorage y redirigir al login

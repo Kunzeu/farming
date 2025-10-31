@@ -8,6 +8,21 @@ const pool = new Pool({
   ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false,
 });
 
+// Cache simple en memoria para evitar validar la API key en cada request
+type SummaryCacheEntry = {
+  data: {
+    hasApiKey: boolean;
+    apiKeyValid: boolean | null;
+    accountInfo: { id: string; name: string } | null;
+    role: string;
+    isActive: boolean;
+    lastValidatedAt: number | null;
+  };
+  expiry: number;
+};
+const summaryCache = new Map<string, SummaryCacheEntry>();
+const SUMMARY_TTL_MS = 5 * 60 * 1000; // 5 minutos
+
 // GET /api/users/[id]/summary
 // Resumen para cliente: hasApiKey, validación básica y accountInfo (si aplica)
 export async function GET(
@@ -18,7 +33,10 @@ export async function GET(
   try {
     // 1) Leer API Key del usuario
     const query = `
-      SELECT gw2_api_key as "gw2ApiKey"
+      SELECT 
+        gw2_api_key as "gw2ApiKey",
+        role,
+        is_active as "isActive"
       FROM users
       WHERE id = $1
     `;
@@ -29,6 +47,8 @@ export async function GET(
     }
 
     const gw2ApiKey: string | null = result.rows[0].gw2ApiKey || null;
+    const role: string = result.rows[0].role;
+    const isActive: boolean = Boolean(result.rows[0].isActive);
     const hasApiKey = Boolean(gw2ApiKey && gw2ApiKey.length > 0);
 
     // 2) Validar API key si existe (tokeninfo + account)
@@ -36,6 +56,19 @@ export async function GET(
     let accountInfo: { id: string; name: string } | null = null;
 
     if (hasApiKey && gw2ApiKey) {
+      const cached = summaryCache.get(id);
+      const nowTs = Date.now();
+      // Si hay cache válida, devolverla (evita pegar a GW2 en cada request)
+      if (cached && cached.expiry > nowTs) {
+        return NextResponse.json({
+          hasApiKey: cached.data.hasApiKey,
+          apiKeyValid: cached.data.apiKeyValid,
+          accountInfo: cached.data.accountInfo,
+          role,
+          isActive,
+          lastValidatedAt: cached.data.lastValidatedAt,
+        }, { headers: { 'Cache-Control': 'private, max-age=60' } });
+      }
       try {
         const [tokenRes, accountRes] = await Promise.all([
           fetch(`https://api.guildwars2.com/v2/tokeninfo?access_token=${gw2ApiKey}`),
@@ -45,10 +78,17 @@ export async function GET(
           const acct = await accountRes.json();
           apiKeyValid = true;
           accountInfo = { id: acct.id as string, name: acct.name as string };
+          // Guardar en cache
+          summaryCache.set(id, {
+            data: { hasApiKey, apiKeyValid, accountInfo, role, isActive, lastValidatedAt: nowTs },
+            expiry: nowTs + SUMMARY_TTL_MS,
+          });
         }
       } catch {
-        apiKeyValid = false;
-        accountInfo = null;
+        // En caso de error de red, mantener estado anterior si existe para no flapping
+        const prev = summaryCache.get(id);
+        apiKeyValid = prev?.data.apiKeyValid ?? false;
+        accountInfo = prev?.data.accountInfo ?? null;
       }
     }
 
@@ -57,6 +97,9 @@ export async function GET(
         hasApiKey,
         apiKeyValid,
         accountInfo,
+        role,
+        isActive,
+        lastValidatedAt: hasApiKey ? (summaryCache.get(id)?.data.lastValidatedAt ?? null) : null,
       },
       {
         headers: {

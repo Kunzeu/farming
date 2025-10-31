@@ -2,14 +2,14 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 import { motion } from 'framer-motion';
-import { FileText, Hammer, Gem } from 'lucide-react';
+import { FileText, Gem } from 'lucide-react';
 import Navigation from '@/components/layout/Navigation';
 import Link from 'next/link';
 import Image from 'next/image';
 import { usePageTitle } from '@/hooks/usePageTitle';
 import { useI18n } from '@/contexts/I18nContext';
-import { useEffect, useState, useMemo } from 'react';
-import { FALLBACK_ITEMS, isOfflineMode, setApiOffline, setApiOnline } from '@/data/fallback-data';
+import { useEffect, useState, useMemo, useCallback } from 'react';
+import { FALLBACK_ITEMS, setApiOffline, setApiOnline } from '@/data/fallback-data';
 
 interface GW2Item {
   id: number;
@@ -79,9 +79,8 @@ export default function ResearchNotesPage() {
    const [price24473, setPrice24473] = useState<GW2Price | null>(null);
    const [price24519, setPrice24519] = useState<GW2Price | null>(null);
    const [price24511, setPrice24511] = useState<GW2Price | null>(null);
-   const [price24277, setPrice24277] = useState<GW2Price | null>(null);
-   const [price24351, setPrice24351] = useState<GW2Price | null>(null);
-   const [price24300, setPrice24300] = useState<GW2Price | null>(null);
+  
+  
    const [price24276, setPrice24276] = useState<GW2Price | null>(null);
    const [price24350, setPrice24350] = useState<GW2Price | null>(null);
    const [price24299, setPrice24299] = useState<GW2Price | null>(null);
@@ -151,7 +150,7 @@ export default function ResearchNotesPage() {
   };
 
   // Función para ordenar items por cualquier campo
-  const sortItemsByField = (items: CraftingItem[]): CraftingItem[] => {
+  const sortItemsByField = useCallback((items: CraftingItem[]): CraftingItem[] => {
     return [...items].sort((a, b) => {
       let valueA: number;
       let valueB: number;
@@ -199,7 +198,7 @@ export default function ResearchNotesPage() {
         return valueA - valueB; // Menor a mayor
       }
     });
-  };
+  }, [sortField, sortOrder]);
 
      // Función para manejar el cambio de campo de ordenamiento
    const handleSortChange = (field: 'craftingLevel' | 'level' | 'notes' | 'buyPrice' | 'sellPrice' | 'craftingCost' | 'pricePerNote') => {
@@ -212,7 +211,7 @@ export default function ResearchNotesPage() {
   };
 
   // Función para calcular el costo de crafting
-  const calculateCraftingCost = (itemId: number): string => {
+  const calculateCraftingCost = useCallback((itemId: number): string => {
     // Si es el item 8868, calcular dinámicamente con 24276, 24350, 24299, 12156 x1 cada uno
     if (itemId === 8868 && price24276 && price24350 && price24299 && price12156) {
       const buyTotal = (price24276.buys?.unit_price || 0) * 1 + (price24350.buys?.unit_price || 0) * 1 + (price24299.buys?.unit_price || 0) * 1 + (price12156.buys?.unit_price || 0) * 1;
@@ -274,7 +273,7 @@ export default function ResearchNotesPage() {
      
      const cost = craftingCosts[itemId] || 0;
      return formatGW2Price(cost);
-  };
+  }, [price24276, price24350, price24299, price12156, price24473, price19700, price24519, price24511, price24475, price19722, price19748, price68063, price19729, craftingPriceSide]);
 
   // Obtener información de los items desde la API de GW2
   useEffect(() => {
@@ -283,59 +282,10 @@ export default function ResearchNotesPage() {
         setLoading(true);
         setError(null);
         
-        // Verificar si estamos en modo offline
-        if (isOfflineMode()) {
-          console.log('Using fallback data - API is offline')
-          
-          // Usar datos de fallback para items
-          setItem8868(FALLBACK_ITEMS.item8868 as any);
-          setItem13436(FALLBACK_ITEMS.item13436 as any);
-          setItem13437(FALLBACK_ITEMS.item13437 as any);
-          setItem13435(FALLBACK_ITEMS.item13435 as any);
-          setItem104934(FALLBACK_ITEMS.item104934 as any);
-          setItem104934B(FALLBACK_ITEMS.item104934B as any);
-          setItem13438(FALLBACK_ITEMS.item13438 as any);
-          
-          // Usar datos de fallback para precios (con precios en 0)
-          const fallbackPrice = {
-            id: 0,
-            whitelisted: false,
-            buys: { unit_price: 0, quantity: 0 },
-            sells: { unit_price: 0, quantity: 0 }
-          };
-          
-          setPrice8868(fallbackPrice as any);
-          setPrice13436(fallbackPrice as any);
-          setPrice13437(fallbackPrice as any);
-          setPrice13435(fallbackPrice as any);
-          setPrice104934(fallbackPrice as any);
-          setPrice104934B(fallbackPrice as any);
-          setPrice13438(fallbackPrice as any);
-          
-          // Usar datos de fallback para materiales
-          setPrice19700(fallbackPrice as any);
-          setPrice24473(fallbackPrice as any);
-          setPrice24519(fallbackPrice as any);
-          setPrice24511(fallbackPrice as any);
-          setPrice24277(fallbackPrice as any);
-          setPrice24351(fallbackPrice as any);
-          setPrice24300(fallbackPrice as any);
-          setPrice24276(fallbackPrice as any);
-          setPrice24350(fallbackPrice as any);
-          setPrice24299(fallbackPrice as any);
-          setPrice12156(fallbackPrice as any);
-          setPrice19722(fallbackPrice as any);
-          setPrice19729(fallbackPrice as any);
-          setPrice19748(fallbackPrice as any);
-          setPrice68063(fallbackPrice as any);
-          setPrice24475(fallbackPrice as any);
-          
-          setLoading(false);
-          return;
-        }
+        // Intentar siempre la ruta online; fallback solo en catch
         
-                          // Obtener información de todos los items
-                     // OPTIMIZADO: Una sola llamada batch en lugar de 7 llamadas individuales
+          // Obtener información de todos los items
+          // OPTIMIZADO: Una sola llamada batch en lugar de 7 llamadas individuales
           const itemIds = [8868, 13436, 13437, 13435, 104934, 13438];
           const itemsResponse = await fetch(`https://api.guildwars2.com/v2/items?ids=${itemIds.join(',')}&lang=${lang}`, {
             headers: {
@@ -363,7 +313,7 @@ export default function ResearchNotesPage() {
           const item13437Response = itemsMap[13437];
           const item13435Response = itemsMap[13435];
           const item104934Response = itemsMap[104934];
-          const item104934BResponse = itemsMap[104934]; // Same item, different variant
+          const item104934BResponse = itemsMap[104934];
           const item13438Response = itemsMap[13438];
 
          const [item8868Data, item13436Data, item13437Data, item13435Data, item104934Data, item104934BData, item13438Data] = await Promise.all([
@@ -445,9 +395,7 @@ export default function ResearchNotesPage() {
          setPrice24473(allMatsMap[24473] || null);
          setPrice24519(allMatsMap[24519] || null);
          setPrice24511(allMatsMap[24511] || null);
-         setPrice24277(allMatsMap[24277] || null);
-         setPrice24351(allMatsMap[24351] || null);
-         setPrice24300(allMatsMap[24300] || null);
+         
          setPrice24276(allMatsMap[24276] || null);
          setPrice24350(allMatsMap[24350] || null);
          setPrice24299(allMatsMap[24299] || null);
@@ -488,9 +436,7 @@ export default function ResearchNotesPage() {
         setPrice24473(fallbackPrice as any);
         setPrice24519(fallbackPrice as any);
         setPrice24511(fallbackPrice as any);
-        setPrice24277(fallbackPrice as any);
-        setPrice24351(fallbackPrice as any);
-        setPrice24300(fallbackPrice as any);
+        
         setPrice24276(fallbackPrice as any);
         setPrice24350(fallbackPrice as any);
         setPrice24299(fallbackPrice as any);
@@ -585,7 +531,7 @@ export default function ResearchNotesPage() {
          ])
        }
      ];
-   }, [item8868, price8868, item13436, price13436, item13437, price13437, item13435, price13435, item13438, price13438, item104934, price104934, item104934B, price104934B, price19700, price24473, price24475, price24519, price24511, price24277, price24351, price24300, price24276, price24350, price24299, price12156, price19722, price19729, price19748, price68063, craftingPriceSide, sortOrder, sortField, calculateCraftingCost, sortItemsByField]);
+   }, [t, item8868, price8868, item13436, price13436, item13437, price13437, item13435, price13435, item13438, price13438, item104934, price104934, item104934B, price104934B, calculateCraftingCost, sortItemsByField]);
 
   
 
