@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { verifyMemberPaidByPatreonId } from '@/lib/server/patreon-creator';
 
-export const runtime = 'edge';;
+export const runtime = 'nodejs';
 
 export async function GET(request: NextRequest) {
   try {
