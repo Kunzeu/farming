@@ -4,7 +4,7 @@ import { Pool } from 'pg';
 import fs from 'fs';
 import path from 'path';
 
-export const runtime = 'edge';;
+export const runtime = 'nodejs';
 
 // Cargar variables de entorno desde .env
 function loadEnvFile() {
