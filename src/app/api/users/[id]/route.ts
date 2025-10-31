@@ -129,11 +129,18 @@ export async function PUT(
 ) {
   const { id } = await params;
   try {
-    // Verificar autenticación (permitir bypass controlado con ?user_id=ID)
+    // Verificar autenticación (bypass controlado solo para edición propia NO sensible)
     const { searchParams } = new URL(request.url);
     const userIdParam = searchParams.get('user_id');
     let currentUser: { userId: string; role: string; username?: string } | null = null;
-    if (userIdParam && userIdParam === id) {
+
+    // Leemos el body temprano para decidir si es una operación sensible (cambio de rol)
+    const body = await request.json();
+
+    const isRoleChangeRequest = Object.prototype.hasOwnProperty.call(body, 'role');
+
+    if (!isRoleChangeRequest && userIdParam && userIdParam === id) {
+      // Bypass permitido SOLO para editar el propio perfil en campos no sensibles
       currentUser = { userId: id, role: 'user', username: 'self' };
     } else {
       const authResult = authenticateRequest(request);
@@ -154,8 +161,6 @@ export async function PUT(
     }
 
     console.log(`User ${currentUser.username} updating user ${id}`);
-
-    const body = await request.json();
     
     
     // Validar que el rol sea válido
@@ -166,7 +171,7 @@ export async function PUT(
       }, { status: 400 });
     }
     
-    // Solo administradores pueden cambiar roles
+    // Solo administradores pueden cambiar roles (sin bypass)
     if (body.role && currentUser.role !== 'admin') {
       return NextResponse.json({ 
         error: 'Forbidden. Only administrators can change user roles.' 
