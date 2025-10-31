@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import pool from '@/lib/postgres-db';
 import { updateGiveawayStatuses } from '../../../config/giveaways';
 
-export const runtime = 'nodejs';
+export const runtime = 'edge';;
 
 // GET /api/giveaways - Get all giveaways from configuration + participant counts from DB
 export async function GET() {

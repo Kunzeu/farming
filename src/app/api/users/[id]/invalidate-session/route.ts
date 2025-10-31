@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { Pool } from 'pg';
 
-export const runtime = 'nodejs';
+export const runtime = 'edge';;
 
 // Configuración de la base de datos
 const pool = new Pool({

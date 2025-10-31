@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { pool } from '@/lib/postgres-db';
 
-export const runtime = 'nodejs';
+export const runtime = 'edge';;
 
 // Endpoint interno para desvincular cuenta de Patreon
 export async function POST(request: NextRequest) {

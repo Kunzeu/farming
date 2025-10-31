@@ -5,7 +5,7 @@ import path from 'path';
 import { hashPassword } from '@/lib/server/password-utils';
 import { authorizeRequest, authenticateRequest } from '@/lib/server/jwt-utils';
 
-export const runtime = 'nodejs';
+export const runtime = 'edge';;
 
 // Cargar variables de entorno desde .env
 function loadEnvFile() {

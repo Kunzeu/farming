@@ -3,7 +3,7 @@ import pool from '@/lib/postgres-db';
 import { getGiveawayById } from '../../../../config/giveaways';
 import { authorizeRequest } from '@/lib/server/jwt-utils';
 
-export const runtime = 'nodejs';
+export const runtime = 'edge';;
 
 export async function POST(request: NextRequest) {
   try {

@@ -3,7 +3,7 @@ import pool from '@/lib/postgres-db';
 import { getAllGiveaways } from '../../../../config/giveaways';
 import { authorizeRequest } from '@/lib/server/jwt-utils';
 
-export const runtime = 'nodejs';
+export const runtime = 'edge';;
 
 // GET /api/giveaways/winners - Get winners
 export async function GET(request: NextRequest) {

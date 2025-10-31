@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-export const runtime = 'nodejs';
+export const runtime = 'edge';;
 
 const GW2_API_BASE = 'https://api.guildwars2.com/v2';
 
