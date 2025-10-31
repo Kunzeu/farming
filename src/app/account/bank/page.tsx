@@ -1,8 +1,7 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
-import { motion } from 'framer-motion';
-import { X } from 'lucide-react';
+import { useState, useEffect, useRef, useCallback } from 'react';
+ 
 import { useAuth } from '@/contexts/AuthContext';
 import { ArrowLeft, Package, Search, Database } from 'lucide-react';
 import Link from 'next/link';
@@ -23,6 +22,7 @@ interface BankItem {
   slot: number;
   bound?: boolean;
   value?: number;
+  price?: ItemPrice;
 }
 
 interface BankSummary {
@@ -58,7 +58,7 @@ interface ItemDetails {
 }
 
 const BankPage = () => {
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, user } = useAuth();
   const { t, lang } = useI18n();
   const { hasApiIssues, isApiHealthy } = useApiStatus();
   usePageTitle('pageTitles.bank', t('pageTitles.bank', 'Bank'));
@@ -164,7 +164,7 @@ const BankPage = () => {
       setItemCache(prev => new Map(prev).set(item.id, { details, price }));
       
       setSelectedItem({ item, details, price });
-    } catch (error) {
+    } catch {
       // If price fetch fails, still show item details
       try {
         const detailsResponse = await fetch(`https://api.guildwars2.com/v2/items/${item.id}?lang=${lang}`);
@@ -174,7 +174,7 @@ const BankPage = () => {
         setItemCache(prev => new Map(prev).set(item.id, { details }));
         
         setSelectedItem({ item, details });
-      } catch (detailsError) {}
+      } catch {}
     } finally {
       setIsLoadingItemDetails(false);
     }
@@ -188,72 +188,57 @@ const BankPage = () => {
 
   const lastFetchedApiKeyRef = useRef<string | null>(null);
 
-  const fetchBankData = async () => {
+  const fetchBankData = useCallback(async () => {
     try {
       setIsLoading(true);
       setApiError(null);
-      const apiKey = localStorage.getItem('gw2_api_key') || sessionStorage.getItem('gw2_api_key');
-      if (!apiKey || apiKey.trim().length < 10) {
+      // Verificar estado de API key vía resumen del usuario
+      let apiKeyAllowed = true;
+      if (user?.id) {
+        try {
+          const summaryResp = await fetch(`/api/users/${user.id}/summary`, { cache: 'no-store' });
+          if (summaryResp.ok) {
+            const summary = await summaryResp.json();
+            apiKeyAllowed = !!summary.hasApiKey && summary.apiKeyValid !== false;
+          }
+        } catch {}
+      }
+
+      if (!apiKeyAllowed) {
+        try {
+          const resp = user?.id ? await fetch(`/api/users/${user.id}/summary`, { cache: 'no-store' }) : null;
+          const data = resp && resp.ok ? await resp.json() : null;
+          if (data && data.apiKeyValid === false) {
+            setApiError(t('profile.apiKey.invalid', 'Invalid API key. Check permissions.'));
+          }
+        } catch {}
+        setIsLoading(false);
         return;
       }
+
+      // Preferir user_id para resolver API key en servidor
       
-      // Avoid re-fetching if the same key was already fetched in this session
-      if (lastFetchedApiKeyRef.current === apiKey) {
+      // Avoid re-fetching if the same user was already fetched in this session
+      if (lastFetchedApiKeyRef.current === (user?.id || null)) {
         setIsLoading(false);
         return;
       }
       
-      const response = await fetch(`/api/gw2/bank?api_key=${apiKey}&lang=${lang}`);
+      const response = user?.id
+        ? await fetch(`/api/gw2/bank?user_id=${user.id}&lang=${lang}`, { cache: 'no-store' })
+        : await (async () => {
+            const apiKey = localStorage.getItem('gw2_api_key') || sessionStorage.getItem('gw2_api_key');
+            if (!apiKey || apiKey.trim().length < 10) {
+              return new Response(null, { status: 400 });
+            }
+            return fetch(`/api/gw2/bank?api_key=${apiKey}&lang=${lang}`);
+          })();
       if (response.ok) {
         const data = await response.json();
         setBankItems(data);
-        lastFetchedApiKeyRef.current = apiKey;
-        // Store in session to speed up navigations within the session
-        try { sessionStorage.setItem('gw2_api_key', apiKey); } catch {}
-        // Calculate prices after loading bank data
+        lastFetchedApiKeyRef.current = user?.id || null;
+        // Calcular resumen usando precios incluidos por el servidor si están presentes
         await calculateBankSummary(data);
-        // Pre-load item details for price display
-        
-        // Pre-load item details inline
-        const validItems = data.filter((item: unknown): item is BankItem => item !== null);
-        const uniqueItemIds = [...new Set(validItems.map((item: BankItem) => item.id))];
-        
-        // Only load items that aren't already cached
-        const uncachedItems = uniqueItemIds.filter((id: unknown) => !itemCache.has(id as number));
-       
-        if (uncachedItems.length > 0) {
-          
-          // Load in batches to avoid overwhelming the API
-          const batchSize = 10;
-          for (let i = 0; i < uncachedItems.length; i += batchSize) {
-            const batch = uncachedItems.slice(i, i + batchSize);
-            
-            try {
-              // Fetch item details
-            const detailsPromises = batch.map(id => 
-              fetch(`https://api.guildwars2.com/v2/items/${id}?lang=${lang}`).then(res => res.json())
-              );
-            const details = await Promise.all(detailsPromises);
-            
-            // Fetch prices
-            const pricesPromises = batch.map(id => 
-              fetch(`https://api.guildwars2.com/v2/commerce/prices/${id}`).then(res => res.json()).catch(() => null)
-            );
-            const prices = await Promise.all(pricesPromises);
-            
-                                 // Cache results
-             batch.forEach((id: unknown, index) => {
-               setItemCache(prev => new Map(prev).set(id as number, { 
-                 details: details[index], 
-                 price: prices[index] 
-               }));
-             });
-            
-            } catch (error) {}
-          }
-          
-        } else {
-        }
       } else {
         console.error('Bank API error:', response.status, response.statusText);
         if (response.status >= 500 || response.status === 0) {
@@ -266,14 +251,14 @@ const BankPage = () => {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [user?.id, lang, t]);
 
 
   useEffect(() => {
     if (isAuthenticated) {
       fetchBankData();
     }
-  }, [isAuthenticated]);
+  }, [isAuthenticated, fetchBankData]);
 
   const filteredItems = bankItems.filter((item): item is BankItem => 
     item !== null && 
@@ -305,48 +290,47 @@ const BankPage = () => {
     }
 
     try {
-      // Get unique item IDs
-      const itemIds = [...new Set(validItems.map(item => item.id))];
-      
-      // Fetch prices from GW2 API
-      const pricesResponse = await fetch(`https://api.guildwars2.com/v2/commerce/prices?ids=${itemIds.join(',')}`);
-      
-      if (pricesResponse.ok) {
-        const prices: ItemPrice[] = await pricesResponse.json();
-        
-                 let totalBuyPrice = 0;
-         let totalSellPrice = 0;
-         
-                   validItems.forEach(item => {
+      // Si el servidor ya incluyó 'price' por ítem, usarlo y evitar fetch
+      const serverHasPrices = validItems.every((it) => it.price && it.price.sells);
+      let totalBuyPrice = 0;
+      let totalSellPrice = 0;
+      if (serverHasPrices) {
+        validItems.forEach((item) => {
+          const price = item.price!;
+          const buyPrice = price.buys.unit_price * item.count;
+          const sellPrice = price.sells.unit_price * item.count;
+          totalBuyPrice += buyPrice;
+          totalSellPrice += sellPrice;
+        });
+      } else {
+        // Fallback: obtener precios en cliente
+        const itemIds = [...new Set(validItems.map(item => item.id))];
+        const pricesResponse = await fetch(`https://api.guildwars2.com/v2/commerce/prices?ids=${itemIds.join(',')}`);
+        if (pricesResponse.ok) {
+          const prices: ItemPrice[] = await pricesResponse.json();
+          validItems.forEach(item => {
             const price = prices.find(p => p.id === item.id);
             if (price) {
-              // Buy price (left side) - what we pay when buying (sell order price - higher)
               const buyPrice = price.buys.unit_price * item.count;
-              // Sell price (right side) - what we get when selling (buy order price - lower)
               const sellPrice = price.sells.unit_price * item.count;
-              
               totalBuyPrice += buyPrice;
               totalSellPrice += sellPrice;
-             
-           } else {
-             // Item has no Trading Post price, use crafting value
-            const craftingValue = (item.value || 0) * item.count;
-             
-             // For items without TP prices, use crafting value for both buy and sell
-             totalBuyPrice += craftingValue;
-             totalSellPrice += craftingValue;
-           }
-         });
-         
-         
-          setBankSummary({
-            totalBuyPrice: totalBuyPrice, // Total Buy Price = sum of all buy prices (left side)
-            totalSellPrice: totalSellPrice, // Total Sell Price = sum of all sell prices (right side)
-            totalValue: totalSellPrice, // Total value = sell price (includes TP + crafting values)
-            usedSlots: validItems.length,
-            totalSlots: items.length
+            } else {
+              const craftingValue = (item.value || 0) * item.count;
+              totalBuyPrice += craftingValue;
+              totalSellPrice += craftingValue;
+            }
           });
+        }
       }
+
+      setBankSummary({
+        totalBuyPrice,
+        totalSellPrice,
+        totalValue: totalSellPrice,
+        usedSlots: validItems.length,
+        totalSlots: items.length
+      });
     } catch (error) {
       console.error('Error calculating bank summary:', error);
     }

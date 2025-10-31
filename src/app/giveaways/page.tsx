@@ -262,6 +262,7 @@ const GiveawaysPage = () => {
 
   // Check if user has API key and get account info from database
   useEffect(() => {
+    const controller = new AbortController();
     const checkApiKey = async () => {
       setIsLoadingApiKey(true);
 
@@ -273,37 +274,15 @@ const GiveawaysPage = () => {
       }
 
       try {
-        // Get API key from database (no-store para evitar caché)
-        const response = await fetch(
-          `/api/users/${user.id}/api-key?user_id=${user.id}`,
-          { cache: "no-store" }
-        );
+        const response = await fetch(`/api/users/${user.id}/summary`, {
+          cache: "no-store",
+          signal: controller.signal,
+        });
         if (response.ok) {
           const data = await response.json();
-          setHasApiKey(data.hasApiKey);
-
-          if (data.hasApiKey) {
-            // Validate API key and get account info
-            const validateResponse = await fetch(
-              `/api/users/${user.id}/validate-api?user_id=${user.id}`,
-              {
-                method: "POST",
-                cache: "no-store",
-              }
-            );
-
-            if (validateResponse.ok) {
-              const validateData = await validateResponse.json();
-              setApiKeyValid(validateData.valid);
-              if (validateData.valid && validateData.accountInfo) {
-                setAccountInfo(validateData.accountInfo);
-              }
-            } else {
-              setApiKeyValid(false);
-            }
-          } else {
-            setApiKeyValid(false);
-          }
+          setHasApiKey(Boolean(data.hasApiKey));
+          setApiKeyValid(Boolean(data.apiKeyValid));
+          setAccountInfo(data.accountInfo || null);
         } else {
           setHasApiKey(false);
           setApiKeyValid(false);
@@ -318,6 +297,7 @@ const GiveawaysPage = () => {
     };
 
     checkApiKey();
+    return () => controller.abort();
   }, [isAuthenticated, user?.id]);
 
   // Load giveaways and winners on component mount
@@ -595,7 +575,7 @@ const GiveawaysPage = () => {
                 {t("giveaways.latestWinners")}
               </div>
               <h2 className="text-2xl font-bold text-white mb-2">
-                {winners[0].giveawayTitle}
+                {t(winners[0].giveawayTitle)}
               </h2>
               <p className="text-gray-300">
                 {t("giveaways.winnersAnnounced")}{" "}
@@ -772,7 +752,7 @@ const GiveawaysPage = () => {
         )}
 
         {/* Upcoming Giveaways */}
-        {!isLoadingGiveaways &&
+        {!isLoadingGiveaways && isAdmin &&
           giveaways.filter((g) => g.status === "upcoming").length > 0 && (
             <div className="mb-8">
               <h2 className="text-2xl font-bold text-white mb-6">
@@ -789,10 +769,10 @@ const GiveawaysPage = () => {
                       <div className="flex items-center justify-between">
                         <div>
                           <h3 className="text-lg font-semibold text-white">
-                            {giveaway.title}
+                            {t(giveaway.title)}
                           </h3>
                           <p className="text-gray-300">
-                            {giveaway.description}
+                            {t(giveaway.description)}
                           </p>
                           <div className="flex items-center gap-4 mt-2 text-sm text-gray-400">
                             <span>

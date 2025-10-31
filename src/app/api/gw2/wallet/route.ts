@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-export const runtime = 'edge';;
+export const runtime = 'nodejs';
+import { pool } from '@/lib/postgres-db';
 
 const GW2_API_BASE = 'https://api.guildwars2.com/v2';
 
@@ -11,9 +12,23 @@ const WALLET_TTL_MS = 10 * 60 * 1000; // 10 minutos
 export async function GET(request: NextRequest) {
   const start = performance.now();
   try {
-    // Get API key from query params or headers
-    const apiKey = request.nextUrl.searchParams.get('api_key') || 
-                   request.headers.get('x-api-key');
+    const searchParams = request.nextUrl.searchParams;
+    const apiKeyParam = searchParams.get('api_key') || request.headers.get('x-api-key');
+    const userId = searchParams.get('user_id');
+
+    let apiKey = apiKeyParam;
+    if (!apiKey && userId) {
+      // Resolver API key desde la base de datos
+      try {
+        const result = await pool.query(
+          'SELECT gw2_api_key AS "gw2ApiKey" FROM users WHERE id = $1',
+          [userId]
+        );
+        if (result.rows.length > 0) {
+          apiKey = result.rows[0].gw2ApiKey || undefined;
+        }
+      } catch {}
+    }
 
     if (!apiKey) {
       return NextResponse.json(
@@ -46,13 +61,27 @@ export async function GET(request: NextRequest) {
 
     const walletData = await response.json();
 
+    // Opcional: enriquecer con datos de monedas para reducir una segunda llamada en cliente
+    const currencyIds = Array.from(new Set((walletData as Array<{ id: number }>).map((w) => w.id)));
+    let currencies: unknown[] = [];
+    if (currencyIds.length > 0) {
+      try {
+        const currenciesResp = await fetch(`${GW2_API_BASE}/currencies?ids=${currencyIds.join(',')}`, {
+          headers: { 'Accept': 'application/json' },
+        });
+        if (currenciesResp.ok) {
+          currencies = await currenciesResp.json();
+        }
+      } catch {}
+    }
+
     // Update cache
     walletCache.set(apiKey, { data: walletData, expiry: now + WALLET_TTL_MS });
 
     const duration = performance.now() - start;
     console.log(`[API] /gw2/wallet ejecutado en ${duration.toFixed(2)}ms`);
 
-    return NextResponse.json(walletData, {
+    return NextResponse.json({ wallet: walletData, currencies }, {
       headers: {
         'Cache-Control': 'public, max-age=0, s-maxage=300, stale-while-revalidate=30',
       },

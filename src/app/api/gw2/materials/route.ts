@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-export const runtime = 'edge';;
+export const runtime = 'nodejs';
+import { pool } from '@/lib/postgres-db';
 
 const GW2_API_BASE = 'https://api.guildwars2.com/v2';
 
@@ -11,8 +12,18 @@ const MATERIALS_TTL_MS = 15 * 60 * 1000; // 15 minutos
 export async function GET(request: NextRequest) {
   const start = performance.now();
   try {
-    const apiKey = request.nextUrl.searchParams.get('api_key') || 
-                   request.headers.get('x-api-key');
+    const searchParams = request.nextUrl.searchParams;
+    const apiKeyParam = searchParams.get('api_key') || request.headers.get('x-api-key');
+    const userId = searchParams.get('user_id');
+    let apiKey = apiKeyParam || undefined;
+    if (!apiKey && userId) {
+      try {
+        const result = await pool.query('SELECT gw2_api_key AS "gw2ApiKey" FROM users WHERE id = $1', [userId]);
+        if (result.rows.length > 0) {
+          apiKey = result.rows[0].gw2ApiKey || undefined;
+        }
+      } catch {}
+    }
 
     if (!apiKey) {
       return NextResponse.json(

@@ -1,8 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
-import { X } from 'lucide-react';
+import { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { ArrowLeft, Database, Search } from 'lucide-react';
 import Link from 'next/link';
@@ -23,7 +21,7 @@ interface Material {
 }
 
 const StoragePage = () => {
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, user } = useAuth();
   const { t } = useI18n();
   const { hasApiIssues, isApiHealthy } = useApiStatus();
   usePageTitle('pageTitles.storage', t('pageTitles.storage', 'Material Storage'));
@@ -40,16 +38,44 @@ const StoragePage = () => {
     }
   }, [isApiHealthy]);
 
-  const fetchMaterialsData = async () => {
+  const fetchMaterialsData = useCallback(async () => {
     try {
       setIsLoading(true);
       setApiError(null);
-      const apiKey = localStorage.getItem('gw2_api_key');
-      if (!apiKey || apiKey.trim().length < 10) {
+      // Verificar estado de API key vía resumen del usuario
+      let apiKeyAllowed = true;
+      if (user?.id) {
+        try {
+          const summaryResp = await fetch(`/api/users/${user.id}/summary`, { cache: 'no-store' });
+          if (summaryResp.ok) {
+            const summary = await summaryResp.json();
+            apiKeyAllowed = !!summary.hasApiKey && summary.apiKeyValid !== false;
+          }
+        } catch {}
+      }
+
+      if (!apiKeyAllowed) {
+        try {
+          const resp = user?.id ? await fetch(`/api/users/${user.id}/summary`, { cache: 'no-store' }) : null;
+          const data = resp && resp.ok ? await resp.json() : null;
+          if (data && data.apiKeyValid === false) {
+            setApiError(t('profile.apiKey.invalid', 'Invalid API key. Check permissions.'));
+          }
+        } catch {}
+        setIsLoading(false);
         return;
       }
-      
-      const response = await fetch(`/api/gw2/materials?api_key=${apiKey}`);
+
+      // Preferir user_id en servidor (evita exponer API key)
+      const response = user?.id
+        ? await fetch(`/api/gw2/materials?user_id=${user.id}`, { cache: 'no-store' })
+        : await (async () => {
+            const apiKey = localStorage.getItem('gw2_api_key');
+            if (!apiKey || apiKey.trim().length < 10) {
+              return new Response(null, { status: 400 });
+            }
+            return fetch(`/api/gw2/materials?api_key=${apiKey}`);
+          })();
       if (response.ok) {
         const data = await response.json();
         setMaterials(data);
@@ -64,14 +90,14 @@ const StoragePage = () => {
       } finally {
         setIsLoading(false);
       }
-    };
+    }, [user?.id, t]);
 
 
   useEffect(() => {
     if (isAuthenticated) {
       fetchMaterialsData();
     }
-  }, [isAuthenticated]);
+  }, [isAuthenticated, fetchMaterialsData]);
 
   const filteredMaterials = materials.filter(material => 
     material && material.name && material.name.toLowerCase().includes(searchTerm.toLowerCase())

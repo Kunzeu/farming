@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-export const runtime = 'edge';;
+export const runtime = 'nodejs';
+import { pool } from '@/lib/postgres-db';
 
 const GW2_API_BASE = 'https://api.guildwars2.com/v2';
 
@@ -29,8 +30,18 @@ async function fetchWith429Retry(url: string, init?: RequestInit): Promise<Respo
 export async function GET(request: NextRequest) {
   const start = performance.now();
   try {
-    const apiKey = request.nextUrl.searchParams.get('api_key') || 
-                   request.headers.get('x-api-key');
+    const searchParams = request.nextUrl.searchParams;
+    const apiKeyParam = searchParams.get('api_key') || request.headers.get('x-api-key');
+    const userId = searchParams.get('user_id');
+    let apiKey = apiKeyParam || undefined;
+    if (!apiKey && userId) {
+      try {
+        const result = await pool.query('SELECT gw2_api_key AS "gw2ApiKey" FROM users WHERE id = $1', [userId]);
+        if (result.rows.length > 0) {
+          apiKey = result.rows[0].gw2ApiKey || undefined;
+        }
+      } catch {}
+    }
     // Language for item details (GW2 API supports en,de,es,fr)
     const rawLang = (request.nextUrl.searchParams.get('lang') || '').toLowerCase();
     const lang = ['en','es','de','fr'].includes(rawLang) ? rawLang : 'en';
@@ -81,7 +92,8 @@ export async function GET(request: NextRequest) {
         const itemsResponse = await fetchWith429Retry(`${GW2_API_BASE}/items?ids=${itemIds.join(',')}&lang=${lang}`);
         if (itemsResponse.ok) {
           const itemsData = await itemsResponse.json();
-          const enrichedBankData = bankData.map((bankItem: unknown, index: number) => {
+          // Enriquecer con detalles de item
+          let enrichedBankData = bankData.map((bankItem: unknown, index: number) => {
             if (bankItem === null) return null;
             const typedBankItem = bankItem as { id: number };
             const itemDetails = itemsData.find((item: { id: number }) => item.id === typedBankItem.id);
@@ -94,6 +106,19 @@ export async function GET(request: NextRequest) {
               slot: index
             };
           });
+          // Enriquecer con precios (una sola llamada para todos los ids)
+          try {
+            const pricesResp = await fetchWith429Retry(`${GW2_API_BASE}/commerce/prices?ids=${itemIds.join(',')}`);
+            if (pricesResp.ok) {
+              const pricesData = await pricesResp.json();
+              const idToPrice = new Map<number, unknown>(pricesData.map((p: { id: number }) => [p.id, p]));
+              enrichedBankData = enrichedBankData.map((it: unknown) => {
+                if (!it) return it;
+                const item = it as { id: number };
+                return { ...it, price: idToPrice.get(item.id) } as unknown;
+              });
+            }
+          } catch {}
           // Update cache
           bankCache.set(apiKey, { data: enrichedBankData, expiresAt: Date.now() + BANK_TTL_MS });
           return enrichedBankData as unknown;

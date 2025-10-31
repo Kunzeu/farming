@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useCallback } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { ArrowLeft, Shield } from 'lucide-react';
 import Link from 'next/link';
@@ -25,7 +25,7 @@ interface Currency {
 }
 
 const WalletPage = () => {
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, user } = useAuth();
   const { t } = useI18n();
   const { hasApiIssues, isApiHealthy } = useApiStatus();
   usePageTitle('pageTitles.wallet', t('account.wallet', 'Wallet'));
@@ -40,11 +40,7 @@ const WalletPage = () => {
     1, 23, 2, 3, 4, 7, 15, 19, 20, 22, 24, 26, 28, 29, 30, 32, 33, 45, 50, 59, 61, 62, 63, 66, 68, 69, 70, 72, 73, 75, 76, 77, 78, 79, 80
   ], []);
 
-  useEffect(() => {
-    if (isAuthenticated) {
-      fetchWalletData();
-    }
-  }, [isAuthenticated, importantCurrencyIds]);
+  
 
   const formatGold = (copper: number) => {
     const gold = Math.floor(copper / 10000);
@@ -65,52 +61,98 @@ const WalletPage = () => {
     setIsModalClosed(true);
   };
 
-  const fetchWalletData = async () => {
+  const fetchWalletData = useCallback(async () => {
     try {
       setIsLoading(true);
       setApiError(null);
-      const apiKey = localStorage.getItem('gw2_api_key');
-      if (!apiKey || apiKey.trim().length < 10) {
+      // Verificar estado de API key vía resumen del usuario
+      let apiKeyAllowed = true;
+      if (user?.id) {
+        try {
+          const summaryResp = await fetch(`/api/users/${user.id}/summary`, { cache: 'no-store' });
+          if (summaryResp.ok) {
+            const summary = await summaryResp.json();
+            apiKeyAllowed = !!summary.hasApiKey && summary.apiKeyValid !== false;
+            if (summary.accountInfo?.name) {
+              // opcional: podríamos mostrar el nombre de cuenta en el futuro
+            }
+          }
+        } catch {}
+      }
+
+      if (!apiKeyAllowed) {
+        // Si la API key es inválida, informar para guiar al usuario
+        try {
+          const resp = user?.id ? await fetch(`/api/users/${user.id}/summary`, { cache: 'no-store' }) : null;
+          const data = resp && resp.ok ? await resp.json() : null;
+          if (data && data.apiKeyValid === false) {
+            setApiError(t('profile.apiKey.invalid', 'Invalid API key. Check permissions.'));
+          }
+        } catch {}
+        setIsLoading(false);
         return;
       }
-      
-      // Fetch wallet data
-      const walletResponse = await fetch(`/api/gw2/wallet?api_key=${apiKey}`);
+
+      // Preferir user_id en servidor (evita exponer API key)
+      let walletResponse = null as Response | null;
+      if (user?.id) {
+        walletResponse = await fetch(`/api/gw2/wallet?user_id=${user.id}`, { cache: 'no-store' });
+      } else {
+        const apiKey = localStorage.getItem('gw2_api_key');
+        if (!apiKey || apiKey.trim().length < 10) {
+          return;
+        }
+        walletResponse = await fetch(`/api/gw2/wallet?api_key=${apiKey}`);
+      }
       if (walletResponse.ok) {
-        const walletData = await walletResponse.json();
-        const filteredWalletData = walletData.filter((item: WalletItem) => 
+        const payload = await walletResponse.json();
+        const serverWallet: WalletItem[] = Array.isArray(payload)
+          ? payload
+          : Array.isArray(payload.wallet) ? payload.wallet : [];
+        const serverCurrencies: Currency[] = Array.isArray(payload?.currencies)
+          ? payload.currencies
+          : [];
+
+        const filteredWalletData = serverWallet.filter((item: WalletItem) => 
           importantCurrencyIds.includes(item.id)
         );
         setWalletData(filteredWalletData);
+        if (serverCurrencies.length > 0) {
+          const onlyImportant = serverCurrencies.filter(c => importantCurrencyIds.includes(c.id));
+          setCurrencies(onlyImportant);
         } else {
-          if (walletResponse.status >= 500 || walletResponse.status === 0) {
-            setApiError(`API Error: ${walletResponse.status} ${walletResponse.statusText}`);
-          }
-        }
-
-      // Fetch only important currencies data
-      const currenciesResponse = await fetch(`https://api.guildwars2.com/v2/currencies?ids=${importantCurrencyIds.join(',')}`, {
-        headers: {
-          'Accept': 'application/json',
-          'Accept-Encoding': 'gzip, deflate, br'
-        }
-      });
-      if (currenciesResponse.ok) {
-        const currenciesData = await currenciesResponse.json();
-        setCurrencies(currenciesData);
-        } else {
-          console.error('Error fetching currencies:', currenciesResponse.status, currenciesResponse.statusText);
-          if (currenciesResponse.status >= 500 || currenciesResponse.status === 0) {
+          // Fallback: obtener currencies desde la API pública
+          const currenciesResponse = await fetch(`https://api.guildwars2.com/v2/currencies?ids=${importantCurrencyIds.join(',')}`, {
+            headers: {
+              'Accept': 'application/json',
+              'Accept-Encoding': 'gzip, deflate, br'
+            }
+          });
+          if (currenciesResponse.ok) {
+            const currenciesData = await currenciesResponse.json();
+            setCurrencies(currenciesData);
+          } else if (currenciesResponse.status >= 500 || currenciesResponse.status === 0) {
             setApiError(`API Error: ${currenciesResponse.status} ${currenciesResponse.statusText}`);
           }
         }
+      } else {
+        if (walletResponse.status >= 500 || walletResponse.status === 0) {
+          setApiError(`API Error: ${walletResponse.status} ${walletResponse.statusText}`);
+        }
+      }
       } catch (error) {
         console.error('Error fetching wallet:', error);
         setApiError('Network error or service unavailable');
       } finally {
         setIsLoading(false);
       }
-    };
+    }, [user?.id, importantCurrencyIds, t]);
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      fetchWalletData();
+    }
+  }, [isAuthenticated, importantCurrencyIds, fetchWalletData]);
 
   if (!isAuthenticated) {
     return (

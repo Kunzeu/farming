@@ -72,24 +72,26 @@ export default function ProfilePage() {
     }
   }, [user?.preferences]);
 
-  // Cargar API key desde la base de datos (sin validar automáticamente para evitar tráfico)
+  // Cargar resumen de usuario (hasApiKey, apiKeyValid, accountInfo)
   useEffect(() => {
-    const loadApiKey = async () => {
+    const loadUserSummary = async () => {
       if (!user?.id) return;
 
       try {
-        const response = await fetch(`/api/users/${user.id}/api-key?user_id=${user.id}`, { cache: 'no-store' });
+        const response = await fetch(`/api/users/${user.id}/summary`, { cache: 'no-store' });
         if (response.ok) {
           const data = await response.json();
-          setHasApiKey(data.hasApiKey);
-          // No validar automáticamente para reducir tráfico en producción
+          setHasApiKey(!!data.hasApiKey);
+          if (data.accountInfo?.name) {
+            setAccountName(data.accountInfo.name);
+          }
         }
       } catch (error) {
-        console.error('Error loading API key:', error);
+        console.error('Error loading user summary:', error);
       }
     };
 
-    loadApiKey();
+    loadUserSummary();
   }, [user?.id]);
 
   const memberSinceDate = user?.createdAt
