@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { pool } from '@/lib/postgres-db';
 
-export const runtime = 'edge';;
+export const runtime = 'nodejs';
 
 // Endpoint interno para persistir vinculación de Patreon
 export async function POST(request: NextRequest) {

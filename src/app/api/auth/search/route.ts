@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { pool } from '@/lib/postgres-db';
 
-export const runtime = 'edge';;
+export const runtime = 'nodejs';
 
 // API interna para búsquedas de autenticación
 export async function GET(request: NextRequest) {

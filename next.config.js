@@ -511,6 +511,20 @@ const nextConfig = {
     if (process.env.ANALYZE === 'true' && !isServer && dev) {
     }
 
+    // Externalizar módulos nativos de Node.js solo en el servidor
+    if (isServer) {
+      config.externals = config.externals || [];
+      config.externals.push({
+        'crypto': 'commonjs crypto',
+        'stream': 'commonjs stream',
+        'fs': 'commonjs fs',
+        'path': 'commonjs path',
+        'os': 'commonjs os',
+        'pg': 'commonjs pg',
+        'bcryptjs': 'commonjs bcryptjs',
+      });
+    }
+
     // Configuración de source maps para mejor debugging
     if (!dev && !isServer) {
       config.devtool = 'source-map';
