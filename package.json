@@ -9,6 +9,8 @@
   "scripts": {
     "dev": "next dev --turbopack",
     "build": "next build",
+    "pages:build": "next build && npx @cloudflare/next-on-pages",
+    "pages:build:wsl": "wsl bash -c \"npm run build && npx @cloudflare/next-on-pages\"",
     "start": "next start",
     "lint": "next lint",
     "analyze": "set ANALYZE=true && next build",
