@@ -46,13 +46,21 @@ export async function GET(request: NextRequest) {
     const cached = bankCache.get(apiKey);
     const now = Date.now();
     if (cached && cached.expiresAt > now) {
-      return NextResponse.json(cached.data);
+      return NextResponse.json(cached.data, {
+        headers: {
+          'Cache-Control': 'public, max-age=0, s-maxage=300, stale-while-revalidate=30',
+        },
+      });
     }
 
     // Coalesce concurrent requests for same apiKey
     if (inflight.has(apiKey)) {
       const data = await inflight.get(apiKey)!;
-      return NextResponse.json(data as unknown);
+      return NextResponse.json(data as unknown, {
+        headers: {
+          'Cache-Control': 'public, max-age=0, s-maxage=300, stale-while-revalidate=30',
+        },
+      });
     }
 
     const fetchPromise = (async () => {

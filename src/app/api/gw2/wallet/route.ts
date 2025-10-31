@@ -26,7 +26,11 @@ export async function GET(request: NextRequest) {
     const cached = walletCache.get(apiKey);
     const now = Date.now();
     if (cached && cached.expiry > now) {
-      return NextResponse.json(cached.data);
+      return NextResponse.json(cached.data, {
+        headers: {
+          'Cache-Control': 'public, max-age=0, s-maxage=300, stale-while-revalidate=30',
+        },
+      });
     }
 
     // Fetch wallet data from GW2 API
@@ -48,7 +52,11 @@ export async function GET(request: NextRequest) {
     const duration = performance.now() - start;
     console.log(`[API] /gw2/wallet ejecutado en ${duration.toFixed(2)}ms`);
 
-    return NextResponse.json(walletData);
+    return NextResponse.json(walletData, {
+      headers: {
+        'Cache-Control': 'public, max-age=0, s-maxage=300, stale-while-revalidate=30',
+      },
+    });
   } catch (error) {
     const duration = performance.now() - start;
     console.error(`[API] /gw2/wallet Error después de ${duration.toFixed(2)}ms:`, error);

@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 import pool from '@/lib/postgres-db';
 import { updateGiveawayStatuses } from '../../../config/giveaways';
 
@@ -36,7 +36,14 @@ export async function GET() {
       updatedAt: new Date().toISOString()  // Fecha de actualización simulada
     }));
 
-    return NextResponse.json({ giveaways });
+    return NextResponse.json(
+      { giveaways },
+      {
+        headers: {
+          'Cache-Control': 'public, max-age=300, stale-while-revalidate=1800',
+        },
+      }
+    );
   } catch (error) {
     console.error('Error fetching giveaways:', error);
     return NextResponse.json(

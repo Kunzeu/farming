@@ -44,7 +44,11 @@ export async function GET(request: NextRequest) {
     const cached = searchCache.get(cacheKey);
     
     if (cached && cached.expiry > Date.now()) {
-      return NextResponse.json(cached.data);
+      return NextResponse.json(cached.data, {
+        headers: {
+          'Cache-Control': 'public, max-age=0, s-maxage=300, stale-while-revalidate=30',
+        },
+      });
     }
 
     const results: unknown[] = [];
@@ -218,7 +222,11 @@ export async function GET(request: NextRequest) {
       expiry: Date.now() + CACHE_TTL
     });
 
-    return NextResponse.json(results);
+    return NextResponse.json(results, {
+      headers: {
+        'Cache-Control': 'public, max-age=0, s-maxage=300, stale-while-revalidate=30',
+      },
+    });
   } catch (error) {
     console.error('Search API error:', error);
     return NextResponse.json(

@@ -43,7 +43,11 @@ export async function GET(request: NextRequest) {
     const cached = accountCache.get(cacheKey);
     
     if (cached && cached.expiry > Date.now()) {
-      return NextResponse.json(cached.data);
+      return NextResponse.json(cached.data, {
+        headers: {
+          'Cache-Control': 'public, max-age=0, s-maxage=300, stale-while-revalidate=30',
+        },
+      });
     }
 
     const response = await fetchWith429Retry(`${GW2_API_BASE}/account?access_token=${apiKey}`, {
@@ -78,7 +82,11 @@ export async function GET(request: NextRequest) {
     const duration = performance.now() - start;
     console.log(`[API] /gw2/account ejecutado en ${duration.toFixed(2)}ms`);
     
-    return NextResponse.json(accountData);
+    return NextResponse.json(accountData, {
+      headers: {
+        'Cache-Control': 'public, max-age=0, s-maxage=300, stale-while-revalidate=30',
+      },
+    });
   } catch (error) {
     const duration = performance.now() - start;
     console.error(`[API] /gw2/account Error después de ${duration.toFixed(2)}ms:`, error);

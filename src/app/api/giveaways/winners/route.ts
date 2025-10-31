@@ -58,7 +58,14 @@ export async function GET(request: NextRequest) {
       };
     });
 
-    return NextResponse.json({ winners });
+    return NextResponse.json(
+      { winners },
+      {
+        headers: {
+          'Cache-Control': 'public, max-age=60, stale-while-revalidate=300',
+        },
+      }
+    );
   } catch (error) {
     console.error('Error fetching winners:', error);
     return NextResponse.json(

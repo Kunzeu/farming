@@ -21,7 +21,14 @@ export async function GET(request: NextRequest) {
 
     const itemsInfo = await getGiveawayItemsInfo(giveaway, lang);
 
-    return NextResponse.json({ items: itemsInfo });
+    return NextResponse.json(
+      { items: itemsInfo },
+      {
+        headers: {
+          'Cache-Control': 'public, max-age=86400, immutable',
+        },
+      }
+    );
   } catch (error) {
     console.error('Error fetching giveaway items:', error);
     return NextResponse.json(

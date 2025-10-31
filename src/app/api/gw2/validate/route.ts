@@ -23,7 +23,11 @@ export async function GET(request: NextRequest) {
     });
 
     if (response.ok) {
-      return NextResponse.json({ valid: true });
+      return NextResponse.json({ valid: true }, {
+        headers: {
+          'Cache-Control': 'public, max-age=0, s-maxage=120, stale-while-revalidate=30',
+        },
+      });
     } else {
       return NextResponse.json(
         { valid: false, error: 'Invalid API key' },

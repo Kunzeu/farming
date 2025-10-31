@@ -64,7 +64,11 @@ export async function GET(request: NextRequest) {
     const duration = performance.now() - start;
     console.log(`[API] /gw2/characters ejecutado en ${duration.toFixed(2)}ms`);
 
-    return NextResponse.json(validCharacters);
+    return NextResponse.json(validCharacters, {
+      headers: {
+        'Cache-Control': 'public, max-age=0, s-maxage=300, stale-while-revalidate=30',
+      },
+    });
   } catch (error) {
     const duration = performance.now() - start;
     console.error(`[API] /gw2/characters Error después de ${duration.toFixed(2)}ms:`, error);

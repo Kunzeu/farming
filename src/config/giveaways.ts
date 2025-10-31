@@ -58,6 +58,40 @@ export const GIVEAWAYS: Giveaway[] = [
       'Prizes will be delivered within 48 hours'
     ],
     maxParticipants: undefined
+  },
+  {
+    id: 'november-2025',
+    slug: 'november-2025-gems',
+    title: 'giveaways.november2025.title',
+    description: 'giveaways.november2025.description',
+    startDate: '2025-11-01T01:00:00.000Z',
+    endDate: '2025-12-01T00:00:00.000Z',
+    status: 'upcoming',
+           prizes: [
+             { position: 1, prize: '1200', icon: 'gem', quantity: 1200, gemPrize: true },
+             { position: 2, prize: '800', icon: 'gem', quantity: 800, gemPrize: true },
+             { position: 3, prize: '400', icon: 'gem', quantity: 400, gemPrize: true },
+             { position: 4, prize: '400', icon: 'gem', quantity: 400, gemPrize: true },
+             { position: 5, prize: '250', icon: 'package', itemId: 19721, quantity: 250 },
+             { position: 6, prize: '250', icon: 'package', itemId: 19721, quantity: 250 },
+             { position: 7, prize: '250', icon: 'package', itemId: 19721, quantity: 250 },
+             { position: 8, prize: '250', icon: 'package', itemId: 19721, quantity: 250 },
+             { position: 9, prize: '250', icon: 'package', itemId: 19721, quantity: 250 },
+             { position: 10, prize: '250', icon: 'package', itemId: 19721, quantity: 250 }
+           ],
+    requirements: [
+      'Link your GW2 API key to your account',
+      'Join our Discord server',
+      'Follow us on social media'
+    ],
+    rules: [
+      'One entry per person',
+      'Must have valid GW2 account',
+      'API key must be active during the entire giveaway period',
+      'Winners will be selected randomly',
+      'Prizes will be delivered within 48 hours'
+    ],
+    maxParticipants: undefined
   }
   // Agregar más sorteos aquí según necesites
 ];

@@ -136,6 +136,8 @@ const GiveawaysPage = () => {
   // Load items information for a specific giveaway
   const loadGiveawayItems = useCallback(
     async (giveawayId: string) => {
+      const cacheKey = `${lang}:${giveawayId}`;
+      if (giveawayItems[cacheKey]) return;
       try {
         const response = await fetch(
           `/api/giveaways/items?giveawayId=${giveawayId}&lang=${lang}`
@@ -144,14 +146,14 @@ const GiveawaysPage = () => {
           const data = await response.json();
           setGiveawayItems((prev) => ({
             ...prev,
-            [giveawayId]: data.items,
+            [cacheKey]: data.items,
           }));
         }
       } catch (error) {
         console.error(`Error loading items for giveaway ${giveawayId}:`, error);
       }
     },
-    [lang]
+    [lang, giveawayItems]
   );
 
   // Load giveaways from API
@@ -163,10 +165,17 @@ const GiveawaysPage = () => {
         const data = await response.json();
         setGiveaways(data.giveaways);
 
-        // Load items information for each giveaway
-        for (const giveaway of data.giveaways) {
-          await loadGiveawayItems(giveaway.id);
-        }
+        // Prefetch solo sorteo activo y el siguiente
+        const active = data.giveaways.find((g: Giveaway) => g.status === "active");
+        const upcomingSorted = data.giveaways
+          .filter((g: Giveaway) => g.status === "upcoming")
+          .sort(
+            (a: Giveaway, b: Giveaway) =>
+              new Date(a.startDate).getTime() - new Date(b.startDate).getTime()
+          );
+        const next = upcomingSorted[0];
+        if (active) await loadGiveawayItems(active.id);
+        if (next) await loadGiveawayItems(next.id);
       } else {
         console.error("Error loading giveaways");
       }
@@ -199,15 +208,15 @@ const GiveawaysPage = () => {
       return;
     }
 
-    // Check if we already have data and it's recent (within 30 seconds)
+    // Check if we already have data and it's recent (within 90 seconds)
     const cacheKey = `participated_${user.id}`;
     const cached = localStorage.getItem(cacheKey);
     const cacheTime = localStorage.getItem(`${cacheKey}_time`);
 
     if (cached && cacheTime) {
       const timeDiff = Date.now() - parseInt(cacheTime);
-      if (timeDiff < 30000) {
-        // 30 seconds cache
+      if (timeDiff < 90000) {
+        // 90 seconds cache
         const participatedSet = new Set(JSON.parse(cached) as string[]);
         setParticipatedAccounts(participatedSet);
         setIsLoadingParticipations(false);
@@ -318,12 +327,15 @@ const GiveawaysPage = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Reload items when language changes
+  // Reload items cuando cambia idioma: solo activo y siguiente (si no están en cache)
   useEffect(() => {
     if (giveaways.length > 0) {
-      giveaways.forEach((giveaway) => {
-        loadGiveawayItems(giveaway.id);
-      });
+      const active = giveaways.find((g) => g.status === "active");
+      const next = giveaways
+        .filter((g) => g.status === "upcoming")
+        .sort((a, b) => new Date(a.startDate).getTime() - new Date(b.startDate).getTime())[0];
+      if (active) loadGiveawayItems(active.id);
+      if (next) loadGiveawayItems(next.id);
     }
   }, [lang, giveaways, loadGiveawayItems]);
 
@@ -522,7 +534,7 @@ const GiveawaysPage = () => {
     },
     giveawayId: string
   ) => {
-    const items = giveawayItems[giveawayId] || [];
+    const items = giveawayItems[`${lang}:${giveawayId}`] || [];
     const itemInfo = items.find((item) => item.position === prize.position);
 
     if (itemInfo && itemInfo.itemName && itemInfo.itemIcon) {

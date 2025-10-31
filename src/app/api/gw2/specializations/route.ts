@@ -38,7 +38,11 @@ export async function GET(request: NextRequest) {
     const cached = specializationCache.get(cacheKey);
     
     if (cached && cached.expiry > Date.now()) {
-      return NextResponse.json(cached.data);
+      return NextResponse.json(cached.data, {
+        headers: {
+          'Cache-Control': 'public, max-age=0, s-maxage=86400, stale-while-revalidate=600',
+        },
+      });
     }
 
     let url = `${GW2_API_BASE}/specializations?lang=${lang}`;
@@ -77,7 +81,11 @@ export async function GET(request: NextRequest) {
       expiry: Date.now() + CACHE_TTL
     });
 
-    return NextResponse.json(specializationMap);
+    return NextResponse.json(specializationMap, {
+      headers: {
+        'Cache-Control': 'public, max-age=0, s-maxage=86400, stale-while-revalidate=600',
+      },
+    });
   } catch (error) {
     console.error('Specializations API error:', error);
     return NextResponse.json(

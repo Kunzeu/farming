@@ -25,7 +25,11 @@ export async function GET(request: NextRequest) {
     const cached = materialsCache.get(apiKey);
     const now = Date.now();
     if (cached && cached.expiry > now) {
-      return NextResponse.json(cached.data);
+      return NextResponse.json(cached.data, {
+        headers: {
+          'Cache-Control': 'public, max-age=0, s-maxage=300, stale-while-revalidate=30',
+        },
+      });
     }
 
     const response = await fetch(`${GW2_API_BASE}/account/materials?access_token=${apiKey}`, {
@@ -66,7 +70,11 @@ export async function GET(request: NextRequest) {
         const duration = performance.now() - start;
         console.log(`[API] /gw2/materials ejecutado en ${duration.toFixed(2)}ms`);
         
-        return NextResponse.json(enrichedMaterialsData);
+        return NextResponse.json(enrichedMaterialsData, {
+          headers: {
+            'Cache-Control': 'public, max-age=0, s-maxage=300, stale-while-revalidate=30',
+          },
+        });
       }
     }
 
@@ -76,7 +84,11 @@ export async function GET(request: NextRequest) {
     const duration = performance.now() - start;
     console.log(`[API] /gw2/materials ejecutado en ${duration.toFixed(2)}ms`);
 
-    return NextResponse.json(materialsData);
+    return NextResponse.json(materialsData, {
+      headers: {
+        'Cache-Control': 'public, max-age=0, s-maxage=300, stale-while-revalidate=30',
+      },
+    });
   } catch (error) {
     const duration = performance.now() - start;
     console.error(`[API] /gw2/materials Error después de ${duration.toFixed(2)}ms:`, error);
