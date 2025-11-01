@@ -722,7 +722,6 @@ const GiveawaysPage = () => {
                           <span>{winner.prizeDescription}</span>
                         )}
                     </div>
-                    {getPositionIcon(winner.position)}
                   </div>
                   );
                 })}
