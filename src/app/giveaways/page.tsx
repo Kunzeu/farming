@@ -189,19 +189,27 @@ const GiveawaysPage = () => {
   }, [loadGiveawayItems]);
 
   // Load winners from API
-  const loadWinners = async () => {
+  const loadWinners = useCallback(async () => {
     try {
       const response = await fetch("/api/giveaways/winners?latest=true");
       if (response.ok) {
         const data = await response.json();
         setWinners(data.winners);
+        
+        // Cargar items de los giveaways de los ganadores si hay ganadores
+        if (data.winners && data.winners.length > 0) {
+          const uniqueGiveawayIds = [...new Set(data.winners.map((w: any) => w.giveawayId))];
+          for (const giveawayId of uniqueGiveawayIds) {
+            await loadGiveawayItems(giveawayId);
+          }
+        }
       } else {
         console.error("Error loading winners");
       }
     } catch (error) {
       console.error("Error loading winners:", error);
     }
-  };
+  }, [loadGiveawayItems]);
 
   // Load user's participated giveaways with caching
   const loadParticipatedGiveaways = useCallback(async () => {
@@ -622,16 +630,37 @@ const GiveawaysPage = () => {
                 .sort((a, b) => a.position - b.position)
                 .slice(0, 10)
                 .map((winner) => {
-                  // Obtener información completa del premio
-                  const giveawayInfo = giveaways.find(g => g.id === winner.giveawayId);
-                  const prizeInfo = giveawayInfo?.prizes.find(p => p.position === winner.position);
-                  const prizeDescription = prizeInfo 
-                    ? (prizeInfo.gemPrize 
-                        ? `${prizeInfo.prize} Gems`
-                        : prizeInfo.itemName 
-                          ? `${prizeInfo.quantity}x ${prizeInfo.itemName}`
-                          : winner.prizeDescription)
-                    : winner.prizeDescription;
+                  // Obtener información completa del premio desde giveawayItems
+                  const items = giveawayItems[`${lang}:${winner.giveawayId}`] || [];
+                  const itemInfo = items.find((item) => item.position === winner.position);
+                  
+                  let prizeDescription = winner.prizeDescription;
+                  
+                  if (itemInfo) {
+                    if (itemInfo.gemPrize) {
+                      // Para premios de gemas, usar traducción
+                      const gemsTranslation = t('giveaways.gems', 'Gems');
+                      prizeDescription = `${itemInfo.prize || itemInfo.quantity || ''} ${gemsTranslation}`;
+                    } else if (itemInfo.itemName) {
+                      // Para items, mostrar cantidad y nombre traducido
+                      const displayName = itemInfo.itemName.startsWith("giveaways.")
+                        ? t(itemInfo.itemName)
+                        : itemInfo.itemName;
+                      prizeDescription = `${itemInfo.quantity || ''}x ${displayName}`;
+                    }
+                  } else {
+                    // Fallback: intentar obtener del giveaway directo
+                    const giveawayInfo = giveaways.find(g => g.id === winner.giveawayId);
+                    const prizeInfo = giveawayInfo?.prizes.find(p => p.position === winner.position);
+                    if (prizeInfo) {
+                      if (prizeInfo.gemPrize) {
+                        const gemsTranslation = t('giveaways.gems', 'Gems');
+                        prizeDescription = `${prizeInfo.prize || prizeInfo.quantity || ''} ${gemsTranslation}`;
+                      } else {
+                        prizeDescription = winner.prizeDescription;
+                      }
+                    }
+                  }
                   
                   return (
                 <div
