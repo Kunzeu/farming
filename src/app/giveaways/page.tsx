@@ -198,7 +198,7 @@ const GiveawaysPage = () => {
         
         // Cargar items de los giveaways de los ganadores si hay ganadores
         if (data.winners && data.winners.length > 0) {
-          const uniqueGiveawayIds = [...new Set(data.winners.map((w: { giveawayId: string }) => w.giveawayId))];
+          const uniqueGiveawayIds: string[] = [...new Set(data.winners.map((w: { giveawayId: string }) => w.giveawayId))];
           for (const giveawayId of uniqueGiveawayIds) {
             await loadGiveawayItems(giveawayId);
           }
@@ -613,15 +613,11 @@ const GiveawaysPage = () => {
             <div className="text-center mb-6">
               <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-yellow-900/20 text-yellow-400 text-sm font-medium mb-4">
                 <Trophy className="w-4 h-4" />
-                {t("giveaways.latestWinners") || "Últimos Ganadores"}
+                {t("giveaways.latestWinners")}
               </div>
               <h2 className="text-2xl font-bold text-white mb-2">
                 {t(winners[0].giveawayTitle)}
               </h2>
-              <p className="text-gray-300">
-                {t("giveaways.winnersAnnounced")}{" "}
-                {new Date(winners[0].winnersAnnouncedAt).toLocaleDateString()}
-              </p>
             </div>
 
             <div className="grid grid-cols-3 gap-4">
@@ -650,8 +646,8 @@ const GiveawaysPage = () => {
                     }
                   } else {
                     // Fallback: intentar obtener del giveaway directo
-                    const giveawayInfo = giveaways.find(g => g.id === winner.giveawayId);
-                    const prizeInfo = giveawayInfo?.prizes.find(p => p.position === winner.position);
+                  const giveawayInfo = giveaways.find(g => g.id === winner.giveawayId);
+                  const prizeInfo = giveawayInfo?.prizes.find(p => p.position === winner.position);
                     if (prizeInfo) {
                       if (prizeInfo.gemPrize) {
                         const gemsTranslation = t('giveaways.gems', 'Gems');
