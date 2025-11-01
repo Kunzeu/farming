@@ -654,21 +654,20 @@ const GiveawaysPage = () => {
                           <>
                             {itemInfo.gemPrize ? (
                               <>
-                                <span>{itemInfo.prize || itemInfo.quantity || ''}</span>
                                 <Image
-                                  src="https://wiki.guildwars2.com/images/8/88/Gem_%28highres%29.png"
+                                  src={itemInfo.itemIcon || "https://wiki.guildwars2.com/images/8/88/Gem_%28highres%29.png"}
                                   alt={t('giveaways.gems', 'Gems')}
                                   width={16}
                                   height={16}
                                   className="w-4 h-4 rounded"
                                   onError={(e: React.SyntheticEvent<HTMLImageElement, Event>) => {
-                                    e.currentTarget.src = "/images/icons/raw.webp";
+                                    e.currentTarget.src = "https://render.guildwars2.com/file/65941.png";
                                   }}
                                 />
+                                <span>{itemInfo.prize || itemInfo.quantity || ''}</span>
                               </>
                             ) : itemInfo.itemIcon && itemInfo.itemName ? (
                               <>
-                                <span>{itemInfo.quantity || ''}x</span>
                                 <Image
                                   src={itemInfo.itemIcon}
                                   alt={itemInfo.itemName}
@@ -679,25 +678,45 @@ const GiveawaysPage = () => {
                                     e.currentTarget.src = "https://wiki.guildwars2.com/images/9/9b/Glob_of_Ectoplasm.png";
                                   }}
                                 />
-                                <span>{itemInfo.itemName.startsWith("giveaways.") ? t(itemInfo.itemName) : itemInfo.itemName}</span>
+                                <span>{itemInfo.quantity || ''}x {itemInfo.itemName.startsWith("giveaways.") ? t(itemInfo.itemName) : itemInfo.itemName}</span>
                               </>
                             ) : (
                               <span>{winner.prizeDescription}</span>
                             )}
                           </>
-                        ) : prizeInfo && prizeInfo.itemId ? (
+                        ) : prizeInfo ? (
                           <>
-                            <span>{prizeInfo.quantity || prizeInfo.prize || ''}</span>
-                            <Image
-                              src="https://wiki.guildwars2.com/images/9/9b/Glob_of_Ectoplasm.png"
-                              alt={prizeInfo.prize}
-                              width={16}
-                              height={16}
-                              className="w-4 h-4 rounded"
-                              onError={(e: React.SyntheticEvent<HTMLImageElement, Event>) => {
-                                e.currentTarget.src = "/images/icons/raw.webp";
-                              }}
-                            />
+                            {prizeInfo.gemPrize ? (
+                              <>
+                                <Image
+                                  src="https://wiki.guildwars2.com/images/8/88/Gem_%28highres%29.png"
+                                  alt={t('giveaways.gems', 'Gems')}
+                                  width={16}
+                                  height={16}
+                                  className="w-4 h-4 rounded"
+                                  onError={(e: React.SyntheticEvent<HTMLImageElement, Event>) => {
+                                    e.currentTarget.src = "https://render.guildwars2.com/file/0B56E2E65A2E9F0F6C7D8F5A9B7D1E2F/65941.png";
+                                  }}
+                                />
+                                <span>{prizeInfo.prize || prizeInfo.quantity || ''}</span>
+                              </>
+                            ) : prizeInfo.itemId ? (
+                              <>
+                                <Image
+                                  src="https://wiki.guildwars2.com/images/9/9b/Glob_of_Ectoplasm.png"
+                                  alt={prizeInfo.prize}
+                                  width={16}
+                                  height={16}
+                                  className="w-4 h-4 rounded"
+                                  onError={(e: React.SyntheticEvent<HTMLImageElement, Event>) => {
+                                    e.currentTarget.src = "/images/icons/raw.webp";
+                                  }}
+                                />
+                                <span>{prizeInfo.quantity || prizeInfo.prize || ''}</span>
+                              </>
+                            ) : (
+                              <span>{winner.prizeDescription}</span>
+                            )}
                           </>
                         ) : (
                           <span>{winner.prizeDescription}</span>
