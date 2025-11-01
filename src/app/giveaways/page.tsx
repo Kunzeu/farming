@@ -654,6 +654,7 @@ const GiveawaysPage = () => {
                           <>
                             {itemInfo.gemPrize ? (
                               <>
+                                <span>{itemInfo.prize || itemInfo.quantity || ''}</span>
                                 <Image
                                   src="https://wiki.guildwars2.com/images/8/88/Gem_%28highres%29.png"
                                   alt={t('giveaways.gems', 'Gems')}
@@ -664,10 +665,10 @@ const GiveawaysPage = () => {
                                     e.currentTarget.src = "/images/icons/raw.webp";
                                   }}
                                 />
-                                <span>{itemInfo.prize || itemInfo.quantity || ''} {t('giveaways.gems', 'Gems')}</span>
                               </>
                             ) : itemInfo.itemIcon && itemInfo.itemName ? (
                               <>
+                                <span>{itemInfo.quantity || ''}x</span>
                                 <Image
                                   src={itemInfo.itemIcon}
                                   alt={itemInfo.itemName}
@@ -675,10 +676,10 @@ const GiveawaysPage = () => {
                                   height={16}
                                   className="w-4 h-4 rounded"
                                   onError={(e: React.SyntheticEvent<HTMLImageElement, Event>) => {
-                                    e.currentTarget.src = "https://render.guildwars2.com/file/18CE5D78317265000CF3C23ED76AB3CEE86BA60E/65941.png";
+                                    e.currentTarget.src = "https://wiki.guildwars2.com/images/9/9b/Glob_of_Ectoplasm.png";
                                   }}
                                 />
-                                <span>{itemInfo.quantity || ''}x {itemInfo.itemName.startsWith("giveaways.") ? t(itemInfo.itemName) : itemInfo.itemName}</span>
+                                <span>{itemInfo.itemName.startsWith("giveaways.") ? t(itemInfo.itemName) : itemInfo.itemName}</span>
                               </>
                             ) : (
                               <span>{winner.prizeDescription}</span>
@@ -686,8 +687,9 @@ const GiveawaysPage = () => {
                           </>
                         ) : prizeInfo && prizeInfo.itemId ? (
                           <>
+                            <span>{prizeInfo.quantity || prizeInfo.prize || ''}</span>
                             <Image
-                              src="https://render.guildwars2.com/file/18CE5D78317265000CF3C23ED76AB3CEE86BA60E/65941.png"
+                              src="https://wiki.guildwars2.com/images/9/9b/Glob_of_Ectoplasm.png"
                               alt={prizeInfo.prize}
                               width={16}
                               height={16}
@@ -696,7 +698,6 @@ const GiveawaysPage = () => {
                                 e.currentTarget.src = "/images/icons/raw.webp";
                               }}
                             />
-                            <span>{prizeInfo.quantity || prizeInfo.prize || ''}</span>
                           </>
                         ) : (
                           <span>{winner.prizeDescription}</span>
