@@ -456,11 +456,21 @@ const GiveawaysPage = () => {
       setIsSelectingWinners(true);
       setShowSelectWinnersModal(false);
 
+      // Obtener token de localStorage
+      const token = typeof window !== 'undefined' ? localStorage.getItem('gw2_token') : null;
+      
+      // Preparar headers con autenticación
+      const headers: HeadersInit = {
+        "Content-Type": "application/json",
+      };
+      
+      if (token) {
+        headers["Authorization"] = `Bearer ${token}`;
+      }
+
       const response = await fetch("/api/giveaways/select-winners", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers,
         body: JSON.stringify({
           giveawayId: activeGiveaway.id,
         }),
