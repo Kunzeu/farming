@@ -31,7 +31,7 @@ export const GIVEAWAYS: Giveaway[] = [
     title: 'giveaways.october2025.title',
     description: 'giveaways.october2025.description',
     startDate: '2025-10-01T00:00:00.000Z', // 1 Oct 2025 00:00 UTC = 30 Sep 2025 19:00 Colombia
-    endDate: '2025-11-01T01:30:00.000Z',   // 1 Nov 2025 00:00 UTC = 31 Oct 2025 19:00 Colombia
+    endDate: '2025-11-01T02:00:00.000Z',   // 1 Nov 2025 00:00 UTC = 31 Oct 2025 19:00 Colombia
     status: 'active',
            prizes: [
              { position: 1, prize: '1200', icon: 'gem', quantity: 1200, gemPrize: true },
@@ -64,7 +64,7 @@ export const GIVEAWAYS: Giveaway[] = [
     slug: 'november-2025-gems',
     title: 'giveaways.november2025.title',
     description: 'giveaways.november2025.description',
-    startDate: '2025-11-01T01:30:00.000Z',
+    startDate: '2025-11-01T02:30:00.000Z',
     endDate: '2025-12-01T00:00:00.000Z',
     status: 'upcoming',
            prizes: [
