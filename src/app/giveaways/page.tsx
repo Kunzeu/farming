@@ -631,32 +631,11 @@ const GiveawaysPage = () => {
                   const items = giveawayItems[`${lang}:${winner.giveawayId}`] || [];
                   const itemInfo = items.find((item) => item.position === winner.position);
                   
-                  let prizeDescription = winner.prizeDescription;
-                  
-                  if (itemInfo) {
-                    if (itemInfo.gemPrize) {
-                      // Para premios de gemas, usar traducción
-                      const gemsTranslation = t('giveaways.gems', 'Gems');
-                      prizeDescription = `${itemInfo.prize || itemInfo.quantity || ''} ${gemsTranslation}`;
-                    } else if (itemInfo.itemName) {
-                      // Para items, mostrar cantidad y nombre traducido
-                      const displayName = itemInfo.itemName.startsWith("giveaways.")
-                        ? t(itemInfo.itemName)
-                        : itemInfo.itemName;
-                      prizeDescription = `${itemInfo.quantity || ''}x ${displayName}`;
-                    }
-                  } else {
-                    // Fallback: intentar obtener del giveaway directo
-                  const giveawayInfo = giveaways.find(g => g.id === winner.giveawayId);
-                  const prizeInfo = giveawayInfo?.prizes.find(p => p.position === winner.position);
-                    if (prizeInfo) {
-                      if (prizeInfo.gemPrize) {
-                        const gemsTranslation = t('giveaways.gems', 'Gems');
-                        prizeDescription = `${prizeInfo.prize || prizeInfo.quantity || ''} ${gemsTranslation}`;
-                      } else {
-                        prizeDescription = winner.prizeDescription;
-                      }
-                    }
+                  // Fallback: intentar obtener del giveaway directo si no hay itemInfo
+                  let prizeInfo = null;
+                  if (!itemInfo) {
+                    const giveawayInfo = giveaways.find(g => g.id === winner.giveawayId);
+                    prizeInfo = giveawayInfo?.prizes.find(p => p.position === winner.position);
                   }
                   
                   return (
@@ -670,8 +649,58 @@ const GiveawaysPage = () => {
                       <div className="font-medium text-white mb-1 text-sm">
                         {winner.accountName}
                       </div>
-                      <div className="text-xs text-gray-300">
-                        {prizeDescription}
+                      <div className="text-xs text-gray-300 flex items-center gap-1.5 justify-center">
+                        {itemInfo && (itemInfo.itemIcon || itemInfo.gemPrize) ? (
+                          <>
+                            {itemInfo.gemPrize ? (
+                              <>
+                                <Image
+                                  src="https://wiki.guildwars2.com/images/8/88/Gem_%28highres%29.png"
+                                  alt={t('giveaways.gems', 'Gems')}
+                                  width={16}
+                                  height={16}
+                                  className="w-4 h-4 rounded"
+                                  onError={(e: React.SyntheticEvent<HTMLImageElement, Event>) => {
+                                    e.currentTarget.src = "/images/icons/raw.webp";
+                                  }}
+                                />
+                                <span>{itemInfo.prize || itemInfo.quantity || ''} {t('giveaways.gems', 'Gems')}</span>
+                              </>
+                            ) : itemInfo.itemIcon && itemInfo.itemName ? (
+                              <>
+                                <Image
+                                  src={itemInfo.itemIcon}
+                                  alt={itemInfo.itemName}
+                                  width={16}
+                                  height={16}
+                                  className="w-4 h-4 rounded"
+                                  onError={(e: React.SyntheticEvent<HTMLImageElement, Event>) => {
+                                    e.currentTarget.src = "https://render.guildwars2.com/file/18CE5D78317265000CF3C23ED76AB3CEE86BA60E/65941.png";
+                                  }}
+                                />
+                                <span>{itemInfo.quantity || ''}x {itemInfo.itemName.startsWith("giveaways.") ? t(itemInfo.itemName) : itemInfo.itemName}</span>
+                              </>
+                            ) : (
+                              <span>{winner.prizeDescription}</span>
+                            )}
+                          </>
+                        ) : prizeInfo && prizeInfo.itemId ? (
+                          <>
+                            <Image
+                              src="https://render.guildwars2.com/file/18CE5D78317265000CF3C23ED76AB3CEE86BA60E/65941.png"
+                              alt={prizeInfo.prize}
+                              width={16}
+                              height={16}
+                              className="w-4 h-4 rounded"
+                              onError={(e: React.SyntheticEvent<HTMLImageElement, Event>) => {
+                                e.currentTarget.src = "/images/icons/raw.webp";
+                              }}
+                            />
+                            <span>{prizeInfo.quantity || prizeInfo.prize || ''}</span>
+                          </>
+                        ) : (
+                          <span>{winner.prizeDescription}</span>
+                        )}
                     </div>
                     {getPositionIcon(winner.position)}
                   </div>
