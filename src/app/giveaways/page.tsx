@@ -514,7 +514,20 @@ const GiveawaysPage = () => {
     }
   };
 
-  const activeGiveaway = giveaways.find((g) => g.status === "active");
+  // Encontrar el sorteo activo basándose en fechas actuales, no solo en status
+  const now = new Date();
+  // Primero intentar encontrar por fechas (dentro del rango)
+  const activeByDate = giveaways.filter((g) => {
+    const start = new Date(g.startDate);
+    const end = new Date(g.endDate);
+    // Un sorteo está activo si está entre su fecha de inicio y fin
+    return start <= now && end > now && (g.status === "active" || g.status === "upcoming");
+  });
+  
+  // Si hay múltiples, seleccionar el más reciente (mayor startDate)
+  const activeGiveaway = activeByDate.length > 0 
+    ? activeByDate.sort((a, b) => new Date(b.startDate).getTime() - new Date(a.startDate).getTime())[0]
+    : giveaways.find((g) => g.status === "active"); // Fallback al status si no hay coincidencia por fechas
 
   // Check if user is admin
   const isAdmin = user?.role === "admin" || user?.isAdmin === true;
@@ -741,13 +754,13 @@ const GiveawaysPage = () => {
               )}
 
               {/* Admin Button - Select Winners - Only visible to admins */}
-              {isAdmin && (
+              {isAdmin && activeGiveaway && (
                 <div className="pt-4 border-t border-gray-700/60">
                   <p className="text-gray-400 text-sm mb-3">
                     🔧 Administración
                   </p>
                   <button
-                    onClick={handleSelectWinnersClick}
+                    onClick={() => handleSelectWinnersClick(activeGiveaway)}
                     disabled={
                       isSelectingWinners ||
                       activeGiveaway.participantCount === 0
@@ -821,14 +834,26 @@ const GiveawaysPage = () => {
 
         {/* Ended Giveaways (Admin Only) - For selecting winners */}
         {!isLoadingGiveaways && isAdmin &&
-          giveaways.filter((g) => g.status === "ended" || g.status === "winners_announced").length > 0 && (
+          giveaways.filter((g) => {
+            // Incluir sorteos terminados por status o por fecha
+            const endDate = new Date(g.endDate);
+            const hasEndedByDate = endDate <= now;
+            return (g.status === "ended" || g.status === "winners_announced") || 
+                   (hasEndedByDate && g.status === "active");
+          }).length > 0 && (
             <div className="mb-8">
               <h2 className="text-2xl font-bold text-white mb-6">
                 🔧 Sorteos Terminados (Administración)
               </h2>
               <div className="space-y-4">
                 {giveaways
-                  .filter((g) => g.status === "ended" || g.status === "winners_announced")
+                  .filter((g) => {
+                    // Incluir sorteos terminados por status o por fecha
+                    const endDate = new Date(g.endDate);
+                    const hasEndedByDate = endDate <= now;
+                    return (g.status === "ended" || g.status === "winners_announced") || 
+                           (hasEndedByDate && g.status === "active");
+                  })
                   .sort((a, b) => new Date(b.endDate).getTime() - new Date(a.endDate).getTime())
                   .map((giveaway) => {
                     // Verificar si ya tiene ganadores
@@ -1098,7 +1123,7 @@ const GiveawaysPage = () => {
                       {/* Admin Button - Only show for active giveaways and admins */}
                       {activeGiveaway && isAdmin && (
                         <button
-                          onClick={handleSelectWinnersClick}
+                          onClick={() => handleSelectWinnersClick(activeGiveaway)}
                           disabled={
                             isSelectingWinners ||
                             activeGiveaway.participantCount === 0
