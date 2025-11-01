@@ -55,12 +55,22 @@ export async function POST(request: NextRequest) {
     for (let i = 0; i < giveaway.prizes.length && i < participants.length; i++) {
       const participant = participants[i];
       const prize = giveaway.prizes[i];
+      
+      // Crear descripción completa del premio
+      let prizeDescription = prize.prize;
+      if (prize.gemPrize) {
+        prizeDescription = `${prize.prize} Gems`;
+      } else if (prize.quantity && prize.itemId) {
+        // Para items, la descripción será más detallada (se puede mejorar con nombre del item)
+        prizeDescription = `${prize.quantity}x Item ${prize.itemId}`;
+      }
+      
       winnersToInsert.push({
         giveaway_id: giveawayId,
         user_id: participant.user_id,
         account_name: participant.account_name,
         position: prize.position,
-        prize_description: prize.prize,
+        prize_description: prizeDescription,
         prize_value: prize.prize
       });
     }
