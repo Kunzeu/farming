@@ -604,7 +604,7 @@ const GiveawaysPage = () => {
             <div className="text-center mb-6">
               <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-yellow-900/20 text-yellow-400 text-sm font-medium mb-4">
                 <Trophy className="w-4 h-4" />
-                {t("giveaways.latestWinners")}
+                {t("giveaways.latestWinners") || "Últimos Ganadores"}
               </div>
               <h2 className="text-2xl font-bold text-white mb-2">
                 {t(winners[0].giveawayTitle)}
@@ -615,28 +615,41 @@ const GiveawaysPage = () => {
               </p>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {winners.slice(0, 6).map((winner) => (
-                <div
-                  key={`${winner.giveawayId}-${winner.position}`}
-                  className="bg-gray-800/60 border border-gray-700/60 rounded-lg p-4"
-                >
-                  <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 rounded-full bg-yellow-500/20 text-yellow-400 text-sm font-bold flex items-center justify-center">
-                      {winner.position}
-                    </div>
-                    <div className="flex-1">
-                      <div className="font-medium text-white">
+            <div className="grid grid-cols-3 gap-4">
+              {winners
+                .filter(w => w.giveawayId === winners[0].giveawayId)
+                .sort((a, b) => a.position - b.position)
+                .slice(0, 10)
+                .map((winner) => {
+                  // Obtener información completa del premio
+                  const giveawayInfo = giveaways.find(g => g.id === winner.giveawayId);
+                  const prizeInfo = giveawayInfo?.prizes.find(p => p.position === winner.position);
+                  const prizeDescription = prizeInfo 
+                    ? (prizeInfo.gemPrize 
+                        ? `${prizeInfo.prize} Gems`
+                        : prizeInfo.itemName 
+                          ? `${prizeInfo.quantity}x ${prizeInfo.itemName}`
+                          : winner.prizeDescription)
+                    : winner.prizeDescription;
+                  
+                  return (
+                    <div
+                      key={`${winner.giveawayId}-${winner.position}`}
+                      className="bg-gray-800/60 border border-gray-700/60 rounded-lg p-4 flex flex-col items-center text-center"
+                    >
+                      <div className="w-12 h-12 rounded-full bg-yellow-500/20 text-yellow-400 text-lg font-bold flex items-center justify-center mb-3">
+                        {winner.position}
+                      </div>
+                      <div className="font-medium text-white mb-1 text-sm">
                         {winner.accountName}
                       </div>
-                      <div className="text-sm text-gray-300">
-                        {winner.prizeDescription}
+                      <div className="text-xs text-gray-300">
+                        {prizeDescription}
                       </div>
+                      {getPositionIcon(winner.position)}
                     </div>
-                    {getPositionIcon(winner.position)}
-                  </div>
-                </div>
-              ))}
+                  );
+                })}
             </div>
           </div>
         )}
@@ -1305,32 +1318,38 @@ const GiveawaysPage = () => {
                   <h4 className="text-lg font-semibold text-white mb-4">
                     Lista de Ganadores
                   </h4>
-                  <div className="space-y-3">
-                    {selectedWinners.map((winner, index) => (
-                      <div
-                        key={index}
-                        className="flex items-center justify-between bg-gray-700/50 rounded-lg p-3"
-                      >
-                        <div className="flex items-center gap-3">
-                          <div className="w-8 h-8 bg-yellow-600 rounded-full flex items-center justify-center text-white font-bold text-sm">
-                            {winner.position}
-                          </div>
-                          <div>
-                            <p className="text-white font-semibold">
+                  <div className="grid grid-cols-3 gap-4">
+                    {selectedWinners
+                      .sort((a, b) => a.position - b.position)
+                      .map((winner, index) => {
+                        // Obtener información del premio del sorteo activo
+                        const targetGiveaway = giveawayToSelectWinners || activeGiveaway;
+                        const prizeInfo = targetGiveaway?.prizes.find(p => p.position === winner.position);
+                        const prizeDescription = prizeInfo 
+                          ? (prizeInfo.gemPrize 
+                              ? `${prizeInfo.prize} Gems`
+                              : prizeInfo.itemName 
+                                ? `${prizeInfo.quantity}x ${prizeInfo.itemName}`
+                                : winner.prize_description)
+                          : winner.prize_description;
+                        
+                        return (
+                          <div
+                            key={index}
+                            className="bg-gray-700/50 rounded-lg p-4 flex flex-col items-center text-center"
+                          >
+                            <div className="w-12 h-12 bg-yellow-600 rounded-full flex items-center justify-center text-white font-bold text-lg mb-3">
+                              {winner.position}
+                            </div>
+                            <p className="text-white font-semibold mb-2 text-sm">
                               {winner.account_name}
                             </p>
-                            <p className="text-gray-400 text-sm">
-                              {winner.prize_description}
+                            <p className="text-gray-300 text-xs">
+                              {prizeDescription}
                             </p>
                           </div>
-                        </div>
-                        <div className="text-right">
-                          <p className="text-yellow-400 font-semibold">
-                            #{winner.position}
-                          </p>
-                        </div>
-                      </div>
-                    ))}
+                        );
+                      })}
                   </div>
                 </div>
 
