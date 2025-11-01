@@ -117,6 +117,7 @@ const GiveawaysPage = () => {
       prize_value: string;
     }>
   >([]);
+  const [giveawayToSelectWinners, setGiveawayToSelectWinners] = useState<Giveaway | null>(null);
   const [giveawayItems, setGiveawayItems] = useState<
     Record<
       string,
@@ -444,13 +445,20 @@ const GiveawaysPage = () => {
   };
 
   // Function to show select winners confirmation modal
-  const handleSelectWinnersClick = () => {
-    setShowSelectWinnersModal(true);
+  const handleSelectWinnersClick = (giveaway?: Giveaway) => {
+    // Si se proporciona un giveaway específico, usarlo; de lo contrario usar el activo
+    const targetGiveaway = giveaway || activeGiveaway;
+    if (targetGiveaway) {
+      setGiveawayToSelectWinners(targetGiveaway);
+      setShowSelectWinnersModal(true);
+    }
   };
 
   // Function to confirm and select winners
   const handleConfirmSelectWinners = async () => {
-    if (!activeGiveaway) return;
+    // Usar el giveaway específico seleccionado o el activo como fallback
+    const targetGiveaway = giveawayToSelectWinners || activeGiveaway;
+    if (!targetGiveaway) return;
 
     try {
       setIsSelectingWinners(true);
@@ -472,7 +480,7 @@ const GiveawaysPage = () => {
         method: "POST",
         headers,
         body: JSON.stringify({
-          giveawayId: activeGiveaway.id,
+          giveawayId: targetGiveaway.id,
         }),
       });
 
@@ -500,8 +508,9 @@ const GiveawaysPage = () => {
         "Error seleccionando ganadores. Por favor intenta de nuevo."
       );
       setShowErrorModal(true);
-    } finally {
+      } finally {
       setIsSelectingWinners(false);
+      setGiveawayToSelectWinners(null);
     }
   };
 
@@ -810,6 +819,84 @@ const GiveawaysPage = () => {
             </div>
           )}
 
+        {/* Ended Giveaways (Admin Only) - For selecting winners */}
+        {!isLoadingGiveaways && isAdmin &&
+          giveaways.filter((g) => g.status === "ended" || g.status === "winners_announced").length > 0 && (
+            <div className="mb-8">
+              <h2 className="text-2xl font-bold text-white mb-6">
+                🔧 Sorteos Terminados (Administración)
+              </h2>
+              <div className="space-y-4">
+                {giveaways
+                  .filter((g) => g.status === "ended" || g.status === "winners_announced")
+                  .sort((a, b) => new Date(b.endDate).getTime() - new Date(a.endDate).getTime())
+                  .map((giveaway) => {
+                    // Verificar si ya tiene ganadores
+                    const hasWinners = winners.some(w => w.giveawayId === giveaway.id);
+                    
+                    return (
+                      <div
+                        key={giveaway.id}
+                        className="bg-gray-800/60 border border-gray-700/60 rounded-lg p-6"
+                      >
+                        <div className="flex items-center justify-between">
+                          <div className="flex-1">
+                            <h3 className="text-lg font-semibold text-white">
+                              {t(giveaway.title)}
+                            </h3>
+                            <p className="text-gray-300 text-sm">
+                              {t(giveaway.description)}
+                            </p>
+                            <div className="flex items-center gap-4 mt-2 text-sm text-gray-400">
+                              <span>
+                                Finalizó: {new Date(giveaway.endDate).toLocaleDateString()}
+                              </span>
+                              <span>•</span>
+                              <span>
+                                {giveaway.participantCount} participantes
+                              </span>
+                              <span>•</span>
+                              <span>
+                                {giveaway.prizes.length} premios
+                              </span>
+                              {hasWinners && (
+                                <>
+                                  <span>•</span>
+                                  <span className="text-green-400">
+                                    Ganadores seleccionados
+                                  </span>
+                                </>
+                              )}
+                            </div>
+                          </div>
+                          <div className="flex items-center gap-3">
+                            <div className={`inline-flex items-center gap-2 px-3 py-1 rounded-full text-sm font-medium ${
+                              giveaway.status === "winners_announced" 
+                                ? "bg-green-900/20 text-green-400" 
+                                : "bg-orange-900/20 text-orange-400"
+                            }`}>
+                              <Trophy className="w-4 h-4" />
+                              {giveaway.status === "winners_announced" ? "Ganadores anunciados" : "Terminado"}
+                            </div>
+                            {!hasWinners && (
+                              <button
+                                onClick={() => handleSelectWinnersClick(giveaway)}
+                                disabled={isSelectingWinners || giveaway.participantCount === 0}
+                                className="inline-flex items-center gap-2 bg-yellow-600 hover:bg-yellow-700 disabled:bg-gray-600 disabled:cursor-not-allowed text-white font-semibold py-2 px-4 rounded-lg transition-colors text-sm"
+                              >
+                                <Crown className="w-4 h-4" />
+                                Seleccionar Ganadores
+                              </button>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
+              </div>
+            </div>
+          )}
+
         {/* No Active Giveaways */}
         {!isLoadingGiveaways &&
           !activeGiveaway &&
@@ -1109,7 +1196,10 @@ const GiveawaysPage = () => {
           <div className="fixed inset-0 z-50 flex items-center justify-center">
             <div
               className="absolute inset-0 bg-black/60"
-              onClick={() => setShowSelectWinnersModal(false)}
+              onClick={() => {
+                setShowSelectWinnersModal(false);
+                setGiveawayToSelectWinners(null);
+              }}
             />
             <motion.div
               initial={{ opacity: 0, scale: 0.95 }}
@@ -1123,7 +1213,7 @@ const GiveawaysPage = () => {
                 <h3 className="text-2xl font-bold text-white mb-4">
                   Seleccionar Ganadores
                 </h3>
-                <p className="text-gray-300 mb-6">
+                  <p className="text-gray-300 mb-6">
                   ¿Estás seguro de que quieres seleccionar ganadores para este
                   sorteo? Esta acción no se puede deshacer.
                 </p>
@@ -1132,16 +1222,19 @@ const GiveawaysPage = () => {
                     Información del sorteo:
                   </p>
                   <p className="text-white font-semibold">
-                    {t(activeGiveaway?.title || "")}
+                    {t((giveawayToSelectWinners || activeGiveaway)?.title || "")}
                   </p>
                   <p className="text-gray-300 text-sm">
-                    {activeGiveaway?.participantCount} participantes •{" "}
-                    {activeGiveaway?.prizes.length} premios
+                    {(giveawayToSelectWinners || activeGiveaway)?.participantCount} participantes •{" "}
+                    {(giveawayToSelectWinners || activeGiveaway)?.prizes.length} premios
                   </p>
                 </div>
                 <div className="flex gap-3">
                   <button
-                    onClick={() => setShowSelectWinnersModal(false)}
+                    onClick={() => {
+                      setShowSelectWinnersModal(false);
+                      setGiveawayToSelectWinners(null);
+                    }}
                     className="flex-1 bg-gray-600 hover:bg-gray-700 text-white font-semibold py-3 px-6 rounded-lg transition-colors"
                   >
                     Cancelar
