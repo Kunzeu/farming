@@ -36,6 +36,7 @@ interface Giveaway {
     quantity?: number;
     itemName?: string;
     itemIcon?: string;
+    gemPrize?: boolean;
   }>;
   startDate: string;
   endDate: string;
@@ -450,7 +451,7 @@ const GiveawaysPage = () => {
     const targetGiveaway = giveaway || activeGiveaway;
     if (targetGiveaway) {
       setGiveawayToSelectWinners(targetGiveaway);
-      setShowSelectWinnersModal(true);
+    setShowSelectWinnersModal(true);
     }
   };
 
@@ -508,7 +509,7 @@ const GiveawaysPage = () => {
         "Error seleccionando ganadores. Por favor intenta de nuevo."
       );
       setShowErrorModal(true);
-      } finally {
+    } finally {
       setIsSelectingWinners(false);
       setGiveawayToSelectWinners(null);
     }
@@ -633,21 +634,21 @@ const GiveawaysPage = () => {
                     : winner.prizeDescription;
                   
                   return (
-                    <div
-                      key={`${winner.giveawayId}-${winner.position}`}
+                <div
+                  key={`${winner.giveawayId}-${winner.position}`}
                       className="bg-gray-800/60 border border-gray-700/60 rounded-lg p-4 flex flex-col items-center text-center"
-                    >
+                >
                       <div className="w-12 h-12 rounded-full bg-yellow-500/20 text-yellow-400 text-lg font-bold flex items-center justify-center mb-3">
-                        {winner.position}
-                      </div>
+                      {winner.position}
+                    </div>
                       <div className="font-medium text-white mb-1 text-sm">
                         {winner.accountName}
                       </div>
                       <div className="text-xs text-gray-300">
                         {prizeDescription}
-                      </div>
-                      {getPositionIcon(winner.position)}
                     </div>
+                    {getPositionIcon(winner.position)}
+                  </div>
                   );
                 })}
             </div>
@@ -1251,7 +1252,7 @@ const GiveawaysPage = () => {
                 <h3 className="text-2xl font-bold text-white mb-4">
                   Seleccionar Ganadores
                 </h3>
-                  <p className="text-gray-300 mb-6">
+                <p className="text-gray-300 mb-6">
                   ¿Estás seguro de que quieres seleccionar ganadores para este
                   sorteo? Esta acción no se puede deshacer.
                 </p>
@@ -1334,13 +1335,13 @@ const GiveawaysPage = () => {
                           : winner.prize_description;
                         
                         return (
-                          <div
-                            key={index}
+                      <div
+                        key={index}
                             className="bg-gray-700/50 rounded-lg p-4 flex flex-col items-center text-center"
-                          >
+                      >
                             <div className="w-12 h-12 bg-yellow-600 rounded-full flex items-center justify-center text-white font-bold text-lg mb-3">
-                              {winner.position}
-                            </div>
+                            {winner.position}
+                          </div>
                             <p className="text-white font-semibold mb-2 text-sm">
                               {winner.account_name}
                             </p>
