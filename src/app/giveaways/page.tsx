@@ -78,7 +78,7 @@ interface Participant {
 
 const GiveawaysPage = () => {
   const { t, lang } = useI18n();
-  const { isAuthenticated, user } = useAuth();
+  const { isAuthenticated, user, token } = useAuth();
 
   // Set page title
   useEffect(() => {
@@ -307,7 +307,7 @@ const GiveawaysPage = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Reload items cuando cambia idioma: solo activo y siguiente (si no están en cache)
+  // Reload items cuando cambia idioma: solo activo y siguiente (si no est?n en cache)
   useEffect(() => {
     if (giveaways.length > 0) {
       const active = giveaways.find((g) => g.status === "active");
@@ -450,7 +450,7 @@ const GiveawaysPage = () => {
 
   // Function to confirm and select winners
   const handleConfirmSelectWinners = async () => {
-    if (!activeGiveaway) return;
+    if (!currentGiveaway) return;
 
     try {
       setIsSelectingWinners(true);
@@ -460,9 +460,10 @@ const GiveawaysPage = () => {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
         },
         body: JSON.stringify({
-          giveawayId: activeGiveaway.id,
+          giveawayId: currentGiveaway.id,
         }),
       });
 
@@ -495,10 +496,85 @@ const GiveawaysPage = () => {
     }
   };
 
-  const activeGiveaway = giveaways.find((g) => g.status === "active");
-
-  // Check if user is admin
   const isAdmin = user?.role === "admin" || user?.isAdmin === true;
+
+  const activeGiveaway = giveaways.find((g) => g.status === "active");
+  const endedGiveawayForAdmin = isAdmin
+    ? giveaways
+        .filter((g) => g.status === "ended")
+        .sort(
+          (a, b) =>
+            new Date(b.endDate).getTime() - new Date(a.endDate).getTime()
+        )?.[0] || null
+    : null;
+  const currentGiveaway = activeGiveaway || endedGiveawayForAdmin;
+
+  const renderParticipationAction = () => {
+    if (!currentGiveaway) {
+      return null;
+    }
+
+    if (!isAuthenticated) {
+      return (
+        <Link
+          href="/login"
+          className="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-8 rounded-lg transition-colors"
+        >
+          {t("giveaways.loginToParticipate")}
+        </Link>
+      );
+    }
+
+    if (isLoadingApiKey || isLoadingParticipations) {
+      return (
+        <div className="inline-flex items-center gap-2 bg-gray-600 text-gray-300 font-semibold py-3 px-8 rounded-lg">
+          <Activity className="w-5 h-5 animate-spin" />
+          {t("giveaways.loading")}
+        </div>
+      );
+    }
+
+    if (currentGiveaway.status !== "active") {
+      return (
+        <div className="inline-flex items-center gap-2 bg-gray-600 text-gray-300 font-semibold py-3 px-8 rounded-lg">
+          <AlertCircle className="w-5 h-5" />
+          {t("giveaways.giveawayEnded")}
+        </div>
+      );
+    }
+
+    if (!hasApiKey || !apiKeyValid) {
+      return (
+        <Link
+          href="/profile"
+          className="inline-flex items-center gap-2 bg-yellow-600 hover:bg-yellow-700 text-white font-semibold py-3 px-8 rounded-lg transition-colors"
+        >
+          {hasApiKey
+            ? t("giveaways.fixApiKeyToParticipate")
+            : t("giveaways.addApiKeyToParticipate")}
+        </Link>
+      );
+    }
+
+    if (participatedAccounts.has(currentGiveaway.id)) {
+      return (
+        <div className="inline-flex items-center gap-2 bg-gray-600 text-gray-300 font-semibold py-3 px-8 rounded-lg">
+          <CheckCircle className="w-5 h-5" />
+          {accountInfo?.name || "N/A"}
+        </div>
+      );
+    }
+
+    return (
+      <button
+        onClick={() => setSelectedGiveaway(currentGiveaway)}
+        className="inline-flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-8 rounded-lg transition-colors"
+      >
+        <Gift className="w-5 h-5" />
+        {t("giveaways.enterGiveaway")}
+      </button>
+    );
+  };
 
   // Function to render prize with dynamic item information
   const renderPrize = (
@@ -518,7 +594,7 @@ const GiveawaysPage = () => {
     const itemInfo = items.find((item) => item.position === prize.position);
 
     if (itemInfo && itemInfo.itemName && itemInfo.itemIcon) {
-      // Si es una clave de traducción (empieza con 'giveaways.')
+      // Si es una clave de traducci?n (empieza con 'giveaways.')
       const displayName = itemInfo.itemName.startsWith("giveaways.")
         ? t(itemInfo.itemName)
         : itemInfo.itemName;
@@ -620,18 +696,30 @@ const GiveawaysPage = () => {
         )}
 
         {/* Current Giveaway */}
-        {!isLoadingGiveaways && activeGiveaway && (
+        {!isLoadingGiveaways && currentGiveaway && (
           <div className="bg-gray-800/60 border border-gray-700/60 rounded-2xl p-8 mb-8">
             <div className="text-center mb-8">
-              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-green-900/20 text-green-400 text-sm font-medium mb-4">
-                <CheckCircle className="w-4 h-4" />
-                {t("giveaways.currentlyActive")}
+              <div
+                className={`inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium mb-4 ${
+                  currentGiveaway.status === "active"
+                    ? "bg-green-900/20 text-green-400"
+                    : "bg-yellow-900/20 text-yellow-400"
+                }`}
+              >
+                {currentGiveaway.status === "active" ? (
+                  <CheckCircle className="w-4 h-4" />
+                ) : (
+                  <Clock className="w-4 h-4" />
+                )}
+                {currentGiveaway.status === "active"
+                  ? t("giveaways.currentlyActive")
+                  : t("giveaways.giveawayEnded")}
               </div>
               <h2 className="text-3xl font-bold text-white mb-2">
-                {t(activeGiveaway.title)}
+                {t(currentGiveaway.title)}
               </h2>
               <p className="text-gray-300 text-lg">
-                {t(activeGiveaway.description)}
+                {t(currentGiveaway.description)}
               </p>
             </div>
 
@@ -639,7 +727,7 @@ const GiveawaysPage = () => {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
               <div className="text-center">
                 <div className="text-3xl font-bold text-blue-400 mb-1">
-                  {activeGiveaway.participantCount.toLocaleString()}
+                  {currentGiveaway.participantCount.toLocaleString()}
                 </div>
                 <div className="text-gray-400">
                   {t("giveaways.participants")}
@@ -647,17 +735,22 @@ const GiveawaysPage = () => {
               </div>
               <div className="text-center">
                 <div className="text-3xl font-bold text-green-400 mb-1">
-                  {activeGiveaway.prizes.length}
+                  {currentGiveaway.prizes.length}
                 </div>
                 <div className="text-gray-400">{t("giveaways.prizes")}</div>
               </div>
               <div className="text-center">
                 <div className="text-3xl font-bold text-purple-400 mb-1">
-                  {Math.ceil(
-                    (new Date(activeGiveaway.endDate).getTime() -
-                      new Date().getTime()) /
-                      (1000 * 60 * 60 * 24)
-                  )}
+                  {currentGiveaway.status === "active"
+                    ? Math.max(
+                        0,
+                        Math.ceil(
+                          (new Date(currentGiveaway.endDate).getTime() -
+                            new Date().getTime()) /
+                            (1000 * 60 * 60 * 24)
+                        )
+                      )
+                    : 0}
                 </div>
                 <div className="text-gray-400">{t("giveaways.daysLeft")}</div>
               </div>
@@ -669,7 +762,7 @@ const GiveawaysPage = () => {
                 {t("giveaways.prizes")}
               </h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {activeGiveaway.prizes.map((prize) => (
+                {currentGiveaway.prizes.map((prize) => (
                   <div
                     key={prize.position}
                     className="flex items-center gap-3 p-4 bg-gray-700/50 rounded-lg"
@@ -677,7 +770,7 @@ const GiveawaysPage = () => {
                     <div className="w-8 h-8 rounded-full bg-yellow-500/20 text-yellow-400 text-sm font-bold flex items-center justify-center">
                       {prize.position}
                     </div>
-                    {renderPrize(prize, activeGiveaway.id)}
+                    {renderPrize(prize, currentGiveaway.id)}
                   </div>
                 ))}
               </div>
@@ -685,53 +778,19 @@ const GiveawaysPage = () => {
 
             {/* Participation */}
             <div className="text-center space-y-4">
-              {!isAuthenticated ? (
-                <Link
-                  href="/login"
-                  className="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-8 rounded-lg transition-colors"
-                >
-                  {t("giveaways.loginToParticipate")}
-                </Link>
-              ) : isLoadingApiKey || isLoadingParticipations ? (
-                <div className="inline-flex items-center gap-2 bg-gray-600 text-gray-300 font-semibold py-3 px-8 rounded-lg">
-                  <Activity className="w-5 h-5 animate-spin" />
-                  {t("giveaways.loading")}
-                </div>
-              ) : !hasApiKey || !apiKeyValid ? (
-                <Link
-                  href="/profile"
-                  className="inline-flex items-center gap-2 bg-yellow-600 hover:bg-yellow-700 text-white font-semibold py-3 px-8 rounded-lg transition-colors"
-                >
-                  {hasApiKey
-                    ? t("giveaways.fixApiKeyToParticipate")
-                    : t("giveaways.addApiKeyToParticipate")}
-                </Link>
-              ) : participatedAccounts.has(activeGiveaway.id) ? (
-                <div className="inline-flex items-center gap-2 bg-gray-600 text-gray-300 font-semibold py-3 px-8 rounded-lg">
-                  <CheckCircle className="w-5 h-5" />
-                  {accountInfo?.name || "N/A"}
-                </div>
-              ) : (
-                <button
-                  onClick={() => setSelectedGiveaway(activeGiveaway)}
-                  className="inline-flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-8 rounded-lg transition-colors"
-                >
-                  <Gift className="w-5 h-5" />
-                  {t("giveaways.enterGiveaway")}
-                </button>
-              )}
+              {renderParticipationAction()}
 
               {/* Admin Button - Select Winners - Only visible to admins */}
-              {isAdmin && (
+              {isAdmin && currentGiveaway && (
                 <div className="pt-4 border-t border-gray-700/60">
                   <p className="text-gray-400 text-sm mb-3">
-                    🔧 Administración
+                    ?? Administraci?n
                   </p>
                   <button
                     onClick={handleSelectWinnersClick}
                     disabled={
                       isSelectingWinners ||
-                      activeGiveaway.participantCount === 0
+                      currentGiveaway.participantCount === 0
                     }
                     className="inline-flex items-center gap-2 bg-yellow-600 hover:bg-yellow-700 disabled:bg-gray-600 disabled:cursor-not-allowed text-white font-semibold py-2 px-6 rounded-lg transition-colors"
                   >
@@ -740,9 +799,9 @@ const GiveawaysPage = () => {
                       ? "Seleccionando..."
                       : "Seleccionar Ganadores"}
                   </button>
-                  {activeGiveaway.participantCount === 0 && (
+                  {currentGiveaway.participantCount === 0 && (
                     <p className="text-gray-500 text-xs mt-2">
-                      No hay participantes aún
+                      No hay participantes a?n
                     </p>
                   )}
                 </div>
@@ -781,7 +840,7 @@ const GiveawaysPage = () => {
                                 giveaway.startDate
                               ).toLocaleDateString()}
                             </span>
-                            <span>•</span>
+                            <span>?</span>
                             <span>
                               {giveaway.prizes.length} {t("giveaways.prizes")}
                             </span>
@@ -802,7 +861,7 @@ const GiveawaysPage = () => {
 
         {/* No Active Giveaways */}
         {!isLoadingGiveaways &&
-          !activeGiveaway &&
+          !currentGiveaway &&
           giveaways.filter((g) => g.status === "upcoming").length === 0 && (
             <div className="bg-gray-800/60 border border-gray-700/60 rounded-2xl p-8 text-center">
               <div className="w-16 h-16 bg-gray-700/50 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -998,13 +1057,13 @@ const GiveawaysPage = () => {
                         </span>
                       </Link>
 
-                      {/* Admin Button - Only show for active giveaways and admins */}
-                      {activeGiveaway && isAdmin && (
+                      {/* Admin Button - Only show for current giveaway and admins */}
+                      {currentGiveaway && isAdmin && (
                         <button
                           onClick={handleSelectWinnersClick}
                           disabled={
                             isSelectingWinners ||
-                            activeGiveaway.participantCount === 0
+                            currentGiveaway.participantCount === 0
                           }
                           className="flex items-center gap-3 p-3 bg-yellow-600/20 hover:bg-yellow-600/30 disabled:bg-gray-600/20 disabled:cursor-not-allowed rounded-lg transition-colors w-full"
                         >
@@ -1114,19 +1173,19 @@ const GiveawaysPage = () => {
                   Seleccionar Ganadores
                 </h3>
                 <p className="text-gray-300 mb-6">
-                  ¿Estás seguro de que quieres seleccionar ganadores para este
-                  sorteo? Esta acción no se puede deshacer.
+                  ?Est?s seguro de que quieres seleccionar ganadores para este
+                  sorteo? Esta acci?n no se puede deshacer.
                 </p>
                 <div className="bg-gray-800/60 rounded-lg p-4 mb-6">
                   <p className="text-sm text-gray-400 mb-2">
-                    Información del sorteo:
+                    Informaci?n del sorteo:
                   </p>
                   <p className="text-white font-semibold">
-                    {t(activeGiveaway?.title || "")}
+                    {t(currentGiveaway?.title || "")}
                   </p>
                   <p className="text-gray-300 text-sm">
-                    {activeGiveaway?.participantCount} participantes •{" "}
-                    {activeGiveaway?.prizes.length} premios
+                    {currentGiveaway?.participantCount} participantes ?{" "}
+                    {currentGiveaway?.prizes.length} premios
                   </p>
                 </div>
                 <div className="flex gap-3">
@@ -1166,7 +1225,7 @@ const GiveawaysPage = () => {
                   <Trophy className="w-8 h-8 text-green-400" />
                 </div>
                 <h3 className="text-2xl font-bold text-white mb-4">
-                  ¡Ganadores Seleccionados!
+                  ?Ganadores Seleccionados!
                 </h3>
                 <p className="text-gray-300 mb-6">
                   Se han seleccionado {selectedWinners.length} ganadores para el
