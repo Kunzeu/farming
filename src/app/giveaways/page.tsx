@@ -198,7 +198,7 @@ const GiveawaysPage = () => {
         
         // Cargar items de los giveaways de los ganadores si hay ganadores
         if (data.winners && data.winners.length > 0) {
-          const uniqueGiveawayIds = [...new Set(data.winners.map((w: any) => w.giveawayId))];
+          const uniqueGiveawayIds = [...new Set(data.winners.map((w: { giveawayId: string }) => w.giveawayId))];
           for (const giveawayId of uniqueGiveawayIds) {
             await loadGiveawayItems(giveawayId);
           }
