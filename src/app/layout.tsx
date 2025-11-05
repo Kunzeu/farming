@@ -218,105 +218,62 @@ export default function RootLayout({
             
             // Bloquear el widget "Discover more" de AdSense
             function blockDiscoverMore() {
-              // Buscar elementos que contengan "Discover more" o texto relacionado
-              const discoverMoreTerms = ['discover more', 'gift cards for games', 'ergonomic gaming mouse', 'gaming accessories', 'game deals'];
+              // Términos específicos del widget "Discover more"
+              const discoverMoreTerms = ['discover more', 'gift cards for games', 'ergonomic gaming mouse'];
               
-              // Buscar todos los elementos que contengan estos términos
-              const allElements = document.querySelectorAll('*');
-              allElements.forEach(element => {
-                const text = (element.textContent || '').toLowerCase();
-                if (discoverMoreTerms.some(term => text.includes(term))) {
-                  // Si el elemento está relacionado con AdSense o anuncios, ocultarlo
-                  const isAdElement = element.closest('.adsbygoogle') || 
-                                     element.closest('[class*="ad"]') || 
-                                     element.closest('[id*="ad"]') ||
-                                     element.closest('[class*="google"]') ||
-                                     element.closest('[id*="google"]') ||
-                                     element.closest('[data-ad-slot]') ||
-                                     element.closest('[data-ad-client]') ||
-                                     element.classList.contains('adsbygoogle') ||
-                                     element.id?.includes('google_ads') ||
-                                     element.id?.includes('ad-') ||
-                                     element.className?.toString().includes('ad');
+              // Solo buscar dentro de elementos de AdSense específicos
+              const adSenseContainers = document.querySelectorAll('.adsbygoogle, [data-ad-client], [data-ad-slot], ins.adsbygoogle');
+              
+              adSenseContainers.forEach(adContainer => {
+                // Buscar solo dentro de este contenedor de anuncio
+                const elements = adContainer.querySelectorAll('*');
+                const containerText = (adContainer.textContent || '').toLowerCase();
+                
+                // Verificar si el contenedor o sus hijos contienen los términos
+                const hasDiscoverMore = discoverMoreTerms.some(term => containerText.includes(term));
+                
+                if (hasDiscoverMore) {
+                  // Verificar si es realmente un widget "Discover more" (no un anuncio normal)
+                  // Los widgets "Discover more" suelen tener estas características:
+                  const isDiscoverWidget = adContainer.querySelector('[class*="discover"]') ||
+                                          adContainer.querySelector('[id*="discover"]') ||
+                                          adContainer.closest('[class*="discover"]') ||
+                                          containerText.includes('discover more') ||
+                                          adContainer.querySelector('iframe[src*="discover"]') ||
+                                          adContainer.querySelector('iframe[src*="native"]');
                   
-                  if (isAdElement) {
-                    let targetElement = element.closest('.adsbygoogle') || 
-                                       element.closest('[class*="ad"]') || 
-                                       element.closest('[id*="ad"]') || 
-                                       element;
-                    
-                    if (targetElement) {
-                      targetElement.style.display = 'none';
-                      targetElement.style.visibility = 'hidden';
-                      targetElement.style.height = '0';
-                      targetElement.style.width = '0';
-                      targetElement.style.overflow = 'hidden';
-                      targetElement.style.opacity = '0';
-                      targetElement.style.position = 'absolute';
-                      targetElement.style.left = '-9999px';
-                    }
+                  if (isDiscoverWidget) {
+                    // Ocultar solo este contenedor específico
+                    adContainer.style.display = 'none';
+                    adContainer.style.visibility = 'hidden';
+                    adContainer.style.height = '0';
+                    adContainer.style.width = '0';
+                    adContainer.style.overflow = 'hidden';
+                    adContainer.style.opacity = '0';
                   }
                 }
               });
               
-              // Bloquear iframes de AdSense que puedan contener "Discover more"
-              const adIframes = document.querySelectorAll('iframe[src*="googlesyndication"], iframe[src*="doubleclick"], iframe[id*="google_ads"], iframe[src*="googleads"]');
+              // Bloquear iframes de AdSense que sean específicamente del widget "Discover more"
+              const adIframes = document.querySelectorAll('iframe[src*="googlesyndication"], iframe[src*="doubleclick"]');
               adIframes.forEach(iframe => {
-                try {
-                  // Verificar el título o atributos del iframe
-                  const iframeTitle = (iframe.getAttribute('title') || '').toLowerCase();
-                  const iframeId = (iframe.id || '').toLowerCase();
-                  const iframeSrc = (iframe.src || '').toLowerCase();
-                  
-                  if (discoverMoreTerms.some(term => 
-                    iframeTitle.includes(term) || 
-                    iframeId.includes(term) || 
-                    iframeSrc.includes('discover') ||
-                    iframeSrc.includes('native')
-                  )) {
+                const iframeSrc = (iframe.src || '').toLowerCase();
+                const iframeId = (iframe.id || '').toLowerCase();
+                
+                // Solo bloquear iframes que claramente sean del widget "Discover more"
+                if (iframeSrc.includes('discover') || 
+                    iframeSrc.includes('native') ||
+                    iframeId.includes('discover')) {
+                  // Verificar que esté dentro de un contenedor de AdSense
+                  const adContainer = iframe.closest('.adsbygoogle, [data-ad-client], [data-ad-slot]');
+                  if (adContainer) {
                     iframe.style.display = 'none';
                     iframe.style.visibility = 'hidden';
                     iframe.style.height = '0';
                     iframe.style.width = '0';
                     iframe.style.overflow = 'hidden';
                     iframe.style.opacity = '0';
-                    iframe.style.position = 'absolute';
-                    iframe.style.left = '-9999px';
                   }
-                  
-                  // Intentar acceder al contenido del iframe (puede fallar por CORS)
-                  const iframeDoc = iframe.contentDocument || iframe.contentWindow?.document;
-                  if (iframeDoc) {
-                    const iframeText = (iframeDoc.body?.textContent || '').toLowerCase();
-                    if (discoverMoreTerms.some(term => iframeText.includes(term))) {
-                      iframe.style.display = 'none';
-                      iframe.style.visibility = 'hidden';
-                      iframe.style.height = '0';
-                      iframe.style.width = '0';
-                      iframe.style.overflow = 'hidden';
-                      iframe.style.opacity = '0';
-                      iframe.style.position = 'absolute';
-                      iframe.style.left = '-9999px';
-                    }
-                  }
-                } catch (e) {
-                  // Ignorar errores de CORS
-                }
-              });
-              
-              // Bloquear contenedores comunes de "Discover more"
-              const discoverContainers = document.querySelectorAll('[class*="discover"], [id*="discover"], [aria-label*="Discover"], [aria-label*="discover"]');
-              discoverContainers.forEach(container => {
-                const text = (container.textContent || '').toLowerCase();
-                if (discoverMoreTerms.some(term => text.includes(term))) {
-                  container.style.display = 'none';
-                  container.style.visibility = 'hidden';
-                  container.style.height = '0';
-                  container.style.width = '0';
-                  container.style.overflow = 'hidden';
-                  container.style.opacity = '0';
-                  container.style.position = 'absolute';
-                  container.style.left = '-9999px';
                 }
               });
             }
