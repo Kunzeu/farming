@@ -13,8 +13,6 @@ import {
   CheckCircle,
   AlertCircle,
   ExternalLink,
-  Star,
-  Award,
   Crown,
   Shield,
   X,
@@ -365,13 +363,6 @@ const GiveawaysPage = () => {
       default:
         return <Gift className="w-4 h-4 text-gray-400" />;
     }
-  };
-
-  const getPositionIcon = (position: number) => {
-    if (position === 1) return <Crown className="w-4 h-4 text-yellow-400" />;
-    if (position === 2) return <Award className="w-4 h-4 text-gray-300" />;
-    if (position === 3) return <Award className="w-4 h-4 text-amber-600" />;
-    return <Star className="w-4 h-4 text-gray-400" />;
   };
 
   const handleEnterGiveaway = async () => {

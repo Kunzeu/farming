@@ -216,12 +216,124 @@ export default function RootLayout({
               });
             }
             
+            // Bloquear el widget "Discover more" de AdSense
+            function blockDiscoverMore() {
+              // Buscar elementos que contengan "Discover more" o texto relacionado
+              const discoverMoreTerms = ['discover more', 'gift cards for games', 'ergonomic gaming mouse', 'gaming accessories', 'game deals'];
+              
+              // Buscar todos los elementos que contengan estos términos
+              const allElements = document.querySelectorAll('*');
+              allElements.forEach(element => {
+                const text = (element.textContent || '').toLowerCase();
+                if (discoverMoreTerms.some(term => text.includes(term))) {
+                  // Si el elemento está relacionado con AdSense o anuncios, ocultarlo
+                  const isAdElement = element.closest('.adsbygoogle') || 
+                                     element.closest('[class*="ad"]') || 
+                                     element.closest('[id*="ad"]') ||
+                                     element.closest('[class*="google"]') ||
+                                     element.closest('[id*="google"]') ||
+                                     element.closest('[data-ad-slot]') ||
+                                     element.closest('[data-ad-client]') ||
+                                     element.classList.contains('adsbygoogle') ||
+                                     element.id?.includes('google_ads') ||
+                                     element.id?.includes('ad-') ||
+                                     element.className?.toString().includes('ad');
+                  
+                  if (isAdElement) {
+                    let targetElement = element.closest('.adsbygoogle') || 
+                                       element.closest('[class*="ad"]') || 
+                                       element.closest('[id*="ad"]') || 
+                                       element;
+                    
+                    if (targetElement) {
+                      targetElement.style.display = 'none';
+                      targetElement.style.visibility = 'hidden';
+                      targetElement.style.height = '0';
+                      targetElement.style.width = '0';
+                      targetElement.style.overflow = 'hidden';
+                      targetElement.style.opacity = '0';
+                      targetElement.style.position = 'absolute';
+                      targetElement.style.left = '-9999px';
+                    }
+                  }
+                }
+              });
+              
+              // Bloquear iframes de AdSense que puedan contener "Discover more"
+              const adIframes = document.querySelectorAll('iframe[src*="googlesyndication"], iframe[src*="doubleclick"], iframe[id*="google_ads"], iframe[src*="googleads"]');
+              adIframes.forEach(iframe => {
+                try {
+                  // Verificar el título o atributos del iframe
+                  const iframeTitle = (iframe.getAttribute('title') || '').toLowerCase();
+                  const iframeId = (iframe.id || '').toLowerCase();
+                  const iframeSrc = (iframe.src || '').toLowerCase();
+                  
+                  if (discoverMoreTerms.some(term => 
+                    iframeTitle.includes(term) || 
+                    iframeId.includes(term) || 
+                    iframeSrc.includes('discover') ||
+                    iframeSrc.includes('native')
+                  )) {
+                    iframe.style.display = 'none';
+                    iframe.style.visibility = 'hidden';
+                    iframe.style.height = '0';
+                    iframe.style.width = '0';
+                    iframe.style.overflow = 'hidden';
+                    iframe.style.opacity = '0';
+                    iframe.style.position = 'absolute';
+                    iframe.style.left = '-9999px';
+                  }
+                  
+                  // Intentar acceder al contenido del iframe (puede fallar por CORS)
+                  const iframeDoc = iframe.contentDocument || iframe.contentWindow?.document;
+                  if (iframeDoc) {
+                    const iframeText = (iframeDoc.body?.textContent || '').toLowerCase();
+                    if (discoverMoreTerms.some(term => iframeText.includes(term))) {
+                      iframe.style.display = 'none';
+                      iframe.style.visibility = 'hidden';
+                      iframe.style.height = '0';
+                      iframe.style.width = '0';
+                      iframe.style.overflow = 'hidden';
+                      iframe.style.opacity = '0';
+                      iframe.style.position = 'absolute';
+                      iframe.style.left = '-9999px';
+                    }
+                  }
+                } catch (e) {
+                  // Ignorar errores de CORS
+                }
+              });
+              
+              // Bloquear contenedores comunes de "Discover more"
+              const discoverContainers = document.querySelectorAll('[class*="discover"], [id*="discover"], [aria-label*="Discover"], [aria-label*="discover"]');
+              discoverContainers.forEach(container => {
+                const text = (container.textContent || '').toLowerCase();
+                if (discoverMoreTerms.some(term => text.includes(term))) {
+                  container.style.display = 'none';
+                  container.style.visibility = 'hidden';
+                  container.style.height = '0';
+                  container.style.width = '0';
+                  container.style.overflow = 'hidden';
+                  container.style.opacity = '0';
+                  container.style.position = 'absolute';
+                  container.style.left = '-9999px';
+                }
+              });
+            }
+            
             // Ejecutar inmediatamente y periódicamente
             blockUnwantedContent();
-            setInterval(blockUnwantedContent, 2000);
+            blockDiscoverMore();
+            setInterval(() => {
+              blockUnwantedContent();
+              blockDiscoverMore();
+            }, 2000);
             
             // También ejecutar cuando se cargan nuevos elementos
-            const observer = new MutationObserver(blockUnwantedContent);
+            const observer = new MutationObserver(() => {
+              blockUnwantedContent();
+              blockDiscoverMore();
+            });
             observer.observe(document.body, { childList: true, subtree: true });
             
             
