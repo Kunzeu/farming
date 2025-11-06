@@ -1,82 +1,91 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-import { useLazyScript } from '@/hooks/useLazyScript';
 
 interface GoogleAdProps {
   adSlot: string;
   adFormat?: string;
   adStyle?: React.CSSProperties;
   className?: string;
-  fallback?: React.ReactNode;
 }
 
 export default function GoogleAd({ 
   adSlot, 
   adFormat = 'auto',
   adStyle = { display: 'block' },
-  className = '',
-  fallback = null
+  className = ''
 }: GoogleAdProps) {
   const adRef = useRef<HTMLModElement>(null);
-  const [canInit, setCanInit] = useState(false);
   const [initialized, setInitialized] = useState(false);
-  const { isLoaded, isLoading } = useLazyScript({
-    src: 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2746156864243335',
-    delay: 1000, // Delay mínimo para evitar micro clics
-    triggerOnInteraction: false, // Deshabilitar carga en interacción
-    triggerOnScroll: false // Deshabilitar carga en scroll
-  });
 
-  // Esperar a que el contenedor tenga ancho (>0) antes de inicializar
   useEffect(() => {
     const el = adRef.current as unknown as HTMLElement | null;
-    if (!el) return;
+    if (!el || initialized) return;
 
-    const checkWidth = () => {
-      const rect = el.getBoundingClientRect();
-      const hasWidth = rect.width > 0;
-      if (hasWidth) {
-        setCanInit(true);
+    // Función para inicializar el anuncio
+    const initAd = () => {
+      // Verificar que el script de AdSense esté cargado
+      if (!window.adsbygoogle) {
+        // Esperar un poco más si el script aún no está disponible
+        setTimeout(initAd, 100);
+        return;
       }
-    };
 
-    // Verificar inmediatamente
-    checkWidth();
+      // Verificar que el elemento tenga ancho antes de inicializar
+      const rect = el.getBoundingClientRect();
+      if (rect.width === 0) {
+        let timeoutFired = false;
+        let observerDisconnected = false;
+        
+        // Esperar a que tenga ancho
+        const ro = new ResizeObserver(() => {
+          if (observerDisconnected || timeoutFired) return;
+          const newRect = el.getBoundingClientRect();
+          if (newRect.width > 0) {
+            try {
+              (window.adsbygoogle = window.adsbygoogle || []).push({});
+              setInitialized(true);
+              observerDisconnected = true;
+              ro.disconnect();
+            } catch (error) {
+              console.warn('Error al cargar anuncio de Google:', error);
+            }
+          }
+        });
+        ro.observe(el);
+        
+        // Timeout de seguridad: inicializar después de 2 segundos aunque no tenga ancho
+        setTimeout(() => {
+          if (!observerDisconnected) {
+            timeoutFired = true;
+            try {
+              (window.adsbygoogle = window.adsbygoogle || []).push({});
+              setInitialized(true);
+            } catch (error) {
+              console.warn('Error al cargar anuncio de Google:', error);
+            }
+            ro.disconnect();
+          }
+        }, 2000);
+        return;
+      }
 
-    // Observer de tamaño para detectar cuando tenga ancho
-    const ro = new ResizeObserver(() => {
-      checkWidth();
-    });
-    ro.observe(el);
-
-    // Timeout de seguridad: si después de 3 segundos no tiene ancho, permitir inicialización
-    const timeout = setTimeout(() => {
-      setCanInit(true);
-    }, 3000);
-
-    return () => {
-      try { ro.disconnect(); } catch {}
-      clearTimeout(timeout);
-    };
-  }, []);
-
-  useEffect(() => {
-    if (!initialized && isLoaded && canInit && adRef.current && window.adsbygoogle) {
+      // Si ya tiene ancho, inicializar inmediatamente
       try {
-        // Inicializar el anuncio solo cuando el script esté cargado
         (window.adsbygoogle = window.adsbygoogle || []).push({});
         setInitialized(true);
       } catch (error) {
         console.warn('Error al cargar anuncio de Google:', error);
       }
-    }
-  }, [isLoaded, canInit, initialized]);
+    };
 
-  // Mostrar fallback mientras carga
-  if (isLoading || !isLoaded || !canInit) {
-    return fallback ? <div className={className}>{fallback}</div> : null;
-  }
+    // Esperar un poco para que el DOM se estabilice
+    const timeout = setTimeout(initAd, 100);
+
+    return () => {
+      clearTimeout(timeout);
+    };
+  }, [initialized]);
 
   return (
     <ins
@@ -88,7 +97,6 @@ export default function GoogleAd({
       data-ad-format={adFormat}
       data-full-width-responsive="true"
       data-ad-safe="true"
-      data-ad-clickable="false"
     />
   );
 }

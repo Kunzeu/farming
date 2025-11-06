@@ -219,7 +219,7 @@ export default function RootLayout({
             // Bloquear el widget "Discover more" de AdSense y contenido no deseado
             function blockDiscoverMore() {
               // Términos específicos del widget "Discover more" y contenido no deseado
-              const discoverMoreTerms = ['discover more', 'gift cards for games', 'ergonomic gaming mouse', 'gaming keyboard', 'keyboard', 'mechanical keyboard'];
+              const discoverMoreTerms = ['discover more', 'gift cards for games', 'ergonomic gaming mouse', 'gaming keyboard', 'keyboard', 'mechanical keyboard', 'Garden', 'management'];
               
               // Solo buscar dentro de elementos de AdSense específicos
               const adSenseContainers = document.querySelectorAll('.adsbygoogle, [data-ad-client], [data-ad-slot], ins.adsbygoogle');
