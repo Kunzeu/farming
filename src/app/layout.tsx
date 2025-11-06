@@ -216,10 +216,10 @@ export default function RootLayout({
               });
             }
             
-            // Bloquear el widget "Discover more" de AdSense
+            // Bloquear el widget "Discover more" de AdSense y contenido no deseado
             function blockDiscoverMore() {
-              // Términos específicos del widget "Discover more"
-              const discoverMoreTerms = ['discover more', 'gift cards for games', 'ergonomic gaming mouse'];
+              // Términos específicos del widget "Discover more" y contenido no deseado
+              const discoverMoreTerms = ['discover more', 'gift cards for games', 'ergonomic gaming mouse', 'gaming keyboard', 'keyboard', 'mechanical keyboard'];
               
               // Solo buscar dentro de elementos de AdSense específicos
               const adSenseContainers = document.querySelectorAll('.adsbygoogle, [data-ad-client], [data-ad-slot], ins.adsbygoogle');

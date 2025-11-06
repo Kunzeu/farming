@@ -28,41 +28,36 @@ export default function GoogleAd({
     triggerOnScroll: false // Deshabilitar carga en scroll
   });
 
-  // Esperar a que el contenedor tenga ancho (>0) y esté visible antes de inicializar
+  // Esperar a que el contenedor tenga ancho (>0) antes de inicializar
   useEffect(() => {
     const el = adRef.current as unknown as HTMLElement | null;
     if (!el) return;
 
-    let inView = false;
-    let widthOk = false;
+    const checkWidth = () => {
+      const rect = el.getBoundingClientRect();
+      const hasWidth = rect.width > 0;
+      if (hasWidth) {
+        setCanInit(true);
+      }
+    };
 
-    const evaluate = () => setCanInit(inView && widthOk);
+    // Verificar inmediatamente
+    checkWidth();
 
-    // Observer de visibilidad
-    const io = new IntersectionObserver((entries) => {
-      inView = entries.some(e => e.isIntersecting);
-      evaluate();
-    }, { rootMargin: '0px', threshold: [0, 0.01, 0.1] });
-    io.observe(el);
-
-    // Observer de tamaño
-    const ro = new ResizeObserver((entries) => {
-      const entry = entries[0];
-      const w = entry?.contentRect?.width ?? 0;
-      widthOk = w > 0;
-      evaluate();
+    // Observer de tamaño para detectar cuando tenga ancho
+    const ro = new ResizeObserver(() => {
+      checkWidth();
     });
     ro.observe(el);
 
-    // Evaluación inicial por si ya tiene tamaño/visibilidad
-    const rect = el.getBoundingClientRect();
-    widthOk = (rect.width ?? 0) > 0;
-    inView = rect.top < window.innerHeight && rect.bottom > 0;
-    evaluate();
+    // Timeout de seguridad: si después de 3 segundos no tiene ancho, permitir inicialización
+    const timeout = setTimeout(() => {
+      setCanInit(true);
+    }, 3000);
 
     return () => {
-      try { io.disconnect(); } catch {}
       try { ro.disconnect(); } catch {}
+      clearTimeout(timeout);
     };
   }, []);
 
