@@ -5,7 +5,6 @@ import { useState } from 'react';
 import { useI18n } from '@/contexts/I18nContext';
 import { CheckCircle, AlertCircle, ExternalLink, Link, Crown } from 'lucide-react';
 import { motion } from 'framer-motion';
-import { getTierBenefits } from '@/lib/patreon-benefits';
 
 export default function PatreonSection() {
   const { user, unlinkPatreon } = useAuth();
@@ -15,38 +14,6 @@ export default function PatreonSection() {
   const hasPatreon = !!user?.patreonId;
   const isActivePatron = user?.patreonStatus === 'active_patron';
 
-  // Verificar si el tier es de pago válido
-  const validPatreonTiers = ['Bronze', 'Silver', 'Gold', 'Legends'];
-  const hasValidTier = user?.patreonTier && validPatreonTiers.includes(user.patreonTier);
-  const displayTier = user?.patreonTier || null; // Mostrar cualquier tier, no solo los válidos
-  
-  // Determinar el estado de visualización
-  const getSubscriptionStatus = () => {
-    if (!hasPatreon) return 'no_patreon';
-    if (displayTier === 'Free') return 'free_user';
-    if (isActivePatron) return 'active_patron';
-    if (displayTier && validPatreonTiers.includes(displayTier)) return 'inactive_patron';
-    return 'unknown';
-  };
-  
-  const subscriptionStatus = getSubscriptionStatus();
-  
-  // Obtener beneficios del tier del usuario
-  const userBenefits = getTierBenefits(user);
-
-  // Mapear beneficios a texto legible
-  const getBenefitText = (benefit: string) => {
-    const benefitMap: Record<string, string> = {
-      'no_ads': t('profile.patreon.benefit.noAds', 'Sin anuncios'),
-      'exclusive_content': t('profile.patreon.benefit.exclusiveContent', 'Contenido exclusivo'),
-      'discord_role': t('profile.patreon.benefit.discordRole', 'Rol especial en Discord'),
-      'priority_support': t('profile.patreon.benefit.prioritySupport', 'Soporte prioritario'),
-      'early_access': t('profile.patreon.benefit.earlyAccess', 'Acceso temprano'),
-      'custom_features': t('profile.patreon.benefit.customFeatures', 'Características personalizadas'),
-      'api_access': t('profile.patreon.benefit.apiAccess', 'Acceso a API')
-    };
-    return benefitMap[benefit] || benefit;
-  };
 
   const handleLinkPatreon = () => {
     // Detectar el entorno actual y usar la URL de redirección apropiada
@@ -132,46 +99,40 @@ export default function PatreonSection() {
               </div>
             </div>
             
-            {displayTier && (
-              <div className="flex items-center justify-between">
-                <span className="text-xs font-medium text-gray-300">
-                  {t('profile.patreon.tier', 'Nivel')}
-                </span>
-                <span className={`text-sm font-bold ${
-                  hasValidTier ? 'text-[#FF424D]' : 'text-gray-400'
-                }`}>
-                  {displayTier}
-                </span>
-              </div>
-            )}
-
-            {!displayTier && hasPatreon && (
+            {hasPatreon && (
               <div className="flex items-center justify-between">
                 <span className="text-xs font-medium text-gray-300">
                   {t('profile.patreon.subscription', 'Suscripción')}
                 </span>
-                <span className="text-sm text-gray-400">
-                  {subscriptionStatus === 'free_user' 
-                    ? t('profile.patreon.freeUser', 'Usuario Free')
-                    : t('profile.patreon.noActiveSubscription', 'Sin suscripción activa')
+                <span className={`text-sm font-semibold ${
+                  user?.patreonStatus === 'active_patron' ? 'text-green-400' :
+                  user?.patreonStatus === 'declined_patron' ? 'text-red-400' :
+                  user?.patreonStatus === 'former_patron' ? 'text-yellow-400' :
+                  'text-gray-400'
+                }`}>
+                  {user?.patreonStatus === 'active_patron' 
+                    ? t('profile.patreon.activePatron', 'Patreon Activo')
+                    : user?.patreonStatus === 'declined_patron'
+                    ? t('profile.patreon.declined', 'Pago Rechazado')
+                    : user?.patreonStatus === 'former_patron'
+                    ? t('profile.patreon.former', 'Ex-Patreon')
+                    : t('profile.patreon.noStatus', 'Sin estado')
                   }
                 </span>
               </div>
             )}
 
-            {/* Benefits */}
-            {displayTier && userBenefits.length > 0 && (
+            {/* Benefits - Solo mostrar si es patreon activo */}
+            {isActivePatron && (
               <div className="mt-4 pt-4 border-t border-gray-700">
                 <h4 className="text-sm font-semibold text-white mb-2">
                   {t('profile.patreon.benefits', 'Beneficios')}
                 </h4>
                 <ul className="space-y-1">
-                  {userBenefits.map((benefit, index) => (
-                    <li key={index} className="flex items-center gap-2 text-xs text-gray-300">
-                      <CheckCircle className="w-3 h-3 text-green-400" />
-                      <span>{getBenefitText(benefit)}</span>
-                    </li>
-                  ))}
+                  <li className="flex items-center gap-2 text-xs text-gray-300">
+                    <CheckCircle className="w-3 h-3 text-green-400" />
+                    <span>{t('profile.patreon.benefit.noAds', 'Sin anuncios')}</span>
+                  </li>
                 </ul>
               </div>
             )}

@@ -3,7 +3,8 @@
 import { useState, useEffect } from 'react';
 import { useDashboardPreferences } from '@/hooks/useDashboardPreferences';
 import { useAuth } from '@/contexts/AuthContext';
-import { Settings, Grid, List, Eye, EyeOff, RotateCcw } from 'lucide-react';
+import { useI18n } from '@/contexts/I18nContext';
+import { Settings, Grid, List, Eye, EyeOff, RotateCcw, X } from 'lucide-react';
 
 interface DashboardSettingsProps {
   isOpen: boolean;
@@ -11,33 +12,41 @@ interface DashboardSettingsProps {
 }
 
 const availableCards = [
-  { id: 'farms', name: 'Rutas de Farming' },
-  { id: 'dailyRoutine', name: 'Rutina Diaria' },
-  { id: 'salvaging', name: 'Reciclaje' },
-  { id: 'magic', name: 'Análisis de Magia' },
-  { id: 'festivals', name: 'Festivales' },
-  { id: 'farmingTracker', name: 'Fractales' },
-  { id: 'glossary', name: 'Glosario' },
-  { id: 'orrianJewelry', name: 'Caja de Joyas Orrianas' },
-  { id: 'giftOfMastery', name: 'Gift of Mastery' },
-  { id: 'giftOfJadeMastery', name: 'Gift of Jade Mastery' },
-  { id: 'garden', name: 'Jardín' }
+  { id: 'farms' },
+  { id: 'dailyRoutine' },
+  { id: 'salvaging' },
+  { id: 'magic' },
+  { id: 'festivals' },
+  { id: 'farmingTracker' },
+  { id: 'glossary' },
+  { id: 'orrianJewelry' },
+  { id: 'giftOfMastery' },
+  { id: 'giftOfJadeMastery' },
+  { id: 'garden' },
+  { id: 'giveaways' },
+  { id: 'opened' },
+  { id: 'ectogambling' },
+  { id: 'conversionGuide' },
+  { id: 'altParking' }
 ];
 
 export default function DashboardSettings({ isOpen, onClose }: DashboardSettingsProps) {
   const { user } = useAuth();
+  const { t } = useI18n();
   const {
     preferences,
     isLoading,
     updateCardOrder,
     toggleCardVisibility,
-    updateCardSize,
     setGlobalCardSize,
     setLayout,
     resetToDefault
   } = useDashboardPreferences();
 
   const [draggedCard, setDraggedCard] = useState<string | null>(null);
+  const [dragOverCard, setDragOverCard] = useState<string | null>(null);
+  const [isDragging, setIsDragging] = useState(false);
+
 
   // Cerrar modal con tecla ESC
   useEffect(() => {
@@ -59,55 +68,133 @@ export default function DashboardSettings({ isOpen, onClose }: DashboardSettings
   if (!isOpen || !user) return null;
 
   const handleDragStart = (e: React.DragEvent, cardId: string) => {
+    e.stopPropagation();
+    setIsDragging(true);
     setDraggedCard(cardId);
     e.dataTransfer.effectAllowed = 'move';
+    e.dataTransfer.setData('text/plain', cardId);
+    
+    // Cambiar el cursor del mouse a "move"
+    document.body.style.cursor = 'move';
+    document.body.style.userSelect = 'none';
+    
+    // Hacer el elemento semi-transparente mientras se arrastra
+    if (e.currentTarget instanceof HTMLElement) {
+      e.currentTarget.style.opacity = '0.5';
+      e.currentTarget.style.cursor = 'move';
+    }
   };
 
-  const handleDragOver = (e: React.DragEvent) => {
+  const handleDragOver = (e: React.DragEvent, targetCardId: string) => {
     e.preventDefault();
+    e.stopPropagation();
     e.dataTransfer.dropEffect = 'move';
+    
+    if (draggedCard && draggedCard !== targetCardId) {
+      setDragOverCard(targetCardId);
+    }
+  };
+
+  const handleDragLeave = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    // Solo limpiar si realmente estamos saliendo del elemento (no entrando a un hijo)
+    const rect = e.currentTarget.getBoundingClientRect();
+    const x = e.clientX;
+    const y = e.clientY;
+    
+    if (x < rect.left || x > rect.right || y < rect.top || y > rect.bottom) {
+      setDragOverCard(null);
+    }
   };
 
   const handleDrop = (e: React.DragEvent, targetCardId: string) => {
     e.preventDefault();
+    e.stopPropagation();
     
-    if (!draggedCard || draggedCard === targetCardId) return;
+    const draggedCardId = draggedCard || e.dataTransfer.getData('text/plain');
+    
+    if (!draggedCardId || draggedCardId === targetCardId) {
+      setIsDragging(false);
+      setDraggedCard(null);
+      setDragOverCard(null);
+      return;
+    }
 
-    const newOrder = [...preferences.cardOrder];
-    const draggedIndex = newOrder.indexOf(draggedCard);
-    const targetIndex = newOrder.indexOf(targetCardId);
+    const currentOrder = [...preferences.cardOrder];
+    const draggedIndex = currentOrder.indexOf(draggedCardId);
+    const targetIndex = currentOrder.indexOf(targetCardId);
+
+    if (draggedIndex === -1 || targetIndex === -1) {
+      setIsDragging(false);
+      setDraggedCard(null);
+      setDragOverCard(null);
+      return;
+    }
 
     // Mover la tarjeta
+    const newOrder = [...currentOrder];
     newOrder.splice(draggedIndex, 1);
-    newOrder.splice(targetIndex, 0, draggedCard);
+    newOrder.splice(targetIndex, 0, draggedCardId);
 
+    // Actualizar inmediatamente
     updateCardOrder(newOrder);
+    
+    setIsDragging(false);
     setDraggedCard(null);
+    setDragOverCard(null);
   };
 
-  const handleDragEnd = () => {
+  const handleDragEnd = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    // Restaurar el cursor del mouse
+    document.body.style.cursor = '';
+    document.body.style.userSelect = '';
+    
+    // Restaurar la opacidad
+    if (e.currentTarget instanceof HTMLElement) {
+      e.currentTarget.style.opacity = '1';
+      e.currentTarget.style.cursor = '';
+    }
+    
+    setIsDragging(false);
     setDraggedCard(null);
+    setDragOverCard(null);
+    
+    // Prevenir clicks después del drag
+    setTimeout(() => {
+      setIsDragging(false);
+    }, 100);
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-gray-800 rounded-lg p-6 max-w-4xl w-full mx-4 max-h-[90vh] overflow-y-auto">
+    <div 
+      className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+      onClick={onClose}
+    >
+      <div 
+        className="bg-gray-800 rounded-lg p-6 max-w-4xl w-full mx-4 max-h-[90vh] overflow-y-auto"
+        onClick={(e) => e.stopPropagation()}
+      >
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-2xl font-bold text-white flex items-center">
             <Settings className="w-6 h-6 mr-2" />
-            Configuración del Dashboard
+            {t('dashboard.settings.title', 'Configuración del Dashboard')}
           </h2>
           <button
             onClick={onClose}
-            className="text-gray-400 hover:text-white text-2xl"
+            className="text-gray-400 hover:text-white transition-colors duration-200 p-1 rounded-full hover:bg-gray-700"
+            aria-label={t('dashboard.settings.close', 'Cerrar')}
           >
-            ×
+            <X className="w-6 h-6" />
           </button>
         </div>
 
         {/* Layout Selection */}
         <div className="mb-6">
-          <h3 className="text-lg font-semibold text-white mb-3">Diseño</h3>
+          <h3 className="text-lg font-semibold text-white mb-3">{t('dashboard.settings.layout', 'Diseño')}</h3>
           <div className="flex gap-4">
             <button
               onClick={() => setLayout('grid')}
@@ -118,7 +205,7 @@ export default function DashboardSettings({ isOpen, onClose }: DashboardSettings
               }`}
             >
               <Grid className="w-4 h-4 mr-2" />
-              Cuadrícula
+              {t('dashboard.settings.grid', 'Cuadrícula')}
             </button>
             <button
               onClick={() => setLayout('list')}
@@ -129,16 +216,16 @@ export default function DashboardSettings({ isOpen, onClose }: DashboardSettings
               }`}
             >
               <List className="w-4 h-4 mr-2" />
-              Lista
+              {t('dashboard.settings.list', 'Lista')}
             </button>
           </div>
         </div>
 
         {/* Global Size Selection */}
         <div className="mb-6">
-          <h3 className="text-lg font-semibold text-white mb-3">Tamaño de Tarjetas</h3>
+          <h3 className="text-lg font-semibold text-white mb-3">{t('dashboard.settings.cardSize', 'Tamaño de Tarjetas')}</h3>
           <p className="text-gray-400 text-sm mb-4">
-            Cambia el tamaño de todas las tarjetas del dashboard.
+            {t('dashboard.settings.cardSizeDescription', 'Cambia el tamaño de todas las tarjetas del dashboard.')}
           </p>
           <div className="flex gap-4">
             <button
@@ -150,7 +237,7 @@ export default function DashboardSettings({ isOpen, onClose }: DashboardSettings
               }`}
             >
               <div className="w-3 h-3 bg-current rounded mr-2"></div>
-              Pequeño
+              {t('dashboard.settings.small', 'Pequeño')}
             </button>
             <button
               onClick={() => setGlobalCardSize('medium')}
@@ -161,7 +248,7 @@ export default function DashboardSettings({ isOpen, onClose }: DashboardSettings
               }`}
             >
               <div className="w-4 h-4 bg-current rounded mr-2"></div>
-              Mediano
+              {t('dashboard.settings.medium', 'Mediano')}
             </button>
             <button
               onClick={() => setGlobalCardSize('large')}
@@ -172,7 +259,7 @@ export default function DashboardSettings({ isOpen, onClose }: DashboardSettings
               }`}
             >
               <div className="w-5 h-5 bg-current rounded mr-2"></div>
-              Grande
+              {t('dashboard.settings.large', 'Grande')}
             </button>
           </div>
         </div>
@@ -180,61 +267,93 @@ export default function DashboardSettings({ isOpen, onClose }: DashboardSettings
         {/* Card Order and Visibility */}
         <div className="mb-6">
           <h3 className="text-lg font-semibold text-white mb-3">
-            Orden y Visibilidad de Tarjetas
+            {t('dashboard.settings.orderAndVisibility', 'Orden y Visibilidad de Tarjetas')}
           </h3>
           <p className="text-gray-400 text-sm mb-4">
-            Arrastra para reordenar las tarjetas. Haz clic en el ojo para mostrar/ocultar.
+            {t('dashboard.settings.orderDescription', 'Arrastra para reordenar las tarjetas. Haz clic en el ojo para mostrar/ocultar.')}
           </p>
           
           <div className="space-y-2">
-            {availableCards.map((card) => {
-              const cardId = card.id;
+            {preferences.cardOrder.map((cardId) => {
+              const card = availableCards.find(c => c.id === cardId);
+              if (!card) return null;
+              
               const isHidden = preferences.hiddenCards.includes(cardId);
-              const cardSize = preferences.cardSizes[cardId] || 'medium';
-              const isInOrder = preferences.cardOrder.includes(cardId);
+              const cardName = t(`dashboard.${cardId}.title`, cardId);
 
               return (
                 <div
                   key={cardId}
-                  draggable={isInOrder}
-                  onDragStart={(e) => isInOrder && handleDragStart(e, cardId)}
-                  onDragOver={handleDragOver}
+                  draggable={true}
+                  onDragStart={(e) => handleDragStart(e, cardId)}
+                  onDragOver={(e) => handleDragOver(e, cardId)}
+                  onDragLeave={handleDragLeave}
                   onDrop={(e) => handleDrop(e, cardId)}
                   onDragEnd={handleDragEnd}
-                  className={`flex items-center justify-between p-3 rounded-lg border-2 ${
-                    isInOrder ? 'border-dashed border-gray-500' : 'border-solid border-gray-600'
-                  } ${
-                    isHidden ? 'bg-gray-700' : 'bg-gray-700'
-                  } ${draggedCard === cardId ? 'opacity-50' : ''} ${
-                    !isInOrder ? 'opacity-60' : ''
+                  onClick={(e) => {
+                    if (isDragging) {
+                      e.preventDefault();
+                      e.stopPropagation();
+                    }
+                  }}
+                  onMouseDown={(e) => {
+                    // Permitir el drag solo si no es un click en el botón
+                    if (e.target instanceof HTMLElement && e.target.closest('button')) {
+                      return;
+                    }
+                  }}
+                  className={`flex items-center justify-between p-3 rounded-lg border-2 border-dashed bg-gray-700 cursor-move transition-all ${
+                    draggedCard === cardId 
+                      ? 'opacity-50 border-blue-500 cursor-move' 
+                      : dragOverCard === cardId
+                      ? 'border-blue-400 bg-gray-600 scale-105 cursor-move'
+                      : 'border-gray-500 hover:border-gray-400 cursor-move'
                   }`}
                 >
-                  <div className="flex items-center">
-                    {isInOrder && <div className="w-2 h-2 bg-gray-400 rounded-full mr-3 cursor-move" />}
+                  <div className="flex items-center flex-1 pointer-events-none">
+                    <div className="w-2 h-2 bg-gray-400 rounded-full mr-3" />
                     <span className={`${isHidden ? 'text-gray-500 line-through' : 'text-white'}`}>
-                      {card.name}
+                      {cardName}
                     </span>
-                    {!isInOrder && (
-                      <span className="ml-2 text-xs text-gray-400">(No disponible)</span>
-                    )}
                   </div>
                   
                   <div className="flex items-center gap-2">
-                    {/* Visibility Toggle - Solo si está en el orden */}
-                    {isInOrder && (
-                      <button
-                        onClick={() => toggleCardVisibility(cardId)}
-                        className={`p-2 rounded ${
-                          isHidden ? 'text-gray-500 hover:text-gray-400' : 'text-blue-400 hover:text-blue-300'
-                        }`}
-                      >
-                        {isHidden ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                      </button>
-                    )}
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        toggleCardVisibility(cardId);
+                      }}
+                      onMouseDown={(e) => e.stopPropagation()}
+                      onDragStart={(e) => e.stopPropagation()}
+                      className={`p-2 rounded transition-colors pointer-events-auto ${
+                        isHidden ? 'text-gray-500 hover:text-gray-400' : 'text-blue-400 hover:text-blue-300'
+                      }`}
+                      title={isHidden ? t('dashboard.settings.show', 'Mostrar') : t('dashboard.settings.hide', 'Ocultar')}
+                    >
+                      {isHidden ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                    </button>
                   </div>
                 </div>
               );
             })}
+            
+            {/* Mostrar tarjetas que no están en el orden */}
+            {availableCards
+              .filter(card => !preferences.cardOrder.includes(card.id))
+              .map((card) => {
+                const cardName = t(`dashboard.${card.id}.title`, card.id);
+                return (
+                  <div
+                    key={card.id}
+                    className="flex items-center justify-between p-3 rounded-lg border-2 border-solid border-gray-600 bg-gray-700 opacity-60"
+                  >
+                    <div className="flex items-center">
+                      <span className="text-gray-500">{cardName}</span>
+                      <span className="ml-2 text-xs text-gray-400">{t('dashboard.settings.notAvailable', '(No disponible)')}</span>
+                    </div>
+                  </div>
+                );
+              })}
           </div>
         </div>
 
@@ -246,7 +365,7 @@ export default function DashboardSettings({ isOpen, onClose }: DashboardSettings
             className="flex items-center px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 disabled:opacity-50"
           >
             <RotateCcw className="w-4 h-4 mr-2" />
-            Restaurar por Defecto
+            {t('dashboard.settings.resetToDefault', 'Restaurar por Defecto')}
           </button>
         </div>
       </div>

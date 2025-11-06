@@ -17,7 +17,8 @@ import {
   ArrowLeft,
   ArrowUpDown,
   ArrowUp,
-  ArrowDown
+  ArrowDown,
+  Map
 } from 'lucide-react';
 
 interface Gw2Price {
@@ -646,7 +647,9 @@ const HalloweenPage = () => {
               { id: 'overview', label: t('festivals.tabs.overview'), icon: Info },
               { id: 'calculators', label: t('festivals.tabs.calculators'), icon: Calculator },
               { id: 'box-opening', label: t('festivals.tabs.boxOpening'), icon: Package },
-              { id: 'strategies', label: t('festivals.tabs.strategies'), icon: TrendingUp }
+              { id: 'labyrinth-guide', label: t('pageTitles.halloweenLabyrinth', 'Guía del Laberinto'), icon: Map },
+              { id: 'strategies', label: t('festivals.tabs.strategies'), icon: TrendingUp },
+
             ] as const).map((tab) => (
               <button
                 key={tab.id}
@@ -697,27 +700,6 @@ const HalloweenPage = () => {
                       <h3 className="text-white font-semibold mb-2">{t('halloween.cards.corn.title')}</h3>
                       <p className="text-gray-200 text-sm">{t('halloween.cards.corn.desc')}</p>
                     </div>
-                  </div>
-
-                  {/* Nueva sección para la guía del laberinto */}
-                  <div className="bg-orange-900/20 border border-orange-500/50 rounded-lg p-6">
-                    <h3 className="text-xl font-bold text-white mb-4 flex items-center">
-                      <span className="text-2xl mr-3">🎃</span>
-                      {t('pageTitles.halloweenLabyrinth')}
-                    </h3>
-                    <p className="text-gray-200 mb-4">
-                      {t('halloween.labyrinth.subtitle')}
-                    </p>
-                    <p className="text-gray-300 text-sm mb-6">
-                      {t('halloween.labyrinth.description')}
-                    </p>
-                    <a
-                      href="/festivals/halloween/labyrinth-guide"
-                      className="inline-flex items-center gap-2 px-6 py-3 bg-orange-600 hover:bg-orange-700 text-white rounded-lg transition-all duration-200 hover:scale-105 hover:shadow-lg font-semibold"
-                    >
-                      <span className="text-lg">🎯</span>
-                      {t('halloween.labyrinth.viewGuide')}
-                    </a>
                   </div>
                 </div>
               </div>
@@ -1245,6 +1227,90 @@ const HalloweenPage = () => {
                         </div>
                         </div>
                       </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Labyrinth Guide Section */}
+            {selectedSection === 'labyrinth-guide' && (
+              <div className="space-y-8">
+                <div className="bg-gray-900/80 backdrop-blur-sm border border-orange-500/30 rounded-lg p-6 shadow-2xl">
+                  <h2 className="text-2xl font-bold text-white mb-6 flex items-center">
+                    <Map className="w-6 h-6 mr-3 text-orange-400" />
+                    {t('pageTitles.halloweenLabyrinth', 'Guía del Laberinto de Halloween')}
+                  </h2>
+                  
+                  <div className="bg-orange-900/20 border border-orange-500/50 rounded-lg p-6 mb-6">
+                    <h3 className="text-xl font-bold text-white mb-4 flex items-center">
+                      <span className="text-2xl mr-3">🎃</span>
+                      {t('halloween.labyrinth.title', 'Guía Completa del Laberinto')}
+                    </h3>
+                    <p className="text-gray-200 mb-4">
+                      {t('halloween.labyrinth.subtitle', 'Descubre todo lo que necesitas saber para farmear el Laberinto de Halloween eficientemente')}
+                    </p>
+                    <p className="text-gray-300 text-sm mb-6">
+                      {t('halloween.labyrinth.description', 'En esta guía encontrarás builds recomendadas, rutas de farm, estrategias de recompensas y consejos avanzados para maximizar tus ganancias en el Laberinto de Halloween.')}
+                    </p>
+                    <a
+                      href="/festivals/halloween/labyrinth-guide"
+                      className="inline-flex items-center gap-2 px-6 py-3 bg-orange-600 hover:bg-orange-700 text-white rounded-lg transition-all duration-200 hover:scale-105 hover:shadow-lg font-semibold"
+                    >
+                      <span className="text-lg">🎯</span>
+                      {t('halloween.labyrinth.viewGuide', 'Ver Guía Completa del Laberinto')}
+                    </a>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <div className="bg-gray-800/60 border border-orange-500/30 rounded-lg p-4 hover:border-orange-500/50 transition-all duration-200">
+                      <h4 className="text-white font-semibold mb-2 flex items-center gap-2">
+                        <Info className="w-5 h-5 text-orange-400" />
+                        {t('halloween.labyrinth.sections.overview', 'Introducción')}
+                      </h4>
+                      <p className="text-gray-300 text-sm">
+                        {t('halloween.labyrinth.overview.description', 'Aprende qué es el Laberinto y cómo maximizar tus ganancias')}
+                      </p>
+                    </div>
+                    
+                    <div className="bg-gray-800/60 border border-orange-500/30 rounded-lg p-4 hover:border-orange-500/50 transition-all duration-200">
+                      <h4 className="text-white font-semibold mb-2 flex items-center gap-2">
+                        <Package className="w-5 h-5 text-orange-400" />
+                        {t('halloween.labyrinth.sections.builds', 'Builds Recomendadas')}
+                      </h4>
+                      <p className="text-gray-300 text-sm">
+                        {t('halloween.labyrinth.builds.description', 'Las mejores builds para farmear eficientemente en el laberinto')}
+                      </p>
+                    </div>
+                    
+                    <div className="bg-gray-800/60 border border-orange-500/30 rounded-lg p-4 hover:border-orange-500/50 transition-all duration-200">
+                      <h4 className="text-white font-semibold mb-2 flex items-center gap-2">
+                        <Map className="w-5 h-5 text-orange-400" />
+                        {t('halloween.labyrinth.sections.routes', 'Rutas de Farm')}
+                      </h4>
+                      <p className="text-gray-300 text-sm">
+                        {t('halloween.labyrinth.routes.description', 'Rutas optimizadas para maximizar tus recompensas')}
+                      </p>
+                    </div>
+                    
+                    <div className="bg-gray-800/60 border border-orange-500/30 rounded-lg p-4 hover:border-orange-500/50 transition-all duration-200">
+                      <h4 className="text-white font-semibold mb-2 flex items-center gap-2">
+                        <TrendingUp className="w-5 h-5 text-orange-400" />
+                        {t('halloween.labyrinth.sections.rewards', 'Recompensas')}
+                      </h4>
+                      <p className="text-gray-300 text-sm">
+                        {t('halloween.labyrinth.rewards.description', 'Descubre todas las recompensas que puedes obtener')}
+                      </p>
+                    </div>
+                    
+                    <div className="bg-gray-800/60 border border-orange-500/30 rounded-lg p-4 hover:border-orange-500/50 transition-all duration-200">
+                      <h4 className="text-white font-semibold mb-2 flex items-center gap-2">
+                        <TrendingUp className="w-5 h-5 text-orange-400" />
+                        {t('halloween.labyrinth.advanced.title', 'Consejos Avanzados')}
+                      </h4>
+                      <p className="text-gray-300 text-sm">
+                        {t('halloween.labyrinth.advanced.description', 'Boosters, comida y mejoras para maximizar tu eficiencia')}
+                      </p>
                     </div>
                   </div>
                 </div>

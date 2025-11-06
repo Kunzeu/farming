@@ -48,6 +48,7 @@ export async function POST(request: NextRequest) {
            patreon_tier = $2::text,
            patreon_status = $3::text,
            patreon_active = CASE WHEN $3::text = 'active_patron' THEN TRUE ELSE FALSE END,
+           is_active = CASE WHEN $3::text = 'active_patron' THEN TRUE ELSE is_active END,
            role = CASE WHEN role IN ('admin','moderator') THEN role ELSE $5 END,
            updated_at = NOW()
        WHERE email = $4

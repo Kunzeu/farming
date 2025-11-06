@@ -260,8 +260,20 @@ class DatabaseClientService {
       const data = await response.json();
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { password: _, ...safeUser } = data;
+      
+      // Parsear preferencias si vienen como string JSON
+      let parsedPreferences = safeUser.preferences;
+      if (typeof parsedPreferences === 'string') {
+        try {
+          parsedPreferences = JSON.parse(parsedPreferences);
+        } catch {
+          // Si falla el parse, mantener como está
+        }
+      }
+      
       return {
         ...safeUser,
+        preferences: parsedPreferences,
         createdAt: new Date(safeUser.createdAt),
         updatedAt: new Date(safeUser.updatedAt)
       };

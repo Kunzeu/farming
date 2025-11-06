@@ -1,0 +1,700 @@
+'use client';
+
+import { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import Navigation from '@/components/layout/Navigation';
+import { usePageTitle } from '@/hooks/usePageTitle';
+import Image from 'next/image';
+import { 
+  MapPin, 
+  X, 
+  CheckCircle,
+  Star,
+  Crown,
+  RefreshCw
+} from 'lucide-react';
+
+interface Node {
+  id: string;
+  name: string;
+  x: number; // Porcentaje desde la izquierda
+  y: number; // Porcentaje desde arriba
+  hubId: string;
+  waypoint?: string;
+  description?: string;
+  type?: 'S' | 'M' | 'L'; // Tipo de nodo: Small, Medium, Large
+}
+
+interface Hub {
+  id: string;
+  name: string;
+  x: number;
+  y: number;
+  color: string; // Color de las líneas de conexión
+  nodes: Node[];
+}
+
+interface MapConfig {
+  id: 'castora' | 'shipwreck';
+  name: string;
+  imageSrc: string;
+  missingPathHint: string;
+  storageKey: string;
+  hubs: Hub[];
+}
+
+// Eliminado contenido de recompensas; no se necesitan tipos/constantes de cofres
+
+// Estructura de Hubs y Nodos para Castora
+const castoraHubs: Hub[] = [
+  {
+    id: 'hub-1',
+    name: 'Lost Basilica',
+    x: 24,
+    y: 26,
+    color: '#DC143C', // Rojo (según imagen 2 - Lost Basilica tiene líneas rojas)
+    nodes: [
+      // 4 puntos 'S': alrededor del hub
+      { id: 'node-1-1', name: 'Magic Mirror 1', x: 5, y: 29, hubId: 'hub-1', waypoint: '[&BAAIAAA=]', type: 'S' },
+      { id: 'node-1-2', name: 'Magic Mirror 2', x: 30, y: 21, hubId: 'hub-1', waypoint: '[&BAAIAAA=]', type: 'S' },
+      { id: 'node-1-3', name: 'Magic Mirror 3', x: 5, y: 44, hubId: 'hub-1', waypoint: '[&BAAIAAA=]', type: 'L' },
+      { id: 'node-1-4', name: 'Magic Mirror 4', x: 30, y: 38, hubId: 'hub-1', waypoint: '[&BAAIAAA=]', type: 'M' },
+      { id: 'node-1-5', name: 'Magic Mirror 5', x: 18, y: 38, hubId: 'hub-1', waypoint: '[&BAAIAAA=]', type: 'M' },
+    ]
+  },
+  {
+    id: 'hub-2',
+    name: 'Untamed Crags',
+    x: 50,
+    y: 25,
+    color: '#32CD32', // Verde (según imagen 2)
+    nodes: [
+      { id: 'node-2-1', name: 'Magic Mirror 6', x: 35, y: 18, hubId: 'hub-2', waypoint: '[&BAAIAAA=]', type: 'S' },
+      { id: 'node-2-2', name: 'Magic Mirror 7', x: 50, y: 13, hubId: 'hub-2', waypoint: '[&BAAIAAA=]', type: 'M' },
+      { id: 'node-2-3', name: 'Magic Mirror 8', x: 59, y: 15, hubId: 'hub-2', waypoint: '[&BAAIAAA=]', type: 'S' },
+      { id: 'node-2-4', name: 'Magic Mirror 9', x: 58, y: 40, hubId: 'hub-2', waypoint: '[&BAAIAAA=]', type: 'M' },
+      { id: 'node-2-5', name: 'Magic Mirror 10', x: 45, y: 43, hubId: 'hub-2', waypoint: '[&BAAIAAA=]', type: 'L' },
+      { id: 'node-2-6', name: 'Magic Mirror 11', x: 36, y: 43, hubId: 'hub-2', waypoint: '[&BAAIAAA=]', type: 'S' },
+
+    ]
+  },
+  {
+    id: 'hub-3',
+    name: 'Command Complex',
+    x: 75,
+    y: 23,
+    color: '#FF5300', // Naranja/Rojo (según imagen 2)
+    nodes: [
+      { id: 'node-3-1', name: 'Magic Mirror 11', x: 66, y: 28, hubId: 'hub-3', waypoint: '[&BAAIAAA=]', type: 'S' },
+      { id: 'node-3-2', name: 'Magic Mirror 12', x: 65, y: 13, hubId: 'hub-3', waypoint: '[&BAAIAAA=]', type: 'S' },
+      { id: 'node-3-3', name: 'Magic Mirror 13', x: 90, y: 40, hubId: 'hub-3', waypoint: '[&BAAIAAA=]', type: 'S' },
+      { id: 'node-3-4', name: 'Magic Mirror 14', x: 83, y: 34, hubId: 'hub-3', waypoint: '[&BAAIAAA=]', type: 'M' },
+      { id: 'node-3-5', name: 'Magic Mirror 15', x: 90, y: 27, hubId: 'hub-3', waypoint: '[&BAAIAAA=]', type: 'L' },
+    ]
+  },
+  {
+    id: 'hub-4',
+    name: 'Cloister of Stars',
+    x: 25,
+    y: 53,
+    color: '#9370DB', // Morado (según imagen 2)
+    nodes: [
+      { id: 'node-4-1', name: 'Magic Mirror 16', x: 8, y: 47, hubId: 'hub-4', waypoint: '[&BAAIAAA=]', type: 'S' },
+      { id: 'node-4-2', name: 'Magic Mirror 17', x: 29, y: 44, hubId: 'hub-4', waypoint: '[&BAAIAAA=]', type: 'S' },
+      { id: 'node-4-3', name: 'Magic Mirror 18', x: 19, y: 55, hubId: 'hub-4', waypoint: '[&BAAIAAA=]', type: 'S' },
+      { id: 'node-4-4', name: 'Magic Mirror 18', x: 17, y: 41, hubId: 'hub-4', waypoint: '[&BAAIAAA=]', type: 'M' },
+      { id: 'node-4-5', name: 'Magic Mirror 19', x: 16, y: 62, hubId: 'hub-4', waypoint: '[&BAAIAAA=]', type: 'M' },
+      { id: 'node-4-6', name: 'Magic Mirror 20', x: 6, y: 55, hubId: 'hub-4', waypoint: '[&BAAIAAA=]', type: 'L' },
+      { id: 'node-4-7', name: 'Magic Mirror 21', x: 28, y: 64, hubId: 'hub-4', waypoint: '[&BAAIAAA=]', type: 'S' },
+
+    ]
+  },
+  {
+    id: 'hub-5',
+    name: 'Crumbling Precipice',
+    x: 35,
+    y: 50,
+    color: '#DC143C', // Rojo (según imagen 2)
+    nodes: [
+      { id: 'node-5-1', name: 'Magic Mirror 21', x: 35, y: 65, hubId: 'hub-5', waypoint: '[&BAAIAAA=]', type: 'S' },
+      { id: 'node-5-2', name: 'Magic Mirror 22', x: 50, y: 65, hubId: 'hub-5', waypoint: '[&BAAIAAA=]', type: 'S' },
+      { id: 'node-5-3', name: 'Magic Mirror 23', x: 50, y: 55, hubId: 'hub-5', waypoint: '[&BAAIAAA=]', type: 'S' },
+      { id: 'node-5-4', name: 'Magic Mirror 24', x: 51, y: 47, hubId: 'hub-5', waypoint: '[&BAAIAAA=]', type: 'S' },
+    ]
+  },
+  {
+    id: 'hub-6',
+    name: 'Overgrown Thicket',
+    x: 9,
+    y: 70,
+    color: '#FFD700', // Amarillo (según imagen 2)
+    nodes: [
+      { id: 'node-6-1', name: 'Magic Mirror 26', x: 5, y: 75, hubId: 'hub-6', waypoint: '[&BAAIAAA=]', type: 'S' },
+      { id: 'node-6-2', name: 'Magic Mirror 27', x: 24, y: 73, hubId: 'hub-6', waypoint: '[&BAAIAAA=]', type: 'S' },
+      { id: 'node-6-3', name: 'Magic Mirror 28', x: 16, y: 88, hubId: 'hub-6', waypoint: '[&BAAIAAA=]', type: 'S' },
+      { id: 'node-6-4', name: 'Magic Mirror 29', x: 29, y: 82, hubId: 'hub-6', waypoint: '[&BAAIAAA=]', type: 'S' },
+      { id: 'node-6-5', name: 'Magic Mirror 30', x: 17, y: 78, hubId: 'hub-6', waypoint: '[&BAAIAAA=]', type: 'M' },
+      { id: 'node-6-6', name: 'Magic Mirror 31', x: 29, y: 88, hubId: 'hub-6', waypoint: '[&BAAIAAA=]', type: 'M' },
+      { id: 'node-6-7', name: 'Magic Mirror 32', x: 9.5, y: 87, hubId: 'hub-6', waypoint: '[&BAAIAAA=]', type: 'L' },
+    ]
+  },
+  {
+    id: 'hub-7',
+    name: 'Tranquil Glen',
+    x: 53,
+    y: 59,
+    color: '#FFFFFF', // Blanco (según imagen 2)
+    nodes: [
+      { id: 'node-7-1', name: 'Magic Mirror 31', x: 60, y: 68, hubId: 'hub-7', waypoint: '[&BAAIAAA=]', type: 'S' },
+      { id: 'node-7-2', name: 'Magic Mirror 32', x: 81, y: 59, hubId: 'hub-7', waypoint: '[&BAAIAAA=]', type: 'S' },
+      { id: 'node-7-3', name: 'Magic Mirror 33', x: 68, y: 65, hubId: 'hub-7', waypoint: '[&BAAIAAA=]', type: 'S' },
+      { id: 'node-7-4', name: 'Magic Mirror 34', x: 70, y: 62, hubId: 'hub-7', waypoint: '[&BAAIAAA=]', type: 'M' },
+      { id: 'node-7-5', name: 'Magic Mirror 35', x: 77, y: 48, hubId: 'hub-7', waypoint: '[&BAAIAAA=]', type: 'S' },
+      { id: 'node-7-6', name: 'Magic Mirror 36', x: 67, y: 48, hubId: 'hub-7', waypoint: '[&BAAIAAA=]', type: 'M' },
+    ]
+  },
+  {
+    id: 'hub-8',
+    name: 'Skyshroud Canopy',
+    x: 42,
+    y: 78,
+    color: '#FF69B4', // Rosa (según imagen 2)
+    nodes: [
+      { id: 'node-8-1', name: 'Magic Mirror 36', x: 31, y: 89, hubId: 'hub-8', waypoint: '[&BAAIAAA=]', type: 'S' },
+      { id: 'node-8-2', name: 'Magic Mirror 37', x: 53, y: 76, hubId: 'hub-8', waypoint: '[&BAAIAAA=]', type: 'S' },
+      { id: 'node-8-3', name: 'Magic Mirror 38', x: 55, y: 84, hubId: 'hub-8', waypoint: '[&BAAIAAA=]', type: 'S' },
+      { id: 'node-8-4', name: 'Magic Mirror 39', x: 55, y: 72, hubId: 'hub-8', waypoint: '[&BAAIAAA=]', type: 'M' },
+      { id: 'node-8-5', name: 'Magic Mirror 40', x: 42, y: 87, hubId: 'hub-8', waypoint: '[&BAAIAAA=]', type: 'S' },
+      { id: 'node-8-6', name: 'Magic Mirror 41', x: 30, y: 71, hubId: 'hub-8', waypoint: '[&BAAIAAA=]', type: 'L' },
+
+    ]
+  },
+  {
+    id: 'hub-9',
+    name: 'Shimmering Basin',
+    x: 60,
+    y: 82,
+    color: '#87CEEB', // Azul claro (según imagen 2)
+    nodes: [
+      { id: 'node-9-1', name: 'Magic Mirror 41', x: 65, y: 75, hubId: 'hub-9', waypoint: '[&BAAIAAA=]', type: 'S' },
+      { id: 'node-9-2', name: 'Magic Mirror 42', x: 80, y: 79, hubId: 'hub-9', waypoint: '[&BAAIAAA=]', type: 'S' },
+      { id: 'node-9-3', name: 'Magic Mirror 43', x: 76, y: 88, hubId: 'hub-9', waypoint: '[&BAAIAAA=]', type: 'S' },
+    ]
+  },
+  {
+    id: 'hub-10',
+    name: 'Enchanting Grottoes',
+    x: 92,
+    y: 56,
+    color: '#ADFF2F', // Verde-amarillo (según imagen 2)
+    nodes: [
+      { id: 'node-10-1', name: 'Magic Mirror 46', x: 89, y: 62, hubId: 'hub-10', waypoint: '[&BAAIAAA=]', type: 'S' },
+      { id: 'node-10-2', name: 'Magic Mirror 47', x: 82, y: 51, hubId: 'hub-10', waypoint: '[&BAAIAAA=]', type: 'S' },
+      { id: 'node-10-5', name: 'Magic Mirror 50', x: 82, y: 59, hubId: 'hub-10', waypoint: '[&BAAIAAA=]', type: 'S' },
+    ]
+  },
+];
+
+// Configs de mapas (Shipwreck Strand inicia vacío para rellenar luego)
+const mapConfigs: MapConfig[] = [
+  {
+    id: 'castora',
+    name: 'Castora',
+    imageSrc: '/images/backgrounds/castora-map.webp',
+    missingPathHint: '/public/images/backgrounds/castora-map.webp',
+    storageKey: 'magicMirrors_completed',
+    hubs: castoraHubs,
+  },
+  {
+    id: 'shipwreck',
+    name: 'Shipwreck Strand',
+    imageSrc: '/images/backgrounds/castora-map.webp',
+    missingPathHint: '/public/images/shipwreck-strand-map.jpg',
+    storageKey: 'magicMirrors_shipwreck_completed',
+    hubs: [],
+  },
+];
+
+export default function MagicMirrorsPage() {
+  usePageTitle('pageTitles.magicMirrors', 'Magic Mirrors');
+  const [selectedMapId, setSelectedMapId] = useState<MapConfig['id']>('castora');
+  const selectedMap = mapConfigs.find(m => m.id === selectedMapId)!;
+  const hubs = selectedMap.hubs;
+  const allNodes = hubs.flatMap(hub => hub.nodes);
+  
+  const [completedNodes, setCompletedNodes] = useState<Set<string>>(new Set());
+  const [selectedNode, setSelectedNode] = useState<Node | null>(null);
+  const [copiedWaypoint, setCopiedWaypoint] = useState<string | null>(null);
+  const [showInfo] = useState(false);
+  const [mapImageError, setMapImageError] = useState(false);
+  const [showResetModal, setShowResetModal] = useState(false);
+
+  // Cargar estado guardado desde localStorage por mapa
+  useEffect(() => {
+    const saved = localStorage.getItem(selectedMap.storageKey);
+    if (saved) {
+      try {
+        const savedIds = JSON.parse(saved);
+        setCompletedNodes(new Set(savedIds));
+      } catch (e) {
+        console.error('Error loading saved state:', e);
+      }
+    }
+  }, [selectedMap.storageKey]);
+
+  // Guardar estado en localStorage cuando cambie (para el mapa actual)
+  useEffect(() => {
+    localStorage.setItem(selectedMap.storageKey, JSON.stringify(Array.from(completedNodes)));
+  }, [completedNodes, selectedMap.storageKey]);
+
+  const toggleNode = (nodeId: string) => {
+    setCompletedNodes(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(nodeId)) {
+        newSet.delete(nodeId);
+      } else {
+        newSet.add(nodeId);
+      }
+      return newSet;
+    });
+  };
+
+  const resetAll = () => {
+    setShowResetModal(true);
+  };
+
+  const confirmReset = () => {
+    setCompletedNodes(new Set());
+    localStorage.removeItem(selectedMap.storageKey);
+    setShowResetModal(false);
+  };
+
+  const copyWaypoint = async (waypoint: string) => {
+    try {
+      await navigator.clipboard.writeText(waypoint);
+      setCopiedWaypoint(waypoint);
+      setTimeout(() => setCopiedWaypoint(null), 2000);
+    } catch (err) {
+      console.error('Error al copiar waypoint:', err);
+    }
+  };
+
+  const handleNodeClick = (node: Node, e: React.MouseEvent) => {
+    e.stopPropagation();
+    // Solo click: marcar o desmarcar
+    toggleNode(node.id);
+  };
+
+  return (
+    <>
+      <Navigation />
+      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
+        <div className="max-w-7xl mx-auto p-4 sm:p-6">
+          {/* Header */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="mb-8"
+          >
+            <div className="flex items-center justify-center gap-4 mb-6">
+              <div className="w-20 h-20 bg-gradient-to-br from-purple-500 to-pink-600 rounded-xl shadow-lg flex items-center justify-center">
+                <Crown className="h-10 w-10 text-white" />
+              </div>
+              <h1 className="text-3xl sm:text-4xl font-bold text-center">
+                <span className="text-white">Magic Mirrors - {selectedMap.name}</span>
+              </h1>
+            </div>
+            {/* Selector de mapa */}
+            <div className="flex items-center justify-center gap-3 mb-4">
+              <button
+                onClick={() => setSelectedMapId('castora')}
+                className={`px-3 py-1.5 rounded-lg text-sm border ${selectedMapId==='castora' ? 'bg-purple-600 text-white border-purple-500' : 'bg-slate-800 text-gray-300 border-slate-600 hover:bg-slate-700'}`}
+              >
+                Castora
+              </button>
+              <button
+                onClick={() => setSelectedMapId('shipwreck')}
+                className={`px-3 py-1.5 rounded-lg text-sm border ${selectedMapId==='shipwreck' ? 'bg-purple-600 text-white border-purple-500' : 'bg-slate-800 text-gray-300 border-slate-600 hover:bg-slate-700'}`}
+              >
+                Shipwreck Strand
+              </button>
+            </div>
+            <div className="text-center text-sm text-gray-400">
+              <p>Haz clic en un nodo para marcar o desmarcar como completado.</p>
+              <p className="mt-1">
+                Progreso: <span className="text-purple-400 font-semibold">{completedNodes.size}</span> / <span className="text-gray-400">{allNodes.length}</span> completados
+              </p>
+            </div>
+          </motion.div>
+
+          {/* Mapa interactivo */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.1 }}
+            className="mb-8"
+          >
+            <div className="bg-slate-800/30 backdrop-blur-sm rounded-xl p-6 border border-slate-700/50">
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-2xl font-bold text-white flex items-center gap-2">
+                  <MapPin className="w-6 h-6 text-purple-400" />
+                  Mapa Interactivo
+                </h2>
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={resetAll}
+                    className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors flex items-center gap-2 text-sm"
+                  >
+                    <RefreshCw className="w-4 h-4" />
+                    Resetear
+                  </button>
+                </div>
+              </div>
+
+              {/* Contenedor del mapa */}
+              <div className="relative bg-slate-900/50 rounded-lg border border-slate-700/50" style={{ minHeight: '1100px', aspectRatio: 'auto', overflow: 'visible' }}>
+                {/* Imagen del mapa de fondo */}
+                <div className="absolute inset-0 overflow-hidden rounded-lg">
+                  {!mapImageError ? (
+                    <Image
+                      src={selectedMap.imageSrc}
+                      alt={`Mapa de ${selectedMap.name}`}
+                      fill
+                      className="object-contain"
+                      sizes="100vw"
+                      priority
+                      quality={90}
+                      onError={() => setMapImageError(true)}
+                    />
+                  ) : (
+                    <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-green-900/30 via-slate-800 to-green-900/30">
+                      <div className="text-center text-gray-600">
+                        <MapPin className="w-32 h-32 mx-auto mb-4 opacity-50" />
+                        <p className="text-lg font-semibold">Mapa de {selectedMap.name}</p>
+                        <p className="text-sm mt-2">Coloca la imagen del mapa en: {selectedMap.missingPathHint}</p>
+                        <p className="text-xs mt-2 text-gray-500">Formatos soportados: .jpg, .png, .webp</p>
+                      </div>
+                    </div>
+                  )}
+                  {/* Overlay sutil para mejorar contraste de los puntos */}
+                  <div className="absolute inset-0 bg-black/10"></div>
+                </div>
+
+                {/* Líneas de conexión entre hubs y nodos */}
+                <svg 
+                  className="absolute inset-0 w-full h-full pointer-events-none" 
+                  style={{ zIndex: 1 }}
+                  preserveAspectRatio="none"
+                >
+                  {hubs.map(hub => (
+                    hub.nodes.map(node => (
+                      <line
+                        key={`line-${hub.id}-${node.id}`}
+                        x1={`${hub.x}%`}
+                        y1={`${hub.y}%`}
+                        x2={`${node.x}%`}
+                        y2={`${node.y}%`}
+                        stroke={hub.color}
+                        strokeWidth="3"
+                        opacity="0.9"
+                      />
+                    ))
+                  ))}
+                </svg>
+
+                {/* Hubs (puntos centrales) */}
+                {hubs.map((hub) => (
+                  <motion.div
+                    key={hub.id}
+                    className="absolute transform -translate-x-1/2 -translate-y-1/2"
+                    style={{
+                      left: `${hub.x}%`,
+                      top: `${hub.y}%`,
+                      zIndex: 3,
+                    }}
+                    initial={{ scale: 0 }}
+                    animate={{ scale: 1 }}
+                    whileHover={{ scale: 1.1 }}
+                  >
+                    {/* Icono del hub con imagen de Magic Mirror - centrado en el punto de conexión de las líneas */}
+                    <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-8 h-8 flex items-center justify-center shadow-lg">
+                      <Image
+                        src="https://wiki.guildwars2.com/images/1/1d/Magic_Mirror.png"
+                        alt="Magic Mirror"
+                        width={32}
+                        height={32}
+                        className="w-full h-full object-contain"
+                        unoptimized
+                      />
+                    </div>
+                    {/* Label del hub */}
+                    {showInfo && (
+                      <div className="absolute top-full left-1/2 transform -translate-x-1/2 mt-2 px-2 py-1 bg-gray-900 text-white text-xs rounded whitespace-nowrap opacity-0 hover:opacity-100 transition-opacity pointer-events-none border border-gray-700">
+                        {hub.name}
+                      </div>
+                    )}
+                  </motion.div>
+                ))}
+
+                {/* Nodos (Magic Mirrors) */}
+                {allNodes.map((node) => {
+                  const isCompleted = completedNodes.has(node.id);
+                  const hub = hubs.find(h => h.id === node.hubId);
+                  
+                  // Calcular dirección desde el hub hacia el nodo para acercar el nodo a la línea
+                  let adjustedX = node.x;
+                  let adjustedY = node.y;
+                  
+                  if (hub) {
+                    const dx = node.x - hub.x;
+                    const dy = node.y - hub.y;
+                    const distance = Math.sqrt(dx * dx + dy * dy);
+                    // Mover el nodo 5% más cerca del hub (más cerca de la línea)
+                    const moveFactor = 0.05;
+                    adjustedX = node.x - (dx / distance) * (distance * moveFactor);
+                    adjustedY = node.y - (dy / distance) * (distance * moveFactor);
+                  }
+                  
+                  return (
+                    <motion.button
+                      key={node.id}
+                      className="absolute transform -translate-x-1/2 -translate-y-1/2 group"
+                      style={{
+                        left: `${adjustedX}%`,
+                        top: `${adjustedY}%`,
+                        zIndex: 2,
+                      }}
+                      onClick={(e) => handleNodeClick(node, e)}
+                      initial={{ scale: 0 }}
+                      animate={{ scale: 1 }}
+                      whileHover={{ scale: 1.3 }}
+                      whileTap={{ scale: 0.9 }}
+                    >
+                      {/* Nodo con etiqueta S, M, L - sin fondo ni contorno */}
+                      <div className={`w-7 h-7 rounded-full transition-all flex items-center justify-center relative ${
+                        isCompleted 
+                          ? 'bg-green-500 border-2 border-green-300 shadow-lg shadow-green-500/50' 
+                          : 'bg-transparent'
+                      }`}>
+                        {isCompleted ? (
+                          <CheckCircle className="w-5 h-5 text-white" />
+                        ) : (
+                          <>
+                            {/* Etiqueta S, M, L en amarillo y bold */}
+                            {node.type && (
+                              <span className="text-xs font-bold text-yellow-400">
+                                {node.type}
+                              </span>
+                            )}
+                            {/* Chevron hacia abajo si no tiene tipo definido */}
+                            {!node.type && (
+                              <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                <path d="M6 9l6 6 6-6" stroke="currentColor" fill="none" className="text-yellow-400" />
+                              </svg>
+                            )}
+                          </>
+                        )}
+                      </div>
+                      {/* Tooltip */}
+                      {showInfo && (
+                        <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 bg-gray-900 text-white text-xs rounded whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-10 border border-gray-700">
+                          {node.name} {node.type && `(${node.type})`} {isCompleted && '✓'}
+                        </div>
+                      )}
+                    </motion.button>
+                  );
+                })}
+              </div>
+
+              {/* Leyenda */}
+              <div className="mt-4 flex flex-wrap gap-4 text-sm text-gray-400">
+                <div className="flex items-center gap-2">
+                  <div className="w-6 h-6">
+                    <Image
+                      src="https://wiki.guildwars2.com/images/1/1d/Magic_Mirror.png"
+                      alt="Magic Mirror"
+                      width={24}
+                      height={24}
+                      className="w-full h-full object-contain"
+                      unoptimized
+                    />
+                  </div>
+                  <span>Hub (Punto Central)</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <div className="w-4 h-4 bg-yellow-400 rounded-full border-2 border-yellow-300"></div>
+                  <span>Magic Mirror (No completado)</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <div className="w-4 h-4 bg-green-500 rounded-full border-2 border-green-300"></div>
+                  <span>Magic Mirror (Completado)</span>
+                </div>
+
+              </div>
+            </div>
+          </motion.div>
+
+
+          {/* Secciones informativas eliminadas a solicitud */}
+        </div>
+      </div>
+
+    {/* Modal de confirmación para Resetear */}
+    <AnimatePresence>
+      {showResetModal && (
+        <>
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black bg-opacity-50 z-50"
+            onClick={() => setShowResetModal(false)}
+          />
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95, y: 20 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.95, y: 20 }}
+            className="fixed inset-0 z-50 flex items-center justify-center p-4"
+            onClick={() => setShowResetModal(false)}
+          >
+            <div
+              className="bg-slate-800 rounded-xl shadow-xl max-w-sm w-full border border-slate-700"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="p-6 border-b border-slate-700">
+                <h3 className="text-lg font-semibold text-white">Resetear progreso</h3>
+                <p className="text-sm text-gray-300 mt-2">¿Seguro que quieres resetear todo el progreso de Magic Mirrors?</p>
+              </div>
+              <div className="p-6 flex items-center justify-end gap-3">
+                <button
+                  onClick={() => setShowResetModal(false)}
+                  className="px-4 py-2 rounded-lg border border-slate-600 text-gray-200 hover:bg-slate-700 transition-colors text-sm"
+                >
+                  Cancelar
+                </button>
+                <button
+                  onClick={confirmReset}
+                  className="px-4 py-2 rounded-lg bg-red-600 hover:bg-red-700 text-white transition-colors text-sm flex items-center gap-2"
+                >
+                  Confirmar
+                </button>
+              </div>
+            </div>
+          </motion.div>
+        </>
+      )}
+    </AnimatePresence>
+
+      {/* Modal de detalles del nodo */}
+      <AnimatePresence>
+        {selectedNode && (
+          <>
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 bg-black bg-opacity-50 z-50"
+              onClick={() => setSelectedNode(null)}
+            />
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 20 }}
+              className="fixed inset-0 z-50 flex items-center justify-center p-4"
+              onClick={() => setSelectedNode(null)}
+            >
+              <div
+                className="bg-slate-800 rounded-xl shadow-xl max-w-md w-full border border-slate-700"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <div className="flex items-center justify-between p-6 border-b border-slate-700">
+                  <div className="flex items-center gap-3">
+                    <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
+                      completedNodes.has(selectedNode.id) 
+                        ? 'bg-green-500' 
+                        : 'bg-yellow-400'
+                    }`}>
+                      {completedNodes.has(selectedNode.id) ? (
+                        <CheckCircle className="w-5 h-5 text-white" />
+                      ) : (
+                        <Star className="w-5 h-5 text-yellow-800" />
+                      )}
+                    </div>
+                    <h3 className="text-xl font-semibold text-white">{selectedNode.name}</h3>
+                  </div>
+                  <button
+                    onClick={() => setSelectedNode(null)}
+                    className="text-gray-400 hover:text-white transition-colors"
+                  >
+                    <X className="w-5 h-5" />
+                  </button>
+                </div>
+                <div className="p-6 space-y-4">
+                  <div>
+                    <p className="text-sm text-gray-400 mb-1">Hub:</p>
+                    <p className="text-gray-300">{hubs.find(h => h.id === selectedNode.hubId)?.name}</p>
+                  </div>
+                  {selectedNode.waypoint && (
+                    <div className="bg-slate-900/50 rounded-lg p-4">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <p className="text-sm text-gray-400 mb-1">Waypoint</p>
+                          <p className="text-purple-400 font-mono text-sm">{selectedNode.waypoint}</p>
+                        </div>
+                        <button
+                          onClick={() => copyWaypoint(selectedNode.waypoint!)}
+                          className="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg transition-colors text-sm flex items-center gap-2"
+                        >
+                          {copiedWaypoint === selectedNode.waypoint ? (
+                            <>
+                              <CheckCircle className="w-4 h-4" />
+                              Copiado
+                            </>
+                          ) : (
+                            <>
+                              <MapPin className="w-4 h-4" />
+                              Copiar
+                            </>
+                          )}
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                  <div className="bg-purple-900/20 rounded-lg p-4 border border-purple-700/30">
+                    <p className="text-sm text-gray-300">
+                      <strong className="text-purple-400">Recompensas:</strong> Al completar el mini-juego, 
+                      obtienes un Long-Lost Keepsake Box y múltiples Obscured Chests en el área.
+                    </p>
+                  </div>
+                  <button
+                    onClick={() => {
+                      toggleNode(selectedNode.id);
+                      setSelectedNode(null);
+                    }}
+                    className={`w-full px-4 py-2 rounded-lg transition-colors flex items-center justify-center gap-2 ${
+                      completedNodes.has(selectedNode.id)
+                        ? 'bg-yellow-600 hover:bg-yellow-700 text-white'
+                        : 'bg-green-600 hover:bg-green-700 text-white'
+                    }`}
+                  >
+                    {completedNodes.has(selectedNode.id) ? (
+                      <>
+                        <X className="w-4 h-4" />
+                        Marcar como No Completado
+                      </>
+                    ) : (
+                      <>
+                        <CheckCircle className="w-4 h-4" />
+                        Marcar como Completado
+                      </>
+                    )}
+                  </button>
+                </div>
+              </div>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
+    </>
+  );
+}

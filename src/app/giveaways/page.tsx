@@ -21,6 +21,15 @@ import {
 import Link from "next/link";
 import Image from "next/image";
 
+// Utilidad para detectar AbortError sin usar 'any'
+function isAbortError(error: unknown): boolean {
+  if (typeof error === 'object' && error !== null) {
+    const maybe = error as { name?: string };
+    return maybe.name === 'AbortError';
+  }
+  return false;
+}
+
 interface Giveaway {
   id: string;
   slug: string;
@@ -296,7 +305,9 @@ const GiveawaysPage = () => {
           setHasApiKey(false);
           setApiKeyValid(false);
         }
-      } catch (error) {
+      } catch (error: unknown) {
+        // Ignorar AbortError para evitar ruido en consola al desmontar o cambiar dependencias
+        if (isAbortError(error)) return;
         console.error("Error checking API key:", error);
         setHasApiKey(false);
         setApiKeyValid(false);

@@ -268,8 +268,21 @@ export async function PUT(
     }
     
     const row = result.rows[0];
+    
+    // Parsear preferencias si vienen como string JSON
+    let parsedPreferences = row.preferences;
+    if (typeof parsedPreferences === 'string') {
+      try {
+        parsedPreferences = JSON.parse(parsedPreferences);
+      } catch {
+        // Si falla el parse, mantener como está
+        parsedPreferences = row.preferences;
+      }
+    }
+    
     const user = {
       ...row,
+      preferences: parsedPreferences,
       createdAt: new Date(row.createdAt),
       updatedAt: new Date(row.updatedAt)
     };

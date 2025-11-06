@@ -115,9 +115,15 @@ export function getTierInfo(user: User | null) {
 
 /**
  * Verifica si el usuario debe ver anuncios
+ * Los patreons con suscripción activa no ven anuncios, sin importar el tier
  */
 export function shouldShowAds(user: User | null): boolean {
-  return !hasBenefit(user, 'no_ads');
+  // Si es un patreon activo, no mostrar anuncios
+  if (isActivePatron(user)) {
+    return false;
+  }
+  // Si no es patreon activo, mostrar anuncios
+  return true;
 }
 
 /**

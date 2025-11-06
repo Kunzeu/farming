@@ -345,7 +345,6 @@ const Navigation = () => {
     { href: '/gift-of-mastery', label: t('nav.giftOfMastery', 'Gift of Mastery'), icon: 'GOM', isImage: true },
     { href: '/gift-of-jade-mastery', label: t('nav.giftOfJadeMastery', 'Gift of Jade Mastery'), icon: 'GOJM', isImage: true },
     { href: '/glossary', label: t('nav.glossary', 'Glosario'), icon: 'Glosary', isImage: true },
-    { href: '/festivals/halloween/labyrinth-guide', label: t('pageTitles.halloweenLabyrinth', 'Guía del Laberinto de Halloween'), icon: 'Shadow_of_the_Mad_King', isImage: true },
     { href: '/alt-parking', label: t('nav.altParking', 'Alt Parking'), icon: 'Explorer', isImage: true }, 
 
   ];

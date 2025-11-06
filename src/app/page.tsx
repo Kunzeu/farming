@@ -21,7 +21,12 @@ import {
   GripVertical,
   BookOpen,
   Award,
-  TreePine
+  TreePine,
+  Trophy,
+  Box,
+  Dice6,
+  RefreshCw,
+  Map
 } from 'lucide-react'
 import { usePageTitle } from '@/hooks/usePageTitle'
 import { useI18n } from '@/contexts/I18nContext'
@@ -115,28 +120,6 @@ const initialCards: DashboardCard[] = [
     order: 5
   },
   {
-    id: "glossary",
-    title: "dashboard.glossary.title",
-    description: "dashboard.glossary.description",
-    href: "/glossary",
-    icon: <BookOpen className="w-8 h-8" />,
-    color: "from-teal-500 to-teal-600",
-    delay: 0.8,
-    visible: false,
-    order: 7
-  },
-  {
-    id: "orrianJewelry",
-    title: "dashboard.orrianJewelry.title",
-    description: "dashboard.orrianJewelry.description",
-    href: "/orrian-jewelry-box",
-    icon: <Gift className="w-8 h-8" />,
-    color: "from-rose-500 to-rose-600",
-    delay: 0.9,
-    visible: false,
-    order: 8
-  },
-  {
     id: "giftOfMastery",
     title: "dashboard.giftOfMastery.title",
     description: "dashboard.giftOfMastery.description",
@@ -145,7 +128,7 @@ const initialCards: DashboardCard[] = [
     color: "from-amber-500 to-yellow-600",
     delay: 1.0,
     visible: true,
-    order: 9
+    order: 7
   },
   {
     id: "giftOfJadeMastery",
@@ -156,7 +139,7 @@ const initialCards: DashboardCard[] = [
     color: "from-cyan-500 to-teal-600",
     delay: 1.1,
     visible: true,
-    order: 10
+    order: 8
   },
   {
     id: "garden",
@@ -167,7 +150,84 @@ const initialCards: DashboardCard[] = [
     color: "from-emerald-500 to-green-600",
     delay: 1.2,
     visible: true,
+    order: 9
+  },
+  {
+    id: "giveaways",
+    title: "dashboard.giveaways.title",
+    description: "dashboard.giveaways.description",
+    href: "/giveaways",
+    icon: <Trophy className="w-8 h-8" />,
+    color: "from-yellow-500 to-orange-600",
+    delay: 1.3,
+    visible: true,
+    order: 10
+  },
+  {
+    id: "opened",
+    title: "dashboard.opened.title",
+    description: "dashboard.opened.description",
+    href: "/opened",
+    icon: <Box className="w-8 h-8" />,
+    color: "from-violet-500 to-purple-600",
+    delay: 1.4,
+    visible: true,
     order: 11
+  },
+  {
+    id: "ectogambling",
+    title: "dashboard.ectogambling.title",
+    description: "dashboard.ectogambling.description",
+    href: "/ectogambling",
+    icon: <Dice6 className="w-8 h-8" />,
+    color: "from-red-500 to-pink-600",
+    delay: 1.5,
+    visible: true,
+    order: 12
+  },
+  {
+    id: "conversionGuide",
+    title: "dashboard.conversionGuide.title",
+    description: "dashboard.conversionGuide.description",
+    href: "/conversion-guide",
+    icon: <RefreshCw className="w-8 h-8" />,
+    color: "from-sky-500 to-blue-600",
+    delay: 1.6,
+    visible: true,
+    order: 13
+  },
+  {
+    id: "altParking",
+    title: "dashboard.altParking.title",
+    description: "dashboard.altParking.description",
+    href: "/alt-parking",
+    icon: <Map className="w-8 h-8" />,
+    color: "from-lime-500 to-green-600",
+    delay: 1.7,
+    visible: true,
+    order: 14
+  },
+  {
+    id: "orrianJewelry",
+    title: "dashboard.orrianJewelry.title",
+    description: "dashboard.orrianJewelry.description",
+    href: "/orrian-jewelry-box",
+    icon: <Gift className="w-8 h-8" />,
+    color: "from-rose-500 to-rose-600",
+    delay: 1.8,
+    visible: true,
+    order: 15
+  },
+  {
+    id: "glossary",
+    title: "dashboard.glossary.title",
+    description: "dashboard.glossary.description",
+    href: "/glossary",
+    icon: <BookOpen className="w-8 h-8" />,
+    color: "from-teal-500 to-teal-600",
+    delay: 1.9,
+    visible: true,
+    order: 16
   }
   
 ];
@@ -175,7 +235,7 @@ const initialCards: DashboardCard[] = [
 export default function HomePage() {
   usePageTitle('pageTitles.home', 'Home');
   const { t } = useI18n();
-  const { preferences, isLoading } = useDashboardPreferences();
+  const { preferences, isLoading, toggleCardVisibility: toggleVisibility, updateCardOrder } = useDashboardPreferences();
   
   // Estados para personalización
   const [isEditMode, setIsEditMode] = useState(false);
@@ -183,6 +243,37 @@ export default function HomePage() {
   const [originalCards, setOriginalCards] = useState<DashboardCard[]>([]);
   const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
   const [showSettings, setShowSettings] = useState(false);
+
+  // Función para obtener el icono según el ID y tamaño
+  const getIcon = (cardId: string, size: 'small' | 'medium' | 'large' = 'medium') => {
+    const iconSizeMap = {
+      small: 'w-6 h-6',
+      medium: 'w-8 h-8',
+      large: 'w-10 h-10'
+    };
+    const iconClass = iconSizeMap[size];
+    
+    const iconMap: Record<string, React.ReactNode> = {
+      "farms": <Route className={iconClass} />,
+      "dailyRoutine": <Clock className={iconClass} />,
+      "salvaging": <Package className={iconClass} />,
+      "magic": <Hammer className={iconClass} />,
+      "festivals": <Gift className={iconClass} />,
+      "farmingTracker": <BarChart3 className={iconClass} />,
+      "glossary": <BookOpen className={iconClass} />,
+      "orrianJewelry": <Gift className={iconClass} />,
+      "giftOfMastery": <Award className={iconClass} />,
+      "giftOfJadeMastery": <Gift className={iconClass} />,
+      "garden": <TreePine className={iconClass} />,
+      "giveaways": <Trophy className={iconClass} />,
+      "opened": <Box className={iconClass} />,
+      "ectogambling": <Dice6 className={iconClass} />,
+      "conversionGuide": <RefreshCw className={iconClass} />,
+      "altParking": <Map className={iconClass} />
+    };
+    
+    return iconMap[cardId] || <Package className={iconClass} />;
+  };
 
   // Función para reconstruir iconos y colores desde los datos guardados
   const reconstructCardWithIcon = (savedCard: Omit<DashboardCard, 'icon'>): DashboardCard => {
@@ -197,7 +288,12 @@ export default function HomePage() {
       "orrianJewelry": <Gift className="w-8 h-8" />,
       "giftOfMastery": <Award className="w-8 h-8" />,
       "giftOfJadeMastery": <Gift className="w-8 h-8" />,
-      "garden": <TreePine className="w-8 h-8" />
+      "garden": <TreePine className="w-8 h-8" />,
+      "giveaways": <Trophy className="w-8 h-8" />,
+      "opened": <Box className="w-8 h-8" />,
+      "ectogambling": <Dice6 className="w-8 h-8" />,
+      "conversionGuide": <RefreshCw className="w-8 h-8" />,
+      "altParking": <Map className="w-8 h-8" />
     };
 
   const colorMap: Record<string, string> = {
@@ -211,7 +307,12 @@ export default function HomePage() {
     "orrianJewelry": "from-rose-500 to-rose-600",
     "giftOfMastery": "from-amber-500 to-yellow-600",
     "giftOfJadeMastery": "from-cyan-500 to-teal-600",
-    "garden": "from-emerald-500 to-green-600"
+    "garden": "from-emerald-500 to-green-600",
+    "giveaways": "from-yellow-500 to-orange-600",
+    "opened": "from-violet-500 to-purple-600",
+    "ectogambling": "from-red-500 to-pink-600",
+    "conversionGuide": "from-sky-500 to-blue-600",
+    "altParking": "from-lime-500 to-green-600"
   };
 
     return {
@@ -249,23 +350,7 @@ export default function HomePage() {
     const finalCards = [...orderedCards, ...remainingCards];
     setDashboardCards(finalCards);
     setOriginalCards(finalCards);
-  }, [preferences, isLoading]);
-
-  // Guardar configuración en localStorage
-  const saveDashboardConfig = (cards: DashboardCard[]) => {
-    // Crear una versión serializable sin los componentes React
-    const serializableCards = cards.map(card => ({
-      id: card.id,
-      title: card.title,
-      description: card.description,
-      href: card.href,
-      color: card.color,
-      delay: card.delay,
-      visible: card.visible,
-      order: card.order
-    }));
-    localStorage.setItem('dashboard-config', JSON.stringify(serializableCards));
-  };
+  }, [preferences.cardOrder, preferences.hiddenCards, isLoading]);
 
   // Funciones de personalización
   const toggleEditMode = () => {
@@ -278,22 +363,23 @@ export default function HomePage() {
 
   const saveChanges = () => {
     setOriginalCards(dashboardCards);
-    saveDashboardConfig(dashboardCards);
+    // Las preferencias se guardan automáticamente en useDashboardPreferences
     setIsEditMode(false);
   };
 
   const resetDashboard = () => {
     setDashboardCards(initialCards);
     setOriginalCards(initialCards);
-    saveDashboardConfig(initialCards);
+    // Las preferencias se guardan automáticamente en useDashboardPreferences
     setIsEditMode(false);
   };
 
   const toggleCardVisibility = (cardId: string) => {
+    toggleVisibility(cardId);
     setDashboardCards(prev => 
       prev.map(card => 
         card.id === cardId 
-          ? { ...card, visible: !card.visible }
+          ? { ...card, visible: !preferences.hiddenCards.includes(cardId) }
           : card
       )
     );
@@ -309,6 +395,10 @@ export default function HomePage() {
       ...card,
       order: index
     }));
+    
+    // Actualizar el orden en las preferencias
+    const newOrder = updatedCards.map(card => card.id);
+    updateCardOrder(newOrder);
     
     setDashboardCards(updatedCards);
   };
@@ -520,63 +610,86 @@ export default function HomePage() {
           </motion.div>
 
           {/* Grid de herramientas */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className={preferences.layout === 'list' 
+            ? 'space-y-4' 
+            : 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6'
+          }>
             {dashboardCards
               .filter(card => isEditMode || card.visible)
-              .sort((a, b) => a.order - b.order)
-              .map((card, index) => (
-              <motion.div
-                key={card.id}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: card.delay }}
-                draggable={isEditMode}
-                onDragStart={(e) => handleDragStart(e, index)}
-                onDragOver={handleDragOver}
-                onDrop={(e) => handleDrop(e, index)}
-                onDragEnd={handleDragEnd}
-                className={`relative ${isEditMode ? 'cursor-move' : ''}`}
-              >
-                {isEditMode && (
-                  <div className="absolute top-2 right-2 z-10 flex gap-1">
-                    <button
-                      onClick={() => toggleCardVisibility(card.id)}
-                      className="p-1 bg-black/50 hover:bg-black/70 text-white rounded transition-colors duration-200"
-                      title={card.visible ? t('dashboard.toggleVisibility', 'Ocultar') : t('dashboard.toggleVisibility', 'Mostrar')}
-                    >
-                      {card.visible ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                    </button>
-                    <div className="p-1 bg-black/50 text-white rounded cursor-move">
-                      <GripVertical className="w-4 h-4" />
-                    </div>
-                  </div>
-                )}
-                
-                <Link href={card.href} className={isEditMode ? 'pointer-events-none' : ''}>
-                  <div className={`bg-gradient-to-br ${card.color} p-6 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 cursor-pointer h-full border border-white/10 ${
-                    isEditMode 
-                      ? card.visible 
-                        ? 'opacity-90' 
-                        : 'opacity-50 border-dashed border-2 border-gray-500'
-                      : ''
-                  }`}>
-                    <div className="flex items-center space-x-4">
-                      <div className="text-white">
-                        {card.icon}
+              .map((card, index) => {
+                const cardSize = preferences.cardSizes[card.id] || 'medium';
+                const sizeClasses = {
+                  small: 'p-4',
+                  medium: 'p-6',
+                  large: 'p-8'
+                };
+                const titleSizeClasses = {
+                  small: 'text-lg',
+                  medium: 'text-xl',
+                  large: 'text-2xl'
+                };
+                const descriptionSizeClasses = {
+                  small: 'text-xs',
+                  medium: 'text-sm',
+                  large: 'text-base'
+                };
+
+                return (
+                  <motion.div
+                    key={card.id}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.6, delay: card.delay }}
+                    draggable={isEditMode}
+                    onDragStart={(e) => handleDragStart(e, index)}
+                    onDragOver={handleDragOver}
+                    onDrop={(e) => handleDrop(e, index)}
+                    onDragEnd={handleDragEnd}
+                    className={`relative ${isEditMode ? 'cursor-move' : ''} ${
+                      preferences.layout === 'list' ? 'w-full' : ''
+                    }`}
+                  >
+                    {isEditMode && (
+                      <div className="absolute top-2 right-2 z-10 flex gap-1">
+                        <button
+                          onClick={() => toggleCardVisibility(card.id)}
+                          className="p-1 bg-black/50 hover:bg-black/70 text-white rounded transition-colors duration-200"
+                          title={card.visible ? t('dashboard.toggleVisibility', 'Ocultar') : t('dashboard.toggleVisibility', 'Mostrar')}
+                        >
+                          {card.visible ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                        </button>
+                        <div className="p-1 bg-black/50 text-white rounded cursor-move">
+                          <GripVertical className="w-4 h-4" />
+                        </div>
                       </div>
-                      <div>
-                        <h3 className="text-xl font-bold text-white mb-2">
-                          {t(card.title, card.title)}
-                        </h3>
-                        <p className="text-gray-100 text-sm leading-relaxed">
-                          {t(card.description, card.description)}
-                        </p>
+                    )}
+                    
+                    <Link href={card.href} className={isEditMode ? 'pointer-events-none' : ''}>
+                      <div className={`bg-gradient-to-br ${card.color} ${sizeClasses[cardSize]} rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 cursor-pointer h-full border border-white/10 ${
+                        preferences.layout === 'list' ? 'flex items-center space-x-4' : ''
+                      } ${
+                        isEditMode 
+                          ? card.visible 
+                            ? 'opacity-90' 
+                            : 'opacity-50 border-dashed border-2 border-gray-500'
+                          : ''
+                      }`}>
+                        <div className={`text-white ${preferences.layout === 'list' ? 'flex-shrink-0' : ''}`}>
+                          {getIcon(card.id, cardSize)}
+                        </div>
+                        <div className={preferences.layout === 'list' ? 'flex-1' : ''}>
+                          <h3 className={`${titleSizeClasses[cardSize]} font-bold text-white mb-2`}>
+                            {t(card.title, card.title)}
+                          </h3>
+                          <p className={`${descriptionSizeClasses[cardSize]} text-gray-100 leading-relaxed`}>
+                            {t(card.description, card.description)}
+                          </p>
+                        </div>
                       </div>
-                    </div>
-                  </div>
-                </Link>
-              </motion.div>
-            ))}
+                    </Link>
+                  </motion.div>
+                );
+              })}
           </div>
         </section>
 

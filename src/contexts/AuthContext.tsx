@@ -183,6 +183,24 @@ function AuthProviderInternal({ children }: { children: ReactNode }) {
         try {
           const user = JSON.parse(userData);
           
+          // Parsear preferencias si vienen como string JSON
+          if (user.preferences && typeof user.preferences === 'string') {
+            try {
+              user.preferences = JSON.parse(user.preferences);
+            } catch {
+              // Si falla el parse, mantener como está
+            }
+          }
+          
+          // Parsear preferencias de dashboard si existen
+          if (user.preferences?.dashboard && typeof user.preferences.dashboard === 'string') {
+            try {
+              user.preferences.dashboard = JSON.parse(user.preferences.dashboard);
+            } catch {
+              // Si falla el parse, mantener como está
+            }
+          }
+          
           dispatch({
             type: 'AUTH_SUCCESS',
             payload: { user, token },
@@ -373,14 +391,41 @@ function AuthProviderInternal({ children }: { children: ReactNode }) {
       // Actualizar en la base de datos
       const updatedUser = await dbService.updateUser(state.user.id, updates);
 
-      // Actualizar en el contexto
+      // Actualizar en el contexto - fusionar preferencias correctamente
+      // Si se actualizaron preferencias, fusionarlas con las existentes
+      let mergedPreferences = state.user.preferences;
+      
+      if (updates.preferences) {
+        // Si se actualizaron preferencias, fusionarlas
+        mergedPreferences = {
+          ...state.user.preferences,
+          ...updates.preferences,
+          // Si hay preferencias de dashboard, fusionarlas también
+          ...(updates.preferences.dashboard && {
+            dashboard: {
+              ...state.user.preferences?.dashboard,
+              ...updates.preferences.dashboard
+            }
+          })
+        };
+      } else if (updatedUser.preferences) {
+        // Si no se actualizaron preferencias pero updatedUser tiene preferencias, usarlas
+        mergedPreferences = updatedUser.preferences;
+      }
+      
       const newUser = {
         ...state.user,
-        ...updatedUser
+        ...updatedUser,
+        preferences: mergedPreferences
       };
 
-      // Guardar en localStorage
-      localStorage.setItem('gw2_user', JSON.stringify(newUser));
+      // Guardar en localStorage INMEDIATAMENTE - esto asegura que las preferencias se persistan
+      // Antes de actualizar el contexto, guardar en localStorage para que esté disponible al refrescar
+      try {
+        localStorage.setItem('gw2_user', JSON.stringify(newUser));
+      } catch (error) {
+        console.error('Error saving to localStorage:', error);
+      }
 
       dispatch({
         type: 'AUTH_SUCCESS',
