@@ -334,6 +334,11 @@ const Navigation = () => {
   
   // Helper function para obtener la ruta de la imagen
   const getImageSrc = (icon: string) => {
+    // URL externa para magic-mirror
+    if (icon === 'magic-mirror') {
+      return 'https://wiki.guildwars2.com/images/1/1d/Magic_Mirror.png';
+    }
+    
     const isAssetsIcon = icon === 'GOM' || icon === 'GOJM' || icon === 'Glosary' || icon === 'Community' || icon === 'conversion-guide' || icon === 'Explorer';
     const isFestivalIcon = icon === 'Shadow_of_the_Mad_King';
     
@@ -357,6 +362,7 @@ const Navigation = () => {
     { href: '/garden', label: t('gardenPage.titleShort', 'Jardín'), icon: Star },
     { href: '/gift-of-mastery', label: t('nav.giftOfMastery', 'Gift of Mastery'), icon: 'GOM', isImage: true },
     { href: '/gift-of-jade-mastery', label: t('nav.giftOfJadeMastery', 'Gift of Jade Mastery'), icon: 'GOJM', isImage: true },
+    { href: '/castora/magic-mirrors', label: t('nav.magicMirrors', 'Magic Mirrors'), icon: 'magic-mirror', isImage: true },
     { href: '/glossary', label: t('nav.glossary', 'Glosario'), icon: 'Glosary', isImage: true },
     { href: '/alt-parking', label: t('nav.altParking', 'Alt Parking'), icon: 'Explorer', isImage: true }, 
 
@@ -516,9 +522,9 @@ const Navigation = () => {
                             alt={item.label}
                             width={item.icon === 'Shadow_of_the_Mad_King' ? 48 : 32}
                             height={item.icon === 'Shadow_of_the_Mad_King' ? 48 : 32}
-                            className={item.icon === 'Shadow_of_the_Mad_King' ? 'w-6 h-6' : 'w-4 h-4'}
-                            unoptimized={item.icon === 'conversion-guide'}
-                            style={item.icon === 'Glosary' ? { backgroundColor: 'transparent' } : undefined}
+                            className={item.icon === 'Shadow_of_the_Mad_King' ? 'w-6 h-6' : item.icon === 'Glosary' ? 'w-4 h-4 mix-blend-screen' : 'w-4 h-4'}
+                            unoptimized={item.icon === 'conversion-guide' || item.icon === 'magic-mirror'}
+                            style={item.icon === 'Glosary' ? { backgroundColor: 'transparent', background: 'transparent' } : undefined}
                           />
                         ) : (
                           <item.icon className="w-4 h-4" />
@@ -560,6 +566,7 @@ const Navigation = () => {
                             width={16}
                             height={16}
                             className="w-4 h-4"
+                            unoptimized={item.icon === 'magic-mirror'}
                           />
                         ) : (
                           <item.icon className="w-4 h-4" />
@@ -741,8 +748,9 @@ const Navigation = () => {
                               alt={item.label}
                               width={item.icon === 'Shadow_of_the_Mad_King' ? 32 : 16}
                               height={item.icon === 'Shadow_of_the_Mad_King' ? 32 : 16}
-                              className={item.icon === 'Shadow_of_the_Mad_King' ? 'w-8 h-8' : 'w-5 h-5'}
-                              style={item.icon === 'Glosary' ? { backgroundColor: 'transparent' } : undefined}
+                              className={item.icon === 'Shadow_of_the_Mad_King' ? 'w-8 h-8' : item.icon === 'Glosary' ? 'w-5 h-5 mix-blend-screen' : 'w-5 h-5'}
+                              unoptimized={item.icon === 'magic-mirror'}
+                              style={item.icon === 'Glosary' ? { backgroundColor: 'transparent', background: 'transparent' } : undefined}
                             />
                           ) : (
                             <item.icon className="w-5 h-5" />
@@ -777,7 +785,7 @@ const Navigation = () => {
                                     width={20}
                                     height={20}
                                     className="w-5 h-5"
-                                    unoptimized={item.icon === 'conversion-guide'}
+                                    unoptimized={item.icon === 'conversion-guide' || item.icon === 'magic-mirror'}
                                   />
                                 ) : (
                                   <item.icon className="w-5 h-5" />
@@ -814,8 +822,9 @@ const Navigation = () => {
                                     alt={item.label}
                                     width={20}
                                     height={20}
-                                    className="w-5 h-5"
-                                    style={item.icon === 'Glosary' ? { backgroundColor: 'transparent' } : undefined}
+                                    className={item.icon === 'Glosary' ? 'w-5 h-5 mix-blend-screen' : 'w-5 h-5'}
+                                    unoptimized={item.icon === 'magic-mirror'}
+                                    style={item.icon === 'Glosary' ? { backgroundColor: 'transparent', background: 'transparent' } : undefined}
                                   />
                                 ) : (
                                   <item.icon className="w-5 h-5" />
