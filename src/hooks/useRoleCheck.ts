@@ -78,7 +78,7 @@ export function useRoleCheck() {
     } catch {
       // No hacer nada en caso de error, mantener la sesión actual
     }
-  }, [user, dbService, refreshUserData]);
+  }, [user, refreshUserData]);
 
   useEffect(() => {
     if (!isAuthenticated || !user || !dbService) {
@@ -88,8 +88,8 @@ export function useRoleCheck() {
     // Verificar inmediatamente al montar
     checkRole();
 
-    // Configurar intervalo de 60 segundos
-    intervalRef.current = setInterval(checkRole, 60000);
+    // Configurar intervalo de 5 minutos para reducir invocaciones
+    intervalRef.current = setInterval(checkRole, 300000);
 
     // Limpiar intervalo al desmontar
     return () => {
@@ -99,23 +99,43 @@ export function useRoleCheck() {
     };
   }, [isAuthenticated, user, dbService, checkRole]);
 
-  // También verificar cuando la ventana vuelve a estar activa
+  // También verificar cuando la ventana vuelve a estar activa (con debouncing)
   useEffect(() => {
     if (!isAuthenticated || !user || !dbService) {
       return;
     }
 
+    let visibilityTimeout: NodeJS.Timeout | null = null;
+    let lastVisibilityTime = 0;
+    const VISIBILITY_DEBOUNCE_MS = 60000; // 1 minuto mínimo entre llamadas
+
     const handleVisibilityChange = () => {
-      if (!document.hidden && !isProcessingChange.current) {
-        // Solo verificar si no se está procesando un cambio
-        checkRole();
+      if (document.hidden || isProcessingChange.current) {
+        return;
       }
+
+      const now = Date.now();
+      if (now - lastVisibilityTime < VISIBILITY_DEBOUNCE_MS) {
+        return; // Ignorar si fue hace menos de 1 minuto
+      }
+
+      if (visibilityTimeout) {
+        clearTimeout(visibilityTimeout);
+      }
+
+      visibilityTimeout = setTimeout(() => {
+        lastVisibilityTime = Date.now();
+        checkRole();
+      }, 2000); // Esperar 2 segundos después de volver a estar visible
     };
 
     document.addEventListener('visibilitychange', handleVisibilityChange);
 
     return () => {
       document.removeEventListener('visibilitychange', handleVisibilityChange);
+      if (visibilityTimeout) {
+        clearTimeout(visibilityTimeout);
+      }
     };
   }, [isAuthenticated, user, dbService, checkRole]);
 } 

@@ -25,9 +25,10 @@ const inter = Inter({
 // Exportar función de metadatos dinámicos
 export { generateDynamicMetadata as generateMetadata };
 
-// Forzar Server-Side Rendering para metadatos dinámicos
+// ISR con revalidación de 1 hora para reducir invocaciones
+// Mantenemos force-dynamic para metadatos pero con revalidación larga
 export const dynamic = 'force-dynamic';
-export const revalidate = 0;
+export const revalidate = 3600;
 
 export default function RootLayout({
   children,

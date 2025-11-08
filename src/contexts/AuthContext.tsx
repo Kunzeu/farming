@@ -1102,14 +1102,30 @@ function AuthProviderInternal({ children }: { children: ReactNode }) {
   useEffect(() => {
     if (!state.isAuthenticated || !state.user) return;
 
-    // Verificar cada 5 minutos
+    // Verificar cada 10 minutos para reducir invocaciones
     const interval = setInterval(() => {
       refreshUserSummary();
-    }, 300000);
+    }, 600000);
 
-    // Verificar cuando el usuario vuelve a la pestaña (onFocus)
+    // Debounce para evitar múltiples llamadas cuando el usuario vuelve a la pestaña
+    let focusTimeout: NodeJS.Timeout | null = null;
+    let lastFocusTime = 0;
+    const FOCUS_DEBOUNCE_MS = 30000; // 30 segundos mínimo entre llamadas
+
     const handleFocus = () => {
-      refreshUserSummary();
+      const now = Date.now();
+      if (now - lastFocusTime < FOCUS_DEBOUNCE_MS) {
+        return; // Ignorar si fue hace menos de 30 segundos
+      }
+      
+      if (focusTimeout) {
+        clearTimeout(focusTimeout);
+      }
+      
+      focusTimeout = setTimeout(() => {
+        lastFocusTime = Date.now();
+        refreshUserSummary();
+      }, 2000); // Esperar 2 segundos después de volver a enfocar
     };
 
     window.addEventListener('focus', handleFocus);
@@ -1117,6 +1133,9 @@ function AuthProviderInternal({ children }: { children: ReactNode }) {
     return () => {
       clearInterval(interval);
       window.removeEventListener('focus', handleFocus);
+      if (focusTimeout) {
+        clearTimeout(focusTimeout);
+      }
     };
   }, [state.isAuthenticated, state.user, refreshUserSummary]);
 
