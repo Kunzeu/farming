@@ -2491,7 +2491,7 @@
   "altParking.stats.totalCharacters": "Gesamt Charaktere",
   "altParking.stats.timeRequired": "Zeit",
   "altParking.stats.dailyReward": "Täglich",
-  "altParking.stats.timeRequiredValue": "1 Minuten",
+  "altParking.stats.timeRequiredValue": "8-15 Sekunden",
   "altParking.stats.reward": "Belohnung",
   "altParking.stats.quantity": "Menge",
   "altParking.stats.avgPerCharacter": "Durchschnitt pro Charakter",

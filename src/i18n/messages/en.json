@@ -2510,7 +2510,7 @@
   "altParking.stats.totalCharacters": "Total Characters",
   "altParking.stats.timeRequired": "Time",
   "altParking.stats.dailyReward": "Daily",
-  "altParking.stats.timeRequiredValue": "1 minutes",
+  "altParking.stats.timeRequiredValue": "8-15 seconds",
   "altParking.stats.reward": "Reward",
   "altParking.stats.quantity": "Quantity",
   "altParking.stats.avgPerCharacter": "Average per Character",
