@@ -33,6 +33,7 @@ import { useI18n } from '@/contexts/I18nContext'
 import { useDashboardPreferences } from '@/hooks/useDashboardPreferences'
 import Slogan from '@/components/ui/Slogan'
 import { getActiveFestivalEvents } from '@/lib/festival-dates'
+import { getUtilityOrder } from '@/lib/page-usage-tracker'
 import { useState, useEffect, lazy, Suspense } from 'react'
 
 // Lazy loading para componentes pesados
@@ -334,17 +335,42 @@ export default function HomePage() {
     // Reconstruir todas las tarjetas filtradas para asegurar colores correctos
     const reconstructedFilteredCards = filteredCards.map(card => reconstructCardWithIcon(card));
 
-    // Ordenar basado en preferencias del usuario
-    const orderedCards = preferences.cardOrder
+    // Verificar si el usuario ha personalizado el orden manualmente
+    // Si el orden personalizado es igual al orden por defecto, usar orden por utilidad
+    const defaultOrder = initialCards.map(card => card.id);
+    const hasCustomOrder = JSON.stringify(preferences.cardOrder) !== JSON.stringify(defaultOrder);
+    
+    let finalOrder: string[];
+    
+    if (hasCustomOrder) {
+      // Usar el orden personalizado del usuario
+      finalOrder = preferences.cardOrder;
+    } else {
+      // Ordenar por utilidad (páginas más visitadas primero)
+      const cardHrefs: Record<string, string> = {};
+      reconstructedFilteredCards.forEach(card => {
+        cardHrefs[card.id] = card.href;
+      });
+      
+      const utilityOrder = getUtilityOrder(
+        reconstructedFilteredCards.map(card => card.id),
+        cardHrefs
+      );
+      
+      finalOrder = utilityOrder;
+    }
+
+    // Ordenar tarjetas según el orden final
+    const orderedCards = finalOrder
       .map(cardId => {
         const foundCard = reconstructedFilteredCards.find(card => card.id === cardId);
         return foundCard || null;
       })
       .filter(Boolean) as DashboardCard[];
 
-    // Agregar tarjetas que no están en el orden personalizado
+    // Agregar tarjetas que no están en el orden final
     const remainingCards = reconstructedFilteredCards.filter(card => 
-      !preferences.cardOrder.includes(card.id)
+      !finalOrder.includes(card.id)
     );
 
     const finalCards = [...orderedCards, ...remainingCards];
@@ -579,14 +605,6 @@ export default function HomePage() {
                   </>
                 ) : (
                   <div className="flex gap-2">
-                    <button
-                      onClick={toggleEditMode}
-                      className="flex items-center gap-1 md:gap-2 px-3 md:px-4 py-1.5 md:py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg transition-colors duration-200 text-sm"
-                    >
-                      <Settings className="w-3 h-3" />
-                      <span className="hidden sm:inline">{t('dashboard.customize', 'Personalizar Dashboard')}</span>
-                      <span className="sm:hidden">{t('dashboard.customizeShort', 'Personalizar')}</span>
-                    </button>
                     <button
                       onClick={() => setShowSettings(true)}
                       className="flex items-center gap-1 md:gap-2 px-3 md:px-4 py-1.5 md:py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors duration-200 text-sm"

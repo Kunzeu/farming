@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
 import { usePageTitle } from '@/hooks/usePageTitle';
@@ -32,7 +32,49 @@ const ChangelogPage = () => {
   const { t } = useI18n();
   const [selectedVersion, setSelectedVersion] = useState<string | null>(null);
 
-  const changelogData: ChangelogEntry[] = [
+  const changelogData: ChangelogEntry[] = useMemo(() => [
+    {
+      version: '2.1.2',
+      date: '2025-11-07',
+      type: 'minor',
+      changes: [
+        {
+          type: 'feature',
+          title: (() => {
+            const mapName = t('magicMirrors.maps.shipwreckStrand', 'Shipwreck Strand');
+            return t('changelog.garden.shipwreck', 'Jardín - Nuevo jardín de {map}').replace('{map}', mapName);
+          })(),
+          description: (() => {
+            const mapName = t('magicMirrors.maps.shipwreckStrand', 'Shipwreck Strand');
+            const waypointName = t('gardenPage.waypoints.pubCanach', 'Pub Canach Waypoint');
+            return t('changelog.garden.shipwreck.desc', 'Agregado nuevo jardín de {map} ({waypoint}) a la Lista 3')
+              .replace('{map}', mapName)
+              .replace('{waypoint}', waypointName);
+          })()
+        },
+        {
+          type: 'feature',
+          title: t('changelog.magicMirrors.interactiveMap', 'Espejos Mágicos - Mapa interactivo'),
+          description: (() => {
+            const map1 = t('magicMirrors.maps.starlitWeald', 'Starlit Weald');
+            const map2 = t('magicMirrors.maps.shipwreckStrand', 'Shipwreck Strand');
+            return t('changelog.magicMirrors.interactiveMap.desc', 'Nuevo mapa interactivo para rastrear el progreso de los espejos mágicos en {map1} y {map2}')
+              .replace('{map1}', map1)
+              .replace('{map2}', map2);
+          })()
+        },
+        {
+          type: 'improvement',
+          title: t('changelog.dashboard.smartOrdering', 'Dashboard - Ordenamiento inteligente'),
+          description: t('changelog.dashboard.smartOrdering.desc', 'El dashboard ahora se ordena automáticamente según la utilidad de las páginas (páginas más visitadas aparecen primero)')
+        },
+        {
+          type: 'bugfix',
+          title: t('changelog.conversionGuide.gif', 'Guía de conversiones T6 - Corrección de gif en móvil'),
+          description: t('changelog.conversionGuide.gif.desc', 'Se corregió el gif de Guía de conversiones T6 en móvil (anteriormente no se mostraba)')
+        }
+      ]
+    },
     {
       version: '2.1.1',
       date: '2025-10-30',
@@ -90,7 +132,7 @@ const ChangelogPage = () => {
         },
       ]
     }
-  ];
+  ], [t]);
 
   const getTypeIcon = (type: string) => {
     switch (type) {

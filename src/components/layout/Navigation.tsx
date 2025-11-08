@@ -331,6 +331,19 @@ const Navigation = () => {
   }, [isMobileMenuOpen, isUserMenuOpen]);
 
   const { t } = useI18n();
+  
+  // Helper function para obtener la ruta de la imagen
+  const getImageSrc = (icon: string) => {
+    const isAssetsIcon = icon === 'GOM' || icon === 'GOJM' || icon === 'Glosary' || icon === 'Community' || icon === 'conversion-guide' || icon === 'Explorer';
+    const isFestivalIcon = icon === 'Shadow_of_the_Mad_King';
+    
+    const folder = isAssetsIcon ? 'assets' : isFestivalIcon ? 'festivals' : 'expansions';
+    const extension = icon === 'conversion-guide' ? 'gif' : 'webp';
+    const query = icon === 'Explorer' ? '?v=2' : '';
+    
+    return `/images/${folder}/${icon}.${extension}${query}`;
+  };
+  
   const navItems: NavItem[] = [
     { href: '/', label: t('nav.home', 'Home'), icon: Home },
     { href: '/farming-routes', label: t('nav.farms', 'Farms'), icon: Map },
@@ -378,7 +391,7 @@ const Navigation = () => {
         }
       `}</style>
       
-      <div className="relative z-50">
+      <div className="fixed top-0 left-0 right-0 z-50">
         <nav className="bg-gray-900/95 backdrop-blur-md border-b border-gray-700/50">
       <div className="max-w-8xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
@@ -499,11 +512,13 @@ const Navigation = () => {
                         onClick={() => handleGuidesMenuToggle(false)}>
                         {item.isImage ? (
                           <Image 
-                            src={`/images/${item.icon === 'GOM' || item.icon === 'GOJM' || item.icon === 'Glosary' || item.icon === 'Community' || item.icon === 'conversion-guide' || item.icon === 'Explorer' ? 'assets' : item.icon === 'Shadow_of_the_Mad_King' ? 'festivals' : 'expansions'}/${item.icon}.${item.icon === 'conversion-guide' ? 'gif' : 'webp'}${item.icon === 'Explorer' ? '?v=2' : ''}`} 
+                            src={getImageSrc(item.icon as string)} 
                             alt={item.label}
                             width={item.icon === 'Shadow_of_the_Mad_King' ? 48 : 32}
                             height={item.icon === 'Shadow_of_the_Mad_King' ? 48 : 32}
                             className={item.icon === 'Shadow_of_the_Mad_King' ? 'w-6 h-6' : 'w-4 h-4'}
+                            unoptimized={item.icon === 'conversion-guide'}
+                            style={item.icon === 'Glosary' ? { backgroundColor: 'transparent' } : undefined}
                           />
                         ) : (
                           <item.icon className="w-4 h-4" />
@@ -540,7 +555,7 @@ const Navigation = () => {
                         onClick={() => handleToolsMenuToggle(false)}>
                         {item.isImage ? (
                           <Image 
-                            src={`/images/${item.icon === 'GOM' || item.icon === 'GOJM' || item.icon === 'Glosary' || item.icon === 'Community' || item.icon === 'Explorer' ? 'assets' : item.icon === 'Shadow_of_the_Mad_King' ? 'festivals' : 'expansions'}/${item.icon}.webp`} 
+                            src={getImageSrc(item.icon as string)} 
                             alt={item.label}
                             width={16}
                             height={16}
@@ -722,11 +737,12 @@ const Navigation = () => {
                           className="flex items-center space-x-3 px-3 py-3 text-gray-300 hover:text-white hover:bg-gray-700 rounded-md transition-colors duration-200">
                           {item.isImage ? (
                             <Image 
-                              src={`/images/${item.icon === 'GOM' || item.icon === 'GOJM' || item.icon === 'Glosary' || item.icon === 'Community' || item.icon === 'Explorer' ? 'assets' : item.icon === 'Shadow_of_the_Mad_King' ? 'festivals' : 'expansions'}/${item.icon}.webp${item.icon === 'Explorer' ? '?v=2' : ''}`} 
+                              src={getImageSrc(item.icon as string)} 
                               alt={item.label}
                               width={item.icon === 'Shadow_of_the_Mad_King' ? 32 : 16}
                               height={item.icon === 'Shadow_of_the_Mad_King' ? 32 : 16}
                               className={item.icon === 'Shadow_of_the_Mad_King' ? 'w-8 h-8' : 'w-5 h-5'}
+                              style={item.icon === 'Glosary' ? { backgroundColor: 'transparent' } : undefined}
                             />
                           ) : (
                             <item.icon className="w-5 h-5" />
@@ -756,11 +772,12 @@ const Navigation = () => {
                                 className="flex items-center space-x-3 px-3 py-3 text-gray-300 hover:text-white hover:bg-gray-700 rounded-md transition-colors duration-200">
                                 {item.isImage ? (
                                   <Image 
-                                    src={`/images/${item.icon === 'GOM' || item.icon === 'GOJM' || item.icon === 'Glosary' || item.icon === 'Community' || item.icon === 'Explorer' ? 'assets' : item.icon === 'Shadow_of_the_Mad_King' ? 'festivals' : 'expansions'}/${item.icon}.webp`} 
+                                    src={getImageSrc(item.icon as string)} 
                                     alt={item.label}
                                     width={20}
                                     height={20}
                                     className="w-5 h-5"
+                                    unoptimized={item.icon === 'conversion-guide'}
                                   />
                                 ) : (
                                   <item.icon className="w-5 h-5" />
@@ -793,11 +810,12 @@ const Navigation = () => {
                                 className="flex items-center space-x-3 px-3 py-3 text-gray-300 hover:text-white hover:bg-gray-700 rounded-md transition-colors duration-200">
                                 {item.isImage ? (
                                   <Image 
-                                    src={`/images/${item.icon === 'GOM' || item.icon === 'GOJM' || item.icon === 'Glosary' || item.icon === 'Community' || item.icon === 'Explorer' ? 'assets' : item.icon === 'Shadow_of_the_Mad_King' ? 'festivals' : 'expansions'}/${item.icon}.webp`}
+                                    src={getImageSrc(item.icon as string)}
                                     alt={item.label}
                                     width={20}
                                     height={20}
                                     className="w-5 h-5"
+                                    style={item.icon === 'Glosary' ? { backgroundColor: 'transparent' } : undefined}
                                   />
                                 ) : (
                                   <item.icon className="w-5 h-5" />

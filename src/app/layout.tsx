@@ -9,6 +9,7 @@ import Footer from "@/components/layout/Footer";
 import ScrollToTop from "@/components/ui/ScrollToTop";
 import CookieBanner from "@/components/ui/CookieBanner";
 import ApiWarningBanner from "@/components/ui/ApiWarningBanner";
+import PageUsageTracker from "@/components/PageUsageTracker";
 // import { Analytics } from "@vercel/analytics/next"; // Deshabilitado para reducir carga
 import { generateDynamicMetadata } from "@/lib/metadata";
 import GoogleAdsLoader from '@/components/GoogleAdsLoader';
@@ -177,6 +178,7 @@ export default function RootLayout({
           <AuthProvider>
             <I18nProvider>
               <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex flex-col">
+                <PageUsageTracker />
                 <RoleChecker />
                 <ApiWarningBanner />
                 <div className="flex-1">
@@ -219,7 +221,20 @@ export default function RootLayout({
             // Bloquear el widget "Discover more" de AdSense y contenido no deseado
             function blockDiscoverMore() {
               // Términos específicos del widget "Discover more" y contenido no deseado
-              const discoverMoreTerms = ['discover more', 'gift cards for games', 'ergonomic gaming mouse', 'gaming keyboard', 'keyboard', 'mechanical keyboard', 'Garden', 'management'];
+              const discoverMoreTerms = ['discover more', 'gift cards for games', 'ergonomic gaming mouse'];
+              
+              // Términos de contenido no deseado que deben bloquearse SIEMPRE (no solo discover widgets)
+              const unwantedAdTerms = ['gaming keyboard', 'keyboard', 'mechanical keyboard', "we couldn't find results", "couldn't find results", 'no results found', "we couldn't find results for", "couldn't find results for", 'external hard drive', 'hard drive', 'external drive', 'usb drive', 'game giveaways', 'giveaways', 'free games', 'win games', 'game prizes'];
+              
+              // Función para verificar si un elemento contiene términos no deseados
+              function hasUnwantedContent(element) {
+                const text = (element.textContent || '').toLowerCase();
+                const title = (element.title || '').toLowerCase();
+                const href = (element.href || '').toLowerCase();
+                const alt = (element.alt || '').toLowerCase();
+                const allText = text + ' ' + title + ' ' + href + ' ' + alt;
+                return unwantedAdTerms.some(term => allText.includes(term.toLowerCase()));
+              }
               
               // Solo buscar dentro de elementos de AdSense específicos
               const adSenseContainers = document.querySelectorAll('.adsbygoogle, [data-ad-client], [data-ad-slot], ins.adsbygoogle');
@@ -229,8 +244,33 @@ export default function RootLayout({
                 const elements = adContainer.querySelectorAll('*');
                 const containerText = (adContainer.textContent || '').toLowerCase();
                 
-                // Verificar si el contenedor o sus hijos contienen los términos
-                const hasDiscoverMore = discoverMoreTerms.some(term => containerText.includes(term));
+                // Verificar también en atributos href, title, alt, etc.
+                const hasUnwantedInContainer = hasUnwantedContent(adContainer);
+                
+                // Bloquear SIEMPRE si contiene términos no deseados (gaming keyboard, etc.)
+                if (hasUnwantedInContainer) {
+                  // Ocultar completamente este anuncio
+                  adContainer.style.display = 'none';
+                  adContainer.style.visibility = 'hidden';
+                  adContainer.style.height = '0';
+                  adContainer.style.width = '0';
+                  adContainer.style.overflow = 'hidden';
+                  adContainer.style.opacity = '0';
+                  adContainer.style.pointerEvents = 'none';
+                  
+                  // Prevenir clics en todos los elementos hijos
+                  elements.forEach(el => {
+                    el.style.pointerEvents = 'none';
+                    el.style.cursor = 'default';
+                    el.onclick = function(e) { e.preventDefault(); e.stopPropagation(); return false; };
+                    el.addEventListener('click', function(e) { e.preventDefault(); e.stopPropagation(); return false; }, true);
+                  });
+                  
+                  return;
+                }
+                
+                // Verificar si el contenedor o sus hijos contienen los términos de discover
+                const hasDiscoverMore = discoverMoreTerms.some(term => containerText.includes(term.toLowerCase()));
                 
                 if (hasDiscoverMore) {
                   // Verificar si es realmente un widget "Discover more" (no un anuncio normal)
@@ -250,30 +290,64 @@ export default function RootLayout({
                     adContainer.style.width = '0';
                     adContainer.style.overflow = 'hidden';
                     adContainer.style.opacity = '0';
+                    adContainer.style.pointerEvents = 'none';
                   }
                 }
               });
               
-              // Bloquear iframes de AdSense que sean específicamente del widget "Discover more"
+              // Bloquear iframes de AdSense que contengan contenido no deseado
               const adIframes = document.querySelectorAll('iframe[src*="googlesyndication"], iframe[src*="doubleclick"]');
               adIframes.forEach(iframe => {
                 const iframeSrc = (iframe.src || '').toLowerCase();
                 const iframeId = (iframe.id || '').toLowerCase();
                 
-                // Solo bloquear iframes que claramente sean del widget "Discover more"
-                if (iframeSrc.includes('discover') || 
-                    iframeSrc.includes('native') ||
-                    iframeId.includes('discover')) {
-                  // Verificar que esté dentro de un contenedor de AdSense
-                  const adContainer = iframe.closest('.adsbygoogle, [data-ad-client], [data-ad-slot]');
-                  if (adContainer) {
+                // Verificar que esté dentro de un contenedor de AdSense
+                const adContainer = iframe.closest('.adsbygoogle, [data-ad-client], [data-ad-slot]');
+                if (adContainer) {
+                  // Bloquear si es discover widget o contiene términos no deseados
+                  const containerText = (adContainer.textContent || '').toLowerCase();
+                  const hasUnwanted = unwantedAdTerms.some(term => containerText.includes(term.toLowerCase()));
+                  const isDiscover = iframeSrc.includes('discover') || 
+                                    iframeSrc.includes('native') ||
+                                    iframeId.includes('discover');
+                  
+                  if (isDiscover || hasUnwanted) {
                     iframe.style.display = 'none';
                     iframe.style.visibility = 'hidden';
                     iframe.style.height = '0';
                     iframe.style.width = '0';
                     iframe.style.overflow = 'hidden';
                     iframe.style.opacity = '0';
+                    iframe.style.pointerEvents = 'none';
                   }
+                }
+              });
+            }
+            
+            // Prevenir clics en anuncios bloqueados
+            function preventClicksOnBlockedAds() {
+              const adContainers = document.querySelectorAll('.adsbygoogle, [data-ad-client], [data-ad-slot], ins.adsbygoogle');
+              adContainers.forEach(container => {
+                if (container.style.display === 'none' || container.style.opacity === '0') {
+                  // Si está bloqueado, prevenir todos los clics
+                  container.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    e.stopImmediatePropagation();
+                    return false;
+                  }, true);
+                  
+                  // Prevenir clics en todos los hijos
+                  const children = container.querySelectorAll('*');
+                  children.forEach(child => {
+                    child.style.pointerEvents = 'none';
+                    child.onclick = function(e) {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      e.stopImmediatePropagation();
+                      return false;
+                    };
+                  });
                 }
               });
             }
@@ -281,17 +355,32 @@ export default function RootLayout({
             // Ejecutar inmediatamente y periódicamente
             blockUnwantedContent();
             blockDiscoverMore();
+            preventClicksOnBlockedAds();
             setInterval(() => {
               blockUnwantedContent();
               blockDiscoverMore();
+              preventClicksOnBlockedAds();
             }, 2000);
             
             // También ejecutar cuando se cargan nuevos elementos
             const observer = new MutationObserver(() => {
               blockUnwantedContent();
               blockDiscoverMore();
+              preventClicksOnBlockedAds();
             });
             observer.observe(document.body, { childList: true, subtree: true });
+            
+            // Prevenir clics globalmente en elementos bloqueados
+            document.addEventListener('click', function(e) {
+              const target = e.target;
+              const blockedAd = target.closest('.adsbygoogle, [data-ad-client], [data-ad-slot]');
+              if (blockedAd && (blockedAd.style.display === 'none' || blockedAd.style.opacity === '0')) {
+                e.preventDefault();
+                e.stopPropagation();
+                e.stopImmediatePropagation();
+                return false;
+              }
+            }, true);
             
             
           `

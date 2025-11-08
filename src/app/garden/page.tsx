@@ -103,7 +103,8 @@ const JardinesPage = () => {
     '/images/garden/SOTO-2-514x1024.webp',       // 47. Skywatch Archipelago
     '/images/garden/JW-1.png',                   // 48. The Echovald Wilds
     '/images/garden/JW-2.png',                   // 49. Lowland Shore
-    '/images/garden/Lion-Arch.webp'              // 50. Lion's Arch
+    '/images/garden/Lion-Arch.webp',             // 50. Lion's Arch
+    '/images/garden/VoE.webp'                    // 51. Shipwreck Strand
   ];
 
   // Obtener datos de los items de la API - OPTIMIZADO: Una sola llamada
@@ -353,7 +354,7 @@ const JardinesPage = () => {
 
   // Función para copiar Lista 3
   const copyList3 = async () => {
-    const list3Text = '[&BNwKAAA=][&BCgKAAA=]x2[&BJEKAAA=][&BEAKAAA=][&BEMLAAA=][&BBsMAAA=][&BCcMAAA=][&BGQMAAA=]x3[&BBkNAAA=]x2[&BCANAAA=][&BNQMAAA=][&BFUOAAA=][&BNwNAAA=][&BK4OAAA=]x2[&BC4EAAA=]';
+    const list3Text = '[&BNwKAAA=][&BCgKAAA=]x2[&BJEKAAA=][&BEAKAAA=][&BEMLAAA=][&BBsMAAA=][&BCcMAAA=][&BGQMAAA=]x3[&BBkNAAA=]x2[&BCANAAA=][&BNQMAAA=][&BFUOAAA=][&BNwNAAA=][&BK4OAAA=]x2[&BC4EAAA=][&BJEPAAA=]';
     
     try {
       await navigator.clipboard.writeText(list3Text);
@@ -1052,7 +1053,7 @@ const JardinesPage = () => {
                       </div>
                       <div className="bg-slate-700/50 rounded-lg p-4 border border-slate-600/50">
                         <div className="text-gray-300 text-lg font-mono break-all leading-relaxed">
-                          [&BNwKAAA=][&BCgKAAA=]<span className="text-yellow-400 font-bold">x2</span>[&BJEKAAA=][&BEAKAAA=][&BEMLAAA=][&BBsMAAA=][&BCcMAAA=][&BGQMAAA=]<span className="text-red-400 font-bold">x3</span>[&BBkNAAA=]<span className="text-yellow-400 font-bold">x2</span>[&BCANAAA=][&BNQMAAA=][&BFUOAAA=][&BNwNAAA=][&BK4OAAA=]<span className="text-yellow-400 font-bold">x2</span>[&BC4EAAA=]
+                          [&BNwKAAA=][&BCgKAAA=]<span className="text-yellow-400 font-bold">x2</span>[&BJEKAAA=][&BEAKAAA=][&BEMLAAA=][&BBsMAAA=][&BCcMAAA=][&BGQMAAA=]<span className="text-red-400 font-bold">x3</span>[&BBkNAAA=]<span className="text-yellow-400 font-bold">x2</span>[&BCANAAA=][&BNQMAAA=][&BFUOAAA=][&BNwNAAA=][&BK4OAAA=]<span className="text-yellow-400 font-bold">x2</span>[&BC4EAAA=][&BJEPAAA=]
                         </div>
                       </div>
                     </div>
@@ -4628,6 +4629,77 @@ const JardinesPage = () => {
                             <Copy className="w-4 h-4" />
                           )}
                           {copiedWaypoint === '[&BC4EAAA=]' 
+                            ? t('gardenPage.sections.locations.waypointCopied')
+                            : t('gardenPage.sections.locations.copyWaypoint')
+                          }
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* Shipwreck Strand - Waypoint BJEPAAA */}
+                    <div className="group relative overflow-hidden rounded-2xl bg-slate-800/50 backdrop-blur-sm border border-slate-700/50 hover:border-purple-400/60 transition-all duration-300 hover:shadow-xl hover:shadow-purple-500/20 h-full flex flex-col">
+                      {/* Imagen con dimensiones uniformes */}
+                      <div 
+                        className="relative h-48 w-full overflow-hidden cursor-pointer"
+                        onClick={() => openImageModal('/images/garden/VoE.webp', gardenImages)}
+                      >
+                        <Image
+                          src="/images/garden/VoE.webp"
+                          alt="Shipwreck Strand Garden Location"
+                          fill
+                          className="object-contain group-hover:scale-105 transition-transform duration-500"
+                          unoptimized
+                        />
+                        {/* Overlay sutil para legibilidad */}
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+                        
+                        {/* Icono de zoom para indicar que se puede hacer clic */}
+                        <div className="absolute top-2 right-2 opacity-100 transition-opacity duration-300">
+                          <Image
+                            src="/images/garden/zoom-in.webp"
+                            alt="Zoom"
+                            width={20}
+                            height={20}
+                            className="w-5 h-5 invert"
+                            unoptimized
+                          />
+                        </div>
+                        
+                      </div>
+                      
+                      {/* Contenido uniforme */}
+                      <div className="p-6 flex-1 flex flex-col">
+                        <h3 className="text-xl font-bold text-white mb-4">
+                          {t('magicMirrors.maps.shipwreckStrand', 'Shipwreck Strand')}
+                        </h3>
+                        
+                        <div className="bg-slate-700/50 rounded-lg p-4 border border-slate-600/40 mb-4">
+                          <p className="text-purple-300 font-semibold flex items-center gap-3 text-sm">
+                            <Image 
+                              src="/images/icons/waypoint-icon.webp" 
+                              alt="Waypoint" 
+                              width={20} 
+                              height={20} 
+                              className="w-7 h-7"
+                            />
+                            {t('gardenPage.waypoints.pubCanach') || 'Pub Canach Waypoint'}
+                          </p>
+                        </div>
+                        
+                        <button
+                          onClick={() => copyWaypoint('[&BJEPAAA=]')}
+                          className={`w-full font-bold py-3 px-4 rounded-lg transition-all duration-300 flex items-center justify-center gap-2 text-sm mt-auto ${
+                            copiedWaypoint === '[&BJEPAAA=]' 
+                              ? 'bg-green-600 text-white shadow-xl' 
+                              : 'bg-gradient-to-r from-purple-600 to-violet-600 hover:from-purple-500 hover:to-violet-500 text-white shadow-lg hover:shadow-xl hover:scale-105'
+                          }`}
+                        >
+                          {copiedWaypoint === '[&BJEPAAA=]' ? (
+                            <CheckCircle className="w-4 h-4" />
+                          ) : (
+                            <Copy className="w-4 h-4" />
+                          )}
+                          {copiedWaypoint === '[&BJEPAAA=]' 
                             ? t('gardenPage.sections.locations.waypointCopied')
                             : t('gardenPage.sections.locations.copyWaypoint')
                           }

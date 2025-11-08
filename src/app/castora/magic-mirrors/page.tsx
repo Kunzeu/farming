@@ -1,9 +1,10 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Navigation from '@/components/layout/Navigation';
 import { usePageTitle } from '@/hooks/usePageTitle';
+import { useI18n } from '@/contexts/I18nContext';
 import Image from 'next/image';
 import { 
   MapPin, 
@@ -195,6 +196,134 @@ const castoraHubs: Hub[] = [
   },
 ];
 
+// Estructura de Hubs y Nodos para Shipwreck Strand
+const shipwreckHubs: Hub[] = [
+  {
+    id: 'hub-shipwreck-1',
+    name: 'Shipwreck Strand',
+    x: 50,
+    y: 54,
+    color: '#87CEEB', // Azul claro (según descripción de la imagen)
+    nodes: [
+      // 6 nodos secundarios conectados al hub central
+      { id: 'node-shipwreck-1-1', name: 'Magic Mirror 1', x: 49, y: 47, hubId: 'hub-shipwreck-1', waypoint: '[&BAAIAAA=]', type: 'S' }, // Norte
+      { id: 'node-shipwreck-1-2', name: 'Magic Mirror 2', x: 63, y: 39, hubId: 'hub-shipwreck-1', waypoint: '[&BAAIAAA=]', type: 'S' }, // Noreste (en pequeña isla)
+      { id: 'node-shipwreck-1-3', name: 'Magic Mirror 3', x: 70, y: 52, hubId: 'hub-shipwreck-1', waypoint: '[&BAAIAAA=]', type: 'S' }, // Este (en el agua, cerca de la costa)
+      { id: 'node-shipwreck-1-4', name: 'Magic Mirror 4', x: 62, y: 62, hubId: 'hub-shipwreck-1', waypoint: '[&BAAIAAA=]', type: 'S' }, // Suroeste (en pequeña isla)
+    ]
+  },
+  {
+    id: 'hub-shipwreck-2',
+    name: 'Coral Bay',
+    x: 38,
+    y: 42,
+    color: '#32CD32', // Verde
+    nodes: [
+      { id: 'node-shipwreck-2-1', name: 'Magic Mirror 7', x: 26, y: 30, hubId: 'hub-shipwreck-2', waypoint: '[&BAAIAAA=]', type: 'S' },
+      { id: 'node-shipwreck-2-3', name: 'Magic Mirror 9', x: 35, y: 33, hubId: 'hub-shipwreck-2', waypoint: '[&BAAIAAA=]', type: 'S' },
+      { id: 'node-shipwreck-2-4', name: 'Magic Mirror 10', x: 30, y: 40, hubId: 'hub-shipwreck-2', waypoint: '[&BAAIAAA=]', type: 'S' },
+      { id: 'node-shipwreck-2-5', name: 'Magic Mirror 11', x: 33, y: 54, hubId: 'hub-shipwreck-2', waypoint: '[&BAAIAAA=]', type: 'M' },
+      { id: 'node-shipwreck-2-6', name: 'Magic Mirror 12', x: 41, y: 44, hubId: 'hub-shipwreck-2', waypoint: '[&BAAIAAA=]', type: 'S' },
+      { id: 'node-shipwreck-2-7', name: 'Magic Mirror 13', x: 43, y: 54, hubId: 'hub-shipwreck-2', waypoint: '[&BAAIAAA=]', type: 'L' },
+    ]
+  },
+  {
+    id: 'hub-shipwreck-3',
+    name: 'Shipwreck Strand',
+    x: 25,
+    y: 60,
+    color: '#FF69B4', // Rosado (según descripción de la imagen)
+    nodes: [
+      { id: 'node-shipwreck-3-1', name: 'Magic Mirror 14', x: 47, y: 57, hubId: 'hub-shipwreck-3', waypoint: '[&BAAIAAA=]', type: 'M' }, // Norte
+      { id: 'node-shipwreck-3-2', name: 'Magic Mirror 15', x: 47, y: 64, hubId: 'hub-shipwreck-3', waypoint: '[&BAAIAAA=]', type: 'S' }, // Norte
+      { id: 'node-shipwreck-3-3', name: 'Magic Mirror 16', x: 47, y: 72, hubId: 'hub-shipwreck-3', waypoint: '[&BAAIAAA=]', type: 'S' }, // Norte
+      { id: 'node-shipwreck-3-4', name: 'Magic Mirror 17', x: 37, y: 73, hubId: 'hub-shipwreck-3', waypoint: '[&BAAIAAA=]', type: 'S' }, // Norte
+      { id: 'node-shipwreck-3-5', name: 'Magic Mirror 18', x: 29, y: 74, hubId: 'hub-shipwreck-3', waypoint: '[&BAAIAAA=]', type: 'L' }, // Norte
+    ]
+  },
+  {
+    id: 'hub-shipwreck-4',
+    name: 'Shipwreck Strand',
+    x: 31,
+    y: 78,
+    color: '#32CD32', // Verde (según descripción de la imagen)
+    nodes: [
+      { id: 'node-shipwreck-4-1', name: 'Magic Mirror 19', x: 22, y: 79, hubId: 'hub-shipwreck-4', waypoint: '[&BAAIAAA=]', type: 'M' }, // Norte
+      { id: 'node-shipwreck-4-2', name: 'Magic Mirror 20', x: 26, y: 85, hubId: 'hub-shipwreck-4', waypoint: '[&BAAIAAA=]', type: 'S' }, // Norte
+      { id: 'node-shipwreck-4-3', name: 'Magic Mirror 21', x: 31, y: 93, hubId: 'hub-shipwreck-4', waypoint: '[&BAAIAAA=]', type: 'M' }, // Norte
+      { id: 'node-shipwreck-4-4', name: 'Magic Mirror 22', x: 47, y: 77, hubId: 'hub-shipwreck-4', waypoint: '[&BAAIAAA=]', type: 'S' }, // Norte
+    ]
+  },
+  {
+    id: 'hub-shipwreck-5',
+    name: 'Shipwreck Strand',
+    x: 67,
+    y: 69,
+    color: '#FFD700', // Amarillo (según descripción de la imagen)
+    nodes: [
+      { id: 'node-shipwreck-5-1', name: 'Magic Mirror 23', x: 51, y: 74, hubId: 'hub-shipwreck-5', waypoint: '[&BAAIAAA=]', type: 'S' }, // Norte
+      { id: 'node-shipwreck-5-2', name: 'Magic Mirror 24', x: 56, y: 65, hubId: 'hub-shipwreck-5', waypoint: '[&BAAIAAA=]', type: 'S' }, // Norte
+      { id: 'node-shipwreck-5-3', name: 'Magic Mirror 25', x: 62, y: 80, hubId: 'hub-shipwreck-5', waypoint: '[&BAAIAAA=]', type: 'S' }, // Norte
+    ]
+  },
+  {
+    id: 'hub-shipwreck-6',
+    name: 'Shipwreck Strand',
+    x: 83,
+    y: 85,
+    color: '#FFFFFF', // Blanco (según descripción de la imagen)
+    nodes: [
+      { id: 'node-shipwreck-6-1', name: 'Magic Mirror 26', x: 76, y: 71, hubId: 'hub-shipwreck-6', waypoint: '[&BAAIAAA=]', type: 'S' }, // Norte
+      { id: 'node-shipwreck-6-2', name: 'Magic Mirror 27', x: 76, y: 75, hubId: 'hub-shipwreck-6', waypoint: '[&BAAIAAA=]', type: 'S' }, // Norte
+      { id: 'node-shipwreck-6-3', name: 'Magic Mirror 28', x: 61, y: 81, hubId: 'hub-shipwreck-6', waypoint: '[&BAAIAAA=]', type: 'S' }, // Norte
+      { id: 'node-shipwreck-6-4', name: 'Magic Mirror 29', x: 59, y: 91, hubId: 'hub-shipwreck-6', waypoint: '[&BAAIAAA=]', type: 'S' }, // Norte
+      { id: 'node-shipwreck-6-5', name: 'Magic Mirror 30', x: 69, y: 96, hubId: 'hub-shipwreck-6', waypoint: '[&BAAIAAA=]', type: 'S' }, // Norte
+    ]
+  },
+  {
+    id: 'hub-shipwreck-7',
+    name: 'Shipwreck Strand',
+    x: 30,
+    y: 15,
+    color: '#CEB7ED', // Blanco (según descripción de la imagen)
+    nodes: [
+      { id: 'node-shipwreck-7-1', name: 'Magic Mirror 31', x: 32, y: 23, hubId: 'hub-shipwreck-7', waypoint: '[&BAAIAAA=]', type: 'S' }, // Norte
+      { id: 'node-shipwreck-7-2', name: 'Magic Mirror 32', x: 24, y: 22, hubId: 'hub-shipwreck-7', waypoint: '[&BAAIAAA=]', type: 'S' }, // Norte
+      { id: 'node-shipwreck-7-3', name: 'Magic Mirror 33', x: 25, y: 10, hubId: 'hub-shipwreck-7', waypoint: '[&BAAIAAA=]', type: 'S' }, // Norte
+    ]
+  },
+  {
+    id: 'hub-shipwreck-8',
+    name: 'Shipwreck Strand',
+    x: 48,
+    y: 9,
+    color: '#0F5691', // Blanco (según descripción de la imagen)
+    nodes: [
+      { id: 'node-shipwreck-8-1', name: 'Magic Mirror 34', x: 37, y: 11, hubId: 'hub-shipwreck-8', waypoint: '[&BAAIAAA=]', type: 'M' }, // Norte
+      { id: 'node-shipwreck-8-2', name: 'Magic Mirror 35', x: 39, y: 22, hubId: 'hub-shipwreck-8', waypoint: '[&BAAIAAA=]', type: 'S' }, // Norte
+      { id: 'node-shipwreck-8-3', name: 'Magic Mirror 36', x: 46, y: 22, hubId: 'hub-shipwreck-8', waypoint: '[&BAAIAAA=]', type: 'M' }, // Norte
+      { id: 'node-shipwreck-8-4', name: 'Magic Mirror 37', x: 53, y: 24, hubId: 'hub-shipwreck-8', waypoint: '[&BAAIAAA=]', type: 'S' }, // Norte
+      { id: 'node-shipwreck-8-5', name: 'Magic Mirror 38', x: 58, y: 11, hubId: 'hub-shipwreck-8', waypoint: '[&BAAIAAA=]', type: 'S' }, // Norte
+    ]
+  },
+  {
+    id: 'hub-shipwreck-9',
+    name: 'Shipwreck Strand',
+    x: 78,
+    y: 13,
+    color: '#0F9123', // Blanco (según descripción de la imagen)
+    nodes: [
+      { id: 'node-shipwreck-9-1', name: 'Magic Mirror 39', x: 64, y: 13, hubId: 'hub-shipwreck-9', waypoint: '[&BAAIAAA=]', type: 'S' }, // Norte
+      { id: 'node-shipwreck-9-2', name: 'Magic Mirror 40', x: 61, y: 25, hubId: 'hub-shipwreck-9', waypoint: '[&BAAIAAA=]', type: 'S' }, // Norte
+      { id: 'node-shipwreck-9-3', name: 'Magic Mirror 41', x: 68, y: 26, hubId: 'hub-shipwreck-9', waypoint: '[&BAAIAAA=]', type: 'M' }, // Norte
+      { id: 'node-shipwreck-9-4', name: 'Magic Mirror 42', x: 64, y: 35, hubId: 'hub-shipwreck-9', waypoint: '[&BAAIAAA=]', type: 'S' }, // Norte
+      { id: 'node-shipwreck-9-5', name: 'Magic Mirror 43', x: 71, y: 34, hubId: 'hub-shipwreck-9', waypoint: '[&BAAIAAA=]', type: 'L' }, // Norte
+      { id: 'node-shipwreck-9-6', name: 'Magic Mirror 44', x: 84, y: 30, hubId: 'hub-shipwreck-9', waypoint: '[&BAAIAAA=]', type: 'M' }, // Norte
+      { id: 'node-shipwreck-9-7', name: 'Magic Mirror 45', x: 77, y: 10, hubId: 'hub-shipwreck-9', waypoint: '[&BAAIAAA=]', type: 'S' }, // Norte
+    ]
+  },
+];
+
 // Configs de mapas (Shipwreck Strand inicia vacío para rellenar luego)
 const mapConfigs: MapConfig[] = [
   {
@@ -208,19 +337,31 @@ const mapConfigs: MapConfig[] = [
   {
     id: 'shipwreck',
     name: 'Shipwreck Strand',
-    imageSrc: '/images/backgrounds/castora-map.webp',
-    missingPathHint: '/public/images/shipwreck-strand-map.jpg',
+    imageSrc: '/images/backgrounds/shipwreck-strand-map.webp',
+    missingPathHint: '/public/images/backgrounds/shipwreck-strand-map.webp',
     storageKey: 'magicMirrors_shipwreck_completed',
-    hubs: [],
+    hubs: shipwreckHubs,
   },
 ];
 
 export default function MagicMirrorsPage() {
   usePageTitle('pageTitles.magicMirrors', 'Magic Mirrors');
+  const { t } = useI18n();
   const [selectedMapId, setSelectedMapId] = useState<MapConfig['id']>('castora');
   const selectedMap = mapConfigs.find(m => m.id === selectedMapId)!;
   const hubs = selectedMap.hubs;
   const allNodes = hubs.flatMap(hub => hub.nodes);
+  
+  // Obtener el nombre traducido del mapa
+  const getMapName = (mapId: string) => {
+    if (mapId === 'castora') {
+      return t('magicMirrors.maps.starlitWeald', 'Starlit Weald');
+    }
+    if (mapId === 'shipwreck') {
+      return t('magicMirrors.maps.shipwreckStrand', 'Shipwreck Strand');
+    }
+    return selectedMap.name;
+  };
   
   const [completedNodes, setCompletedNodes] = useState<Set<string>>(new Set());
   const [selectedNode, setSelectedNode] = useState<Node | null>(null);
@@ -301,7 +442,7 @@ export default function MagicMirrorsPage() {
                 <Crown className="h-10 w-10 text-white" />
               </div>
               <h1 className="text-3xl sm:text-4xl font-bold text-center">
-                <span className="text-white">Magic Mirrors - {selectedMap.name}</span>
+                <span className="text-white">{t('pageTitles.magicMirrors', 'Magic Mirrors')} - {getMapName(selectedMapId)}</span>
               </h1>
             </div>
             {/* Selector de mapa */}
@@ -310,19 +451,38 @@ export default function MagicMirrorsPage() {
                 onClick={() => setSelectedMapId('castora')}
                 className={`px-3 py-1.5 rounded-lg text-sm border ${selectedMapId==='castora' ? 'bg-purple-600 text-white border-purple-500' : 'bg-slate-800 text-gray-300 border-slate-600 hover:bg-slate-700'}`}
               >
-                Castora
+                {getMapName('castora')}
               </button>
               <button
                 onClick={() => setSelectedMapId('shipwreck')}
                 className={`px-3 py-1.5 rounded-lg text-sm border ${selectedMapId==='shipwreck' ? 'bg-purple-600 text-white border-purple-500' : 'bg-slate-800 text-gray-300 border-slate-600 hover:bg-slate-700'}`}
               >
-                Shipwreck Strand
+                {getMapName('shipwreck')}
               </button>
             </div>
             <div className="text-center text-sm text-gray-400">
-              <p>Haz clic en un nodo para marcar o desmarcar como completado.</p>
+              <p>{t('magicMirrors.clickNode', 'Haz clic en un nodo para marcar o desmarcar como completado.')}</p>
               <p className="mt-1">
-                Progreso: <span className="text-purple-400 font-semibold">{completedNodes.size}</span> / <span className="text-gray-400">{allNodes.length}</span> completados
+                {(() => {
+                  const progressText = t('magicMirrors.progress', 'Progreso: {completed} / {total} completados');
+                  const parts = progressText.split('{completed}');
+                  if (parts.length === 2) {
+                    const [before, after] = parts;
+                    const afterParts = after.split('{total}');
+                    if (afterParts.length === 2) {
+                      return (
+                        <>
+                          {before}
+                          <span className="text-purple-400 font-semibold">{completedNodes.size}</span>
+                          {afterParts[0]}
+                          <span className="text-gray-400">{allNodes.length}</span>
+                          {afterParts[1]}
+                        </>
+                      );
+                    }
+                  }
+                  return progressText.replace('{completed}', String(completedNodes.size)).replace('{total}', String(allNodes.length));
+                })()}
               </p>
             </div>
           </motion.div>
@@ -338,7 +498,7 @@ export default function MagicMirrorsPage() {
               <div className="flex items-center justify-between mb-4">
                 <h2 className="text-2xl font-bold text-white flex items-center gap-2">
                   <MapPin className="w-6 h-6 text-purple-400" />
-                  Mapa Interactivo
+                  {t('magicMirrors.interactiveMap', 'Mapa Interactivo')}
                 </h2>
                 <div className="flex items-center gap-2">
                   <button
@@ -346,7 +506,7 @@ export default function MagicMirrorsPage() {
                     className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors flex items-center gap-2 text-sm"
                   >
                     <RefreshCw className="w-4 h-4" />
-                    Resetear
+                    {t('magicMirrors.reset', 'Resetear')}
                   </button>
                 </div>
               </div>
@@ -441,28 +601,48 @@ export default function MagicMirrorsPage() {
                   const isCompleted = completedNodes.has(node.id);
                   const hub = hubs.find(h => h.id === node.hubId);
                   
-                  // Calcular dirección desde el hub hacia el nodo para acercar el nodo a la línea
-                  let adjustedX = node.x;
-                  let adjustedY = node.y;
+                  // Calcular posición de la letra más cerca del final de la línea
+                  let letterX = node.x;
+                  let letterY = node.y;
                   
                   if (hub) {
                     const dx = node.x - hub.x;
                     const dy = node.y - hub.y;
-                    const distance = Math.sqrt(dx * dx + dy * dy);
-                    // Mover el nodo 5% más cerca del hub (más cerca de la línea)
-                    const moveFactor = 0.05;
-                    adjustedX = node.x - (dx / distance) * (distance * moveFactor);
-                    adjustedY = node.y - (dy / distance) * (distance * moveFactor);
+                    
+                    // Posicionar la letra exactamente al final de la línea (100% desde el hub hacia el nodo)
+                    // Esto la coloca exactamente donde termina la línea SVG
+                    const letterPosition = 1.03;
+                    letterX = hub.x + (dx * letterPosition);
+                    letterY = hub.y + (dy * letterPosition);
                   }
                   
-                  return (
+                  return [
+                    // Letra S, M, L posicionada más cerca del final de la línea
+                    !isCompleted && node.type && (
+                      <div
+                        key={`letter-${node.id}`}
+                        className="absolute transform -translate-x-1/2 -translate-y-1/2 pointer-events-none"
+                        style={{
+                          left: `${letterX}%`,
+                          top: `${letterY}%`,
+                          zIndex: 2,
+                        }}
+                      >
+                        <span className="text-xs font-bold text-yellow-400">
+                          {node.type}
+                        </span>
+                      </div>
+                    ),
+                    // Botón del nodo (en la misma posición que la letra)
                     <motion.button
                       key={node.id}
-                      className="absolute transform -translate-x-1/2 -translate-y-1/2 group"
+                      className="absolute transform -translate-x-1/2 -translate-y-1/2 group cursor-pointer"
                       style={{
-                        left: `${adjustedX}%`,
-                        top: `${adjustedY}%`,
+                        left: `${letterX}%`,
+                        top: `${letterY}%`,
                         zIndex: 2,
+                        minWidth: '24px',
+                        minHeight: '24px',
                       }}
                       onClick={(e) => handleNodeClick(node, e)}
                       initial={{ scale: 0 }}
@@ -470,22 +650,16 @@ export default function MagicMirrorsPage() {
                       whileHover={{ scale: 1.3 }}
                       whileTap={{ scale: 0.9 }}
                     >
-                      {/* Nodo con etiqueta S, M, L - sin fondo ni contorno */}
-                      <div className={`w-7 h-7 rounded-full transition-all flex items-center justify-center relative ${
+                      {/* Nodo sin etiqueta S, M, L */}
+                      <div className={`rounded-full transition-all flex items-center justify-center relative ${
                         isCompleted 
-                          ? 'bg-green-500 border-2 border-green-300 shadow-lg shadow-green-500/50' 
-                          : 'bg-transparent'
+                          ? 'w-6 h-6 bg-purple-500 border-2 border-purple-300 shadow-lg shadow-purple-500/50' 
+                          : 'w-0 h-0 bg-transparent'
                       }`}>
                         {isCompleted ? (
-                          <CheckCircle className="w-5 h-5 text-white" />
+                          <CheckCircle className="w-4 h-4 text-white" />
                         ) : (
                           <>
-                            {/* Etiqueta S, M, L en amarillo y bold */}
-                            {node.type && (
-                              <span className="text-xs font-bold text-yellow-400">
-                                {node.type}
-                              </span>
-                            )}
                             {/* Chevron hacia abajo si no tiene tipo definido */}
                             {!node.type && (
                               <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -502,7 +676,7 @@ export default function MagicMirrorsPage() {
                         </div>
                       )}
                     </motion.button>
-                  );
+                  ].filter(Boolean);
                 })}
               </div>
 
@@ -519,15 +693,23 @@ export default function MagicMirrorsPage() {
                       unoptimized
                     />
                   </div>
-                  <span>Hub (Punto Central)</span>
+                  <span>{t('magicMirrors.legend.hub', 'Hub (Punto Central)')}</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <div className="w-4 h-4 bg-yellow-400 rounded-full border-2 border-yellow-300"></div>
-                  <span>Magic Mirror (No completado)</span>
+                  <span>{(() => {
+                    const text = t('magicMirrors.legend.notCompleted', 'Magic Mirror (No completado)');
+                    const mirrorText = t('magicMirrors.magicMirror', 'Magic Mirror');
+                    return text.replace('{magicMirror}', mirrorText);
+                  })()}</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <div className="w-4 h-4 bg-green-500 rounded-full border-2 border-green-300"></div>
-                  <span>Magic Mirror (Completado)</span>
+                  <div className="w-4 h-4 bg-purple-500 rounded-full border-2 border-purple-300"></div>
+                  <span>{(() => {
+                    const text = t('magicMirrors.legend.completed', 'Magic Mirror (Completado)');
+                    const mirrorText = t('magicMirrors.magicMirror', 'Magic Mirror');
+                    return text.replace('{magicMirror}', mirrorText);
+                  })()}</span>
                 </div>
 
               </div>
@@ -562,7 +744,7 @@ export default function MagicMirrorsPage() {
               onClick={(e) => e.stopPropagation()}
             >
               <div className="p-6 border-b border-slate-700">
-                <h3 className="text-lg font-semibold text-white">Resetear progreso</h3>
+                <h3 className="text-lg font-semibold text-white">{t('magicMirrors.resetProgress', 'Resetear progreso')}</h3>
                 <p className="text-sm text-gray-300 mt-2">¿Seguro que quieres resetear todo el progreso de Magic Mirrors?</p>
               </div>
               <div className="p-6 flex items-center justify-end gap-3">
@@ -611,7 +793,7 @@ export default function MagicMirrorsPage() {
                   <div className="flex items-center gap-3">
                     <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
                       completedNodes.has(selectedNode.id) 
-                        ? 'bg-green-500' 
+                        ? 'bg-purple-500' 
                         : 'bg-yellow-400'
                     }`}>
                       {completedNodes.has(selectedNode.id) ? (

@@ -45,9 +45,24 @@ export const PATREON_TIERS = {
 
 /**
  * Verifica si un usuario es un patreon activo
+ * Un usuario es patreon activo si:
+ * - patreonStatus === 'active_patron'
+ * - O tiene un tier pagado (no 'free' y no vacío)
  */
 export function isActivePatron(user: User | null): boolean {
-  return user?.patreonStatus === 'active_patron';
+  if (!user) return false;
+  
+  // Verificar si el status es 'active_patron'
+  if (user.patreonStatus === 'active_patron') {
+    return true;
+  }
+  
+  // Verificar si tiene un tier pagado (no 'free' y no vacío)
+  if (user.patreonTier && user.patreonTier.trim().toLowerCase() !== 'free' && user.patreonTier.trim() !== '') {
+    return true;
+  }
+  
+  return false;
 }
 
 /**
@@ -115,15 +130,16 @@ export function getTierInfo(user: User | null) {
 
 /**
  * Verifica si el usuario debe ver anuncios
- * Los patreons con suscripción activa no ven anuncios, sin importar el tier
+ * Los patreons con suscripción activa NO ven anuncios
+ * Solo los usuarios que NO son patreons activos ven anuncios
  */
 export function shouldShowAds(user: User | null): boolean {
-  // Si es un patreon activo, no mostrar anuncios
+  // Si es un patreon activo (status = 'active_patron'), NO mostrar anuncios
   if (isActivePatron(user)) {
-    return false;
+    return false; // No mostrar anuncios a patreons activos
   }
   // Si no es patreon activo, mostrar anuncios
-  return true;
+  return true; // Mostrar anuncios a usuarios que no son patreons activos
 }
 
 /**
