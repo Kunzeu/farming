@@ -182,7 +182,7 @@ export default function RootLayout({
                 <PageUsageTracker />
                 <RoleChecker />
                 <ApiWarningBanner />
-                <div className="flex-1">
+                <div className="flex-1 pt-16">
                   {children}
                 </div>
                 <div className="mt-auto">

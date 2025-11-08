@@ -210,7 +210,7 @@ export default function FarmingRoutes() {
     return (
       <div className="min-h-screen">
         <Navigation />
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 main-content">
           <div className="flex items-center justify-center h-64">
             <div className="text-center">
               <RefreshCw className="w-8 h-8 text-blue-400 animate-spin mx-auto mb-4" />
@@ -226,7 +226,7 @@ export default function FarmingRoutes() {
     <div className="min-h-screen">
         <Navigation />
       
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 main-content">
         {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}

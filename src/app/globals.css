@@ -82,3 +82,8 @@ footer + div:not([class*="scroll"]):not([id*="scroll"]) {
   text-decoration: none !important;
   border-bottom: none !important;
 }
+
+/* Padding-top para compensar el header fijo */
+.main-content {
+  padding-top: 4rem; /* 64px - altura del header */
+}

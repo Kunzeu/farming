@@ -477,7 +477,7 @@ export default function HomePage() {
         <Navigation />
       
       {/* Container principal */}
-      <div className="container mx-auto px-4 pb-8">
+      <div className="container mx-auto px-4 pb-8 pt-16">
         
         {/* Hero Section - Banner Promocional */}
         <section className="relative overflow-hidden rounded-xl mb-2 h-72 md:h-96">
