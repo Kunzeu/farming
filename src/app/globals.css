@@ -87,3 +87,8 @@ footer + div:not([class*="scroll"]):not([id*="scroll"]) {
 .main-content {
   padding-top: 4rem; /* 64px - altura del header */
 }
+
+/* Excluir padding-top de la página de inicio usando :has() */
+.flex-1.pt-16:has(.home-page) {
+  padding-top: 0 !important;
+}

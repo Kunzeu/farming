@@ -464,7 +464,7 @@ export default function HomePage() {
 
 
   return (
-    <div>
+    <div className="home-page">
         <Head>
           <link 
             rel="preload" 
