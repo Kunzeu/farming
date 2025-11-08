@@ -353,14 +353,34 @@ export default function RootLayout({
               });
             }
             
+            // Bloquear TODOS los anuncios dentro del Navigation
+            function blockAdsInNavigation() {
+              const nav = document.querySelector('nav[data-no-ads="true"]');
+              if (!nav) return;
+              
+              // Buscar y bloquear cualquier anuncio dentro del nav
+              const adsInNav = nav.querySelectorAll('.adsbygoogle, [data-ad-client], [data-ad-slot], ins.adsbygoogle, iframe[src*="googlesyndication"], iframe[src*="doubleclick"]');
+              adsInNav.forEach(ad => {
+                ad.style.display = 'none';
+                ad.style.visibility = 'hidden';
+                ad.style.height = '0';
+                ad.style.width = '0';
+                ad.style.opacity = '0';
+                ad.style.pointerEvents = 'none';
+                ad.style.overflow = 'hidden';
+              });
+            }
+            
             // Ejecutar inmediatamente y periódicamente
             blockUnwantedContent();
             blockDiscoverMore();
             preventClicksOnBlockedAds();
+            blockAdsInNavigation();
             setInterval(() => {
               blockUnwantedContent();
               blockDiscoverMore();
               preventClicksOnBlockedAds();
+              blockAdsInNavigation();
             }, 2000);
             
             // También ejecutar cuando se cargan nuevos elementos
@@ -368,6 +388,7 @@ export default function RootLayout({
               blockUnwantedContent();
               blockDiscoverMore();
               preventClicksOnBlockedAds();
+              blockAdsInNavigation();
             });
             observer.observe(document.body, { childList: true, subtree: true });
             

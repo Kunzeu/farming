@@ -52,7 +52,7 @@ const castoraHubs: Hub[] = [
     id: 'hub-1',
     name: 'Lost Basilica',
     x: 24,
-    y: 26,
+    y: 30,
     color: '#DC143C', // Rojo (según imagen 2 - Lost Basilica tiene líneas rojas)
     nodes: [
       // 4 puntos 'S': alrededor del hub
@@ -89,8 +89,9 @@ const castoraHubs: Hub[] = [
       { id: 'node-3-1', name: 'Magic Mirror 11', x: 66, y: 28, hubId: 'hub-3', waypoint: '[&BAAIAAA=]', type: 'S' },
       { id: 'node-3-2', name: 'Magic Mirror 12', x: 65, y: 13, hubId: 'hub-3', waypoint: '[&BAAIAAA=]', type: 'S' },
       { id: 'node-3-3', name: 'Magic Mirror 13', x: 90, y: 40, hubId: 'hub-3', waypoint: '[&BAAIAAA=]', type: 'S' },
-      { id: 'node-3-4', name: 'Magic Mirror 14', x: 83, y: 34, hubId: 'hub-3', waypoint: '[&BAAIAAA=]', type: 'M' },
-      { id: 'node-3-5', name: 'Magic Mirror 15', x: 90, y: 27, hubId: 'hub-3', waypoint: '[&BAAIAAA=]', type: 'L' },
+      { id: 'node-3-4', name: 'Magic Mirror 15', x: 90, y: 27, hubId: 'hub-3', waypoint: '[&BAAIAAA=]', type: 'L' },
+      { id: 'node-3-5', name: 'Magic Mirror 16', x: 74, y: 31, 
+        hubId: 'hub-3', waypoint: '[&BAAIAAA=]', type: 'M' },
     ]
   },
   {
@@ -103,7 +104,7 @@ const castoraHubs: Hub[] = [
       { id: 'node-4-1', name: 'Magic Mirror 16', x: 8, y: 47, hubId: 'hub-4', waypoint: '[&BAAIAAA=]', type: 'S' },
       { id: 'node-4-2', name: 'Magic Mirror 17', x: 29, y: 44, hubId: 'hub-4', waypoint: '[&BAAIAAA=]', type: 'S' },
       { id: 'node-4-3', name: 'Magic Mirror 18', x: 19, y: 55, hubId: 'hub-4', waypoint: '[&BAAIAAA=]', type: 'S' },
-      { id: 'node-4-4', name: 'Magic Mirror 18', x: 17, y: 41, hubId: 'hub-4', waypoint: '[&BAAIAAA=]', type: 'M' },
+      { id: 'node-4-4', name: 'Magic Mirror 18', x: 18, y: 44, hubId: 'hub-4', waypoint: '[&BAAIAAA=]', type: 'M' },
       { id: 'node-4-5', name: 'Magic Mirror 19', x: 16, y: 62, hubId: 'hub-4', waypoint: '[&BAAIAAA=]', type: 'M' },
       { id: 'node-4-6', name: 'Magic Mirror 20', x: 6, y: 55, hubId: 'hub-4', waypoint: '[&BAAIAAA=]', type: 'L' },
       { id: 'node-4-7', name: 'Magic Mirror 21', x: 28, y: 64, hubId: 'hub-4', waypoint: '[&BAAIAAA=]', type: 'S' },
@@ -135,7 +136,7 @@ const castoraHubs: Hub[] = [
       { id: 'node-6-3', name: 'Magic Mirror 28', x: 16, y: 88, hubId: 'hub-6', waypoint: '[&BAAIAAA=]', type: 'S' },
       { id: 'node-6-4', name: 'Magic Mirror 29', x: 29, y: 82, hubId: 'hub-6', waypoint: '[&BAAIAAA=]', type: 'S' },
       { id: 'node-6-5', name: 'Magic Mirror 30', x: 17, y: 78, hubId: 'hub-6', waypoint: '[&BAAIAAA=]', type: 'M' },
-      { id: 'node-6-6', name: 'Magic Mirror 31', x: 29, y: 88, hubId: 'hub-6', waypoint: '[&BAAIAAA=]', type: 'M' },
+      { id: 'node-6-6', name: 'Magic Mirror 31', x: 29, y: 88, hubId: 'hub-6', waypoint: '[&BAAIAAA=]', type: 'S' },
       { id: 'node-6-7', name: 'Magic Mirror 32', x: 9.5, y: 87, hubId: 'hub-6', waypoint: '[&BAAIAAA=]', type: 'L' },
     ]
   },
@@ -148,8 +149,8 @@ const castoraHubs: Hub[] = [
     nodes: [
       { id: 'node-7-1', name: 'Magic Mirror 31', x: 60, y: 68, hubId: 'hub-7', waypoint: '[&BAAIAAA=]', type: 'S' },
       { id: 'node-7-2', name: 'Magic Mirror 32', x: 81, y: 59, hubId: 'hub-7', waypoint: '[&BAAIAAA=]', type: 'S' },
-      { id: 'node-7-3', name: 'Magic Mirror 33', x: 68, y: 65, hubId: 'hub-7', waypoint: '[&BAAIAAA=]', type: 'S' },
-      { id: 'node-7-4', name: 'Magic Mirror 34', x: 70, y: 62, hubId: 'hub-7', waypoint: '[&BAAIAAA=]', type: 'M' },
+      { id: 'node-7-3', name: 'Magic Mirror 33', x: 69, y: 60, hubId: 'hub-7', waypoint: '[&BAAIAAA=]', type: 'M' },
+      { id: 'node-7-4', name: 'Magic Mirror 34', x: 70, y: 62, hubId: 'hub-7', waypoint: '[&BAAIAAA=]', type: 'S' },
       { id: 'node-7-5', name: 'Magic Mirror 35', x: 77, y: 48, hubId: 'hub-7', waypoint: '[&BAAIAAA=]', type: 'S' },
       { id: 'node-7-6', name: 'Magic Mirror 36', x: 67, y: 48, hubId: 'hub-7', waypoint: '[&BAAIAAA=]', type: 'M' },
     ]
@@ -161,7 +162,7 @@ const castoraHubs: Hub[] = [
     y: 78,
     color: '#FF69B4', // Rosa (según imagen 2)
     nodes: [
-      { id: 'node-8-1', name: 'Magic Mirror 36', x: 31, y: 89, hubId: 'hub-8', waypoint: '[&BAAIAAA=]', type: 'S' },
+      { id: 'node-8-1', name: 'Magic Mirror 36', x: 31, y: 89, hubId: 'hub-8', waypoint: '[&BAAIAAA=]', type: 'M' },
       { id: 'node-8-2', name: 'Magic Mirror 37', x: 53, y: 76, hubId: 'hub-8', waypoint: '[&BAAIAAA=]', type: 'S' },
       { id: 'node-8-3', name: 'Magic Mirror 38', x: 55, y: 84, hubId: 'hub-8', waypoint: '[&BAAIAAA=]', type: 'S' },
       { id: 'node-8-4', name: 'Magic Mirror 39', x: 55, y: 72, hubId: 'hub-8', waypoint: '[&BAAIAAA=]', type: 'M' },
@@ -191,7 +192,6 @@ const castoraHubs: Hub[] = [
     nodes: [
       { id: 'node-10-1', name: 'Magic Mirror 46', x: 89, y: 62, hubId: 'hub-10', waypoint: '[&BAAIAAA=]', type: 'S' },
       { id: 'node-10-2', name: 'Magic Mirror 47', x: 82, y: 51, hubId: 'hub-10', waypoint: '[&BAAIAAA=]', type: 'S' },
-      { id: 'node-10-5', name: 'Magic Mirror 50', x: 82, y: 59, hubId: 'hub-10', waypoint: '[&BAAIAAA=]', type: 'S' },
     ]
   },
 ];
