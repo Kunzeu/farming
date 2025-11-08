@@ -15,11 +15,6 @@ export default function AdExample() {
           adSlot="1234567890"
           adFormat="auto"
           className="w-full h-32 bg-gray-800 rounded-lg flex items-center justify-center"
-          fallback={
-            <div className="text-gray-400 text-sm">
-              Cargando anuncio...
-            </div>
-          }
         />
       </div>
 
@@ -31,11 +26,6 @@ export default function AdExample() {
           adFormat="rectangle"
           adStyle={{ width: '300px', height: '250px' }}
           className="bg-gray-800 rounded-lg flex items-center justify-center"
-          fallback={
-            <div className="text-gray-400 text-sm">
-              Anuncio cargando...
-            </div>
-          }
         />
       </div>
     </div>
