@@ -15,6 +15,67 @@ import {
   RefreshCw
 } from 'lucide-react';
 
+// Caché en memoria para el item 96046 por idioma
+const itemCache: Record<string, { data: { name: string; icon: string }; expiry: number }> = {};
+
+const CACHE_TTL = 24 * 60 * 60 * 1000; // 24 horas
+
+// Hook para obtener el item 96046 con caché por idioma
+function useChestItem(language: string) {
+  const [item, setItem] = useState<{ name: string; icon: string } | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const now = Date.now();
+    const cached = itemCache[language];
+    
+    // Verificar caché para este idioma específico
+    if (cached && cached.expiry > now) {
+      setItem(cached.data);
+      setLoading(false);
+      return;
+    }
+
+    // Hacer la llamada solo si no hay caché válido para este idioma
+    const fetchItem = async () => {
+      try {
+        const response = await fetch(
+          `https://api.guildwars2.com/v2/items/96046?lang=${language}`,
+          {
+            headers: {
+              'Accept': 'application/json',
+            }
+          }
+        );
+
+        if (response.ok) {
+          const data = await response.json();
+          const itemData = {
+            name: data.name,
+            icon: data.icon || ''
+          };
+          
+          // Actualizar caché para este idioma
+          itemCache[language] = {
+            data: itemData,
+            expiry: now + CACHE_TTL
+          };
+          
+          setItem(itemData);
+        }
+      } catch (error) {
+        console.error('Error fetching chest item:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchItem();
+  }, [language]);
+
+  return { item, loading };
+}
+
 interface Node {
   id: string;
   name: string;
@@ -90,8 +151,8 @@ const castoraHubs: Hub[] = [
       { id: 'node-3-2', name: 'Magic Mirror 12', x: 65, y: 13, hubId: 'hub-3', waypoint: '[&BAAIAAA=]', type: 'S' },
       { id: 'node-3-3', name: 'Magic Mirror 13', x: 90, y: 40, hubId: 'hub-3', waypoint: '[&BAAIAAA=]', type: 'S' },
       { id: 'node-3-4', name: 'Magic Mirror 15', x: 90, y: 27, hubId: 'hub-3', waypoint: '[&BAAIAAA=]', type: 'L' },
-      { id: 'node-3-5', name: 'Magic Mirror 16', x: 74, y: 31, 
-        hubId: 'hub-3', waypoint: '[&BAAIAAA=]', type: 'M' },
+      { id: 'node-3-5', name: 'Magic Mirror 16', x: 74, y: 31, hubId: 'hub-3', waypoint: '[&BAAIAAA=]', type: 'M' },
+      { id: 'node-3-6', name: 'Magic Mirror 17', x: 82, y: 35, hubId: 'hub-3', waypoint: '[&BAAIAAA=]', type: 'M' },
     ]
   },
   {
@@ -167,7 +228,7 @@ const castoraHubs: Hub[] = [
       { id: 'node-8-3', name: 'Magic Mirror 38', x: 55, y: 84, hubId: 'hub-8', waypoint: '[&BAAIAAA=]', type: 'S' },
       { id: 'node-8-4', name: 'Magic Mirror 39', x: 55, y: 72, hubId: 'hub-8', waypoint: '[&BAAIAAA=]', type: 'M' },
       { id: 'node-8-5', name: 'Magic Mirror 40', x: 42, y: 87, hubId: 'hub-8', waypoint: '[&BAAIAAA=]', type: 'S' },
-      { id: 'node-8-6', name: 'Magic Mirror 41', x: 30, y: 71, hubId: 'hub-8', waypoint: '[&BAAIAAA=]', type: 'L' },
+      { id: 'node-8-6', name: 'Magic Mirror 41', x: 30, y: 71, hubId: 'hub-8', waypoint: '[&BAAIAAA=]', type: 'S' },
 
     ]
   },
@@ -192,6 +253,7 @@ const castoraHubs: Hub[] = [
     nodes: [
       { id: 'node-10-1', name: 'Magic Mirror 46', x: 89, y: 62, hubId: 'hub-10', waypoint: '[&BAAIAAA=]', type: 'S' },
       { id: 'node-10-2', name: 'Magic Mirror 47', x: 82, y: 51, hubId: 'hub-10', waypoint: '[&BAAIAAA=]', type: 'S' },
+      { id: 'node-10-3', name: 'Magic Mirror 48', x: 82, y: 59, hubId: 'hub-10', waypoint: '[&BAAIAAA=]' }, 
     ]
   },
 ];
@@ -346,7 +408,8 @@ const mapConfigs: MapConfig[] = [
 
 export default function MagicMirrorsPage() {
   usePageTitle('pageTitles.magicMirrors', 'Magic Mirrors');
-  const { t } = useI18n();
+  const { t, lang } = useI18n();
+  const { item: chestItem } = useChestItem(lang);
   const [selectedMapId, setSelectedMapId] = useState<MapConfig['id']>('castora');
   const selectedMap = mapConfigs.find(m => m.id === selectedMapId)!;
   const hubs = selectedMap.hubs;
@@ -681,37 +744,67 @@ export default function MagicMirrorsPage() {
               </div>
 
               {/* Leyenda */}
-              <div className="mt-4 flex flex-wrap gap-4 text-sm text-gray-400">
-                <div className="flex items-center gap-2">
-                  <div className="w-6 h-6">
-                    <Image
-                      src="https://wiki.guildwars2.com/images/1/1d/Magic_Mirror.png"
-                      alt="Magic Mirror"
-                      width={24}
-                      height={24}
-                      className="w-full h-full object-contain"
-                      unoptimized
-                    />
+              <div className="mt-4">
+                <div className="flex flex-wrap gap-4 text-sm text-gray-400 mb-3">
+                  <div className="flex items-center gap-2">
+                    <div className="w-6 h-6">
+                      <Image
+                        src="https://wiki.guildwars2.com/images/1/1d/Magic_Mirror.png"
+                        alt="Magic Mirror"
+                        width={24}
+                        height={24}
+                        className="w-full h-full object-contain"
+                        unoptimized
+                      />
+                    </div>
+                    <span>{t('magicMirrors.legend.hub', 'Hub (Punto Central)')}</span>
                   </div>
-                  <span>{t('magicMirrors.legend.hub', 'Hub (Punto Central)')}</span>
+                  <div className="flex items-center gap-2">
+                    <div className="w-4 h-4 bg-yellow-400 rounded-full border-2 border-yellow-300"></div>
+                    <span>{(() => {
+                      const text = t('magicMirrors.legend.notCompleted', 'Magic Mirror (No completado)');
+                      const mirrorText = t('magicMirrors.magicMirror', 'Magic Mirror');
+                      return text.replace('{magicMirror}', mirrorText);
+                    })()}</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <div className="w-4 h-4 bg-purple-500 rounded-full border-2 border-purple-300"></div>
+                    <span>{(() => {
+                      const text = t('magicMirrors.legend.completed', 'Magic Mirror (Completado)');
+                      const mirrorText = t('magicMirrors.magicMirror', 'Magic Mirror');
+                      return text.replace('{magicMirror}', mirrorText);
+                    })()}</span>
+                  </div>
                 </div>
-                <div className="flex items-center gap-2">
-                  <div className="w-4 h-4 bg-yellow-400 rounded-full border-2 border-yellow-300"></div>
-                  <span>{(() => {
-                    const text = t('magicMirrors.legend.notCompleted', 'Magic Mirror (No completado)');
-                    const mirrorText = t('magicMirrors.magicMirror', 'Magic Mirror');
-                    return text.replace('{magicMirror}', mirrorText);
-                  })()}</span>
+                <div className="text-sm text-yellow-400 font-semibold flex flex-col gap-1">
+                  {t('magicMirrors.legend.typeNote', 'L = Grande (da 8), S = Pequeño (da 1-3), M = Mediano (da 4-6)')
+                    .split(', ')
+                    .map((item, index) => {
+                      const parts = item.split(' (da ');
+                      const typePart = parts[0];
+                      const quantityPart = parts[1]?.replace(')', '');
+                      
+                      return (
+                        <span key={index} className="flex items-center gap-2">
+                          <span>{typePart} (da {quantityPart}</span>
+                          {chestItem && (
+                            <>
+                              <Image
+                                src={chestItem.icon}
+                                alt={chestItem.name}
+                                width={16}
+                                height={16}
+                                className="w-4 h-4"
+                                unoptimized
+                              />
+                              <span>{chestItem.name})</span>
+                            </>
+                          )}
+                          {!chestItem && <span>)</span>}
+                        </span>
+                      );
+                    })}
                 </div>
-                <div className="flex items-center gap-2">
-                  <div className="w-4 h-4 bg-purple-500 rounded-full border-2 border-purple-300"></div>
-                  <span>{(() => {
-                    const text = t('magicMirrors.legend.completed', 'Magic Mirror (Completado)');
-                    const mirrorText = t('magicMirrors.magicMirror', 'Magic Mirror');
-                    return text.replace('{magicMirror}', mirrorText);
-                  })()}</span>
-                </div>
-
               </div>
             </div>
           </motion.div>

@@ -105,6 +105,7 @@
   "nav.giveaways": "Verlosungen",
   "nav.guides": "Anleitungen",
   "nav.glossary": "Glossar",
+  "nav.magicMirrors": "Magische Spiegel",
   "nav.tools": "Werkzeuge",
   "nav.daily": "Täglich",
   "nav.weekly": "Wöchentlich",
@@ -339,6 +340,7 @@
   "cta.viewCalculator": "Rechner anzeigen",
   "cta.seeFullDescription": "Gesamte Beschreibung anzeigen",
   "cta.purchaseNow": "Jetzt Kaufen",
+  "cta.checkNewTool": "Schauen Sie sich unser neues Tool an",
 
   "section.availableTools": "Verfügbare Tools",
   "festivals.title": "Guild Wars 2 Festivals",
@@ -2517,6 +2519,7 @@
   "magicMirrors.legend.hub": "Hub (Zentraler Punkt)",
   "magicMirrors.legend.notCompleted": "{magicMirror} (Nicht abgeschlossen)",
   "magicMirrors.legend.completed": "{magicMirror} (Abgeschlossen)",
+  "magicMirrors.legend.typeNote": "L = Groß (gibt 8), S = Klein (gibt 1-3), M = Mittel (gibt 4-6)",
   "magicMirrors.magicMirror": "Magischer Spiegel",
   "magicMirrors.interactiveMap": "Interaktive Karte",
   "magicMirrors.reset": "Zurücksetzen",

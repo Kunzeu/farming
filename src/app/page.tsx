@@ -26,7 +26,8 @@ import {
   Box,
   Dice6,
   RefreshCw,
-  Map
+  Map,
+  Sparkles
 } from 'lucide-react'
 import { usePageTitle } from '@/hooks/usePageTitle'
 import { useI18n } from '@/contexts/I18nContext'
@@ -34,7 +35,7 @@ import { useDashboardPreferences } from '@/hooks/useDashboardPreferences'
 import Slogan from '@/components/ui/Slogan'
 import { getActiveFestivalEvents } from '@/lib/festival-dates'
 import { getUtilityOrder } from '@/lib/page-usage-tracker'
-import { useState, useEffect, lazy, Suspense } from 'react'
+import { useState, useEffect, useRef, lazy, Suspense } from 'react'
 
 // Lazy loading para componentes pesados
 const DashboardSettings = lazy(() => import('@/components/DashboardSettings'))
@@ -229,6 +230,17 @@ const initialCards: DashboardCard[] = [
     delay: 1.9,
     visible: true,
     order: 16
+  },
+  {
+    id: "magicMirrors",
+    title: "nav.magicMirrors",
+    description: "magicMirrors.interactiveMap",
+    href: "/castora/magic-mirrors",
+    icon: <Sparkles className="w-8 h-8" />,
+    color: "from-purple-500 to-indigo-600",
+    delay: 2.0,
+    visible: true,
+    order: 17
   }
   
 ];
@@ -244,6 +256,9 @@ export default function HomePage() {
   const [originalCards, setOriginalCards] = useState<DashboardCard[]>([]);
   const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
   const [showSettings, setShowSettings] = useState(false);
+  const [mostUsedDashboard, setMostUsedDashboard] = useState<DashboardCard | null>(null);
+  const [showNewToolMessage, setShowNewToolMessage] = useState(false);
+  const hideTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   // Función para obtener el icono según el ID y tamaño
   const getIcon = (cardId: string, size: 'small' | 'medium' | 'large' = 'medium') => {
@@ -270,7 +285,8 @@ export default function HomePage() {
       "opened": <Box className={iconClass} />,
       "ectogambling": <Dice6 className={iconClass} />,
       "conversionGuide": <RefreshCw className={iconClass} />,
-      "altParking": <Map className={iconClass} />
+      "altParking": <Map className={iconClass} />,
+      "magicMirrors": <Sparkles className={iconClass} />
     };
     
     return iconMap[cardId] || <Package className={iconClass} />;
@@ -294,7 +310,8 @@ export default function HomePage() {
       "opened": <Box className="w-8 h-8" />,
       "ectogambling": <Dice6 className="w-8 h-8" />,
       "conversionGuide": <RefreshCw className="w-8 h-8" />,
-      "altParking": <Map className="w-8 h-8" />
+      "altParking": <Map className="w-8 h-8" />,
+      "magicMirrors": <Sparkles className="w-8 h-8" />
     };
 
   const colorMap: Record<string, string> = {
@@ -313,7 +330,8 @@ export default function HomePage() {
     "opened": "from-violet-500 to-purple-600",
     "ectogambling": "from-red-500 to-pink-600",
     "conversionGuide": "from-sky-500 to-blue-600",
-    "altParking": "from-lime-500 to-green-600"
+    "altParking": "from-lime-500 to-green-600",
+    "magicMirrors": "from-purple-500 to-indigo-600"
   };
 
     return {
@@ -377,6 +395,59 @@ export default function HomePage() {
     setDashboardCards(finalCards);
     setOriginalCards(finalCards);
   }, [preferences.cardOrder, preferences.hiddenCards, isLoading]);
+
+  // Obtener el último dashboard agregado (magic-mirrors)
+  useEffect(() => {
+    // Crear tarjeta para magic-mirrors (última agregada)
+    const magicMirrorsCard: DashboardCard = {
+      id: "magicMirrors",
+      title: "nav.magicMirrors",
+      description: "magicMirrors.interactiveMap",
+      href: "/castora/magic-mirrors",
+      icon: <Sparkles className="w-8 h-8" />,
+      color: "from-purple-500 to-indigo-600",
+      delay: 0,
+      visible: true,
+      order: 17
+    };
+    
+    setMostUsedDashboard(reconstructCardWithIcon(magicMirrorsCard));
+  }, []);
+
+  // Mostrar mensaje "Check our new tool" cada 6 segundos
+  useEffect(() => {
+    // Función para mostrar y ocultar el mensaje
+    const showMessage = () => {
+      // Limpiar timeout anterior si existe
+      if (hideTimeoutRef.current) {
+        clearTimeout(hideTimeoutRef.current);
+      }
+      
+      // Mostrar el mensaje
+      setShowNewToolMessage(true);
+      
+      // Ocultar después de 4 segundos
+      hideTimeoutRef.current = setTimeout(() => {
+        setShowNewToolMessage(false);
+        hideTimeoutRef.current = null;
+      }, 4000);
+    };
+
+    // Mostrar inmediatamente al inicio
+    showMessage();
+
+    // Configurar intervalo para repetir cada 6 segundos
+    const interval = setInterval(() => {
+      showMessage();
+    }, 6000);
+
+    return () => {
+      clearInterval(interval);
+      if (hideTimeoutRef.current) {
+        clearTimeout(hideTimeoutRef.current);
+      }
+    };
+  }, []);
 
   // Funciones de personalización
   const toggleEditMode = () => {
@@ -499,8 +570,8 @@ export default function HomePage() {
             <div className="absolute inset-0 bg-gradient-to-t from-slate-900/90 via-transparent to-transparent rounded-xl"></div>
           </div>
 
-          {/* Logo central */}
-          <div className="absolute inset-0 flex items-center justify-center -mt-8 md:-mt-10">
+          {/* Logo a la derecha */}
+          <div className="absolute top-1/2 right-0 md:right-4 lg:right-8 transform -translate-y-1/2 -mt-8 md:-mt-10">
             <Image 
               src="/images/backgrounds/GuildWars2.webp" 
               alt="Guild Wars 2: Visions of Eternity"
@@ -511,42 +582,139 @@ export default function HomePage() {
             />
           </div>
 
-          {/* Slogan aleatorio */}
-          <div className="absolute top-4 left-1/2 transform -translate-x-1/2">
+          {/* Dashboard más utilizado - Centro */}
+          {mostUsedDashboard && (() => {
+            const cardSize = preferences.cardSizes[mostUsedDashboard.id] || 'medium';
+            const sizeClasses = {
+              small: 'p-4',
+              medium: 'p-6',
+              large: 'p-8'
+            };
+            const titleSizeClasses = {
+              small: 'text-lg',
+              medium: 'text-xl',
+              large: 'text-2xl'
+            };
+            const descriptionSizeClasses = {
+              small: 'text-xs',
+              medium: 'text-sm',
+              large: 'text-base'
+            };
+
+            return (
+              <div className="absolute top-[0%] left-1/2 transform -translate-x-1/2 hidden md:block">
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ duration: 0.6, delay: 0.4 }}
+                  className="flex flex-col items-center gap-1"
+                >
+                  {/* Icono con contenedor para el mensaje */}
+                  <div className="flex-shrink-0 relative">
+                    <div className="transform translate-y-12">
+                      <Image 
+                        src="/images/icons/icoon.webp" 
+                        alt="Icon"
+                        width={128}
+                        height={128}
+                        className="w-32 h-32 drop-shadow-2xl"
+                      />
+                    </div>
+                    
+                    {/* Nube de mensaje debajo del icono - posicionamiento absoluto para no afectar el layout */}
+                    {showNewToolMessage && (
+                      <div className="absolute top-full left-1/2 transform -translate-x-1/2 mt-1 z-10">
+                        <motion.div
+                          initial={{ opacity: 0, scale: 0.8, y: 10 }}
+                          animate={{ opacity: 1, scale: 1, y: 0 }}
+                          exit={{ opacity: 0, scale: 0.8, y: 10 }}
+                          transition={{ duration: 0.3, delay: 0.1 }}
+                          className="relative"
+                        >
+                          {/* Nube */}
+                          <div className="bg-gradient-to-r from-blue-500/95 to-purple-600/95 backdrop-blur-sm border-2 border-blue-400 rounded-lg px-4 py-2 shadow-2xl">
+                            <p className="text-white font-bold text-sm md:text-base text-center whitespace-nowrap">
+                              {t('cta.checkNewTool', 'Check our new tool')}
+                            </p>
+                          </div>
+                          
+                          {/* Cola de la nube que apunta al icono - más grande */}
+                          <div className="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-full">
+                            <div className="w-0 h-0 border-l-12 border-r-12 border-b-12 border-l-transparent border-r-transparent border-b-blue-500/95"></div>
+                          </div>
+                        </motion.div>
+                      </div>
+                    )}
+                  </div>
+                  
+                  {/* Espacio fijo reservado para el mensaje (mantiene el dashboard fijo) */}
+                  <div className="h-[40px]"></div>
+                  
+                  {/* Tarjeta del dashboard */}
+                  <div className="w-64 mt-4">
+                    <Link href={mostUsedDashboard.href}>
+                      <div className={`bg-gradient-to-br ${mostUsedDashboard.color} ${sizeClasses[cardSize]} rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 cursor-pointer h-full border border-white/10`}>
+                        <div className="text-white">
+                          {getIcon(mostUsedDashboard.id, cardSize)}
+                        </div>
+                        <div>
+                          <h3 className={`${titleSizeClasses[cardSize]} font-bold text-white mb-2`}>
+                            {t(mostUsedDashboard.title, mostUsedDashboard.title)}
+                          </h3>
+                          <p className={`${descriptionSizeClasses[cardSize]} text-gray-100 leading-relaxed`}>
+                            {t(mostUsedDashboard.description, mostUsedDashboard.description)}
+                          </p>
+                        </div>
+                      </div>
+                    </Link>
+                  </div>
+                </motion.div>
+              </div>
+            );
+          })()}
+
+          {/* Slogan aleatorio - Móvil */}
+          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 block md:hidden">
             <Slogan 
               variant="random" 
-              className="text-yellow-400 drop-shadow-2xl font-bold text-base md:text-sm lg:text-base"
+              className="text-yellow-400 drop-shadow-2xl font-bold text-base"
+            />
+          </div>
+
+          {/* Slogan aleatorio - Desktop */}
+          <div className="absolute top-1/2 left-6 ml-12 transform -translate-y-1/2 hidden md:block" style={{ transform: 'translateY(-50%) rotate(-20deg)' }}>
+            <Slogan 
+              variant="random" 
+              className="text-yellow-400 drop-shadow-2xl font-bold text-base md:text-lg lg:text-xl"
             />
           </div>
 
           {/* Contenido principal */}
-          <div className="absolute bottom-8 left-0 right-0 text-center translate-y-[0.5cm]">
-            <div className="max-w-3xl mx-auto">
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6 }}
-                className="space-y-4">
+          <div className="absolute bottom-8 right-0 md:right-4 lg:right-8 translate-y-[0.5cm] translate-x-[-1.5cm]">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6 }}
+              className="space-y-4">
         
-                {/* Botón Purchase Now */}
-                <div className="pt-2">
-                  <motion.a
-                    href="http://guildwars2.go2cloud.org/aff_c?offer_id=28&aff_id=757"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-block bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white font-bold py-2 px-6 rounded-md text-base shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-0.5"
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
-                  >
-                    {t('cta.purchaseNow', 'Purchase Now')}
-                  </motion.a>
-                  
-                  <div className="mt-3 flex justify-center">
-                    <div className="w-20 h-1 bg-gradient-to-r from-transparent via-blue-400 to-transparent rounded-full opacity-60"></div>
-                  </div>
+              {/* Botón Purchase Now */}
+              <div className="pt-2">
+                <motion.a
+                  href="http://guildwars2.go2cloud.org/aff_c?offer_id=28&aff_id=757"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-block bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white font-bold py-2 px-6 rounded-md text-base shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-0.5"
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                >
+                  {t('cta.purchaseNow', 'Purchase Now')}
+                </motion.a>
+                
+                <div className="mt-3 flex justify-center">
+                  <div className="w-20 h-1 bg-gradient-to-r from-transparent via-blue-400 to-transparent rounded-full opacity-60"></div>
                 </div>
-              </motion.div>
-            </div>
+              </div>
+            </motion.div>
           </div>
         </section> 
 
