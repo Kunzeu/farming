@@ -341,7 +341,7 @@ export default function HomePage() {
     };
   };
 
-  // Cargar configuración basada en preferencias del usuario
+  // Cargar configuración basada en preferencias del usuario y orden por utilidad
   useEffect(() => {
     if (isLoading) return;
 
@@ -353,30 +353,22 @@ export default function HomePage() {
     // Reconstruir todas las tarjetas filtradas para asegurar colores correctos
     const reconstructedFilteredCards = filteredCards.map(card => reconstructCardWithIcon(card));
 
-    // Verificar si el usuario ha personalizado el orden manualmente
-    // Si el orden personalizado es igual al orden por defecto, usar orden por utilidad
-    const defaultOrder = initialCards.map(card => card.id);
-    const hasCustomOrder = JSON.stringify(preferences.cardOrder) !== JSON.stringify(defaultOrder);
+    // SIEMPRE usar orden por utilidad basado en las visitas (cookies/localStorage)
+    // El orden se actualiza automáticamente cuando cambian las estadísticas de uso
+    const cardHrefs: Record<string, string> = {};
+    reconstructedFilteredCards.forEach(card => {
+      cardHrefs[card.id] = card.href;
+    });
     
-    let finalOrder: string[];
+    const utilityOrder = getUtilityOrder(
+      reconstructedFilteredCards.map(card => card.id),
+      cardHrefs
+    );
     
-    if (hasCustomOrder) {
-      // Usar el orden personalizado del usuario
-      finalOrder = preferences.cardOrder;
-    } else {
-      // Ordenar por utilidad (páginas más visitadas primero)
-      const cardHrefs: Record<string, string> = {};
-      reconstructedFilteredCards.forEach(card => {
-        cardHrefs[card.id] = card.href;
-      });
-      
-      const utilityOrder = getUtilityOrder(
-        reconstructedFilteredCards.map(card => card.id),
-        cardHrefs
-      );
-      
-      finalOrder = utilityOrder;
-    }
+    // Si el usuario ha personalizado el orden manualmente, combinar ambos:
+    // Mantener las tarjetas ocultas según preferencias del usuario
+    // Pero usar el orden por utilidad para las tarjetas visibles
+    const finalOrder = utilityOrder;
 
     // Ordenar tarjetas según el orden final
     const orderedCards = finalOrder
@@ -394,7 +386,100 @@ export default function HomePage() {
     const finalCards = [...orderedCards, ...remainingCards];
     setDashboardCards(finalCards);
     setOriginalCards(finalCards);
-  }, [preferences.cardOrder, preferences.hiddenCards, isLoading]);
+  }, [preferences.hiddenCards, isLoading]);
+
+  // Función helper para actualizar el orden basado en utilidad
+  const updateOrderByUtility = useRef(() => {
+    if (isLoading) return;
+
+    const filteredCards = initialCards.filter(card => 
+      !preferences.hiddenCards.includes(card.id)
+    );
+    const reconstructedFilteredCards = filteredCards.map(card => reconstructCardWithIcon(card));
+    
+    const cardHrefs: Record<string, string> = {};
+    reconstructedFilteredCards.forEach(card => {
+      cardHrefs[card.id] = card.href;
+    });
+    
+    const utilityOrder = getUtilityOrder(
+      reconstructedFilteredCards.map(card => card.id),
+      cardHrefs
+    );
+    
+    const orderedCards = utilityOrder
+      .map(cardId => {
+        const foundCard = reconstructedFilteredCards.find(card => card.id === cardId);
+        return foundCard || null;
+      })
+      .filter(Boolean) as DashboardCard[];
+
+    const remainingCards = reconstructedFilteredCards.filter(card => 
+      !utilityOrder.includes(card.id)
+    );
+
+    const finalCards = [...orderedCards, ...remainingCards];
+    setDashboardCards(finalCards);
+    setOriginalCards(finalCards);
+  });
+
+  // Actualizar la referencia cuando cambien las dependencias
+  useEffect(() => {
+    updateOrderByUtility.current = () => {
+      if (isLoading) return;
+
+      const filteredCards = initialCards.filter(card => 
+        !preferences.hiddenCards.includes(card.id)
+      );
+      const reconstructedFilteredCards = filteredCards.map(card => reconstructCardWithIcon(card));
+      
+      const cardHrefs: Record<string, string> = {};
+      reconstructedFilteredCards.forEach(card => {
+        cardHrefs[card.id] = card.href;
+      });
+      
+      const utilityOrder = getUtilityOrder(
+        reconstructedFilteredCards.map(card => card.id),
+        cardHrefs
+      );
+      
+      const orderedCards = utilityOrder
+        .map(cardId => {
+          const foundCard = reconstructedFilteredCards.find(card => card.id === cardId);
+          return foundCard || null;
+        })
+        .filter(Boolean) as DashboardCard[];
+
+      const remainingCards = reconstructedFilteredCards.filter(card => 
+        !utilityOrder.includes(card.id)
+      );
+
+      const finalCards = [...orderedCards, ...remainingCards];
+      setDashboardCards(finalCards);
+      setOriginalCards(finalCards);
+    };
+  }, [preferences.hiddenCards, isLoading]);
+
+  // Actualizar el orden cuando cambien las estadísticas de uso
+  useEffect(() => {
+    if (isLoading) return;
+
+    const handleUsageUpdate = () => {
+      // Actualizar el orden cuando se actualicen las estadísticas de uso
+      updateOrderByUtility.current();
+    };
+
+    // Escuchar el evento personalizado cuando se actualiza el tracking
+    window.addEventListener('pageUsageUpdated', handleUsageUpdate);
+    
+    // También escuchar cambios en localStorage (para otros tabs)
+    window.addEventListener('storage', handleUsageUpdate);
+
+    return () => {
+      window.removeEventListener('pageUsageUpdated', handleUsageUpdate);
+      window.removeEventListener('storage', handleUsageUpdate);
+    };
+  }, [isLoading]);
 
   // Obtener el último dashboard agregado (magic-mirrors)
   useEffect(() => {

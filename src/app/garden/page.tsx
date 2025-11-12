@@ -23,6 +23,7 @@ import {
 } from 'lucide-react';
 import { useI18n } from '@/contexts/I18nContext';
 import { usePageTitle } from '@/hooks/usePageTitle';
+import { useGW2Items } from '@/hooks/useGW2ItemCache';
 
 const JardinesPage = () => {
   const { t, lang } = useI18n();
@@ -107,64 +108,51 @@ const JardinesPage = () => {
     '/images/garden/VoE.webp'                    // 51. Shipwreck Strand
   ];
 
-  // Obtener datos de los items de la API - OPTIMIZADO: Una sola llamada
-  useEffect(() => {
-    const fetchItemsData = async () => {
-      try {
-        // Obtener todos los items en una sola llamada optimizada
-        const itemIds = [42594, 80977, 80979, 102000, 20003, 39699, 20002, 67393, 87698];
-        const itemsResponse = await fetch(`https://api.guildwars2.com/v2/items?ids=${itemIds.join(',')}&lang=${lang}`, {
-          headers: {
-            'Accept': 'application/json',
-            'Accept-Encoding': 'gzip, deflate, br'
-          }
-        });
-        const itemsData = await itemsResponse.json();
-        
-        // Mapear los resultados a los estados correspondientes
-        itemsData.forEach((item: {id: number, name: string, icon: string}) => {
-          const itemData = { name: item.name, icon: item.icon };
-          
-          switch (item.id) {
-            case 42594:
-              setConsortiumSickleData(itemData);
-              break;
-            case 80977:
-              setUnboundMiningData(itemData);
-              break;
-            case 80979:
-              setUnboundLoggingData(itemData);
-              break;
-            case 102000:
-              setAlternativeSickleData(itemData);
-              break;
-            case 67032:
-              setAlternativeMSickleData(itemData);
-              break;
-            case 20003:
-              setItemBoosterData(itemData);
-              break;
-            case 39699:
-              setGuildBannerData(itemData);
-              break;
-            case 20002:
-              setXpBoosterData(itemData);
-              break;
-            case 67393:
-              setCandyGobblerData(itemData);
-              break;
-            case 87698:
-              setVolatileMagicGlyphData(itemData);
-              break;
-          }
-        });
-      } catch (error) {
-        console.error('Error fetching items data:', error);
-      }
-    };
+  // Obtener datos de los items de la API con caché optimizado
+  const itemIds = [42594, 80977, 80979, 102000, 67032, 20003, 39699, 20002, 67393, 87698];
+  const { items: itemsData } = useGW2Items(itemIds, lang);
 
-    fetchItemsData();
-  }, [lang]);
+  // Mapear los resultados a los estados correspondientes cuando los datos estén disponibles
+  useEffect(() => {
+    if (!itemsData || Object.keys(itemsData).length === 0) return;
+
+    Object.values(itemsData).forEach((item) => {
+      const itemData = { name: item.name, icon: item.icon || '' };
+      
+      switch (item.id) {
+        case 42594:
+          setConsortiumSickleData(itemData);
+          break;
+        case 80977:
+          setUnboundMiningData(itemData);
+          break;
+        case 80979:
+          setUnboundLoggingData(itemData);
+          break;
+        case 102000:
+          setAlternativeSickleData(itemData);
+          break;
+        case 67032:
+          setAlternativeMSickleData(itemData);
+          break;
+        case 20003:
+          setItemBoosterData(itemData);
+          break;
+        case 39699:
+          setGuildBannerData(itemData);
+          break;
+        case 20002:
+          setXpBoosterData(itemData);
+          break;
+        case 67393:
+          setCandyGobblerData(itemData);
+          break;
+        case 87698:
+          setVolatileMagicGlyphData(itemData);
+          break;
+      }
+    });
+  }, [itemsData]);
 
   // Obtener datos de los mapas de la API de GW2
   useEffect(() => {

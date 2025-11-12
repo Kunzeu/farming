@@ -8,6 +8,7 @@ import { useI18n } from '@/contexts/I18nContext'
 import Navigation from '@/components/layout/Navigation'
 import Image from 'next/image'
 import { FALLBACK_ITEMS, isOfflineMode, setApiOffline, setApiOnline } from '@/data/fallback-data'
+import { useGW2Item, useGW2Items } from '@/hooks/useGW2ItemCache'
 
 interface GiftOfMasteryItem {
   id: number
@@ -166,110 +167,68 @@ export default function GiftOfJadeMasteryPage() {
     return `https://${wikiDomain}/wiki/${itemName.replace(/\s+/g, '_')}`
   }
 
-  useEffect(() => {
-    // Función para obtener materiales de la API
-    const fetchMaterials = async (lang: string) => {
-      try {
-        const gw2Lang = getGW2LangCode(lang)
-        const itemIds = Object.values(ITEM_IDS).join(',')
-        
-        const response = await fetch(`https://api.guildwars2.com/v2/items?ids=${itemIds}&lang=${gw2Lang}`, {
-          headers: {
-            'Accept': 'application/json',
-            'Accept-Encoding': 'gzip, deflate, br'
-          },
-          signal: AbortSignal.timeout(15000) // 15 segundos timeout
-        })
-        
-        if (!response.ok) {
-          throw new Error(`Failed to fetch materials: ${response.status}`)
-        }
-        
-        const items = await response.json()
-        
-        const materialsMap: Record<string, GiftOfMasteryItem> = {}
-        
-        if (Array.isArray(items)) {
-          items.forEach((item: GiftOfMasteryItem) => {
-            // Encontrar la clave correspondiente al ID
-            const key = Object.keys(ITEM_IDS).find(k => ITEM_IDS[k as keyof typeof ITEM_IDS] === item.id)
-            if (key) {
-              materialsMap[key] = item
-            }
-          })
-        }
-        setMaterials(materialsMap)
-      } catch (error) {
-        console.error('Error fetching materials:', error)
-        // En caso de error, usar datos de fallback
-        setMaterials(FALLBACK_ITEMS)
-        throw error // Re-lanzar para que el catch principal lo maneje
+  // Obtener el item principal con caché
+  const gw2Lang = getGW2LangCode(lang)
+  const { item: mainItem, loading: itemLoading } = useGW2Item(
+    96033,
+    gw2Lang,
+    {
+      timeout: 10000,
+      fallback: FALLBACK_ITEMS.giftOfJadeMastery,
+      onSuccess: (data) => {
+        setItem(data as GiftOfMasteryItem)
+        setApiOnline()
+      },
+      onError: () => {
+        setItem(FALLBACK_ITEMS.giftOfJadeMastery)
+        setApiOffline()
       }
     }
+  )
 
-    const fetchData = async () => {
-      try {
-        setLoading(true)
-        setError(null)
-
-        // Verificar si estamos en modo offline
-        if (isOfflineMode()) {
-          console.log('Using fallback data - API is offline')
-          setItem(FALLBACK_ITEMS.giftOfJadeMastery)
-          setMaterials(FALLBACK_ITEMS)
-          setLoading(false)
-          return
-        }
-
-        const gw2Lang = getGW2LangCode(lang)
-        
-        // Intentar obtener el item principal
-        try {
-          const itemResponse = await fetch(`https://api.guildwars2.com/v2/items/96033?lang=${gw2Lang}`, {
-            headers: {
-              'Accept': 'application/json',
-              'Accept-Encoding': 'gzip, deflate, br'
-            },
-            signal: AbortSignal.timeout(10000) // 10 segundos timeout
-          })
-          
-          if (!itemResponse.ok) {
-            throw new Error('Failed to fetch item from GW2 API')
+  // Obtener los materiales con caché
+  const materialIds = Object.values(ITEM_IDS).filter((id): id is number => typeof id === 'number')
+  const { items: materialsData, loading: materialsLoading } = useGW2Items(
+    materialIds,
+    gw2Lang,
+    {
+      timeout: 15000,
+      fallback: FALLBACK_ITEMS,
+      onSuccess: (data) => {
+        const materialsMap: Record<string, GiftOfMasteryItem> = {}
+        Object.values(data).forEach((item) => {
+          const key = Object.keys(ITEM_IDS).find(k => ITEM_IDS[k as keyof typeof ITEM_IDS] === item.id)
+          if (key) {
+            materialsMap[key] = item as GiftOfMasteryItem
           }
-
-          const data = await itemResponse.json()
-          setItem(data)
-          setApiOnline() // Marcar API como online si funciona
-          
-        } catch (itemErr) {
-          console.warn('Failed to fetch item, using fallback:', itemErr)
-          setItem(FALLBACK_ITEMS.giftOfJadeMastery)
-          setApiOffline() // Marcar API como offline
-        }
-        
-        // Intentar obtener los materiales
-        try {
-          await fetchMaterials(lang)
-        } catch (materialsErr) {
-          console.warn('Failed to fetch materials, using fallback:', materialsErr)
-          setMaterials(FALLBACK_ITEMS)
-          setApiOffline() // Marcar API como offline
-        }
-        
-      } catch (err) {
-        console.error('Error fetching data:', err)
-        // En caso de error total, usar datos de fallback
-        setItem(FALLBACK_ITEMS.giftOfJadeMastery)
+        })
+        setMaterials(materialsMap)
+        setApiOnline()
+      },
+      onError: () => {
         setMaterials(FALLBACK_ITEMS)
         setApiOffline()
-        setError('API no disponible - mostrando datos de respaldo')
-      } finally {
-        setLoading(false)
       }
     }
+  )
 
-    fetchData()
-  }, [lang])
+  // Sincronizar el estado de loading
+  useEffect(() => {
+    setLoading(itemLoading || materialsLoading)
+  }, [itemLoading, materialsLoading])
+
+  // Manejar modo offline
+  useEffect(() => {
+    if (isOfflineMode() && !itemLoading && !materialsLoading) {
+      if (!mainItem) {
+        setItem(FALLBACK_ITEMS.giftOfJadeMastery)
+      }
+      if (Object.keys(materialsData).length === 0) {
+        setMaterials(FALLBACK_ITEMS)
+      }
+      setError('API no disponible - mostrando datos de respaldo')
+    }
+  }, [itemLoading, materialsLoading, mainItem, materialsData])
 
   // Scrollspy effect
   useEffect(() => {

@@ -24,9 +24,38 @@ export function getPageUsageStats(): Record<string, PageUsage> {
   return {};
 }
 
+// Verificar si el tracking está permitido (respetar consentimiento de cookies)
+function isTrackingAllowed(): boolean {
+  if (typeof window === 'undefined') return false;
+  
+  try {
+    const consent = localStorage.getItem('cookie_consent');
+    const preferences = localStorage.getItem('cookie_preferences');
+    
+    // Si no hay consentimiento, no trackear
+    if (consent !== 'true') return false;
+    
+    // Si hay preferencias guardadas, verificar que analytics esté habilitado
+    if (preferences) {
+      const parsed = JSON.parse(preferences);
+      // Permitir tracking si analytics está habilitado O si es esencial (siempre permitido)
+      return parsed.analytics === true || parsed.essential === true;
+    }
+    
+    // Si hay consentimiento pero no hay preferencias específicas, permitir tracking
+    return true;
+  } catch (error) {
+    console.error('Error checking tracking permission:', error);
+    return false;
+  }
+}
+
 // Registrar una visita a una página
 export function trackPageVisit(path: string): void {
   if (typeof window === 'undefined') return;
+  
+  // Verificar consentimiento de cookies antes de trackear
+  if (!isTrackingAllowed()) return;
   
   try {
     const stats = getPageUsageStats();
@@ -47,6 +76,12 @@ export function trackPageVisit(path: string): void {
     }
     
     localStorage.setItem(USAGE_STORAGE_KEY, JSON.stringify(stats));
+    
+    // Disparar evento personalizado para notificar que las estadísticas cambiaron
+    // Esto permite que el dashboard se actualice automáticamente
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(new CustomEvent('pageUsageUpdated', { detail: { path, stats } }));
+    }
   } catch (error) {
     console.error('Error tracking page visit:', error);
   }
