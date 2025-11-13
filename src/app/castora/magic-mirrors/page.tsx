@@ -415,6 +415,9 @@ export default function MagicMirrorsPage() {
   const hubs = selectedMap.hubs;
   const allNodes = hubs.flatMap(hub => hub.nodes);
   
+  // Ref para el contenedor del mapa para calcular posiciones correctas
+  const mapContainerRef = React.useRef<HTMLDivElement>(null);
+  
   // Obtener el nombre traducido del mapa
   const getMapName = (mapId: string) => {
     if (mapId === 'castora') {
@@ -575,9 +578,22 @@ export default function MagicMirrorsPage() {
               </div>
 
               {/* Contenedor del mapa */}
-              <div className="relative bg-slate-900/50 rounded-lg border border-slate-700/50" style={{ minHeight: '1100px', aspectRatio: 'auto', overflow: 'visible' }}>
+              <div 
+                ref={mapContainerRef}
+                className="relative bg-slate-900/50 rounded-lg border border-slate-700/50" 
+                style={{ 
+                  minHeight: '1100px', 
+                  aspectRatio: 'auto', 
+                  overflow: 'visible',
+                  // Asegurar que el contenedor mantenga su tamaño relativo al viewport
+                  width: '100%',
+                  position: 'relative',
+                  // Prevenir que el zoom del navegador afecte las posiciones
+                  transformOrigin: 'top left'
+                }}
+              >
                 {/* Imagen del mapa de fondo */}
-                <div className="absolute inset-0 overflow-hidden rounded-lg">
+                <div className="absolute inset-0 overflow-hidden rounded-lg" style={{ width: '100%', height: '100%' }}>
                   {!mapImageError ? (
                     <Image
                       src={selectedMap.imageSrc}
