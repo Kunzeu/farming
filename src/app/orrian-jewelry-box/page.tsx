@@ -468,7 +468,7 @@ export default function OrrianJewelryBoxPage() {
                 href="/salvage" 
                 className="flex items-center gap-2 px-4 py-2 bg-gray-900/80 hover:bg-gray-800/90 border border-blue-500/30 text-white rounded-lg transition-all duration-200 hover:scale-105 hover:shadow-lg">
                 <ArrowLeft className="h-5 w-5" />
-                <span>{t('orrianJewelryBoxPage.backToSalvaging', '← Volver al Reciclaje')}</span>
+                <span>{t('orrianJewelryBoxPage.backToSalvaging', 'Volver al Reciclaje')}</span>
               </Link>
             </div>
           </div>
