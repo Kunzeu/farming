@@ -2523,6 +2523,16 @@
   "magicMirrors.magicMirror": "Magischer Spiegel",
   "magicMirrors.interactiveMap": "Interaktive Karte",
   "magicMirrors.reset": "Zurücksetzen",
-  "magicMirrors.resetProgress": "Fortschritt zurücksetzen"
+  "magicMirrors.resetProgress": "Fortschritt zurücksetzen",
+  "magicMirrors.resetConfirmMessage": "Sind Sie sicher, dass Sie den gesamten Fortschritt der Magischen Spiegel zurücksetzen möchten?",
+  "magicMirrors.confirm": "Bestätigen",
+  "magicMirrors.modal.hub": "Hub:",
+  "magicMirrors.modal.waypoint": "Wegpunkt",
+  "magicMirrors.modal.copied": "Kopiert",
+  "magicMirrors.modal.copy": "Kopieren",
+  "magicMirrors.modal.rewards": "Belohnungen:",
+  "magicMirrors.modal.rewardsDescription": "Nach Abschluss des Mini-Spiels erhalten Sie eine Lang Verlorene Erinnerungskiste und mehrere Verhüllte Truhen in der Gegend.",
+  "magicMirrors.modal.markAsNotCompleted": "Als Nicht Abgeschlossen Markieren",
+  "magicMirrors.modal.markAsCompleted": "Als Abgeschlossen Markieren"
 }
 

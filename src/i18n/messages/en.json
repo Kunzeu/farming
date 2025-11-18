@@ -2543,6 +2543,16 @@
   "magicMirrors.magicMirror": "Magic Mirror",
   "magicMirrors.interactiveMap": "Interactive Map",
   "magicMirrors.reset": "Reset",
-  "magicMirrors.resetProgress": "Reset progress"
+  "magicMirrors.resetProgress": "Reset progress",
+  "magicMirrors.resetConfirmMessage": "Are you sure you want to reset all Magic Mirrors progress?",
+  "magicMirrors.confirm": "Confirm",
+  "magicMirrors.modal.hub": "Hub:",
+  "magicMirrors.modal.waypoint": "Waypoint",
+  "magicMirrors.modal.copied": "Copied",
+  "magicMirrors.modal.copy": "Copy",
+  "magicMirrors.modal.rewards": "Rewards:",
+  "magicMirrors.modal.rewardsDescription": "Upon completing the mini-game, you get a Long-Lost Keepsake Box and multiple Obscured Chests in the area.",
+  "magicMirrors.modal.markAsNotCompleted": "Mark as Not Completed",
+  "magicMirrors.modal.markAsCompleted": "Mark as Completed"
 }
 

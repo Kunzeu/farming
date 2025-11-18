@@ -2577,6 +2577,16 @@
   "magicMirrors.magicMirror": "Espejo Mágico",
   "magicMirrors.interactiveMap": "Mapa Interactivo",
   "magicMirrors.reset": "Resetear",
-  "magicMirrors.resetProgress": "Resetear progreso"
+  "magicMirrors.resetProgress": "Resetear progreso",
+  "magicMirrors.resetConfirmMessage": "¿Seguro que quieres resetear todo el progreso de Magic Mirrors?",
+  "magicMirrors.confirm": "Confirmar",
+  "magicMirrors.modal.hub": "Hub:",
+  "magicMirrors.modal.waypoint": "Waypoint",
+  "magicMirrors.modal.copied": "Copiado",
+  "magicMirrors.modal.copy": "Copiar",
+  "magicMirrors.modal.rewards": "Recompensas:",
+  "magicMirrors.modal.rewardsDescription": "Al completar el mini-juego, obtienes un Long-Lost Keepsake Box y múltiples Obscured Chests en el área.",
+  "magicMirrors.modal.markAsNotCompleted": "Marcar como No Completado",
+  "magicMirrors.modal.markAsCompleted": "Marcar como Completado"
 }
 

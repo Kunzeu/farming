@@ -796,27 +796,36 @@ export default function MagicMirrorsPage() {
                   {t('magicMirrors.legend.typeNote', 'L = Grande (da 8), S = Pequeño (da 1-3), M = Mediano (da 4-6)')
                     .split(', ')
                     .map((item, index) => {
-                      const parts = item.split(' (da ');
-                      const typePart = parts[0];
-                      const quantityPart = parts[1]?.replace(')', '');
+                      const match = item.match(/^(.+?)\s+\((\w+)\s+([^)]+)\)$/);
                       
+                      if (match) {
+                        const [, typePart, verbPart, quantityPart] = match;
+                        
+                        return (
+                          <span key={index} className="flex items-center gap-2">
+                            <span>{typePart} ({verbPart} {quantityPart}</span>
+                            {chestItem && (
+                              <>
+                                <Image
+                                  src={chestItem.icon}
+                                  alt={chestItem.name}
+                                  width={16}
+                                  height={16}
+                                  className="w-4 h-4"
+                                  unoptimized
+                                />
+                                <span>{chestItem.name})</span>
+                              </>
+                            )}
+                            {!chestItem && <span>)</span>}
+                          </span>
+                        );
+                      }
+                      
+                      // Fallback si no coincide el patrón
                       return (
                         <span key={index} className="flex items-center gap-2">
-                          <span>{typePart} (da {quantityPart}</span>
-                          {chestItem && (
-                            <>
-                              <Image
-                                src={chestItem.icon}
-                                alt={chestItem.name}
-                                width={16}
-                                height={16}
-                                className="w-4 h-4"
-                                unoptimized
-                              />
-                              <span>{chestItem.name})</span>
-                            </>
-                          )}
-                          {!chestItem && <span>)</span>}
+                          <span>{item}</span>
                         </span>
                       );
                     })}
@@ -854,20 +863,20 @@ export default function MagicMirrorsPage() {
             >
               <div className="p-6 border-b border-slate-700">
                 <h3 className="text-lg font-semibold text-white">{t('magicMirrors.resetProgress', 'Resetear progreso')}</h3>
-                <p className="text-sm text-gray-300 mt-2">¿Seguro que quieres resetear todo el progreso de Magic Mirrors?</p>
+                <p className="text-sm text-gray-300 mt-2">{t('magicMirrors.resetConfirmMessage', '¿Seguro que quieres resetear todo el progreso de Magic Mirrors?')}</p>
               </div>
               <div className="p-6 flex items-center justify-end gap-3">
                 <button
                   onClick={() => setShowResetModal(false)}
                   className="px-4 py-2 rounded-lg border border-slate-600 text-gray-200 hover:bg-slate-700 transition-colors text-sm"
                 >
-                  Cancelar
+                  {t('common.cancel', 'Cancelar')}
                 </button>
                 <button
                   onClick={confirmReset}
                   className="px-4 py-2 rounded-lg bg-red-600 hover:bg-red-700 text-white transition-colors text-sm flex items-center gap-2"
                 >
-                  Confirmar
+                  {t('magicMirrors.confirm', 'Confirmar')}
                 </button>
               </div>
             </div>
@@ -922,14 +931,14 @@ export default function MagicMirrorsPage() {
                 </div>
                 <div className="p-6 space-y-4">
                   <div>
-                    <p className="text-sm text-gray-400 mb-1">Hub:</p>
+                    <p className="text-sm text-gray-400 mb-1">{t('magicMirrors.modal.hub', 'Hub:')}</p>
                     <p className="text-gray-300">{hubs.find(h => h.id === selectedNode.hubId)?.name}</p>
                   </div>
                   {selectedNode.waypoint && (
                     <div className="bg-slate-900/50 rounded-lg p-4">
                       <div className="flex items-center justify-between">
                         <div>
-                          <p className="text-sm text-gray-400 mb-1">Waypoint</p>
+                          <p className="text-sm text-gray-400 mb-1">{t('magicMirrors.modal.waypoint', 'Waypoint')}</p>
                           <p className="text-purple-400 font-mono text-sm">{selectedNode.waypoint}</p>
                         </div>
                         <button
@@ -939,12 +948,12 @@ export default function MagicMirrorsPage() {
                           {copiedWaypoint === selectedNode.waypoint ? (
                             <>
                               <CheckCircle className="w-4 h-4" />
-                              Copiado
+                              {t('magicMirrors.modal.copied', 'Copiado')}
                             </>
                           ) : (
                             <>
                               <MapPin className="w-4 h-4" />
-                              Copiar
+                              {t('magicMirrors.modal.copy', 'Copiar')}
                             </>
                           )}
                         </button>
@@ -953,8 +962,7 @@ export default function MagicMirrorsPage() {
                   )}
                   <div className="bg-purple-900/20 rounded-lg p-4 border border-purple-700/30">
                     <p className="text-sm text-gray-300">
-                      <strong className="text-purple-400">Recompensas:</strong> Al completar el mini-juego, 
-                      obtienes un Long-Lost Keepsake Box y múltiples Obscured Chests en el área.
+                      <strong className="text-purple-400">{t('magicMirrors.modal.rewards', 'Recompensas:')}</strong> {t('magicMirrors.modal.rewardsDescription', 'Al completar el mini-juego, obtienes un Long-Lost Keepsake Box y múltiples Obscured Chests en el área.')}
                     </p>
                   </div>
                   <button
@@ -971,12 +979,12 @@ export default function MagicMirrorsPage() {
                     {completedNodes.has(selectedNode.id) ? (
                       <>
                         <X className="w-4 h-4" />
-                        Marcar como No Completado
+                        {t('magicMirrors.modal.markAsNotCompleted', 'Marcar como No Completado')}
                       </>
                     ) : (
                       <>
                         <CheckCircle className="w-4 h-4" />
-                        Marcar como Completado
+                        {t('magicMirrors.modal.markAsCompleted', 'Marcar como Completado')}
                       </>
                     )}
                   </button>

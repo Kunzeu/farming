@@ -2524,6 +2524,16 @@
   "magicMirrors.magicMirror": "Miroir Magique",
   "magicMirrors.interactiveMap": "Carte Interactive",
   "magicMirrors.reset": "Réinitialiser",
-  "magicMirrors.resetProgress": "Réinitialiser la progression"
+  "magicMirrors.resetProgress": "Réinitialiser la progression",
+  "magicMirrors.resetConfirmMessage": "Êtes-vous sûr de vouloir réinitialiser tout le progrès des Miroirs Magiques ?",
+  "magicMirrors.confirm": "Confirmer",
+  "magicMirrors.modal.hub": "Hub :",
+  "magicMirrors.modal.waypoint": "Point de passage",
+  "magicMirrors.modal.copied": "Copié",
+  "magicMirrors.modal.copy": "Copier",
+  "magicMirrors.modal.rewards": "Récompenses :",
+  "magicMirrors.modal.rewardsDescription": "En complétant le mini-jeu, vous obtenez une Boîte de Souvenir Perdu et plusieurs Coffres Obscurcis dans la zone.",
+  "magicMirrors.modal.markAsNotCompleted": "Marquer comme Non Terminé",
+  "magicMirrors.modal.markAsCompleted": "Marquer comme Terminé"
 }
 
