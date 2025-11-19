@@ -1,11 +1,10 @@
 'use client';
 
 import { use, useState, useEffect, useCallback, useRef } from 'react';
-import Link from 'next/link';
 import Navigation from '@/components/layout/Navigation';
 import { usePageTitle } from '@/hooks/usePageTitle';
 import { useI18n } from '@/contexts/I18nContext';
-import { ArrowLeft, ExternalLink } from 'lucide-react';
+import { ExternalLink } from 'lucide-react';
 import Image from 'next/image';
 
 interface CashDonation {
@@ -524,13 +523,6 @@ export default function ContributionEventPage({ params }: { params: Promise<{ sl
           <div className="text-center">
             <h1 className="text-4xl font-bold text-white mb-4">404</h1>
             <p className="text-gray-400 mb-6">{t('contributions.eventNotFound')}</p>
-            <Link
-              href="/contributions"
-              className="inline-flex items-center gap-2 px-6 py-3 bg-purple-600 hover:bg-purple-700 text-white rounded-lg transition-colors"
-            >
-              <ArrowLeft className="w-4 h-4" />
-              {t('contributions.backToContributions')}
-            </Link>
           </div>
         </div>
       </>
@@ -571,22 +563,22 @@ export default function ContributionEventPage({ params }: { params: Promise<{ sl
 
   const topCashDonor = event.cashDonations.sort((a, b) => b.amount - a.amount)[0];
 
+  // Fecha fija del evento
+  const eventDate = lang === 'es' ? '19 de noviembre de 2025' :
+                    lang === 'de' ? '19. November 2025' :
+                    lang === 'fr' ? '19 novembre 2025' :
+                    'November 19, 2025';
+
   return (
     <>
       <Navigation />
       <div className="min-h-screen bg-slate-900 text-white">
         <div className="max-w-6xl mx-auto px-4 py-8">
-          {/* Back Button */}
-          <Link
-            href="/contributions"
-            className="inline-flex items-center gap-2 text-gray-400 hover:text-white transition-colors mb-8"
-          >
-            <ArrowLeft className="w-4 h-4" />
-            {t('contributions.backToContributions')}
-          </Link>
-
           {/* Title */}
-          <h1 className="text-3xl font-bold mb-8">{event.title}</h1>
+          <h1 className="text-3xl font-bold mb-2">{event.title}</h1>
+          <p className="text-gray-400 text-lg mb-8">
+            {eventDate}
+          </p>
 
           {/* Total */}
           {topCashDonor && (
