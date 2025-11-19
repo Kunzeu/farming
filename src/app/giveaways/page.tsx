@@ -601,13 +601,20 @@ const GiveawaysPage = () => {
 
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
-        <div className="text-center mb-12">
+        <div className="mb-12 text-center">
           <h1 className="text-4xl font-bold text-white mb-4">
             {t("giveaways.title")}
           </h1>
-          <p className="text-xl text-gray-300 max-w-2xl mx-auto">
+          <p className="text-xl text-gray-300 max-w-2xl mx-auto mb-4">
             {t("giveaways.subtitle")}
           </p>
+          <Link
+            href="/contributions"
+            className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-cyan-400 to-blue-500 rounded-lg text-white font-medium text-sm hover:shadow-lg transition-all duration-300"
+          >
+            <Trophy className="w-4 h-4" />
+            <span>{t('pageTitles.contributions', 'Contribuciones')}</span>
+          </Link>
         </div>
 
         {/* Latest Winners Section */}

@@ -11,7 +11,8 @@ import {
   Zap,
   Bot,
   Globe,
-  Package
+  Package,
+  Trophy
 } from 'lucide-react';
 
 
@@ -67,37 +68,51 @@ export default function Footer() {
         {/* Main Content */}
         <div className="grid grid-cols-3 md:grid-cols-5 gap-5 md:gap-8 mb-8">
           
-          {/* Apoyo */}
+          {/* Apoyo y Contributors */}
           <motion.div 
             className="text-center"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.2 }}
           >
-            <div className="flex items-center gap-2 justify-center mb-2 md:mb-3">
-              <Coffee className="w-3 h-3 md:w-4 md:h-4 text-orange-400" />
-              <h3 className="text-white font-semibold text-sm md:text-base">{t('footer.supportSite', 'Apoyo')}</h3>
-            </div>
-            <p className="text-gray-400 text-xs mb-2 md:mb-3 hidden sm:block">
-              {t('footer.supportDescription', 'Ayúdanos a mantener y mejorar la plataforma')}
-            </p>
-            <motion.a
-              href="https://patreon.com/KunzeuLabs"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-1 md:gap-2 px-3 md:px-4 py-1.5 md:py-2 bg-gradient-to-r from-orange-500 to-pink-500 rounded-lg text-white font-medium text-xs md:text-sm hover:shadow-lg transition-all duration-300"
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-            >
-              <motion.div
-                animate={isClient ? { rotate: [0, 360] } : {}}
-                transition={{ duration: 6, repeat: Infinity, ease: "linear" }}
+            {/* Apoyo */}
+            <div className="mb-6">
+              <div className="flex items-center gap-2 justify-center mb-2 md:mb-3">
+                <Coffee className="w-3 h-3 md:w-4 md:h-4 text-orange-400" />
+                <h3 className="text-white font-semibold text-sm md:text-base">{t('footer.supportSite', 'Apoyo')}</h3>
+              </div>
+              <p className="text-gray-400 text-xs mb-2 md:mb-3 hidden sm:block">
+                {t('footer.supportDescription', 'Ayúdanos a mantener y mejorar la plataforma')}
+              </p>
+              <motion.a
+                href="https://patreon.com/KunzeuLabs"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1 md:gap-2 px-3 md:px-4 py-1.5 md:py-2 bg-gradient-to-r from-orange-500 to-pink-500 rounded-lg text-white font-medium text-xs md:text-sm hover:shadow-lg transition-all duration-300"
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
               >
-                <Heart className="w-3 h-3 md:w-4 md:h-4" />
-              </motion.div>
-              <span className="hidden sm:inline">{t('footer.becomePatron', 'Hazte Patrocinador')}</span>
-              <span className="sm:hidden">Patreon</span>
-            </motion.a>
+                <motion.div
+                  animate={isClient ? { rotate: [0, 360] } : {}}
+                  transition={{ duration: 6, repeat: Infinity, ease: "linear" }}
+                >
+                  <Heart className="w-3 h-3 md:w-4 md:h-4" />
+                </motion.div>
+                <span className="hidden sm:inline">{t('footer.becomePatron', 'Hazte Patrocinador')}</span>
+                <span className="sm:hidden">Patreon</span>
+              </motion.a>
+            </div>
+
+            {/* Contributors */}
+            <div>
+              <Link
+                href="/contributions"
+                className="inline-flex items-center gap-1 md:gap-2 px-3 md:px-4 py-1.5 md:py-2 bg-gradient-to-r from-cyan-400 to-blue-500 rounded-lg text-white font-medium text-xs md:text-sm hover:shadow-lg transition-all duration-300"
+              >
+                <Trophy className="w-3 h-3 md:w-4 md:h-4" />
+                <span>{t('pageTitles.contributions', 'Contribuciones')}</span>
+              </Link>
+            </div>
           </motion.div>
 
           {/* Comunidad */}

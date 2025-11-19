@@ -1,0 +1,854 @@
+'use client';
+
+import { use, useState, useEffect, useCallback, useRef } from 'react';
+import Link from 'next/link';
+import Navigation from '@/components/layout/Navigation';
+import { usePageTitle } from '@/hooks/usePageTitle';
+import { useI18n } from '@/contexts/I18nContext';
+import { ArrowLeft, ExternalLink } from 'lucide-react';
+import Image from 'next/image';
+
+interface CashDonation {
+  name: string;
+  amount: number;
+}
+
+interface ItemData {
+  id: number;
+  icon: string;
+  names: {
+    en: string;
+    es: string;
+    de: string;
+    fr: string;
+  };
+  description?: {
+    en: string;
+    es: string;
+    de: string;
+    fr: string;
+  };
+  type?: string;
+  rarity?: string;
+  level?: number;
+}
+
+interface InGameDonation {
+  name: string;
+  amount?: number;
+  coins?: {
+    gold?: number;
+    silver?: number;
+    copper?: number;
+  };
+  items?: Array<{
+    name: string;
+    icon?: string;
+    quantity?: number;
+  }>;
+  ectoplasm?: number;
+}
+
+interface ContributionEvent {
+  id: string;
+  slug: string;
+  title: string;
+  description: string;
+  startDate: string;
+  endDate: string;
+  cashDonations: CashDonation[];
+  inGameDonations: InGameDonation[];
+}
+
+// IDs de items legendarios de GW2
+const LEGENDARY_ITEM_IDS: Record<string, number> = {
+  // Gen 1 Legendary Weapons
+  'Frostfang': 30684,
+  'Kudzu': 30685,
+  'The Dreamer': 30686,
+  'Incinerator': 30687,
+  'The Minstrel': 30688,
+  'Eternity': 30689,
+  'The Juggernaut': 30690,
+  'Kamohoali\'i Kotaki': 30691,
+  'The Moot': 30692,
+  'Quip': 30693,
+  'The Predator': 30694,
+  'Meteorlogicus': 30695,
+  'The Flameseeker Prophecies': 30696,
+  'Frenzy': 30697,
+  'The Bifrost': 30698,
+  'Bolt': 30699,
+  'Rodgort': 30700,
+  'Kraitkin': 30701,
+  'Howler': 30702,
+  'Sunrise': 30703,
+  'Twilight': 30704,
+  // Gen 4 y 5 Legendary Weapons
+  'Klobjarne Geirr': 103815,
+  'Aetheric Anchor': 105497,
+  // Aurene Weapons
+  'Aurene\'s Tail': 95612,
+  'Aurene\'s Fang': 95675,
+  'Aurene\'s Argument': 95808,
+  'Aurene\'s Scale': 96028,
+  'Aurene\'s Claw': 96203,
+  'Aurene\'s Wisdom': 96221,
+  'Aurene\'s Bite': 96356,
+  'Aurene\'s Insight': 96652,
+  'Aurene\'s Rending': 96937,
+  'Aurene\'s Wing': 97077,
+  'Aurene\'s Breath': 97099,
+  'Aurene\'s Gaze': 97165,
+  'Aurene\'s Persuasion': 97377,
+  'Aurene\'s Flight': 97590,
+  'Aurene\'s Weight': 95684,
+  'Aurene\'s Voice': 97783,
+};
+
+// Traducciones para tipos y rareza
+const TRANSLATIONS: Record<string, Record<string, string>> = {
+  en: {
+    weapon: 'Weapon',
+    rarity: 'Rarity',
+    level: 'Level',
+    legendary: 'Legendary',
+  },
+  es: {
+    weapon: 'Arma',
+    rarity: 'Rareza',
+    level: 'Nivel',
+    legendary: 'Legendario',
+  },
+  de: {
+    weapon: 'Waffe',
+    rarity: 'Seltenheit',
+    level: 'Stufe',
+    legendary: 'Legendär',
+  },
+  fr: {
+    weapon: 'Arme',
+    rarity: 'Rareté',
+    level: 'Niveau',
+    legendary: 'Légendaire',
+  },
+};
+
+// Función helper para obtener traducciones
+function getTranslation(key: string, language: string): string {
+  return TRANSLATIONS[language]?.[key] || TRANSLATIONS.en[key] || key;
+}
+
+// Función para traducir el tipo
+function translateType(type: string | undefined, language: string): string {
+  if (!type) return '';
+  const typeLower = type.toLowerCase();
+  if (typeLower === 'weapon') {
+    return getTranslation('weapon', language);
+  }
+  return type;
+}
+
+// Función para traducir la rareza
+function translateRarity(rarity: string | undefined, language: string): string {
+  if (!rarity) return '';
+  const rarityLower = rarity.toLowerCase();
+  if (rarityLower === 'legendary') {
+    return getTranslation('legendary', language);
+  }
+  return rarity;
+}
+
+// Clave para el caché en localStorage
+const CACHE_KEY = 'gw2_items_cache';
+const CACHE_VERSION = '1.0';
+
+// Función para obtener datos del caché
+function getCachedItemData(itemId: number): ItemData | null {
+  if (typeof window === 'undefined') return null;
+  
+  try {
+    const cached = localStorage.getItem(CACHE_KEY);
+    if (!cached) return null;
+    
+    const cacheData = JSON.parse(cached);
+    if (cacheData.version !== CACHE_VERSION) return null;
+    
+    return cacheData.items[itemId] || null;
+  } catch (error) {
+    console.error('Error reading cache:', error);
+    return null;
+  }
+}
+
+// Función para guardar datos en el caché (asíncrona para no bloquear)
+function setCachedItemData(itemId: number, data: ItemData): void {
+  if (typeof window === 'undefined') return;
+  
+  // Usar setTimeout para escribir de forma asíncrona y no bloquear el hilo principal
+  setTimeout(() => {
+    try {
+      const cached = localStorage.getItem(CACHE_KEY);
+      const cacheData = cached ? JSON.parse(cached) : { version: CACHE_VERSION, items: {} };
+      
+      cacheData.items[itemId] = data;
+      localStorage.setItem(CACHE_KEY, JSON.stringify(cacheData));
+    } catch (error) {
+      console.error('Error writing cache:', error);
+    }
+  }, 0);
+}
+
+// Función para obtener datos de items desde la API de GW2
+async function fetchItemData(itemName: string): Promise<ItemData | null> {
+  const itemId = LEGENDARY_ITEM_IDS[itemName];
+  if (!itemId) return null;
+
+  // Intentar obtener del caché primero
+  const cached = getCachedItemData(itemId);
+  if (cached) {
+    return cached;
+  }
+
+  try {
+    const languages = ['en', 'es', 'de', 'fr'];
+    const promises = languages.map(lang =>
+      fetch(`https://api.guildwars2.com/v2/items/${itemId}?lang=${lang}`)
+        .then(res => res.ok ? res.json() : null)
+        .catch(() => null)
+    );
+
+    const results = await Promise.all(promises);
+    const [enData, esData, deData, frData] = results;
+
+    if (!enData) return null;
+
+    const itemData: ItemData = {
+      id: itemId,
+      icon: enData.icon || '',
+      names: {
+        en: enData.name || itemName,
+        es: esData?.name || enData.name || itemName,
+        de: deData?.name || enData.name || itemName,
+        fr: frData?.name || enData.name || itemName,
+      },
+      description: {
+        en: enData.description || '',
+        es: esData?.description || enData.description || '',
+        de: deData?.description || enData.description || '',
+        fr: frData?.description || enData.description || '',
+      },
+      type: enData.type,
+      rarity: enData.rarity,
+      level: enData.level,
+    };
+
+    // Guardar en caché
+    setCachedItemData(itemId, itemData);
+
+    return itemData;
+  } catch (error) {
+    console.error(`Error fetching item data for ${itemName}:`, error);
+    return null;
+  }
+}
+
+// Datos del evento
+const getEventData = (slug: string): ContributionEvent | null => {
+  if (slug === 'contribuciones-de-la-comunidad') {
+    return {
+      id: '1',
+      slug: 'contribuciones-de-la-comunidad',
+      title: 'Contribuciones de la Comunidad',
+      description: 'Evento de contribuciones y donaciones de la comunidad de Guild Wars 2.',
+      startDate: '2025-11-19',
+      endDate: '2025-12-31',
+      cashDonations: [
+        // { name: 'Kunzeu', amount: 6.52 },
+      ],
+      inGameDonations: [
+        // {
+        //     name: 'Zumito',
+        //     coins: { gold: 17, silver: 37, copper: 83 },
+        //     items: [
+        //         { name: 'Klobjarne Geirr' },
+        //         { name: 'The Juggernaut' },
+        //         { name: 'Twilight' },
+        //     ]
+        // },
+        // { 
+        //   name: 'Calvo', 
+        //   coins: { gold: 127, silver: 37, copper: 83 },
+        //   items: [
+        //     { name: 'Aetheric Anchor' },
+        //     { name: 'The Juggernaut' },
+        //     { name: 'Twilight' },
+        //     { name: 'The Bifrost' },
+        //     { name: 'Sunrise' },
+        //     { name: 'Meteorlogicus' }
+        //   ]
+        // }
+      ]
+    };
+  }
+  return null;
+};
+
+// Función para generar URL de la wiki de GW2
+function getWikiUrl(itemName: string, language: string = 'en'): string {
+  // Reemplazar espacios con guiones bajos y codificar caracteres especiales
+  const wikiName = itemName.replace(/\s+/g, '_').replace(/[()]/g, '');
+  const encodedName = encodeURIComponent(wikiName);
+  
+  // La wiki de GW2 usa subdominios para diferentes idiomas
+  const subdomainMap: Record<string, string> = {
+    'en': 'wiki',
+    'es': 'wiki-es',
+    'de': 'wiki-de',
+    'fr': 'wiki-fr',
+  };
+  
+  const subdomain = subdomainMap[language] || 'wiki';
+  return `https://${subdomain}.guildwars2.com/wiki/${encodedName}`;
+}
+
+export default function ContributionEventPage({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = use(params);
+  const event = getEventData(slug);
+  const { lang, t } = useI18n();
+  const [itemsData, setItemsData] = useState<Record<string, ItemData>>({});
+  const [activeTooltip, setActiveTooltip] = useState<string | null>(null);
+  const [tooltipPosition, setTooltipPosition] = useState<Record<string, { top: number; left: number; position: 'top' | 'bottom' }>>({});
+  const isLoadingRef = useRef(false);
+  const eventSlugRef = useRef<string | null>(null);
+  const tooltipRefs = useRef<Record<string, HTMLButtonElement | null>>({});
+  
+  usePageTitle(event ? `contributions.${event.slug}` : 'contributions.eventNotFound', event?.title || t('contributions.eventNotFound'));
+
+  // Cargar datos de items desde la API
+  useEffect(() => {
+    if (!event) return;
+    
+    const eventSlug = event.slug;
+    const inGameDonations = event.inGameDonations;
+    
+    // Evitar cargar múltiples veces para el mismo evento
+    if (isLoadingRef.current || eventSlugRef.current === eventSlug) return;
+    
+    isLoadingRef.current = true;
+    eventSlugRef.current = eventSlug;
+
+    const loadItemsData = async () => {
+      try {
+        const allItemNames = new Set<string>();
+        
+        // Recopilar todos los nombres de items únicos
+        inGameDonations.forEach(donation => {
+          donation.items?.forEach(item => {
+            allItemNames.add(item.name);
+          });
+        });
+
+        // Primero cargar desde caché (una sola lectura de localStorage)
+        const itemsDataMap: Record<string, ItemData> = {};
+        const itemsToFetch: string[] = [];
+        
+        // Leer el caché completo una sola vez
+        let cacheData: { version: string; items: Record<number, ItemData> } | null = null;
+        if (typeof window !== 'undefined') {
+          try {
+            const cached = localStorage.getItem(CACHE_KEY);
+            if (cached) {
+              const parsed = JSON.parse(cached);
+              if (parsed.version === CACHE_VERSION) {
+                cacheData = parsed;
+              }
+            }
+          } catch (error) {
+            console.error('Error reading cache:', error);
+          }
+        }
+        
+        for (const itemName of allItemNames) {
+          const itemId = LEGENDARY_ITEM_IDS[itemName];
+          if (itemId) {
+            const cached = cacheData?.items[itemId];
+            if (cached) {
+              itemsDataMap[itemName] = cached;
+            } else {
+              itemsToFetch.push(itemName);
+            }
+          }
+        }
+
+        // Actualizar estado con datos del caché primero (solo si hay datos)
+        if (Object.keys(itemsDataMap).length > 0) {
+          setItemsData(prev => {
+            // Solo actualizar si hay cambios
+            const hasChanges = Object.keys(itemsDataMap).some(
+              key => prev[key] !== itemsDataMap[key]
+            );
+            return hasChanges ? { ...itemsDataMap } : prev;
+          });
+        }
+
+        // Solo hacer llamadas a la API para items que no están en caché
+        if (itemsToFetch.length > 0) {
+          // Procesar en lotes pequeños para no bloquear
+          const batchSize = 2;
+          const batches: string[][] = [];
+          for (let i = 0; i < itemsToFetch.length; i += batchSize) {
+            batches.push(itemsToFetch.slice(i, i + batchSize));
+          }
+
+          for (const batch of batches) {
+            const batchPromises = batch.map(async (itemName) => {
+              const data = await fetchItemData(itemName);
+              if (data) {
+                itemsDataMap[itemName] = data;
+              }
+              // Pequeño delay entre items para no sobrecargar
+              await new Promise(resolve => setTimeout(resolve, 100));
+            });
+
+            await Promise.all(batchPromises);
+            
+            // Actualizar estado incrementalmente solo con los nuevos datos
+            setItemsData(prev => {
+              const newData = { ...prev };
+              let hasChanges = false;
+              batch.forEach(itemName => {
+                if (itemsDataMap[itemName] && prev[itemName] !== itemsDataMap[itemName]) {
+                  newData[itemName] = itemsDataMap[itemName];
+                  hasChanges = true;
+                }
+              });
+              return hasChanges ? newData : prev;
+            });
+            
+            // Delay entre lotes
+            if (batches.indexOf(batch) < batches.length - 1) {
+              await new Promise(resolve => setTimeout(resolve, 200));
+            }
+          }
+        }
+      } finally {
+        isLoadingRef.current = false;
+      }
+    };
+
+    loadItemsData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [event?.slug]);
+
+  // Función para manejar el clic en el botón del item
+  const handleItemClick = useCallback((e: React.MouseEvent, itemKey: string) => {
+    e.stopPropagation();
+    
+    if (activeTooltip === itemKey) {
+      setActiveTooltip(null);
+      return;
+    }
+    
+    const button = tooltipRefs.current[itemKey];
+    if (button) {
+      const rect = button.getBoundingClientRect();
+      const tooltipHeight = 450;
+      const tooltipWidth = 320; // 80 * 4 = 320px (w-80)
+      const spaceAbove = rect.top;
+      const spaceBelow = window.innerHeight - rect.bottom;
+      
+      // Siempre mostrar abajo por defecto, solo mostrar arriba si hay menos de 200px abajo
+      // Y hay suficiente espacio arriba (más de 500px) para el tooltip completo
+      const showBottom = spaceBelow >= 200 || spaceAbove < 500;
+      
+      // Calcular left ajustado para que no se salga de la pantalla
+      let left = rect.left;
+      if (left + tooltipWidth > window.innerWidth) {
+        left = window.innerWidth - tooltipWidth - 10;
+      }
+      if (left < 10) {
+        left = 10;
+      }
+      
+      // Establecer posición inmediatamente antes de activar el tooltip
+      setTooltipPosition(prev => ({
+        ...prev,
+        [itemKey]: {
+          top: showBottom ? rect.bottom + 8 : rect.top - tooltipHeight - 8,
+          left: left,
+          position: showBottom ? 'bottom' : 'top'
+        }
+      }));
+      
+      // Activar el tooltip después de establecer la posición
+      setActiveTooltip(itemKey);
+    }
+  }, [activeTooltip]);
+
+  // Cerrar tooltip al hacer clic fuera
+  useEffect(() => {
+    if (!activeTooltip) return;
+
+    const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as HTMLElement;
+      // No cerrar si el clic fue dentro del tooltip o en un enlace
+      if (
+        target.closest('[data-tooltip-container]') ||
+        target.closest('a[href]')
+      ) {
+        return;
+      }
+      // Cerrar solo si el clic no fue en un botón de item
+      if (!target.closest('button[type="button"]')) {
+        setActiveTooltip(null);
+      }
+    };
+
+    // Usar setTimeout para evitar que el evento se ejecute inmediatamente
+    const timeoutId = setTimeout(() => {
+      document.addEventListener('click', handleClickOutside, true);
+    }, 100);
+
+    return () => {
+      clearTimeout(timeoutId);
+      document.removeEventListener('click', handleClickOutside, true);
+    };
+  }, [activeTooltip]);
+
+  if (!event) {
+    return (
+      <>
+        <Navigation />
+        <div className="min-h-screen bg-slate-900 flex items-center justify-center">
+          <div className="text-center">
+            <h1 className="text-4xl font-bold text-white mb-4">404</h1>
+            <p className="text-gray-400 mb-6">{t('contributions.eventNotFound')}</p>
+            <Link
+              href="/contributions"
+              className="inline-flex items-center gap-2 px-6 py-3 bg-purple-600 hover:bg-purple-700 text-white rounded-lg transition-colors"
+            >
+              <ArrowLeft className="w-4 h-4" />
+              {t('contributions.backToContributions')}
+            </Link>
+          </div>
+        </div>
+      </>
+    );
+  }
+
+  const formatCurrency = (amount: number) => {
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD'
+    }).format(amount);
+  };
+
+  const convertCopperToCoins = (copper: number) => {
+    const gold = Math.floor(copper / 10000);
+    const silver = Math.floor((copper % 10000) / 100);
+    const remainingCopper = copper % 100;
+    return { gold, silver, copper: remainingCopper };
+  };
+
+  const normalizeCoins = (coins: { gold: number; silver: number; copper: number }) => {
+    let { gold, silver, copper } = coins;
+    
+    // Normalizar cobre (0-99)
+    if (copper >= 100) {
+      silver += Math.floor(copper / 100);
+      copper = copper % 100;
+    }
+    
+    // Normalizar plata (0-99)
+    if (silver >= 100) {
+      gold += Math.floor(silver / 100);
+      silver = silver % 100;
+    }
+    
+    return { gold, silver, copper };
+  };
+
+  const topCashDonor = event.cashDonations.sort((a, b) => b.amount - a.amount)[0];
+
+  return (
+    <>
+      <Navigation />
+      <div className="min-h-screen bg-slate-900 text-white">
+        <div className="max-w-6xl mx-auto px-4 py-8">
+          {/* Back Button */}
+          <Link
+            href="/contributions"
+            className="inline-flex items-center gap-2 text-gray-400 hover:text-white transition-colors mb-8"
+          >
+            <ArrowLeft className="w-4 h-4" />
+            {t('contributions.backToContributions')}
+          </Link>
+
+          {/* Title */}
+          <h1 className="text-3xl font-bold mb-8">{event.title}</h1>
+
+          {/* Total */}
+          {topCashDonor && (
+            <div className="text-center mb-12">
+              <div className="text-4xl font-bold">
+                {topCashDonor.name} {formatCurrency(topCashDonor.amount)}
+              </div>
+            </div>
+          )}
+
+          {/* REAL MONEY DONATIONS */}
+          <div className="mb-12">
+            <h2 className="text-xl font-semibold mb-4">{t('contributions.realMoneyDonations')}</h2>
+            <div className="overflow-x-auto">
+              <table className="w-full border-collapse">
+                <thead>
+                  <tr className="border-b border-gray-700">
+                    <th className="text-left py-3 px-4 text-gray-400 font-semibold"></th>
+                    <th className="text-right py-3 px-4 text-gray-400 font-semibold"></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {event.cashDonations
+                    .sort((a, b) => b.amount - a.amount)
+                    .map((donation, index) => (
+                      <tr key={index} className="border-b border-gray-800 hover:bg-gray-800/50 transition-colors">
+                        <td className="py-3 px-4 text-gray-300">{donation.name}</td>
+                        <td className="py-3 px-4 text-right">
+                          <span className="text-green-400 font-semibold">{formatCurrency(donation.amount)}</span>
+                        </td>
+                      </tr>
+                    ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          {/* IN-GAME DONATIONS */}
+          <div>
+            <h2 className="text-xl font-semibold mb-6 uppercase">{t('contributions.inGameDonations')}</h2>
+            <div className="overflow-x-auto overflow-y-visible relative">
+              <table className="w-full border-collapse overflow-visible">
+                <thead>
+                  <tr className="border-b border-gray-700">
+                    <th className="text-left py-3 px-4 text-gray-400 font-semibold"></th>
+                    <th className="text-right py-3 px-4 text-gray-400 font-semibold"></th>
+                    <th className="text-left py-3 px-4 text-gray-400 font-semibold"></th>
+                    <th className="text-left py-3 px-4 text-gray-400 font-semibold"></th>
+                    <th className="text-left py-3 px-4 text-gray-400 font-semibold"></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {event.inGameDonations
+                    .sort((a, b) => {
+                      const amountA = a.amount || 0;
+                      const amountB = b.amount || 0;
+                      return amountB - amountA;
+                    })
+                    .map((donation, index) => {
+                      // Combinar coins y amount convertido a monedas
+                      const amountCoins = donation.amount ? convertCopperToCoins(donation.amount) : null;
+                      const combinedCoins = normalizeCoins({
+                        gold: (donation.coins?.gold || 0) + (amountCoins?.gold || 0),
+                        silver: (donation.coins?.silver || 0) + (amountCoins?.silver || 0),
+                        copper: (donation.coins?.copper || 0) + (amountCoins?.copper || 0),
+                      });
+                      const hasCoins = combinedCoins.gold > 0 || combinedCoins.silver > 0 || combinedCoins.copper > 0;
+
+                      return (
+                        <tr key={index} className="border-b border-gray-800 hover:bg-gray-800/50 transition-colors">
+                          <td className="py-3 px-4 font-semibold text-base overflow-visible">{donation.name}</td>
+                          <td className="py-3 px-4 text-right overflow-visible"></td>
+                          <td className="py-3 px-4 overflow-visible">
+                            {hasCoins && (
+                              <div className="flex items-center gap-2 flex-wrap">
+                                {combinedCoins.gold > 0 && (
+                                  <div className="flex items-center gap-1">
+                                    <span className="text-yellow-400 font-semibold text-sm">{combinedCoins.gold.toLocaleString()}</span>
+                                    <Image
+                                      src="/images/expansions/Gold.webp"
+                                      alt="Gold"
+                                      width={14}
+                                      height={14}
+                                      className="w-3.5 h-3.5"
+                                      unoptimized
+                                    />
+                                  </div>
+                                )}
+                                {combinedCoins.silver > 0 && (
+                                  <div className="flex items-center gap-1">
+                                    <span className="text-gray-300 font-semibold text-sm">{combinedCoins.silver.toLocaleString()}</span>
+                                    <Image
+                                      src="/images/expansions/Silver.webp"
+                                      alt="Silver"
+                                      width={14}
+                                      height={14}
+                                      className="w-3.5 h-3.5"
+                                      unoptimized
+                                    />
+                                  </div>
+                                )}
+                                {combinedCoins.copper > 0 && (
+                                  <div className="flex items-center gap-1">
+                                    <span className="text-orange-400 font-semibold text-sm">{combinedCoins.copper.toLocaleString()}</span>
+                                    <Image
+                                      src="/images/expansions/Copper.webp"
+                                      alt="Copper"
+                                      width={14}
+                                      height={14}
+                                      className="w-3.5 h-3.5"
+                                      unoptimized
+                                    />
+                                  </div>
+                                )}
+                              </div>
+                            )}
+                          </td>
+                        <td className="py-3 px-4 overflow-visible">
+                          {donation.items && donation.items.length > 0 && (
+                            <div className="flex items-center gap-2 flex-wrap">
+                              {donation.items.map((item, itemIndex) => {
+                                const itemData = itemsData[item.name];
+                                const itemName = itemData?.names[lang as keyof typeof itemData.names] || itemData?.names.en || item.name;
+                                const itemKey = `${donation.name}-${itemIndex}`;
+                                const isTooltipActive = activeTooltip === itemKey;
+                                const position = tooltipPosition[itemKey];
+                                
+                                return (
+                                  <div 
+                                    key={itemIndex} 
+                                    className="relative flex items-center gap-1 whitespace-nowrap"
+                                  >
+                                    {itemData?.icon && (
+                                      <Image
+                                        src={itemData.icon}
+                                        alt={itemName}
+                                        width={16}
+                                        height={16}
+                                        className="w-4 h-4"
+                                        unoptimized
+                                      />
+                                    )}
+                                    <button
+                                      type="button"
+                                      ref={(el) => { tooltipRefs.current[itemKey] = el; }}
+                                      onClick={(e) => handleItemClick(e, itemKey)}
+                                      className="text-purple-400 text-sm hover:text-purple-300 transition-colors cursor-pointer"
+                                    >
+                                      {itemName}
+                                    </button>
+                                    
+                                    {/* Tooltip */}
+                                    {isTooltipActive && itemData && position && (
+                                      <div 
+                                        data-tooltip-container
+                                        className="fixed z-[9999] w-80 bg-slate-800 border border-purple-500/50 rounded-lg shadow-xl p-4"
+                                        style={{
+                                          top: `${position.top}px`,
+                                          left: `${position.left}px`
+                                        }}
+                                      >
+                                        {/* Header con icono y nombre */}
+                                        <div className="flex items-center gap-2 mb-3 pb-2 border-b border-gray-700">
+                                          {itemData.icon && (
+                                            <Image
+                                              src={itemData.icon}
+                                              alt={itemName}
+                                              width={32}
+                                              height={32}
+                                              className="w-8 h-8"
+                                              unoptimized
+                                            />
+                                          )}
+                                          <div className="flex-1">
+                                            <h3 className="text-white font-semibold text-sm">{itemName}</h3>
+                                            {itemData.type && (
+                                              <p className="text-gray-400 text-xs">{translateType(itemData.type, lang)}</p>
+                                            )}
+                                          </div>
+                                        </div>
+                                        
+                                        {/* Descripción */}
+                                        {itemData.description && itemData.description[lang as keyof typeof itemData.description] && (
+                                          <p className="text-gray-300 text-xs mb-3 line-clamp-3">
+                                            {itemData.description[lang as keyof typeof itemData.description]}
+                                          </p>
+                                        )}
+                                        
+                                        {/* Información adicional */}
+                                        <div className="flex gap-4 mb-3 text-xs">
+                                          {itemData.rarity && (
+                                            <span className="text-gray-400">
+                                              {getTranslation('rarity', lang)}: <span className="text-purple-400 capitalize">{translateRarity(itemData.rarity, lang)}</span>
+                                            </span>
+                                          )}
+                                          {itemData.level && (
+                                            <span className="text-gray-400">
+                                              {getTranslation('level', lang)}: <span className="text-purple-400">{itemData.level}</span>
+                                            </span>
+                                          )}
+                                        </div>
+                                        
+                                        {/* Enlaces a wikis */}
+                                        <div className="border-t border-gray-700 pt-2">
+                                          <p className="text-gray-400 text-xs mb-2">Wiki:</p>
+                                          <div className="flex flex-wrap gap-2">
+                                            {(['en', 'es', 'de', 'fr'] as const).map((wikiLang) => {
+                                              const wikiName = itemData.names[wikiLang] || itemData.names.en;
+                                              const wikiUrl = getWikiUrl(wikiName, wikiLang);
+                                              return (
+                                                <a
+                                                  key={wikiLang}
+                                                  href={wikiUrl}
+                                                  target="_blank"
+                                                  rel="noopener noreferrer"
+                                                  className="inline-flex items-center gap-1 text-xs text-purple-400 hover:text-purple-300 transition-colors cursor-pointer"
+                                                  onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    e.preventDefault();
+                                                    window.open(wikiUrl, '_blank', 'noopener,noreferrer');
+                                                  }}
+                                                >
+                                                  {wikiLang.toUpperCase()}
+                                                  <ExternalLink className="w-3 h-3" />
+                                                </a>
+                                              );
+                                            })}
+                                          </div>
+                                        </div>
+                                      </div>
+                                    )}
+                                  </div>
+                                );
+                              })}
+                            </div>
+                          )}
+                        </td>
+                        <td className="py-3 px-4 overflow-visible">
+                          {donation.ectoplasm && (
+                            <div className="flex items-center gap-2">
+                              <span className="text-base font-bold">{donation.ectoplasm.toLocaleString()}</span>
+                              <Image
+                                src="https://wiki.guildwars2.com/images/9/9b/Glob_of_Ectoplasm.png"
+                                alt="Glob of Ectoplasm"
+                                width={20}
+                                height={20}
+                                className="w-5 h-5"
+                                unoptimized
+                              />
+                            </div>
+                          )}
+                        </td>
+                      </tr>
+                      );
+                    })}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </>
+  );
+}
+
