@@ -1589,6 +1589,8 @@
   "contributions.realMoneyDonations": "SPENDEN MIT ECHTEM GELD",
   "contributions.inGameDonations": "SPENDEN IM SPIEL",
   "contributions.eventNotFound": "Event nicht gefunden",
+  "contributions.communityContributions.title": "Gemeinschaftsbeiträge",
+  "contributions.communityContributions.description": "Gemeinschaftsbeiträge und Spenden-Event für Guild Wars 2.",
   "profile.title": "Mein Profil",
   "profile.subtitle": "Verwalten Sie Ihr Konto und Ihre Einstellungen",
   "profile.userInfo": "Benutzerinformationen",

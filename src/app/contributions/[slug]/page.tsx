@@ -253,13 +253,13 @@ async function fetchItemData(itemName: string): Promise<ItemData | null> {
 }
 
 // Datos del evento
-const getEventData = (slug: string): ContributionEvent | null => {
+const getEventData = (slug: string, t: (key: string) => string): ContributionEvent | null => {
   if (slug === 'contribuciones-de-la-comunidad') {
     return {
       id: '1',
       slug: 'contribuciones-de-la-comunidad',
-      title: 'Contribuciones de la Comunidad',
-      description: 'Evento de contribuciones y donaciones de la comunidad de Guild Wars 2.',
+      title: t('contributions.communityContributions.title'),
+      description: t('contributions.communityContributions.description'),
       startDate: '2025-11-19',
       endDate: '2025-12-31',
       cashDonations: [
@@ -313,8 +313,8 @@ function getWikiUrl(itemName: string, language: string = 'en'): string {
 
 export default function ContributionEventPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = use(params);
-  const event = getEventData(slug);
   const { lang, t } = useI18n();
+  const event = getEventData(slug, t);
   const [itemsData, setItemsData] = useState<Record<string, ItemData>>({});
   const [activeTooltip, setActiveTooltip] = useState<string | null>(null);
   const [tooltipPosition, setTooltipPosition] = useState<Record<string, { top: number; left: number; position: 'top' | 'bottom' }>>({});
