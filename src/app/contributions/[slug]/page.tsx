@@ -7,11 +7,6 @@ import { useI18n } from '@/contexts/I18nContext';
 import { ExternalLink } from 'lucide-react';
 import Image from 'next/image';
 
-interface CashDonation {
-  name: string;
-  amount: number;
-}
-
 interface ItemData {
   id: number;
   icon: string;
@@ -55,7 +50,6 @@ interface ContributionEvent {
   description: string;
   startDate: string;
   endDate: string;
-  cashDonations: CashDonation[];
   inGameDonations: InGameDonation[];
 }
 
@@ -262,9 +256,6 @@ const getEventData = (slug: string, t: (key: string) => string): ContributionEve
       description: t('contributions.communityContributions.description'),
       startDate: '2025-11-19',
       endDate: '2025-12-31',
-      cashDonations: [
-        // { name: 'Kunzeu', amount: 6.52 },
-      ],
       inGameDonations: [
         // {
         //     name: 'Zumito',
@@ -529,13 +520,6 @@ export default function ContributionEventPage({ params }: { params: Promise<{ sl
     );
   }
 
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD'
-    }).format(amount);
-  };
-
   const convertCopperToCoins = (copper: number) => {
     const gold = Math.floor(copper / 10000);
     const silver = Math.floor((copper % 10000) / 100);
@@ -561,8 +545,6 @@ export default function ContributionEventPage({ params }: { params: Promise<{ sl
     return { gold, silver, copper };
   };
 
-  const topCashDonor = event.cashDonations.sort((a, b) => b.amount - a.amount)[0];
-
   // Fecha fija del evento
   const eventDate = lang === 'es' ? '19 de noviembre de 2025' :
                     lang === 'de' ? '19. November 2025' :
@@ -579,42 +561,6 @@ export default function ContributionEventPage({ params }: { params: Promise<{ sl
           <p className="text-gray-400 text-lg mb-8">
             {eventDate}
           </p>
-
-          {/* Total */}
-          {topCashDonor && (
-            <div className="text-center mb-12">
-              <div className="text-4xl font-bold">
-                {topCashDonor.name} {formatCurrency(topCashDonor.amount)}
-              </div>
-            </div>
-          )}
-
-          {/* REAL MONEY DONATIONS */}
-          <div className="mb-12">
-            <h2 className="text-xl font-semibold mb-4">{t('contributions.realMoneyDonations')}</h2>
-            <div className="overflow-x-auto">
-              <table className="w-full border-collapse">
-                <thead>
-                  <tr className="border-b border-gray-700">
-                    <th className="text-left py-3 px-4 text-gray-400 font-semibold"></th>
-                    <th className="text-right py-3 px-4 text-gray-400 font-semibold"></th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {event.cashDonations
-                    .sort((a, b) => b.amount - a.amount)
-                    .map((donation, index) => (
-                      <tr key={index} className="border-b border-gray-800 hover:bg-gray-800/50 transition-colors">
-                        <td className="py-3 px-4 text-gray-300">{donation.name}</td>
-                        <td className="py-3 px-4 text-right">
-                          <span className="text-green-400 font-semibold">{formatCurrency(donation.amount)}</span>
-                        </td>
-                      </tr>
-                    ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
 
           {/* IN-GAME DONATIONS */}
           <div>
@@ -816,21 +762,7 @@ export default function ContributionEventPage({ params }: { params: Promise<{ sl
                             </div>
                           )}
                         </td>
-                        <td className="py-3 px-4 overflow-visible">
-                          {donation.ectoplasm && (
-                            <div className="flex items-center gap-2">
-                              <span className="text-base font-bold">{donation.ectoplasm.toLocaleString()}</span>
-                              <Image
-                                src="https://wiki.guildwars2.com/images/9/9b/Glob_of_Ectoplasm.png"
-                                alt="Glob of Ectoplasm"
-                                width={20}
-                                height={20}
-                                className="w-5 h-5"
-                                unoptimized
-                              />
-                            </div>
-                          )}
-                        </td>
+
                       </tr>
                       );
                     })}
