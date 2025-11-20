@@ -97,6 +97,7 @@ const LEGENDARY_ITEM_IDS: Record<string, number> = {
   'Aurene\'s Flight': 97590,
   'Aurene\'s Weight': 95684,
   'Aurene\'s Voice': 97783,
+  'Glob of Ectoplasm': 19721,
 };
 
 // Traducciones para tipos y rareza
@@ -257,14 +258,14 @@ const getEventData = (slug: string, t: (key: string) => string): ContributionEve
       startDate: '2025-11-19',
       endDate: '2025-12-31',
       inGameDonations: [
-        // {
-        //     name: 'Zumito',
-        //     coins: { gold: 17, silver: 37, copper: 83 },
-        //     items: [
-        //         { name: 'Klobjarne Geirr' },
-        //         { name: 'The Juggernaut' },
-        //         { name: 'Twilight' },
-        //     ]
+         {
+             name: 'Yuuki.7084',
+             coins: { gold: 64, silver: 95 },
+             items: [
+                 { name: 'Glob of Ectoplasm' },
+
+             ]
+         }
         // },
         // { 
         //   name: 'Calvo', 
