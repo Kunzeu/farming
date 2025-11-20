@@ -1,6 +1,6 @@
 'use client';
 
-import { use, useState, useEffect, useCallback, useRef } from 'react';
+import { use, useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import Navigation from '@/components/layout/Navigation';
 import { usePageTitle } from '@/hooks/usePageTitle';
 import { useI18n } from '@/contexts/I18nContext';
@@ -39,6 +39,7 @@ interface InGameDonation {
     name: string;
     icon?: string;
     quantity?: number;
+    price?: number; // Precio en cobre (precio del bazar al momento de la donación)
   }>;
   ectoplasm?: number;
 }
@@ -260,25 +261,19 @@ const getEventData = (slug: string, t: (key: string) => string): ContributionEve
       inGameDonations: [
          {
              name: 'Yuuki.7084',
-             coins: { gold: 64, silver: 95 },
-             items: [
-                 { name: 'Glob of Ectoplasm' },
+            items: [
+                { name: 'Glob of Ectoplasm', quantity: 250 }, // Precio en cobre 
 
-             ]
-         }
-        // },
-        // { 
-        //   name: 'Calvo', 
-        //   coins: { gold: 127, silver: 37, copper: 83 },
-        //   items: [
-        //     { name: 'Aetheric Anchor' },
-        //     { name: 'The Juggernaut' },
-        //     { name: 'Twilight' },
-        //     { name: 'The Bifrost' },
-        //     { name: 'Sunrise' },
-        //     { name: 'Meteorlogicus' }
-        //   ]
-        // }
+            ]
+         },
+         { 
+           name: 'Zirial.2698', 
+           items: [
+            { name: 'Glob of Ectoplasm', quantity: 500  }, // Precio en cobre 
+             
+           ]
+         },
+
       ]
     };
   }
@@ -308,6 +303,7 @@ export default function ContributionEventPage({ params }: { params: Promise<{ sl
   const { lang, t } = useI18n();
   const event = getEventData(slug, t);
   const [itemsData, setItemsData] = useState<Record<string, ItemData>>({});
+  const [itemPrices, setItemPrices] = useState<Record<string, number>>({}); // Precios desde la API: nombre -> precio en cobre
   const [activeTooltip, setActiveTooltip] = useState<string | null>(null);
   const [tooltipPosition, setTooltipPosition] = useState<Record<string, { top: number; left: number; position: 'top' | 'bottom' }>>({});
   const isLoadingRef = useRef(false);
@@ -432,6 +428,90 @@ export default function ContributionEventPage({ params }: { params: Promise<{ sl
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [event?.slug]);
 
+  // Cargar precios desde la API (una sola llamada)
+  useEffect(() => {
+    if (!event) return;
+    
+    const loadPrices = async () => {
+      try {
+        const allItemNames = new Set<string>();
+        
+        // Recopilar todos los nombres de items únicos
+        event.inGameDonations.forEach(donation => {
+          donation.items?.forEach(item => {
+            allItemNames.add(item.name);
+          });
+        });
+
+        if (allItemNames.size === 0) return;
+
+        // Obtener los IDs de los items
+        const itemIds: number[] = [];
+        const nameToIdMap: Record<string, number> = {};
+        
+        for (const itemName of allItemNames) {
+          const itemId = LEGENDARY_ITEM_IDS[itemName];
+          if (itemId) {
+            itemIds.push(itemId);
+            nameToIdMap[itemName] = itemId;
+          }
+        }
+
+        if (itemIds.length === 0) return;
+
+        // Hacer una sola llamada a la API para obtener todos los precios
+        const pricesResponse = await fetch(
+          `https://api.guildwars2.com/v2/commerce/prices?ids=${itemIds.join(',')}`,
+          {
+            headers: {
+              'Accept': 'application/json',
+              'Accept-Encoding': 'gzip, deflate, br'
+            }
+          }
+        );
+
+        if (pricesResponse.ok) {
+          const pricesData: Array<{ id: number; sells?: { unit_price: number } }> = await pricesResponse.json();
+          
+          // Crear un mapa de precios por nombre de item
+          const pricesMap: Record<string, number> = {};
+          
+          pricesData.forEach(priceData => {
+            // Buscar el nombre del item por su ID
+            const itemName = Object.keys(nameToIdMap).find(name => nameToIdMap[name] === priceData.id);
+            if (itemName && priceData.sells?.unit_price) {
+              // El precio viene en cobre directamente desde la API (precio de venta)
+              pricesMap[itemName] = priceData.sells.unit_price;
+              console.log(`Precio obtenido para ${itemName}: ${priceData.sells.unit_price} cobre (ID: ${priceData.id})`);
+            }
+          });
+
+          console.log('Precios obtenidos:', pricesMap);
+          setItemPrices(pricesMap);
+        }
+      } catch (error) {
+        console.error('Error fetching prices:', error);
+      }
+    };
+
+    loadPrices();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [event?.slug]);
+
+  // Función para obtener el precio de un item (prioriza precio manual, luego API)
+  const getItemPrice = useCallback((item: { name: string; price?: number }) => {
+    // Si hay precio manual, usarlo
+    if (item.price !== undefined && item.price !== null) {
+      return item.price;
+    }
+    // Si no, usar el precio de la API
+    const apiPrice = itemPrices[item.name] || 0;
+    if (apiPrice === 0 && item.name) {
+      console.log(`No se encontró precio para ${item.name} en itemPrices:`, itemPrices);
+    }
+    return apiPrice;
+  }, [itemPrices]);
+
   // Función para manejar el clic en el botón del item
   const handleItemClick = useCallback((e: React.MouseEvent, itemKey: string) => {
     e.stopPropagation();
@@ -507,20 +587,6 @@ export default function ContributionEventPage({ params }: { params: Promise<{ sl
     };
   }, [activeTooltip]);
 
-  if (!event) {
-    return (
-      <>
-        <Navigation />
-        <div className="min-h-screen bg-slate-900 flex items-center justify-center">
-          <div className="text-center">
-            <h1 className="text-4xl font-bold text-white mb-4">404</h1>
-            <p className="text-gray-400 mb-6">{t('contributions.eventNotFound')}</p>
-          </div>
-        </div>
-      </>
-    );
-  }
-
   const convertCopperToCoins = (copper: number) => {
     const gold = Math.floor(copper / 10000);
     const silver = Math.floor((copper % 10000) / 100);
@@ -546,6 +612,75 @@ export default function ContributionEventPage({ params }: { params: Promise<{ sl
     return { gold, silver, copper };
   };
 
+  // Función para convertir monedas a cobre
+  const coinsToCopper = (coins: { gold?: number; silver?: number; copper?: number }) => {
+    const gold = coins.gold || 0;
+    const silver = coins.silver || 0;
+    const copper = coins.copper || 0;
+    return (gold * 10000) + (silver * 100) + copper;
+  };
+
+  // Calcular el total de todas las donaciones
+  const calculateTotalDonations = useCallback(() => {
+    if (!event) return { gold: 0, silver: 0, copper: 0 };
+    
+    let totalCopper = 0;
+
+    event.inGameDonations.forEach(donation => {
+      // Sumar monedas donadas
+      if (donation.coins) {
+        totalCopper += coinsToCopper(donation.coins);
+      }
+      
+      // Sumar amount si existe
+      if (donation.amount) {
+        totalCopper += donation.amount;
+      }
+
+      // Sumar precios de items (precio * cantidad)
+      if (donation.items) {
+        donation.items.forEach(item => {
+          const price = getItemPrice(item);
+          console.log(`Calculando: ${item.name} - Precio: ${price} cobre, Cantidad: ${item.quantity || 1}`);
+          if (price > 0 && item.quantity) {
+            const itemTotal = price * item.quantity;
+            console.log(`  Total para ${item.name}: ${itemTotal} cobre (${price} * ${item.quantity})`);
+            totalCopper += itemTotal;
+          } else if (price > 0) {
+            // Si no hay cantidad, asumir 1
+            totalCopper += price;
+          } else {
+            console.log(`  ⚠️ Precio es 0 para ${item.name}`);
+          }
+        });
+      }
+    });
+
+    console.log(`Total en cobre calculado: ${totalCopper}`);
+    const coins = convertCopperToCoins(totalCopper);
+    console.log(`Total convertido: ${coins.gold} oro, ${coins.silver} plata, ${coins.copper} cobre`);
+    return coins;
+  }, [event, getItemPrice]);
+
+  // Recalcular el total cuando cambien los precios
+  const totalDonations = useMemo(() => {
+    return calculateTotalDonations();
+  }, [calculateTotalDonations]);
+
+  if (!event) {
+    return (
+      <>
+        <Navigation />
+        <div className="min-h-screen bg-slate-900 flex items-center justify-center">
+          <div className="text-center">
+            <h1 className="text-4xl font-bold text-white mb-4">404</h1>
+            <p className="text-gray-400 mb-6">{t('contributions.eventNotFound')}</p>
+          </div>
+        </div>
+      </>
+    );
+  }
+
   // Fecha fija del evento
   const eventDate = lang === 'es' ? '19 de noviembre de 2025' :
                     lang === 'de' ? '19. November 2025' :
@@ -565,7 +700,54 @@ export default function ContributionEventPage({ params }: { params: Promise<{ sl
 
           {/* IN-GAME DONATIONS */}
           <div>
-            <h2 className="text-xl font-semibold mb-6 uppercase">{t('contributions.inGameDonations')}</h2>
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-xl font-semibold uppercase">{t('contributions.inGameDonations')}</h2>
+              {/* Total de donaciones */}
+              <div className="flex items-center gap-3 bg-slate-800/50 px-4 py-2 rounded-lg border border-purple-500/30">
+                <span className="text-gray-400 text-sm font-semibold uppercase">Total:</span>
+                <div className="flex items-center gap-2">
+                  {totalDonations.gold > 0 && (
+                    <div className="flex items-center gap-1">
+                      <span className="text-yellow-400 font-bold text-lg">{totalDonations.gold.toLocaleString()}</span>
+                      <Image
+                        src="/images/expansions/Gold.webp"
+                        alt="Gold"
+                        width={18}
+                        height={18}
+                        className="w-4.5 h-4.5"
+                        unoptimized
+                      />
+                    </div>
+                  )}
+                  {totalDonations.silver > 0 && (
+                    <div className="flex items-center gap-1">
+                      <span className="text-gray-300 font-bold text-lg">{totalDonations.silver.toLocaleString()}</span>
+                      <Image
+                        src="/images/expansions/Silver.webp"
+                        alt="Silver"
+                        width={18}
+                        height={18}
+                        className="w-4.5 h-4.5"
+                        unoptimized
+                      />
+                    </div>
+                  )}
+                  {(totalDonations.copper > 0 || totalDonations.gold > 0 || totalDonations.silver > 0) && (
+                    <div className="flex items-center gap-1">
+                      <span className="text-orange-400 font-bold text-lg">{String(totalDonations.copper).padStart(2, '0')}</span>
+                      <Image
+                        src="/images/expansions/Copper.webp"
+                        alt="Copper"
+                        width={18}
+                        height={18}
+                        className="w-4.5 h-4.5"
+                        unoptimized
+                      />
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
             <div className="overflow-x-auto overflow-y-visible relative">
               <table className="w-full border-collapse overflow-visible">
                 <thead>
@@ -580,17 +762,69 @@ export default function ContributionEventPage({ params }: { params: Promise<{ sl
                 <tbody>
                   {event.inGameDonations
                     .sort((a, b) => {
-                      const amountA = a.amount || 0;
-                      const amountB = b.amount || 0;
-                      return amountB - amountA;
+                      // Calcular el total en cobre para la donación a
+                      let totalCopperA = 0;
+                      if (a.coins) {
+                        totalCopperA += coinsToCopper(a.coins);
+                      }
+                      if (a.amount) {
+                        totalCopperA += a.amount;
+                      }
+                      if (a.items) {
+                        a.items.forEach(item => {
+                          const price = getItemPrice(item);
+                          if (price > 0 && item.quantity) {
+                            totalCopperA += price * item.quantity;
+                          } else if (price > 0) {
+                            totalCopperA += price;
+                          }
+                        });
+                      }
+                      
+                      // Calcular el total en cobre para la donación b
+                      let totalCopperB = 0;
+                      if (b.coins) {
+                        totalCopperB += coinsToCopper(b.coins);
+                      }
+                      if (b.amount) {
+                        totalCopperB += b.amount;
+                      }
+                      if (b.items) {
+                        b.items.forEach(item => {
+                          const price = getItemPrice(item);
+                          if (price > 0 && item.quantity) {
+                            totalCopperB += price * item.quantity;
+                          } else if (price > 0) {
+                            totalCopperB += price;
+                          }
+                        });
+                      }
+                      
+                      // Ordenar de mayor a menor
+                      return totalCopperB - totalCopperA;
                     })
                     .map((donation, index) => {
-                      // Combinar coins y amount convertido a monedas
+                      // Calcular el valor total de los items en cobre
+                      let itemsValueCopper = 0;
+                      if (donation.items) {
+                        donation.items.forEach(item => {
+                          const price = getItemPrice(item);
+                          if (price > 0 && item.quantity) {
+                            itemsValueCopper += price * item.quantity;
+                          } else if (price > 0) {
+                            // Si no hay cantidad, asumir 1
+                            itemsValueCopper += price;
+                          }
+                        });
+                      }
+                      const itemsCoins = itemsValueCopper > 0 ? convertCopperToCoins(itemsValueCopper) : null;
+                      
+                      // Combinar coins, amount convertido a monedas, y valor de items
                       const amountCoins = donation.amount ? convertCopperToCoins(donation.amount) : null;
                       const combinedCoins = normalizeCoins({
-                        gold: (donation.coins?.gold || 0) + (amountCoins?.gold || 0),
-                        silver: (donation.coins?.silver || 0) + (amountCoins?.silver || 0),
-                        copper: (donation.coins?.copper || 0) + (amountCoins?.copper || 0),
+                        gold: (donation.coins?.gold || 0) + (amountCoins?.gold || 0) + (itemsCoins?.gold || 0),
+                        silver: (donation.coins?.silver || 0) + (amountCoins?.silver || 0) + (itemsCoins?.silver || 0),
+                        copper: (donation.coins?.copper || 0) + (amountCoins?.copper || 0) + (itemsCoins?.copper || 0),
                       });
                       const hasCoins = combinedCoins.gold > 0 || combinedCoins.silver > 0 || combinedCoins.copper > 0;
 
@@ -627,9 +861,9 @@ export default function ContributionEventPage({ params }: { params: Promise<{ sl
                                     />
                                   </div>
                                 )}
-                                {combinedCoins.copper > 0 && (
+                                {(combinedCoins.copper > 0 || combinedCoins.gold > 0 || combinedCoins.silver > 0) && (
                                   <div className="flex items-center gap-1">
-                                    <span className="text-orange-400 font-semibold text-sm">{combinedCoins.copper.toLocaleString()}</span>
+                                    <span className="text-orange-400 font-semibold text-sm">{String(combinedCoins.copper).padStart(2, '0')}</span>
                                     <Image
                                       src="/images/expansions/Copper.webp"
                                       alt="Copper"
@@ -658,6 +892,9 @@ export default function ContributionEventPage({ params }: { params: Promise<{ sl
                                     key={itemIndex} 
                                     className="relative flex items-center gap-1 whitespace-nowrap"
                                   >
+                                    {item.quantity && item.quantity > 1 && (
+                                      <span className="text-gray-400">{item.quantity} </span>
+                                    )}
                                     {itemData?.icon && (
                                       <Image
                                         src={itemData.icon}
