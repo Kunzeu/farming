@@ -283,6 +283,17 @@ const getEventData = (slug: string, t: (key: string) => string): ContributionEve
             
           ]
         },
+        { 
+          name: 'Vortus.2801', 
+          items: [
+            { name: 'Aurene\'s Insight', quantity: 1  }, // Precio en cobre 
+           { name: 'Sunrise', quantity: 1  }, // Precio en cobre 
+           { name: 'The Juggernaut', quantity: 1  }, // Precio en cobre 
+           { name: 'giveaways.gems', quantity: 2800, icon: 'https://wiki.guildwars2.com/images/8/88/Gem_%28highres%29.png'  }, // Precio en cobre 
+            
+          ]
+        },
+        
 
       ]
     };
@@ -892,7 +903,13 @@ export default function ContributionEventPage({ params }: { params: Promise<{ sl
                             <div className="flex items-center gap-2 flex-wrap">
                               {donation.items.map((item, itemIndex) => {
                                 const itemData = itemsData[item.name];
-                                const itemName = itemData?.names[lang as keyof typeof itemData.names] || itemData?.names.en || item.name;
+                                // Si el nombre del item es una clave de traducción, usarla directamente
+                                const isTranslationKey = item.name.includes('.');
+                                const itemName = isTranslationKey 
+                                  ? t(item.name)
+                                  : (itemData?.names[lang as keyof typeof itemData.names] || itemData?.names.en || item.name);
+                                // El icono puede venir del item directamente o de los datos de la API
+                                const itemIcon = item.icon || itemData?.icon;
                                 const itemKey = `${donation.name}-${itemIndex}`;
                                 const isTooltipActive = activeTooltip === itemKey;
                                 const position = tooltipPosition[itemKey];
@@ -905,9 +922,9 @@ export default function ContributionEventPage({ params }: { params: Promise<{ sl
                                     {item.quantity && item.quantity > 1 && (
                                       <span className="text-gray-400">{item.quantity} </span>
                                     )}
-                                    {itemData?.icon && (
+                                    {itemIcon && (
                                       <Image
-                                        src={itemData.icon}
+                                        src={itemIcon}
                                         alt={itemName}
                                         width={16}
                                         height={16}
@@ -925,7 +942,7 @@ export default function ContributionEventPage({ params }: { params: Promise<{ sl
                                     </button>
                                     
                                     {/* Tooltip */}
-                                    {isTooltipActive && itemData && position && (
+                                    {isTooltipActive && position && (itemData || isTranslationKey) && (
                                       <div 
                                         data-tooltip-container
                                         className="fixed z-[9999] w-80 bg-slate-800 border border-purple-500/50 rounded-lg shadow-xl p-4"
@@ -936,9 +953,9 @@ export default function ContributionEventPage({ params }: { params: Promise<{ sl
                                       >
                                         {/* Header con icono y nombre */}
                                         <div className="flex items-center gap-2 mb-3 pb-2 border-b border-gray-700">
-                                          {itemData.icon && (
+                                          {itemIcon && (
                                             <Image
-                                              src={itemData.icon}
+                                              src={itemIcon}
                                               alt={itemName}
                                               width={32}
                                               height={32}
@@ -948,60 +965,64 @@ export default function ContributionEventPage({ params }: { params: Promise<{ sl
                                           )}
                                           <div className="flex-1">
                                             <h3 className="text-white font-semibold text-sm">{itemName}</h3>
-                                            {itemData.type && (
+                                            {itemData?.type && (
                                               <p className="text-gray-400 text-xs">{translateType(itemData.type, lang)}</p>
                                             )}
                                           </div>
                                         </div>
                                         
                                         {/* Descripción */}
-                                        {itemData.description && itemData.description[lang as keyof typeof itemData.description] && (
+                                        {itemData?.description && itemData.description[lang as keyof typeof itemData.description] && (
                                           <p className="text-gray-300 text-xs mb-3 line-clamp-3">
                                             {itemData.description[lang as keyof typeof itemData.description]}
                                           </p>
                                         )}
                                         
                                         {/* Información adicional */}
-                                        <div className="flex gap-4 mb-3 text-xs">
-                                          {itemData.rarity && (
-                                            <span className="text-gray-400">
-                                              {getTranslation('rarity', lang)}: <span className="text-purple-400 capitalize">{translateRarity(itemData.rarity, lang)}</span>
-                                            </span>
-                                          )}
-                                          {itemData.level && (
-                                            <span className="text-gray-400">
-                                              {getTranslation('level', lang)}: <span className="text-purple-400">{itemData.level}</span>
-                                            </span>
-                                          )}
-                                        </div>
+                                        {itemData && (
+                                          <div className="flex gap-4 mb-3 text-xs">
+                                            {itemData.rarity && (
+                                              <span className="text-gray-400">
+                                                {getTranslation('rarity', lang)}: <span className="text-purple-400 capitalize">{translateRarity(itemData.rarity, lang)}</span>
+                                              </span>
+                                            )}
+                                            {itemData.level && (
+                                              <span className="text-gray-400">
+                                                {getTranslation('level', lang)}: <span className="text-purple-400">{itemData.level}</span>
+                                              </span>
+                                            )}
+                                          </div>
+                                        )}
                                         
                                         {/* Enlaces a wikis */}
-                                        <div className="border-t border-gray-700 pt-2">
-                                          <p className="text-gray-400 text-xs mb-2">Wiki:</p>
-                                          <div className="flex flex-wrap gap-2">
-                                            {(['en', 'es', 'de', 'fr'] as const).map((wikiLang) => {
-                                              const wikiName = itemData.names[wikiLang] || itemData.names.en;
-                                              const wikiUrl = getWikiUrl(wikiName, wikiLang);
-                                              return (
-                                                <a
-                                                  key={wikiLang}
-                                                  href={wikiUrl}
-                                                  target="_blank"
-                                                  rel="noopener noreferrer"
-                                                  className="inline-flex items-center gap-1 text-xs text-purple-400 hover:text-purple-300 transition-colors cursor-pointer"
-                                                  onClick={(e) => {
-                                                    e.stopPropagation();
-                                                    e.preventDefault();
-                                                    window.open(wikiUrl, '_blank', 'noopener,noreferrer');
-                                                  }}
-                                                >
-                                                  {wikiLang.toUpperCase()}
-                                                  <ExternalLink className="w-3 h-3" />
-                                                </a>
-                                              );
-                                            })}
+                                        {itemData && (
+                                          <div className="border-t border-gray-700 pt-2">
+                                            <p className="text-gray-400 text-xs mb-2">Wiki:</p>
+                                            <div className="flex flex-wrap gap-2">
+                                              {(['en', 'es', 'de', 'fr'] as const).map((wikiLang) => {
+                                                const wikiName = itemData.names[wikiLang] || itemData.names.en;
+                                                const wikiUrl = getWikiUrl(wikiName, wikiLang);
+                                                return (
+                                                  <a
+                                                    key={wikiLang}
+                                                    href={wikiUrl}
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    className="inline-flex items-center gap-1 text-xs text-purple-400 hover:text-purple-300 transition-colors cursor-pointer"
+                                                    onClick={(e) => {
+                                                      e.stopPropagation();
+                                                      e.preventDefault();
+                                                      window.open(wikiUrl, '_blank', 'noopener,noreferrer');
+                                                    }}
+                                                  >
+                                                    {wikiLang.toUpperCase()}
+                                                    <ExternalLink className="w-3 h-3" />
+                                                  </a>
+                                                );
+                                              })}
+                                            </div>
                                           </div>
-                                        </div>
+                                        )}
                                       </div>
                                     )}
                                   </div>
