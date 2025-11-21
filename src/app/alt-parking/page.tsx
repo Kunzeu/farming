@@ -123,43 +123,63 @@ export default function AltParkingPage() {
             </div>
           </motion.div>
 
-          {/* Secciones de Contenido */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-6xl mx-auto">
-            {/* Ubicaciones Populares */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.4 }}
-              className="group">
-              <Link href="/alt-parking/locations">
-                <div className="bg-gradient-to-br from-blue-500/20 to-cyan-500/20 backdrop-blur-sm rounded-xl p-6 border border-blue-500/30 hover:scale-105 transition-all duration-300 cursor-pointer">
-                  <div className="flex items-center gap-4 mb-4">
-                    <div className="w-12 h-12 bg-gradient-to-br from-blue-500/20 to-cyan-500/20 rounded-lg flex items-center justify-center border border-blue-500/30 overflow-hidden">
-                      <MapPin className="h-6 w-6 text-blue-400" />
-                    </div>
-                    <div>
-                      <h3 className="text-xl font-bold text-blue-400 group-hover:text-white transition-colors">
-                        {t("altParking.popularLocations.title", "Ubicaciones Populares")}
+          {/* Ubicaciones Populares */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.4 }}
+            className="mb-6">
+            <div className="flex items-center gap-4 mb-4">
+              <div className="w-12 h-12 bg-gradient-to-br from-blue-500/20 to-cyan-500/20 rounded-lg flex items-center justify-center border border-blue-500/30 overflow-hidden">
+                <MapPin className="h-6 w-6 text-blue-400" />
+              </div>
+              <h2 className="text-2xl font-bold text-blue-400">
+                {t("altParking.popularLocations.title", "Ubicaciones Populares")}
+              </h2>
+            </div>
+            
+            {/* Draconis Mons Card */}
+            <Link href="/alt-parking/draconis-mons">
+              <div className="bg-gradient-to-r from-slate-800/30 to-slate-700/30 backdrop-blur-sm rounded-lg p-4 border border-slate-600/30 hover:border-purple-500/50 transition-all duration-300 hover:bg-slate-700/40 cursor-pointer group">
+                <div className="flex items-center justify-between">
+                  <div className="flex-1">
+                    <div className="flex items-center gap-3 mb-2">
+                      <h3 className="text-lg font-bold text-white group-hover:text-purple-400 transition-colors">
+                        Draconis Mons
                       </h3>
                     </div>
+                    <p className="text-gray-400 text-sm mb-1">Draconis Mons</p>
+                    <p className="text-gray-300 text-sm">
+                      {t("altParking.locations.draconisMonsDescription", "Ubicación ideal para recoger recompensas diarias. Excelente para principiantes.")}
+                    </p>
                   </div>
-                  
-                  <div className="mt-4 flex items-center justify-between">
-                    <span className="text-sm font-medium text-blue-400 group-hover:text-white transition-colors">
-                      {t("altParking.explore", "Explorar")}
-                    </span>
-                    <div className="w-6 h-6 rounded-full bg-gradient-to-br from-blue-500/20 to-cyan-500/20 flex items-center justify-center group-hover:scale-110 transition-transform">
-                      <svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                  <div className="flex items-center gap-4">
+                    <div className="text-right">
+                      <div className="flex items-center gap-1 text-xs text-gray-400">
+                        <Users className="w-3 h-3" />
+                        <span>453</span>
+                      </div>
+                    </div>
+                    <div className="w-6 h-6 rounded-full bg-gradient-to-br from-purple-500/20 to-pink-500/20 flex items-center justify-center group-hover:scale-110 transition-transform">
+                      <svg
+                        className="w-3 h-3 text-white"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M9 5l7 7-7 7"
+                        />
                       </svg>
                     </div>
                   </div>
                 </div>
-              </Link>
-            </motion.div>
-
-            {/* Guías de Optimización (removido por requerimiento) */}
-          </div>
+              </div>
+            </Link>
+          </motion.div>
 
         </div>
       </div>

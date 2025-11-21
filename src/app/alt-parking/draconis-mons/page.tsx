@@ -301,11 +301,11 @@ export default function DraconisMonsLocationPage() {
               className="mb-4"
             >
               <Link
-                href="/alt-parking/locations"
+                href="/alt-parking"
                 className="flex items-center gap-2 px-4 py-2 bg-gray-900/80 hover:bg-gray-800/90 border border-purple-500/30 text-white rounded-lg transition-all duration-200 hover:scale-105 hover:shadow-lg w-fit"
               >
                 <ArrowLeft className="w-4 h-4" />
-                {t("altParking.backToLocations", "Volver a Ubicaciones")}
+                {t("altParking.backToAltParking", "Volver a Alt Parking")}
               </Link>
             </motion.div>
 
@@ -694,3 +694,4 @@ export default function DraconisMonsLocationPage() {
     </>
   );
 }
+
