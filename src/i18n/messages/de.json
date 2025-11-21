@@ -110,6 +110,8 @@
   "nav.daily": "Täglich",
   "nav.weekly": "Wöchentlich",
   "nav.special": "Speziell",
+  "nav.search": "Suchen",
+  "nav.noResults": "Keine Ergebnisse gefunden",
   "nav.dailyReset": "Täglicher Reset - Tägliche Belohnungen, Missionen und Erfolge werden zurückgesetzt",
   "nav.weeklyReset": "Wöchentlicher Reset - Wöchentliche Belohnungen, Raids, Fraktale und WvW werden zurückgesetzt",
   "nav.specialEvent": "Gewölbe des Zauberers Reset - Spezielle Missionen werden zurückgesetzt",

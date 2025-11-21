@@ -110,6 +110,8 @@
   "nav.daily": "Daily",
   "nav.weekly": "Weekly",
   "nav.special": "Special",
+  "nav.search": "Search",
+  "nav.noResults": "No results found",
   "nav.dailyReset": "Reset Daily - Daily rewards, missions and achievements reset",
   "nav.weeklyReset": "Reset Weekly - Weekly rewards, raids, fractals and WvW reset",
   "nav.specialEvent": "Wizard's Vault Reset - Special missions reset",

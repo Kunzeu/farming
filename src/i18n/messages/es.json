@@ -111,6 +111,8 @@
   "nav.daily": "Diario",
   "nav.weekly": "Semanal",
   "nav.special": "Especial",
+  "nav.search": "Buscar",
+  "nav.noResults": "No se encontraron resultados",
   "nav.dailyReset": "Reinicio Diario - Las recompensas diarias, misiones y logros se reinician",
   "nav.weeklyReset": "Reinicio Semanal - Las recompensas semanales, raids, fractales y WvW se reinician",
   "nav.specialEvent": "Reinicio de Cámara del Brujo - Las misiones especiales se reinician",

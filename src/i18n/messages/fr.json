@@ -110,6 +110,8 @@
   "nav.daily": "Quotidien",
   "nav.weekly": "Hebdomadaire",
   "nav.special": "Spécial",
+  "nav.search": "Rechercher",
+  "nav.noResults": "Aucun résultat trouvé",
   "nav.dailyReset": "Réinitialisation Quotidienne - Les récompenses quotidiennes, missions et succès se réinitialisent",
   "nav.weeklyReset": "Réinitialisation Hebdomadaire - Les récompenses hebdomadaires, raids, fractales et McM se réinitialisent",
   "nav.specialEvent": "Réinitialisation Chambre forte du sorcier - Les missions spéciales se réinitialisent",

@@ -7,6 +7,13 @@ const nextConfig = {
     contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
     // Configuración de calidades para Next.js 16
     qualities: [25, 50, 75, 85, 90, 95, 100],
+    // Configuración para imágenes locales con query strings (requerido en Next.js 16)
+    localPatterns: [
+      {
+        pathname: '/images/**',
+        search: '?v=*',
+      },
+    ],
     // Sin transformaciones - las imágenes se sirven tal como están
     // Dominios externos permitidos
     remotePatterns: [

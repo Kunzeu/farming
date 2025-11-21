@@ -21,7 +21,8 @@ import {
   Crown,
   ShoppingCart,
   Star,
-  Gift
+  Gift,
+  Search
 } from 'lucide-react';
 import { useI18n } from '@/contexts/I18nContext';
 
@@ -31,6 +32,7 @@ interface NavItem {
   label: string;
   icon: React.ComponentType<{ className?: string }> | string;
   isImage?: boolean;
+  keywords?: string[]; // Palabras clave para mejorar la búsqueda
 }
 
 // Componente de selector de idiomas flotante
@@ -140,11 +142,15 @@ const Navigation = () => {
   const [isMobileGuidesOpen, setIsMobileGuidesOpen] = useState(false);
   const [isMobileToolsOpen, setIsMobileToolsOpen] = useState(false);
   const [isMobileUserOpen, setIsMobileUserOpen] = useState(false);
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [isLargeScreen, setIsLargeScreen] = useState(false);
   const {user, isAuthenticated, isLoading, logout} = useAuth();
   const guidesMenuRef = useRef<HTMLDivElement>(null);
   const toolsMenuRef = useRef<HTMLDivElement>(null);
   const mobileMenuRef = useRef<HTMLDivElement>(null);
   const userMenuRef = useRef<HTMLDivElement>(null);
+  const searchRef = useRef<HTMLDivElement>(null);
 
   // Funciones para manejar el estado del menú de guías con localStorage
   const handleGuidesMenuToggle = (isOpen: boolean) => {
@@ -200,6 +206,28 @@ const Navigation = () => {
         setIsMobileToolsOpen(JSON.parse(savedMobileTools));
       }
     }
+  }, []);
+
+  // Detectar tamaño de pantalla para expandir buscador automáticamente
+  useEffect(() => {
+    const handleResize = () => {
+      const width = window.innerWidth;
+      const largeScreen = width >= 1536; // 2xl breakpoint
+      setIsLargeScreen(largeScreen);
+      
+      // Expandir automáticamente en pantallas grandes
+      if (largeScreen) {
+        setIsSearchOpen(true);
+      }
+    };
+
+    // Ejecutar al montar
+    handleResize();
+    
+    // Escuchar cambios de tamaño
+    window.addEventListener('resize', handleResize);
+    
+    return () => window.removeEventListener('resize', handleResize);
   }, []);
   
   // Reset timers - Inicializar con placeholders para evitar layout shift
@@ -304,6 +332,15 @@ const Navigation = () => {
         setIsUserMenuOpen(false);
       }
       
+      // Cerrar barra de búsqueda (solo en pantallas pequeñas)
+      if (searchRef.current && !searchRef.current.contains(target)) {
+        // Solo cerrar si no es pantalla grande
+        const width = window.innerWidth;
+        if (width < 1536) { // menor a 2xl breakpoint
+          setIsSearchOpen(false);
+        }
+      }
+      
       // Cerrar menús móviles
       if (isMobileMenuOpen) {
         const mobileMenuElement = document.querySelector('[data-mobile-menu]');
@@ -339,6 +376,11 @@ const Navigation = () => {
       return 'https://wiki.guildwars2.com/images/1/1d/Magic_Mirror.png';
     }
     
+    // URL externa para garden
+    if (icon === 'garden') {
+      return 'https://wiki.guildwars2.com/images/2/2d/Plant_resource_%28map_icon%29.png';
+    }
+    
     const isAssetsIcon = icon === 'GOM' || icon === 'GOJM' || icon === 'Glosary' || icon === 'Community' || icon === 'conversion-guide' || icon === 'Explorer';
     const isFestivalIcon = icon === 'Shadow_of_the_Mad_King';
     
@@ -350,34 +392,126 @@ const Navigation = () => {
   };
   
   const navItems: NavItem[] = [
-    { href: '/', label: t('nav.home', 'Home'), icon: Home },
-    { href: '/farming-routes', label: t('nav.farms', 'Farms'), icon: Map },
-    { href: '/salvage', label: t('nav.salvaging', 'Salvaging'), icon: Package },
+    { 
+      href: '/', 
+      label: t('nav.home', 'Home'), 
+      icon: Home,
+      keywords: ['inicio', 'home', 'principal', 'dashboard']
+    },
+    { 
+      href: '/farming-routes', 
+      label: t('nav.farms', 'Farms'), 
+      icon: Map,
+      keywords: ['farms', 'rutas', 'routes', 'farmeo', 'oro', 'gold', 'mapa', 'map']
+    },
 
   ];
 
   // Sección de Guías
   const guidesItems: NavItem[] = [
-    { href: '/conversion-guide', label: t('conversionGuidePage.title', 'Guía de Conversión'), icon: 'conversion-guide', isImage: true },
-    { href: '/garden', label: t('gardenPage.titleShort', 'Jardín'), icon: Star },
-    { href: '/gift-of-mastery', label: t('nav.giftOfMastery', 'Gift of Mastery'), icon: 'GOM', isImage: true },
-    { href: '/gift-of-jade-mastery', label: t('nav.giftOfJadeMastery', 'Gift of Jade Mastery'), icon: 'GOJM', isImage: true },
-    { href: '/castora/magic-mirrors', label: t('nav.magicMirrors', 'Magic Mirrors'), icon: 'magic-mirror', isImage: true },
-    { href: '/glossary', label: t('nav.glossary', 'Glosario'), icon: 'Glosary', isImage: true },
-    { href: '/alt-parking', label: t('nav.altParking', 'Alt Parking'), icon: 'Explorer', isImage: true }, 
+    { 
+      href: '/conversion-guide', 
+      label: t('conversionGuidePage.title', 'Guía de Conversión'), 
+      icon: 'conversion-guide', 
+      isImage: true,
+      keywords: ['conversion', 'convertir', 'materiales', 'materials', 'tier', 'promote', 'refinar', 'refinamiento']
+    },
+    { 
+      href: '/garden', 
+      label: t('gardenPage.titleShort', 'Jardín'), 
+      icon: 'garden', 
+      isImage: true,
+      keywords: ['garden', 'jardin', 'plantas', 'plants', 'nodes', 'nodos', 'home instance', 'instancia']
+    },
+    { 
+      href: '/gift-of-mastery', 
+      label: t('nav.giftOfMastery', 'Gift of Mastery'), 
+      icon: 'GOM', 
+      isImage: true,
+      keywords: ['gom', 'mastery', 'maestria', 'gift', 'regalo', 'obsidian', 'shards', 'clovers', 'tréboles']
+    },
+    { 
+      href: '/gift-of-jade-mastery', 
+      label: t('nav.giftOfJadeMastery', 'Gift of Jade Mastery'), 
+      icon: 'GOJM', 
+      isImage: true,
+      keywords: ['gojm', 'jade', 'cantha', 'gift', 'regalo', 'imperial favor', 'favor imperial']
+    },
+    { 
+      href: '/castora/magic-mirrors', 
+      label: t('nav.magicMirrors', 'Magic Mirrors'), 
+      icon: 'magic-mirror', 
+      isImage: true,
+      keywords: ['magic mirrors', 'espejos', 'mirrors', 'castora', 'castora strand', 'shipwreck', 'mapa', 'guide']
+    },
+    { 
+      href: '/glossary', 
+      label: t('nav.glossary', 'Glosario'), 
+      icon: 'Glosary', 
+      isImage: true,
+      keywords: ['glossary', 'glosario', 'términos', 'terms', 'diccionario', 'dictionary', 'definiciones', 'abreviaciones']
+    },
+    { 
+      href: '/alt-parking', 
+      label: t('nav.altParking', 'Alt Parking'), 
+      icon: 'Explorer', 
+      isImage: true,
+      keywords: ['alt parking', 'alts', 'personajes', 'characters', 'draconis', 'mons', 'parqueo', 'estacionar']
+    }, 
 
   ];
 
   // Sección de Herramientas
   const toolsItems: NavItem[] = [
-    { href: '/magic', label: t('dashboard.magic.title', 'Magic'), icon: 'volatile-magic', isImage: true },
-    { href: '/festivals', label: t('nav.festivals', 'Festivales'), icon: 'Festival_Collections', isImage: true},
-    { href: '/fractals', label: t('dashboard.farmingTracker.title', 'Fractales'), icon: 'fractal-relic', isImage: true },
-    { href: '/ectogambling', label: t('ectogamblingPage.title', 'Ectogambling'), icon: 'ecto', isImage: true },
-    { href: '/opened', label: t('openedPage.title', 'Contenedores Abribles'), icon: 'Community', isImage: true },
+    { 
+      href: '/magic', 
+      label: t('dashboard.magic.title', 'Magic'), 
+      icon: 'volatile-magic', 
+      isImage: true,
+      keywords: ['magic', 'volatile', 'unbound', 'karma', 'converter', 'convertidor', 'currency', 'moneda']
+    },
+    { 
+      href: '/festivals', 
+      label: t('nav.festivals', 'Festivales'), 
+      icon: 'Festival_Collections', 
+      isImage: true,
+      keywords: ['festivals', 'festivales', 'events', 'eventos', 'halloween', 'wintersday', 'lunar', 'dragon bash', 'four winds']
+    },
+    { 
+      href: '/fractals', 
+      label: t('dashboard.farmingTracker.title', 'Fractales'), 
+      icon: 'fractal-relic', 
+      isImage: true,
+      keywords: ['fractals', 'fractales', 'daily', 'diarias', 'pristine', 'relics', 'reliquias', 'cms', 't4']
+    },
+    { 
+      href: '/ectogambling', 
+      label: t('ectogamblingPage.title', 'Ectogambling'), 
+      icon: 'ecto', 
+      isImage: true,
+      keywords: ['ecto', 'ectoplasm', 'gambling', 'apostar', 'rare', 'forge', 'forja', 'mystic forge']
+    },
+    { 
+      href: '/opened', 
+      label: t('openedPage.title', 'Contenedores Abribles'), 
+      icon: 'Community', 
+      isImage: true,
+      keywords: ['containers', 'contenedores', 'bags', 'bolsas', 'boxes', 'cajas', 'open', 'abrir', 'loot']
+    },
+    { 
+      href: '/salvage', 
+      label: t('nav.salvaging', 'Salvaging'), 
+      icon: Package,
+      keywords: ['salvage', 'salvaging', 'salvar', 'salvamento', 'research notes', 'notas', 'kits', 'copper-fed', 'silver-fed', 'runecrafter']
+    },
 
     // Solo mostrar Buyout Calculator para admins
-    ...(user?.role === 'admin' ? [{ href: '/buyout', label: 'Buyout Calculator', icon: ShoppingCart }] : []),
+    ...(user?.role === 'admin' ? [{ 
+      href: '/buyout', 
+      label: 'Buyout Calculator', 
+      icon: ShoppingCart,
+      keywords: ['buyout', 'calculator', 'calculadora', 'tp', 'trading post', 'buy', 'comprar']
+    }] : []),
   ];
 
   const handleLogout = () => {
@@ -385,6 +519,49 @@ const Navigation = () => {
     setIsUserMenuOpen(false);
     // La redirección se maneja automáticamente en el contexto de autenticación
   };
+
+  // Combinar todos los items para búsqueda
+  const allSearchableItems = [
+    ...navItems,
+    ...guidesItems,
+    ...toolsItems,
+    { 
+      href: '/contributions', 
+      label: t('pageTitles.contributions', 'Contribuciones'), 
+      icon: Gift, 
+      isImage: false,
+      keywords: ['contributions', 'contribuciones', 'help', 'ayuda', 'colaborar', 'support', 'community']
+    },
+    { 
+      href: '/giveaways', 
+      label: t('nav.giveaways', 'Sorteos'), 
+      icon: Gift, 
+      isImage: false,
+      keywords: ['giveaways', 'sorteos', 'gift', 'regalo', 'prizes', 'premios', 'raffle', 'rifa', 'winners', 'ganadores']
+    },
+    { 
+      href: '/daily-routine', 
+      label: t('pageTitles.dailyRoutine', 'Rutina Diaria'), 
+      icon: Clock, 
+      isImage: false,
+      keywords: ['daily', 'routine', 'rutina', 'diaria', 'checklist', 'tareas', 'tasks', 'dailies']
+    },
+  ];
+
+  // Filtrar resultados de búsqueda
+  const searchResults = searchQuery.trim() 
+    ? allSearchableItems.filter(item => {
+        const query = searchQuery.toLowerCase();
+        // Buscar en el label
+        const matchesLabel = item.label.toLowerCase().includes(query);
+        // Buscar en las keywords si existen
+        const matchesKeywords = item.keywords?.some(keyword => 
+          keyword.toLowerCase().includes(query)
+        ) || false;
+        
+        return matchesLabel || matchesKeywords;
+      }).slice(0, 8) // Aumentar a 8 resultados
+    : [];
 
   return (
     <>
@@ -473,6 +650,102 @@ const Navigation = () => {
           <div className="flex items-center space-x-6">
             {/* Desktop Navigation */}
             <div className="hidden lg:flex items-center space-x-4">
+              {/* Search Bar - Moved to first position */}
+              <div className="relative" ref={searchRef}>
+                {isSearchOpen ? (
+                  <div className="relative">
+                    <motion.div
+                      initial={{ width: 0, opacity: 0 }}
+                      animate={{ width: 'auto', opacity: 1 }}
+                      exit={{ width: 0, opacity: 0 }}
+                      transition={{ duration: 0.3 }}
+                      className="flex items-center bg-gray-800/50 border border-gray-600 rounded-lg overflow-hidden w-[180px] xl:w-[250px] 2xl:w-[350px]"
+                    >
+                      <Search className="w-4 h-4 text-gray-400 ml-3 flex-shrink-0" />
+                      <input
+                        type="text"
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        placeholder={t('nav.search', 'Buscar...')}
+                        className="flex-1 bg-transparent text-white px-3 py-2 text-sm focus:outline-none min-w-0"
+                        autoFocus
+                      />
+                      {!isLargeScreen && (
+                        <button
+                          onClick={() => {
+                            setIsSearchOpen(false);
+                            setSearchQuery('');
+                          }}
+                          className="px-3 py-2 text-gray-400 hover:text-white transition-colors flex-shrink-0"
+                        >
+                          <X className="w-4 h-4" />
+                        </button>
+                      )}
+                    </motion.div>
+                    
+                    {/* Search Results Dropdown */}
+                    {searchResults.length > 0 && (
+                      <motion.div
+                        initial={{ opacity: 0, y: -10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className="absolute top-full left-0 right-0 mt-2 bg-gray-800 rounded-lg shadow-xl border border-gray-700 py-2 z-50 overflow-hidden"
+                      >
+                        {searchResults.map((item) => (
+                          <Link
+                            key={item.href}
+                            href={item.href}
+                            className="flex items-center space-x-3 px-4 py-2 text-gray-300 hover:text-white hover:bg-gray-700 transition-colors"
+                            onClick={() => {
+                              if (!isLargeScreen) {
+                                setIsSearchOpen(false);
+                              }
+                              setSearchQuery('');
+                            }}
+                          >
+                            {item.isImage ? (
+                              <Image 
+                                src={getImageSrc(item.icon as string)} 
+                                alt={item.label}
+                                width={16}
+                                height={16}
+                                className="w-4 h-4"
+                                unoptimized={item.icon === 'magic-mirror'}
+                              />
+                            ) : (
+                              typeof item.icon === 'function' ? (
+                                <item.icon className="w-4 h-4" />
+                              ) : null
+                            )}
+                            <span className="text-sm">{item.label}</span>
+                          </Link>
+                        ))}
+                      </motion.div>
+                    )}
+
+                    {/* No results message */}
+                    {searchQuery.trim() && searchResults.length === 0 && (
+                      <motion.div
+                        initial={{ opacity: 0, y: -10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className="absolute top-full left-0 right-0 mt-2 bg-gray-800 rounded-lg shadow-xl border border-gray-700 py-4 px-4 z-50"
+                      >
+                        <p className="text-gray-400 text-sm text-center">
+                          {t('nav.noResults', 'No se encontraron resultados')}
+                        </p>
+                      </motion.div>
+                    )}
+                  </div>
+                ) : (
+                  <button
+                    onClick={() => setIsSearchOpen(true)}
+                    className="p-2 text-gray-300 hover:text-white hover:bg-gray-800/50 rounded-lg transition-colors border border-gray-600"
+                    title={t('nav.search', 'Buscar')}
+                  >
+                    <Search className="w-5 h-5" />
+                  </button>
+                )}
+              </div>
+
               {navItems.map((item) => (
                 <Link
                   key={item.href}
@@ -523,7 +796,7 @@ const Navigation = () => {
                             width={item.icon === 'Shadow_of_the_Mad_King' ? 48 : 32}
                             height={item.icon === 'Shadow_of_the_Mad_King' ? 48 : 32}
                             className={item.icon === 'Shadow_of_the_Mad_King' ? 'w-6 h-6' : item.icon === 'Glosary' ? 'w-4 h-4 mix-blend-screen' : 'w-4 h-4'}
-                            unoptimized={item.icon === 'conversion-guide' || item.icon === 'magic-mirror'}
+                            unoptimized={item.icon === 'conversion-guide' || item.icon === 'magic-mirror' || item.icon === 'garden'}
                             style={item.icon === 'Glosary' ? { backgroundColor: 'transparent', background: 'transparent' } : undefined}
                           />
                         ) : (
@@ -785,7 +1058,7 @@ const Navigation = () => {
                                     width={20}
                                     height={20}
                                     className="w-5 h-5"
-                                    unoptimized={item.icon === 'conversion-guide' || item.icon === 'magic-mirror'}
+                                    unoptimized={item.icon === 'conversion-guide' || item.icon === 'magic-mirror' || item.icon === 'garden'}
                                   />
                                 ) : (
                                   <item.icon className="w-5 h-5" />
