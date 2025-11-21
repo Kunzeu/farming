@@ -99,6 +99,9 @@ const LEGENDARY_ITEM_IDS: Record<string, number> = {
   'Aurene\'s Weight': 95684,
   'Aurene\'s Voice': 97783,
   'Glob of Ectoplasm': 19721,
+
+  // Pre's
+  'Dragon\'s Bite': 96357,
 };
 
 // Traducciones para tipos y rareza
@@ -273,6 +276,13 @@ const getEventData = (slug: string, t: (key: string) => string): ContributionEve
              
            ]
          },
+         { 
+          name: 'Lele.5984', 
+          items: [
+           { name: 'Dragon\'s Bite', quantity: 1  }, // Precio en cobre 
+            
+          ]
+        },
 
       ]
     };
