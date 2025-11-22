@@ -145,6 +145,7 @@ const Navigation = () => {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [isLargeScreen, setIsLargeScreen] = useState(false);
+  const [selectedSearchIndex, setSelectedSearchIndex] = useState(0);
   const {user, isAuthenticated, isLoading, logout} = useAuth();
   const guidesMenuRef = useRef<HTMLDivElement>(null);
   const toolsMenuRef = useRef<HTMLDivElement>(null);
@@ -564,6 +565,44 @@ const Navigation = () => {
       }).slice(0, 8) // Aumentar a 8 resultados
     : [];
 
+  // Resetear índice seleccionado cuando cambien los resultados
+  useEffect(() => {
+    setSelectedSearchIndex(0);
+  }, [searchQuery]);
+
+  // Manejar navegación con teclado
+  const handleSearchKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (searchResults.length === 0) return;
+
+    switch (e.key) {
+      case 'ArrowDown':
+        e.preventDefault();
+        setSelectedSearchIndex((prev) => 
+          prev < searchResults.length - 1 ? prev + 1 : prev
+        );
+        break;
+      case 'ArrowUp':
+        e.preventDefault();
+        setSelectedSearchIndex((prev) => (prev > 0 ? prev - 1 : 0));
+        break;
+      case 'Enter':
+        e.preventDefault();
+        if (searchResults[selectedSearchIndex]) {
+          window.location.href = searchResults[selectedSearchIndex].href;
+          setSearchQuery('');
+          setIsSearchOpen(false);
+          setIsMobileMenuOpen(false);
+        }
+        break;
+      case 'Escape':
+        setSearchQuery('');
+        if (!isLargeScreen) {
+          setIsSearchOpen(false);
+        }
+        break;
+    }
+  };
+
   return (
     <>
       <style jsx global>{`
@@ -686,6 +725,7 @@ const Navigation = () => {
                         type="text"
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
+                        onKeyDown={handleSearchKeyDown}
                         placeholder={t('nav.search', 'Buscar...')}
                         className="flex-1 bg-transparent text-white px-3 py-2 text-sm focus:outline-none min-w-0"
                       />
@@ -709,17 +749,22 @@ const Navigation = () => {
                         animate={{ opacity: 1, y: 0 }}
                         className="absolute top-full left-0 right-0 mt-2 bg-gray-800 rounded-lg shadow-xl border border-gray-700 py-2 z-50 overflow-hidden"
                       >
-                        {searchResults.map((item) => (
+                        {searchResults.map((item, index) => (
                           <Link
                             key={item.href}
                             href={item.href}
-                            className="flex items-center space-x-3 px-4 py-2 text-gray-300 hover:text-white hover:bg-gray-700 transition-colors"
+                            className={`flex items-center space-x-3 px-4 py-2 text-gray-300 transition-colors ${
+                              index === selectedSearchIndex
+                                ? 'bg-gray-700 text-white'
+                                : 'hover:bg-gray-700 hover:text-white'
+                            }`}
                             onClick={() => {
                               if (!isLargeScreen) {
                                 setIsSearchOpen(false);
                               }
                               setSearchQuery('');
                             }}
+                            onMouseEnter={() => setSelectedSearchIndex(index)}
                           >
                             {item.isImage ? (
                               <Image 
@@ -999,6 +1044,7 @@ const Navigation = () => {
                             type="text"
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
+                            onKeyDown={handleSearchKeyDown}
                             placeholder={t('nav.search', 'Buscar...')}
                             className="w-full bg-transparent text-white pl-9 pr-2.5 py-1.5 text-sm focus:outline-none"
                           />
@@ -1007,15 +1053,20 @@ const Navigation = () => {
                         {/* Search Results - Mobile */}
                         {searchResults.length > 0 && (
                           <div className="mt-1.5 bg-gray-700/50 rounded-lg border border-gray-600 py-0.5 max-h-60 overflow-y-auto">
-                            {searchResults.map((item) => (
+                            {searchResults.map((item, index) => (
                               <Link
                                 key={item.href}
                                 href={item.href}
-                                className="flex items-center space-x-2.5 px-2.5 py-1.5 text-gray-300 hover:text-white hover:bg-gray-600/50 transition-colors"
+                                className={`flex items-center space-x-2.5 px-2.5 py-1.5 transition-colors ${
+                                  index === selectedSearchIndex
+                                    ? 'bg-gray-600/70 text-white'
+                                    : 'text-gray-300 hover:text-white hover:bg-gray-600/50'
+                                }`}
                                 onClick={() => {
                                   setIsMobileMenuOpen(false);
                                   setSearchQuery('');
                                 }}
+                                onMouseEnter={() => setSelectedSearchIndex(index)}
                               >
                                 {item.isImage ? (
                                   <Image 
