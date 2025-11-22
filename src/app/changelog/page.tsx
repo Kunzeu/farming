@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
 import { usePageTitle } from '@/hooks/usePageTitle';
@@ -31,8 +31,45 @@ const ChangelogPage = () => {
   usePageTitle('pageTitles.changelog', 'Changelog');
   const { t } = useI18n();
   const [selectedVersion, setSelectedVersion] = useState<string | null>(null);
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
   const changelogData: ChangelogEntry[] = useMemo(() => [
+    {
+      version: '2.1.3',
+      date: '2025-11-22',
+      type: 'minor',
+      changes: [
+        {
+          type: 'feature',
+          title: t('changelog.navigation.search', 'Navegación - Buscador global'),
+          description: t('changelog.navigation.search.desc', 'Agregado buscador completo en escritorio y móvil con resultados en tiempo real')
+        },
+        {
+          type: 'feature',
+          title: t('changelog.magic.consumables', 'Análisis de Magia - Sección de consumibles LS3 y LS4'),
+          description: t('changelog.magic.consumables.desc', 'Agregada sección de consumibles de Magia Liberada (LS3) y Magia Volátil (LS4) con cantidades')
+        },
+        {
+          type: 'improvement',
+          title: t('changelog.navigation.mobileOptimization', 'Navegación - Optimización del menú móvil'),
+          description: t('changelog.navigation.mobileOptimization.desc', 'Menú móvil optimizado con scroll, espaciados compactos y scrollbar personalizada para mejor experiencia de usuario')
+        },
+        {
+          type: 'improvement',
+          title: t('changelog.contributions.socialIcons', 'Contribuciones - Iconos de redes sociales'),
+          description: t('changelog.contributions.socialIcons.desc', 'Agregados iconos de Twitch y YouTube a la página de contribuciones')
+        },
+        {
+          type: 'bugfix',
+          title: t('changelog.magic.armoredScale', 'Análisis de Magia - Corrección de Profit Max para Escama blindada'),
+          description: t('changelog.magic.armoredScale.desc', 'Corregido el cálculo de Profit Max para Escama blindada en Magia Volátil')
+        }
+      ]
+    },
     {
       version: '2.1.2',
       date: '2025-11-07',
@@ -202,7 +239,12 @@ const ChangelogPage = () => {
           transition={{ delay: 0.2 }}
           className="space-y-6"
         >
-          {changelogData.map((entry, index) => (
+          {!isMounted ? (
+            <div className="flex items-center justify-center py-12">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-400"></div>
+            </div>
+          ) : (
+            changelogData.map((entry, index) => (
             <div
               key={entry.version}
               className="bg-gray-900/80 backdrop-blur-sm border border-gray-700/50 rounded-lg p-6 shadow-2xl"
@@ -286,7 +328,8 @@ const ChangelogPage = () => {
                 </motion.div>
               )}
             </div>
-          ))}
+          ))
+          )}
         </motion.div>
 
         {/* Footer Info */}

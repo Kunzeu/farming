@@ -356,6 +356,7 @@ const Navigation = () => {
             handleMobileGuidesToggle(false);
             handleMobileToolsToggle(false);
             setIsMobileUserOpen(false);
+            setSearchQuery(''); // Limpiar búsqueda al cerrar menú móvil
           }
         }
       }
@@ -571,6 +572,25 @@ const Navigation = () => {
           font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
           font-weight: 900;
           text-rendering: optimizeSpeed;
+        }
+        
+        /* Custom scrollbar for mobile menu */
+        [data-mobile-menu]::-webkit-scrollbar {
+          width: 6px;
+        }
+        
+        [data-mobile-menu]::-webkit-scrollbar-track {
+          background: rgba(31, 41, 55, 0.5);
+          border-radius: 3px;
+        }
+        
+        [data-mobile-menu]::-webkit-scrollbar-thumb {
+          background: rgba(107, 114, 128, 0.5);
+          border-radius: 3px;
+        }
+        
+        [data-mobile-menu]::-webkit-scrollbar-thumb:hover {
+          background: rgba(156, 163, 175, 0.7);
         }
       `}</style>
       
@@ -948,7 +968,12 @@ const Navigation = () => {
               {/* Mobile menu button */}
               <div className="lg:hidden relative" ref={mobileMenuRef}>
                 <button
-                  onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+                  onClick={() => {
+                    setIsMobileMenuOpen(!isMobileMenuOpen);
+                    if (isMobileMenuOpen) {
+                      setSearchQuery(''); // Limpiar búsqueda al cerrar
+                    }
+                  }}
                   className="text-gray-300 hover:text-white transition-colors duration-200 p-2 rounded-lg hover:bg-gray-800/50 cursor-pointer">
                   {isMobileMenuOpen ? (
                     <X className="w-6 h-6" />
@@ -964,44 +989,100 @@ const Navigation = () => {
                     initial={{ opacity: 0, y: -20 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -20 }}
-                    className="absolute top-full right-0 mt-2 w-64 bg-gray-800/90 rounded-lg border border-gray-700 shadow-xl z-50">
+                    className="absolute top-full right-0 mt-2 w-72 bg-gray-800/95 backdrop-blur-md rounded-lg border border-gray-700 shadow-xl z-50 max-h-[calc(100vh-80px)] overflow-y-auto">
                     <div className="px-2 pt-2 pb-3 space-y-1">
-                      {/* Reset Timers - Mobile */}
-                      <div className="border-b border-gray-700 pb-3 mb-3">
-                        <div className="flex flex-col space-y-2">
+                      {/* Search Bar - Mobile */}
+                      <div className="border-b border-gray-700 pb-2 mb-2">
+                        <div className="relative bg-gray-700/50 border border-gray-600 rounded-lg overflow-hidden">
+                          <Search className="w-4 h-4 text-gray-400 absolute left-2.5 top-1/2 transform -translate-y-1/2" />
+                          <input
+                            type="text"
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                            placeholder={t('nav.search', 'Buscar...')}
+                            className="w-full bg-transparent text-white pl-9 pr-2.5 py-1.5 text-sm focus:outline-none"
+                          />
+                        </div>
+                        
+                        {/* Search Results - Mobile */}
+                        {searchResults.length > 0 && (
+                          <div className="mt-1.5 bg-gray-700/50 rounded-lg border border-gray-600 py-0.5 max-h-60 overflow-y-auto">
+                            {searchResults.map((item) => (
+                              <Link
+                                key={item.href}
+                                href={item.href}
+                                className="flex items-center space-x-2.5 px-2.5 py-1.5 text-gray-300 hover:text-white hover:bg-gray-600/50 transition-colors"
+                                onClick={() => {
+                                  setIsMobileMenuOpen(false);
+                                  setSearchQuery('');
+                                }}
+                              >
+                                {item.isImage ? (
+                                  <Image 
+                                    src={getImageSrc(item.icon as string)} 
+                                    alt={item.label}
+                                    width={16}
+                                    height={16}
+                                    className="w-4 h-4"
+                                    unoptimized={item.icon === 'magic-mirror' || item.icon === 'conversion-guide' || item.icon === 'garden'}
+                                  />
+                                ) : (
+                                  typeof item.icon === 'function' ? (
+                                    <item.icon className="w-4 h-4" />
+                                  ) : null
+                                )}
+                                <span className="text-sm">{item.label}</span>
+                              </Link>
+                            ))}
+                          </div>
+                        )}
+                        
+                        {/* No results message - Mobile */}
+                        {searchQuery.trim() && searchResults.length === 0 && (
+                          <div className="mt-1.5 bg-gray-700/50 rounded-lg border border-gray-600 py-2 px-2.5">
+                            <p className="text-gray-400 text-xs text-center">
+                              {t('nav.noResults', 'No se encontraron resultados')}
+                            </p>
+                          </div>
+                        )}
+                      </div>
+                      
+                      {/* Reset Timers - Mobile (Compact) */}
+                      <div className="border-b border-gray-700 pb-2 mb-2">
+                        <div className="flex flex-col space-y-1.5">
                           <div 
-                            className="flex items-center space-x-2 text-blue-300 px-3 py-2 rounded-lg bg-blue-900/20 border border-blue-700/30"
+                            className="flex items-center space-x-1.5 text-blue-300 px-2 py-1.5 rounded-md bg-blue-900/20 border border-blue-700/30"
                             title={t('nav.dailyReset', 'Reset Daily - Daily rewards, missions and achievements reset')}
                           >
-                            <Clock className="w-4 h-4" />
+                            <Clock className="w-3.5 h-3.5 flex-shrink-0" />
                             <TimerDisplay 
                               time={dailyResetTime}
                               className="text-xs font-mono font-bold"
-                              style={{ width: '6rem', minWidth: '6rem', display: 'inline-block', textAlign: 'center' }}
+                              style={{ width: '5rem', minWidth: '5rem', display: 'inline-block', textAlign: 'center' }}
                             />
                             <span className="text-xs text-blue-200 ml-auto">{t('nav.daily', 'Daily')}</span>
                           </div>
                           <div 
-                            className="flex items-center space-x-2 text-purple-300 px-3 py-2 rounded-lg bg-purple-900/20 border border-purple-700/30"
+                            className="flex items-center space-x-1.5 text-purple-300 px-2 py-1.5 rounded-md bg-purple-900/20 border border-purple-700/30"
                             title={t('nav.weeklyReset', 'Reset Weekly - Weekly rewards, raids, fractals and WvW reset')}
                           >
-                            <Calendar className="w-4 h-4" />
+                            <Calendar className="w-3.5 h-3.5 flex-shrink-0" />
                             <TimerDisplay 
                               time={weeklyResetTime}
                               className="text-xs font-mono font-bold"
-                              style={{ width: '6rem', minWidth: '6rem', display: 'inline-block', textAlign: 'center' }}
+                              style={{ width: '5rem', minWidth: '5rem', display: 'inline-block', textAlign: 'center' }}
                             />
                             <span className="text-xs text-purple-200 ml-auto">{t('nav.weekly', 'Weekly')}</span>
                           </div>
                           <div 
-                            className="flex items-center space-x-2 text-amber-300 px-3 py-2 rounded-lg bg-amber-900/20 border border-amber-700/30"
+                            className="flex items-center space-x-1.5 text-amber-300 px-2 py-1.5 rounded-md bg-amber-900/20 border border-amber-700/30"
                             title={t('nav.specialEvent', "Wizard's Vault Reset - Special missions reset")}
                           >
-                            <Star className="w-4 h-4" />
+                            <Star className="w-3.5 h-3.5 flex-shrink-0" />
                             <TimerDisplay 
                               time={specialEventTime}
                               className="text-xs font-mono font-bold"
-                              style={{ width: '6rem', minWidth: '6rem', display: 'inline-block', textAlign: 'center' }}
+                              style={{ width: '5rem', minWidth: '5rem', display: 'inline-block', textAlign: 'center' }}
                             />
                             <span className="text-xs text-amber-200 ml-auto">{t('nav.special', 'Special')}</span>
                           </div>
@@ -1013,7 +1094,7 @@ const Navigation = () => {
                           key={item.href}
                           href={item.href}
                           onClick={() => setIsMobileMenuOpen(false)}
-                          className="flex items-center space-x-3 px-3 py-3 text-gray-300 hover:text-white hover:bg-gray-700 rounded-md transition-colors duration-200">
+                          className="flex items-center space-x-2.5 px-3 py-2 text-gray-300 hover:text-white hover:bg-gray-700 rounded-md transition-colors duration-200">
                           {item.isImage ? (
                             <Image 
                               src={getImageSrc(item.icon as string)} 
@@ -1032,10 +1113,10 @@ const Navigation = () => {
                       ))}
 
                       {/* Guides Section */}
-                      <div className="border-t border-gray-700 my-2 pt-2">
+                      <div className="border-t border-gray-700 my-1.5 pt-1.5">
                         <button
                           onClick={() => handleMobileGuidesToggle(!isMobileGuidesOpen)}
-                          className="flex items-center justify-between w-full px-3 py-2 text-xs font-semibold text-gray-400 uppercase tracking-wider hover:text-white transition-colors duration-200 cursor-pointer">
+                          className="flex items-center justify-between w-full px-2.5 py-1.5 text-xs font-semibold text-gray-400 uppercase tracking-wider hover:text-white transition-colors duration-200 cursor-pointer">
                           <div className="flex items-center space-x-2">
                             <BookOpen className="w-4 h-4" />
                             <span>{t('nav.guides', 'Guías')}</span>
@@ -1043,13 +1124,13 @@ const Navigation = () => {
                           <ChevronDown className={`w-4 h-4 text-gray-400 transition-transform duration-200 ${isMobileGuidesOpen ? 'rotate-180' : ''}`} />
                         </button>
                         {isMobileGuidesOpen && (
-                          <div className="space-y-1">
+                          <div className="space-y-0.5 mt-1">
                             {guidesItems.map((item) => (
                               <Link
                                 key={item.href}
                                 href={item.href}
                                 onClick={() => setIsMobileMenuOpen(false)}
-                                className="flex items-center space-x-3 px-3 py-3 text-gray-300 hover:text-white hover:bg-gray-700 rounded-md transition-colors duration-200">
+                                className="flex items-center space-x-2.5 px-3 py-2 text-gray-300 hover:text-white hover:bg-gray-700 rounded-md transition-colors duration-200">
                                 {item.isImage ? (
                                   <Image 
                                     src={getImageSrc(item.icon as string)} 
@@ -1070,10 +1151,10 @@ const Navigation = () => {
                       </div>
 
                       {/* Tools Section */}
-                      <div className="border-t border-gray-700 my-2 pt-2">
+                      <div className="border-t border-gray-700 my-1.5 pt-1.5">
                         <button
                           onClick={() => handleMobileToolsToggle(!isMobileToolsOpen)}
-                          className="flex items-center justify-between w-full px-3 py-2 text-xs font-semibold text-gray-400 uppercase tracking-wider hover:text-white transition-colors duration-200 cursor-pointer">
+                          className="flex items-center justify-between w-full px-2.5 py-1.5 text-xs font-semibold text-gray-400 uppercase tracking-wider hover:text-white transition-colors duration-200 cursor-pointer">
                           <div className="flex items-center space-x-2">
                             <Shield className="w-4 h-4" />
                             <span>{t('nav.tools', 'Herramientas')}</span>
@@ -1081,13 +1162,13 @@ const Navigation = () => {
                           <ChevronDown className={`w-4 h-4 text-gray-400 transition-transform duration-200 ${isMobileToolsOpen ? 'rotate-180' : ''}`} />
                         </button>
                         {isMobileToolsOpen && (
-                          <div className="space-y-1">
+                          <div className="space-y-0.5 mt-1">
                             {toolsItems.map((item) => (
                               <Link
                                 key={item.href}
                                 href={item.href}
                                 onClick={() => setIsMobileMenuOpen(false)}
-                                className="flex items-center space-x-3 px-3 py-3 text-gray-300 hover:text-white hover:bg-gray-700 rounded-md transition-colors duration-200">
+                                className="flex items-center space-x-2.5 px-3 py-2 text-gray-300 hover:text-white hover:bg-gray-700 rounded-md transition-colors duration-200">
                                 {item.isImage ? (
                                   <Image 
                                     src={getImageSrc(item.icon as string)}
@@ -1111,10 +1192,10 @@ const Navigation = () => {
                       {/* User Section for Mobile (authenticated) */}
                       {isAuthenticated ? (
                         <>
-                          <div className="border-t border-gray-700 my-2 pt-2">
+                          <div className="border-t border-gray-700 my-1.5 pt-1.5">
                             <button
                               onClick={() => setIsMobileUserOpen(!isMobileUserOpen)}
-                              className="flex items-center justify-between w-full px-3 py-2 text-xs font-semibold text-gray-400 uppercase tracking-wider hover:text-white transition-colors duration-200 cursor-pointer">
+                              className="flex items-center justify-between w-full px-2.5 py-1.5 text-xs font-semibold text-gray-400 uppercase tracking-wider hover:text-white transition-colors duration-200 cursor-pointer">
                               <div className="flex items-center space-x-2">
                                 <User className="w-4 h-4" />
                                 <span>{user?.username}</span>
@@ -1122,11 +1203,11 @@ const Navigation = () => {
                               <ChevronDown className={`w-4 h-4 text-gray-400 transition-transform duration-200 ${isMobileUserOpen ? 'rotate-180' : ''}`} />
                             </button>
                             {isMobileUserOpen && (
-                              <div className="space-y-1">
+                              <div className="space-y-0.5 mt-1">
                                 <Link
                                   href="/profile"
                                   onClick={() => setIsMobileMenuOpen(false)}
-                                  className="flex items-center space-x-3 px-3 py-3 text-gray-300 hover:text-white hover:bg-gray-700 rounded-md transition-colors duration-200">
+                                  className="flex items-center space-x-2.5 px-3 py-2 text-gray-300 hover:text-white hover:bg-gray-700 rounded-md transition-colors duration-200">
                                   <User className="w-5 h-5" />
                                   <span className="font-medium">{t('auth.profile', 'Profile')}</span>
                                 </Link>
@@ -1137,7 +1218,7 @@ const Navigation = () => {
                                   <Link
                                     href="/admin"
                                     onClick={() => setIsMobileMenuOpen(false)}
-                                    className="flex items-center space-x-3 px-3 py-3 text-purple-300 hover:text-purple-200 hover:bg-gray-700 rounded-md transition-colors duration-200">
+                                    className="flex items-center space-x-2.5 px-3 py-2 text-purple-300 hover:text-purple-200 hover:bg-gray-700 rounded-md transition-colors duration-200">
                                     <Crown className="w-5 h-5" />
                                     <span className="font-medium">{t('auth.admin', 'Admin Panel')}</span>
                                   </Link>
@@ -1146,7 +1227,7 @@ const Navigation = () => {
                                   <Link
                                     href="/moderator"
                                     onClick={() => setIsMobileMenuOpen(false)}
-                                    className="flex items-center space-x-3 px-3 py-3 text-blue-300 hover:text-blue-200 hover:bg-gray-700 rounded-md transition-colors duration-200">
+                                    className="flex items-center space-x-2.5 px-3 py-2 text-blue-300 hover:text-blue-200 hover:bg-gray-700 rounded-md transition-colors duration-200">
                                     <Shield className="w-5 h-5" />
                                     <span className="font-medium">{t('auth.moderation', 'Moderation Panel')}</span>
                                   </Link>
@@ -1157,7 +1238,7 @@ const Navigation = () => {
                                     handleLogout();
                                     setIsMobileMenuOpen(false);
                                   }}
-                                  className="flex items-center space-x-3 px-3 py-3 text-red-400 hover:text-red-300 hover:bg-gray-700 rounded-md transition-colors duration-200 w-full text-left cursor-pointer">
+                                  className="flex items-center space-x-2.5 px-3 py-2 text-red-400 hover:text-red-300 hover:bg-gray-700 rounded-md transition-colors duration-200 w-full text-left cursor-pointer">
                                   <LogOut className="w-5 h-5" />
                                   <span className="font-medium">{t('auth.logout', 'Logout')}</span>
                                 </button>
@@ -1167,11 +1248,11 @@ const Navigation = () => {
                         </>
                       ) : (
                         // Mobile unauthenticated: show Login inside the hamburger menu
-                        <div className="border-t border-gray-700 my-2 pt-2">
+                        <div className="border-t border-gray-700 my-1.5 pt-1.5">
                           <Link
                             href="/login"
                             onClick={() => setIsMobileMenuOpen(false)}
-                            className="flex items-center space-x-3 px-3 py-3 text-gray-100 bg-blue-600/80 hover:bg-blue-700 rounded-md transition-colors duration-200">
+                            className="flex items-center space-x-2.5 px-3 py-2 text-gray-100 bg-blue-600/80 hover:bg-blue-700 rounded-md transition-colors duration-200">
                             <User className="w-5 h-5" />
                             <span className="font-semibold">{t('auth.login', 'Login')}</span>
                           </Link>
