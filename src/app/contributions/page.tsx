@@ -7,6 +7,19 @@ import { useI18n } from '@/contexts/I18nContext';
 import { ExternalLink } from 'lucide-react';
 import Image from 'next/image';
 
+// Iconos de redes sociales
+const TwitchIcon = ({ className = "w-4 h-4" }: { className?: string }) => (
+  <svg className={className} viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+    <path d="M11.571 4.714h1.715v5.143H11.57zm4.715 0H18v5.143h-1.714zM6 0L1.714 4.286v15.428h5.143V24l4.286-4.286h3.428L22.286 12V0zm14.571 11.143l-3.428 3.428h-3.429l-3 3v-3H6.857V1.714h13.714Z"/>
+  </svg>
+);
+
+const YouTubeIcon = ({ className = "w-4 h-4" }: { className?: string }) => (
+  <svg className={className} viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+    <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
+  </svg>
+);
+
 interface ItemData {
   id: number;
   icon: string;
@@ -42,6 +55,8 @@ interface InGameDonation {
     price?: number; // Precio en cobre (precio del bazar al momento de la donación)
   }>;
   ectoplasm?: number;
+  twitch?: string; // URL del canal de Twitch
+  youtube?: string; // URL del canal de YouTube
 }
 
 interface ContributionEvent {
@@ -264,31 +279,32 @@ const getEventData = (t: (key: string) => string): ContributionEvent => {
        {
            name: 'Yuuki.7084',
           items: [
-              { name: 'Glob of Ectoplasm', quantity: 250 }, // Precio en cobre 
+              { name: 'Glob of Ectoplasm', quantity: 250 }, 
 
           ]
        },
        { 
          name: 'Zirial.2698', 
          items: [
-          { name: 'Glob of Ectoplasm', quantity: 500  }, // Precio en cobre 
+          { name: 'Glob of Ectoplasm', quantity: 500  }, 
            
          ]
        },
        { 
         name: 'Lele.5984', 
         items: [
-         { name: 'Dragon\'s Bite', quantity: 1  }, // Precio en cobre 
+         { name: 'Dragon\'s Bite', quantity: 1  }, 
           
         ]
       },
       { 
-        name: 'Vortus.2801', 
+        name: 'Vortus.2801',
+        twitch: 'https://www.twitch.tv/Vortus43', 
         items: [
-          { name: 'Aurene\'s Insight', quantity: 1  }, // Precio en cobre 
-         { name: 'Sunrise', quantity: 1  }, // Precio en cobre 
-         { name: 'The Juggernaut', quantity: 1  }, // Precio en cobre 
-         { name: 'giveaways.gems', quantity: 2800, icon: 'https://wiki.guildwars2.com/images/8/88/Gem_%28highres%29.png'  }, // Precio en cobre 
+          { name: 'Aurene\'s Insight', quantity: 1  },  
+         { name: 'Sunrise', quantity: 1  },
+         { name: 'The Juggernaut', quantity: 1  }, 
+         { name: 'giveaways.gems', quantity: 2800, icon: 'https://wiki.guildwars2.com/images/8/88/Gem_%28highres%29.png'  },
           
         ]
       },
@@ -833,7 +849,29 @@ export default function ContributionsPage() {
 
                       return (
                         <tr key={index} className="border-b border-gray-800 hover:bg-gray-800/50 transition-colors">
-                          <td className="py-3 px-4 font-semibold text-base overflow-visible">{donation.name}</td>
+                          <td className="py-3 px-4 font-semibold text-base overflow-visible">
+                            <div className="flex items-center gap-2">
+                              <span>{donation.name}</span>
+                              {donation.twitch && (
+                                <a
+                                  href={donation.twitch}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="text-purple-400 hover:text-purple-300 transition-colors">
+                                  <TwitchIcon className="w-4 h-4" />
+                                </a>
+                              )}
+                              {donation.youtube && (
+                                <a
+                                  href={donation.youtube}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="text-red-500 hover:text-red-400 transition-colors">
+                                  <YouTubeIcon className="w-4 h-4" />
+                                </a>
+                              )}
+                            </div>
+                          </td>
                           <td className="py-3 px-4 text-right overflow-visible"></td>
                           <td className="py-3 px-4 overflow-visible">
                             {hasCoins && (

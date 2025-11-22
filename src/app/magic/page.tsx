@@ -44,6 +44,55 @@ interface ConversionItem {
   profit85: number; // en cobre
 }
 
+interface CachedItemData {
+  names: Record<string, string>; // lang -> name
+  icon: string;
+  timestamp: number;
+}
+
+// Sistema de caché para items
+class ItemCache {
+  private static memoryCache: Map<number, CachedItemData> = new Map();
+  private static CACHE_KEY = 'gw2_items_cache';
+  private static CACHE_DURATION = 7 * 24 * 60 * 60 * 1000; // 7 días
+
+  static get(itemId: number): CachedItemData | null {
+    const memCached = this.memoryCache.get(itemId);
+    if (memCached && Date.now() - memCached.timestamp < this.CACHE_DURATION) {
+      return memCached;
+    }
+
+    if (typeof window !== 'undefined') {
+      try {
+        const stored = localStorage.getItem(`${this.CACHE_KEY}_${itemId}`);
+        if (stored) {
+          const data: CachedItemData = JSON.parse(stored);
+          if (Date.now() - data.timestamp < this.CACHE_DURATION) {
+            this.memoryCache.set(itemId, data);
+            return data;
+          } else {
+            localStorage.removeItem(`${this.CACHE_KEY}_${itemId}`);
+          }
+        }
+      } catch (e) {
+        console.warn('Error reading from cache:', e);
+      }
+    }
+    return null;
+  }
+
+  static set(itemId: number, data: CachedItemData): void {
+    this.memoryCache.set(itemId, data);
+    if (typeof window !== 'undefined') {
+      try {
+        localStorage.setItem(`${this.CACHE_KEY}_${itemId}`, JSON.stringify(data));
+      } catch (e) {
+        console.warn('Error writing to cache:', e);
+      }
+    }
+  }
+}
+
 // Componente de imagen optimizada para móvil
 const OptimizedImage = ({ src, alt, className, priority = false }: {
   src: string;
@@ -235,7 +284,11 @@ const CraftingPage = () => {
       // Lodestones y otros items de UM
       24305, 24310, 24315, 24320, 24325, 24330, 70842, 68942, 24335, 72504, 76491, 75654, 72315, 74988, 24762, 100429, 24815,
       // Item para Trophy Shipment
-      85725
+      85725,
+      // Items de Magia Liberada
+      79280, 79469, 79899, 80332, 81127, 81706,
+      // Items de Magia Volátil
+      86069, 86977, 87645, 89537, 88955
     ];
     
     // Eliminar duplicados y filtrar IDs válidos
@@ -962,60 +1015,106 @@ const CraftingPage = () => {
     
   }, [tableItemIds]);
 
-  // Función para obtener nombres de los items de las tablas
+  // Función para obtener nombres de los items de las tablas con caché
   const fetchTableItemNames = useCallback(async () => {
     try {
-      // Dividir en lotes más pequeños para evitar errores de API
-      const batchSize = 25; // Reducir el tamaño del lote para mayor estabilidad
-      const batches = [];
-      for (let i = 0; i < tableItemIds.length; i += batchSize) {
-        batches.push(tableItemIds.slice(i, i + batchSize));
-      }
-      
       const allNames: Record<number, string> = {};
       const allIcons: Record<number, string> = {};
+      const itemsToFetch: number[] = [];
+      
+      // Verificar caché primero
+      tableItemIds.forEach(itemId => {
+        const cached = ItemCache.get(itemId);
+        if (cached && cached.names[lang]) {
+          allNames[itemId] = cached.names[lang];
+          allIcons[itemId] = cached.icon;
+        } else {
+          itemsToFetch.push(itemId);
+        }
+      });
+      
+      // Si no hay items que buscar, solo actualizar estados
+      if (itemsToFetch.length === 0) {
+        setTableItemNames(allNames);
+        setTableItemIcons(allIcons);
+        return;
+      }
+      
+      // Fetch de items que no están en caché, con los 4 idiomas
+      const languages = ['en', 'es', 'de', 'fr'];
+      const batchSize = 25;
+      const batches = [];
+      for (let i = 0; i < itemsToFetch.length; i += batchSize) {
+        batches.push(itemsToFetch.slice(i, i + batchSize));
+      }
       
       for (const batch of batches) {
-        let retryCount = 0;
-        const maxRetries = 3;
-        
-        while (retryCount < maxRetries) {
-          try {
-            const itemsResponse = await fetch(`https://api.guildwars2.com/v2/items?ids=${batch.join(',')}&lang=${lang}`, {
-              headers: {
-                'Accept': 'application/json',
-                'Accept-Encoding': 'gzip, deflate, br'
-              }
-            });
-            
-            if (!itemsResponse.ok) {
-              throw new Error(`HTTP ${itemsResponse.status}`);
-            }
-            
-            const items = await itemsResponse.json();
-            
-            if (Array.isArray(items)) {
-              items.forEach((item: Gw2Item) => {
-                if (item && item.id && item.name) {
-                  allNames[item.id] = item.name;
-                  // Asegurar que el icono tenga el formato correcto
-                  if (item.icon) {
-                    allIcons[item.id] = item.icon;
-                  }
+        const langPromises = languages.map(async (language) => {
+          let retryCount = 0;
+          const maxRetries = 3;
+          
+          while (retryCount < maxRetries) {
+            try {
+              const itemsResponse = await fetch(`https://api.guildwars2.com/v2/items?ids=${batch.join(',')}&lang=${language}`, {
+                headers: {
+                  'Accept': 'application/json',
+                  'Accept-Encoding': 'gzip, deflate, br'
                 }
               });
+              
+              if (!itemsResponse.ok) {
+                throw new Error(`HTTP ${itemsResponse.status}`);
+              }
+              
+              const items = await itemsResponse.json();
+              return { language, items };
+            } catch (batchError) {
+              retryCount++;
+              if (retryCount >= maxRetries) {
+                console.warn(`Error fetching batch after ${maxRetries} retries:`, batchError);
+                return { language, items: [] };
+              }
+              await new Promise(resolve => setTimeout(resolve, 1000 * retryCount));
             }
-            break; // Éxito, salir del bucle de reintentos
-          } catch (batchError) {
-            retryCount++;
-            if (retryCount >= maxRetries) {
-              console.warn(`Error fetching batch after ${maxRetries} retries:`, batchError);
-              break;
-            }
-            // Esperar antes del siguiente intento
-            await new Promise(resolve => setTimeout(resolve, 1000 * retryCount));
           }
-        }
+          return { language, items: [] };
+        });
+        
+        const results = await Promise.all(langPromises);
+        
+        // Organizar datos por itemId
+        const itemDataMap: Record<number, { names: Record<string, string>; icon: string }> = {};
+        
+        results.forEach(({ language, items }) => {
+          if (Array.isArray(items)) {
+            items.forEach((item: Gw2Item) => {
+              if (item && item.id && item.name) {
+                if (!itemDataMap[item.id]) {
+                  itemDataMap[item.id] = { names: {}, icon: item.icon || '' };
+                }
+                itemDataMap[item.id].names[language] = item.name;
+                if (item.icon) {
+                  itemDataMap[item.id].icon = item.icon;
+                }
+              }
+            });
+          }
+        });
+        
+        // Guardar en caché y actualizar estados
+        Object.entries(itemDataMap).forEach(([itemIdStr, data]) => {
+          const itemId = parseInt(itemIdStr);
+          ItemCache.set(itemId, {
+            names: data.names,
+            icon: data.icon,
+            timestamp: Date.now()
+          });
+          
+          if (data.names[lang]) {
+            allNames[itemId] = data.names[lang];
+            allIcons[itemId] = data.icon;
+          }
+        });
       }
       
       setTableItemNames(allNames);
@@ -2517,6 +2616,51 @@ const CraftingPage = () => {
                       {t('craftingPage.volatileMagicDesc', 'La Magia Volatil es una divisa almacenada en la cartera y es la divisa principal de la 4.ª temporada del Mundo Viviente.')}</p>
                   </div>
 
+                  {/* Sección de Consumibles de Magia Volátil */}
+                  <div className="bg-gradient-to-br from-orange-900/30 to-red-900/30 rounded-lg p-6 mb-6 border border-orange-500/30">
+                    <h3 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
+                      <OptimizedImage 
+                        src="/images/expansions/volatile-magic.webp" 
+                        alt={t('craftingPage.volatileMagic', 'Magia Volatil')} 
+                        className="mr-1"
+                        priority
+                      />
+                      {t('craftingPage.volatileMagicConsumables', 'Consumibles de Magia Volátil')}
+                    </h3>
+                    <p className="text-gray-300 mb-4 text-sm">
+                      {t('craftingPage.volatileMagicConsumablesDesc', 'Estos consumibles dan esta cantidad de Magia Volátil')}
+                    </p>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                      {[
+                        { id: 86069, quantity: 5 },
+                        { id: 86977, quantity: 20 },
+                        { id: 87645, quantity: 20 },
+                        { id: 89537, quantity: 20 },
+                        { id: 88955, quantity: 20 }
+                      ].map(item => (
+                        <div key={item.id} className="flex items-center gap-3 bg-gray-800/50 rounded-lg p-3 border border-gray-700/50 hover:border-orange-500/50 transition-all">
+                          {tableItemIcons[item.id] ? (
+                            <OptimizedImage
+                              src={tableItemIcons[item.id]}
+                              alt={tableItemNames[item.id] || `Item ${item.id}`}
+                              className="w-12 h-12 rounded flex-shrink-0"
+                            />
+                          ) : (
+                            <div className="w-12 h-12 bg-gray-700 rounded animate-pulse flex-shrink-0" />
+                          )}
+                          <div className="flex-1 min-w-0">
+                            <p className="text-white font-semibold text-sm truncate">
+                              {tableItemNames[item.id] || t('craftingPage.loading', 'Cargando...')}
+                            </p>
+                            <p className="text-gray-400 text-xs">
+                              {t('craftingPage.quantity', 'Cantidad')}: {item.quantity}
+                            </p>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
                   <h3 className="text-lg sm:text-xl font-bold text-white mb-4 sm:mb-6 text-center">
                     {t('craftingPage.howToGet', '¿Cómo lo obtengo?')}
                   </h3>
@@ -3187,14 +3331,14 @@ const CraftingPage = () => {
                    </div>
                  </div>
                    
-                   {/* Tabla de datos de trofeos */}
-                   <div className="bg-gray-900/80 backdrop-blur-sm border border-gray-700 rounded-lg p-2 sm:p-4 md:p-6 shadow-2xl mb-4 sm:mb-6 md:mb-8">
-                     <h5 className="text-base sm:text-lg md:text-xl font-semibold text-white mb-3 sm:mb-4 text-center">📊 {t('craftingPage.analysisRewards', 'Análisis de Recompensas por')} {tableItemNames[85725] || 'Item 85725'}</h5>
-                     
-                     {/* Tabla de {t('craftingPage.table.rareTrophies', 'Trofeos Raros')} (Droprate 1.0078) */}
-                     <div className="mb-6 sm:mb-8">
-                       <div className="overflow-x-auto">
-                         <table className="w-full text-xs min-w-[400px] sm:min-w-[500px] md:min-w-[600px]">
+                  {/* Tabla de datos de trofeos unificada */}
+                  <div className="bg-gray-900/80 backdrop-blur-sm border border-gray-700 rounded-lg p-2 sm:p-4 md:p-6 shadow-2xl mb-4 sm:mb-6 md:mb-8">
+                    <h5 className="text-base sm:text-lg md:text-xl font-semibold text-white mb-3 sm:mb-4 text-center">📊 {t('craftingPage.analysisRewards', 'Análisis de Recompensas por')} {tableItemNames[85725] || 'Item 85725'}</h5>
+                    
+                    {/* Tabla unificada de trofeos */}
+                    <div className="mb-6 sm:mb-8">
+                      <div className="overflow-x-auto">
+                        <table className="w-full text-xs min-w-[400px] sm:min-w-[500px] md:min-w-[600px]">
                            <thead>
                              <tr className="border-b border-gray-700 bg-gray-800/60">
                                <th className="text-left p-2 sm:p-3 text-gray-200 font-semibold text-xs">{t('craftingPage.table.item', 'Item')}</th>
@@ -3292,11 +3436,13 @@ const CraftingPage = () => {
                                    <span className="text-xs truncate">{tableItemNames[24289] || 'Escama blindada'}</span>
                                  </div>
                                </td>
-                               <td className="p-1 sm:p-1 md:p-2 text-center text-blue-400 font-semibold text-xs">1.0078</td>
-                               <td className="p-1 sm:p-2 md:p-3 text-center text-green-400 font-semibold text-xs whitespace-nowrap">
-                                 {isLoadingPrices ? <Loader2 className="w-3 h-3 sm:w-4 sm:h-4 animate-spin mx-auto" /> : formatGW2Price(calculateBasePrice(24289, 1.0078))}
-                               </td>
-                               <td className="p-1 sm:p-2 md:p-3 text-center text-gray-400 font-semibold text-xs whitespace-nowrap">00G 00S 00C</td>
+                              <td className="p-1 sm:p-1 md:p-2 text-center text-blue-400 font-semibold text-xs">1.0078</td>
+                              <td className="p-1 sm:p-2 md:p-3 text-center text-green-400 font-semibold text-xs whitespace-nowrap">
+                                {isLoadingPrices ? <Loader2 className="w-3 h-3 sm:w-4 sm:h-4 animate-spin mx-auto" /> : formatGW2Price(calculateBasePrice(24289, 1.0078))}
+                              </td>
+                              <td className="p-1 sm:p-2 md:p-3 text-center text-yellow-400 font-semibold text-xs whitespace-nowrap">
+                                {isLoadingPrices ? <Loader2 className="w-3 h-3 sm:w-4 sm:h-4 animate-spin mx-auto" /> : formatGW2Price(calculateVMProfitMax24289())}
+                              </td>
                              </tr>
                              <tr className="border-b border-gray-800 hover:bg-gray-800/50 transition-colors">
                                <td className="p-2 sm:p-2 text-gray-300">
@@ -3357,29 +3503,8 @@ const CraftingPage = () => {
                                <td className="p-1 sm:p-2 md:p-3 text-center text-yellow-400 font-semibold text-xs whitespace-nowrap">
                                  {isLoadingPrices ? <Loader2 className="w-3 h-3 sm:w-4 sm:h-4 animate-spin mx-auto" /> : formatGW2Price(calculateResultadoFinalConDroprateSeptimaSeccion())}
                                </td>
-                             </tr>
-                           </tbody>
-                         </table>
-                       </div>
-                     </div>
-                     
-                     {/* Separador visual */}
-                     <div className="my-6 sm:my-8 border-t-2 border-gray-600/50"></div>
-                     
-                     {/* Tabla de {t('craftingPage.table.commonTrophies', 'Trofeos Comunes')} (Droprate 4.99) */}
-                     <div className="mb-6 sm:mb-8">                    
-                       <div className="overflow-x-auto">
-                         <table className="w-full text-xs min-w-[400px] sm:min-w-[500px] md:min-w-[600px]">
-                           <thead>
-                             <tr className="border-b border-gray-700 bg-gray-800/60">
-                               <th className="text-left p-2 sm:p-3 text-gray-200 font-semibold text-xs">{t('craftingPage.table.item', 'Item')}</th>
-                               <th className="p-1 sm:p-2 md:p-3 text-center text-gray-200 font-semibold text-xs">{t('craftingPage.table.droprate', 'Droprate')}</th>
-                               <th className="p-1 sm:p-2 md:p-3 text-center text-gray-200 font-semibold text-xs">{t('craftingPage.table.basePrice', 'Precio BASE')}</th>
-                               <th className="p-1 sm:p-2 md:p-3 text-center text-gray-200 font-semibold text-xs">{t('craftingPage.table.profitMax', 'Profit Max')}</th>
-                             </tr>
-                           </thead>
-                           <tbody>
-                             <tr className="border-b border-gray-800 hover:bg-gray-800/50 transition-colors">
+                            </tr>
+                            <tr className="border-b border-gray-800 hover:bg-gray-800/50 transition-colors">
                                <td className="p-2 sm:p-2 text-gray-300">
                                  <div className="flex items-center gap-1 sm:gap-2">
                                    <OptimizedImage 
@@ -3828,6 +3953,52 @@ const CraftingPage = () => {
                     <p className="text-gray-300 mb-4">
                       {t('craftingPage.unboundMagicDesc', 'La Magia Liberada es una divisa almacenada en la cartera y es la divisa principal de la 3.ª temporada del Mundo Viviente.')}
                     </p>
+                  </div>
+
+                  {/* Sección de Consumibles de Magia Liberada */}
+                  <div className="bg-gradient-to-br from-purple-900/30 to-blue-900/30 rounded-lg p-6 mb-6 border border-purple-500/30">
+                    <h3 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
+                      <OptimizedImage 
+                        src="/images/expansions/unbound-magic.webp" 
+                        alt={t('craftingPage.unboundMagic', 'Magia Liberada')} 
+                        className="mr-1"
+                        priority
+                      />
+                      {t('craftingPage.unboundMagicConsumables', 'Consumibles de Magia Liberada')}
+                    </h3>
+                    <p className="text-gray-300 mb-4 text-sm">
+                      {t('craftingPage.unboundMagicConsumablesDesc', 'Estos consumibles dan esta cantidad de Magia Liberada')}
+                    </p>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                      {[
+                        { id: 79280, quantity: 36 },
+                        { id: 79469, quantity: 36 },
+                        { id: 79899, quantity: 22 },
+                        { id: 80332, quantity: 36 },
+                        { id: 81127, quantity: 36 },
+                        { id: 81706, quantity: 22 }
+                      ].map(item => (
+                        <div key={item.id} className="flex items-center gap-3 bg-gray-800/50 rounded-lg p-3 border border-gray-700/50 hover:border-purple-500/50 transition-all">
+                          {tableItemIcons[item.id] ? (
+                            <OptimizedImage
+                              src={tableItemIcons[item.id]}
+                              alt={tableItemNames[item.id] || `Item ${item.id}`}
+                              className="w-12 h-12 rounded flex-shrink-0"
+                            />
+                          ) : (
+                            <div className="w-12 h-12 bg-gray-700 rounded animate-pulse flex-shrink-0" />
+                          )}
+                          <div className="flex-1 min-w-0">
+                            <p className="text-white font-semibold text-sm truncate">
+                              {tableItemNames[item.id] || t('craftingPage.loading', 'Cargando...')}
+                            </p>
+                            <p className="text-gray-400 text-xs">
+                              {t('craftingPage.quantity', 'Cantidad')}: {item.quantity}
+                            </p>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
                   </div>
 
                   {/* Sección de cálculos para UM - OCULTA */}

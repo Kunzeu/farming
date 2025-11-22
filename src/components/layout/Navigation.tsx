@@ -668,7 +668,6 @@ const Navigation = () => {
                         onChange={(e) => setSearchQuery(e.target.value)}
                         placeholder={t('nav.search', 'Buscar...')}
                         className="flex-1 bg-transparent text-white px-3 py-2 text-sm focus:outline-none min-w-0"
-                        autoFocus
                       />
                       {!isLargeScreen && (
                         <button
