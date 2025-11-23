@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { motion } from '@/lib/framer-motion-optimized';
@@ -143,6 +143,7 @@ const Navigation = () => {
   const [isMobileToolsOpen, setIsMobileToolsOpen] = useState(false);
   const [isMobileUserOpen, setIsMobileUserOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [isMobileSearchOpen, setIsMobileSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [isLargeScreen, setIsLargeScreen] = useState(false);
   const [selectedSearchIndex, setSelectedSearchIndex] = useState(0);
@@ -213,7 +214,7 @@ const Navigation = () => {
   useEffect(() => {
     const handleResize = () => {
       const width = window.innerWidth;
-      const largeScreen = width >= 1536; // 2xl breakpoint
+      const largeScreen = width >= 1024; // lg breakpoint
       setIsLargeScreen(largeScreen);
       
       // Expandir automáticamente en pantallas grandes
@@ -337,7 +338,7 @@ const Navigation = () => {
       if (searchRef.current && !searchRef.current.contains(target)) {
         // Solo cerrar si no es pantalla grande
         const width = window.innerWidth;
-        if (width < 1536) { // menor a 2xl breakpoint
+        if (width < 1024) { // menor a lg breakpoint
           setIsSearchOpen(false);
         }
       }
@@ -393,7 +394,7 @@ const Navigation = () => {
     return `/images/${folder}/${icon}.${extension}${query}`;
   };
   
-  const navItems: NavItem[] = [
+  const navItems: NavItem[] = useMemo(() => [
     { 
       href: '/', 
       label: t('nav.home', 'Home'), 
@@ -407,16 +408,16 @@ const Navigation = () => {
       keywords: ['farms', 'rutas', 'routes', 'farmeo', 'oro', 'gold', 'mapa', 'map']
     },
 
-  ];
+  ], [t]);
 
   // Sección de Guías
-  const guidesItems: NavItem[] = [
+  const guidesItems: NavItem[] = useMemo(() => [
     { 
       href: '/conversion-guide', 
       label: t('conversionGuidePage.title', 'Guía de Conversión'), 
       icon: 'conversion-guide', 
       isImage: true,
-      keywords: ['conversion', 'convertir', 'materiales', 'materials', 'tier', 'promote', 'refinar', 'refinamiento']
+      keywords: ['conversion', 'convertir', 'materiales', 'materials', 'tier', 'promote']
     },
     { 
       href: '/garden', 
@@ -430,21 +431,21 @@ const Navigation = () => {
       label: t('nav.giftOfMastery', 'Gift of Mastery'), 
       icon: 'GOM', 
       isImage: true,
-      keywords: ['gom', 'mastery', 'maestria', 'gift', 'regalo', 'obsidian', 'shards', 'clovers', 'tréboles']
+      keywords: ['gom', 'mastery', 'gift', 'regalo']
     },
     { 
       href: '/gift-of-jade-mastery', 
       label: t('nav.giftOfJadeMastery', 'Gift of Jade Mastery'), 
       icon: 'GOJM', 
       isImage: true,
-      keywords: ['gojm', 'jade', 'cantha', 'gift', 'regalo', 'imperial favor', 'favor imperial']
+      keywords: ['gojm', 'jade', 'cantha', 'gift', 'regalo']
     },
     { 
       href: '/castora/magic-mirrors', 
       label: t('nav.magicMirrors', 'Magic Mirrors'), 
       icon: 'magic-mirror', 
       isImage: true,
-      keywords: ['magic mirrors', 'espejos', 'mirrors', 'castora', 'castora strand', 'shipwreck', 'mapa', 'guide']
+      keywords: ['magic mirrors', 'espejos', 'mirrors', 'castora', 'shipwreck', 'mapa', 'guide']
     },
     { 
       href: '/glossary', 
@@ -458,13 +459,13 @@ const Navigation = () => {
       label: t('nav.altParking', 'Alt Parking'), 
       icon: 'Explorer', 
       isImage: true,
-      keywords: ['alt parking', 'alts', 'personajes', 'characters', 'draconis', 'mons', 'parqueo', 'estacionar']
+      keywords: ['alt parking', 'alts', 'personajes', 'characters', 'draconis', 'mons']
     }, 
 
-  ];
+  ], [t]);
 
   // Sección de Herramientas
-  const toolsItems: NavItem[] = [
+  const toolsItems: NavItem[] = useMemo(() => [
     { 
       href: '/magic', 
       label: t('dashboard.magic.title', 'Magic'), 
@@ -514,7 +515,7 @@ const Navigation = () => {
       icon: ShoppingCart,
       keywords: ['buyout', 'calculator', 'calculadora', 'tp', 'trading post', 'buy', 'comprar']
     }] : []),
-  ];
+  ], [t, user?.role]);
 
   const handleLogout = () => {
     logout();
@@ -522,8 +523,8 @@ const Navigation = () => {
     // La redirección se maneja automáticamente en el contexto de autenticación
   };
 
-  // Combinar todos los items para búsqueda
-  const allSearchableItems = [
+  // Combinar todos los items para búsqueda (cacheado para evitar recalcular en cada render)
+  const allSearchableItems = useMemo(() => [
     ...navItems,
     ...guidesItems,
     ...toolsItems,
@@ -548,27 +549,29 @@ const Navigation = () => {
       isImage: false,
       keywords: ['daily', 'routine', 'rutina', 'diaria', 'checklist', 'tareas', 'tasks', 'dailies']
     },
-  ];
+  ], [navItems, guidesItems, toolsItems, t]);
 
-  // Filtrar resultados de búsqueda
-  const searchResults = searchQuery.trim() 
-    ? allSearchableItems.filter(item => {
-        const query = searchQuery.toLowerCase();
-        // Buscar en el label
-        const matchesLabel = item.label.toLowerCase().includes(query);
-        // Buscar en las keywords si existen
-        const matchesKeywords = item.keywords?.some(keyword => 
-          keyword.toLowerCase().includes(query)
-        ) || false;
-        
-        return matchesLabel || matchesKeywords;
-      }).slice(0, 8) // Aumentar a 8 resultados
-    : [];
+  // Filtrar resultados de búsqueda (cacheado para evitar recalcular)
+  const searchResults = useMemo(() => {
+    if (!searchQuery.trim()) return [];
+    
+    const query = searchQuery.toLowerCase();
+    return allSearchableItems.filter(item => {
+      // Buscar en el label
+      const matchesLabel = item.label.toLowerCase().includes(query);
+      // Buscar en las keywords si existen
+      const matchesKeywords = item.keywords?.some(keyword => 
+        keyword.toLowerCase().includes(query)
+      ) || false;
+      
+      return matchesLabel || matchesKeywords;
+    }).slice(0, 8); // Aumentar a 8 resultados
+  }, [searchQuery, allSearchableItems]);
 
   // Resetear índice seleccionado cuando cambien los resultados
   useEffect(() => {
     setSelectedSearchIndex(0);
-  }, [searchQuery]);
+  }, [searchResults]);
 
   // Manejar navegación con teclado
   const handleSearchKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -1000,12 +1003,23 @@ const Navigation = () => {
 
                   {/* Mobile primary button spot: Show Giveaways with same desktop style */}
                   <div className="lg:hidden">
-                    <Link
-                      href="/giveaways"
-                      className="flex items-center space-x-2 text-green-300 px-3 py-2 rounded-lg bg-green-900/20 border border-green-700/30 hover:bg-green-800/30 hover:text-green-200 transition-all duration-200">
-                      <Gift className="w-4 h-4" />
-                      <span className="text-xs font-bold">{t('nav.giveaways', 'Giveaways')}</span>
-                    </Link>
+                    <div className="flex items-center space-x-2">
+                      {/* Search button - Mobile only */}
+                      <button
+                        onClick={() => setIsMobileSearchOpen(!isMobileSearchOpen)}
+                        className="p-2 text-gray-300 hover:text-white hover:bg-gray-800/50 rounded-lg transition-colors border border-gray-600"
+                        title={t('nav.search', 'Buscar')}
+                      >
+                        <Search className="w-5 h-5" />
+                      </button>
+                      
+                      <Link
+                        href="/giveaways"
+                        className="flex items-center space-x-2 text-green-300 px-3 py-2 rounded-lg bg-green-900/20 border border-green-700/30 hover:bg-green-800/30 hover:text-green-200 transition-all duration-200">
+                        <Gift className="w-4 h-4" />
+                        <span className="text-xs font-bold">{t('nav.giveaways', 'Giveaways')}</span>
+                      </Link>
+                    </div>
                   </div>
                 </>
               )}
@@ -1036,68 +1050,6 @@ const Navigation = () => {
                     exit={{ opacity: 0, y: -20 }}
                     className="absolute top-full right-0 mt-2 w-72 bg-gray-800/95 backdrop-blur-md rounded-lg border border-gray-700 shadow-xl z-50 max-h-[calc(100vh-80px)] overflow-y-auto">
                     <div className="px-2 pt-2 pb-3 space-y-1">
-                      {/* Search Bar - Mobile */}
-                      <div className="border-b border-gray-700 pb-2 mb-2">
-                        <div className="relative bg-gray-700/50 border border-gray-600 rounded-lg overflow-hidden">
-                          <Search className="w-4 h-4 text-gray-400 absolute left-2.5 top-1/2 transform -translate-y-1/2" />
-                          <input
-                            type="text"
-                            value={searchQuery}
-                            onChange={(e) => setSearchQuery(e.target.value)}
-                            onKeyDown={handleSearchKeyDown}
-                            placeholder={t('nav.search', 'Buscar...')}
-                            className="w-full bg-transparent text-white pl-9 pr-2.5 py-1.5 text-sm focus:outline-none"
-                          />
-                        </div>
-                        
-                        {/* Search Results - Mobile */}
-                        {searchResults.length > 0 && (
-                          <div className="mt-1.5 bg-gray-700/50 rounded-lg border border-gray-600 py-0.5 max-h-60 overflow-y-auto">
-                            {searchResults.map((item, index) => (
-                              <Link
-                                key={item.href}
-                                href={item.href}
-                                className={`flex items-center space-x-2.5 px-2.5 py-1.5 transition-colors ${
-                                  index === selectedSearchIndex
-                                    ? 'bg-gray-600/70 text-white'
-                                    : 'text-gray-300 hover:text-white hover:bg-gray-600/50'
-                                }`}
-                                onClick={() => {
-                                  setIsMobileMenuOpen(false);
-                                  setSearchQuery('');
-                                }}
-                                onMouseEnter={() => setSelectedSearchIndex(index)}
-                              >
-                                {item.isImage ? (
-                                  <Image 
-                                    src={getImageSrc(item.icon as string)} 
-                                    alt={item.label}
-                                    width={16}
-                                    height={16}
-                                    className="w-4 h-4"
-                                    unoptimized={item.icon === 'magic-mirror' || item.icon === 'conversion-guide' || item.icon === 'garden'}
-                                  />
-                                ) : (
-                                  typeof item.icon === 'function' ? (
-                                    <item.icon className="w-4 h-4" />
-                                  ) : null
-                                )}
-                                <span className="text-sm">{item.label}</span>
-                              </Link>
-                            ))}
-                          </div>
-                        )}
-                        
-                        {/* No results message - Mobile */}
-                        {searchQuery.trim() && searchResults.length === 0 && (
-                          <div className="mt-1.5 bg-gray-700/50 rounded-lg border border-gray-600 py-2 px-2.5">
-                            <p className="text-gray-400 text-xs text-center">
-                              {t('nav.noResults', 'No se encontraron resultados')}
-                            </p>
-                          </div>
-                        )}
-                      </div>
-                      
                       {/* Reset Timers - Mobile (Compact) */}
                       <div className="border-b border-gray-700 pb-2 mb-2">
                         <div className="flex flex-col space-y-1.5">
@@ -1325,6 +1277,105 @@ const Navigation = () => {
             <FloatingLanguageSwitcher />
           </div>
         </div>
+
+        {/* Mobile Search Modal */}
+        {isMobileSearchOpen && (
+          <div className="lg:hidden fixed inset-0 z-50 flex items-center justify-center">
+            {/* Overlay */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => {
+                setIsMobileSearchOpen(false);
+                setSearchQuery('');
+              }}
+              className="absolute inset-0 bg-black/70 backdrop-blur-sm"
+            />
+            
+            {/* Modal Content */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.9, y: 20 }}
+              className="relative w-[90%] max-w-md bg-gray-800/95 backdrop-blur-md rounded-2xl border border-gray-600 shadow-2xl p-4"
+            >
+              {/* Close Button */}
+              <button
+                onClick={() => {
+                  setIsMobileSearchOpen(false);
+                  setSearchQuery('');
+                }}
+                className="absolute top-2 right-3 text-gray-400 hover:text-white hover:bg-gray-700 rounded-lg transition-colors"
+              >
+                <X className="w-5 h-5" />
+              </button>
+
+              {/* Search Input */}
+              <div className="mt-2">
+                <div className="relative bg-gray-700/50 border border-gray-600 rounded-lg overflow-hidden">
+                  <Search className="w-5 h-5 text-gray-400 absolute left-3 top-1/2 transform -translate-y-1/2" />
+                  <input
+                    type="text"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    onKeyDown={handleSearchKeyDown}
+                    placeholder={t('nav.search', 'Buscar...')}
+                    className="w-full bg-transparent text-white pl-11 pr-3 py-3 text-base focus:outline-none"
+                    autoFocus
+                  />
+                </div>
+              </div>
+
+              {/* Search Results */}
+              {searchResults.length > 0 && (
+                <div className="mt-3 bg-gray-700/30 rounded-lg border border-gray-600 max-h-[60vh] overflow-y-auto">
+                  {searchResults.map((item, index) => (
+                    <Link
+                      key={item.href}
+                      href={item.href}
+                      className={`flex items-center space-x-3 px-4 py-3 transition-colors ${
+                        index === selectedSearchIndex
+                          ? 'bg-gray-600/70 text-white'
+                          : 'text-gray-300 hover:text-white hover:bg-gray-600/50'
+                      }`}
+                      onClick={() => {
+                        setIsMobileSearchOpen(false);
+                        setSearchQuery('');
+                      }}
+                      onMouseEnter={() => setSelectedSearchIndex(index)}
+                    >
+                      {item.isImage ? (
+                        <Image 
+                          src={getImageSrc(item.icon as string)} 
+                          alt={item.label}
+                          width={20}
+                          height={20}
+                          className="w-5 h-5"
+                          unoptimized={item.icon === 'magic-mirror' || item.icon === 'conversion-guide' || item.icon === 'garden'}
+                        />
+                      ) : (
+                        typeof item.icon === 'function' ? (
+                          <item.icon className="w-5 h-5" />
+                        ) : null
+                      )}
+                      <span className="text-base font-medium">{item.label}</span>
+                    </Link>
+                  ))}
+                </div>
+              )}
+
+              {/* No results message */}
+              {searchQuery.trim() && searchResults.length === 0 && (
+                <div className="mt-3 bg-gray-700/30 rounded-lg border border-gray-600 py-8 px-4">
+                  <p className="text-gray-400 text-base text-center">
+                    {t('nav.noResults', 'No se encontraron resultados')}
+                  </p>
+                </div>
+              )}
+            </motion.div>
+          </div>
+        )}
       </div>
       
     </>

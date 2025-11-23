@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useRef } from 'react';
 import { GW2Item } from '@/types/gw2';
 
 // Tipos para el caché
@@ -34,8 +34,16 @@ export function useGW2Item(
 
   const timeout = options?.timeout ?? 10000;
   const fallback = options?.fallback;
-  const onSuccess = options?.onSuccess;
-  const onError = options?.onError;
+  
+  // Usar refs para callbacks para evitar recrear el effect
+  const onSuccessRef = useRef(options?.onSuccess);
+  const onErrorRef = useRef(options?.onError);
+  
+  // Actualizar refs cuando cambien las callbacks
+  useEffect(() => {
+    onSuccessRef.current = options?.onSuccess;
+    onErrorRef.current = options?.onError;
+  });
 
   useEffect(() => {
     if (!itemId) {
@@ -56,8 +64,8 @@ export function useGW2Item(
     if (cached && cached.expiry > now) {
       setItem(cached.data);
       setLoading(false);
-      if (onSuccess) {
-        onSuccess(cached.data);
+      if (onSuccessRef.current) {
+        onSuccessRef.current(cached.data);
       }
       return;
     }
@@ -100,8 +108,8 @@ export function useGW2Item(
         };
         
         setItem(data);
-        if (onSuccess) {
-          onSuccess(data);
+        if (onSuccessRef.current) {
+          onSuccessRef.current(data);
         }
       } catch (err) {
         const fetchError = err instanceof Error ? err : new Error('Unknown error');
@@ -112,8 +120,8 @@ export function useGW2Item(
           setItem(fallback);
         }
         
-        if (onError) {
-          onError(fetchError);
+        if (onErrorRef.current) {
+          onErrorRef.current(fetchError);
         } else {
           console.error(`Error fetching item ${itemId}:`, fetchError);
         }
@@ -123,7 +131,7 @@ export function useGW2Item(
     };
 
     fetchItem();
-  }, [itemId, language, timeout, fallback, onSuccess, onError]);
+  }, [itemId, language, timeout, fallback]);
 
   return { item, loading, error };
 }
@@ -151,8 +159,16 @@ export function useGW2Items(
   const itemIdsKey = useMemo(() => itemIds.join(','), [itemIds]);
   const timeout = options?.timeout ?? 15000;
   const fallback = options?.fallback;
-  const onSuccess = options?.onSuccess;
-  const onError = options?.onError;
+  
+  // Usar refs para callbacks para evitar recrear el effect
+  const onSuccessRef = useRef(options?.onSuccess);
+  const onErrorRef = useRef(options?.onError);
+  
+  // Actualizar refs cuando cambien las callbacks
+  useEffect(() => {
+    onSuccessRef.current = options?.onSuccess;
+    onErrorRef.current = options?.onError;
+  });
 
   useEffect(() => {
     if (!itemIds || itemIds.length === 0) {
@@ -184,8 +200,8 @@ export function useGW2Items(
     if (itemsToFetch.length === 0) {
       setItems(cachedItems);
       setLoading(false);
-      if (onSuccess) {
-        onSuccess(cachedItems);
+      if (onSuccessRef.current) {
+        onSuccessRef.current(cachedItems);
       }
       return;
     }
@@ -234,8 +250,8 @@ export function useGW2Items(
         });
         
         setItems(allItems);
-        if (onSuccess) {
-          onSuccess(allItems);
+        if (onSuccessRef.current) {
+          onSuccessRef.current(allItems);
         }
       } catch (err) {
         const fetchError = err instanceof Error ? err : new Error('Unknown error');
@@ -246,8 +262,8 @@ export function useGW2Items(
           setItems(fallback);
         }
         
-        if (onError) {
-          onError(fetchError);
+        if (onErrorRef.current) {
+          onErrorRef.current(fetchError);
         } else {
           console.error('Error fetching items:', fetchError);
         }
@@ -257,8 +273,9 @@ export function useGW2Items(
     };
 
     fetchItems();
+    // itemIds está representado por itemIdsKey (memoizado)
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [itemIdsKey, language, timeout, fallback, onSuccess, onError]);
+  }, [itemIdsKey, language, timeout, fallback]);
 
   return { items, loading, error };
 }
