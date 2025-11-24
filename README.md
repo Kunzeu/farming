@@ -97,8 +97,8 @@ Una aplicación web moderna y completa para optimizar tu experiencia de farming 
 
 1. **Clonar el repositorio**
    ```bash
-   git clone https://github.com/Kunzeu/gw2-farming-hub.git
-   cd gw2-farming-hub
+   git clone https://github.com/Kunzeu/true-farming.git
+   cd true-farming
    ```
 
 2. **Instalar dependencias**
@@ -134,7 +134,7 @@ npm run type-check   # Verificación de tipos
 ## 📁 Arquitectura del Proyecto
 
 ```
-gw2-farming-hub/
+true-farming/
 ├── src/
 │   ├── app/                    # Páginas de Next.js App Router
 │   │   ├── [locale]/          # Soporte multiidioma

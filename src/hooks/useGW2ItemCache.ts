@@ -32,18 +32,13 @@ export function useGW2Item(
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
 
-  const timeout = options?.timeout ?? 10000;
-  const fallback = options?.fallback;
+  // Usar refs para todas las opciones para evitar recrear el effect
+  const optionsRef = useRef(options);
   
-  // Usar refs para callbacks para evitar recrear el effect
-  const onSuccessRef = useRef(options?.onSuccess);
-  const onErrorRef = useRef(options?.onError);
-  
-  // Actualizar refs cuando cambien las callbacks
+  // Actualizar refs cuando cambien las opciones
   useEffect(() => {
-    onSuccessRef.current = options?.onSuccess;
-    onErrorRef.current = options?.onError;
-  });
+    optionsRef.current = options;
+  }, [options]);
 
   useEffect(() => {
     if (!itemId) {
@@ -52,6 +47,9 @@ export function useGW2Item(
     }
 
     const now = Date.now();
+    const opts = optionsRef.current;
+    const timeout = opts?.timeout ?? 10000;
+    const fallback = opts?.fallback;
     
     // Inicializar caché para este idioma si no existe
     if (!itemCache[language]) {
@@ -64,8 +62,8 @@ export function useGW2Item(
     if (cached && cached.expiry > now) {
       setItem(cached.data);
       setLoading(false);
-      if (onSuccessRef.current) {
-        onSuccessRef.current(cached.data);
+      if (opts?.onSuccess) {
+        opts.onSuccess(cached.data);
       }
       return;
     }
@@ -108,8 +106,8 @@ export function useGW2Item(
         };
         
         setItem(data);
-        if (onSuccessRef.current) {
-          onSuccessRef.current(data);
+        if (opts?.onSuccess) {
+          opts.onSuccess(data);
         }
       } catch (err) {
         const fetchError = err instanceof Error ? err : new Error('Unknown error');
@@ -120,8 +118,8 @@ export function useGW2Item(
           setItem(fallback);
         }
         
-        if (onErrorRef.current) {
-          onErrorRef.current(fetchError);
+        if (opts?.onError) {
+          opts.onError(fetchError);
         } else {
           console.error(`Error fetching item ${itemId}:`, fetchError);
         }
@@ -131,7 +129,7 @@ export function useGW2Item(
     };
 
     fetchItem();
-  }, [itemId, language, timeout, fallback]);
+  }, [itemId, language]);
 
   return { item, loading, error };
 }
@@ -157,18 +155,14 @@ export function useGW2Items(
   const [error, setError] = useState<Error | null>(null);
 
   const itemIdsKey = useMemo(() => itemIds.join(','), [itemIds]);
-  const timeout = options?.timeout ?? 15000;
-  const fallback = options?.fallback;
   
-  // Usar refs para callbacks para evitar recrear el effect
-  const onSuccessRef = useRef(options?.onSuccess);
-  const onErrorRef = useRef(options?.onError);
+  // Usar refs para todas las opciones para evitar recrear el effect
+  const optionsRef = useRef(options);
   
-  // Actualizar refs cuando cambien las callbacks
+  // Actualizar refs cuando cambien las opciones
   useEffect(() => {
-    onSuccessRef.current = options?.onSuccess;
-    onErrorRef.current = options?.onError;
-  });
+    optionsRef.current = options;
+  }, [options]);
 
   useEffect(() => {
     if (!itemIds || itemIds.length === 0) {
@@ -177,6 +171,9 @@ export function useGW2Items(
     }
 
     const now = Date.now();
+    const opts = optionsRef.current;
+    const timeout = opts?.timeout ?? 15000;
+    const fallback = opts?.fallback;
     
     // Inicializar caché para este idioma si no existe
     if (!itemCache[language]) {
@@ -200,8 +197,8 @@ export function useGW2Items(
     if (itemsToFetch.length === 0) {
       setItems(cachedItems);
       setLoading(false);
-      if (onSuccessRef.current) {
-        onSuccessRef.current(cachedItems);
+      if (opts?.onSuccess) {
+        opts.onSuccess(cachedItems);
       }
       return;
     }
@@ -250,8 +247,8 @@ export function useGW2Items(
         });
         
         setItems(allItems);
-        if (onSuccessRef.current) {
-          onSuccessRef.current(allItems);
+        if (opts?.onSuccess) {
+          opts.onSuccess(allItems);
         }
       } catch (err) {
         const fetchError = err instanceof Error ? err : new Error('Unknown error');
@@ -262,8 +259,8 @@ export function useGW2Items(
           setItems(fallback);
         }
         
-        if (onErrorRef.current) {
-          onErrorRef.current(fetchError);
+        if (opts?.onError) {
+          opts.onError(fetchError);
         } else {
           console.error('Error fetching items:', fetchError);
         }
@@ -275,7 +272,7 @@ export function useGW2Items(
     fetchItems();
     // itemIds está representado por itemIdsKey (memoizado)
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [itemIdsKey, language, timeout, fallback]);
+  }, [itemIdsKey, language]);
 
   return { items, loading, error };
 }
