@@ -279,7 +279,7 @@ const getEventData = (t: (key: string) => string): ContributionEvent => {
        {
            name: 'Yuuki.7084',
           items: [
-              { name: 'Glob of Ectoplasm', quantity: 250 }, 
+              { name: 'Glob of Ectoplasm', quantity: 500 }, 
 
           ]
        },
