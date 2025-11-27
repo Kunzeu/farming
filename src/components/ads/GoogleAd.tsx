@@ -22,12 +22,11 @@ export default function GoogleAd({
   const adRef = useRef<HTMLModElement>(null);
   const [initialized, setInitialized] = useState(false);
 
-  // Si el usuario es Patreon activo, no renderizar el anuncio
-  if (!showAds) {
-    return null;
-  }
-
   useEffect(() => {
+    // Si el usuario es Patreon activo, no inicializar el anuncio
+    if (!showAds) {
+      return;
+    }
     const el = adRef.current as unknown as HTMLElement | null;
     if (!el || initialized) return;
 
@@ -94,7 +93,12 @@ export default function GoogleAd({
     return () => {
       clearTimeout(timeout);
     };
-  }, [initialized]);
+  }, [initialized, showAds]);
+
+  // Si el usuario es Patreon activo, no renderizar el anuncio
+  if (!showAds) {
+    return null;
+  }
 
   return (
     <ins

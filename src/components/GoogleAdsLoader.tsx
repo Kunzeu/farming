@@ -21,6 +21,7 @@ export default function GoogleAdsLoader() {
       }
       // Limpiar el objeto global de AdSense
       if (window.adsbygoogle) {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         delete (window as any).adsbygoogle;
       }
       return;
