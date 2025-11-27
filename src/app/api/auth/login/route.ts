@@ -19,7 +19,8 @@ export async function POST(request: NextRequest) {
     // Get user from database
     const query = `
       SELECT id, email, username, password, role, is_active as "isActive",
-             created_at as "createdAt", updated_at as "updatedAt", discord_id as "discordId"
+             created_at as "createdAt", updated_at as "updatedAt", discord_id as "discordId",
+             patreon_id as "patreonId", patreon_tier as "patreonTier", patreon_status as "patreonStatus"
       FROM users 
       WHERE email = $1
     `;

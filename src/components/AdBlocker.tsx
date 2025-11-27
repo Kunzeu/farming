@@ -17,10 +17,18 @@ export default function AdBlocker() {
 
     // Debug: Log para verificar el estado del usuario
     if (user && !showAds) {
-      console.log('[AdBlocker] Usuario Patreon detectado, bloqueando anuncios:', {
+      console.log('[AdBlocker] ✅ Usuario Patreon activo detectado, bloqueando anuncios:', {
         email: user.email,
         patreonStatus: user.patreonStatus,
         patreonTier: user.patreonTier,
+        isActivePatron: true,
+      });
+    } else if (user && showAds) {
+      console.log('[AdBlocker] ⚠️ Usuario NO es Patreon activo, mostrando anuncios:', {
+        email: user.email,
+        patreonStatus: user.patreonStatus || 'null',
+        patreonTier: user.patreonTier || 'null',
+        isActivePatron: false,
       });
     }
 

@@ -311,7 +311,10 @@ function AuthProviderInternal({ children }: { children: ReactNode }) {
         joinDate: data.user.createdAt ? (typeof data.user.createdAt === 'string' ? data.user.createdAt : data.user.createdAt.toISOString()) : new Date().toISOString(),
         lastLogin: new Date().toISOString(),
         isAdmin: data.user.role === 'admin',
-        preferences: data.user.preferences
+        preferences: data.user.preferences,
+        patreonId: data.user.patreonId || undefined,
+        patreonTier: data.user.patreonTier || undefined,
+        patreonStatus: data.user.patreonStatus || undefined
       };
 
       // Use the JWT token from the server response

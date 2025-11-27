@@ -47,22 +47,31 @@ export const PATREON_TIERS = {
  * Verifica si un usuario es un patreon activo
  * Un usuario es patreon activo si:
  * - patreonStatus === 'active_patron'
- * - O tiene un tier pagado (no 'free' y no vacío)
+ * - Y tiene un tier válido (Bronze, Silver, Gold, Legends)
  */
 export function isActivePatron(user: User | null): boolean {
   if (!user) return false;
   
-  // Verificar si el status es 'active_patron'
-  if (user.patreonStatus === 'active_patron') {
-    return true;
+  // Debe tener status 'active_patron'
+  if (user.patreonStatus !== 'active_patron') {
+    return false;
   }
   
-  // Verificar si tiene un tier pagado (no 'free' y no vacío)
-  if (user.patreonTier && user.patreonTier.trim().toLowerCase() !== 'free' && user.patreonTier.trim() !== '') {
-    return true;
+  // Debe tener un tier válido
+  if (!user.patreonTier || user.patreonTier.trim() === '') {
+    return false;
   }
   
-  return false;
+  // Verificar que el tier sea uno de los válidos (case-insensitive)
+  const tier = user.patreonTier.trim();
+  const validTiers = ['Bronze', 'Silver', 'Gold', 'Legends'];
+  const tierLower = tier.toLowerCase();
+  
+  const isValidTier = validTiers.some(validTier => 
+    validTier.toLowerCase() === tierLower
+  );
+  
+  return isValidTier;
 }
 
 /**
