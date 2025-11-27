@@ -920,6 +920,8 @@
 
   "dashboard.advancedSettings": "Configuración Avanzada",
   "dashboard.advancedSettingsShort": "Config",
+  "dashboard.loginRequired.title": "Inicio de sesión requerido",
+  "dashboard.loginRequired.message": "Debes estar logueado para usar esta opción.",
   "dashboard.editMode": "Modo Edición",
   "dashboard.saveChanges": "Guardar",
   "dashboard.cancel": "Cancelar",
@@ -2174,6 +2176,8 @@
   "fourWindsPrizeBag.purses": "Monederos",
   "fourWindsPrizeBag.randomExotic": "Exótico Aleatorio",
   "fourWindsPrizeBag.luxuryEquipment": "Equipo de lujo",
+  "fourWindsPrizeBag.dataSource": "Fuente de datos:",
+  "fourWindsPrizeBag.dataSourceNames": "Vortus43 y Giges.9632",
   "magicPage.t6ConversionButton": "COMO HACER CONVERSIONES DE T6 + VENTA DE ESQUIRLAS ESPIRITUALES",
   "ectogamblingPage.sandstormLuckyDraw": "Sorteo Afortunado de Tormenta de Arena",
   "ectogamblingPage.subtitle": "Análisis completo de estadísticas y probabilidades de ectogambling",

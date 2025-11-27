@@ -1,11 +1,21 @@
 'use client';
 
 import { useEffect } from 'react';
+import { useAuth } from '@/contexts/AuthContext';
+import { shouldShowAds } from '@/lib/patreon-benefits';
 
 export default function GoogleAdsLoader() {
+  const { user } = useAuth();
+  const showAds = shouldShowAds(user);
+
   useEffect(() => {
     // Solo ejecutar en el cliente
     if (typeof window === 'undefined') return;
+    
+    // Si el usuario es patreon activo, NO cargar el script de AdSense
+    if (!showAds) {
+      return;
+    }
     
     function loadGoogleAds() {
       if (window.adsbygoogle) return; // Ya cargado
@@ -26,7 +36,7 @@ export default function GoogleAdsLoader() {
     
     // Cargar inmediatamente cuando se carga la página
     loadAdsOnInteraction();
-  }, []);
+  }, [showAds]);
 
   return null; // No renderiza nada
 }

@@ -4,6 +4,7 @@ import { createContext, useContext, useReducer, useEffect, ReactNode, useCallbac
 import { useRouter } from 'next/navigation';
 import { AuthState, User, LoginCredentials, RegisterCredentials } from '@/types/auth';
 import type { User as DbUser } from '@/lib/database-client';
+import { isActivePatron } from '@/lib/patreon-benefits';
 
 // Tipos para la API de Patreon
 interface PatreonResource {
@@ -20,6 +21,12 @@ interface PatreonResource {
   relationships?: {
     currently_entitled_tiers?: {
       data: Array<{ type: string; id: string }>;
+    };
+    campaign?: {
+      data?: { type: string; id: string };
+    };
+    currently_entitled_campaign?: {
+      data?: { type: string; id: string };
     };
   };
 }
@@ -119,46 +126,50 @@ interface PatreonIdentityResponse {
   included?: PatreonResource[];
 }
 
+const PATREON_CAMPAIGN_ID =
+  process.env.NEXT_PUBLIC_PATREON_CAMPAIGN_ID || process.env.PATREON_CAMPAIGN_ID || '';
+
 // Función auxiliar para extraer información de Patreon de forma consistente
 function extractPatreonInfo(patreonData: PatreonIdentityResponse) {
   const included = patreonData.included || [];
-  
-  // Buscar la membresía activa según documentación de Patreon
-  const membership = included.find((item: PatreonResource) => item.type === 'member');
-  
-  let patreonStatus: 'active_patron' | 'declined_patron' | 'former_patron' | null = null;
-  let patreonTier: string | undefined = undefined;
-  let entitledAmountCents = 0;
-  
-  if (membership && membership.attributes) {
-    // Obtener patron_status según documentación
-    patreonStatus = membership.attributes.patron_status || null;
-    entitledAmountCents = Number(membership.attributes.currently_entitled_amount_cents || 0);
-    
-    // Buscar el tier usando relationships según documentación
-    const tierRelationship = membership.relationships?.currently_entitled_tiers?.data?.[0];
-    
-    if (tierRelationship) {
-      // Buscar el tier en included usando el ID de la relationship
-      const tier = included.find((item: PatreonResource) => 
-        item.type === 'tier' && item.id === tierRelationship.id
-      );
-      
-      if (tier && tier.attributes) {
-        // Obtener title del tier según documentación
-        patreonTier = tier.attributes.title;
-      }
-    }
+  const memberships = included.filter((item: PatreonResource) => item.type === 'member');
 
-    // Si no viene patron_status pero hay tier o amount > 0, considerarlo activo
-    if (!patreonStatus && (patreonTier || entitledAmountCents > 0)) {
-      patreonStatus = 'active_patron';
+  const membership = memberships.find((member) => {
+    if (!PATREON_CAMPAIGN_ID) return true;
+    const campaignId =
+      member.relationships?.campaign?.data?.id ||
+      member.relationships?.currently_entitled_campaign?.data?.id ||
+      null;
+    return campaignId === PATREON_CAMPAIGN_ID;
+  });
+
+  if (!membership || !membership.attributes) {
+    return { patreonStatus: null, patreonTier: undefined };
+  }
+
+  const patreonStatus =
+    membership.attributes.patron_status &&
+    (membership.attributes.patron_status === 'active_patron' ||
+      membership.attributes.patron_status === 'declined_patron' ||
+      membership.attributes.patron_status === 'former_patron')
+      ? membership.attributes.patron_status
+      : null;
+
+  let patreonTier: string | undefined;
+
+  const tierRelationship = membership.relationships?.currently_entitled_tiers?.data?.[0];
+  if (tierRelationship) {
+    const tierResource = included.find(
+      (resource: PatreonResource) => resource.type === 'tier' && resource.id === tierRelationship.id
+    );
+    if (tierResource?.attributes?.title) {
+      patreonTier = tierResource.attributes.title;
     }
   }
-  
-  return { 
-    patreonStatus: patreonStatus || null, 
-    patreonTier: patreonTier || undefined 
+
+  return {
+    patreonStatus,
+    patreonTier,
   };
 }
 
@@ -171,6 +182,7 @@ function AuthProviderInternal({ children }: { children: ReactNode }) {
   const didInitialRefreshRef = useRef<boolean>(false);
   const inflightRefreshRef = useRef<Promise<void> | null>(null);
   const lastSummaryRef = useRef<{ hasApiKey: boolean; apiKeyValid: boolean | null } | null>(null);
+  const autoEnrollGiveawayRef = useRef<string | null>(null);
   const refreshThrottleMs = 120000; // 2 minutos para deduplicar refrescos
 
   // Verificar token al cargar
@@ -217,6 +229,57 @@ function AuthProviderInternal({ children }: { children: ReactNode }) {
 
     checkAuth();
   }, []);
+
+  useEffect(() => {
+    const currentUser = state.user;
+
+    if (!currentUser || !currentUser.id) {
+      autoEnrollGiveawayRef.current = null;
+      return;
+    }
+
+    if (!isActivePatron(currentUser)) {
+      return;
+    }
+
+    if (autoEnrollGiveawayRef.current === currentUser.id) {
+      return;
+    }
+
+    let cancelled = false;
+
+    const enroll = async () => {
+      try {
+        const response = await fetch('/api/giveaways/auto-enroll', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ userId: currentUser.id }),
+        });
+
+        if (!response.ok) {
+          const payload = await response.text();
+          console.error('Auto-enroll giveaway failed:', response.status, payload);
+          return;
+        }
+
+        if (!cancelled) {
+          autoEnrollGiveawayRef.current = currentUser.id;
+        }
+      } catch (error) {
+        if (!cancelled) {
+          console.error('Auto-enroll giveaway request error:', error);
+        }
+      }
+    };
+
+    enroll();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [state.user]);
 
   // Función de login
   const login = useCallback(async (credentials: LoginCredentials) => {

@@ -1027,6 +1027,8 @@
 
   "dashboard.advancedSettings": "Erweiterte Einstellungen",
   "dashboard.advancedSettingsShort": "Einstellungen",
+  "dashboard.loginRequired.title": "Anmeldung erforderlich",
+  "dashboard.loginRequired.message": "Sie müssen angemeldet sein, um diese Option zu verwenden.",
   "dashboard.editMode": "Bearbeitungsmodus",
   "dashboard.saveChanges": "Speichern",
   "dashboard.cancel": "Abbrechen",
@@ -2131,6 +2133,8 @@
   "fourWindsPrizeBag.purses": "Geldbörsen",
   "fourWindsPrizeBag.randomExotic": "Zufällig Exotisch",
   "fourWindsPrizeBag.luxuryEquipment": "Luxusausrüstung",
+  "fourWindsPrizeBag.dataSource": "Datenquelle:",
+  "fourWindsPrizeBag.dataSourceNames": "Vortus43 und Giges.9632",
   "magicPage.t6ConversionButton": "WIE MAN T6 KONVERTIERUNGEN + SPIRITUELLE SPLITTER-VERKÄUFE MACHT",
   "ectogamblingPage.sandstormLuckyDraw": "Glücksspiel des Sandsturms",
   "ectogamblingPage.subtitle": "Vollständige Analyse der Ectogambling-Statistiken und -Wahrscheinlichkeiten",

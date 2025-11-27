@@ -73,7 +73,8 @@ export async function GET(request: NextRequest) {
       // Buscar por email (para login)
       const query = `
         SELECT id, email, username, password, role, is_active as "isActive",
-               created_at as "createdAt", updated_at as "updatedAt", discord_id as "discordId"
+               created_at as "createdAt", updated_at as "updatedAt", discord_id as "discordId",
+               patreon_id as "patreonId", patreon_tier as "patreonTier", patreon_status as "patreonStatus"
         FROM users 
         WHERE email = $1
       `;
@@ -94,7 +95,8 @@ export async function GET(request: NextRequest) {
       // Buscar por username
       const query = `
         SELECT id, email, username, role, is_active as "isActive",
-               created_at as "createdAt", updated_at as "updatedAt", discord_id as "discordId"
+               created_at as "createdAt", updated_at as "updatedAt", discord_id as "discordId",
+               patreon_id as "patreonId", patreon_tier as "patreonTier", patreon_status as "patreonStatus"
         FROM users 
         WHERE username = $1
       `;
@@ -115,7 +117,8 @@ export async function GET(request: NextRequest) {
       // Buscar por Discord ID
       const query = `
         SELECT id, email, username, role, is_active as "isActive",
-               created_at as "createdAt", updated_at as "updatedAt", discord_id as "discordId"
+               created_at as "createdAt", updated_at as "updatedAt", discord_id as "discordId",
+               patreon_id as "patreonId", patreon_tier as "patreonTier", patreon_status as "patreonStatus"
         FROM users 
         WHERE discord_id = $1
       `;
@@ -139,7 +142,8 @@ export async function GET(request: NextRequest) {
       const query = `
         SELECT id, email, username, role, is_active as "isActive",
                created_at as "createdAt", updated_at as "updatedAt", discord_id as "discordId",
-               gw2_api_key as "gw2ApiKey"
+               gw2_api_key as "gw2ApiKey",
+               patreon_id as "patreonId", patreon_tier as "patreonTier", patreon_status as "patreonStatus"
         FROM users 
         WHERE id = $1
       `;

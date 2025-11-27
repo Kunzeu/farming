@@ -13,6 +13,7 @@ import PageUsageTracker from "@/components/PageUsageTracker";
 // import { Analytics } from "@vercel/analytics/next"; // Deshabilitado para reducir carga
 import { generateDynamicMetadata } from "@/lib/metadata";
 import GoogleAdsLoader from '@/components/GoogleAdsLoader';
+import AdBlocker from '@/components/AdBlocker';
 
 // Optimización de fuentes para Desktop
 const inter = Inter({ 
@@ -190,6 +191,8 @@ export default function RootLayout({
                 </div>
                 <ScrollToTop />
                 <CookieBanner />
+                <GoogleAdsLoader />
+                <AdBlocker />
                 {/* <Analytics /> Deshabilitado para reducir carga */}
               </div>
             </I18nProvider>
@@ -408,8 +411,6 @@ export default function RootLayout({
           `
         }} />
         
-        {/* Google Ads Loader */}
-        <GoogleAdsLoader />
       </body>
     </html>
   );

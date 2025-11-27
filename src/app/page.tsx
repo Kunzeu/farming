@@ -31,11 +31,13 @@ import {
 } from 'lucide-react'
 import { usePageTitle } from '@/hooks/usePageTitle'
 import { useI18n } from '@/contexts/I18nContext'
+import { useAuth } from '@/contexts/AuthContext'
 import { useDashboardPreferences } from '@/hooks/useDashboardPreferences'
 import Slogan from '@/components/ui/Slogan'
 import { getActiveFestivalEvents } from '@/lib/festival-dates'
 import { getUtilityOrder } from '@/lib/page-usage-tracker'
 import { useState, useEffect, useRef, lazy, Suspense } from 'react'
+import Modal from '@/components/ui/Modal'
 
 // Lazy loading para componentes pesados
 const DashboardSettings = lazy(() => import('@/components/DashboardSettings'))
@@ -248,6 +250,7 @@ const initialCards: DashboardCard[] = [
 export default function HomePage() {
   usePageTitle('pageTitles.home', 'Home');
   const { t } = useI18n();
+  const { user } = useAuth();
   const { preferences, isLoading, toggleCardVisibility: toggleVisibility, updateCardOrder } = useDashboardPreferences();
   
   // Estados para personalización
@@ -256,6 +259,7 @@ export default function HomePage() {
   const [originalCards, setOriginalCards] = useState<DashboardCard[]>([]);
   const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
   const [showSettings, setShowSettings] = useState(false);
+  const [showLoginModal, setShowLoginModal] = useState(false);
   const [mostUsedDashboard, setMostUsedDashboard] = useState<DashboardCard | null>(null);
   const [showNewToolMessage, setShowNewToolMessage] = useState(false);
   const hideTimeoutRef = useRef<NodeJS.Timeout | null>(null);
@@ -859,7 +863,13 @@ export default function HomePage() {
                 ) : (
                   <div className="flex gap-2">
                     <button
-                      onClick={() => setShowSettings(true)}
+                      onClick={() => {
+                        if (!user) {
+                          setShowLoginModal(true);
+                        } else {
+                          setShowSettings(true);
+                        }
+                      }}
                       className="flex items-center gap-1 md:gap-2 px-3 md:px-4 py-1.5 md:py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors duration-200 text-sm"
                     >
                       <Settings className="w-3 h-3" />
@@ -973,6 +983,15 @@ export default function HomePage() {
           onClose={() => setShowSettings(false)} 
         />
       </Suspense>
+
+      {/* Modal de login requerido */}
+      <Modal
+        isOpen={showLoginModal}
+        onClose={() => setShowLoginModal(false)}
+        type="error"
+        title={t('dashboard.loginRequired.title', 'Inicio de sesión requerido')}
+        message={t('dashboard.loginRequired.message', 'Debes estar logueado para usar esta opción.')}
+      />
     </div>
   )
 } 
