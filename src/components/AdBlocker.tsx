@@ -15,25 +15,34 @@ export default function AdBlocker() {
     // Solo ejecutar en el cliente
     if (typeof window === 'undefined') return;
 
-    // Debug: Log para verificar el estado del usuario
-    if (user && !showAds) {
-      console.log('[AdBlocker] ✅ Usuario Patreon activo detectado, bloqueando anuncios:', {
-        email: user.email,
-        patreonStatus: user.patreonStatus,
-        patreonTier: user.patreonTier,
-        isActivePatron: true,
-      });
-    } else if (user && showAds) {
-      console.log('[AdBlocker] ⚠️ Usuario NO es Patreon activo, mostrando anuncios:', {
-        email: user.email,
-        patreonStatus: user.patreonStatus || 'null',
-        patreonTier: user.patreonTier || 'null',
-        isActivePatron: false,
-      });
+    // Debug: Log solo en desarrollo (verificar en cliente)
+    if (typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')) {
+      if (user && !showAds) {
+        console.log('[AdBlocker] ✅ Usuario Patreon activo detectado, bloqueando anuncios:', {
+          email: user.email,
+          patreonStatus: user.patreonStatus,
+          patreonTier: user.patreonTier,
+          isActivePatron: true,
+          showAds: showAds,
+        });
+      } else if (user && showAds) {
+        console.log('[AdBlocker] ℹ️ Usuario normal - NO bloqueando anuncios (showAds=true):', {
+          email: user.email,
+          patreonStatus: user.patreonStatus || 'null',
+          patreonTier: user.patreonTier || 'null',
+          isActivePatron: false,
+          showAds: showAds,
+        });
+      } else if (!user) {
+        console.log('[AdBlocker] ℹ️ Usuario no logueado - NO bloqueando anuncios (showAds=true):', {
+          showAds: showAds,
+        });
+      }
     }
 
-    // Si el usuario es patreon activo, bloquear TODOS los anuncios
-    if (!showAds) {
+    // Solo bloquear anuncios si el usuario es Patreon activo (showAds === false)
+    // Si showAds === true, NO hacer nada y dejar que los anuncios se muestren normalmente
+    if (!showAds && user) {
       const blockAllAds = () => {
         // Eliminar el script de AdSense si existe
         const adScript = document.querySelector('script[src*="googlesyndication"]');
@@ -134,6 +143,7 @@ export default function AdBlocker() {
         document.removeEventListener('click', handleClick, true);
       };
     }
+    // Si showAds === true, no hacer nada - dejar que los anuncios se muestren normalmente
   }, [showAds, user]);
 
   return null; // No renderiza nada
