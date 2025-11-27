@@ -1,6 +1,8 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
+import { useAuth } from '@/contexts/AuthContext';
+import { shouldShowAds } from '@/lib/patreon-benefits';
 
 interface GoogleAdProps {
   adSlot: string;
@@ -15,8 +17,15 @@ export default function GoogleAd({
   adStyle = { display: 'block' },
   className = ''
 }: GoogleAdProps) {
+  const { user } = useAuth();
+  const showAds = shouldShowAds(user);
   const adRef = useRef<HTMLModElement>(null);
   const [initialized, setInitialized] = useState(false);
+
+  // Si el usuario es Patreon activo, no renderizar el anuncio
+  if (!showAds) {
+    return null;
+  }
 
   useEffect(() => {
     const el = adRef.current as unknown as HTMLElement | null;

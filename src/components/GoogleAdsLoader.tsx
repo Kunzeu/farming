@@ -14,6 +14,15 @@ export default function GoogleAdsLoader() {
     
     // Si el usuario es patreon activo, NO cargar el script de AdSense
     if (!showAds) {
+      // Si el script ya está cargado, intentar eliminarlo
+      const existingScript = document.querySelector('script[src*="googlesyndication"]');
+      if (existingScript) {
+        existingScript.remove();
+      }
+      // Limpiar el objeto global de AdSense
+      if (window.adsbygoogle) {
+        delete (window as any).adsbygoogle;
+      }
       return;
     }
     
