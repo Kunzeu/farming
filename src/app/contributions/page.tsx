@@ -117,6 +117,16 @@ const LEGENDARY_ITEM_IDS: Record<string, number> = {
 
   // Pre's
   'Dragon\'s Bite': 96357,
+
+  // Lodestone
+  'Destroyer Lodestone': 24325,
+  'Glacial Lodestone': 24320,
+  'Corrupted Lodestone': 24340,
+  'Molten Lodestone': 24315,
+  'Onyx Lodestone': 24310,
+  'Crystal Lodestone': 24330,
+  'Charged Lodestone': 24305,
+  'Mordrem Lodestone': 70842,
 };
 
 // Traducciones para tipos y rareza
@@ -305,6 +315,14 @@ const getEventData = (t: (key: string) => string): ContributionEvent => {
          { name: 'Sunrise', quantity: 1  },
          { name: 'The Juggernaut', quantity: 1  }, 
          { name: 'giveaways.gems', quantity: 2800, icon: 'https://wiki.guildwars2.com/images/8/88/Gem_%28highres%29.png'  },
+          
+        ]
+      },
+      {
+        name: 'sombra.6318',
+        items: [
+          { name: 'Destroyer Lodestone', quantity: 500  },
+          { name: 'Corrupted Lodestone', quantity: 500  },
           
         ]
       },
