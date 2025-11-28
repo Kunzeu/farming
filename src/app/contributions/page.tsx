@@ -319,6 +319,9 @@ const getEventData = (t: (key: string) => string): ContributionEvent => {
          { name: 'Sunrise', quantity: 1  },
          { name: 'The Juggernaut', quantity: 1  }, 
          { name: 'giveaways.gems', quantity: 2800, icon: 'https://wiki.guildwars2.com/images/8/88/Gem_%28highres%29.png'  },
+         { name: 'Glob of Ectoplasm', quantity: 1250  },
+         { name: 'Aetheric Anchor', quantity: 1  },
+         { name: 'Klobjarne Geirr', quantity: 1  },
           
         ]
       },
@@ -897,7 +900,7 @@ export default function ContributionsPage() {
                           <td className="py-3 px-4 text-right overflow-visible"></td>
                           <td className="py-3 px-4 overflow-visible">
                             {hasCoins && (
-                              <div className="flex items-center gap-2 flex-wrap">
+                              <div className="flex items-center gap-2">
                                 {combinedCoins.gold > 0 && (
                                   <div className="flex items-center gap-1">
                                     <span className="text-yellow-400 font-semibold text-sm">{combinedCoins.gold.toLocaleString()}</span>
