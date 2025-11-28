@@ -127,6 +127,9 @@ const LEGENDARY_ITEM_IDS: Record<string, number> = {
   'Crystal Lodestone': 24330,
   'Charged Lodestone': 24305,
   'Mordrem Lodestone': 70842,
+
+  // Glyphs
+  'Glyph of Volatility': 88045  ,
 };
 
 // Traducciones para tipos y rareza
@@ -290,6 +293,7 @@ const getEventData = (t: (key: string) => string): ContributionEvent => {
            name: 'Yuuki.7084',
           items: [
               { name: 'Glob of Ectoplasm', quantity: 750 }, 
+              { name: 'Glyph of Volatility', quantity: 1  },
 
           ]
        },
@@ -756,9 +760,9 @@ export default function ContributionsPage() {
                       />
                     </div>
                   )}
-                  {totalDonations.silver > 0 && (
+                  {(totalDonations.gold > 0 || totalDonations.silver > 0) && (
                     <div className="flex items-center gap-1">
-                      <span className="text-gray-300 font-bold text-lg">{totalDonations.silver.toLocaleString()}</span>
+                      <span className="text-gray-300 font-bold text-lg">{String(totalDonations.silver).padStart(2, '0')}</span>
                       <Image
                         src="/images/expansions/Silver.webp"
                         alt="Silver"
@@ -907,9 +911,9 @@ export default function ContributionsPage() {
                                     />
                                   </div>
                                 )}
-                                {combinedCoins.silver > 0 && (
+                                {(combinedCoins.gold > 0 || combinedCoins.silver > 0) && (
                                   <div className="flex items-center gap-1">
-                                    <span className="text-gray-300 font-semibold text-sm">{combinedCoins.silver.toLocaleString()}</span>
+                                    <span className="text-gray-300 font-semibold text-sm">{String(combinedCoins.silver).padStart(2, '0')}</span>
                                     <Image
                                       src="/images/expansions/Silver.webp"
                                       alt="Silver"
