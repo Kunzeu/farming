@@ -38,6 +38,12 @@ interface ItemData {
   type?: string;
   rarity?: string;
   level?: number;
+  stats?: {
+    attributes?: Array<{
+      attribute: string;
+      modifier: number;
+    }>;
+  };
 }
 
 interface InGameDonation {
@@ -117,6 +123,19 @@ const LEGENDARY_ITEM_IDS: Record<string, number> = {
 
   // Pre's
   'Dragon\'s Bite': 96357,
+  'Dragon\'s Fang': 95994,
+  'Dragon\'s Weight': 95920,
+  'Dragon\'s Rending': 97449,
+  'Dragon\'s Wing': 96330,
+  'Dragon\'s Flight': 95834,
+  'Dragon\'s Insight': 95814,
+  'Dragon\'s Claw': 95967,
+  'Dragon\'s Argument': 96915,
+  'Dragon\'s Scale': 97691,
+  // Pre gen1
+  'The Colossus': 29170,
+  'The Lover': 29178,
+  
 
   // Lodestone
   'Destroyer Lodestone': 24325,
@@ -130,6 +149,31 @@ const LEGENDARY_ITEM_IDS: Record<string, number> = {
 
   // Glyphs
   'Glyph of Volatility': 88045  ,
+
+  // Skins
+  'Imperial Everbloom Greatsword Skin': 104209,
+  'Imperial Everbloom Spear Skin': 104228,
+  'Imperial Everbloom Sword Skin': 104221,
+  'Imperial Everbloom Dagger Skin': 104212,
+  'Imperial Everbloom Axe Skin': 104210,
+  'Imperial Everbloom Mace Skin': 104207,
+
+  // Infusions
+  'Polysaturating Reverberating Infusion (Purple)': 89070,
+  'Thundercrag Greatsword Skin': 101365,
+  'Thundercrag Sword Skin': 101340,
+  'Vial of Liquid Aurillium':  81918,
+
+};
+
+// Mapeo de traducciones manuales para items específicos (cuando la API falla)
+const MANUAL_ITEM_TRANSLATIONS: Record<string, Record<string, string>> = {
+  'Polysaturating Reverberating Infusion (Purple)': {
+    en: 'Polysaturating Reverberating Infusion (Purple)',
+    es: 'Infusión reverberante polisaturante (morada)',
+    fr: 'Infusion réverbérante polysaturée (violette)',
+    de: 'Polysaturierende widerhallende Infusion (lila)',
+  },
 };
 
 // Traducciones para tipos y rareza
@@ -139,24 +183,72 @@ const TRANSLATIONS: Record<string, Record<string, string>> = {
     rarity: 'Rarity',
     level: 'Level',
     legendary: 'Legendary',
+    stats: 'Stats',
+    // Atributos
+    Power: 'Power',
+    Precision: 'Precision',
+    Toughness: 'Toughness',
+    Vitality: 'Vitality',
+    ConditionDamage: 'Condition Damage',
+    HealingPower: 'Healing Power',
+    Concentration: 'Concentration',
+    Expertise: 'Expertise',
+    Ferocity: 'Ferocity',
+    AgonyResistance: 'Agony Resistance',
   },
   es: {
     weapon: 'Arma',
     rarity: 'Rareza',
     level: 'Nivel',
     legendary: 'Legendario',
+    stats: 'Estadísticas',
+    // Atributos
+    Power: 'Poder',
+    Precision: 'Precisión',
+    Toughness: 'Dureza',
+    Vitality: 'Vitalidad',
+    ConditionDamage: 'Daño de condición',
+    HealingPower: 'Poder de curación',
+    Concentration: 'Concentración',
+    Expertise: 'Experiencia',
+    Ferocity: 'Ferocidad',
+    AgonyResistance: 'Resistencia a la agonía',
   },
   de: {
     weapon: 'Waffe',
     rarity: 'Seltenheit',
     level: 'Stufe',
     legendary: 'Legendär',
+    stats: 'Statistiken',
+    // Atributos
+    Power: 'Kraft',
+    Precision: 'Präzision',
+    Toughness: 'Zähigkeit',
+    Vitality: 'Vitalität',
+    ConditionDamage: 'Zustandsschaden',
+    HealingPower: 'Heilkraft',
+    Concentration: 'Konzentration',
+    Expertise: 'Fachwissen',
+    Ferocity: 'Wildheit',
+    AgonyResistance: 'Qual-Widerstand',
   },
   fr: {
     weapon: 'Arme',
     rarity: 'Rareté',
     level: 'Niveau',
     legendary: 'Légendaire',
+    stats: 'Statistiques',
+    // Atributos
+    Power: 'Puissance',
+    Precision: 'Précision',
+    Toughness: 'Robustesse',
+    Vitality: 'Vitalité',
+    ConditionDamage: 'Dégâts de condition',
+    HealingPower: 'Puissance de soin',
+    Concentration: 'Concentration',
+    Expertise: 'Expertise',
+    Ferocity: 'Férocité',
+    AgonyResistance: 'Résistance à l\'agonie',
   },
 };
 
@@ -185,9 +277,24 @@ function translateRarity(rarity: string | undefined, language: string): string {
   return rarity;
 }
 
+// Función para traducir nombres de atributos
+function translateAttribute(attribute: string, language: string): string {
+  // Normalizar el nombre del atributo (puede venir con o sin espacios)
+  const normalized = attribute.replace(/\s+/g, '');
+  
+  // Intentar obtener la traducción
+  const translation = getTranslation(normalized, language);
+  if (translation && translation !== normalized) {
+    return translation;
+  }
+  
+  // Si no hay traducción, devolver el nombre original con formato legible
+  return attribute.replace(/([A-Z])/g, ' $1').trim();
+}
+
 // Clave para el caché en localStorage
 const CACHE_KEY = 'gw2_items_cache';
-const CACHE_VERSION = '1.0';
+const CACHE_VERSION = '1.1'; // Actualizado para incluir stats
 
 // Función para obtener datos del caché
 function getCachedItemData(itemId: number): ItemData | null {
@@ -232,10 +339,7 @@ async function fetchItemData(itemName: string): Promise<ItemData | null> {
 
   // Intentar obtener del caché primero
   const cached = getCachedItemData(itemId);
-  if (cached) {
-    return cached;
-  }
-
+  
   try {
     const languages = ['en', 'es', 'de', 'fr'];
     const promises = languages.map(lang =>
@@ -247,16 +351,59 @@ async function fetchItemData(itemName: string): Promise<ItemData | null> {
     const results = await Promise.all(promises);
     const [enData, esData, deData, frData] = results;
 
-    if (!enData) return null;
+    if (!enData) {
+      // Si falla la API pero tenemos caché, usar el caché
+      if (cached) return cached;
+      return null;
+    }
+    
+    // Si tenemos caché y los datos de la API son iguales (mismo ID), verificar si necesitamos actualizar stats
+    if (cached && cached.id === itemId) {
+      // Si el item tiene stats en la API pero no en caché, actualizar
+      const hasStatsInAPI = enData.details?.infix_upgrade?.attributes;
+      const hasStatsInCache = cached.stats?.attributes;
+      
+      if (hasStatsInAPI && !hasStatsInCache) {
+        console.log(`[fetchItemData] Item ${itemName} tiene stats en API pero no en caché, actualizando...`);
+        // Continuar para actualizar el caché con stats
+      } else if (!hasStatsInAPI && hasStatsInCache) {
+        // No hay stats en API, usar caché
+        return cached;
+      } else if (!hasStatsInAPI && !hasStatsInCache) {
+        // No hay stats en ninguno, usar caché
+        return cached;
+      } else {
+        // Ambos tienen stats, usar caché (asumimos que son iguales)
+        return cached;
+      }
+    }
+
+    // Verificar si hay traducciones manuales para este item
+    const manualTranslations = MANUAL_ITEM_TRANSLATIONS[itemName];
+
+    // Extraer stats si están disponibles
+    console.log(`[fetchItemData] Item: ${itemName}, ID: ${itemId}`);
+    console.log(`[fetchItemData] Details:`, enData.details);
+    console.log(`[fetchItemData] Infix upgrade:`, enData.details?.infix_upgrade);
+    console.log(`[fetchItemData] Attributes:`, enData.details?.infix_upgrade?.attributes);
+    
+    const stats = enData.details?.infix_upgrade?.attributes ? {
+      attributes: enData.details.infix_upgrade.attributes.map((attr: { attribute: string; modifier: number }) => ({
+        attribute: attr.attribute,
+        modifier: attr.modifier,
+      })),
+    } : undefined;
+    
+    console.log(`[fetchItemData] Stats extraídos:`, stats);
 
     const itemData: ItemData = {
       id: itemId,
       icon: enData.icon || '',
       names: {
-        en: enData.name || itemName,
-        es: esData?.name || enData.name || itemName,
-        de: deData?.name || enData.name || itemName,
-        fr: frData?.name || enData.name || itemName,
+        en: manualTranslations?.en || enData.name || itemName,
+        es: manualTranslations?.es || esData?.name || enData.name || itemName,
+        de: manualTranslations?.de || deData?.name || enData.name || itemName,
+        fr: manualTranslations?.fr || frData?.name || enData.name || itemName,
       },
       description: {
         en: enData.description || '',
@@ -267,6 +414,7 @@ async function fetchItemData(itemName: string): Promise<ItemData | null> {
       type: enData.type,
       rarity: enData.rarity,
       level: enData.level,
+      stats: stats,
     };
 
     // Guardar en caché
@@ -315,13 +463,19 @@ const getEventData = (t: (key: string) => string): ContributionEvent => {
         name: 'Vortus.2801',
         twitch: 'https://www.twitch.tv/Vortus43', 
         items: [
-          { name: 'Aurene\'s Insight', quantity: 1  },  
+         { name: 'Aurene\'s Insight', quantity: 1  },  
          { name: 'Sunrise', quantity: 1  },
          { name: 'The Juggernaut', quantity: 1  }, 
          { name: 'giveaways.gems', quantity: 2800, icon: 'https://wiki.guildwars2.com/images/8/88/Gem_%28highres%29.png'  },
          { name: 'Glob of Ectoplasm', quantity: 1250  },
          { name: 'Aetheric Anchor', quantity: 1  },
          { name: 'Klobjarne Geirr', quantity: 1  },
+         { name: 'Imperial Everbloom Greatsword Skin', quantity: 1  },
+         { name: 'Imperial Everbloom Spear Skin', quantity: 1  },
+         { name: 'Imperial Everbloom Sword Skin', quantity: 1  },
+         { name: 'Imperial Everbloom Dagger Skin', quantity: 1  },
+         { name: 'Imperial Everbloom Axe Skin', quantity: 1  },
+         { name: 'Imperial Everbloom Mace Skin', quantity: 1  },
           
         ]
       },
@@ -330,10 +484,44 @@ const getEventData = (t: (key: string) => string): ContributionEvent => {
         items: [
           { name: 'Destroyer Lodestone', quantity: 500  },
           { name: 'Corrupted Lodestone', quantity: 500  },
+          { name: 'Vial of Liquid Aurillium', quantity: 1  },
           
         ]
       },
-      
+      {
+        name: 'giges.9632',
+        items: [
+          { name: 'Dragon\'s Fang', quantity: 1  },
+          { name: 'Dragon\'s Weight', quantity: 1  },
+          { name: 'Dragon\'s Wing', quantity: 1  },
+          { name: 'Dragon\'s Rending', quantity: 1  },
+          { name: 'Dragon\'s Flight', quantity: 1  },
+          { name: 'Dragon\'s Insight', quantity: 1  },
+          { name: 'Dragon\'s Claw', quantity: 1  },
+          { name: 'Dragon\'s Bite', quantity: 1  },
+          { name: 'Dragon\'s Argument', quantity: 1  },
+          { name: 'Dragon\'s Scale', quantity: 1  },
+          
+        ]
+      },
+      {
+        name: 'Lazaro.6109',
+        items: [
+          { name: 'Dragon\'s Flight', quantity: 1  },
+          
+        ]
+      },
+      {
+        name: 'Meimi.5461',
+        items: [
+          { name: 'Polysaturating Reverberating Infusion (Purple)', quantity: 1},
+          { name: 'Thundercrag Greatsword Skin', quantity: 1  },
+          { name: 'Thundercrag Sword Skin', quantity: 1  },
+          { name: 'The Colossus', quantity: 1  },
+          { name: 'The Lover', quantity: 1  },
+          
+        ]
+      },
 
     ]
   };
@@ -749,7 +937,7 @@ export default function ContributionsPage() {
               {/* Total de donaciones */}
               <div className="flex items-center gap-3 bg-slate-800/50 px-4 py-2 rounded-lg border border-purple-500/30">
                 <span className="text-gray-400 text-sm font-semibold uppercase">Total:</span>
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-4">
                   {totalDonations.gold > 0 && (
                     <div className="flex items-center gap-1">
                       <span className="text-yellow-400 font-bold text-lg">{totalDonations.gold.toLocaleString()}</span>
@@ -900,7 +1088,7 @@ export default function ContributionsPage() {
                           <td className="py-3 px-4 text-right overflow-visible"></td>
                           <td className="py-3 px-4 overflow-visible">
                             {hasCoins && (
-                              <div className="flex items-center gap-2">
+                              <div className="flex items-center gap-4">
                                 {combinedCoins.gold > 0 && (
                                   <div className="flex items-center gap-1">
                                     <span className="text-yellow-400 font-semibold text-sm">{combinedCoins.gold.toLocaleString()}</span>
@@ -950,9 +1138,11 @@ export default function ContributionsPage() {
                                 const itemData = itemsData[item.name];
                                 // Si el nombre del item es una clave de traducción, usarla directamente
                                 const isTranslationKey = item.name.includes('.');
+                                // Verificar traducciones manuales primero, luego itemData, luego el nombre original
+                                const manualTranslation = MANUAL_ITEM_TRANSLATIONS[item.name]?.[lang as keyof typeof MANUAL_ITEM_TRANSLATIONS[string]];
                                 const itemName = isTranslationKey 
                                   ? t(item.name)
-                                  : (itemData?.names[lang as keyof typeof itemData.names] || itemData?.names.en || item.name);
+                                  : (manualTranslation || itemData?.names[lang as keyof typeof itemData.names] || itemData?.names.en || item.name);
                                 // El icono puede venir del item directamente o de los datos de la API
                                 const itemIcon = item.icon || itemData?.icon;
                                 const itemKey = `${donation.name}-${itemIndex}`;
@@ -1036,6 +1226,32 @@ export default function ContributionsPage() {
                                                 {getTranslation('level', lang)}: <span className="text-purple-400">{itemData.level}</span>
                                               </span>
                                             )}
+                                          </div>
+                                        )}
+                                        
+                                        {/* Estadísticas */}
+                                        {(() => {
+                                          if (itemData) {
+                                            console.log(`[Tooltip] Item: ${itemName}`);
+                                            console.log(`[Tooltip] ItemData completo:`, itemData);
+                                            console.log(`[Tooltip] Stats:`, itemData.stats);
+                                            console.log(`[Tooltip] Attributes:`, itemData.stats?.attributes);
+                                            console.log(`[Tooltip] ¿Tiene attributes?:`, !!itemData.stats?.attributes);
+                                            console.log(`[Tooltip] ¿Length > 0?:`, (itemData.stats?.attributes?.length ?? 0) > 0);
+                                          }
+                                          return null;
+                                        })()}
+                                        {itemData?.stats?.attributes && itemData.stats.attributes.length > 0 && (
+                                          <div className="border-t border-gray-700 pt-2 mb-3">
+                                            <p className="text-gray-400 text-xs mb-2 font-semibold">{getTranslation('stats', lang)}:</p>
+                                            <div className="space-y-1">
+                                              {itemData.stats.attributes.map((attr, idx) => (
+                                                <div key={idx} className="flex justify-between text-xs">
+                                                  <span className="text-gray-300">{translateAttribute(attr.attribute, lang)}:</span>
+                                                  <span className="text-yellow-400 font-semibold">+{attr.modifier}</span>
+                                                </div>
+                                              ))}
+                                            </div>
                                           </div>
                                         )}
                                         
