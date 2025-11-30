@@ -465,7 +465,7 @@ const getEventData = (t: (key: string) => string): ContributionEvent => {
        {
            name: 'Yuuki.7084',
           items: [
-              { name: 'Glob of Ectoplasm', quantity: 750 }, 
+              { name: 'Glob of Ectoplasm', quantity: 1000 }, 
               { name: 'Glyph of Volatility', quantity: 1  },
 
           ]
