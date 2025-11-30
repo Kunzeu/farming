@@ -579,6 +579,14 @@ const getEventData = (t: (key: string) => string): ContributionEvent => {
           
         ]
       },
+      {
+        name: 'RobertDePueblo.4215',
+        items: [
+          { name: 'Glob of Ectoplasm', quantity: 500  },
+          { name: 'Dragon\'s Fang', quantity: 1  },
+          
+        ]
+      },
 
     ]
   };
