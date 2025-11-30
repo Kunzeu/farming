@@ -161,6 +161,7 @@ const LEGENDARY_ITEM_IDS: Record<string, number> = {
   'Imperial Everbloom Dagger Skin': 104212,
   'Imperial Everbloom Axe Skin': 104210,
   'Imperial Everbloom Mace Skin': 104207,
+  'Chromatic Assassin Spear Skin': 102013,
 
   // Infusions
   'Polysaturating Reverberating Infusion (Purple)': 89070,
@@ -174,6 +175,12 @@ const LEGENDARY_ITEM_IDS: Record<string, number> = {
   'Powerful Venom Sac': 24283,
   'Vicious Fang': 24357,
   'Symbol of Control': 89098,
+  'Scavenger Protocol: Magic Trophies': 97535,
+  'Mystic Coin': 19976,
+  'Jade Bot Core: Tier 10': 96613,
+  'Hard Wood Logging Node': 79085,
+  'Orichalcum Mining Node': 68094,
+
 
 };
 
@@ -506,6 +513,9 @@ const getEventData = (t: (key: string) => string): ContributionEvent => {
               { name: 'Glob of Ectoplasm', quantity: 1000 }, 
               { name: 'Glyph of Volatility', quantity: 1  },
               { name: 'Dragon\'s Tail', quantity: 1  },
+              { name: 'Hard Wood Logging Node', quantity: 1  },
+              { name: 'Orichalcum Mining Node', quantity: 1  },
+              
 
           ]
        },
@@ -530,7 +540,7 @@ const getEventData = (t: (key: string) => string): ContributionEvent => {
          { name: 'Aurene\'s Insight', quantity: 1  },  
          { name: 'Sunrise', quantity: 1  },
          { name: 'The Juggernaut', quantity: 1  }, 
-         { name: 'giveaways.gems', quantity: 2800, icon: 'https://wiki.guildwars2.com/images/8/88/Gem_%28highres%29.png'  },
+         { name: 'giveaways.gems', quantity: 2800, icon: 'https://wiki.guildwars2.com/images/8/88/Gem_%28highres%29.png', price: 10610000},
          { name: 'Glob of Ectoplasm', quantity: 1250  },
          { name: 'Aetheric Anchor', quantity: 1  },
          { name: 'Klobjarne Geirr', quantity: 1  },
@@ -630,11 +640,31 @@ const getEventData = (t: (key: string) => string): ContributionEvent => {
       {
         name: 'Guille.7985',
         items: [
-          { name: 'Glob of Ectoplasm', quantity: 1000  },
-          
+          { name: 'Glob of Ectoplasm', quantity: 1000  },        
         ]
       },
-
+      {
+        name: 'Rc Ganz.2315',
+        items: [
+          { name: 'Glob of Ectoplasm', quantity: 250  },
+          { name: 'Scavenger Protocol: Magic Trophies', quantity: 1  },
+          { name: 'Mystic Coin', quantity: 50  },
+          { name: 'Jade Bot Core: Tier 10', quantity: 1  },
+        ]
+      },
+      {
+        name: 'Jookerts.8071',
+        items: [
+          { name: 'Chromatic Assassin Spear Skin', quantity: 10  },
+        ]
+      },
+      {
+        name: '', // Donación anónima - no se mostrará el nombre
+        items: [
+          { name: 'Gold', quantity: 900, price: 10000, icon: '/images/expansions/Gold.webp' },
+        ]
+      },
+      
     ]
   };
 };
@@ -1018,11 +1048,16 @@ export default function ContributionsPage() {
       if (donation.items) {
         donation.items.forEach(item => {
           const price = getItemPrice(item);
-          if (price > 0 && item.quantity) {
-            totalCopper += price * item.quantity;
-          } else if (price > 0) {
-            // Si no hay cantidad, asumir 1
-            totalCopper += price;
+          if (price > 0) {
+            // Para gemas, no multiplicar por cantidad (el precio ya es el total)
+            if (item.name === 'giveaways.gems') {
+              totalCopper += price;
+            } else if (item.quantity) {
+              totalCopper += price * item.quantity;
+            } else {
+              // Si no hay cantidad, asumir 1
+              totalCopper += price;
+            }
           }
         });
       }
@@ -1129,10 +1164,15 @@ export default function ContributionsPage() {
                       if (a.items) {
                         a.items.forEach(item => {
                           const price = getItemPrice(item);
-                          if (price > 0 && item.quantity) {
-                            totalCopperA += price * item.quantity;
-                          } else if (price > 0) {
-                            totalCopperA += price;
+                          if (price > 0) {
+                            // Para gemas, no multiplicar por cantidad (el precio ya es el total)
+                            if (item.name === 'giveaways.gems') {
+                              totalCopperA += price;
+                            } else if (item.quantity) {
+                              totalCopperA += price * item.quantity;
+                            } else {
+                              totalCopperA += price;
+                            }
                           }
                         });
                       }
@@ -1148,10 +1188,15 @@ export default function ContributionsPage() {
                       if (b.items) {
                         b.items.forEach(item => {
                           const price = getItemPrice(item);
-                          if (price > 0 && item.quantity) {
-                            totalCopperB += price * item.quantity;
-                          } else if (price > 0) {
-                            totalCopperB += price;
+                          if (price > 0) {
+                            // Para gemas, no multiplicar por cantidad (el precio ya es el total)
+                            if (item.name === 'giveaways.gems') {
+                              totalCopperB += price;
+                            } else if (item.quantity) {
+                              totalCopperB += price * item.quantity;
+                            } else {
+                              totalCopperB += price;
+                            }
                           }
                         });
                       }
@@ -1159,17 +1204,23 @@ export default function ContributionsPage() {
                       // Ordenar de mayor a menor
                       return totalCopperB - totalCopperA;
                     })
+                    .filter((donation) => donation.name !== '') // Filtrar donaciones anónimas (no se muestran en la tabla)
                     .map((donation, index) => {
                       // Calcular el valor total de los items en cobre
                       let itemsValueCopper = 0;
                       if (donation.items) {
                         donation.items.forEach(item => {
                           const price = getItemPrice(item);
-                          if (price > 0 && item.quantity) {
-                            itemsValueCopper += price * item.quantity;
-                          } else if (price > 0) {
-                            // Si no hay cantidad, asumir 1
-                            itemsValueCopper += price;
+                          if (price > 0) {
+                            // Para gemas, no multiplicar por cantidad (el precio ya es el total)
+                            if (item.name === 'giveaways.gems') {
+                              itemsValueCopper += price;
+                            } else if (item.quantity) {
+                              itemsValueCopper += price * item.quantity;
+                            } else {
+                              // Si no hay cantidad, asumir 1
+                              itemsValueCopper += price;
+                            }
                           }
                         });
                       }
