@@ -314,26 +314,48 @@ function getCachedItemData(itemId: number): ItemData | null {
   }
 }
 
-// Función para guardar datos en el caché (asíncrona para no bloquear)
+// Cola de escrituras pendientes para optimizar el caché
+const pendingCacheWrites: Map<number, ItemData> = new Map();
+let cacheWriteTimeout: NodeJS.Timeout | null = null;
+
+// Función para guardar datos en el caché (con batching para optimizar)
 function setCachedItemData(itemId: number, data: ItemData): void {
   if (typeof window === 'undefined') return;
   
-  // Usar setTimeout para escribir de forma asíncrona y no bloquear el hilo principal
-  setTimeout(() => {
+  // Agregar a la cola de escrituras pendientes
+  pendingCacheWrites.set(itemId, data);
+  
+  // Cancelar el timeout anterior si existe
+  if (cacheWriteTimeout) {
+    clearTimeout(cacheWriteTimeout);
+  }
+  
+  // Escribir en batch después de un pequeño delay
+  cacheWriteTimeout = setTimeout(() => {
     try {
       const cached = localStorage.getItem(CACHE_KEY);
       const cacheData = cached ? JSON.parse(cached) : { version: CACHE_VERSION, items: {} };
       
-      cacheData.items[itemId] = data;
+      // Escribir todos los items pendientes de una vez
+      pendingCacheWrites.forEach((itemData, id) => {
+        cacheData.items[id] = itemData;
+      });
+      
       localStorage.setItem(CACHE_KEY, JSON.stringify(cacheData));
+      
+      // Limpiar la cola
+      pendingCacheWrites.clear();
+      cacheWriteTimeout = null;
     } catch (error) {
       console.error('Error writing cache:', error);
+      pendingCacheWrites.clear();
+      cacheWriteTimeout = null;
     }
-  }, 0);
+  }, 100); // Delay de 100ms para agrupar múltiples escrituras
 }
 
 // Función para obtener datos de items desde la API de GW2
-async function fetchItemData(itemName: string): Promise<ItemData | null> {
+async function fetchItemData(itemName: string, skipCacheWrite: boolean = false): Promise<ItemData | null> {
   const itemId = LEGENDARY_ITEM_IDS[itemName];
   if (!itemId) return null;
 
@@ -364,7 +386,6 @@ async function fetchItemData(itemName: string): Promise<ItemData | null> {
       const hasStatsInCache = cached.stats?.attributes;
       
       if (hasStatsInAPI && !hasStatsInCache) {
-        console.log(`[fetchItemData] Item ${itemName} tiene stats en API pero no en caché, actualizando...`);
         // Continuar para actualizar el caché con stats
       } else if (!hasStatsInAPI && hasStatsInCache) {
         // No hay stats en API, usar caché
@@ -382,19 +403,12 @@ async function fetchItemData(itemName: string): Promise<ItemData | null> {
     const manualTranslations = MANUAL_ITEM_TRANSLATIONS[itemName];
 
     // Extraer stats si están disponibles
-    console.log(`[fetchItemData] Item: ${itemName}, ID: ${itemId}`);
-    console.log(`[fetchItemData] Details:`, enData.details);
-    console.log(`[fetchItemData] Infix upgrade:`, enData.details?.infix_upgrade);
-    console.log(`[fetchItemData] Attributes:`, enData.details?.infix_upgrade?.attributes);
-    
     const stats = enData.details?.infix_upgrade?.attributes ? {
       attributes: enData.details.infix_upgrade.attributes.map((attr: { attribute: string; modifier: number }) => ({
         attribute: attr.attribute,
         modifier: attr.modifier,
       })),
     } : undefined;
-    
-    console.log(`[fetchItemData] Stats extraídos:`, stats);
 
     const itemData: ItemData = {
       id: itemId,
@@ -417,8 +431,19 @@ async function fetchItemData(itemName: string): Promise<ItemData | null> {
       stats: stats,
     };
 
-    // Guardar en caché
-    setCachedItemData(itemId, itemData);
+    // Pre-cargar el icono para mejorar la velocidad de carga
+    if (itemData.icon && typeof window !== 'undefined') {
+      const link = document.createElement('link');
+      link.rel = 'preload';
+      link.as = 'image';
+      link.href = itemData.icon;
+      document.head.appendChild(link);
+    }
+
+    // Guardar en caché solo si no se está haciendo batch write
+    if (!skipCacheWrite) {
+      setCachedItemData(itemId, itemData);
+    }
 
     return itemData;
   } catch (error) {
@@ -636,7 +661,7 @@ export default function ContributionsPage() {
 
           for (const batch of batches) {
             const batchPromises = batch.map(async (itemName) => {
-              const data = await fetchItemData(itemName);
+              const data = await fetchItemData(itemName, true); // skipCacheWrite = true para batch
               if (data) {
                 itemsDataMap[itemName] = data;
               }
@@ -662,6 +687,42 @@ export default function ContributionsPage() {
             // Delay entre lotes
             if (batches.indexOf(batch) < batches.length - 1) {
               await new Promise(resolve => setTimeout(resolve, 200));
+            }
+          }
+          
+          // Pre-cargar todos los iconos de una vez para mejorar la velocidad
+          if (typeof window !== 'undefined') {
+            Object.values(itemsDataMap).forEach(itemData => {
+              if (itemData.icon) {
+                const link = document.createElement('link');
+                link.rel = 'preload';
+                link.as = 'image';
+                link.href = itemData.icon;
+                // Solo agregar si no existe ya
+                if (!document.querySelector(`link[href="${itemData.icon}"]`)) {
+                  document.head.appendChild(link);
+                }
+              }
+            });
+          }
+          
+          // Escribir todos los items nuevos al caché de una vez al final
+          if (itemsToFetch.length > 0 && typeof window !== 'undefined') {
+            try {
+              const cached = localStorage.getItem(CACHE_KEY);
+              const cacheData = cached ? JSON.parse(cached) : { version: CACHE_VERSION, items: {} };
+              
+              // Escribir todos los items nuevos de una vez
+              itemsToFetch.forEach(itemName => {
+                const itemId = LEGENDARY_ITEM_IDS[itemName];
+                if (itemId && itemsDataMap[itemName]) {
+                  cacheData.items[itemId] = itemsDataMap[itemName];
+                }
+              });
+              
+              localStorage.setItem(CACHE_KEY, JSON.stringify(cacheData));
+            } catch (error) {
+              console.error('Error writing cache batch:', error);
             }
           }
         }
@@ -728,11 +789,8 @@ export default function ContributionsPage() {
             if (itemName && priceData.sells?.unit_price) {
               // El precio viene en cobre directamente desde la API (precio de venta)
               pricesMap[itemName] = priceData.sells.unit_price;
-              console.log(`Precio obtenido para ${itemName}: ${priceData.sells.unit_price} cobre (ID: ${priceData.id})`);
             }
           });
-
-          console.log('Precios obtenidos:', pricesMap);
           setItemPrices(pricesMap);
         }
       } catch (error) {
@@ -751,11 +809,7 @@ export default function ContributionsPage() {
       return item.price;
     }
     // Si no, usar el precio de la API
-    const apiPrice = itemPrices[item.name] || 0;
-    if (apiPrice === 0 && item.name) {
-      console.log(`No se encontró precio para ${item.name} en itemPrices:`, itemPrices);
-    }
-    return apiPrice;
+    return itemPrices[item.name] || 0;
   }, [itemPrices]);
 
   // Función para manejar el clic en el botón del item
@@ -887,24 +941,17 @@ export default function ContributionsPage() {
       if (donation.items) {
         donation.items.forEach(item => {
           const price = getItemPrice(item);
-          console.log(`Calculando: ${item.name} - Precio: ${price} cobre, Cantidad: ${item.quantity || 1}`);
           if (price > 0 && item.quantity) {
-            const itemTotal = price * item.quantity;
-            console.log(`  Total para ${item.name}: ${itemTotal} cobre (${price} * ${item.quantity})`);
-            totalCopper += itemTotal;
+            totalCopper += price * item.quantity;
           } else if (price > 0) {
             // Si no hay cantidad, asumir 1
             totalCopper += price;
-          } else {
-            console.log(`  ⚠️ Precio es 0 para ${item.name}`);
           }
         });
       }
     });
 
-    console.log(`Total en cobre calculado: ${totalCopper}`);
     const coins = convertCopperToCoins(totalCopper);
-    console.log(`Total convertido: ${coins.gold} oro, ${coins.silver} plata, ${coins.copper} cobre`);
     return coins;
   }, [event, getItemPrice]);
 
@@ -1164,6 +1211,7 @@ export default function ContributionsPage() {
                                         width={16}
                                         height={16}
                                         className="w-4 h-4"
+                                        loading="lazy"
                                         unoptimized
                                       />
                                     )}
@@ -1195,7 +1243,11 @@ export default function ContributionsPage() {
                                               width={32}
                                               height={32}
                                               className="w-8 h-8"
+                                              loading="eager"
+                                              priority
                                               unoptimized
+                                              placeholder="blur"
+                                              blurDataURL="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg=="
                                             />
                                           )}
                                           <div className="flex-1">
@@ -1230,17 +1282,6 @@ export default function ContributionsPage() {
                                         )}
                                         
                                         {/* Estadísticas */}
-                                        {(() => {
-                                          if (itemData) {
-                                            console.log(`[Tooltip] Item: ${itemName}`);
-                                            console.log(`[Tooltip] ItemData completo:`, itemData);
-                                            console.log(`[Tooltip] Stats:`, itemData.stats);
-                                            console.log(`[Tooltip] Attributes:`, itemData.stats?.attributes);
-                                            console.log(`[Tooltip] ¿Tiene attributes?:`, !!itemData.stats?.attributes);
-                                            console.log(`[Tooltip] ¿Length > 0?:`, (itemData.stats?.attributes?.length ?? 0) > 0);
-                                          }
-                                          return null;
-                                        })()}
                                         {itemData?.stats?.attributes && itemData.stats.attributes.length > 0 && (
                                           <div className="border-t border-gray-700 pt-2 mb-3">
                                             <p className="text-gray-400 text-xs mb-2 font-semibold">{getTranslation('stats', lang)}:</p>
