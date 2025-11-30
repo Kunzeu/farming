@@ -133,6 +133,7 @@ const LEGENDARY_ITEM_IDS: Record<string, number> = {
   'Dragon\'s Argument': 96915,
   'Dragon\'s Scale': 97691,
   'Dragon\'s Wisdom': 96193,
+  'Dragon\'s Tail': 96827,
 
 
   // Pre gen1
@@ -166,6 +167,13 @@ const LEGENDARY_ITEM_IDS: Record<string, number> = {
   'Thundercrag Greatsword Skin': 101365,
   'Thundercrag Sword Skin': 101340,
   'Vial of Liquid Aurillium':  81918,
+  'Queen Bee Infusion':  81701,
+
+  // Materials
+  'Vial of Powerful Blood': 24295,
+  'Powerful Venom Sac': 24283,
+  'Vicious Fang': 24357,
+  'Symbol of Control': 89098,
 
 };
 
@@ -176,6 +184,12 @@ const MANUAL_ITEM_TRANSLATIONS: Record<string, Record<string, string>> = {
     es: 'Infusión reverberante polisaturante (morada)',
     fr: 'Infusion réverbérante polysaturée (violette)',
     de: 'Polysaturierende widerhallende Infusion (lila)',
+  },
+  'Gold': {
+    en: 'Gold',
+    es: 'Oro',
+    fr: 'Or',
+    de: 'Gold',
   },
 };
 
@@ -491,6 +505,7 @@ const getEventData = (t: (key: string) => string): ContributionEvent => {
           items: [
               { name: 'Glob of Ectoplasm', quantity: 1000 }, 
               { name: 'Glyph of Volatility', quantity: 1  },
+              { name: 'Dragon\'s Tail', quantity: 1  },
 
           ]
        },
@@ -584,6 +599,38 @@ const getEventData = (t: (key: string) => string): ContributionEvent => {
         items: [
           { name: 'Glob of Ectoplasm', quantity: 500  },
           { name: 'Dragon\'s Fang', quantity: 1  },
+          
+        ]
+      },
+      {
+        name: 'CrowLurbe.4697',
+        items: [
+          { name: 'Glob of Ectoplasm', quantity: 500  },
+          
+        ]
+      },
+      {
+        name: 'Reig.8173',
+        items: [
+          { name: 'Queen Bee Infusion', quantity: 1  },
+          
+        ]
+      },
+      {
+        name: 'Zankiie.5891',
+        items: [
+          { name: 'The Predator', quantity: 1  },
+          { name: 'Vial of Powerful Blood', quantity: 250  },
+          { name: 'Powerful Venom Sac', quantity: 250  },
+          { name: 'Vicious Fang', quantity: 250  },
+          { name: 'Symbol of Control', quantity: 250  },
+          { name: 'Gold', quantity: 500, price: 10000, icon: '/images/expansions/Gold.webp' },
+        ]
+      },
+      {
+        name: 'Guille.7985',
+        items: [
+          { name: 'Glob of Ectoplasm', quantity: 1000  },
           
         ]
       },
