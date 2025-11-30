@@ -132,6 +132,9 @@ const LEGENDARY_ITEM_IDS: Record<string, number> = {
   'Dragon\'s Claw': 95967,
   'Dragon\'s Argument': 96915,
   'Dragon\'s Scale': 97691,
+  'Dragon\'s Wisdom': 96193,
+
+
   // Pre gen1
   'The Colossus': 29170,
   'The Lover': 29178,
@@ -565,6 +568,14 @@ const getEventData = (t: (key: string) => string): ContributionEvent => {
           { name: 'Thundercrag Sword Skin', quantity: 1  },
           { name: 'The Colossus', quantity: 1  },
           { name: 'The Lover', quantity: 1  },
+          
+        ]
+      },
+      {
+        name: 'MrAntunha.9834',
+        items: [
+          { name: 'Glob of Ectoplasm', quantity: 250  },
+          { name: 'Dragon\'s Wisdom', quantity: 1  },
           
         ]
       },
