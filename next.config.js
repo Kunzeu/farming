@@ -46,6 +46,8 @@ const nextConfig = {
   
   // Configuración de Turbopack
   turbopack: {
+    // Especificar el directorio raíz del proyecto para evitar warnings de múltiples lockfiles
+    root: process.cwd(),
     rules: {
       '*.svg': {
         loaders: ['@svgr/webpack'],

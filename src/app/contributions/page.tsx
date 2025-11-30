@@ -330,9 +330,16 @@ function setCachedItemData(itemId: number, data: ItemData): void {
     clearTimeout(cacheWriteTimeout);
   }
   
-  // Escribir en batch después de un pequeño delay
+  // Escribir en batch después de un pequeño delay (compatible con Edge)
   cacheWriteTimeout = setTimeout(() => {
     try {
+      // Verificar que localStorage esté disponible (compatible con Edge en modo privado)
+      if (typeof Storage === 'undefined' || !window.localStorage) {
+        pendingCacheWrites.clear();
+        cacheWriteTimeout = null;
+        return;
+      }
+      
       const cached = localStorage.getItem(CACHE_KEY);
       const cacheData = cached ? JSON.parse(cached) : { version: CACHE_VERSION, items: {} };
       
@@ -341,7 +348,27 @@ function setCachedItemData(itemId: number, data: ItemData): void {
         cacheData.items[id] = itemData;
       });
       
-      localStorage.setItem(CACHE_KEY, JSON.stringify(cacheData));
+      // Intentar escribir, manejar errores de cuota en Edge
+      try {
+        localStorage.setItem(CACHE_KEY, JSON.stringify(cacheData));
+      } catch (quotaError) {
+        // Si hay error de cuota, intentar limpiar items antiguos
+        if (quotaError instanceof DOMException && quotaError.code === 22) {
+          // Limpiar items más antiguos si el caché está lleno
+          const itemIds = Object.keys(cacheData.items).map(Number).sort((a, b) => a - b);
+          // Mantener solo los últimos 100 items
+          if (itemIds.length > 100) {
+            const itemsToKeep = itemIds.slice(-100);
+            const newCacheData = { version: CACHE_VERSION, items: {} as Record<number, ItemData> };
+            itemsToKeep.forEach(id => {
+              newCacheData.items[id] = cacheData.items[id];
+            });
+            localStorage.setItem(CACHE_KEY, JSON.stringify(newCacheData));
+          }
+        } else {
+          throw quotaError;
+        }
+      }
       
       // Limpiar la cola
       pendingCacheWrites.clear();
@@ -431,14 +458,8 @@ async function fetchItemData(itemName: string, skipCacheWrite: boolean = false):
       stats: stats,
     };
 
-    // Pre-cargar el icono para mejorar la velocidad de carga
-    if (itemData.icon && typeof window !== 'undefined') {
-      const link = document.createElement('link');
-      link.rel = 'preload';
-      link.as = 'image';
-      link.href = itemData.icon;
-      document.head.appendChild(link);
-    }
+    // No pre-cargar iconos individualmente para reducir peticiones
+    // Los iconos se cargarán cuando se rendericen con lazy loading
 
     // Guardar en caché solo si no se está haciendo batch write
     if (!skipCacheWrite) {
@@ -639,6 +660,9 @@ export default function ContributionsPage() {
           }
         }
 
+        // No pre-cargar iconos desde caché para reducir peticiones en Edge
+        // Los iconos se cargarán cuando se rendericen con lazy loading
+
         // Actualizar estado con datos del caché primero (solo si hay datos)
         if (Object.keys(itemsDataMap).length > 0) {
           setItemsData(prev => {
@@ -690,21 +714,8 @@ export default function ContributionsPage() {
             }
           }
           
-          // Pre-cargar todos los iconos de una vez para mejorar la velocidad
-          if (typeof window !== 'undefined') {
-            Object.values(itemsDataMap).forEach(itemData => {
-              if (itemData.icon) {
-                const link = document.createElement('link');
-                link.rel = 'preload';
-                link.as = 'image';
-                link.href = itemData.icon;
-                // Solo agregar si no existe ya
-                if (!document.querySelector(`link[href="${itemData.icon}"]`)) {
-                  document.head.appendChild(link);
-                }
-              }
-            });
-          }
+          // No pre-cargar iconos en batch para reducir peticiones en Edge
+          // Los iconos se cargarán cuando se rendericen con lazy loading
           
           // Escribir todos los items nuevos al caché de una vez al final
           if (itemsToFetch.length > 0 && typeof window !== 'undefined') {
@@ -1213,6 +1224,7 @@ export default function ContributionsPage() {
                                         className="w-4 h-4"
                                         loading="lazy"
                                         unoptimized
+                                        fetchPriority="low"
                                       />
                                     )}
                                     <button

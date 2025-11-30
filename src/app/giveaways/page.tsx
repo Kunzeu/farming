@@ -617,127 +617,6 @@ const GiveawaysPage = () => {
           </Link>
         </div>
 
-        {/* Latest Winners Section */}
-        {winners.length > 0 && (
-          <div className="bg-gradient-to-r from-yellow-900/20 to-amber-900/20 border border-yellow-700/60 rounded-2xl p-8 mb-8">
-            <div className="text-center mb-6">
-              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-yellow-900/20 text-yellow-400 text-sm font-medium mb-4">
-                <Trophy className="w-4 h-4" />
-                {t("giveaways.latestWinners")}
-              </div>
-              <h2 className="text-2xl font-bold text-white mb-2">
-                {t(winners[0].giveawayTitle)}
-              </h2>
-            </div>
-
-            <div className="grid grid-cols-3 gap-4">
-              {winners
-                .filter(w => w.giveawayId === winners[0].giveawayId)
-                .sort((a, b) => a.position - b.position)
-                .slice(0, 10)
-                .map((winner) => {
-                  // Obtener información completa del premio desde giveawayItems
-                  const items = giveawayItems[`${lang}:${winner.giveawayId}`] || [];
-                  const itemInfo = items.find((item) => item.position === winner.position);
-                  
-                  // Fallback: intentar obtener del giveaway directo si no hay itemInfo
-                  let prizeInfo = null;
-                  if (!itemInfo) {
-                    const giveawayInfo = giveaways.find(g => g.id === winner.giveawayId);
-                    prizeInfo = giveawayInfo?.prizes.find(p => p.position === winner.position);
-                  }
-                  
-                  return (
-                <div
-                  key={`${winner.giveawayId}-${winner.position}`}
-                      className="bg-gray-800/60 border border-gray-700/60 rounded-lg p-4 flex flex-col items-center text-center"
-                >
-                      <div className="w-12 h-12 rounded-full bg-yellow-500/20 text-yellow-400 text-lg font-bold flex items-center justify-center mb-3">
-                      {winner.position}
-                    </div>
-                      <div className="font-medium text-white mb-1 text-sm">
-                        {winner.accountName}
-                      </div>
-                      <div className="text-xs text-gray-300 flex items-center gap-1.5 justify-center">
-                        {itemInfo && (itemInfo.itemIcon || itemInfo.gemPrize) ? (
-                          <>
-                            {itemInfo.gemPrize ? (
-                              <>
-                                <Image
-                                  src={itemInfo.itemIcon || "https://wiki.guildwars2.com/images/8/88/Gem_%28highres%29.png"}
-                                  alt={t('giveaways.gems', 'Gems')}
-                                  width={16}
-                                  height={16}
-                                  className="w-4 h-4 rounded"
-                                  onError={(e: React.SyntheticEvent<HTMLImageElement, Event>) => {
-                                    e.currentTarget.src = "https://render.guildwars2.com/file/65941.png";
-                                  }}
-                                />
-                                <span>{itemInfo.prize || itemInfo.quantity || ''}</span>
-                              </>
-                            ) : itemInfo.itemIcon && itemInfo.itemName ? (
-                              <>
-                                <Image
-                                  src={itemInfo.itemIcon}
-                                  alt={itemInfo.itemName}
-                                  width={16}
-                                  height={16}
-                                  className="w-4 h-4 rounded"
-                                  onError={(e: React.SyntheticEvent<HTMLImageElement, Event>) => {
-                                    e.currentTarget.src = "https://wiki.guildwars2.com/images/9/9b/Glob_of_Ectoplasm.png";
-                                  }}
-                                />
-                                <span>{itemInfo.quantity || ''}x {itemInfo.itemName.startsWith("giveaways.") ? t(itemInfo.itemName) : itemInfo.itemName}</span>
-                              </>
-                            ) : (
-                              <span>{winner.prizeDescription}</span>
-                            )}
-                          </>
-                        ) : prizeInfo ? (
-                          <>
-                            {prizeInfo.gemPrize ? (
-                              <>
-                                <Image
-                                  src="https://wiki.guildwars2.com/images/8/88/Gem_%28highres%29.png"
-                                  alt={t('giveaways.gems', 'Gems')}
-                                  width={16}
-                                  height={16}
-                                  className="w-4 h-4 rounded"
-                                  onError={(e: React.SyntheticEvent<HTMLImageElement, Event>) => {
-                                    e.currentTarget.src = "https://render.guildwars2.com/file/0B56E2E65A2E9F0F6C7D8F5A9B7D1E2F/65941.png";
-                                  }}
-                                />
-                                <span>{prizeInfo.prize || prizeInfo.quantity || ''}</span>
-                              </>
-                            ) : prizeInfo.itemId ? (
-                              <>
-                                <Image
-                                  src="https://wiki.guildwars2.com/images/9/9b/Glob_of_Ectoplasm.png"
-                                  alt={prizeInfo.prize}
-                                  width={16}
-                                  height={16}
-                                  className="w-4 h-4 rounded"
-                                  onError={(e: React.SyntheticEvent<HTMLImageElement, Event>) => {
-                                    e.currentTarget.src = "/images/icons/raw.webp";
-                                  }}
-                                />
-                                <span>{prizeInfo.quantity || prizeInfo.prize || ''}</span>
-                              </>
-                            ) : (
-                              <span>{winner.prizeDescription}</span>
-                            )}
-                          </>
-                        ) : (
-                          <span>{winner.prizeDescription}</span>
-                        )}
-                    </div>
-                  </div>
-                  );
-                })}
-            </div>
-          </div>
-        )}
-
         {/* Loading State */}
         {isLoadingGiveaways && (
           <div className="bg-gray-800/60 border border-gray-700/60 rounded-2xl p-8 mb-8">
@@ -876,6 +755,127 @@ const GiveawaysPage = () => {
                   )}
                 </div>
               )}
+            </div>
+          </div>
+        )}
+
+        {/* Latest Winners Section */}
+        {winners.length > 0 && (
+          <div className="bg-gradient-to-r from-yellow-900/20 to-amber-900/20 border border-yellow-700/60 rounded-2xl p-8 mb-8">
+            <div className="text-center mb-6">
+              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-yellow-900/20 text-yellow-400 text-sm font-medium mb-4">
+                <Trophy className="w-4 h-4" />
+                {t("giveaways.latestWinners")}
+              </div>
+              <h2 className="text-2xl font-bold text-white mb-2">
+                {t(winners[0].giveawayTitle)}
+              </h2>
+            </div>
+
+            <div className="grid grid-cols-3 gap-4">
+              {winners
+                .filter(w => w.giveawayId === winners[0].giveawayId)
+                .sort((a, b) => a.position - b.position)
+                .slice(0, 10)
+                .map((winner) => {
+                  // Obtener información completa del premio desde giveawayItems
+                  const items = giveawayItems[`${lang}:${winner.giveawayId}`] || [];
+                  const itemInfo = items.find((item) => item.position === winner.position);
+                  
+                  // Fallback: intentar obtener del giveaway directo si no hay itemInfo
+                  let prizeInfo = null;
+                  if (!itemInfo) {
+                    const giveawayInfo = giveaways.find(g => g.id === winner.giveawayId);
+                    prizeInfo = giveawayInfo?.prizes.find(p => p.position === winner.position);
+                  }
+                  
+                  return (
+                <div
+                  key={`${winner.giveawayId}-${winner.position}`}
+                      className="bg-gray-800/60 border border-gray-700/60 rounded-lg p-4 flex flex-col items-center text-center"
+                >
+                      <div className="w-12 h-12 rounded-full bg-yellow-500/20 text-yellow-400 text-lg font-bold flex items-center justify-center mb-3">
+                      {winner.position}
+                    </div>
+                      <div className="font-medium text-white mb-1 text-sm">
+                        {winner.accountName}
+                      </div>
+                      <div className="text-xs text-gray-300 flex items-center gap-1.5 justify-center">
+                        {itemInfo && (itemInfo.itemIcon || itemInfo.gemPrize) ? (
+                          <>
+                            {itemInfo.gemPrize ? (
+                              <>
+                                <Image
+                                  src={itemInfo.itemIcon || "https://wiki.guildwars2.com/images/8/88/Gem_%28highres%29.png"}
+                                  alt={t('giveaways.gems', 'Gems')}
+                                  width={16}
+                                  height={16}
+                                  className="w-4 h-4 rounded"
+                                  onError={(e: React.SyntheticEvent<HTMLImageElement, Event>) => {
+                                    e.currentTarget.src = "https://render.guildwars2.com/file/65941.png";
+                                  }}
+                                />
+                                <span>{itemInfo.prize || itemInfo.quantity || ''}</span>
+                              </>
+                            ) : itemInfo.itemIcon && itemInfo.itemName ? (
+                              <>
+                                <Image
+                                  src={itemInfo.itemIcon}
+                                  alt={itemInfo.itemName}
+                                  width={16}
+                                  height={16}
+                                  className="w-4 h-4 rounded"
+                                  onError={(e: React.SyntheticEvent<HTMLImageElement, Event>) => {
+                                    e.currentTarget.src = "https://wiki.guildwars2.com/images/9/9b/Glob_of_Ectoplasm.png";
+                                  }}
+                                />
+                                <span>{itemInfo.quantity || ''}x {itemInfo.itemName.startsWith("giveaways.") ? t(itemInfo.itemName) : itemInfo.itemName}</span>
+                              </>
+                            ) : (
+                              <span>{winner.prizeDescription}</span>
+                            )}
+                          </>
+                        ) : prizeInfo ? (
+                          <>
+                            {prizeInfo.gemPrize ? (
+                              <>
+                                <Image
+                                  src="https://wiki.guildwars2.com/images/8/88/Gem_%28highres%29.png"
+                                  alt={t('giveaways.gems', 'Gems')}
+                                  width={16}
+                                  height={16}
+                                  className="w-4 h-4 rounded"
+                                  onError={(e: React.SyntheticEvent<HTMLImageElement, Event>) => {
+                                    e.currentTarget.src = "https://render.guildwars2.com/file/0B56E2E65A2E9F0F6C7D8F5A9B7D1E2F/65941.png";
+                                  }}
+                                />
+                                <span>{prizeInfo.prize || prizeInfo.quantity || ''}</span>
+                              </>
+                            ) : prizeInfo.itemId ? (
+                              <>
+                                <Image
+                                  src="https://wiki.guildwars2.com/images/9/9b/Glob_of_Ectoplasm.png"
+                                  alt={prizeInfo.prize}
+                                  width={16}
+                                  height={16}
+                                  className="w-4 h-4 rounded"
+                                  onError={(e: React.SyntheticEvent<HTMLImageElement, Event>) => {
+                                    e.currentTarget.src = "/images/icons/raw.webp";
+                                  }}
+                                />
+                                <span>{prizeInfo.quantity || prizeInfo.prize || ''}</span>
+                              </>
+                            ) : (
+                              <span>{winner.prizeDescription}</span>
+                            )}
+                          </>
+                        ) : (
+                          <span>{winner.prizeDescription}</span>
+                        )}
+                    </div>
+                  </div>
+                  );
+                })}
             </div>
           </div>
         )}
