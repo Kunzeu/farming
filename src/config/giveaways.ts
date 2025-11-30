@@ -32,7 +32,7 @@ export const GIVEAWAYS: Giveaway[] = [
     description: 'giveaways.october2025.description',
     startDate: '2025-10-01T00:00:00.000Z', // 1 Oct 2025 00:00 UTC = 30 Sep 2025 19:00 Colombia
     endDate: '2025-11-01T00:00:00.000Z',   // 1 Nov 2025 00:00 UTC = 31 Oct 2025 19:00 Colombia
-    status: 'active',
+    status: 'winners_announced',
            prizes: [
              { position: 1, prize: '1200', icon: 'gem', quantity: 1200, gemPrize: true },
              { position: 2, prize: '800', icon: 'gem', quantity: 800, gemPrize: true },
@@ -65,8 +65,8 @@ export const GIVEAWAYS: Giveaway[] = [
     title: 'giveaways.november2025.title',
     description: 'giveaways.november2025.description',
     startDate: '2025-11-01T00:00:00.000Z',
-    endDate: '2025-12-01T00:00:00.000Z',
-    status: 'upcoming',
+    endDate: '2025-11-30T00:00:00.000Z',
+    status: 'winners_announced',
            prizes: [
              { position: 1, prize: '1200', icon: 'gem', quantity: 1200, gemPrize: true },
              { position: 2, prize: '800', icon: 'gem', quantity: 800, gemPrize: true },
@@ -93,8 +93,97 @@ export const GIVEAWAYS: Giveaway[] = [
     ],
     maxParticipants: undefined
   }
-  // Agregar más sorteos aquí según necesites
 ];
+
+// Generar sorteos de adviento para diciembre 2025
+export function generateAdventGiveaways(year: number = 2025): Giveaway[] {
+  const adventGiveaways: Giveaway[] = [];
+  
+  // Premios variados para cada día (puedes personalizar esto)
+  const dailyPrizes = [
+    // Días 1-7
+    [
+      { position: 1, prize: '1200', icon: 'gem' as const, quantity: 1200, gemPrize: true },
+      { position: 2, prize: '250', icon: 'package' as const, itemId: 19721, quantity: 250 },
+      { position: 3, prize: '25', icon: 'package' as const, itemId: 19721, quantity: 25 }
+    ],
+    // Días 8-14
+    [
+      { position: 1, prize: '800', icon: 'gem' as const, quantity: 800, gemPrize: true },
+      { position: 2, prize: '250', icon: 'package' as const, itemId: 19721, quantity: 250 },
+      { position: 3, prize: '50', icon: 'package' as const, itemId: 19721, quantity: 50 }
+    ],
+    // Días 15-21
+    [
+      { position: 1, prize: '400', icon: 'gem' as const, quantity: 400, gemPrize: true },
+      { position: 2, prize: '250', icon: 'package' as const, itemId: 19721, quantity: 250 },
+      { position: 3, prize: '100', icon: 'package' as const, itemId: 19721, quantity: 100 }
+    ],
+    // Días 22-28
+    [
+      { position: 1, prize: '2000', icon: 'gem' as const, quantity: 2000, gemPrize: true },
+      { position: 2, prize: '500', icon: 'package' as const, itemId: 19721, quantity: 500 },
+      { position: 3, prize: '250', icon: 'package' as const, itemId: 19721, quantity: 250 }
+    ],
+    // Días 29-31
+    [
+      { position: 1, prize: '3000', icon: 'gem' as const, quantity: 3000, gemPrize: true },
+      { position: 2, prize: '1000', icon: 'package' as const, itemId: 19721, quantity: 1000 },
+      { position: 3, prize: '500', icon: 'package' as const, itemId: 19721, quantity: 500 }
+    ]
+  ];
+
+  for (let day = 1; day <= 31; day++) {
+    const dayStr = day.toString().padStart(2, '0');
+    const startDate = new Date(year, 11, day, 0, 0, 0); // Diciembre (mes 11)
+    const endDate = new Date(year, 11, day, 23, 59, 59); // Mismo día, fin del día
+    
+    // Seleccionar premios según el día
+    let prizes;
+    if (day <= 7) {
+      prizes = dailyPrizes[0];
+    } else if (day <= 14) {
+      prizes = dailyPrizes[1];
+    } else if (day <= 21) {
+      prizes = dailyPrizes[2];
+    } else if (day <= 28) {
+      prizes = dailyPrizes[3];
+    } else {
+      prizes = dailyPrizes[4];
+    }
+
+    adventGiveaways.push({
+      id: `advent-${year}-12-${dayStr}`,
+      slug: `advent-${year}-12-${dayStr}`,
+      title: `Sorteo Día ${day} - Diciembre ${year}`,
+      description: `¡Abre el sorteo del día ${day} de diciembre y participa para ganar increíbles premios!`,
+      startDate: startDate.toISOString(),
+      endDate: endDate.toISOString(),
+      status: 'upcoming', // Se actualizará automáticamente según la fecha
+      prizes: prizes,
+      requirements: [
+        'Link your GW2 API key to your account',
+        'Join our Discord server'
+      ],
+      rules: [
+        'One entry per person',
+        'Must have valid GW2 account',
+        'API key must be active',
+        'Winners will be selected randomly',
+        'Prizes will be delivered within 48 hours'
+      ],
+      maxParticipants: undefined
+    });
+  }
+
+  return adventGiveaways;
+}
+
+// Agregar sorteos de adviento a la lista de sorteos
+export function getAllGiveawaysWithAdvent(year: number = 2025): Giveaway[] {
+  const adventGiveaways = generateAdventGiveaways(year);
+  return [...GIVEAWAYS, ...adventGiveaways];
+}
 
 // Función para obtener sorteo por ID
 export function getGiveawayById(id: string): Giveaway | undefined {

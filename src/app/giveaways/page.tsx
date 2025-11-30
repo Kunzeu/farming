@@ -532,14 +532,24 @@ const GiveawaysPage = () => {
   const activeByDate = giveaways.filter((g) => {
     const start = new Date(g.startDate);
     const end = new Date(g.endDate);
-    // Un sorteo está activo si está entre su fecha de inicio y fin
-    return start <= now && end > now && (g.status === "active" || g.status === "upcoming");
+    // Un sorteo está activo si está entre su fecha de inicio y fin Y tiene status activo o upcoming
+    // Excluir sorteos terminados, con ganadores anunciados o cancelados
+    const isActiveStatus = g.status === "active" || g.status === "upcoming";
+    const isNotFinished = g.status !== "ended" && g.status !== "winners_announced" && g.status !== "cancelled";
+    return start <= now && end > now && isActiveStatus && isNotFinished;
   });
   
   // Si hay múltiples, seleccionar el más reciente (mayor startDate)
   const activeGiveaway = activeByDate.length > 0 
     ? activeByDate.sort((a, b) => new Date(b.startDate).getTime() - new Date(a.startDate).getTime())[0]
-    : giveaways.find((g) => g.status === "active"); // Fallback al status si no hay coincidencia por fechas
+    : giveaways.find((g) => {
+        // Fallback: buscar sorteo activo que esté dentro de fechas y no tenga ganadores
+        const start = new Date(g.startDate);
+        const end = new Date(g.endDate);
+        const isActiveStatus = g.status === "active";
+        const isNotFinished = g.status !== "ended" && g.status !== "winners_announced" && g.status !== "cancelled";
+        return isActiveStatus && isNotFinished && start <= now && end > now;
+      });
 
   // Check if user is admin
   const isAdmin = user?.role === "admin" || user?.isAdmin === true;
@@ -628,7 +638,7 @@ const GiveawaysPage = () => {
         )}
 
         {/* Current Giveaway */}
-        {!isLoadingGiveaways && activeGiveaway && (
+        {!isLoadingGiveaways && activeGiveaway && activeGiveaway.status !== "ended" && new Date(activeGiveaway.endDate) > new Date() && (
           <div className="bg-gray-800/60 border border-gray-700/60 rounded-2xl p-8 mb-8">
             <div className="text-center mb-8">
               <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-green-900/20 text-green-400 text-sm font-medium mb-4">
@@ -882,14 +892,14 @@ const GiveawaysPage = () => {
 
         {/* Upcoming Giveaways */}
         {!isLoadingGiveaways && isAdmin &&
-          giveaways.filter((g) => g.status === "upcoming").length > 0 && (
+          giveaways.filter((g) => g.status === "upcoming" && !g.id.startsWith('advent-')).length > 0 && (
             <div className="mb-8">
               <h2 className="text-2xl font-bold text-white mb-6">
                 {t("giveaways.upcomingGiveaways")}
               </h2>
               <div className="space-y-4">
                 {giveaways
-                  .filter((g) => g.status === "upcoming")
+                  .filter((g) => g.status === "upcoming" && !g.id.startsWith('advent-'))
                   .map((giveaway) => (
                     <div
                       key={giveaway.id}
