@@ -406,7 +406,7 @@ function setCachedItemData(itemId: number, data: ItemData): void {
 }
 
 // Función para obtener datos de items desde la API de GW2
-async function fetchItemData(itemName: string, skipCacheWrite: boolean = false): Promise<ItemData | null> {
+async function fetchItemData(itemName: string, skipCacheWrite: boolean = false, currentLang: string = 'en'): Promise<ItemData | null> {
   const itemId = LEGENDARY_ITEM_IDS[itemName];
   if (!itemId) return null;
 
@@ -414,26 +414,34 @@ async function fetchItemData(itemName: string, skipCacheWrite: boolean = false):
   const cached = getCachedItemData(itemId);
   
   try {
-    const languages = ['en', 'es', 'de', 'fr'];
-    const promises = languages.map(lang =>
-      fetch(`https://api.guildwars2.com/v2/items/${itemId}?lang=${lang}`)
-        .then(res => res.ok ? res.json() : null)
-        .catch(() => null)
-    );
+    // Solo cargar el idioma actual para reducir peticiones Edge
+    // Los otros idiomas se cargarán desde el caché si están disponibles
+    const currentLangData = await fetch(`https://api.guildwars2.com/v2/items/${itemId}?lang=${currentLang}`)
+      .then(res => res.ok ? res.json() : null)
+      .catch(() => null);
 
-    const results = await Promise.all(promises);
-    const [enData, esData, deData, frData] = results;
-
-    if (!enData) {
+    if (!currentLangData) {
       // Si falla la API pero tenemos caché, usar el caché
       if (cached) return cached;
       return null;
     }
+
+    if (!currentLangData) {
+      // Si falla la API pero tenemos caché, usar el caché
+      if (cached) return cached;
+      return null;
+    }
+
+    // Usar datos del caché para otros idiomas si están disponibles, o usar currentLangData como fallback
+    const enData = currentLang === 'en' ? currentLangData : (cached?.names?.en ? { ...currentLangData, name: cached.names.en, description: cached.description?.en || currentLangData.description } : currentLangData);
+    const esData = currentLang === 'es' ? currentLangData : (cached?.names?.es ? { ...currentLangData, name: cached.names.es, description: cached.description?.es || currentLangData.description } : currentLangData);
+    const deData = currentLang === 'de' ? currentLangData : (cached?.names?.de ? { ...currentLangData, name: cached.names.de, description: cached.description?.de || currentLangData.description } : currentLangData);
+    const frData = currentLang === 'fr' ? currentLangData : (cached?.names?.fr ? { ...currentLangData, name: cached.names.fr, description: cached.description?.fr || currentLangData.description } : currentLangData);
     
     // Si tenemos caché y los datos de la API son iguales (mismo ID), verificar si necesitamos actualizar stats
     if (cached && cached.id === itemId) {
       // Si el item tiene stats en la API pero no en caché, actualizar
-      const hasStatsInAPI = enData.details?.infix_upgrade?.attributes;
+      const hasStatsInAPI = currentLangData.details?.infix_upgrade?.attributes;
       const hasStatsInCache = cached.stats?.attributes;
       
       if (hasStatsInAPI && !hasStatsInCache) {
@@ -454,8 +462,8 @@ async function fetchItemData(itemName: string, skipCacheWrite: boolean = false):
     const manualTranslations = MANUAL_ITEM_TRANSLATIONS[itemName];
 
     // Extraer stats si están disponibles
-    const stats = enData.details?.infix_upgrade?.attributes ? {
-      attributes: enData.details.infix_upgrade.attributes.map((attr: { attribute: string; modifier: number }) => ({
+    const stats = currentLangData.details?.infix_upgrade?.attributes ? {
+      attributes: currentLangData.details.infix_upgrade.attributes.map((attr: { attribute: string; modifier: number }) => ({
         attribute: attr.attribute,
         modifier: attr.modifier,
       })),
@@ -463,22 +471,22 @@ async function fetchItemData(itemName: string, skipCacheWrite: boolean = false):
 
     const itemData: ItemData = {
       id: itemId,
-      icon: enData.icon || '',
+      icon: currentLangData.icon || '',
       names: {
-        en: manualTranslations?.en || enData.name || itemName,
-        es: manualTranslations?.es || esData?.name || enData.name || itemName,
-        de: manualTranslations?.de || deData?.name || enData.name || itemName,
-        fr: manualTranslations?.fr || frData?.name || enData.name || itemName,
+        en: manualTranslations?.en || enData.name || currentLangData.name || itemName,
+        es: manualTranslations?.es || esData.name || currentLangData.name || itemName,
+        de: manualTranslations?.de || deData.name || currentLangData.name || itemName,
+        fr: manualTranslations?.fr || frData.name || currentLangData.name || itemName,
       },
       description: {
-        en: enData.description || '',
-        es: esData?.description || enData.description || '',
-        de: deData?.description || enData.description || '',
-        fr: frData?.description || enData.description || '',
+        en: enData.description || currentLangData.description || '',
+        es: esData.description || currentLangData.description || '',
+        de: deData.description || currentLangData.description || '',
+        fr: frData.description || currentLangData.description || '',
       },
-      type: enData.type,
-      rarity: enData.rarity,
-      level: enData.level,
+      type: currentLangData.type,
+      rarity: currentLangData.rarity,
+      level: currentLangData.level,
       stats: stats,
     };
 
@@ -541,7 +549,7 @@ const getEventData = (t: (key: string) => string): ContributionEvent => {
          { name: 'Sunrise', quantity: 1  },
          { name: 'The Juggernaut', quantity: 1  }, 
          { name: 'giveaways.gems', quantity: 2800, icon: 'https://wiki.guildwars2.com/images/8/88/Gem_%28highres%29.png', price: 10610000},
-         { name: 'Glob of Ectoplasm', quantity: 1250  },
+         { name: 'Glob of Ectoplasm', quantity: 1500  },
          { name: 'Aetheric Anchor', quantity: 1  },
          { name: 'Klobjarne Geirr', quantity: 1  },
          { name: 'Imperial Everbloom Greatsword Skin', quantity: 1  },
@@ -781,7 +789,7 @@ export default function ContributionsPage() {
 
           for (const batch of batches) {
             const batchPromises = batch.map(async (itemName) => {
-              const data = await fetchItemData(itemName, true); // skipCacheWrite = true para batch
+              const data = await fetchItemData(itemName, true, lang); // skipCacheWrite = true para batch, usar idioma actual
               if (data) {
                 itemsDataMap[itemName] = data;
               }
