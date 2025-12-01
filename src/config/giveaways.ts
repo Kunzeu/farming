@@ -128,6 +128,25 @@ export function generateAdventGiveaways(year: number = 2025): Giveaway[] {
     const startDate = startLocal.toISOString()
     const endDate = endLocal.toISOString()
 
+    // Configurar premios específicos para cada día
+    let prizes: Array<{
+      position: number;
+      prize: string;
+      icon: 'gem' | 'package' | 'gold' | 'materials';
+      itemId?: number;
+      quantity?: number;
+      gemPrize?: boolean;
+    }> = [];
+
+    // Premios para el día 1
+    if (day === 1) {
+      prizes = [
+        { position: 1, prize: '1', icon: 'materials', itemId: 95994, quantity: 1 }, // Dragon's Fang
+        { position: 2, prize: '250', icon: 'package', itemId: 19721, quantity: 250 }, // Glob of Ectoplasm
+        { position: 3, prize: '250', icon: 'package', itemId: 24295, quantity: 250 }, // Glob of Ectoplasm
+      ];
+    }
+
     adventGiveaways.push({
       id: `advent-${year}-12-${dayStr}`,
       slug: `advent-${year}-12-${dayStr}`,
@@ -136,7 +155,7 @@ export function generateAdventGiveaways(year: number = 2025): Giveaway[] {
       startDate: startDate,
       endDate: endDate,
       status: 'upcoming', // Se actualizará automáticamente según la fecha
-      prizes: [],
+      prizes: prizes,
       requirements: [
         'Link your GW2 API key to your account',
         'Join our Discord server'
@@ -209,9 +228,39 @@ export function updateGiveawayStatuses(): Giveaway[] {
   });
 }
 
+// Mapeo de iconos personalizados para items específicos
+const customItemIcons: Record<number, string> = {
+  95994: 'https://render.guildwars2.com/file/24F07065A51E4BE8F00F9573FF76B221BAAAA6D8/2596936.png', // Dragon's Fang
+  19721: 'https://render.guildwars2.com/file/18CE5D78317265000CF3C23ED76AB3CEE86BA60E/65941.png', // Glob of Ectoplasm
+  24295: 'https://render.guildwars2.com/file/1A930A6A7B5B01EAB4CB36E79014C12B500BF6B3/66950.png', // Vial of Powerful Blood
+};
+
 // Función para obtener información de un item de GW2
 export async function getItemInfo(itemId: number, lang: string = 'en'): Promise<{ name: string; icon: string } | null> {
   try {
+    // Si hay un icono personalizado, usarlo
+    if (customItemIcons[itemId]) {
+      // Mapear idiomas a códigos de GW2 API
+      const gw2LangMap: Record<string, string> = {
+        'en': 'en',
+        'es': 'es', 
+        'de': 'de',
+        'fr': 'fr'
+      };
+      
+      const gw2Lang = gw2LangMap[lang] || 'en';
+      
+      // Obtener el nombre desde la API
+      const response = await fetch(`https://api.guildwars2.com/v2/items/${itemId}?lang=${gw2Lang}`);
+      if (response.ok) {
+        const item = await response.json();
+        return {
+          name: item.name,
+          icon: customItemIcons[itemId] // Usar icono personalizado
+        };
+      }
+    }
+    
     // Mapear idiomas a códigos de GW2 API
     const gw2LangMap: Record<string, string> = {
       'en': 'en',
@@ -235,6 +284,13 @@ export async function getItemInfo(itemId: number, lang: string = 'en'): Promise<
     };
   } catch (error) {
     console.error(`Error fetching item ${itemId} in ${lang}:`, error);
+    // Si hay un icono personalizado, devolverlo aunque falle la API
+    if (customItemIcons[itemId]) {
+      return {
+        name: `Item ${itemId}`,
+        icon: customItemIcons[itemId]
+      };
+    }
     return null;
   }
 }
