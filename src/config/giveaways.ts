@@ -114,15 +114,15 @@ export function generateAdventGiveaways(year: number = 2025): Giveaway[] {
       startLocal = new Date(`${year}-12-${prevDay}T14:00:00-05:00`);
     }
 
-    // Cada sorteo termina al día siguiente a las 13:59
+    // Cada sorteo termina el mismo día a las 13:10
+    // Día 1 cierra el 1 de diciembre, día 2 cierra el 2 de diciembre, etc.
     let endLocal: Date;
     if (day === 31) {
-      // El día 31 termina el 1 de enero del año siguiente a las 13:59
-      endLocal = new Date(`${year + 1}-01-01T13:59:00-05:00`);
+      // El día 31 termina el 31 de diciembre a las 13:10
+      endLocal = new Date(`${year}-12-31T13:59:00-05:00`);
     } else {
-      // Días 1-30 terminan el día siguiente de diciembre a las 13:59
-      const nextDay = String(day + 1).padStart(2, '0');
-      endLocal = new Date(`${year}-12-${nextDay}T13:59:00-05:00`);
+      // Días 1-30 terminan el mismo día de diciembre a las 13:10
+      endLocal = new Date(`${year}-12-${dayStr}T13:59:00-05:00`);
     }
 
     const startDate = startLocal.toISOString()

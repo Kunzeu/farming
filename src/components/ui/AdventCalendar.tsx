@@ -796,12 +796,14 @@ export default function AdventCalendar({
                   <Image
                     src={
                       day.day === 1 ? "/images/assets/day1.webp" :
-                      day.day === 7 ? "/images/assets/soon.webp" :
-                      day.day === 14 ? "/images/assets/soon.webp" :
-                      day.day === 21 ? "/images/assets/soon.webp" :
+                      day.day === 7 ? "/images/assets/daily.webp" :
+                      day.day === 14 ? "/images/assets/daily.webp" :
+                      day.day === 21 ? "/images/assets/daily.webp" :
                       day.day === 25 ? "/images/assets/day25.webp" :
-                      day.day === 28 ? `/images/assets/soon.webp?v=${Date.now()}` :
-                      "/images/assets/daily.webp"
+                      day.day === 28 ? "/images/assets/daily.webp" :
+                      day.day === 31 ? `/images/assets/daily.webp?v=${Date.now()}` :
+                       
+                      "/images/assets/soon.webp"
                     }
                     alt={`Día ${day.day}`}
                     fill

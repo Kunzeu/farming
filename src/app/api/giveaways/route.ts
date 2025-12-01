@@ -98,7 +98,9 @@ export async function GET() {
       { giveaways },
       {
         headers: {
-          'Cache-Control': 'public, max-age=300, stale-while-revalidate=1800',
+          'Cache-Control': 'no-cache, no-store, must-revalidate',
+          'Pragma': 'no-cache',
+          'Expires': '0',
         },
       }
     );
