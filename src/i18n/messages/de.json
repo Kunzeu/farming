@@ -2387,6 +2387,10 @@
   "holidayCalendar.participating": "Teilnehmen...",
   "holidayCalendar.registered": "ANGEMELDET",
   "holidayCalendar.participate": "TEILNEHMEN",
+  "holidayCalendar.login": "ANMELDEN",
+  "holidayCalendar.loading": "Lädt...",
+  "holidayCalendar.linkApiKey": "API-SCHLÜSSEL VERKNÜPFEN",
+  "holidayCalendar.winner": "GEWINNER",
   
   "months.january": "Januar",
   "months.february": "Februar",

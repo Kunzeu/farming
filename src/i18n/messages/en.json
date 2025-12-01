@@ -2407,6 +2407,10 @@
   "holidayCalendar.participating": "Participating...",
   "holidayCalendar.registered": "REGISTERED",
   "holidayCalendar.participate": "PARTICIPATE",
+  "holidayCalendar.login": "LOG IN",
+  "holidayCalendar.loading": "Loading...",
+  "holidayCalendar.linkApiKey": "LINK API KEY",
+  "holidayCalendar.winner": "WINNER",
   
   "months.january": "January",
   "months.february": "February",

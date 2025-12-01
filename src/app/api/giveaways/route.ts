@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import pool from '@/lib/postgres-db';
-import { updateGiveawayStatuses, getAllGiveawaysWithAdvent } from '../../../config/giveaways';
+import { getAllGiveawaysWithAdvent } from '../../../config/giveaways';
 
 export const runtime = 'nodejs';
 
@@ -24,13 +24,18 @@ export async function GET() {
       // Determinar estado basado en fechas actuales
       let status: 'upcoming' | 'active' | 'ended' = g.status;
       
-      if (end <= now) {
+      // Usar getTime() para comparaciones precisas
+      const endTime = end.getTime();
+      const startTime = start.getTime();
+      const nowTime = now.getTime();
+      
+      if (endTime <= nowTime) {
         // El sorteo ya terminó
         status = 'ended';
-      } else if (start <= now && end > now) {
+      } else if (startTime <= nowTime && endTime > nowTime) {
         // El sorteo está activo
         status = 'active';
-      } else if (start > now) {
+      } else if (startTime > nowTime) {
         // El sorteo aún no ha comenzado
         status = 'upcoming';
       }
@@ -52,7 +57,10 @@ export async function GET() {
     // Crear mapa de conteos de participantes
     const participantCountMap = new Map();
     participantCounts.rows.forEach(row => {
-      participantCountMap.set(row.giveaway_id, parseInt(row.participant_count));
+      const count = parseInt(row.participant_count);
+      // Limpiar el ID por si acaso tiene espacios o caracteres extra
+      const cleanId = String(row.giveaway_id).trim();
+      participantCountMap.set(cleanId, count);
     });
     
     // Obtener sorteos con ganadores anunciados
@@ -70,10 +78,14 @@ export async function GET() {
         finalStatus = 'winners_announced';
       }
       
+      // Limpiar el ID del giveaway también
+      const cleanGiveawayId = String(giveaway.id).trim();
+      const participantCount = participantCountMap.get(cleanGiveawayId) || 0;
+      
       return {
         ...giveaway,
         status: finalStatus,
-        participantCount: participantCountMap.get(giveaway.id) || 0,
+        participantCount,
         // Convertir fechas a formato ISO para el frontend
         startDate: new Date(giveaway.startDate).toISOString(),
         endDate: new Date(giveaway.endDate).toISOString(),

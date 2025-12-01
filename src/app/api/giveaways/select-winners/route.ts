@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import pool from '@/lib/postgres-db';
-import { getGiveawayById } from '../../../../config/giveaways';
+import { getGiveawayById, getAllGiveawaysWithAdvent } from '../../../../config/giveaways';
 import { authorizeRequest } from '@/lib/server/jwt-utils';
 
 export const runtime = 'nodejs';
@@ -27,7 +27,13 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Giveaway ID is required' }, { status: 400 });
     }
 
-    const giveaway = getGiveawayById(giveawayId);
+    // Buscar en todos los sorteos incluyendo los de adviento
+    let giveaway = getGiveawayById(giveawayId);
+    if (!giveaway) {
+      // Si no se encuentra, buscar en los sorteos de adviento
+      const allGiveaways = getAllGiveawaysWithAdvent(2025);
+      giveaway = allGiveaways.find(g => g.id === giveawayId);
+    }
 
     if (!giveaway) {
       return NextResponse.json({ error: 'Giveaway not found in configuration' }, { status: 404 });

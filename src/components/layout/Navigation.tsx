@@ -699,7 +699,7 @@ const Navigation = () => {
             </div>
             {/* Enlace de Giveaways */}
              <Link
-              href="/giveaways"
+              href="/holiday-calendar"
               className="flex items-center space-x-2 text-green-300 px-3 py-2 rounded-lg bg-green-900/20 border border-green-700/30 hover:bg-green-800/30 hover:text-green-200 transition-all duration-200"
               title={t('nav.giveaways', 'Giveaways')}
             >

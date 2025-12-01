@@ -2388,6 +2388,10 @@
   "holidayCalendar.participating": "Participation...",
   "holidayCalendar.registered": "INSCRIT",
   "holidayCalendar.participate": "PARTICIPER",
+  "holidayCalendar.login": "SE CONNECTER",
+  "holidayCalendar.loading": "Chargement...",
+  "holidayCalendar.linkApiKey": "LIER LA CLÉ API",
+  "holidayCalendar.winner": "GAGNANT",
   
   "months.january": "Janvier",
   "months.february": "Février",

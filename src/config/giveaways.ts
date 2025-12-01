@@ -98,70 +98,34 @@ export const GIVEAWAYS: Giveaway[] = [
 // Generar sorteos de adviento para diciembre 2025
 export function generateAdventGiveaways(year: number = 2025): Giveaway[] {
   const adventGiveaways: Giveaway[] = [];
-  
-  // Premios variados para cada día (puedes personalizar esto)
-  const dailyPrizes = [
-    // Días 1-7
-    [
-      { position: 1, prize: '1200', icon: 'gem' as const, quantity: 1200, gemPrize: true },
-      { position: 2, prize: '250', icon: 'package' as const, itemId: 19721, quantity: 250 },
-      { position: 3, prize: '25', icon: 'package' as const, itemId: 19721, quantity: 25 }
-    ],
-    // Días 8-14
-    [
-      { position: 1, prize: '800', icon: 'gem' as const, quantity: 800, gemPrize: true },
-      { position: 2, prize: '250', icon: 'package' as const, itemId: 19721, quantity: 250 },
-      { position: 3, prize: '50', icon: 'package' as const, itemId: 19721, quantity: 50 }
-    ],
-    // Días 15-21
-    [
-      { position: 1, prize: '400', icon: 'gem' as const, quantity: 400, gemPrize: true },
-      { position: 2, prize: '250', icon: 'package' as const, itemId: 19721, quantity: 250 },
-      { position: 3, prize: '100', icon: 'package' as const, itemId: 19721, quantity: 100 }
-    ],
-    // Días 22-28
-    [
-      { position: 1, prize: '2000', icon: 'gem' as const, quantity: 2000, gemPrize: true },
-      { position: 2, prize: '500', icon: 'package' as const, itemId: 19721, quantity: 500 },
-      { position: 3, prize: '250', icon: 'package' as const, itemId: 19721, quantity: 250 }
-    ],
-    // Días 29-31
-    [
-      { position: 1, prize: '3000', icon: 'gem' as const, quantity: 3000, gemPrize: true },
-      { position: 2, prize: '1000', icon: 'package' as const, itemId: 19721, quantity: 1000 },
-      { position: 3, prize: '500', icon: 'package' as const, itemId: 19721, quantity: 500 }
-    ]
-  ];
 
   for (let day = 1; day <= 31; day++) {
     const dayStr = day.toString().padStart(2, '0');
-    // España en diciembre está en UTC+1, entonces 20:00 España = 19:00 UTC
-    const startDate = new Date(Date.UTC(year, 11, day, 0, 0, 0)); // Diciembre (mes 11) a las 00:00 UTC
-    const endDate = new Date(Date.UTC(year, 11, day, 19, 0, 0)); // Mismo día a las 20:00 hora de España (19:00 UTC)
-    
-    // Seleccionar premios según el día
-    let prizes;
-    if (day <= 7) {
-      prizes = dailyPrizes[0];
-    } else if (day <= 14) {
-      prizes = dailyPrizes[1];
-    } else if (day <= 21) {
-      prizes = dailyPrizes[2];
-    } else if (day <= 28) {
-      prizes = dailyPrizes[3];
+    // Diciembre es el mes 11 (0-indexed: 0=enero, 11=diciembre)
+    // Día del sorteo
+    const startLocal = new Date(`${year}-12-${dayStr}T14:00:00-05:00`)
+
+    // Manejar el caso especial del día 31 (el cierre es el 1 de enero del año siguiente)
+    let endLocal: Date;
+    if (day === 31) {
+      endLocal = new Date(`${year + 1}-01-01T13:59:00-05:00`);
     } else {
-      prizes = dailyPrizes[4];
+      const cierreDay = String(day + 1).padStart(2, '0');
+      endLocal = new Date(`${year}-12-${cierreDay}T13:59:00-05:00`);
     }
+
+    const startDate = startLocal.toISOString()
+    const endDate = endLocal.toISOString()
 
     adventGiveaways.push({
       id: `advent-${year}-12-${dayStr}`,
       slug: `advent-${year}-12-${dayStr}`,
       title: `Sorteo Día ${day} - Diciembre ${year}`,
       description: `¡Abre el sorteo del día ${day} de diciembre y participa para ganar increíbles premios!`,
-      startDate: startDate.toISOString(),
-      endDate: endDate.toISOString(),
+      startDate: startDate,
+      endDate: endDate,
       status: 'upcoming', // Se actualizará automáticamente según la fecha
-      prizes: prizes,
+      prizes: [],
       requirements: [
         'Link your GW2 API key to your account',
         'Join our Discord server'

@@ -6,6 +6,7 @@ import Image from "next/image";
 import { useAuth } from "@/contexts/AuthContext";
 import { useI18n } from "@/contexts/I18nContext";
 import Link from "next/link";
+import { Crown, AlertCircle, Users } from "lucide-react";
 
 interface AdventDay {
   day: number;
@@ -64,12 +65,31 @@ export default function AdventCalendar({
   const [winners, setWinners] = useState<Record<string, Array<{ position: number; accountName: string }>>>({});
   const [isLoadingApiKey, setIsLoadingApiKey] = useState(true);
   const [isLoadingParticipations, setIsLoadingParticipations] = useState(true);
+  const [isSelectingWinners, setIsSelectingWinners] = useState(false);
+  const [showSelectWinnersModal, setShowSelectWinnersModal] = useState(false);
+  const [showWinnersResultModal, setShowWinnersResultModal] = useState(false);
+  const [showErrorModal, setShowErrorModal] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
+  const [selectedWinners, setSelectedWinners] = useState<Array<{
+    giveaway_id: string;
+    user_id: string;
+    account_name: string;
+    position: number;
+    prize_description: string;
+    prize_value: string;
+  }>>([]);
+  const [giveawayToSelectWinners, setGiveawayToSelectWinners] = useState<string | null>(null);
 
   // Cargar sorteos desde la API
   useEffect(() => {
     const loadGiveaways = async () => {
       try {
-        const response = await fetch("/api/giveaways");
+        const response = await fetch("/api/giveaways", {
+          cache: "no-store",
+          headers: {
+            "Cache-Control": "no-cache, no-store, must-revalidate",
+          },
+        });
         if (response.ok) {
           const data = await response.json();
           const giveawaysMap: Record<string, {
@@ -112,6 +132,11 @@ export default function AdventCalendar({
     };
 
     loadGiveaways();
+    
+    // Recargar cada 30 segundos para actualizar contadores
+    const interval = setInterval(loadGiveaways, 30000);
+    
+    return () => clearInterval(interval);
   }, []);
 
   // Cargar ganadores
@@ -150,9 +175,6 @@ export default function AdventCalendar({
   // Inicializar días del adviento con datos de sorteos
   useEffect(() => {
     const today = new Date();
-    const currentYear = today.getFullYear();
-    const currentMonth = today.getMonth();
-    const currentDay = today.getDate();
 
     const days: AdventDay[] = [];
     for (let day = 1; day <= 31; day++) {
@@ -161,17 +183,19 @@ export default function AdventCalendar({
       const giveawayId = `advent-${year}-12-${dayStr}`;
       const giveaway = giveaways[giveawayId];
 
-      const isAvailable = giveaway && (
-        new Date(giveaway.startDate) <= today ||
-        (currentYear === year && currentMonth === month && day <= currentDay)
-      );
+      // Comparar fechas completas (con hora) en lugar de solo el día del mes
+      const giveawayStartDate = giveaway ? new Date(giveaway.startDate) : null;
+      const giveawayEndDate = giveaway ? new Date(giveaway.endDate) : null;
+      
+      const isAvailable = Boolean(giveaway && giveawayStartDate && (
+        giveawayStartDate.getTime() <= today.getTime()
+      ));
 
-      const isClosed = giveaway && (
-        (currentYear === year && currentMonth === month && day < currentDay) ||
-        new Date(giveaway.endDate) < today ||
+      const isClosed = Boolean(giveaway && (
+        (giveawayEndDate && giveawayEndDate.getTime() <= today.getTime()) ||
         giveaway.status === 'ended' ||
         giveaway.status === 'winners_announced'
-      );
+      ));
 
       const prizes = giveaway?.prizes?.slice(0, 3).map((p: {
         itemId?: number;
@@ -189,6 +213,8 @@ export default function AdventCalendar({
         { itemId: 19721, quantity: 250, gemPrize: false }
       ];
 
+      const participantCount = giveaway?.participantCount ?? 0;
+      
       days.push({
         day,
         date,
@@ -196,7 +222,7 @@ export default function AdventCalendar({
         isClosed,
         isParticipated: participatedDays.has(giveawayId),
         giveawayId,
-        participantCount: giveaway?.participantCount || 0,
+        participantCount,
         winners: winners[giveawayId]?.sort((a, b) => a.position - b.position).slice(0, 3),
         prizes
       });
@@ -372,11 +398,47 @@ export default function AdventCalendar({
         newParticipatedDays.add(dayData.giveawayId);
         setParticipatedDays(newParticipatedDays);
 
-        setAdventDays(prev => prev.map(d =>
-          d.day === selectedDay
-            ? { ...d, isParticipated: true, participantCount: (d.participantCount || 0) + 1 }
-            : d
-        ));
+        // Recargar sorteos desde la API para obtener el contador real actualizado
+        const giveawaysResponse = await fetch("/api/giveaways", {
+          cache: "no-store",
+          headers: {
+            "Cache-Control": "no-cache, no-store, must-revalidate",
+          },
+        });
+        if (giveawaysResponse.ok) {
+          const giveawaysData = await giveawaysResponse.json();
+          const giveawaysMap: Record<string, {
+            id: string;
+            startDate: string;
+            endDate: string;
+            status: string;
+            participantCount: number;
+            prizes: Array<{
+              itemId?: number;
+              quantity?: number;
+              gemPrize?: boolean;
+              itemIcon?: string;
+            }>;
+          }> = {};
+          giveawaysData.giveaways?.forEach((giveaway: {
+            id: string;
+            startDate: string;
+            endDate: string;
+            status: string;
+            participantCount: number;
+            prizes: Array<{
+              itemId?: number;
+              quantity?: number;
+              gemPrize?: boolean;
+              itemIcon?: string;
+            }>;
+          }) => {
+            if (giveaway.id.startsWith('advent-')) {
+              giveawaysMap[giveaway.id] = giveaway;
+            }
+          });
+          setGiveaways(giveawaysMap);
+        }
 
         // Update cache
         const cacheKey = `participated_${user.id}`;
@@ -405,6 +467,126 @@ export default function AdventCalendar({
     }
   };
 
+  // Verificar si el usuario es admin
+  const isAdmin = user?.role === "admin" || user?.isAdmin === true;
+
+  // Función para mostrar modal de selección de ganadores
+  const handleSelectWinnersClick = (giveawayId: string) => {
+    setGiveawayToSelectWinners(giveawayId);
+    setShowSelectWinnersModal(true);
+  };
+
+  // Función para confirmar y seleccionar ganadores
+  const handleConfirmSelectWinners = async () => {
+    if (!giveawayToSelectWinners) return;
+
+    try {
+      setIsSelectingWinners(true);
+      setShowSelectWinnersModal(false);
+
+      // Obtener token de localStorage
+      const token = typeof window !== 'undefined' ? localStorage.getItem('gw2_token') : null;
+      
+      // Preparar headers con autenticación
+      const headers: HeadersInit = {
+        "Content-Type": "application/json",
+      };
+      
+      if (token) {
+        headers["Authorization"] = `Bearer ${token}`;
+      }
+
+      const response = await fetch("/api/giveaways/select-winners", {
+        method: "POST",
+        headers,
+        body: JSON.stringify({
+          giveawayId: giveawayToSelectWinners,
+        }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setSelectedWinners(data.winners || []);
+        setShowWinnersResultModal(true);
+
+        // Recargar ganadores y sorteos para mostrar datos actualizados
+        const winnersResponse = await fetch("/api/giveaways/winners");
+        if (winnersResponse.ok) {
+          const winnersData = await winnersResponse.json();
+          const winnersMap: Record<string, Array<{ position: number; accountName: string }>> = {};
+          winnersData.winners?.forEach((winner: {
+            giveawayId: string;
+            position: number;
+            accountName: string;
+          }) => {
+            if (!winnersMap[winner.giveawayId]) {
+              winnersMap[winner.giveawayId] = [];
+            }
+            winnersMap[winner.giveawayId].push({
+              position: winner.position,
+              accountName: winner.accountName
+            });
+          });
+          setWinners(winnersMap);
+        }
+
+        const giveawaysResponse = await fetch("/api/giveaways");
+        if (giveawaysResponse.ok) {
+          const giveawaysData = await giveawaysResponse.json();
+          const giveawaysMap: Record<string, {
+            id: string;
+            startDate: string;
+            endDate: string;
+            status: string;
+            participantCount: number;
+            prizes: Array<{
+              itemId?: number;
+              quantity?: number;
+              gemPrize?: boolean;
+              itemIcon?: string;
+            }>;
+          }> = {};
+          giveawaysData.giveaways?.forEach((giveaway: {
+            id: string;
+            startDate: string;
+            endDate: string;
+            status: string;
+            participantCount: number;
+            prizes: Array<{
+              itemId?: number;
+              quantity?: number;
+              gemPrize?: boolean;
+              itemIcon?: string;
+            }>;
+          }) => {
+            if (giveaway.id.startsWith('advent-')) {
+              giveawaysMap[giveaway.id] = giveaway;
+            }
+          });
+          setGiveaways(giveawaysMap);
+        }
+      } else {
+        const errorData = await response.json();
+        console.error("Error selecting winners:", errorData);
+        setErrorMessage(
+          `Error seleccionando ganadores: ${
+            errorData.error || "Error desconocido"
+          }`
+        );
+        setShowErrorModal(true);
+      }
+    } catch (error) {
+      console.error("Error selecting winners:", error);
+      setErrorMessage(
+        "Error seleccionando ganadores. Por favor intenta de nuevo."
+      );
+      setShowErrorModal(true);
+    } finally {
+      setIsSelectingWinners(false);
+      setGiveawayToSelectWinners(null);
+    }
+  };
+
 
   return (
     <div className={`mb-8 ${className}`}>
@@ -430,6 +612,10 @@ export default function AdventCalendar({
           const isClosed = day.isClosed || dayWinners.length > 0;
           // El botón solo aparece en días 1 y 25, y solo si no está cerrado
           const showButton = (day.day === 1 || day.day === 25) && !isClosed;
+          // Para admin: mostrar botón en todas las tarjetas
+          const showAdminButton = isAdmin && day.giveawayId;
+          // El botón está habilitado solo si el día está cerrado, no hay ganadores y hay participantes
+          const canSelectWinners = day.isClosed && dayWinners.length === 0 && (day.participantCount || 0) > 0;
 
           return (
             <motion.div
@@ -444,7 +630,7 @@ export default function AdventCalendar({
                 relative rounded-xl overflow-hidden
                 transition-all duration-300
                 w-full
-                aspect-[3/4]
+                aspect-[3/5]
                 ${!isClosed ? 'hover:shadow-2xl hover:scale-105 cursor-pointer' : 'cursor-default'}
               `}>
                 {/* Imagen de fondo completa sin modificaciones */}
@@ -452,11 +638,11 @@ export default function AdventCalendar({
                   <Image
                     src={
                       day.day === 1 ? "/images/assets/day1.webp" :
-                      day.day === 7 ? "/images/assets/day7.webp" :
-                      day.day === 14 ? "/images/assets/day14.webp" :
-                      day.day === 21 ? "/images/assets/day21.webp" :
+                      day.day === 7 ? "/images/assets/soon.webp" :
+                      day.day === 14 ? "/images/assets/soon.webp" :
+                      day.day === 21 ? "/images/assets/soon.webp" :
                       day.day === 25 ? "/images/assets/day25.webp" :
-                      day.day === 28 ? `/images/assets/day28.webp?v=${Date.now()}` :
+                      day.day === 28 ? `/images/assets/soon.webp?v=${Date.now()}` :
                       "/images/assets/daily.webp"
                     }
                     alt={`Día ${day.day}`}
@@ -470,6 +656,16 @@ export default function AdventCalendar({
                 {/* Contenido posicionado absolutamente sobre la imagen respetando sus espacios */}
                 <div className="relative z-10 w-full h-full">
 
+                  {/* Indicador de participantes */}
+                  {day.giveawayId && (
+                    <div className="absolute top-3 right-3 bg-blue-600/95 backdrop-blur-sm text-white px-2.5 py-1.5 rounded-lg flex items-center gap-1.5 shadow-lg border border-blue-400/50 z-30">
+                      <Users className="w-3.5 h-3.5" />
+                      <span className="text-xs font-semibold">
+                        {day.participantCount ?? 0}
+                      </span>
+                    </div>
+                  )}
+
                   {/* Botón APUNTATE - Sobre la imagen */}
                   {showButton && (
                     <div className="absolute top-[65%] left-1/2 transform -translate-x-1/2 w-[85%] px-2">
@@ -478,18 +674,18 @@ export default function AdventCalendar({
                           href="/login"
                           className="inline-flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2.5 rounded-lg transition-colors w-full"
                         >
-                          INICIA SESIÓN
+                          {t("holidayCalendar.login", "INICIA SESIÓN")}
                         </Link>
                       ) : isLoadingApiKey || isLoadingParticipations ? (
                         <div className="inline-flex items-center justify-center gap-2 bg-gray-600 text-gray-300 font-semibold py-2.5 rounded-lg w-full">
-                          Cargando...
+                          {t("holidayCalendar.loading", "Cargando...")}
                         </div>
                       ) : !hasApiKey || !apiKeyValid ? (
                         <Link
                           href="/profile"
                           className="inline-flex items-center justify-center gap-2 bg-yellow-600 hover:bg-yellow-700 text-white font-semibold py-2.5 rounded-lg transition-colors w-full"
                         >
-                          VINCULA API KEY
+                          {t("holidayCalendar.linkApiKey", "VINCULA API KEY")}
                         </Link>
                       ) : participatedDays.has(day.giveawayId || '') ? (
                         <div className="inline-flex items-center justify-center gap-2 bg-gray-600 text-gray-300 font-semibold py-2.5 rounded-lg w-full">
@@ -518,14 +714,46 @@ export default function AdventCalendar({
 
                   {/* Lista de ganadores */}
                   {dayWinners.length > 0 && (
-                    <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 w-[85%] px-2">
+                    <div className="absolute bottom-[3.78rem] left-1/2 transform -translate-x-1/2 w-[85%] px-2">
                       <div className="space-y-1">
                         {dayWinners.slice(0, 3).map((winner) => (
                           <div key={winner.position} className="text-xs text-gray-900 text-center font-medium leading-tight">
-                            <span className="font-bold">{winner.position}º GANADOR</span> - {winner.accountName}
+                            <span className="font-bold">{winner.position}º {t("holidayCalendar.winner", "GANADOR")}</span> - {winner.accountName}
                           </div>
                         ))}
                       </div>
+                    </div>
+                  )}
+
+                  {/* Botón de Admin para seleccionar ganadores - Aparece en todas las tarjetas para admins, pero se oculta si ya hay ganadores */}
+                  {showAdminButton && dayWinners.length === 0 && (
+                    <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 w-[85%] px-2 z-20">
+                      <button
+                        onClick={() => handleSelectWinnersClick(day.giveawayId!)}
+                        disabled={isSelectingWinners || !canSelectWinners}
+                        className={`w-full py-2 px-3 text-white font-semibold text-xs rounded-lg transition-colors flex items-center justify-center gap-2 shadow-lg ${
+                          canSelectWinners 
+                            ? "bg-yellow-600 hover:bg-yellow-700" 
+                            : "bg-gray-600 cursor-not-allowed opacity-60"
+                        }`}
+                        title={
+                          !day.isClosed 
+                            ? "El sorteo aún no ha cerrado" 
+                            : dayWinners.length > 0 
+                            ? "Ya hay ganadores seleccionados" 
+                            : (day.participantCount || 0) === 0 
+                            ? "No hay participantes" 
+                            : "Seleccionar ganadores al azar"
+                        }
+                      >
+                        <Crown className="w-3 h-3" />
+                        {isSelectingWinners ? "Seleccionando..." : "Seleccionar Ganadores"}
+                      </button>
+                      {!canSelectWinners && dayWinners.length > 0 && (
+                        <p className="text-gray-500 text-xs mt-1 text-center">
+                          Ganadores ya seleccionados
+                        </p>
+                      )}
                     </div>
                   )}
                 </div>
@@ -565,6 +793,140 @@ export default function AdventCalendar({
                 className="flex-1 py-2.5 px-4 bg-gradient-to-r from-teal-600 to-green-600 hover:from-teal-700 hover:to-green-700 text-white font-semibold rounded-lg transition-colors disabled:opacity-50"
               >
                 {isParticipating ? t("holidayCalendar.participating", "Participando...") : t("holidayCalendar.confirm", "Confirmar")}
+              </button>
+            </div>
+          </motion.div>
+        </div>
+      )}
+
+      {/* Modal de confirmación para seleccionar ganadores */}
+      {showSelectWinnersModal && giveawayToSelectWinners && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="bg-gray-800 rounded-xl p-6 max-w-md w-full mx-4 border border-gray-700"
+          >
+            <div className="text-center">
+              <div className="w-16 h-16 bg-yellow-600/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                <Crown className="w-8 h-8 text-yellow-400" />
+              </div>
+              <h3 className="text-2xl font-bold text-white mb-4">
+                Seleccionar Ganadores
+              </h3>
+              <p className="text-gray-300 mb-6">
+                ¿Estás seguro de que quieres seleccionar ganadores al azar para este sorteo? Esta acción no se puede deshacer.
+              </p>
+              <div className="bg-gray-700/50 rounded-lg p-4 mb-6">
+                <p className="text-sm text-gray-400 mb-2">
+                  Información del sorteo:
+                </p>
+                <p className="text-white font-semibold">
+                  Día {adventDays.find(d => d.giveawayId === giveawayToSelectWinners)?.day || 'N/A'}
+                </p>
+                <p className="text-gray-300 text-sm">
+                  {adventDays.find(d => d.giveawayId === giveawayToSelectWinners)?.participantCount || 0} participantes •{" "}
+                  {adventDays.find(d => d.giveawayId === giveawayToSelectWinners)?.prizes?.length || 0} premios
+                </p>
+              </div>
+              <div className="flex gap-3">
+                <button
+                  onClick={() => {
+                    setShowSelectWinnersModal(false);
+                    setGiveawayToSelectWinners(null);
+                  }}
+                  className="flex-1 bg-gray-600 hover:bg-gray-700 text-white font-semibold py-3 px-6 rounded-lg transition-colors"
+                >
+                  Cancelar
+                </button>
+                <button
+                  onClick={handleConfirmSelectWinners}
+                  disabled={isSelectingWinners}
+                  className="flex-1 bg-yellow-600 hover:bg-yellow-700 disabled:bg-gray-600 disabled:cursor-not-allowed text-white font-semibold py-3 px-6 rounded-lg transition-colors"
+                >
+                  {isSelectingWinners ? "Seleccionando..." : "Confirmar"}
+                </button>
+              </div>
+            </div>
+          </motion.div>
+        </div>
+      )}
+
+      {/* Modal de resultado de ganadores */}
+      {showWinnersResultModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="relative max-w-2xl w-[90%] bg-gray-900 border border-gray-700 rounded-2xl p-8"
+          >
+            <div className="text-center">
+              <div className="w-16 h-16 bg-green-600/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                <Crown className="w-8 h-8 text-green-400" />
+              </div>
+              <h3 className="text-2xl font-bold text-white mb-4">
+                ¡Ganadores Seleccionados!
+              </h3>
+              <p className="text-gray-300 mb-6">
+                Se han seleccionado {selectedWinners.length} ganadores al azar para el sorteo.
+              </p>
+
+              <div className="bg-gray-800/60 rounded-lg p-6 mb-6">
+                <h4 className="text-lg font-semibold text-white mb-4">
+                  Lista de Ganadores
+                </h4>
+                <div className="grid grid-cols-3 gap-4">
+                  {selectedWinners
+                    .sort((a, b) => a.position - b.position)
+                    .map((winner, index) => (
+                      <div
+                        key={index}
+                        className="bg-gray-700/50 rounded-lg p-4 flex flex-col items-center text-center"
+                      >
+                        <div className="w-12 h-12 bg-yellow-600 rounded-full flex items-center justify-center text-white font-bold text-lg mb-3">
+                          {winner.position}
+                        </div>
+                        <p className="text-white font-semibold mb-2 text-sm">
+                          {winner.account_name}
+                        </p>
+                        <p className="text-gray-300 text-xs">
+                          {winner.prize_description}
+                        </p>
+                      </div>
+                    ))}
+                </div>
+              </div>
+
+              <button
+                onClick={() => setShowWinnersResultModal(false)}
+                className="bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-8 rounded-lg transition-colors"
+              >
+                Cerrar
+              </button>
+            </div>
+          </motion.div>
+        </div>
+      )}
+
+      {/* Modal de error */}
+      {showErrorModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="relative max-w-md w-[90%] bg-gray-900 border border-red-500 rounded-2xl p-8"
+          >
+            <div className="text-center">
+              <div className="w-16 h-16 bg-red-600/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                <AlertCircle className="w-8 h-8 text-red-400" />
+              </div>
+              <h3 className="text-2xl font-bold text-white mb-4">Error</h3>
+              <p className="text-gray-300 mb-6">{errorMessage}</p>
+              <button
+                onClick={() => setShowErrorModal(false)}
+                className="bg-red-600 hover:bg-red-700 text-white font-semibold py-3 px-8 rounded-lg transition-colors"
+              >
+                Cerrar
               </button>
             </div>
           </motion.div>
