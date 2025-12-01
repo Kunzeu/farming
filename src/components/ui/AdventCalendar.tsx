@@ -144,7 +144,12 @@ export default function AdventCalendar({
   useEffect(() => {
     const loadWinners = async () => {
       try {
-        const response = await fetch("/api/giveaways/winners");
+        const response = await fetch("/api/giveaways/winners", {
+          cache: "no-store",
+          headers: {
+            "Cache-Control": "no-cache, no-store, must-revalidate",
+          },
+        });
         if (response.ok) {
           const data = await response.json();
           const winnersMap: Record<string, Array<{ position: number; accountName: string }>> = {};
@@ -668,7 +673,12 @@ export default function AdventCalendar({
         setShowWinnersResultModal(true);
 
         // Recargar ganadores y sorteos para mostrar datos actualizados
-        const winnersResponse = await fetch("/api/giveaways/winners");
+        const winnersResponse = await fetch("/api/giveaways/winners", {
+          cache: "no-store",
+          headers: {
+            "Cache-Control": "no-cache, no-store, must-revalidate",
+          },
+        });
         if (winnersResponse.ok) {
           const winnersData = await winnersResponse.json();
           const winnersMap: Record<string, Array<{ position: number; accountName: string }>> = {};
@@ -688,7 +698,12 @@ export default function AdventCalendar({
           setWinners(winnersMap);
         }
 
-        const giveawaysResponse = await fetch("/api/giveaways");
+        const giveawaysResponse = await fetch("/api/giveaways", {
+          cache: "no-store",
+          headers: {
+            "Cache-Control": "no-cache, no-store, must-revalidate",
+          },
+        });
         if (giveawaysResponse.ok) {
           const giveawaysData = await giveawaysResponse.json();
           const giveawaysMap: Record<string, {
@@ -768,8 +783,8 @@ export default function AdventCalendar({
         {adventDays.slice(0, 31).map((day, index) => {
           const dayWinners = day.winners || [];
           const isClosed = day.isClosed || dayWinners.length > 0;
-          // El botón solo aparece en días 1 y 25, y solo si no está cerrado
-          const showButton = (day.day === 1 || day.day === 25) && !isClosed;
+          // El botón aparece en todos los días que tengan giveaway, estén disponibles y no estén cerrados
+          const showButton = day.giveawayId && day.isAvailable && !isClosed;
           // Para admin: mostrar botón en todas las tarjetas
           const showAdminButton = isAdmin && day.giveawayId;
           // El botón está habilitado solo si el día está cerrado, no hay ganadores y hay participantes
@@ -796,6 +811,7 @@ export default function AdventCalendar({
                   <Image
                     src={
                       day.day === 1 ? "/images/assets/day1.webp" :
+                      day.day === 2 ? "/images/assets/day2.webp" :
                       day.day === 7 ? "/images/assets/daily.webp" :
                       day.day === 14 ? "/images/assets/daily.webp" :
                       day.day === 21 ? "/images/assets/daily.webp" :

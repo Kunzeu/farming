@@ -62,7 +62,9 @@ export async function GET(request: NextRequest) {
       { winners },
       {
         headers: {
-          'Cache-Control': 'public, max-age=60, stale-while-revalidate=300',
+          'Cache-Control': 'no-cache, no-store, must-revalidate',
+          'Pragma': 'no-cache',
+          'Expires': '0',
         },
       }
     );
