@@ -697,14 +697,16 @@ const Navigation = () => {
                 style={{ width: '6rem', minWidth: '6rem', display: 'inline-block', textAlign: 'center' }}
               />
             </div>
-            {/* Enlace de Giveaways */}
+            {/* Enlace Calendario de Adviento */}
              <Link
               href="/holiday-calendar"
               className="flex items-center space-x-2 text-green-300 px-3 py-2 rounded-lg bg-green-900/20 border border-green-700/30 hover:bg-green-800/30 hover:text-green-200 transition-all duration-200"
-              title={t('nav.giveaways', 'Giveaways')}
+              title={t('nav.holidayCalendar', 'Calendario de Adviento')}
             >
               <Gift className="w-4 h-4" />
-              <span className="text-sm font-bold">{t('nav.giveaways', 'Giveaways')}</span>
+              <span className="text-sm font-bold">
+                {t('nav.holidayCalendar', 'Calendario de Adviento')}
+              </span>
             </Link>   
           </div>
 
@@ -1014,10 +1016,12 @@ const Navigation = () => {
                       </button>
                       
                       <Link
-                        href="/giveaways"
+                        href="/holiday-calendar"
                         className="flex items-center space-x-2 text-green-300 px-3 py-2 rounded-lg bg-green-900/20 border border-green-700/30 hover:bg-green-800/30 hover:text-green-200 transition-all duration-200">
                         <Gift className="w-4 h-4" />
-                        <span className="text-xs font-bold">{t('nav.giveaways', 'Giveaways')}</span>
+                        <span className="text-xs font-bold">
+                          {t('nav.holidayCalendar', 'Calendario de Adviento')}
+                        </span>
                       </Link>
                     </div>
                   </div>
