@@ -101,17 +101,28 @@ export function generateAdventGiveaways(year: number = 2025): Giveaway[] {
 
   for (let day = 1; day <= 31; day++) {
     const dayStr = day.toString().padStart(2, '0');
-    // Diciembre es el mes 11 (0-indexed: 0=enero, 11=diciembre)
-    // Día del sorteo - Inicio a las 00:00 (medianoche) hora local
-    const startLocal = new Date(`${year}-12-${dayStr}T00:00:00-05:00`)
+    
+    // Cada sorteo inicia el día anterior a las 14:00
+    // Día 1 inicia el 30 de noviembre, día 2 inicia el 1 de diciembre, etc.
+    let startLocal: Date;
+    if (day === 1) {
+      // Día 1 inicia el 30 de noviembre a las 14:00
+      startLocal = new Date(`${year}-11-30T14:00:00-05:00`);
+    } else {
+      // Días 2-31 inician el día anterior de diciembre a las 14:00
+      const prevDay = String(day - 1).padStart(2, '0');
+      startLocal = new Date(`${year}-12-${prevDay}T14:00:00-05:00`);
+    }
 
-    // Manejar el caso especial del día 31 (el cierre es el 1 de enero del año siguiente)
+    // Cada sorteo termina al día siguiente a las 13:59
     let endLocal: Date;
     if (day === 31) {
+      // El día 31 termina el 1 de enero del año siguiente a las 13:59
       endLocal = new Date(`${year + 1}-01-01T13:59:00-05:00`);
     } else {
-      const cierreDay = String(day + 1).padStart(2, '0');
-      endLocal = new Date(`${year}-12-${cierreDay}T13:59:00-05:00`);
+      // Días 1-30 terminan el día siguiente de diciembre a las 13:59
+      const nextDay = String(day + 1).padStart(2, '0');
+      endLocal = new Date(`${year}-12-${nextDay}T13:59:00-05:00`);
     }
 
     const startDate = startLocal.toISOString()
