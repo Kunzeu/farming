@@ -193,9 +193,12 @@ export default function AdventCalendar({
       const giveawayStartDate = giveaway ? new Date(giveaway.startDate) : null;
       const giveawayEndDate = giveaway ? new Date(giveaway.endDate) : null;
       
-      const isAvailable = Boolean(giveaway && giveawayStartDate && (
-        giveawayStartDate.getTime() <= today.getTime()
-      ));
+      // El día 25 siempre está disponible (aunque no sea la fecha actual)
+      const isAvailable = day === 25 
+        ? Boolean(giveaway) 
+        : Boolean(giveaway && giveawayStartDate && (
+            giveawayStartDate.getTime() <= today.getTime()
+          ));
 
       const isClosed = Boolean(giveaway && (
         (giveawayEndDate && giveawayEndDate.getTime() <= today.getTime()) ||
@@ -667,10 +670,26 @@ export default function AdventCalendar({
         }),
       });
 
-      if (response.ok) {
-        const data = await response.json();
-        setSelectedWinners(data.winners || []);
-        setShowWinnersResultModal(true);
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({ error: 'Error desconocido al seleccionar ganadores' }));
+        console.error("Error selecting winners:", errorData);
+        setErrorMessage(errorData.error || errorData.details || "Error al seleccionar ganadores. Por favor intenta de nuevo.");
+        setShowErrorModal(true);
+        setIsSelectingWinners(false);
+        return;
+      }
+
+      const data = await response.json();
+      
+      if (!data.winners || data.winners.length === 0) {
+        setErrorMessage(data.message || "No se pudieron seleccionar ganadores. Verifica que el sorteo tenga premios configurados y participantes.");
+        setShowErrorModal(true);
+        setIsSelectingWinners(false);
+        return;
+      }
+
+      setSelectedWinners(data.winners || []);
+      setShowWinnersResultModal(true);
 
         // Recargar ganadores y sorteos para mostrar datos actualizados
         const winnersResponse = await fetch("/api/giveaways/winners", {
@@ -738,18 +757,9 @@ export default function AdventCalendar({
           });
           setGiveaways(giveawaysMap);
         }
-      } else {
-        const errorData = await response.json();
-        console.error("Error selecting winners:", errorData);
-        setErrorMessage(
-          `Error seleccionando ganadores: ${
-            errorData.error || "Error desconocido"
-          }`
-        );
-        setShowErrorModal(true);
-      }
     } catch (error) {
       console.error("Error selecting winners:", error);
+      setIsSelectingWinners(false);
       setErrorMessage(
         "Error seleccionando ganadores. Por favor intenta de nuevo."
       );

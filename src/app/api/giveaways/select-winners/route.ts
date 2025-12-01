@@ -39,6 +39,14 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Giveaway not found in configuration' }, { status: 404 });
     }
 
+    // Verificar que el sorteo tenga premios configurados
+    if (!giveaway.prizes || giveaway.prizes.length === 0) {
+      return NextResponse.json({ 
+        error: 'Este sorteo no tiene premios configurados. Por favor configura los premios primero.',
+        details: 'No prizes configured for this giveaway'
+      }, { status: 400 });
+    }
+
     // 1. Get all participants for the giveaway
     const participantsResult = await pool.query(
       'SELECT user_id, account_name FROM giveaway_participants WHERE giveaway_id = $1',
@@ -47,7 +55,10 @@ export async function POST(request: NextRequest) {
     const participants = participantsResult.rows;
 
     if (participants.length === 0) {
-      return NextResponse.json({ message: 'No participants for this giveaway' }, { status: 200 });
+      return NextResponse.json({ 
+        message: 'No participants for this giveaway',
+        error: 'No hay participantes en este sorteo'
+      }, { status: 200 });
     }
 
     // 2. Shuffle participants (Fisher-Yates algorithm)
@@ -58,7 +69,10 @@ export async function POST(request: NextRequest) {
 
     // 3. Select winners based on prize count
     const winnersToInsert = [];
-    for (let i = 0; i < giveaway.prizes.length && i < participants.length; i++) {
+    const prizeCount = giveaway.prizes.length;
+    const participantCount = participants.length;
+    
+    for (let i = 0; i < prizeCount && i < participantCount; i++) {
       const participant = participants[i];
       const prize = giveaway.prizes[i];
       
@@ -82,7 +96,11 @@ export async function POST(request: NextRequest) {
     }
 
     if (winnersToInsert.length === 0) {
-      return NextResponse.json({ message: 'No winners selected (not enough participants or prizes)' }, { status: 200 });
+      return NextResponse.json({ 
+        error: 'No se pudieron seleccionar ganadores',
+        message: `No se pudieron seleccionar ganadores. El sorteo tiene ${participantCount} participantes pero ${prizeCount} premios configurados.`,
+        details: `Participants: ${participantCount}, Prizes: ${prizeCount}`
+      }, { status: 400 });
     }
 
     // 4. Insert winners into giveaway_winners table (simplified)
@@ -103,8 +121,13 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ message: 'Winners selected and announced', winners: winnersToInsert });
   } catch (error) {
     console.error('Error selecting winners:', error);
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
     return NextResponse.json(
-      { error: 'Failed to select winners' },
+      { 
+        error: 'Error al seleccionar ganadores',
+        details: errorMessage,
+        message: 'Ocurrió un error inesperado al seleccionar los ganadores. Por favor intenta de nuevo.'
+      },
       { status: 500 }
     );
   }
