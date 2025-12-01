@@ -79,6 +79,7 @@ export default function AdventCalendar({
     prize_value: string;
   }>>([]);
   const [giveawayToSelectWinners, setGiveawayToSelectWinners] = useState<string | null>(null);
+  const [autoParticipatedGiveaways, setAutoParticipatedGiveaways] = useState<Set<string>>(new Set());
 
   // Cargar sorteos desde la API
   useEffect(() => {
@@ -337,6 +338,163 @@ export default function AdventCalendar({
     }
     return () => controller.abort();
   }, [isAuthenticated, user?.id]);
+
+  // Auto-inscripción de todos los usuarios Patreon desde el servidor
+  // Busca en la base de datos todos los usuarios Patreon activos (Bronze/Silver/Gold/Legends + active_patron)
+  // y los inscribe automáticamente en sorteos disponibles
+  useEffect(() => {
+    const autoEnrollAllPatreons = async () => {
+      // Esperar a que se carguen los datos
+      if (isLoadingApiKey || isLoadingParticipations || adventDays.length === 0) {
+        return;
+      }
+
+      // Encontrar sorteos disponibles que no se hayan procesado ya
+      // Para auto-inscripción, consideramos sorteos que:
+      // 1. Tengan giveawayId
+      // 2. Existan en giveaways (estén configurados)
+      // 3. No estén cerrados (no tengan ganadores, no hayan terminado)
+      // 4. No se hayan procesado ya
+      
+      const todayUTC = new Date(); // Fecha actual
+      const availableGiveaways = adventDays
+        .filter(day => {
+          const giveaway = day.giveawayId ? giveaways[day.giveawayId] : null;
+          const hasGiveaway = !!giveaway;
+          
+          // Verificar si la fecha de inicio ya pasó (incluso si el estado es "upcoming")
+          // Comparar ambas fechas en UTC para evitar problemas de zona horaria
+          const giveawayStartDate = giveaway ? new Date(giveaway.startDate) : null;
+          const startDatePassed = giveawayStartDate ? giveawayStartDate.getTime() <= todayUTC.getTime() : false;
+          
+          // Verificar si el día del calendario ya pasó o es hoy (comparando solo día, mes y año, sin hora)
+          const todayYear = todayUTC.getUTCFullYear();
+          const todayMonth = todayUTC.getUTCMonth();
+          const todayDay = todayUTC.getUTCDate();
+          // month es 11 (diciembre) porque es 0-indexed
+          const dayDatePassed = todayYear > year || 
+            (todayYear === year && todayMonth > month) ||
+            (todayYear === year && todayMonth === month && todayDay >= day.day);
+          
+          const isActive = giveaway?.status === 'active';
+          const isUpcomingButStarted = giveaway?.status === 'upcoming' && (startDatePassed || dayDatePassed);
+          const isNotClosed = !day.isClosed && !day.winners?.length;
+          const notProcessed = !autoParticipatedGiveaways.has(day.giveawayId || '');
+          
+          // Considerar disponible si:
+          // - Tiene giveaway
+          // - Está activo O la fecha de inicio ya pasó (incluso si es "upcoming")
+          // - O si es el día actual o ya pasó (para sorteos diarios)
+          // - No está cerrado
+          // - No se ha procesado ya
+          const isAvailable = hasGiveaway && 
+            (isActive || isUpcomingButStarted || day.isAvailable || dayDatePassed) && 
+            isNotClosed && 
+            day.giveawayId &&
+            notProcessed;
+          
+          return isAvailable;
+        })
+        .map(day => day.giveawayId!)
+        .filter((id): id is string => !!id);
+
+      if (availableGiveaways.length === 0) {
+        return;
+      }
+
+      // Marcar estos sorteos como procesados antes de llamar al servidor
+      const newAutoParticipated = new Set(autoParticipatedGiveaways);
+      availableGiveaways.forEach(giveawayId => {
+        newAutoParticipated.add(giveawayId);
+      });
+      setAutoParticipatedGiveaways(newAutoParticipated);
+
+      try {
+        const response = await fetch("/api/giveaways/auto-enroll-patreons", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            giveawayIds: availableGiveaways,
+          }),
+        });
+
+        if (response.ok) {
+          await response.json();
+
+          // Recargar participaciones del usuario actual si está autenticado
+          if (isAuthenticated && user?.id) {
+            const participationsResponse = await fetch(`/api/giveaways/participants?userId=${user.id}`, {
+              cache: "no-cache",
+              headers: {
+                "Cache-Control": "no-cache, no-store, must-revalidate",
+              },
+            });
+            if (participationsResponse.ok) {
+              const data = await participationsResponse.json();
+              const participatedSet = new Set<string>(
+                data.participants.map((p: { giveawayId: string }) => p.giveawayId)
+              );
+              setParticipatedDays(participatedSet);
+            }
+          }
+
+          // Recargar sorteos para actualizar contadores
+          const giveawaysResponse = await fetch("/api/giveaways", {
+            cache: "no-store",
+            headers: {
+              "Cache-Control": "no-cache, no-store, must-revalidate",
+            },
+          });
+          if (giveawaysResponse.ok) {
+            const giveawaysData = await giveawaysResponse.json();
+            const giveawaysMap: Record<string, {
+              id: string;
+              startDate: string;
+              endDate: string;
+              status: string;
+              participantCount: number;
+              prizes: Array<{
+                itemId?: number;
+                quantity?: number;
+                gemPrize?: boolean;
+                itemIcon?: string;
+              }>;
+            }> = {};
+            giveawaysData.giveaways?.forEach((giveaway: {
+              id: string;
+              startDate: string;
+              endDate: string;
+              status: string;
+              participantCount: number;
+              prizes: Array<{
+                itemId?: number;
+                quantity?: number;
+                gemPrize?: boolean;
+                itemIcon?: string;
+              }>;
+            }) => {
+              if (giveaway.id.startsWith('advent-')) {
+                giveawaysMap[giveaway.id] = giveaway;
+              }
+            });
+            setGiveaways(giveawaysMap);
+          }
+        }
+      } catch (error) {
+        console.error("Error auto-enrolling Patreons:", error);
+      }
+    };
+
+    // Ejecutar después de un delay para asegurar que todo esté cargado
+    const delay = isLoadingApiKey || isLoadingParticipations ? 2000 : 1500;
+    const timeoutId = setTimeout(() => {
+      autoEnrollAllPatreons();
+    }, delay);
+
+    return () => clearTimeout(timeoutId);
+  }, [isLoadingApiKey, isLoadingParticipations, adventDays, autoParticipatedGiveaways, isAuthenticated, user?.id, giveaways, year, month]);
 
   // Abrir modal de confirmación
   const handleParticipateClick = (day: number) => {

@@ -102,8 +102,8 @@ export function generateAdventGiveaways(year: number = 2025): Giveaway[] {
   for (let day = 1; day <= 31; day++) {
     const dayStr = day.toString().padStart(2, '0');
     // Diciembre es el mes 11 (0-indexed: 0=enero, 11=diciembre)
-    // Día del sorteo
-    const startLocal = new Date(`${year}-12-${dayStr}T14:00:00-05:00`)
+    // Día del sorteo - Inicio a las 00:00 (medianoche) hora local
+    const startLocal = new Date(`${year}-12-${dayStr}T00:00:00-05:00`)
 
     // Manejar el caso especial del día 31 (el cierre es el 1 de enero del año siguiente)
     let endLocal: Date;
