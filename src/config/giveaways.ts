@@ -33,18 +33,18 @@ export const GIVEAWAYS: Giveaway[] = [
     startDate: '2025-10-01T00:00:00.000Z', // 1 Oct 2025 00:00 UTC = 30 Sep 2025 19:00 Colombia
     endDate: '2025-11-01T00:00:00.000Z',   // 1 Nov 2025 00:00 UTC = 31 Oct 2025 19:00 Colombia
     status: 'winners_announced',
-           prizes: [
-             { position: 1, prize: '1200', icon: 'gem', quantity: 1200, gemPrize: true },
-             { position: 2, prize: '800', icon: 'gem', quantity: 800, gemPrize: true },
-             { position: 3, prize: '400', icon: 'gem', quantity: 400, gemPrize: true },
-             { position: 4, prize: '400', icon: 'gem', quantity: 400, gemPrize: true },
-             { position: 5, prize: '250', icon: 'package', itemId: 19721, quantity: 250 },
-             { position: 6, prize: '250', icon: 'package', itemId: 19721, quantity: 250 },
-             { position: 7, prize: '250', icon: 'package', itemId: 19721, quantity: 250 },
-             { position: 8, prize: '250', icon: 'package', itemId: 19721, quantity: 250 },
-             { position: 9, prize: '250', icon: 'package', itemId: 19721, quantity: 250 },
-             { position: 10, prize: '250', icon: 'package', itemId: 19721, quantity: 250 }
-           ],
+    prizes: [
+      { position: 1, prize: '1200', icon: 'gem', quantity: 1200, gemPrize: true },
+      { position: 2, prize: '800', icon: 'gem', quantity: 800, gemPrize: true },
+      { position: 3, prize: '400', icon: 'gem', quantity: 400, gemPrize: true },
+      { position: 4, prize: '400', icon: 'gem', quantity: 400, gemPrize: true },
+      { position: 5, prize: '250', icon: 'package', itemId: 19721, quantity: 250 },
+      { position: 6, prize: '250', icon: 'package', itemId: 19721, quantity: 250 },
+      { position: 7, prize: '250', icon: 'package', itemId: 19721, quantity: 250 },
+      { position: 8, prize: '250', icon: 'package', itemId: 19721, quantity: 250 },
+      { position: 9, prize: '250', icon: 'package', itemId: 19721, quantity: 250 },
+      { position: 10, prize: '250', icon: 'package', itemId: 19721, quantity: 250 }
+    ],
     requirements: [
       'Link your GW2 API key to your account',
       'Join our Discord server',
@@ -67,18 +67,18 @@ export const GIVEAWAYS: Giveaway[] = [
     startDate: '2025-11-01T00:00:00.000Z',
     endDate: '2025-11-30T00:00:00.000Z',
     status: 'winners_announced',
-           prizes: [
-             { position: 1, prize: '1200', icon: 'gem', quantity: 1200, gemPrize: true },
-             { position: 2, prize: '800', icon: 'gem', quantity: 800, gemPrize: true },
-             { position: 3, prize: '400', icon: 'gem', quantity: 400, gemPrize: true },
-             { position: 4, prize: '400', icon: 'gem', quantity: 400, gemPrize: true },
-             { position: 5, prize: '250', icon: 'package', itemId: 19721, quantity: 250 },
-             { position: 6, prize: '250', icon: 'package', itemId: 19721, quantity: 250 },
-             { position: 7, prize: '250', icon: 'package', itemId: 19721, quantity: 250 },
-             { position: 8, prize: '250', icon: 'package', itemId: 19721, quantity: 250 },
-             { position: 9, prize: '250', icon: 'package', itemId: 19721, quantity: 250 },
-             { position: 10, prize: '250', icon: 'package', itemId: 19721, quantity: 250 }
-           ],
+    prizes: [
+      { position: 1, prize: '1200', icon: 'gem', quantity: 1200, gemPrize: true },
+      { position: 2, prize: '800', icon: 'gem', quantity: 800, gemPrize: true },
+      { position: 3, prize: '400', icon: 'gem', quantity: 400, gemPrize: true },
+      { position: 4, prize: '400', icon: 'gem', quantity: 400, gemPrize: true },
+      { position: 5, prize: '250', icon: 'package', itemId: 19721, quantity: 250 },
+      { position: 6, prize: '250', icon: 'package', itemId: 19721, quantity: 250 },
+      { position: 7, prize: '250', icon: 'package', itemId: 19721, quantity: 250 },
+      { position: 8, prize: '250', icon: 'package', itemId: 19721, quantity: 250 },
+      { position: 9, prize: '250', icon: 'package', itemId: 19721, quantity: 250 },
+      { position: 10, prize: '250', icon: 'package', itemId: 19721, quantity: 250 }
+    ],
     requirements: [
       'Link your GW2 API key to your account',
       'Join our Discord server',
@@ -101,7 +101,7 @@ export function generateAdventGiveaways(year: number = 2025): Giveaway[] {
 
   for (let day = 1; day <= 31; day++) {
     const dayStr = day.toString().padStart(2, '0');
-    
+
     // Cada sorteo inicia el día anterior a las 14:00
     // Día 1 inicia el 30 de noviembre, día 2 inicia el 1 de diciembre, etc.
     let startLocal: Date;
@@ -138,14 +138,52 @@ export function generateAdventGiveaways(year: number = 2025): Giveaway[] {
       gemPrize?: boolean;
     }> = [];
 
-    // Premios para el día 1
-    if (day === 1) {
-      prizes = [
-        { position: 1, prize: '1', icon: 'materials', itemId: 95994, quantity: 1 }, // Dragon's Fang
-        { position: 2, prize: '250', icon: 'package', itemId: 19721, quantity: 250 }, // Glob of Ectoplasm
-        { position: 3, prize: '250', icon: 'package', itemId: 24295, quantity: 250 }, // Glob of Ectoplasm
-      ];
-    }
+    // Configuración de premios por día
+    const dailyPrizes: Record<number, Array<{ position: number; prize: string; icon: 'gem' | 'package' | 'gold' | 'materials'; itemId?: number; quantity: number; gemPrize?: boolean }>> = {
+      1: [
+        { position: 1, prize: '250', icon: 'package', itemId: 19721, quantity: 250 }, // Glob of Ectoplasm
+        { position: 2, prize: '250', icon: 'package', itemId: 24295, quantity: 250 }, // Vial of Powerful Blood
+        { position: 3, prize: '1', icon: 'materials', itemId: 95994, quantity: 1 }, // Dragon's Fang
+      ],
+      2: [
+        { position: 1, prize: '250', icon: 'package', itemId: 19721, quantity: 250 }, // Glob of Ectoplasm
+        { position: 2, prize: '1', icon: 'materials', itemId: 102013, quantity: 1 }, // Chromatic Assassin Spear Skin
+        { position: 3, prize: '1', icon: 'package', itemId: 101340, quantity: 1 }, // Thundercrag Sword Skin
+      ],
+      7: [
+        { position: 1, prize: '1', icon: 'package', itemId: 30703, quantity: 1 }, // Sunrise
+        { position: 2, prize: '400', icon: 'gem', quantity: 400, gemPrize: true },
+        { position: 3, prize: '400', icon: 'gem', quantity: 400, gemPrize: true },
+      ],
+      14: [
+        { position: 1, prize: '800', icon: 'gem', quantity: 800, gemPrize: true },
+        { position: 2, prize: '400', icon: 'gem', quantity: 400, gemPrize: true },
+        { position: 3, prize: '250', icon: 'package', itemId: 19721, quantity: 250 }, // Glob of Ectoplasm
+      ],
+      21: [
+        { position: 1, prize: '800', icon: 'gem', quantity: 800, gemPrize: true },
+        { position: 2, prize: '400', icon: 'gem', quantity: 400, gemPrize: true },
+        { position: 3, prize: '250', icon: 'package', itemId: 19721, quantity: 250 }, // Glob of Ectoplasm
+      ],
+      25: [
+        { position: 1, prize: '1200', icon: 'gem', quantity: 1200, gemPrize: true },
+        { position: 2, prize: '800', icon: 'gem', quantity: 800, gemPrize: true },
+        { position: 3, prize: '400', icon: 'gem', quantity: 400, gemPrize: true },
+      ],
+      28: [
+        { position: 1, prize: '800', icon: 'gem', quantity: 800, gemPrize: true },
+        { position: 2, prize: '400', icon: 'gem', quantity: 400, gemPrize: true },
+        { position: 3, prize: '250', icon: 'package', itemId: 19721, quantity: 250 }, // Glob of Ectoplasm
+      ],
+      31: [
+        { position: 1, prize: '1200', icon: 'gem', quantity: 1200, gemPrize: true },
+        { position: 2, prize: '800', icon: 'gem', quantity: 800, gemPrize: true },
+        { position: 3, prize: '400', icon: 'gem', quantity: 400, gemPrize: true },
+      ],
+    };
+
+    // Obtener premios del día (o array vacío si no hay configuración)
+    prizes = dailyPrizes[day] || [];
 
     adventGiveaways.push({
       id: `advent-${year}-12-${dayStr}`,
@@ -208,19 +246,19 @@ export function getAllGiveaways(): Giveaway[] {
 // Función para actualizar estado de sorteos basado en fechas
 export function updateGiveawayStatuses(): Giveaway[] {
   const now = new Date();
-  
+
   return GIVEAWAYS.map(giveaway => {
     const start = new Date(giveaway.startDate);
     const end = new Date(giveaway.endDate);
-    
+
     let newStatus = giveaway.status;
-    
+
     if (giveaway.status === 'upcoming' && start <= now && end > now) {
       newStatus = 'active';
     } else if (giveaway.status === 'active' && end <= now) {
       newStatus = 'ended';
     }
-    
+
     return {
       ...giveaway,
       status: newStatus
@@ -243,13 +281,13 @@ export async function getItemInfo(itemId: number, lang: string = 'en'): Promise<
       // Mapear idiomas a códigos de GW2 API
       const gw2LangMap: Record<string, string> = {
         'en': 'en',
-        'es': 'es', 
+        'es': 'es',
         'de': 'de',
         'fr': 'fr'
       };
-      
+
       const gw2Lang = gw2LangMap[lang] || 'en';
-      
+
       // Obtener el nombre desde la API
       const response = await fetch(`https://api.guildwars2.com/v2/items/${itemId}?lang=${gw2Lang}`);
       if (response.ok) {
@@ -260,23 +298,23 @@ export async function getItemInfo(itemId: number, lang: string = 'en'): Promise<
         };
       }
     }
-    
+
     // Mapear idiomas a códigos de GW2 API
     const gw2LangMap: Record<string, string> = {
       'en': 'en',
-      'es': 'es', 
+      'es': 'es',
       'de': 'de',
       'fr': 'fr'
     };
-    
+
     const gw2Lang = gw2LangMap[lang] || 'en';
-    
+
     // Hacer la petición con el parámetro de idioma
     const response = await fetch(`https://api.guildwars2.com/v2/items/${itemId}?lang=${gw2Lang}`);
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
-    
+
     const item = await response.json();
     return {
       name: item.name,
@@ -311,7 +349,7 @@ function getItemTranslation(itemId: number, lang: string): string {
       19721: 'Boule d\'Ectoplasme'
     }
   };
-  
+
   return translations[lang]?.[itemId] || translations['en']?.[itemId] || `Item ${itemId}`;
 }
 
@@ -337,7 +375,7 @@ export async function getGiveawayItemsInfo(giveaway: Giveaway, lang: string = 'e
         };
       } else if (prize.itemId) {
         const itemInfo = await getItemInfo(prize.itemId, lang);
-        
+
         // Si no hay API disponible, usar traducciones locales
         if (!itemInfo) {
           const translatedName = t ? t(`giveaways.items.${prize.itemId}`, prize.prize) : getItemTranslation(prize.itemId, lang);
@@ -347,7 +385,7 @@ export async function getGiveawayItemsInfo(giveaway: Giveaway, lang: string = 'e
             itemIcon: 'https://wiki.guildwars2.com/images/9/9b/Glob_of_Ectoplasm.png'
           };
         }
-        
+
         return {
           ...prize,
           itemName: itemInfo?.name || prize.prize,
@@ -357,6 +395,6 @@ export async function getGiveawayItemsInfo(giveaway: Giveaway, lang: string = 'e
       return prize;
     })
   );
-  
+
   return prizesWithItems;
 }

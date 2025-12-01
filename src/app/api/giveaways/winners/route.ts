@@ -1,9 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
 import pool from '@/lib/postgres-db';
-import { getAllGiveaways } from '../../../../config/giveaways';
+import { getAllGiveaways, getAllGiveawaysWithAdvent, getItemInfo } from '../../../../config/giveaways';
 import { authorizeRequest } from '@/lib/server/jwt-utils';
 
 export const runtime = 'nodejs';
+export const revalidate = 300; // Revalidar cada 5 minutos
 
 // GET /api/giveaways/winners - Get winners
 export async function GET(request: NextRequest) {
@@ -12,9 +13,9 @@ export async function GET(request: NextRequest) {
     const giveawayId = searchParams.get('giveawayId');
     const latest = searchParams.get('latest');
 
-    // Obtener configuración de sorteos
-    const configuredGiveaways = getAllGiveaways();
-    
+    // Obtener configuración de sorteos (incluyendo adviento)
+    const configuredGiveaways = getAllGiveawaysWithAdvent(2025);
+
     let query = `
       SELECT 
         gw.giveaway_id,
@@ -25,7 +26,7 @@ export async function GET(request: NextRequest) {
         gw.announced_at
       FROM giveaway_winners gw
     `;
-    
+
     const params: (string | number)[] = [];
     let paramCount = 0;
 
@@ -41,30 +42,73 @@ export async function GET(request: NextRequest) {
     }
 
     const result = await pool.query(query, params);
-    
-    // Combinar datos de ganadores con configuración de sorteos
-    const winners = result.rows.map(row => {
-      const giveaway = configuredGiveaways.find(g => g.id === row.giveaway_id);
+
+    // Combinar datos de ganadores con configuración de sorteos y obtener iconos
+    const winners = await Promise.all(result.rows.map(async (row) => {
+      const cleanGiveawayId = String(row.giveaway_id).trim();
+      console.log('Looking for giveaway:', cleanGiveawayId);
+      console.log('Available giveaways:', configuredGiveaways.map(g => g.id));
+      const giveaway = configuredGiveaways.find(g => g.id === cleanGiveawayId);
+      console.log('Found giveaway:', giveaway?.title || 'NOT FOUND');
+
+      let itemIcon = null;
+      let gemPrize = false;
+
+      // Intentar encontrar el premio en la configuración para obtener el icono
+      if (giveaway && giveaway.prizes) {
+        const prizeConfig = giveaway.prizes.find(p => p.position == row.position);
+        if (prizeConfig) {
+          gemPrize = prizeConfig.gemPrize || false;
+
+          if (prizeConfig.itemId) {
+            try {
+              const itemInfo = await getItemInfo(prizeConfig.itemId);
+              if (itemInfo) {
+                itemIcon = itemInfo.icon;
+              }
+            } catch (error) {
+              console.error(`Error fetching item info for ${prizeConfig.itemId}:`, error);
+            }
+          }
+
+          // Fallback si no hay icono
+          if (!itemIcon && prizeConfig.icon) {
+            const FALLBACK_ICONS: Record<string, string> = {
+              'gem': 'https://wiki.guildwars2.com/images/8/88/Gem_%28highres%29.png',
+              'package': 'https://wiki.guildwars2.com/images/5/5e/Daily_Achievement_Chest.png',
+              'materials': 'https://wiki.guildwars2.com/images/7/75/Trophy_case.png',
+              'gold': 'https://wiki.guildwars2.com/images/d/d1/Coin_gold.png'
+            };
+            itemIcon = FALLBACK_ICONS[prizeConfig.icon] || FALLBACK_ICONS['package'];
+          }
+        }
+      }
+
+      // Ultimate fallback
+      if (!itemIcon && !gemPrize) {
+        itemIcon = 'https://wiki.guildwars2.com/images/5/5e/Daily_Achievement_Chest.png';
+      }
+
       return {
         giveawayId: row.giveaway_id,
         giveawayTitle: giveaway?.title || 'Sorteo Desconocido',
         giveawaySlug: giveaway?.slug || 'unknown',
-        winnersAnnouncedAt: row.announced_at, // Usar announced_at como fecha de anuncio
+        winnersAnnouncedAt: row.announced_at,
         position: row.position,
         accountName: row.account_name,
         prizeDescription: row.prize_description,
         prizeValue: row.prize_value,
-        announcedAt: row.announced_at
+        announcedAt: row.announced_at,
+        itemIcon,
+        gemPrize
       };
-    });
+    }));
 
     return NextResponse.json(
       { winners },
       {
         headers: {
-          'Cache-Control': 'no-cache, no-store, must-revalidate',
-          'Pragma': 'no-cache',
-          'Expires': '0',
+          'Cache-Control': 'public, s-maxage=300, stale-while-revalidate=600',
         },
       }
     );
@@ -82,10 +126,10 @@ export async function POST(request: NextRequest) {
   try {
     // Verificar autenticación y autorización (solo administradores)
     const authResult = authorizeRequest(request, 'admin');
-    
+
     if (!authResult.isAuthorized) {
       console.log('Unauthorized giveaway winners announcement:', authResult.error);
-      return NextResponse.json({ 
+      return NextResponse.json({
         error: 'Unauthorized. Admin access required to announce winners.',
         details: authResult.error
       }, { status: 401 });
@@ -107,7 +151,7 @@ export async function POST(request: NextRequest) {
     const client = await pool.connect();
     try {
       await client.query('BEGIN');
-      
+
       for (const winner of winnersData) {
         await client.query(`
           INSERT INTO giveaway_winners (
@@ -130,7 +174,7 @@ export async function POST(request: NextRequest) {
           winner.prize_value
         ]);
       }
-      
+
       await client.query('COMMIT');
     } catch (error) {
       await client.query('ROLLBACK');
@@ -139,8 +183,8 @@ export async function POST(request: NextRequest) {
       client.release();
     }
 
-    return NextResponse.json({ 
-      message: 'Winners announced successfully' 
+    return NextResponse.json({
+      message: 'Winners announced successfully'
     });
   } catch (error) {
     console.error('Error announcing winners:', error);

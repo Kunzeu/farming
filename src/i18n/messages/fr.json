@@ -2579,5 +2579,7 @@
   "magicMirrors.modal.rewardsDescription": "En complétant le mini-jeu, vous obtenez une Boîte de Souvenir Perdu et plusieurs Coffres Obscurcis dans la zone.",
   "magicMirrors.modal.markAsNotCompleted": "Marquer comme Non Terminé",
   "magicMirrors.modal.markAsCompleted": "Marquer comme Terminé"
+,
+  "holidayCalendar.closedPending": "FERMÉ - EN ATTENTE",
+  "holidayCalendar.awaitingWinners": "En attente des gagnants"
 }
-

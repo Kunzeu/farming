@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import pool from '@/lib/postgres-db';
-import { getGiveawayById, getAllGiveawaysWithAdvent } from '../../../../config/giveaways';
+import { getGiveawayById, getAllGiveawaysWithAdvent, getItemInfo } from '../../../../config/giveaways';
 import { authorizeRequest } from '@/lib/server/jwt-utils';
 
 export const runtime = 'nodejs';
@@ -9,10 +9,10 @@ export async function POST(request: NextRequest) {
   try {
     // Verificar autenticación y autorización (solo administradores)
     const authResult = authorizeRequest(request, 'admin');
-    
+
     if (!authResult.isAuthorized) {
       console.log('Unauthorized giveaway winner selection:', authResult.error);
-      return NextResponse.json({ 
+      return NextResponse.json({
         error: 'Unauthorized. Admin access required to select winners.',
         details: authResult.error
       }, { status: 401 });
@@ -41,7 +41,7 @@ export async function POST(request: NextRequest) {
 
     // Verificar que el sorteo tenga premios configurados
     if (!giveaway.prizes || giveaway.prizes.length === 0) {
-      return NextResponse.json({ 
+      return NextResponse.json({
         error: 'Este sorteo no tiene premios configurados. Por favor configura los premios primero.',
         details: 'No prizes configured for this giveaway'
       }, { status: 400 });
@@ -55,7 +55,7 @@ export async function POST(request: NextRequest) {
     const participants = participantsResult.rows;
 
     if (participants.length === 0) {
-      return NextResponse.json({ 
+      return NextResponse.json({
         message: 'No participants for this giveaway',
         error: 'No hay participantes en este sorteo'
       }, { status: 200 });
@@ -71,32 +71,68 @@ export async function POST(request: NextRequest) {
     const winnersToInsert = [];
     const prizeCount = giveaway.prizes.length;
     const participantCount = participants.length;
-    
+
     for (let i = 0; i < prizeCount && i < participantCount; i++) {
       const participant = participants[i];
       const prize = giveaway.prizes[i];
-      
+
+      // Obtener información del item si existe
+      let itemIcon = null;
+      let itemName = null;
+
+      if (prize.itemId) {
+        try {
+          const itemInfo = await getItemInfo(prize.itemId);
+          if (itemInfo) {
+            itemIcon = itemInfo.icon;
+            itemName = itemInfo.name;
+          }
+        } catch (error) {
+          console.error(`Error fetching item info for ${prize.itemId}:`, error);
+        }
+      }
+
+      // Fallback si no hay icono
+      if (!itemIcon && prize.icon) {
+        const FALLBACK_ICONS: Record<string, string> = {
+          'gem': 'https://wiki.guildwars2.com/images/8/88/Gem_%28highres%29.png',
+          'package': 'https://wiki.guildwars2.com/images/5/5e/Daily_Achievement_Chest.png',
+          'materials': 'https://wiki.guildwars2.com/images/7/75/Trophy_case.png',
+          'gold': 'https://wiki.guildwars2.com/images/d/d1/Coin_gold.png'
+        };
+        itemIcon = FALLBACK_ICONS[prize.icon] || FALLBACK_ICONS['package'];
+      }
+
+      // Ultimate fallback
+      if (!itemIcon) {
+        itemIcon = 'https://wiki.guildwars2.com/images/5/5e/Daily_Achievement_Chest.png';
+      }
+
       // Crear descripción completa del premio
       let prizeDescription = prize.prize;
       if (prize.gemPrize) {
         prizeDescription = `${prize.prize} Gems`;
       } else if (prize.quantity && prize.itemId) {
-        // Para items, la descripción será más detallada (se puede mejorar con nombre del item)
-        prizeDescription = `${prize.quantity}x Item ${prize.itemId}`;
+        prizeDescription = `${prize.quantity}x ${itemName || `Item ${prize.itemId}`}`;
       }
-      
+
       winnersToInsert.push({
         giveaway_id: giveawayId,
         user_id: participant.user_id,
         account_name: participant.account_name,
         position: prize.position,
         prize_description: prizeDescription,
-        prize_value: prize.prize
+        prize_value: prize.prize,
+        // Incluir información adicional del premio para el frontend
+        item_id: prize.itemId || null,
+        quantity: prize.quantity || null,
+        gem_prize: prize.gemPrize || false,
+        item_icon: itemIcon // URL real del icono
       });
     }
 
     if (winnersToInsert.length === 0) {
-      return NextResponse.json({ 
+      return NextResponse.json({
         error: 'No se pudieron seleccionar ganadores',
         message: `No se pudieron seleccionar ganadores. El sorteo tiene ${participantCount} participantes pero ${prizeCount} premios configurados.`,
         details: `Participants: ${participantCount}, Prizes: ${prizeCount}`
@@ -123,7 +159,7 @@ export async function POST(request: NextRequest) {
     console.error('Error selecting winners:', error);
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
     return NextResponse.json(
-      { 
+      {
         error: 'Error al seleccionar ganadores',
         details: errorMessage,
         message: 'Ocurrió un error inesperado al seleccionar los ganadores. Por favor intenta de nuevo.'

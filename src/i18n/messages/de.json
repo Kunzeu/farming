@@ -2578,5 +2578,7 @@
   "magicMirrors.modal.rewardsDescription": "Nach Abschluss des Mini-Spiels erhalten Sie eine Lang Verlorene Erinnerungskiste und mehrere Verhüllte Truhen in der Gegend.",
   "magicMirrors.modal.markAsNotCompleted": "Als Nicht Abgeschlossen Markieren",
   "magicMirrors.modal.markAsCompleted": "Als Abgeschlossen Markieren"
+,
+  "holidayCalendar.closedPending": "GESCHLOSSEN - AUSSTEHEND",
+  "holidayCalendar.awaitingWinners": "Warten auf Gewinner"
 }
-

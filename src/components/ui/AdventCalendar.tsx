@@ -19,6 +19,8 @@ interface AdventDay {
   winners?: Array<{
     position: number;
     accountName: string;
+    itemIcon?: string;
+    gemPrize?: boolean;
   }>;
   prizes?: Array<{
     itemId?: number;
@@ -77,6 +79,10 @@ export default function AdventCalendar({
     position: number;
     prize_description: string;
     prize_value: string;
+    item_id?: number | null;
+    quantity?: number | null;
+    gem_prize?: boolean;
+    item_icon?: string | null;
   }>>([]);
   const [giveawayToSelectWinners, setGiveawayToSelectWinners] = useState<string | null>(null);
   const [autoParticipatedGiveaways, setAutoParticipatedGiveaways] = useState<Set<string>>(new Set());
@@ -133,10 +139,10 @@ export default function AdventCalendar({
     };
 
     loadGiveaways();
-    
+
     // Recargar cada 30 segundos para actualizar contadores
     const interval = setInterval(loadGiveaways, 30000);
-    
+
     return () => clearInterval(interval);
   }, []);
 
@@ -152,19 +158,23 @@ export default function AdventCalendar({
         });
         if (response.ok) {
           const data = await response.json();
-          const winnersMap: Record<string, Array<{ position: number; accountName: string }>> = {};
+          const winnersMap: Record<string, Array<{ position: number; accountName: string; itemIcon?: string; gemPrize?: boolean }>> = {};
 
           data.winners?.forEach((winner: {
             giveawayId: string;
             position: number;
             accountName: string;
+            itemIcon?: string;
+            gemPrize?: boolean;
           }) => {
             if (!winnersMap[winner.giveawayId]) {
               winnersMap[winner.giveawayId] = [];
             }
             winnersMap[winner.giveawayId].push({
               position: winner.position,
-              accountName: winner.accountName
+              accountName: winner.accountName,
+              itemIcon: winner.itemIcon,
+              gemPrize: winner.gemPrize
             });
           });
 
@@ -192,13 +202,13 @@ export default function AdventCalendar({
       // Comparar fechas completas (con hora) en lugar de solo el día del mes
       const giveawayStartDate = giveaway ? new Date(giveaway.startDate) : null;
       const giveawayEndDate = giveaway ? new Date(giveaway.endDate) : null;
-      
+
       // El día 25 siempre está disponible (aunque no sea la fecha actual)
-      const isAvailable = day === 25 
-        ? Boolean(giveaway) 
+      const isAvailable = day === 25
+        ? Boolean(giveaway)
         : Boolean(giveaway && giveawayStartDate && (
-            giveawayStartDate.getTime() <= today.getTime()
-          ));
+          giveawayStartDate.getTime() <= today.getTime()
+        ));
 
       const isClosed = Boolean(giveaway && (
         (giveawayEndDate && giveawayEndDate.getTime() <= today.getTime()) ||
@@ -217,13 +227,13 @@ export default function AdventCalendar({
         gemPrize: p.gemPrize,
         itemIcon: p.itemIcon
       })) || [
-        { itemId: 19721, quantity: 250, gemPrize: false },
-        { quantity: 1, gemPrize: true },
-        { itemId: 19721, quantity: 250, gemPrize: false }
-      ];
+          { itemId: 19721, quantity: 250, gemPrize: false },
+          { quantity: 1, gemPrize: true },
+          { itemId: 19721, quantity: 250, gemPrize: false }
+        ];
 
       const participantCount = giveaway?.participantCount ?? 0;
-      
+
       days.push({
         day,
         date,
@@ -363,44 +373,44 @@ export default function AdventCalendar({
       // 2. Existan en giveaways (estén configurados)
       // 3. No estén cerrados (no tengan ganadores, no hayan terminado)
       // 4. No se hayan procesado ya
-      
+
       const todayUTC = new Date(); // Fecha actual
       const availableGiveaways = adventDays
         .filter(day => {
           const giveaway = day.giveawayId ? giveaways[day.giveawayId] : null;
           const hasGiveaway = !!giveaway;
-          
+
           // Verificar si la fecha de inicio ya pasó (incluso si el estado es "upcoming")
           // Comparar ambas fechas en UTC para evitar problemas de zona horaria
           const giveawayStartDate = giveaway ? new Date(giveaway.startDate) : null;
           const startDatePassed = giveawayStartDate ? giveawayStartDate.getTime() <= todayUTC.getTime() : false;
-          
+
           // Verificar si el día del calendario ya pasó o es hoy (comparando solo día, mes y año, sin hora)
           const todayYear = todayUTC.getUTCFullYear();
           const todayMonth = todayUTC.getUTCMonth();
           const todayDay = todayUTC.getUTCDate();
           // month es 11 (diciembre) porque es 0-indexed
-          const dayDatePassed = todayYear > year || 
+          const dayDatePassed = todayYear > year ||
             (todayYear === year && todayMonth > month) ||
             (todayYear === year && todayMonth === month && todayDay >= day.day);
-          
+
           const isActive = giveaway?.status === 'active';
           const isUpcomingButStarted = giveaway?.status === 'upcoming' && (startDatePassed || dayDatePassed);
           const isNotClosed = !day.isClosed && !day.winners?.length;
           const notProcessed = !autoParticipatedGiveaways.has(day.giveawayId || '');
-          
+
           // Considerar disponible si:
           // - Tiene giveaway
           // - Está activo O la fecha de inicio ya pasó (incluso si es "upcoming")
           // - O si es el día actual o ya pasó (para sorteos diarios)
           // - No está cerrado
           // - No se ha procesado ya
-          const isAvailable = hasGiveaway && 
-            (isActive || isUpcomingButStarted || day.isAvailable || dayDatePassed) && 
-            isNotClosed && 
+          const isAvailable = hasGiveaway &&
+            (isActive || isUpcomingButStarted || day.isAvailable || dayDatePassed) &&
+            isNotClosed &&
             day.giveawayId &&
             notProcessed;
-          
+
           return isAvailable;
         })
         .map(day => day.giveawayId!)
@@ -652,12 +662,12 @@ export default function AdventCalendar({
 
       // Obtener token de localStorage
       const token = typeof window !== 'undefined' ? localStorage.getItem('gw2_token') : null;
-      
+
       // Preparar headers con autenticación
       const headers: HeadersInit = {
         "Content-Type": "application/json",
       };
-      
+
       if (token) {
         headers["Authorization"] = `Bearer ${token}`;
       }
@@ -680,7 +690,7 @@ export default function AdventCalendar({
       }
 
       const data = await response.json();
-      
+
       if (!data.winners || data.winners.length === 0) {
         setErrorMessage(data.message || "No se pudieron seleccionar ganadores. Verifica que el sorteo tenga premios configurados y participantes.");
         setShowErrorModal(true);
@@ -691,72 +701,76 @@ export default function AdventCalendar({
       setSelectedWinners(data.winners || []);
       setShowWinnersResultModal(true);
 
-        // Recargar ganadores y sorteos para mostrar datos actualizados
-        const winnersResponse = await fetch("/api/giveaways/winners", {
-          cache: "no-store",
-          headers: {
-            "Cache-Control": "no-cache, no-store, must-revalidate",
-          },
-        });
-        if (winnersResponse.ok) {
-          const winnersData = await winnersResponse.json();
-          const winnersMap: Record<string, Array<{ position: number; accountName: string }>> = {};
-          winnersData.winners?.forEach((winner: {
-            giveawayId: string;
-            position: number;
-            accountName: string;
-          }) => {
-            if (!winnersMap[winner.giveawayId]) {
-              winnersMap[winner.giveawayId] = [];
-            }
-            winnersMap[winner.giveawayId].push({
-              position: winner.position,
-              accountName: winner.accountName
-            });
+      // Recargar ganadores y sorteos para mostrar datos actualizados
+      const winnersResponse = await fetch("/api/giveaways/winners", {
+        cache: "no-store",
+        headers: {
+          "Cache-Control": "no-cache, no-store, must-revalidate",
+        },
+      });
+      if (winnersResponse.ok) {
+        const winnersData = await winnersResponse.json();
+        const winnersMap: Record<string, Array<{ position: number; accountName: string; itemIcon?: string; gemPrize?: boolean }>> = {};
+        winnersData.winners?.forEach((winner: {
+          giveawayId: string;
+          position: number;
+          accountName: string;
+          itemIcon?: string;
+          gemPrize?: boolean;
+        }) => {
+          if (!winnersMap[winner.giveawayId]) {
+            winnersMap[winner.giveawayId] = [];
+          }
+          winnersMap[winner.giveawayId].push({
+            position: winner.position,
+            accountName: winner.accountName,
+            itemIcon: winner.itemIcon,
+            gemPrize: winner.gemPrize
           });
-          setWinners(winnersMap);
-        }
+        });
+        setWinners(winnersMap);
+      }
 
-        const giveawaysResponse = await fetch("/api/giveaways", {
-          cache: "no-store",
-          headers: {
-            "Cache-Control": "no-cache, no-store, must-revalidate",
-          },
+      const giveawaysResponse = await fetch("/api/giveaways", {
+        cache: "no-store",
+        headers: {
+          "Cache-Control": "no-cache, no-store, must-revalidate",
+        },
+      });
+      if (giveawaysResponse.ok) {
+        const giveawaysData = await giveawaysResponse.json();
+        const giveawaysMap: Record<string, {
+          id: string;
+          startDate: string;
+          endDate: string;
+          status: string;
+          participantCount: number;
+          prizes: Array<{
+            itemId?: number;
+            quantity?: number;
+            gemPrize?: boolean;
+            itemIcon?: string;
+          }>;
+        }> = {};
+        giveawaysData.giveaways?.forEach((giveaway: {
+          id: string;
+          startDate: string;
+          endDate: string;
+          status: string;
+          participantCount: number;
+          prizes: Array<{
+            itemId?: number;
+            quantity?: number;
+            gemPrize?: boolean;
+            itemIcon?: string;
+          }>;
+        }) => {
+          if (giveaway.id.startsWith('advent-')) {
+            giveawaysMap[giveaway.id] = giveaway;
+          }
         });
-        if (giveawaysResponse.ok) {
-          const giveawaysData = await giveawaysResponse.json();
-          const giveawaysMap: Record<string, {
-            id: string;
-            startDate: string;
-            endDate: string;
-            status: string;
-            participantCount: number;
-            prizes: Array<{
-              itemId?: number;
-              quantity?: number;
-              gemPrize?: boolean;
-              itemIcon?: string;
-            }>;
-          }> = {};
-          giveawaysData.giveaways?.forEach((giveaway: {
-            id: string;
-            startDate: string;
-            endDate: string;
-            status: string;
-            participantCount: number;
-            prizes: Array<{
-              itemId?: number;
-              quantity?: number;
-              gemPrize?: boolean;
-              itemIcon?: string;
-            }>;
-          }) => {
-            if (giveaway.id.startsWith('advent-')) {
-              giveawaysMap[giveaway.id] = giveaway;
-            }
-          });
-          setGiveaways(giveawaysMap);
-        }
+        setGiveaways(giveawaysMap);
+      }
     } catch (error) {
       console.error("Error selecting winners:", error);
       setIsSelectingWinners(false);
@@ -790,7 +804,7 @@ export default function AdventCalendar({
 
       {/* Grid de tarjetas */}
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 md:gap-8 lg:gap-10">
-        {adventDays.slice(0, 31).map((day, index) => {
+        {adventDays.map((day, index) => {
           const dayWinners = day.winners || [];
           const isClosed = day.isClosed || dayWinners.length > 0;
           // El botón aparece en todos los días que tengan giveaway, estén disponibles y no estén cerrados
@@ -821,15 +835,15 @@ export default function AdventCalendar({
                   <Image
                     src={
                       day.day === 1 ? "/images/assets/day1.webp" :
-                      day.day === 2 ? "/images/assets/day2.webp" :
-                      day.day === 7 ? "/images/assets/daily.webp" :
-                      day.day === 14 ? "/images/assets/daily.webp" :
-                      day.day === 21 ? "/images/assets/daily.webp" :
-                      day.day === 25 ? "/images/assets/day25.webp" :
-                      day.day === 28 ? "/images/assets/daily.webp" :
-                      day.day === 31 ? `/images/assets/daily.webp?v=${Date.now()}` :
-                       
-                      "/images/assets/soon.webp"
+                        day.day === 2 ? "/images/assets/day2.webp" :
+                          day.day === 7 ? "/images/assets/daily.webp" :
+                            day.day === 14 ? "/images/assets/daily.webp" :
+                              day.day === 21 ? "/images/assets/daily.webp" :
+                                day.day === 25 ? "/images/assets/day25.webp" :
+                                  day.day === 28 ? "/images/assets/daily.webp" :
+                                    day.day === 31 ? `/images/assets/daily.webp?v=${Date.now()}` :
+
+                                      "/images/assets/soon.webp"
                     }
                     alt={`Día ${day.day}`}
                     fill
@@ -898,13 +912,41 @@ export default function AdventCalendar({
                     </div>
                   )}
 
+                  {/* Indicador de CERRADO - PENDIENTE (cuando está cerrado pero sin ganadores) */}
+                  {isClosed && dayWinners.length === 0 && day.giveawayId && (
+                    <div className="absolute bottom-[3.78rem] left-1/2 transform -translate-x-1/2 w-[85%] px-2">
+                      <div className="bg-yellow-600/95 backdrop-blur-sm text-white px-3 py-2 rounded-lg text-center shadow-lg border border-yellow-400/50">
+                        <p className="text-xs font-bold">{t("holidayCalendar.closedPending", "CERRADO - PENDIENTE")}</p>
+                        <p className="text-[10px] mt-0.5 opacity-90">{t("holidayCalendar.awaitingWinners", "En espera de ganadores")}</p>
+                      </div>
+                    </div>
+                  )}
+
                   {/* Lista de ganadores */}
                   {dayWinners.length > 0 && (
                     <div className="absolute bottom-[3.78rem] left-1/2 transform -translate-x-1/2 w-[85%] px-2">
                       <div className="space-y-1">
                         {dayWinners.slice(0, 3).map((winner) => (
-                          <div key={winner.position} className="text-xs text-gray-900 text-center font-medium leading-tight">
-                            <span className="font-bold">{winner.position}º {t("holidayCalendar.winner", "GANADOR")}</span> - {winner.accountName}
+                          <div key={winner.position} className="text-xs text-gray-900 text-center font-medium leading-tight flex items-center justify-center gap-1">
+                            <span className="font-bold">{winner.position}º</span>
+                            {/* Icono del premio */}
+                            {winner.gemPrize ? (
+                              <img
+                                src="https://wiki.guildwars2.com/images/8/88/Gem_%28highres%29.png"
+                                alt="Gems"
+                                className="w-5 h-5 object-contain"
+                              />
+                            ) : winner.itemIcon ? (
+                              <img
+                                src={winner.itemIcon}
+                                alt="Prize"
+                                className="w-5 h-5 object-contain"
+                                onError={(e) => {
+                                  e.currentTarget.style.display = 'none';
+                                }}
+                              />
+                            ) : null}
+                            <span className="text-[10px] leading-none">{winner.accountName}</span>
                           </div>
                         ))}
                       </div>
@@ -917,19 +959,18 @@ export default function AdventCalendar({
                       <button
                         onClick={() => handleSelectWinnersClick(day.giveawayId!)}
                         disabled={isSelectingWinners || !canSelectWinners}
-                        className={`w-full py-2 px-3 text-white font-semibold text-xs rounded-lg transition-colors flex items-center justify-center gap-2 shadow-lg ${
-                          canSelectWinners 
-                            ? "bg-yellow-600 hover:bg-yellow-700" 
-                            : "bg-gray-600 cursor-not-allowed opacity-60"
-                        }`}
+                        className={`w-full py-2 px-3 text-white font-semibold text-xs rounded-lg transition-colors flex items-center justify-center gap-2 shadow-lg ${canSelectWinners
+                          ? "bg-yellow-600 hover:bg-yellow-700"
+                          : "bg-gray-600 cursor-not-allowed opacity-60"
+                          }`}
                         title={
-                          !day.isClosed 
-                            ? "El sorteo aún no ha cerrado" 
-                            : dayWinners.length > 0 
-                            ? "Ya hay ganadores seleccionados" 
-                            : (day.participantCount || 0) === 0 
-                            ? "No hay participantes" 
-                            : "Seleccionar ganadores al azar"
+                          !day.isClosed
+                            ? "El sorteo aún no ha cerrado"
+                            : dayWinners.length > 0
+                              ? "Ya hay ganadores seleccionados"
+                              : (day.participantCount || 0) === 0
+                                ? "No hay participantes"
+                                : "Seleccionar ganadores al azar"
                         }
                       >
                         <Crown className="w-3 h-3" />
@@ -1075,8 +1116,33 @@ export default function AdventCalendar({
                         <p className="text-white font-semibold mb-2 text-sm">
                           {winner.account_name}
                         </p>
-                        <p className="text-gray-300 text-xs">
-                          {winner.prize_description}
+                        {/* Mostrar icono del premio */}
+                        <div className="flex items-center justify-center gap-2 mb-2">
+                          {winner.gem_prize ? (
+                            <img
+                              src="https://wiki.guildwars2.com/images/8/88/Gem_%28highres%29.png"
+                              alt="Gems"
+                              className="w-8 h-8 object-contain"
+                            />
+                          ) : winner.item_icon ? (
+                            <img
+                              src={winner.item_icon}
+                              alt={`Item ${winner.item_id}`}
+                              className="w-8 h-8 object-contain"
+                              onError={(e) => {
+                                // Fallback si la imagen no carga
+                                e.currentTarget.style.display = 'none';
+                              }}
+                            />
+                          ) : null}
+                        </div>
+                        <p className="text-gray-300 text-xs font-semibold">
+                          {winner.gem_prize
+                            ? `${winner.prize_value} Gems`
+                            : winner.quantity && winner.item_id
+                              ? `${winner.quantity}x`
+                              : winner.prize_description
+                          }
                         </p>
                       </div>
                     ))}

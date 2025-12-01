@@ -2632,5 +2632,7 @@
   "magicMirrors.modal.rewardsDescription": "Al completar el mini-juego, obtienes un Long-Lost Keepsake Box y múltiples Obscured Chests en el área.",
   "magicMirrors.modal.markAsNotCompleted": "Marcar como No Completado",
   "magicMirrors.modal.markAsCompleted": "Marcar como Completado"
+,
+  "holidayCalendar.closedPending": "CERRADO - PENDIENTE",
+  "holidayCalendar.awaitingWinners": "En espera de ganadores"
 }
-
