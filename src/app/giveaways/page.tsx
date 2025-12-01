@@ -174,10 +174,10 @@ const GiveawaysPage = () => {
         const data = await response.json();
         setGiveaways(data.giveaways);
 
-        // Prefetch solo sorteo activo y el siguiente
-        const active = data.giveaways.find((g: Giveaway) => g.status === "active");
+        // Prefetch solo sorteo activo y el siguiente (excluyendo advent)
+        const active = data.giveaways.find((g: Giveaway) => g.status === "active" && !g.id.startsWith('advent-'));
         const upcomingSorted = data.giveaways
-          .filter((g: Giveaway) => g.status === "upcoming")
+          .filter((g: Giveaway) => g.status === "upcoming" && !g.id.startsWith('advent-'))
           .sort(
             (a: Giveaway, b: Giveaway) =>
               new Date(a.startDate).getTime() - new Date(b.startDate).getTime()
@@ -330,9 +330,9 @@ const GiveawaysPage = () => {
   // Reload items cuando cambia idioma: solo activo y siguiente (si no están en cache)
   useEffect(() => {
     if (giveaways.length > 0) {
-      const active = giveaways.find((g) => g.status === "active");
+      const active = giveaways.find((g) => g.status === "active" && !g.id.startsWith('advent-'));
       const next = giveaways
-        .filter((g) => g.status === "upcoming")
+        .filter((g) => g.status === "upcoming" && !g.id.startsWith('advent-'))
         .sort((a, b) => new Date(a.startDate).getTime() - new Date(b.startDate).getTime())[0];
       if (active) loadGiveawayItems(active.id);
       if (next) loadGiveawayItems(next.id);
@@ -530,6 +530,8 @@ const GiveawaysPage = () => {
   const now = new Date();
   // Primero intentar encontrar por fechas (dentro del rango)
   const activeByDate = giveaways.filter((g) => {
+    // Excluir sorteos del calendario de adviento
+    if (g.id.startsWith('advent-')) return false;
     const start = new Date(g.startDate);
     const end = new Date(g.endDate);
     // Un sorteo está activo si está entre su fecha de inicio y fin Y tiene status activo o upcoming
@@ -543,6 +545,8 @@ const GiveawaysPage = () => {
   const activeGiveaway = activeByDate.length > 0 
     ? activeByDate.sort((a, b) => new Date(b.startDate).getTime() - new Date(a.startDate).getTime())[0]
     : giveaways.find((g) => {
+        // Excluir sorteos del calendario de adviento
+        if (g.id.startsWith('advent-')) return false;
         // Fallback: buscar sorteo activo que esté dentro de fechas y no tenga ganadores
         const start = new Date(g.startDate);
         const end = new Date(g.endDate);
@@ -942,6 +946,8 @@ const GiveawaysPage = () => {
         {/* Ended Giveaways (Admin Only) - For selecting winners */}
         {!isLoadingGiveaways && isAdmin &&
           giveaways.filter((g) => {
+            // Excluir sorteos del calendario de adviento
+            if (g.id.startsWith('advent-')) return false;
             // Incluir sorteos terminados por status o por fecha
             const endDate = new Date(g.endDate);
             const hasEndedByDate = endDate <= now;
@@ -955,6 +961,8 @@ const GiveawaysPage = () => {
               <div className="space-y-4">
                 {giveaways
                   .filter((g) => {
+                    // Excluir sorteos del calendario de adviento
+                    if (g.id.startsWith('advent-')) return false;
                     // Incluir sorteos terminados por status o por fecha
                     const endDate = new Date(g.endDate);
                     const hasEndedByDate = endDate <= now;
@@ -1032,7 +1040,7 @@ const GiveawaysPage = () => {
         {/* No Active Giveaways */}
         {!isLoadingGiveaways &&
           !activeGiveaway &&
-          giveaways.filter((g) => g.status === "upcoming").length === 0 && (
+          giveaways.filter((g) => g.status === "upcoming" && !g.id.startsWith('advent-')).length === 0 && (
             <div className="bg-gray-800/60 border border-gray-700/60 rounded-2xl p-8 text-center">
               <div className="w-16 h-16 bg-gray-700/50 rounded-full flex items-center justify-center mx-auto mb-4">
                 <Gift className="w-8 h-8 text-gray-400" />

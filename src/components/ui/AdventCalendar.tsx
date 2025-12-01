@@ -46,6 +46,8 @@ export default function AdventCalendar({
   const [apiKeyValid, setApiKeyValid] = useState(false);
   const [accountInfo, setAccountInfo] = useState<{ id: string; name: string } | null>(null);
   const [isParticipating, setIsParticipating] = useState(false);
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
+  const [selectedDay, setSelectedDay] = useState<number | null>(null);
   const [giveaways, setGiveaways] = useState<Record<string, {
     id: string;
     startDate: string;
@@ -184,7 +186,7 @@ export default function AdventCalendar({
       })) || [
         { itemId: 19721, quantity: 250, gemPrize: false },
         { quantity: 1, gemPrize: true },
-        { itemId: 19721, quantity: 25, gemPrize: false }
+        { itemId: 19721, quantity: 250, gemPrize: false }
       ];
 
       days.push({
@@ -310,8 +312,8 @@ export default function AdventCalendar({
     return () => controller.abort();
   }, [isAuthenticated, user?.id]);
 
-  // Manejar participación en sorteo
-  const handleParticipate = async (day: number) => {
+  // Abrir modal de confirmación
+  const handleParticipateClick = (day: number) => {
     const dayData = adventDays.find(d => d.day === day);
     if (!dayData || !dayData.giveawayId) {
       return;
@@ -337,6 +339,20 @@ export default function AdventCalendar({
       return;
     }
 
+    setSelectedDay(day);
+    setShowConfirmModal(true);
+  };
+
+  // Confirmar y participar en sorteo
+  const handleConfirmParticipate = async () => {
+    if (!selectedDay) return;
+
+    const dayData = adventDays.find(d => d.day === selectedDay);
+    if (!dayData || !dayData.giveawayId || !user?.id || !accountInfo) {
+      return;
+    }
+
+    setShowConfirmModal(false);
     setIsParticipating(true);
     try {
       const response = await fetch("/api/giveaways/participants", {
@@ -357,7 +373,7 @@ export default function AdventCalendar({
         setParticipatedDays(newParticipatedDays);
 
         setAdventDays(prev => prev.map(d =>
-          d.day === day
+          d.day === selectedDay
             ? { ...d, isParticipated: true, participantCount: (d.participantCount || 0) + 1 }
             : d
         ));
@@ -374,7 +390,7 @@ export default function AdventCalendar({
           }
         }
 
-        alert(`¡Te has apuntado al sorteo del día ${day}!`);
+        // No mostrar alert, el accountName se mostrará en el botón
       } else {
         const errorData = await response.json();
         console.error("Error participating in giveaway:", errorData);
@@ -385,6 +401,7 @@ export default function AdventCalendar({
       alert("Error al apuntarse al sorteo. Por favor intenta de nuevo.");
     } finally {
       setIsParticipating(false);
+      setSelectedDay(null);
     }
   };
 
@@ -408,9 +425,11 @@ export default function AdventCalendar({
 
       {/* Grid de tarjetas */}
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 md:gap-8 lg:gap-10">
-        {adventDays.slice(0, 21).map((day, index) => {
+        {adventDays.slice(0, 31).map((day, index) => {
           const dayWinners = day.winners || [];
           const isClosed = day.isClosed || dayWinners.length > 0;
+          // El botón solo aparece en días 1 y 25, y solo si no está cerrado
+          const showButton = (day.day === 1 || day.day === 25) && !isClosed;
 
           return (
             <motion.div
@@ -431,27 +450,29 @@ export default function AdventCalendar({
                 {/* Imagen de fondo completa sin modificaciones */}
                 <div className="absolute inset-0 z-0">
                   <Image
-                    src="/images/assets/X.webp"
+                    src={
+                      day.day === 1 ? "/images/assets/day1.webp" :
+                      day.day === 7 ? "/images/assets/day7.webp" :
+                      day.day === 14 ? "/images/assets/day14.webp" :
+                      day.day === 21 ? "/images/assets/day21.webp" :
+                      day.day === 25 ? "/images/assets/day25.webp" :
+                      day.day === 28 ? `/images/assets/day28.webp?v=${Date.now()}` :
+                      "/images/assets/daily.webp"
+                    }
                     alt={`Día ${day.day}`}
                     fill
                     className="object-contain"
                     priority={index < 7}
+                    unoptimized={day.day === 28}
                   />
                 </div>
 
                 {/* Contenido posicionado absolutamente sobre la imagen respetando sus espacios */}
                 <div className="relative z-10 w-full h-full">
 
-                  {/* Título */}
-                  <div className="absolute top-8 md:top-10 left-1/2 transform -translate-x-1/2 w-full px-2">
-                    <h3 className="text-xs md:text-sm font-bold text-gray-900 uppercase tracking-tight text-center">
-                      SORTEOS - DÍA {day.day}
-                    </h3>
-                  </div>
-
                   {/* Botón APUNTATE - Sobre la imagen */}
-                  {!isClosed && (
-                    <div className="absolute top-[52%] left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[85%] px-2">
+                  {showButton && (
+                    <div className="absolute top-[65%] left-1/2 transform -translate-x-1/2 w-[85%] px-2">
                       {!isAuthenticated ? (
                         <Link
                           href="/login"
@@ -472,11 +493,11 @@ export default function AdventCalendar({
                         </Link>
                       ) : participatedDays.has(day.giveawayId || '') ? (
                         <div className="inline-flex items-center justify-center gap-2 bg-gray-600 text-gray-300 font-semibold py-2.5 rounded-lg w-full">
-                          APUNTADO
+                          {accountInfo?.name || t("holidayCalendar.registered", "APUNTADO")}
                         </div>
                       ) : (
                         <button
-                          onClick={() => handleParticipate(day.day)}
+                          onClick={() => handleParticipateClick(day.day)}
                           disabled={isParticipating}
                           className={`
                             w-full py-2.5 rounded-lg
@@ -487,7 +508,7 @@ export default function AdventCalendar({
                         >
                           <span className="flex items-center justify-center gap-2">
                             <span>-</span>
-                            <span>APUNTATE</span>
+                            <span>{t("holidayCalendar.participate", "APUNTATE")}</span>
                             <span>-</span>
                           </span>
                         </button>
@@ -496,8 +517,8 @@ export default function AdventCalendar({
                   )}
 
                   {/* Lista de ganadores */}
-                  <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 w-[85%] px-2">
-                    {dayWinners.length > 0 ? (
+                  {dayWinners.length > 0 && (
+                    <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 w-[85%] px-2">
                       <div className="space-y-1">
                         {dayWinners.slice(0, 3).map((winner) => (
                           <div key={winner.position} className="text-xs text-gray-900 text-center font-medium leading-tight">
@@ -505,18 +526,50 @@ export default function AdventCalendar({
                           </div>
                         ))}
                       </div>
-                    ) : (
-                      <div className="text-xs text-gray-600 text-center">
-                        {isClosed ? 'Sorteo cerrado' : 'Sin ganadores aún'}
-                      </div>
-                    )}
-                  </div>
+                    </div>
+                  )}
                 </div>
               </div>
             </motion.div>
           );
         })}
       </div>
+
+      {/* Modal de confirmación */}
+      {showConfirmModal && selectedDay && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="bg-gray-800 rounded-xl p-6 max-w-md w-full mx-4 border border-gray-700"
+          >
+            <h3 className="text-xl font-bold text-white mb-4 text-center">
+              {t("holidayCalendar.confirmTitle", "Confirmar participación")}
+            </h3>
+            <p className="text-gray-300 mb-6 text-center">
+              {t("holidayCalendar.confirmMessage", `¿Estás seguro de que quieres participar en el sorteo del día ${selectedDay}?`).replace("{day}", selectedDay.toString())}
+            </p>
+            <div className="flex gap-4">
+              <button
+                onClick={() => {
+                  setShowConfirmModal(false);
+                  setSelectedDay(null);
+                }}
+                className="flex-1 py-2.5 px-4 bg-gray-600 hover:bg-gray-700 text-white font-semibold rounded-lg transition-colors"
+              >
+                {t("holidayCalendar.cancel", "Cancelar")}
+              </button>
+              <button
+                onClick={handleConfirmParticipate}
+                disabled={isParticipating}
+                className="flex-1 py-2.5 px-4 bg-gradient-to-r from-teal-600 to-green-600 hover:from-teal-700 hover:to-green-700 text-white font-semibold rounded-lg transition-colors disabled:opacity-50"
+              >
+                {isParticipating ? t("holidayCalendar.participating", "Participando...") : t("holidayCalendar.confirm", "Confirmar")}
+              </button>
+            </div>
+          </motion.div>
+        </div>
+      )}
     </div>
   );
 }

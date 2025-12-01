@@ -2381,6 +2381,13 @@
   "holidayCalendar.title": "Calendrier de l'Avent - Décembre {year}",
   "holidayCalendar.subtitle": "Ouvrez un concours chaque jour et inscrivez-vous pour gagner des prix incroyables !",
   "holidayCalendar.participateEveryDay": "⚠️ IMPORTANT : Vous devez participer TOUS LES JOURS pour avoir plus de chances de gagner",
+  "holidayCalendar.confirmTitle": "Confirmer la participation",
+  "holidayCalendar.confirmMessage": "Êtes-vous sûr de vouloir participer au concours du jour {day} ?",
+  "holidayCalendar.cancel": "Annuler",
+  "holidayCalendar.confirm": "Confirmer",
+  "holidayCalendar.participating": "Participation...",
+  "holidayCalendar.registered": "INSCRIT",
+  "holidayCalendar.participate": "PARTICIPER",
   
   "months.january": "Janvier",
   "months.february": "Février",

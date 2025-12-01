@@ -135,8 +135,9 @@ export function generateAdventGiveaways(year: number = 2025): Giveaway[] {
 
   for (let day = 1; day <= 31; day++) {
     const dayStr = day.toString().padStart(2, '0');
-    const startDate = new Date(year, 11, day, 0, 0, 0); // Diciembre (mes 11)
-    const endDate = new Date(year, 11, day, 23, 59, 59); // Mismo día, fin del día
+    // España en diciembre está en UTC+1, entonces 20:00 España = 19:00 UTC
+    const startDate = new Date(Date.UTC(year, 11, day, 0, 0, 0)); // Diciembre (mes 11) a las 00:00 UTC
+    const endDate = new Date(Date.UTC(year, 11, day, 19, 0, 0)); // Mismo día a las 20:00 hora de España (19:00 UTC)
     
     // Seleccionar premios según el día
     let prizes;

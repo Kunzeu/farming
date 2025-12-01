@@ -2380,6 +2380,13 @@
   "holidayCalendar.title": "Adventskalender - Dezember {year}",
   "holidayCalendar.subtitle": "Öffne jeden Tag ein Gewinnspiel und melde dich an, um tolle Preise zu gewinnen!",
   "holidayCalendar.participateEveryDay": "⚠️ WICHTIG: Du musst JEDEN TAG teilnehmen, um mehr Gewinnchancen zu haben",
+  "holidayCalendar.confirmTitle": "Teilnahme bestätigen",
+  "holidayCalendar.confirmMessage": "Bist du sicher, dass du am Gewinnspiel für Tag {day} teilnehmen möchtest?",
+  "holidayCalendar.cancel": "Abbrechen",
+  "holidayCalendar.confirm": "Bestätigen",
+  "holidayCalendar.participating": "Teilnehmen...",
+  "holidayCalendar.registered": "ANGEMELDET",
+  "holidayCalendar.participate": "TEILNEHMEN",
   
   "months.january": "Januar",
   "months.february": "Februar",

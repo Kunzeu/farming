@@ -2400,6 +2400,13 @@
   "holidayCalendar.title": "Advent Calendar - December {year}",
   "holidayCalendar.subtitle": "Open a giveaway every day and sign up to win amazing prizes!",
   "holidayCalendar.participateEveryDay": "⚠️ IMPORTANT: You must participate EVERY DAY to have more chances to win",
+  "holidayCalendar.confirmTitle": "Confirm participation",
+  "holidayCalendar.confirmMessage": "Are you sure you want to participate in the giveaway for day {day}?",
+  "holidayCalendar.cancel": "Cancel",
+  "holidayCalendar.confirm": "Confirm",
+  "holidayCalendar.participating": "Participating...",
+  "holidayCalendar.registered": "REGISTERED",
+  "holidayCalendar.participate": "PARTICIPATE",
   
   "months.january": "January",
   "months.february": "February",
