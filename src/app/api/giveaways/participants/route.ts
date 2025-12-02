@@ -21,9 +21,9 @@ export async function GET(request: NextRequest) {
         WHERE gp.user_id = $1
         ORDER BY gp.participated_at DESC
       `;
-      
+
       const result = await pool.query(query, [userId]);
-      
+
       const participants = result.rows.map(row => ({
         id: row.id,
         giveawayId: row.giveaway_id,
@@ -51,7 +51,7 @@ export async function GET(request: NextRequest) {
       JOIN users u ON gp.user_id = u.id
       WHERE gp.giveaway_id = $1
     `;
-    
+
     const params: (string | number)[] = [giveawayId!]; // giveawayId is guaranteed to exist here
     let paramCount = 1;
 
@@ -63,7 +63,7 @@ export async function GET(request: NextRequest) {
     query += ` ORDER BY gp.participated_at DESC`;
 
     const result = await pool.query(query, params);
-    
+
     const participants = result.rows.map(row => ({
       id: row.id,
       giveawayId: row.giveaway_id,
@@ -72,7 +72,16 @@ export async function GET(request: NextRequest) {
       participatedAt: row.participated_at
     }));
 
-    return NextResponse.json({ participants });
+    return NextResponse.json(
+      { participants },
+      {
+        headers: {
+          'Cache-Control': 'no-store, no-cache, must-revalidate, max-age=0',
+          'Pragma': 'no-cache',
+          'Expires': '0',
+        },
+      }
+    );
   } catch (error) {
     console.error('Error fetching participants:', error);
     return NextResponse.json(
