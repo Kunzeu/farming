@@ -10,13 +10,13 @@ import Image from 'next/image';
 // Iconos de redes sociales
 const TwitchIcon = ({ className = "w-4 h-4" }: { className?: string }) => (
   <svg className={className} viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-    <path d="M11.571 4.714h1.715v5.143H11.57zm4.715 0H18v5.143h-1.714zM6 0L1.714 4.286v15.428h5.143V24l4.286-4.286h3.428L22.286 12V0zm14.571 11.143l-3.428 3.428h-3.429l-3 3v-3H6.857V1.714h13.714Z"/>
+    <path d="M11.571 4.714h1.715v5.143H11.57zm4.715 0H18v5.143h-1.714zM6 0L1.714 4.286v15.428h5.143V24l4.286-4.286h3.428L22.286 12V0zm14.571 11.143l-3.428 3.428h-3.429l-3 3v-3H6.857V1.714h13.714Z" />
   </svg>
 );
 
 const YouTubeIcon = ({ className = "w-4 h-4" }: { className?: string }) => (
   <svg className={className} viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-    <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
+    <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" />
   </svg>
 );
 
@@ -139,7 +139,7 @@ const LEGENDARY_ITEM_IDS: Record<string, number> = {
   // Pre gen1
   'The Colossus': 29170,
   'The Lover': 29178,
-  
+
 
   // Lodestone
   'Destroyer Lodestone': 24325,
@@ -152,7 +152,7 @@ const LEGENDARY_ITEM_IDS: Record<string, number> = {
   'Mordrem Lodestone': 70842,
 
   // Glyphs
-  'Glyph of Volatility': 88045  ,
+  'Glyph of Volatility': 88045,
 
   // Skins
   'Imperial Everbloom Greatsword Skin': 104209,
@@ -167,8 +167,8 @@ const LEGENDARY_ITEM_IDS: Record<string, number> = {
   'Polysaturating Reverberating Infusion (Purple)': 89070,
   'Thundercrag Greatsword Skin': 101365,
   'Thundercrag Sword Skin': 101340,
-  'Vial of Liquid Aurillium':  81918,
-  'Queen Bee Infusion':  81701,
+  'Vial of Liquid Aurillium': 81918,
+  'Queen Bee Infusion': 81701,
 
   // Materials
   'Vial of Powerful Blood': 24295,
@@ -306,13 +306,13 @@ function translateRarity(rarity: string | undefined, language: string): string {
 function translateAttribute(attribute: string, language: string): string {
   // Normalizar el nombre del atributo (puede venir con o sin espacios)
   const normalized = attribute.replace(/\s+/g, '');
-  
+
   // Intentar obtener la traducción
   const translation = getTranslation(normalized, language);
   if (translation && translation !== normalized) {
     return translation;
   }
-  
+
   // Si no hay traducción, devolver el nombre original con formato legible
   return attribute.replace(/([A-Z])/g, ' $1').trim();
 }
@@ -324,14 +324,14 @@ const CACHE_VERSION = '1.1'; // Actualizado para incluir stats
 // Función para obtener datos del caché
 function getCachedItemData(itemId: number): ItemData | null {
   if (typeof window === 'undefined') return null;
-  
+
   try {
     const cached = localStorage.getItem(CACHE_KEY);
     if (!cached) return null;
-    
+
     const cacheData = JSON.parse(cached);
     if (cacheData.version !== CACHE_VERSION) return null;
-    
+
     return cacheData.items[itemId] || null;
   } catch (error) {
     console.error('Error reading cache:', error);
@@ -346,15 +346,15 @@ let cacheWriteTimeout: NodeJS.Timeout | null = null;
 // Función para guardar datos en el caché (con batching para optimizar)
 function setCachedItemData(itemId: number, data: ItemData): void {
   if (typeof window === 'undefined') return;
-  
+
   // Agregar a la cola de escrituras pendientes
   pendingCacheWrites.set(itemId, data);
-  
+
   // Cancelar el timeout anterior si existe
   if (cacheWriteTimeout) {
     clearTimeout(cacheWriteTimeout);
   }
-  
+
   // Escribir en batch después de un pequeño delay (compatible con Edge)
   cacheWriteTimeout = setTimeout(() => {
     try {
@@ -364,15 +364,15 @@ function setCachedItemData(itemId: number, data: ItemData): void {
         cacheWriteTimeout = null;
         return;
       }
-      
+
       const cached = localStorage.getItem(CACHE_KEY);
       const cacheData = cached ? JSON.parse(cached) : { version: CACHE_VERSION, items: {} };
-      
+
       // Escribir todos los items pendientes de una vez
       pendingCacheWrites.forEach((itemData, id) => {
         cacheData.items[id] = itemData;
       });
-      
+
       // Intentar escribir, manejar errores de cuota en Edge
       try {
         localStorage.setItem(CACHE_KEY, JSON.stringify(cacheData));
@@ -394,7 +394,7 @@ function setCachedItemData(itemId: number, data: ItemData): void {
           throw quotaError;
         }
       }
-      
+
       // Limpiar la cola
       pendingCacheWrites.clear();
       cacheWriteTimeout = null;
@@ -407,64 +407,61 @@ function setCachedItemData(itemId: number, data: ItemData): void {
 }
 
 // Función para obtener datos de items desde la API de GW2
+// Función para obtener datos de items desde la API de GW2
 async function fetchItemData(itemName: string, skipCacheWrite: boolean = false, currentLang: string = 'en'): Promise<ItemData | null> {
   const itemId = LEGENDARY_ITEM_IDS[itemName];
   if (!itemId) return null;
 
   // Intentar obtener del caché primero
   const cached = getCachedItemData(itemId);
-  
+
+  // Verificar si el caché tiene todos los idiomas necesarios
+  const hasAllLanguages = cached &&
+    cached.names?.en &&
+    cached.names?.es &&
+    cached.names?.de &&
+    cached.names?.fr;
+
+  if (hasAllLanguages) {
+    return cached;
+  }
+
   try {
-    // Solo cargar el idioma actual para reducir peticiones Edge
-    // Los otros idiomas se cargarán desde el caché si están disponibles
-    const currentLangData = await fetch(`https://api.guildwars2.com/v2/items/${itemId}?lang=${currentLang}`)
-      .then(res => res.ok ? res.json() : null)
-      .catch(() => null);
+    // Definir los idiomas a cargar
+    const languages = ['en', 'es', 'de', 'fr'];
 
-    if (!currentLangData) {
-      // Si falla la API pero tenemos caché, usar el caché
+    // Si tenemos caché parcial, solo cargar los idiomas que faltan
+    // Pero para simplificar y asegurar consistencia, cargaremos todos si falta alguno importante
+    // O si estamos en modo batch (skipCacheWrite=true), cargamos todos para asegurar
+
+    const fetchPromises = languages.map(lang =>
+      fetch(`https://api.guildwars2.com/v2/items/${itemId}?lang=${lang}`)
+        .then(res => res.ok ? res.json() : null)
+        .catch(() => null)
+    );
+
+    const results = await Promise.all(fetchPromises);
+    const [enData, esData, deData, frData] = results;
+
+    // Si no pudimos obtener datos en inglés (fallback principal), retornar null o caché parcial
+    if (!enData) {
       if (cached) return cached;
       return null;
-    }
-
-    if (!currentLangData) {
-      // Si falla la API pero tenemos caché, usar el caché
-      if (cached) return cached;
-      return null;
-    }
-
-    // Usar datos del caché para otros idiomas si están disponibles, o usar currentLangData como fallback
-    const enData = currentLang === 'en' ? currentLangData : (cached?.names?.en ? { ...currentLangData, name: cached.names.en, description: cached.description?.en || currentLangData.description } : currentLangData);
-    const esData = currentLang === 'es' ? currentLangData : (cached?.names?.es ? { ...currentLangData, name: cached.names.es, description: cached.description?.es || currentLangData.description } : currentLangData);
-    const deData = currentLang === 'de' ? currentLangData : (cached?.names?.de ? { ...currentLangData, name: cached.names.de, description: cached.description?.de || currentLangData.description } : currentLangData);
-    const frData = currentLang === 'fr' ? currentLangData : (cached?.names?.fr ? { ...currentLangData, name: cached.names.fr, description: cached.description?.fr || currentLangData.description } : currentLangData);
-    
-    // Si tenemos caché y los datos de la API son iguales (mismo ID), verificar si necesitamos actualizar stats
-    if (cached && cached.id === itemId) {
-      // Si el item tiene stats en la API pero no en caché, actualizar
-      const hasStatsInAPI = currentLangData.details?.infix_upgrade?.attributes;
-      const hasStatsInCache = cached.stats?.attributes;
-      
-      if (hasStatsInAPI && !hasStatsInCache) {
-        // Continuar para actualizar el caché con stats
-      } else if (!hasStatsInAPI && hasStatsInCache) {
-        // No hay stats en API, usar caché
-        return cached;
-      } else if (!hasStatsInAPI && !hasStatsInCache) {
-        // No hay stats en ninguno, usar caché
-        return cached;
-      } else {
-        // Ambos tienen stats, usar caché (asumimos que son iguales)
-        return cached;
-      }
     }
 
     // Verificar si hay traducciones manuales para este item
     const manualTranslations = MANUAL_ITEM_TRANSLATIONS[itemName];
 
-    // Extraer stats si están disponibles
-    const stats = currentLangData.details?.infix_upgrade?.attributes ? {
-      attributes: currentLangData.details.infix_upgrade.attributes.map((attr: { attribute: string; modifier: number }) => ({
+    // Usar datos de la API o fallback a inglés/manual
+    const finalEnData = enData || cached?.names?.en ? { name: cached?.names?.en, description: cached?.description?.en } : null;
+    const finalEsData = esData || cached?.names?.es ? { name: cached?.names?.es, description: cached?.description?.es } : enData;
+    const finalDeData = deData || cached?.names?.de ? { name: cached?.names?.de, description: cached?.description?.de } : enData;
+    const finalFrData = frData || cached?.names?.fr ? { name: cached?.names?.fr, description: cached?.description?.fr } : enData;
+
+    // Extraer stats si están disponibles (usar los datos en inglés o el primer disponible)
+    const dataWithStats = enData || esData || deData || frData;
+    const stats = dataWithStats?.details?.infix_upgrade?.attributes ? {
+      attributes: dataWithStats.details.infix_upgrade.attributes.map((attr: { attribute: string; modifier: number }) => ({
         attribute: attr.attribute,
         modifier: attr.modifier,
       })),
@@ -472,22 +469,22 @@ async function fetchItemData(itemName: string, skipCacheWrite: boolean = false, 
 
     const itemData: ItemData = {
       id: itemId,
-      icon: currentLangData.icon || '',
+      icon: enData.icon || '',
       names: {
-        en: manualTranslations?.en || enData.name || currentLangData.name || itemName,
-        es: manualTranslations?.es || esData.name || currentLangData.name || itemName,
-        de: manualTranslations?.de || deData.name || currentLangData.name || itemName,
-        fr: manualTranslations?.fr || frData.name || currentLangData.name || itemName,
+        en: manualTranslations?.en || enData?.name || cached?.names?.en || itemName,
+        es: manualTranslations?.es || esData?.name || cached?.names?.es || enData?.name || itemName,
+        de: manualTranslations?.de || deData?.name || cached?.names?.de || enData?.name || itemName,
+        fr: manualTranslations?.fr || frData?.name || cached?.names?.fr || enData?.name || itemName,
       },
       description: {
-        en: enData.description || currentLangData.description || '',
-        es: esData.description || currentLangData.description || '',
-        de: deData.description || currentLangData.description || '',
-        fr: frData.description || currentLangData.description || '',
+        en: enData?.description || cached?.description?.en || '',
+        es: esData?.description || cached?.description?.es || enData?.description || '',
+        de: deData?.description || cached?.description?.de || enData?.description || '',
+        fr: frData?.description || cached?.description?.fr || enData?.description || '',
       },
-      type: currentLangData.type,
-      rarity: currentLangData.rarity,
-      level: currentLangData.level,
+      type: enData.type,
+      rarity: enData.rarity,
+      level: enData.level,
       stats: stats,
     };
 
@@ -502,6 +499,8 @@ async function fetchItemData(itemName: string, skipCacheWrite: boolean = false, 
     return itemData;
   } catch (error) {
     console.error(`Error fetching item data for ${itemName}:`, error);
+    // Si falla y tenemos caché (aunque sea parcial), usarlo
+    if (cached) return cached;
     return null;
   }
 }
@@ -516,155 +515,155 @@ const getEventData = (t: (key: string) => string): ContributionEvent => {
     startDate: '2025-11-19',
     endDate: '2025-12-31',
     inGameDonations: [
-       {
-           name: 'Yuuki.7084',
-          items: [
-              { name: 'Glob of Ectoplasm', quantity: 1000 }, 
-              { name: 'Glyph of Volatility', quantity: 1  },
-              { name: 'Dragon\'s Tail', quantity: 1  },
-              { name: 'Hard Wood Logging Node', quantity: 1  },
-              { name: 'Orichalcum Mining Node', quantity: 1  },
-              
-
-          ]
-       },
-       { 
-         name: 'Zirial.2698', 
-         items: [
-          { name: 'Glob of Ectoplasm', quantity: 500  }, 
-           
-         ]
-       },
-       { 
-        name: 'Lele.5984', 
+      {
+        name: 'Yuuki.7084',
         items: [
-         { name: 'Dragon\'s Bite', quantity: 1  }, 
-          
+          { name: 'Glob of Ectoplasm', quantity: 1000 },
+          { name: 'Glyph of Volatility', quantity: 1 },
+          { name: 'Dragon\'s Tail', quantity: 1 },
+          { name: 'Hard Wood Logging Node', quantity: 1 },
+          { name: 'Orichalcum Mining Node', quantity: 1 },
+
+
         ]
       },
-      { 
-        name: 'Vortus.2801',
-        twitch: 'https://www.twitch.tv/Vortus43', 
+      {
+        name: 'Zirial.2698',
         items: [
-         { name: 'Aurene\'s Insight', quantity: 1  },  
-         { name: 'Sunrise', quantity: 1  },
-         { name: 'The Juggernaut', quantity: 1  }, 
-         { name: 'giveaways.gems', quantity: 2800, icon: 'https://wiki.guildwars2.com/images/8/88/Gem_%28highres%29.png', price: 10610000},
-         { name: 'Glob of Ectoplasm', quantity: 1500  },
-         { name: 'Aetheric Anchor', quantity: 1  },
-         { name: 'Klobjarne Geirr', quantity: 1  },
-         { name: 'Imperial Everbloom Greatsword Skin', quantity: 1  },
-         { name: 'Imperial Everbloom Spear Skin', quantity: 1  },
-         { name: 'Imperial Everbloom Sword Skin', quantity: 1  },
-         { name: 'Imperial Everbloom Dagger Skin', quantity: 1  },
-         { name: 'Imperial Everbloom Axe Skin', quantity: 1  },
-         { name: 'Imperial Everbloom Mace Skin', quantity: 1  },
-          
+          { name: 'Glob of Ectoplasm', quantity: 500 },
+
+        ]
+      },
+      {
+        name: 'Lele.5984',
+        items: [
+          { name: 'Dragon\'s Bite', quantity: 1 },
+
+        ]
+      },
+      {
+        name: 'Vortus.2801',
+        twitch: 'https://www.twitch.tv/Vortus43',
+        items: [
+          { name: 'Aurene\'s Insight', quantity: 1 },
+          { name: 'Sunrise', quantity: 1 },
+          { name: 'The Juggernaut', quantity: 1 },
+          { name: 'giveaways.gems', quantity: 2800, icon: 'https://wiki.guildwars2.com/images/8/88/Gem_%28highres%29.png', price: 10610000 },
+          { name: 'Glob of Ectoplasm', quantity: 1500 },
+          { name: 'Aetheric Anchor', quantity: 1 },
+          { name: 'Klobjarne Geirr', quantity: 1 },
+          { name: 'Imperial Everbloom Greatsword Skin', quantity: 1 },
+          { name: 'Imperial Everbloom Spear Skin', quantity: 1 },
+          { name: 'Imperial Everbloom Sword Skin', quantity: 1 },
+          { name: 'Imperial Everbloom Dagger Skin', quantity: 1 },
+          { name: 'Imperial Everbloom Axe Skin', quantity: 1 },
+          { name: 'Imperial Everbloom Mace Skin', quantity: 1 },
+
         ]
       },
       {
         name: 'sombra.6318',
         items: [
-          { name: 'Destroyer Lodestone', quantity: 500  },
-          { name: 'Corrupted Lodestone', quantity: 500  },
-          { name: 'Vial of Liquid Aurillium', quantity: 1  },
-          
+          { name: 'Destroyer Lodestone', quantity: 500 },
+          { name: 'Corrupted Lodestone', quantity: 500 },
+          { name: 'Vial of Liquid Aurillium', quantity: 1 },
+
         ]
       },
       {
         name: 'giges.9632',
         items: [
-          { name: 'Dragon\'s Fang', quantity: 1  },
-          { name: 'Dragon\'s Weight', quantity: 1  },
-          { name: 'Dragon\'s Wing', quantity: 1  },
-          { name: 'Dragon\'s Rending', quantity: 1  },
-          { name: 'Dragon\'s Flight', quantity: 1  },
-          { name: 'Dragon\'s Insight', quantity: 1  },
-          { name: 'Dragon\'s Claw', quantity: 1  },
-          { name: 'Dragon\'s Bite', quantity: 1  },
-          { name: 'Dragon\'s Argument', quantity: 1  },
-          { name: 'Dragon\'s Scale', quantity: 1  },
-          
+          { name: 'Dragon\'s Fang', quantity: 1 },
+          { name: 'Dragon\'s Weight', quantity: 1 },
+          { name: 'Dragon\'s Wing', quantity: 1 },
+          { name: 'Dragon\'s Rending', quantity: 1 },
+          { name: 'Dragon\'s Flight', quantity: 1 },
+          { name: 'Dragon\'s Insight', quantity: 1 },
+          { name: 'Dragon\'s Claw', quantity: 1 },
+          { name: 'Dragon\'s Bite', quantity: 1 },
+          { name: 'Dragon\'s Argument', quantity: 1 },
+          { name: 'Dragon\'s Scale', quantity: 1 },
+
         ]
       },
       {
         name: 'Lazaro.6109',
         items: [
-          { name: 'Dragon\'s Flight', quantity: 1  },
-          
+          { name: 'Dragon\'s Flight', quantity: 1 },
+
         ]
       },
       {
         name: 'Meimi.5461',
         items: [
-          { name: 'Polysaturating Reverberating Infusion (Purple)', quantity: 1},
-          { name: 'Thundercrag Greatsword Skin', quantity: 1  },
-          { name: 'Thundercrag Sword Skin', quantity: 1  },
-          { name: 'The Colossus', quantity: 1  },
-          { name: 'The Lover', quantity: 1  },
-          
+          { name: 'Polysaturating Reverberating Infusion (Purple)', quantity: 1 },
+          { name: 'Thundercrag Greatsword Skin', quantity: 1 },
+          { name: 'Thundercrag Sword Skin', quantity: 1 },
+          { name: 'The Colossus', quantity: 1 },
+          { name: 'The Lover', quantity: 1 },
+
         ]
       },
       {
         name: 'MrAntunha.9834',
         items: [
-          { name: 'Glob of Ectoplasm', quantity: 250  },
-          { name: 'Dragon\'s Wisdom', quantity: 1  },
-          
+          { name: 'Glob of Ectoplasm', quantity: 250 },
+          { name: 'Dragon\'s Wisdom', quantity: 1 },
+
         ]
       },
       {
         name: 'RobertDePueblo.4215',
         items: [
-          { name: 'Glob of Ectoplasm', quantity: 500  },
-          { name: 'Dragon\'s Fang', quantity: 1  },
-          
+          { name: 'Glob of Ectoplasm', quantity: 500 },
+          { name: 'Dragon\'s Fang', quantity: 1 },
+
         ]
       },
       {
         name: 'CrowLurbe.4697',
         items: [
-          { name: 'Glob of Ectoplasm', quantity: 500  },
-          
+          { name: 'Glob of Ectoplasm', quantity: 500 },
+
         ]
       },
       {
         name: 'Reig.8173',
         items: [
-          { name: 'Queen Bee Infusion', quantity: 1  },
-          
+          { name: 'Queen Bee Infusion', quantity: 1 },
+
         ]
       },
       {
         name: 'Zankiie.5891',
         items: [
-          { name: 'The Predator', quantity: 1  },
-          { name: 'Vial of Powerful Blood', quantity: 250  },
-          { name: 'Powerful Venom Sac', quantity: 250  },
-          { name: 'Vicious Fang', quantity: 250  },
-          { name: 'Symbol of Control', quantity: 250  },
+          { name: 'The Predator', quantity: 1 },
+          { name: 'Vial of Powerful Blood', quantity: 250 },
+          { name: 'Powerful Venom Sac', quantity: 250 },
+          { name: 'Vicious Fang', quantity: 250 },
+          { name: 'Symbol of Control', quantity: 250 },
           { name: 'Gold', quantity: 500, price: 10000, icon: '/images/expansions/Gold.webp' },
         ]
       },
       {
         name: 'Guille.7985',
         items: [
-          { name: 'Glob of Ectoplasm', quantity: 1000  },        
+          { name: 'Glob of Ectoplasm', quantity: 1000 },
         ]
       },
       {
         name: 'Rc Ganz.2315',
         items: [
-          { name: 'Glob of Ectoplasm', quantity: 250  },
-          { name: 'Scavenger Protocol: Magic Trophies', quantity: 1  },
-          { name: 'Mystic Coin', quantity: 50  },
-          { name: 'Jade Bot Core: Tier 10', quantity: 1  },
+          { name: 'Glob of Ectoplasm', quantity: 250 },
+          { name: 'Scavenger Protocol: Magic Trophies', quantity: 1 },
+          { name: 'Mystic Coin', quantity: 50 },
+          { name: 'Jade Bot Core: Tier 10', quantity: 1 },
         ]
       },
       {
         name: 'Jookerts.8071',
         items: [
-          { name: 'Chromatic Assassin Spear Skin', quantity: 10  },
+          { name: 'Chromatic Assassin Spear Skin', quantity: 10 },
         ]
       },
       {
@@ -676,12 +675,12 @@ const getEventData = (t: (key: string) => string): ContributionEvent => {
       {
         name: 'ArenaNet', // Donación anónima - no se mostrará el nombre
         items: [
-         { name: 'giveaways.gems', quantity: 7200, icon: 'https://wiki.guildwars2.com/images/8/88/Gem_%28highres%29.png', price: 30040000},
-         { name: 'Community Chest', quantity: 7  },
+          { name: 'giveaways.gems', quantity: 7200, icon: 'https://wiki.guildwars2.com/images/8/88/Gem_%28highres%29.png', price: 30040000 },
+          { name: 'Community Chest', quantity: 7 },
 
         ]
       },
-      
+
     ]
   };
 };
@@ -691,7 +690,7 @@ function getWikiUrl(itemName: string, language: string = 'en'): string {
   // Reemplazar espacios con guiones bajos y codificar caracteres especiales
   const wikiName = itemName.replace(/\s+/g, '_').replace(/[()]/g, '');
   const encodedName = encodeURIComponent(wikiName);
-  
+
   // La wiki de GW2 usa subdominios para diferentes idiomas
   const subdomainMap: Record<string, string> = {
     'en': 'wiki',
@@ -699,7 +698,7 @@ function getWikiUrl(itemName: string, language: string = 'en'): string {
     'de': 'wiki-de',
     'fr': 'wiki-fr',
   };
-  
+
   const subdomain = subdomainMap[language] || 'wiki';
   return `https://${subdomain}.guildwars2.com/wiki/${encodedName}`;
 }
@@ -714,26 +713,26 @@ export default function ContributionsPage() {
   const isLoadingRef = useRef(false);
   const eventSlugRef = useRef<string | null>(null);
   const tooltipRefs = useRef<Record<string, HTMLButtonElement | null>>({});
-  
+
   usePageTitle(`contributions.${event.slug}`, event.title);
 
   // Cargar datos de items desde la API
   useEffect(() => {
     if (!event) return;
-    
+
     const eventSlug = event.slug;
     const inGameDonations = event.inGameDonations;
-    
+
     // Evitar cargar múltiples veces para el mismo evento
     if (isLoadingRef.current || eventSlugRef.current === eventSlug) return;
-    
+
     isLoadingRef.current = true;
     eventSlugRef.current = eventSlug;
 
     const loadItemsData = async () => {
       try {
         const allItemNames = new Set<string>();
-        
+
         // Recopilar todos los nombres de items únicos
         inGameDonations.forEach(donation => {
           donation.items?.forEach(item => {
@@ -744,7 +743,7 @@ export default function ContributionsPage() {
         // Primero cargar desde caché (una sola lectura de localStorage)
         const itemsDataMap: Record<string, ItemData> = {};
         const itemsToFetch: string[] = [];
-        
+
         // Leer el caché completo una sola vez
         let cacheData: { version: string; items: Record<number, ItemData> } | null = null;
         if (typeof window !== 'undefined') {
@@ -760,7 +759,7 @@ export default function ContributionsPage() {
             console.error('Error reading cache:', error);
           }
         }
-        
+
         for (const itemName of allItemNames) {
           const itemId = LEGENDARY_ITEM_IDS[itemName];
           if (itemId) {
@@ -807,7 +806,7 @@ export default function ContributionsPage() {
             });
 
             await Promise.all(batchPromises);
-            
+
             // Actualizar estado incrementalmente solo con los nuevos datos
             setItemsData(prev => {
               const newData = { ...prev };
@@ -820,22 +819,22 @@ export default function ContributionsPage() {
               });
               return hasChanges ? newData : prev;
             });
-            
+
             // Delay entre lotes
             if (batches.indexOf(batch) < batches.length - 1) {
               await new Promise(resolve => setTimeout(resolve, 200));
             }
           }
-          
+
           // No pre-cargar iconos en batch para reducir peticiones en Edge
           // Los iconos se cargarán cuando se rendericen con lazy loading
-          
+
           // Escribir todos los items nuevos al caché de una vez al final
           if (itemsToFetch.length > 0 && typeof window !== 'undefined') {
             try {
               const cached = localStorage.getItem(CACHE_KEY);
               const cacheData = cached ? JSON.parse(cached) : { version: CACHE_VERSION, items: {} };
-              
+
               // Escribir todos los items nuevos de una vez
               itemsToFetch.forEach(itemName => {
                 const itemId = LEGENDARY_ITEM_IDS[itemName];
@@ -843,7 +842,7 @@ export default function ContributionsPage() {
                   cacheData.items[itemId] = itemsDataMap[itemName];
                 }
               });
-              
+
               localStorage.setItem(CACHE_KEY, JSON.stringify(cacheData));
             } catch (error) {
               console.error('Error writing cache batch:', error);
@@ -862,11 +861,11 @@ export default function ContributionsPage() {
   // Cargar precios desde la API (una sola llamada)
   useEffect(() => {
     if (!event) return;
-    
+
     const loadPrices = async () => {
       try {
         const allItemNames = new Set<string>();
-        
+
         // Recopilar todos los nombres de items únicos
         event.inGameDonations.forEach(donation => {
           donation.items?.forEach(item => {
@@ -879,7 +878,7 @@ export default function ContributionsPage() {
         // Obtener los IDs de los items
         const itemIds: number[] = [];
         const nameToIdMap: Record<string, number> = {};
-        
+
         for (const itemName of allItemNames) {
           const itemId = LEGENDARY_ITEM_IDS[itemName];
           if (itemId) {
@@ -903,10 +902,10 @@ export default function ContributionsPage() {
 
         if (pricesResponse.ok) {
           const pricesData: Array<{ id: number; sells?: { unit_price: number } }> = await pricesResponse.json();
-          
+
           // Crear un mapa de precios por nombre de item
           const pricesMap: Record<string, number> = {};
-          
+
           pricesData.forEach(priceData => {
             // Buscar el nombre del item por su ID
             const itemName = Object.keys(nameToIdMap).find(name => nameToIdMap[name] === priceData.id);
@@ -939,12 +938,12 @@ export default function ContributionsPage() {
   // Función para manejar el clic en el botón del item
   const handleItemClick = useCallback((e: React.MouseEvent, itemKey: string) => {
     e.stopPropagation();
-    
+
     if (activeTooltip === itemKey) {
       setActiveTooltip(null);
       return;
     }
-    
+
     const button = tooltipRefs.current[itemKey];
     if (button) {
       const rect = button.getBoundingClientRect();
@@ -952,11 +951,11 @@ export default function ContributionsPage() {
       const tooltipWidth = 320; // 80 * 4 = 320px (w-80)
       const spaceAbove = rect.top;
       const spaceBelow = window.innerHeight - rect.bottom;
-      
+
       // Siempre mostrar abajo por defecto, solo mostrar arriba si hay menos de 200px abajo
       // Y hay suficiente espacio arriba (más de 500px) para el tooltip completo
       const showBottom = spaceBelow >= 200 || spaceAbove < 500;
-      
+
       // Calcular left ajustado para que no se salga de la pantalla
       let left = rect.left;
       if (left + tooltipWidth > window.innerWidth) {
@@ -965,7 +964,7 @@ export default function ContributionsPage() {
       if (left < 10) {
         left = 10;
       }
-      
+
       // Establecer posición inmediatamente antes de activar el tooltip
       setTooltipPosition(prev => ({
         ...prev,
@@ -975,7 +974,7 @@ export default function ContributionsPage() {
           position: showBottom ? 'bottom' : 'top'
         }
       }));
-      
+
       // Activar el tooltip después de establecer la posición
       setActiveTooltip(itemKey);
     }
@@ -1020,19 +1019,19 @@ export default function ContributionsPage() {
 
   const normalizeCoins = (coins: { gold: number; silver: number; copper: number }) => {
     let { gold, silver, copper } = coins;
-    
+
     // Normalizar cobre (0-99)
     if (copper >= 100) {
       silver += Math.floor(copper / 100);
       copper = copper % 100;
     }
-    
+
     // Normalizar plata (0-99)
     if (silver >= 100) {
       gold += Math.floor(silver / 100);
       silver = silver % 100;
     }
-    
+
     return { gold, silver, copper };
   };
 
@@ -1047,7 +1046,7 @@ export default function ContributionsPage() {
   // Calcular el total de todas las donaciones
   const calculateTotalDonations = useCallback(() => {
     if (!event) return { gold: 0, silver: 0, copper: 0 };
-    
+
     let totalCopper = 0;
 
     event.inGameDonations.forEach(donation => {
@@ -1055,7 +1054,7 @@ export default function ContributionsPage() {
       if (donation.coins) {
         totalCopper += coinsToCopper(donation.coins);
       }
-      
+
       // Sumar amount si existe
       if (donation.amount) {
         totalCopper += donation.amount;
@@ -1091,9 +1090,9 @@ export default function ContributionsPage() {
 
   // Fecha fija del evento
   const eventDate = lang === 'es' ? '19 de noviembre de 2025' :
-                    lang === 'de' ? '19. November 2025' :
-                    lang === 'fr' ? '19 novembre 2025' :
-                    'November 19, 2025';
+    lang === 'de' ? '19. November 2025' :
+      lang === 'fr' ? '19 novembre 2025' :
+        'November 19, 2025';
 
   return (
     <>
@@ -1193,7 +1192,7 @@ export default function ContributionsPage() {
                           }
                         });
                       }
-                      
+
                       // Calcular el total en cobre para la donación b
                       let totalCopperB = 0;
                       if (b.coins) {
@@ -1217,7 +1216,7 @@ export default function ContributionsPage() {
                           }
                         });
                       }
-                      
+
                       // Ordenar de mayor a menor
                       return totalCopperB - totalCopperA;
                     })
@@ -1242,7 +1241,7 @@ export default function ContributionsPage() {
                         });
                       }
                       const itemsCoins = itemsValueCopper > 0 ? convertCopperToCoins(itemsValueCopper) : null;
-                      
+
                       // Combinar coins, amount convertido a monedas, y valor de items
                       const amountCoins = donation.amount ? convertCopperToCoins(donation.amount) : null;
                       const combinedCoins = normalizeCoins({
@@ -1323,164 +1322,195 @@ export default function ContributionsPage() {
                               </div>
                             )}
                           </td>
-                        <td className="py-3 px-4 overflow-visible">
-                          {donation.items && donation.items.length > 0 && (
-                            <div className="flex items-center gap-2 flex-wrap">
-                              {donation.items.map((item, itemIndex) => {
-                                const itemData = itemsData[item.name];
-                                // Si el nombre del item es una clave de traducción, usarla directamente
-                                const isTranslationKey = item.name.includes('.');
-                                // Verificar traducciones manuales primero, luego itemData, luego el nombre original
-                                const manualTranslation = MANUAL_ITEM_TRANSLATIONS[item.name]?.[lang as keyof typeof MANUAL_ITEM_TRANSLATIONS[string]];
-                                const itemName = isTranslationKey 
-                                  ? t(item.name)
-                                  : (manualTranslation || itemData?.names[lang as keyof typeof itemData.names] || itemData?.names.en || item.name);
-                                // El icono puede venir del item directamente o de los datos de la API
-                                const itemIcon = item.icon || itemData?.icon;
-                                const itemKey = `${donation.name}-${itemIndex}`;
-                                const isTooltipActive = activeTooltip === itemKey;
-                                const position = tooltipPosition[itemKey];
-                                
-                                return (
-                                  <div 
-                                    key={itemIndex} 
-                                    className="relative flex items-center gap-1 whitespace-nowrap"
-                                  >
-                                    {item.quantity && item.quantity > 1 && (
-                                      <span className="text-gray-400">{item.quantity} </span>
-                                    )}
-                                    {itemIcon && (
-                                      <Image
-                                        src={itemIcon}
-                                        alt={itemName}
-                                        width={16}
-                                        height={16}
-                                        className="w-4 h-4"
-                                        loading="lazy"
-                                        unoptimized
-                                        fetchPriority="low"
-                                      />
-                                    )}
-                                    <button
-                                      type="button"
-                                      ref={(el) => { tooltipRefs.current[itemKey] = el; }}
-                                      onClick={(e) => handleItemClick(e, itemKey)}
-                                      className="text-purple-400 text-sm hover:text-purple-300 transition-colors cursor-pointer"
-                                    >
-                                      {itemName}
-                                    </button>
-                                    
-                                    {/* Tooltip */}
-                                    {isTooltipActive && position && (itemData || isTranslationKey) && (
-                                      <div 
-                                        data-tooltip-container
-                                        className="fixed z-[9999] w-80 bg-slate-800 border border-purple-500/50 rounded-lg shadow-xl p-4"
-                                        style={{
-                                          top: `${position.top}px`,
-                                          left: `${position.left}px`
-                                        }}
-                                      >
-                                        {/* Header con icono y nombre */}
-                                        <div className="flex items-center gap-2 mb-3 pb-2 border-b border-gray-700">
-                                          {itemIcon && (
-                                            <Image
-                                              src={itemIcon}
-                                              alt={itemName}
-                                              width={32}
-                                              height={32}
-                                              className="w-8 h-8"
-                                              loading="eager"
-                                              priority
-                                              unoptimized
-                                              placeholder="blur"
-                                              blurDataURL="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg=="
-                                            />
-                                          )}
-                                          <div className="flex-1">
-                                            <h3 className="text-white font-semibold text-sm">{itemName}</h3>
-                                            {itemData?.type && (
-                                              <p className="text-gray-400 text-xs">{translateType(itemData.type, lang)}</p>
-                                            )}
-                                          </div>
-                                        </div>
-                                        
-                                        {/* Descripción */}
-                                        {itemData?.description && itemData.description[lang as keyof typeof itemData.description] && (
-                                          <p className="text-gray-300 text-xs mb-3 line-clamp-3">
-                                            {itemData.description[lang as keyof typeof itemData.description]}
-                                          </p>
-                                        )}
-                                        
-                                        {/* Información adicional */}
-                                        {itemData && (
-                                          <div className="flex gap-4 mb-3 text-xs">
-                                            {itemData.rarity && (
-                                              <span className="text-gray-400">
-                                                {getTranslation('rarity', lang)}: <span className="text-purple-400 capitalize">{translateRarity(itemData.rarity, lang)}</span>
-                                              </span>
-                                            )}
-                                            {itemData.level && (
-                                              <span className="text-gray-400">
-                                                {getTranslation('level', lang)}: <span className="text-purple-400">{itemData.level}</span>
-                                              </span>
-                                            )}
-                                          </div>
-                                        )}
-                                        
-                                        {/* Estadísticas */}
-                                        {itemData?.stats?.attributes && itemData.stats.attributes.length > 0 && (
-                                          <div className="border-t border-gray-700 pt-2 mb-3">
-                                            <p className="text-gray-400 text-xs mb-2 font-semibold">{getTranslation('stats', lang)}:</p>
-                                            <div className="space-y-1">
-                                              {itemData.stats.attributes.map((attr, idx) => (
-                                                <div key={idx} className="flex justify-between text-xs">
-                                                  <span className="text-gray-300">{translateAttribute(attr.attribute, lang)}:</span>
-                                                  <span className="text-yellow-400 font-semibold">+{attr.modifier}</span>
-                                                </div>
-                                              ))}
-                                            </div>
-                                          </div>
-                                        )}
-                                        
-                                        {/* Enlaces a wikis */}
-                                        {itemData && (
-                                          <div className="border-t border-gray-700 pt-2">
-                                            <p className="text-gray-400 text-xs mb-2">Wiki:</p>
-                                            <div className="flex flex-wrap gap-2">
-                                              {(['en', 'es', 'de', 'fr'] as const).map((wikiLang) => {
-                                                const wikiName = itemData.names[wikiLang] || itemData.names.en;
-                                                const wikiUrl = getWikiUrl(wikiName, wikiLang);
-                                                return (
-                                                  <a
-                                                    key={wikiLang}
-                                                    href={wikiUrl}
-                                                    target="_blank"
-                                                    rel="noopener noreferrer"
-                                                    className="inline-flex items-center gap-1 text-xs text-purple-400 hover:text-purple-300 transition-colors cursor-pointer"
-                                                    onClick={(e) => {
-                                                      e.stopPropagation();
-                                                      e.preventDefault();
-                                                      window.open(wikiUrl, '_blank', 'noopener,noreferrer');
-                                                    }}
-                                                  >
-                                                    {wikiLang.toUpperCase()}
-                                                    <ExternalLink className="w-3 h-3" />
-                                                  </a>
-                                                );
-                                              })}
-                                            </div>
-                                          </div>
-                                        )}
-                                      </div>
-                                    )}
-                                  </div>
-                                );
-                              })}
-                            </div>
-                          )}
-                        </td>
+                          <td className="py-3 px-4 overflow-visible">
+                            {donation.items && donation.items.length > 0 && (
+                              <div className="flex items-center gap-2 flex-wrap">
+                                {donation.items.map((item, itemIndex) => {
+                                  const itemData = itemsData[item.name];
+                                  // Si el nombre del item es una clave de traducción, usarla directamente
+                                  const isTranslationKey = item.name.includes('.');
+                                  // Verificar traducciones manuales primero, luego itemData, luego el nombre original
+                                  const manualTranslation = MANUAL_ITEM_TRANSLATIONS[item.name]?.[lang as keyof typeof MANUAL_ITEM_TRANSLATIONS[string]];
+                                  const itemName = isTranslationKey
+                                    ? t(item.name)
+                                    : (manualTranslation || itemData?.names[lang as keyof typeof itemData.names] || itemData?.names.en || item.name);
+                                  // El icono puede venir del item directamente o de los datos de la API
+                                  const itemIcon = item.icon || itemData?.icon;
+                                  const itemKey = `${donation.name}-${itemIndex}`;
+                                  const isTooltipActive = activeTooltip === itemKey;
+                                  const position = tooltipPosition[itemKey];
 
-                      </tr>
+                                  return (
+                                    <div
+                                      key={itemIndex}
+                                      className="relative flex items-center gap-1 whitespace-nowrap"
+                                    >
+                                      {item.quantity && item.quantity > 1 && (
+                                        <span className="text-gray-400">{item.quantity} </span>
+                                      )}
+                                      {itemIcon && (
+                                        <Image
+                                          src={itemIcon}
+                                          alt={itemName}
+                                          width={16}
+                                          height={16}
+                                          className="w-4 h-4"
+                                          loading="lazy"
+                                          unoptimized
+                                          fetchPriority="low"
+                                        />
+                                      )}
+                                      <button
+                                        type="button"
+                                        ref={(el) => { tooltipRefs.current[itemKey] = el; }}
+                                        onClick={(e) => handleItemClick(e, itemKey)}
+                                        className="text-purple-400 text-sm hover:text-purple-300 transition-colors cursor-pointer"
+                                      >
+                                        {itemName}
+                                      </button>
+
+                                      {/* Tooltip */}
+                                      {isTooltipActive && position && (itemData || isTranslationKey) && (
+                                        <div
+                                          data-tooltip-container
+                                          className="fixed z-[9999] w-80 bg-slate-800 border border-purple-500/50 rounded-lg shadow-xl p-4"
+                                          style={{
+                                            top: `${position.top}px`,
+                                            left: `${position.left}px`
+                                          }}
+                                        >
+                                          {/* Header con icono y nombre */}
+                                          <div className="flex items-center gap-2 mb-3 pb-2 border-b border-gray-700">
+                                            {itemIcon && (
+                                              <Image
+                                                src={itemIcon}
+                                                alt={itemName}
+                                                width={32}
+                                                height={32}
+                                                className="w-8 h-8"
+                                                loading="eager"
+                                                priority
+                                                unoptimized
+                                                placeholder="blur"
+                                                blurDataURL="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg=="
+                                              />
+                                            )}
+                                            <div className="flex-1">
+                                              <h3 className="text-white font-semibold text-sm">{itemName}</h3>
+                                              {itemData?.type && (
+                                                <p className="text-gray-400 text-xs">{translateType(itemData.type, lang)}</p>
+                                              )}
+                                            </div>
+                                          </div>
+
+                                          {/* Descripción */}
+                                          {itemData?.description && itemData.description[lang as keyof typeof itemData.description] && (
+                                            <p className="text-gray-300 text-xs mb-3 line-clamp-3">
+                                              {itemData.description[lang as keyof typeof itemData.description]}
+                                            </p>
+                                          )}
+
+                                          {/* Información adicional */}
+                                          {itemData && (
+                                            <div className="flex justify-between items-center mb-3 text-xs border-b border-gray-700 pb-2">
+                                              {itemData.rarity && (
+                                                <span className="text-gray-400">
+                                                  {getTranslation('rarity', lang)}: <span className={`font-semibold ${itemData.rarity.toLowerCase() === 'legendary' ? 'text-purple-400' :
+                                                      itemData.rarity.toLowerCase() === 'ascended' ? 'text-pink-400' :
+                                                        itemData.rarity.toLowerCase() === 'exotic' ? 'text-orange-400' :
+                                                          itemData.rarity.toLowerCase() === 'rare' ? 'text-yellow-400' :
+                                                            itemData.rarity.toLowerCase() === 'masterwork' ? 'text-green-400' :
+                                                              itemData.rarity.toLowerCase() === 'fine' ? 'text-blue-400' :
+                                                                'text-gray-400'
+                                                    }`}>{translateRarity(itemData.rarity, lang)}</span>
+                                                </span>
+                                              )}
+
+                                              {/* Precio del item */}
+                                              {(() => {
+                                                const price = getItemPrice(item);
+                                                if (price > 0) {
+                                                  const coins = convertCopperToCoins(price);
+                                                  return (
+                                                    <div className="flex items-center gap-1">
+                                                      {coins.gold > 0 && (
+                                                        <div className="flex items-center gap-0.5">
+                                                          <span className="text-yellow-400 font-semibold">{coins.gold}</span>
+                                                          <Image src="/images/expansions/Gold.webp" alt="Gold" width={12} height={12} className="w-3 h-3" unoptimized />
+                                                        </div>
+                                                      )}
+                                                      {(coins.gold > 0 || coins.silver > 0) && (
+                                                        <div className="flex items-center gap-0.5">
+                                                          <span className="text-gray-300 font-semibold">{coins.silver}</span>
+                                                          <Image src="/images/expansions/Silver.webp" alt="Silver" width={12} height={12} className="w-3 h-3" unoptimized />
+                                                        </div>
+                                                      )}
+                                                      <div className="flex items-center gap-0.5">
+                                                        <span className="text-orange-400 font-semibold">{coins.copper}</span>
+                                                        <Image src="/images/expansions/Copper.webp" alt="Copper" width={12} height={12} className="w-3 h-3" unoptimized />
+                                                      </div>
+                                                    </div>
+                                                  );
+                                                }
+                                                return null;
+                                              })()}
+                                            </div>
+                                          )}
+
+                                          {/* Estadísticas */}
+                                          {itemData?.stats?.attributes && itemData.stats.attributes.length > 0 && (
+                                            <div className="border-t border-gray-700 pt-2 mb-3">
+                                              <p className="text-gray-400 text-xs mb-2 font-semibold">{getTranslation('stats', lang)}:</p>
+                                              <div className="space-y-1">
+                                                {itemData.stats.attributes.map((attr, idx) => (
+                                                  <div key={idx} className="flex justify-between text-xs">
+                                                    <span className="text-gray-300">{translateAttribute(attr.attribute, lang)}:</span>
+                                                    <span className="text-yellow-400 font-semibold">+{attr.modifier}</span>
+                                                  </div>
+                                                ))}
+                                              </div>
+                                            </div>
+                                          )}
+
+                                          {/* Enlaces a wikis */}
+                                          {itemData && (
+                                            <div className="border-t border-gray-700 pt-2">
+                                              <p className="text-gray-400 text-xs mb-2">Wiki:</p>
+                                              <div className="flex flex-wrap gap-2">
+                                                {(['en', 'es', 'de', 'fr'] as const).map((wikiLang) => {
+                                                  const wikiName = itemData.names[wikiLang] || itemData.names.en;
+                                                  const wikiUrl = getWikiUrl(wikiName, wikiLang);
+                                                  return (
+                                                    <a
+                                                      key={wikiLang}
+                                                      href={wikiUrl}
+                                                      target="_blank"
+                                                      rel="noopener noreferrer"
+                                                      className="inline-flex items-center gap-1 text-xs text-purple-400 hover:text-purple-300 transition-colors cursor-pointer"
+                                                      onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        e.preventDefault();
+                                                        window.open(wikiUrl, '_blank', 'noopener,noreferrer');
+                                                      }}
+                                                    >
+                                                      {wikiLang.toUpperCase()}
+                                                      <ExternalLink className="w-3 h-3" />
+                                                    </a>
+                                                  );
+                                                })}
+                                              </div>
+                                            </div>
+                                          )}
+                                        </div>
+                                      )}
+                                    </div>
+                                  );
+                                })}
+                              </div>
+                            )}
+                          </td>
+
+                        </tr>
                       );
                     })}
                 </tbody>

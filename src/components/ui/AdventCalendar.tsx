@@ -845,14 +845,17 @@ export default function AdventCalendar({
                         day.day === 1 ? "/images/assets/day1.webp" :
                           day.day === 2 ? "/images/assets/day2.webp" :
                             (day.day === 3 && day.isAvailable) ? "/images/assets/day3.webp" :
-                              day.day === 7 ? "/images/assets/daily.webp" :
-                                day.day === 14 ? "/images/assets/daily.webp" :
-                                  day.day === 21 ? "/images/assets/daily.webp" :
-                                    day.day === 25 ? "/images/assets/day25.webp" :
-                                      day.day === 28 ? "/images/assets/daily.webp" :
-                                        day.day === 31 ? `/images/assets/daily.webp?v=${Date.now()}` :
+                              (day.day === 4 && day.isAvailable) ? "/images/assets/day4.webp" :
+                                day.day === 7 ? "/images/assets/daily.webp" :
+                                  day.day === 14 ? "/images/assets/daily.webp" :
+                                    (day.day === 17 && day.isAvailable) ? "/images/assets/day17.webp" :
+                                      day.day === 21 ? "/images/assets/daily.webp" :
+                                        day.day === 25 ? "/images/assets/day25.webp" :
+                                          day.day === 28 ? "/images/assets/daily.webp" :
+                                            day.day === 31 ? `/images/assets/daily.webp?v=${Date.now()}` :
+                                              (day.day === 32 && isAdmin) ? "/images/assets/day3.webp" :
 
-                                          "/images/assets/soon.webp"
+                                                "/images/assets/soon.webp"
                       }
                       alt={`Día ${day.day}`}
                       fill
@@ -942,29 +945,29 @@ export default function AdventCalendar({
 
                     {/* Lista de ganadores */}
                     {dayWinners.length > 0 && (
-                      <div className="absolute bottom-[3.78rem] left-1/2 transform -translate-x-1/2 w-[85%] px-2">
-                        <div className="space-y-1">
+                      <div className="absolute bottom-[calc(2.5rem-18px)] left-1/2 transform -translate-x-1/2 w-[85%] px-2">
+                        <div className="space-y-0.9">
                           {dayWinners.map((winner) => (
-                            <div key={winner.position} className="text-xs text-gray-900 text-center font-medium leading-tight flex items-center justify-center gap-1">
+                            <div key={winner.position} className="text-sm text-gray-900 text-center font-medium leading-tight flex items-center justify-center gap-1.5">
                               <span className="font-bold">{winner.position}º</span>
                               {/* Icono del premio */}
                               {winner.gemPrize ? (
                                 <img
                                   src="https://wiki.guildwars2.com/images/8/88/Gem_%28highres%29.png"
                                   alt="Gems"
-                                  className="w-5 h-5 object-contain"
+                                  className="w-6 h-6 object-contain"
                                 />
                               ) : winner.itemIcon ? (
                                 <img
                                   src={winner.itemIcon}
                                   alt="Prize"
-                                  className="w-5 h-5 object-contain"
+                                  className="w-6 h-6 object-contain"
                                   onError={(e) => {
                                     e.currentTarget.style.display = 'none';
                                   }}
                                 />
                               ) : null}
-                              <span className="text-[10px] leading-none">{winner.accountName}</span>
+                              <span className="text-xs leading-none font-bold">{winner.accountName}</span>
                             </div>
                           ))}
                         </div>

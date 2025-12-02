@@ -185,7 +185,17 @@ export function generateAdventGiveaways(year: number = 2025): Giveaway[] {
       8: [
         { position: 1, prize: '250', icon: 'package', itemId: 19721, quantity: 250 }, // Glob of Ectoplasm
         { position: 2, prize: '1', icon: 'materials', itemId: 102013, quantity: 1 }, // Chromatic Assassin Spear Skin
-        { position: 3, prize: '400', icon: 'gem', quantity: 400, gemPrize: true }, // Pre aun no escogemos
+        { position: 3, prize: '1', icon: 'package', itemId: 95834, quantity: 1 }, // Dragon's Flight
+      ],
+      9: [
+        { position: 1, prize: '250', icon: 'package', itemId: 19721, quantity: 250 }, // Glob of Ectoplasm
+        { position: 2, prize: '100', icon: 'materials', itemId: 24340, quantity: 100 }, // Corrupted Lodestone
+        { position: 3, prize: '1', icon: 'package', itemId: 79085, quantity: 1 }, // Hard Wood Logging Node
+      ],
+      10: [
+        { position: 1, prize: '250', icon: 'package', itemId: 19721, quantity: 250 }, // Glob of Ectoplasm
+        { position: 2, prize: '1', icon: 'materials', itemId: 104209, quantity: 1 }, // Imperial Everbloom Greatsword Skin
+        { position: 3, prize: '1', icon: 'package', itemId: 95814, quantity: 1 }, // Dragon's Flight
       ],
       14: [
         { position: 1, prize: '800', icon: 'gem', quantity: 800, gemPrize: true },
