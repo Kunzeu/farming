@@ -216,7 +216,7 @@ export default function AdventCalendar({
         giveaway.status === 'winners_announced'
       ));
 
-      const prizes = giveaway?.prizes?.slice(0, 3).map((p: {
+      const prizes = giveaway?.prizes?.map((p: {
         itemId?: number;
         quantity?: number;
         gemPrize?: boolean;
@@ -242,7 +242,7 @@ export default function AdventCalendar({
         isParticipated: participatedDays.has(giveawayId),
         giveawayId,
         participantCount,
-        winners: winners[giveawayId]?.sort((a, b) => a.position - b.position).slice(0, 3),
+        winners: winners[giveawayId]?.sort((a, b) => a.position - b.position),
         prizes
       });
     }
@@ -926,7 +926,7 @@ export default function AdventCalendar({
                   {dayWinners.length > 0 && (
                     <div className="absolute bottom-[3.78rem] left-1/2 transform -translate-x-1/2 w-[85%] px-2">
                       <div className="space-y-1">
-                        {dayWinners.slice(0, 3).map((winner) => (
+                        {dayWinners.map((winner) => (
                           <div key={winner.position} className="text-xs text-gray-900 text-center font-medium leading-tight flex items-center justify-center gap-1">
                             <span className="font-bold">{winner.position}º</span>
                             {/* Icono del premio */}
