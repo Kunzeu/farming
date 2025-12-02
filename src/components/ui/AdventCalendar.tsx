@@ -193,7 +193,7 @@ export default function AdventCalendar({
     const today = new Date();
 
     const days: AdventDay[] = [];
-    for (let day = 1; day <= 31; day++) {
+    for (let day = 1; day <= 32; day++) {
       const date = new Date(year, month, day);
       const dayStr = day.toString().padStart(2, '0');
       const giveawayId = `advent-${year}-12-${dayStr}`;
@@ -804,190 +804,207 @@ export default function AdventCalendar({
 
       {/* Grid de tarjetas */}
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 md:gap-8 lg:gap-10">
-        {adventDays.map((day, index) => {
-          const dayWinners = day.winners || [];
-          const isClosed = day.isClosed || dayWinners.length > 0;
-          // El botón aparece en todos los días que tengan giveaway, estén disponibles y no estén cerrados
-          const showButton = day.giveawayId && day.isAvailable && !isClosed;
-          // Para admin: mostrar botón en todas las tarjetas
-          const showAdminButton = isAdmin && day.giveawayId;
-          // El botón está habilitado solo si el día está cerrado, no hay ganadores y hay participantes
-          const canSelectWinners = day.isClosed && dayWinners.length === 0 && (day.participantCount || 0) > 0;
+        {adventDays
+          .filter(day => {
+            // Filtrar día 32: solo visible para administradores
+            if (day.day === 32) {
+              return isAdmin;
+            }
+            return true;
+          })
+          .map((day, index) => {
+            const dayWinners = day.winners || [];
+            const isClosed = day.isClosed || dayWinners.length > 0;
+            // El botón aparece en todos los días que tengan giveaway, estén disponibles y no estén cerrados
+            const showButton = day.giveawayId && day.isAvailable && !isClosed;
+            // Para admin: mostrar botón en todas las tarjetas
+            const showAdminButton = isAdmin && day.giveawayId;
+            // El botón está habilitado solo si el día está cerrado, no hay ganadores y hay participantes
+            const canSelectWinners = day.isClosed && dayWinners.length === 0 && (day.participantCount || 0) > 0;
 
-          return (
-            <motion.div
-              key={day.day}
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: index * 0.03 }}
-              className="relative"
-            >
-              {/* Tarjeta usando la imagen completa */}
-              <div className={`
+            return (
+              <motion.div
+                key={day.day}
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: index * 0.03 }}
+                className="relative"
+              >
+                {/* Tarjeta usando la imagen completa */}
+                <div className={`
                 relative rounded-xl overflow-hidden
                 transition-all duration-300
                 w-full
                 aspect-[3/5]
                 ${!isClosed ? 'hover:shadow-2xl hover:scale-105 cursor-pointer' : 'cursor-default'}
               `}>
-                {/* Imagen de fondo completa sin modificaciones */}
-                <div className="absolute inset-0 z-0">
-                  <Image
-                    src={
-                      day.day === 1 ? "/images/assets/day1.webp" :
-                        day.day === 2 ? "/images/assets/day2.webp" :
-                          day.day === 7 ? "/images/assets/daily.webp" :
-                            day.day === 14 ? "/images/assets/daily.webp" :
-                              day.day === 21 ? "/images/assets/daily.webp" :
-                                day.day === 25 ? "/images/assets/day25.webp" :
-                                  day.day === 28 ? "/images/assets/daily.webp" :
-                                    day.day === 31 ? `/images/assets/daily.webp?v=${Date.now()}` :
+                  {/* Imagen de fondo completa sin modificaciones */}
+                  <div className="absolute inset-0 z-0">
+                    <Image
+                      src={
+                        day.day === 1 ? "/images/assets/day1.webp" :
+                          day.day === 2 ? "/images/assets/day2.webp" :
+                            day.day === 7 ? "/images/assets/daily.webp" :
+                              day.day === 14 ? "/images/assets/daily.webp" :
+                                day.day === 21 ? "/images/assets/daily.webp" :
+                                  day.day === 25 ? "/images/assets/day25.webp" :
+                                    day.day === 28 ? "/images/assets/daily.webp" :
+                                      day.day === 31 ? `/images/assets/daily.webp?v=${Date.now()}` :
 
-                                      "/images/assets/soon.webp"
-                    }
-                    alt={`Día ${day.day}`}
-                    fill
-                    className="object-contain"
-                    priority={index < 7}
-                    unoptimized={day.day === 28}
-                  />
-                </div>
+                                        "/images/assets/soon.webp"
+                      }
+                      alt={`Día ${day.day}`}
+                      fill
+                      className="object-contain"
+                      priority={index < 7}
+                      unoptimized={day.day === 28}
+                    />
+                  </div>
 
-                {/* Contenido posicionado absolutamente sobre la imagen respetando sus espacios */}
-                <div className="relative z-10 w-full h-full">
+                  {/* Contenido posicionado absolutamente sobre la imagen respetando sus espacios */}
+                  <div className="relative z-10 w-full h-full">
 
-                  {/* Indicador de participantes */}
-                  {day.giveawayId && (
-                    <div className="absolute top-3 right-3 bg-blue-600/95 backdrop-blur-sm text-white px-2.5 py-1.5 rounded-lg flex items-center gap-1.5 shadow-lg border border-blue-400/50 z-30">
-                      <Users className="w-3.5 h-3.5" />
-                      <span className="text-xs font-semibold">
-                        {day.participantCount ?? 0}
-                      </span>
-                    </div>
-                  )}
+                    {/* Indicador de CERRADO (cuando está cerrado y tiene ganadores) */}
+                    {isClosed && dayWinners.length > 0 && (
+                      <div className="absolute top-3 left-3 bg-red-600/95 backdrop-blur-sm text-white px-2.5 py-1.5 rounded-lg flex items-center gap-1.5 shadow-lg border border-red-400/50 z-30">
+                        <span className="text-xs font-bold">
+                          {t("holidayCalendar.closed", "CERRADO")}
+                        </span>
+                      </div>
+                    )}
 
-                  {/* Botón APUNTATE - Sobre la imagen */}
-                  {showButton && (
-                    <div className="absolute top-[calc(65%_-_6px)] left-1/2 transform -translate-x-1/2 w-[85%] px-2">
-                      {!isAuthenticated ? (
-                        <Link
-                          href="/login"
-                          className="inline-flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2.5 rounded-lg transition-colors w-full"
-                        >
-                          {t("holidayCalendar.login", "INICIA SESIÓN")}
-                        </Link>
-                      ) : isLoadingApiKey || isLoadingParticipations ? (
-                        <div className="inline-flex items-center justify-center gap-2 bg-gray-600 text-gray-300 font-semibold py-2.5 rounded-lg w-full">
-                          {t("holidayCalendar.loading", "Cargando...")}
-                        </div>
-                      ) : !hasApiKey || !apiKeyValid ? (
-                        <Link
-                          href="/profile"
-                          className="inline-flex items-center justify-center gap-2 bg-yellow-600 hover:bg-yellow-700 text-white font-semibold py-2.5 rounded-lg transition-colors w-full"
-                        >
-                          {t("holidayCalendar.linkApiKey", "VINCULA API KEY")}
-                        </Link>
-                      ) : participatedDays.has(day.giveawayId || '') ? (
-                        <div className="inline-flex items-center justify-center gap-2 bg-gray-600 text-gray-300 font-semibold py-2.5 rounded-lg w-full">
-                          {accountInfo?.name || t("holidayCalendar.registered", "APUNTADO")}
-                        </div>
-                      ) : (
-                        <button
-                          onClick={() => handleParticipateClick(day.day)}
-                          disabled={isParticipating}
-                          className={`
+                    {/* Indicador de participantes */}
+                    {day.giveawayId && (
+                      <div className="absolute top-3 right-3 bg-blue-600/95 backdrop-blur-sm text-white px-2.5 py-1.5 rounded-lg flex items-center gap-1.5 shadow-lg border border-blue-400/50 z-30">
+                        <Users className="w-3.5 h-3.5" />
+                        <span className="text-xs font-semibold">
+                          {day.participantCount ?? 0}
+                        </span>
+                      </div>
+                    )}
+
+                    {/* Botón APUNTATE - Sobre la imagen */}
+                    {showButton && (
+                      <div className="absolute top-[calc(65%_-_6px)] left-1/2 transform -translate-x-1/2 w-[85%] px-2">
+                        {!isAuthenticated ? (
+                          <Link
+                            href="/login"
+                            className="inline-flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2.5 rounded-lg transition-colors w-full"
+                          >
+                            {t("holidayCalendar.login", "INICIA SESIÓN")}
+                          </Link>
+                        ) : isLoadingApiKey || isLoadingParticipations ? (
+                          <div className="inline-flex items-center justify-center gap-2 bg-gray-600 text-gray-300 font-semibold py-2.5 rounded-lg w-full">
+                            {t("holidayCalendar.loading", "Cargando...")}
+                          </div>
+                        ) : !hasApiKey || !apiKeyValid ? (
+                          <Link
+                            href="/profile"
+                            className="inline-flex items-center justify-center gap-2 bg-yellow-600 hover:bg-yellow-700 text-white font-semibold py-2.5 rounded-lg transition-colors w-full"
+                          >
+                            {t("holidayCalendar.linkApiKey", "VINCULA API KEY")}
+                          </Link>
+                        ) : participatedDays.has(day.giveawayId || '') ? (
+                          <div className="inline-flex items-center justify-center gap-2 bg-gray-600 text-gray-300 font-semibold py-2.5 rounded-lg w-full">
+                            {accountInfo?.name || t("holidayCalendar.registered", "APUNTADO")}
+                          </div>
+                        ) : (
+                          <button
+                            onClick={() => handleParticipateClick(day.day)}
+                            disabled={isParticipating}
+                            className={`
                             w-full py-2.5 rounded-lg
                             font-bold text-white text-sm
                             transition-all duration-200
                             bg-gradient-to-r from-teal-600 to-green-600 hover:from-teal-700 hover:to-green-700 active:scale-95 shadow-lg
                           `}
+                          >
+                            <span className="flex items-center justify-center gap-2">
+                              <span>-</span>
+                              <span>{t("holidayCalendar.participate", "APUNTATE")}</span>
+                              <span>-</span>
+                            </span>
+                          </button>
+                        )}
+                      </div>
+                    )}
+
+                    {/* Indicador de CERRADO - PENDIENTE (cuando está cerrado pero sin ganadores) */}
+                    {isClosed && dayWinners.length === 0 && day.giveawayId && (
+                      <div className="absolute bottom-[3.78rem] left-1/2 transform -translate-x-1/2 w-[85%] px-2">
+                        <div className="bg-yellow-600/95 backdrop-blur-sm text-white px-3 py-2 rounded-lg text-center shadow-lg border border-yellow-400/50">
+                          <p className="text-xs font-bold">{t("holidayCalendar.closedPending", "CERRADO - PENDIENTE")}</p>
+                          <p className="text-[10px] mt-0.5 opacity-90">{t("holidayCalendar.awaitingWinners", "En espera de ganadores")}</p>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Lista de ganadores */}
+                    {dayWinners.length > 0 && (
+                      <div className="absolute bottom-[3.78rem] left-1/2 transform -translate-x-1/2 w-[85%] px-2">
+                        <div className="space-y-1">
+                          {dayWinners.map((winner) => (
+                            <div key={winner.position} className="text-xs text-gray-900 text-center font-medium leading-tight flex items-center justify-center gap-1">
+                              <span className="font-bold">{winner.position}º</span>
+                              {/* Icono del premio */}
+                              {winner.gemPrize ? (
+                                <img
+                                  src="https://wiki.guildwars2.com/images/8/88/Gem_%28highres%29.png"
+                                  alt="Gems"
+                                  className="w-5 h-5 object-contain"
+                                />
+                              ) : winner.itemIcon ? (
+                                <img
+                                  src={winner.itemIcon}
+                                  alt="Prize"
+                                  className="w-5 h-5 object-contain"
+                                  onError={(e) => {
+                                    e.currentTarget.style.display = 'none';
+                                  }}
+                                />
+                              ) : null}
+                              <span className="text-[10px] leading-none">{winner.accountName}</span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Botón de Admin para seleccionar ganadores - Aparece en todas las tarjetas para admins, pero se oculta si ya hay ganadores */}
+                    {showAdminButton && dayWinners.length === 0 && (
+                      <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 w-[85%] px-2 z-20">
+                        <button
+                          onClick={() => handleSelectWinnersClick(day.giveawayId!)}
+                          disabled={isSelectingWinners || !canSelectWinners}
+                          className={`w-full py-2 px-3 text-white font-semibold text-xs rounded-lg transition-colors flex items-center justify-center gap-2 shadow-lg ${canSelectWinners
+                            ? "bg-yellow-600 hover:bg-yellow-700"
+                            : "bg-gray-600 cursor-not-allowed opacity-60"
+                            }`}
+                          title={
+                            !day.isClosed
+                              ? "El sorteo aún no ha cerrado"
+                              : dayWinners.length > 0
+                                ? "Ya hay ganadores seleccionados"
+                                : (day.participantCount || 0) === 0
+                                  ? "No hay participantes"
+                                  : "Seleccionar ganadores al azar"
+                          }
                         >
-                          <span className="flex items-center justify-center gap-2">
-                            <span>-</span>
-                            <span>{t("holidayCalendar.participate", "APUNTATE")}</span>
-                            <span>-</span>
-                          </span>
+                          <Crown className="w-3 h-3" />
+                          {isSelectingWinners ? "Seleccionando..." : "Seleccionar Ganadores"}
                         </button>
-                      )}
-                    </div>
-                  )}
-
-                  {/* Indicador de CERRADO - PENDIENTE (cuando está cerrado pero sin ganadores) */}
-                  {isClosed && dayWinners.length === 0 && day.giveawayId && (
-                    <div className="absolute bottom-[3.78rem] left-1/2 transform -translate-x-1/2 w-[85%] px-2">
-                      <div className="bg-yellow-600/95 backdrop-blur-sm text-white px-3 py-2 rounded-lg text-center shadow-lg border border-yellow-400/50">
-                        <p className="text-xs font-bold">{t("holidayCalendar.closedPending", "CERRADO - PENDIENTE")}</p>
-                        <p className="text-[10px] mt-0.5 opacity-90">{t("holidayCalendar.awaitingWinners", "En espera de ganadores")}</p>
+                        {!canSelectWinners && dayWinners.length > 0 && (
+                          <p className="text-gray-500 text-xs mt-1 text-center">
+                            Ganadores ya seleccionados
+                          </p>
+                        )}
                       </div>
-                    </div>
-                  )}
-
-                  {/* Lista de ganadores */}
-                  {dayWinners.length > 0 && (
-                    <div className="absolute bottom-[3.78rem] left-1/2 transform -translate-x-1/2 w-[85%] px-2">
-                      <div className="space-y-1">
-                        {dayWinners.map((winner) => (
-                          <div key={winner.position} className="text-xs text-gray-900 text-center font-medium leading-tight flex items-center justify-center gap-1">
-                            <span className="font-bold">{winner.position}º</span>
-                            {/* Icono del premio */}
-                            {winner.gemPrize ? (
-                              <img
-                                src="https://wiki.guildwars2.com/images/8/88/Gem_%28highres%29.png"
-                                alt="Gems"
-                                className="w-5 h-5 object-contain"
-                              />
-                            ) : winner.itemIcon ? (
-                              <img
-                                src={winner.itemIcon}
-                                alt="Prize"
-                                className="w-5 h-5 object-contain"
-                                onError={(e) => {
-                                  e.currentTarget.style.display = 'none';
-                                }}
-                              />
-                            ) : null}
-                            <span className="text-[10px] leading-none">{winner.accountName}</span>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Botón de Admin para seleccionar ganadores - Aparece en todas las tarjetas para admins, pero se oculta si ya hay ganadores */}
-                  {showAdminButton && dayWinners.length === 0 && (
-                    <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 w-[85%] px-2 z-20">
-                      <button
-                        onClick={() => handleSelectWinnersClick(day.giveawayId!)}
-                        disabled={isSelectingWinners || !canSelectWinners}
-                        className={`w-full py-2 px-3 text-white font-semibold text-xs rounded-lg transition-colors flex items-center justify-center gap-2 shadow-lg ${canSelectWinners
-                          ? "bg-yellow-600 hover:bg-yellow-700"
-                          : "bg-gray-600 cursor-not-allowed opacity-60"
-                          }`}
-                        title={
-                          !day.isClosed
-                            ? "El sorteo aún no ha cerrado"
-                            : dayWinners.length > 0
-                              ? "Ya hay ganadores seleccionados"
-                              : (day.participantCount || 0) === 0
-                                ? "No hay participantes"
-                                : "Seleccionar ganadores al azar"
-                        }
-                      >
-                        <Crown className="w-3 h-3" />
-                        {isSelectingWinners ? "Seleccionando..." : "Seleccionar Ganadores"}
-                      </button>
-                      {!canSelectWinners && dayWinners.length > 0 && (
-                        <p className="text-gray-500 text-xs mt-1 text-center">
-                          Ganadores ya seleccionados
-                        </p>
-                      )}
-                    </div>
-                  )}
+                    )}
+                  </div>
                 </div>
-              </div>
-            </motion.div>
-          );
-        })}
+              </motion.div>
+            );
+          })}
       </div>
 
       {/* Modal de confirmación */}

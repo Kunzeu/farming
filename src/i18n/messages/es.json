@@ -5,7 +5,6 @@
   "halloween.labyrinth.builds.daredevilPower.keepAheadZerg": "Para mantenerse por delante de los zerg",
   "halloween.labyrinth.builds.daredevilPower.bowExceptional": "El arco tendría un básico excepcional para este farm",
   "halloween.labyrinth.builds.daredevilPower.useFourAoEDoors": " y podríamos usar el 4 para hacer daños en área en lugares como las puertas.",
-  
   "halloween.labyrinth.advanced.title": "Consejos Avanzados",
   "halloween.labyrinth.advanced.maximizeEfficiency.title": "Maximizar Eficiencia",
   "halloween.labyrinth.advanced.maximizeEfficiency.description": "Usa estos boosters y potenciadores para maximizar tu experiencia y recompensas en el Laberinto de Halloween.",
@@ -14,7 +13,6 @@
   "halloween.labyrinth.advanced.festivalBoosters.title": "Boosters de Festival",
   "halloween.labyrinth.advanced.maximumEfficiencyTip.title": "Consejo de Eficiencia Máxima",
   "halloween.labyrinth.advanced.maximumEfficiencyTip.description": "Combina múltiples boosters para obtener el máximo beneficio. Los boosters se acumulan multiplicativamente, por lo que usar varios a la vez puede resultar en ganancias de experiencia extremadamente altas. ¡Planifica tu sesión de farming para aprovechar al máximo estos potenciadores!",
-  
   "halloween.labyrinth.advanced.blackLionBoost.description": "50% de experiencia extra por 30 minutos. Se consigue con estatuillas del león negro.",
   "halloween.labyrinth.advanced.experienceBonus.description": "50% de bonificación extra de ganancia de experiencia. Se obtiene de la {bonfire}.",
   "halloween.labyrinth.advanced.killStreak.description": "10% extra de experiencia por cada carga (hasta 10 cargas). Se obtiene del {zampacaramelos}.",
@@ -22,7 +20,6 @@
   "halloween.labyrinth.advanced.celebrationBoost.description": "Lo obtenemos de diarias o de los regalos de cumpleaños. Podemos acumular hasta 7 días de este bonificador y nos da un 100% extra de experiencia.",
   "halloween.labyrinth.advanced.strawberryGhost.description": "40% de experiencia extra por 30 minutos. Comida.",
   "halloween.labyrinth.advanced.chatoyantElixir.description": "40% de experiencia extra por 30 minutos. Mejora.",
-  
   "halloween.labyrinth.advanced.blackLionBoost.fallback": "Potenciador del León Negro",
   "halloween.labyrinth.advanced.experienceBonus.alt": "50% de bonificación de experiencia",
   "halloween.labyrinth.advanced.killStreak.alt": "¡Racha de muertes activadas!",
@@ -39,13 +36,10 @@
   "lang.german": "Deutsch",
   "lang.spanish": "Español",
   "lang.french": "Français",
-  
   "apiWarning.title": "La API oficial de Guild Wars 2 será desactivada del 24 al 30 de octubre para evitar spoilers.",
   "apiWarning.subtitle": "Esto significa que la mayoría de páginas en True Farming no cargarán durante este período.",
   "apiWarning.close": "Cerrar banner",
-  
   "giveaways.items.19721": "Pegote de Ectoplasma",
-  
   "pageTitles.changelog": "Actualizaciones",
   "pageTitles.magicMirrors": "Espejos Mágicos",
   "changelog.subtitle": "Registro de actualizaciones, mejoras y correcciones",
@@ -353,17 +347,14 @@
   "dashboard.tradingPost.description": "Accede a precios actualizados del Trading Post y análisis de mercado.",
   "dashboard.community.title": "Comunidad Activa",
   "dashboard.community.description": "Conecta con otros jugadores y comparte estrategias de farming.",
-
   "cta.activeEvent": "Evento activo: {name}",
   "cta.viewCalculator": "Ver calculadora",
   "cta.seeFullDescription": "Ver descripción completa",
   "cta.purchaseNow": "Comprar Ahora",
   "cta.checkNewTool": "Consulta nuestra nueva herramienta",
-
   "section.availableTools": "Herramientas disponibles",
   "festivals.title": "Festivales de Guild Wars 2",
   "nav.backToSalvaging": "Volver a Reciclaje",
-
   "dashboard.farms.title": "Rutas",
   "dashboard.farms.description": "Rutas optimizadas para máxima eficiencia",
   "dashboard.dailyRoutine.title": "Rutina Diaria",
@@ -376,7 +367,6 @@
   "dashboard.festivals.description": "Información sobre eventos y festivales",
   "dashboard.farmingTracker.title": "Fractales",
   "dashboard.farmingTracker.description": "Seguimiento de progreso y análisis de farming",
-
   "farmingRoutes.title": "Rutas de Farmeo",
   "farmingRoutes.subtitle": "Las mejores rutas para hacer oro en Guild Wars 2",
   "farmingRoutes.loading": "Cargando rutas desde la base de datos...",
@@ -384,7 +374,6 @@
   "farmingRoutes.mode.solo": "Solo",
   "farmingRoutes.mode.squad": "Escuadrón",
   "farmingRoutes.clickToCopy": "Haz clic para copiar waypoint",
-
   "farmingTracker.title": "Análisis de Cofres de Fractales",
   "farmingTracker.subtitle": "Crédito de datos: gad.7365 (T1, T2, T3, T4)",
   "farmingTracker.sections.fractal": "Cofre de Maestro (T4)",
@@ -416,11 +405,7 @@
   "farmingTracker.summary.itemsShown": "Items Mostrados",
   "farmingTracker.summary.totalValueFiltered": "Valor Total Filtrado",
   "farmingTracker.summary.avgValuePerChest": "Valor Promedio/Cofre",
-
-
-
   "common.all": "Todos",
-
   "currency.gold": "Oro",
   "currency.spiritShards": "Esquirlas Espirituales",
   "currency.karma": "Karma",
@@ -430,28 +415,23 @@
   "currency.riftEssences": "Esencias de Rift",
   "currency.mysticClovers": "Tréboles Místicos",
   "currency.imperialFavor": "Favor Imperial",
-
   "salvage.dropdown.common": "Selecto",
   "salvage.dropdown.masterwork": "Obra de arte",
   "salvage.dropdown.rare": "Excepcional",
-
   "salvage.note.title": "Nota",
   "salvage.note.showMore": "Ver más",
   "salvage.note.showLess": "Ver menos",
   "salvage.note.common": "Los precios se obtienen en tiempo real desde la API de GW2. El \"Precio procesado\" incluye las comisiones del Trading Post (descuento del 15% sobre el precio de venta). El costo del equipo sin identificado usa el precio de compra actual del Trading Post. Las tasas de botín se basan en datos oficiales del GW2 Wiki para la Pieza de equipo sin identificado selecto, abierto y luego reciclado con Copper-Fed Salvage-o-Matic. Recomendación: Ten un inventario de 280 espacios para facilitar el proceso.",
   "salvage.note.masterwork": "Los precios se obtienen en tiempo real desde la API de GW2. El \"Precio procesado\" incluye las comisiones del Trading Post (descuento del 15% sobre el precio de venta). El costo del equipo sin identificado usa el precio de compra actual del Trading Post. Las tasas de botín se basan en datos oficiales del GW2 Wiki para la Pieza de equipo sin identificar (Obra de arte), abierto y luego reciclado con Runecrafter's Salvage-o-Matic. Recomendación: Ten un inventario de 280 espacios para facilitar el proceso.",
   "salvage.note.rare": "Los precios se obtienen en tiempo real desde la API de GW2. El \"Precio procesado\" incluye las comisiones del Trading Post (descuento del 15% sobre el precio de venta). El costo del equipo sin identificado usa el precio de compra actual del Trading Post. Las tasas de botín se basan en datos oficiales del GW2 Wiki para la Pieza de equipo sin identificar excepcional, abierto y luego reciclado con Silver-Fed Salvage-o-Matic. Recomendación: Ten un inventario de 280 espacios para facilitar el proceso.",
-
   "salvage.header.common": "Equipo sin identificar - Selecto",
   "salvage.header.masterwork": "Equipo sin identificar - Obra de arte",
   "salvage.header.rare": "Equipo sin identificar - Excepcional",
   "salvage.header.desc.common": "Calcula cuánto oro ganas abriendo y reciclando la Pieza de equipo sin identificar selecto",
   "salvage.header.desc.masterwork": "Calcula cuánto oro ganas abriendo y reciclando la Pieza de equipo sin identificar obra de arte",
   "salvage.header.desc.rare": "Calcula cuánto oro ganas abriendo y reciclando la Pieza de equipo sin identificar excepcional",
-
   "salvage.viewWiki": "Ver Wiki",
   "salvage.lastUpdated": "Última actualización: {time}",
-
   "salvage.kit.copper": "Copper-Fed Salvage-o-Matic",
   "salvage.kit.runecrafter": "Runecrafter's Salvage-o-Matic",
   "salvage.kit.silver": "Silver-Fed Salvage-o-Matic",
@@ -462,7 +442,6 @@
   "salvage.commonShort": "Equipo selecto",
   "salvage.masterworkShort": "Equipo sin id.",
   "salvage.rareShort": "Equipo excepcional",
-
   "salvage.label.costPerUse": "Costo por uso",
   "salvage.label.dropRates": "Tasas de botín",
   "salvage.label.estimated": "Estimado",
@@ -470,16 +449,13 @@
   "salvage.profit.low": "Baja",
   "salvage.profit.mid": "Media",
   "salvage.profit.high": "Alta",
-
   "salvage.controls.quantityLabel": "Cantidad de {name}",
   "salvage.controls.updatePrices": "Actualizar precios",
-
   "salvage.summary.totalMaterialsValue": "Valor total de materiales",
   "salvage.summary.costGear": "Costo {quantity} {name}",
   "salvage.summary.eachTpSuffix": "cada uno (TP)",
   "salvage.summary.kitCost": "Costo del kit",
   "salvage.summary.totalProfit": "Ganancia total",
-
   "salvage.table.material": "Material",
   "salvage.table.matPerUnit": "Mat por unidad",
   "salvage.table.sellPrice": "Precio de venta",
@@ -502,7 +478,6 @@
   "status.upcoming": "Próximo",
   "status.ended": "Finalizado",
   "home.hero.subtitle": "Accede a todas las funciones y herramientas disponibles para optimizar tu experiencia de farmeo en Guild Wars 2",
-
   "festival.fourWinds": "Festival de los Cuatro Vientos",
   "festival.halloween": "Sombra del Rey Loco (Halloween)",
   "festival.lunarNewYear": "Año Nuevo Lunar",
@@ -700,18 +675,17 @@
   "footer.useThisLink": "¡Usa este link para apoyarnos!",
   "footer.supportSite": "Apoya el sitio web",
   "footer.becomePatron": "Hazte patrocinador",
-    "footer.communityContact": "Comunidad",
-    "footer.developer": "Desarrollador Principal",
-    "footer.botCreator": "Creador del Bot",
-    "footer.supportWebsite": "Apoya el sitio web",
-    "footer.supportDescription": "Tu apoyo nos ayuda a mejorar constantemente la plataforma",
-    "footer.discordBot": "Añade nuestro bot a Discord",
-    "footer.github": "Código fuente",
-    "footer.email": "Email",
-    "footer.emailDesc": "Contacto directo",
-    "footer.disclaimer": "Los datos mostrados provienen de la API oficial de Guild Wars 2. True Farming es un proyecto independiente de la comunidad.",
+  "footer.communityContact": "Comunidad",
+  "footer.developer": "Desarrollador Principal",
+  "footer.botCreator": "Creador del Bot",
+  "footer.supportWebsite": "Apoya el sitio web",
+  "footer.supportDescription": "Tu apoyo nos ayuda a mejorar constantemente la plataforma",
+  "footer.discordBot": "Añade nuestro bot a Discord",
+  "footer.github": "Código fuente",
+  "footer.email": "Email",
+  "footer.emailDesc": "Contacto directo",
+  "footer.disclaimer": "Los datos mostrados provienen de la API oficial de Guild Wars 2. True Farming es un proyecto independiente de la comunidad.",
   "footer.discordContact": "Contacto directo por Discord",
-  
   "dailyRoutine.title": "Rutina Diaria",
   "dailyRoutine.subtitle": "Selecciona tus farms favoritos y crea tu rutina diaria perfecta",
   "dailyRoutine.summary": "Resumen de tu Rutina Diaria",
@@ -728,7 +702,6 @@
   "dailyRoutine.farms": "Farms",
   "dailyRoutine.time": "Tiempo",
   "dailyRoutine.progress": "Progreso",
-
   "salvagePage.title": "Reciclaje",
   "salvagePage.subtitle": "Guía completa para reciclar en Guild Wars 2. Aprende técnicas, calcula rentabilidad y maximiza tus ganancias.",
   "salvagePage.whatIsSalvaging": "¿Qué es el Reciclaje?",
@@ -765,7 +738,6 @@
   "salvagePage.checkPrices": "Revisa precios antes de reciclar",
   "salvagePage.considerValue": "Considera el valor del objeto completo",
   "salvagePage.useAppropriateKit": "Usa el kit apropiado para cada tipo",
-
   "craftingPage.title": "Análisis de Materiales",
   "craftingPage.subtitle": "Calculadora de rentabilidad para materiales T6, Magia Volátil y Magia Liberada",
   "craftingPage.overview": "Visión General",
@@ -917,7 +889,6 @@
   "craftingPage.continuousMonitoringDesc": "Los precios cambian constantemente. Revisa regularmente las tablas para identificar nuevas oportunidades.",
   "craftingPage.fromGW2API": "desde la API de GW2",
   "craftingPage.autoUpdate": "Actualización automática cada 5 minutos",
-
   "dashboard.advancedSettings": "Configuración Avanzada",
   "dashboard.advancedSettingsShort": "Config",
   "dashboard.loginRequired.title": "Inicio de sesión requerido",
@@ -948,7 +919,6 @@
   "dashboard.buyout.description": "Calcula el costo de comprar materiales en grandes cantidades",
   "dashboard.garden.title": "Jardines",
   "dashboard.garden.description": "Gestiona tus jardines y cultivos",
-
   "gardenPage.title": "Guía de Jardines - Farming de Magia Volátil",
   "gardenPage.titleShort": "Guía de Jardines",
   "gardenPage.subtitle": "Guía completa para maximizar la ganancia en este farmeo de magia volátil",
@@ -1164,7 +1134,6 @@
   "dashboard.others.description": "Herramientas adicionales y utilidades",
   "dashboard.profile.title": "Perfil",
   "dashboard.profile.description": "Gestiona tu perfil y configuraciones de usuario",
-
   "giftOfMasteryPage.title": "Don del dominio - GOM",
   "giftOfMasteryPage.loading": "Cargando información del Don del dominio...",
   "giftOfMasteryPage.error.title": "Error al cargar el item",
@@ -1254,7 +1223,6 @@
   "giftOfMasteryPage.tips.paymentOrder.title": "3. Orden de Pago",
   "giftOfMasteryPage.tips.paymentOrder.description": "Siempre se paga después de recibir la legendaria, en caso de ser por Overflow se podría aceptar que se mande el pago primero si el comprador no tiene reputación y el vendedor si.",
   "giftOfMasteryPage.tips.goodLuck": "¡Mucha suerte con la venta y compra de GOMs!",
-
   "glossaryPage.title": "Glosario de GW2",
   "glossaryPage.subtitle": "Guía completa de conceptos y términos importantes para ganar oro en Guild Wars 2",
   "glossaryPage.searchPlaceholder": "Buscar conceptos...",
@@ -1289,7 +1257,6 @@
   "glossaryPage.tips.differentContent": "Diferentes tipos de contenido para todos los gustos",
   "glossaryPage.tips.sellAtPeaks": "Vende objetos específicos cuando sus precios alcancen picos",
   "glossaryPage.tips.participateActivities": "Participa en actividades únicas del festival",
-
   "salvageCommon.title": "Equipo sin identificar - Selecto",
   "salvageCommon.description": "Calcula cuánto oro ganas abriendo y reciclando Pieza de equipo sin identificar selecto",
   "salvageCommon.backToSalvaging": "Volver a Reciclaje",
@@ -1299,7 +1266,6 @@
   "salvageCommon.quantityLabel": "Cantidad de Equipo sin identificar selecto",
   "salvageCommon.costGear": "Costo de {quantity}",
   "salvageCommon.loadingPrice": "Cargando precio...",
-
   "salvageMasterwork.title": "Equipo sin identificado - Obra de arte",
   "salvageMasterwork.description": "Calcula cuánto oro ganas abriendo y reciclando Pieza de equipo sin identificado obra de arte",
   "salvageMasterwork.note": "Los precios se obtienen en tiempo real desde la API de GW2. El \"Precio procesado\" incluye las comisiones del Trading Post (descuento del 15% sobre el precio de venta). El costo del equipo sin identificado usa el precio de compra actual del Trading Post. Las tasas de caída se basan en datos oficiales del GW2 Wiki para Pieza de equipo sin identificar (Obra de arte), abierto y luego reciclado con Runecrafter's Salvage-o-Matic. Recomendación: Ten un inventario de 280 espacios para facilitar el proceso.",
@@ -1307,7 +1273,6 @@
   "salvageMasterwork.recommendedKit": "Kit recomendado para Equipo sin identificar obra de arte",
   "salvageMasterwork.quantityLabel": "Cantidad de Equipo sin identificar",
   "salvageMasterwork.costGear": "Costo de {quantity}",
-
   "salvageRare.title": "Equipo sin identificado - Excepcional",
   "salvageRare.description": "Calcula cuánto oro ganas abriendo y reciclando Pieza de equipo sin identificado excepcional",
   "salvageRare.note": "Los precios se obtienen en tiempo real desde la API de GW2. El \"Precio procesado\" incluye las comisiones del Trading Post (descuento del 15% sobre el precio de venta). El costo del equipo sin identificado usa el precio de compra actual del Trading Post. Las tasas de caída se basan en datos oficiales del GW2 Wiki para Pieza de equipo sin identificar excepcional, abierto y luego reciclado con Silver-Fed Salvage-o-Matic. Recomendación: Ten un inventario de 280 espacios para facilitar el proceso.",
@@ -1315,7 +1280,6 @@
   "salvageRare.recommendedKit": "Kit recomendado para Equipo sin identificar excepcional",
   "salvageRare.quantityLabel": "Cantidad de Equipo sin identificar excepcional",
   "salvageRare.costGear": "Costo de {quantity}",
-
   "salvagePages.viewWiki": "Ver Wiki",
   "salvagePages.lastUpdated": "Última actualización: {time}",
   "salvagePages.costPerUse": "Costo por uso",
@@ -1353,7 +1317,6 @@
   "modal.goldPerHour": "Oro por hora:",
   "modal.spiritShardsPerHour": "Fragmentos de espíritu por hora:",
   "modal.close": "Cerrar",
-
   "festivals.description": "Calculadoras específicas y guías para maximizar tus ganancias durante los festivales anuales",
   "festivals.info.title": "¿Qué son los Festivales?",
   "festivals.info.description": "Los festivales en Guild Wars 2 son celebraciones estacionales que ocurren durante todo el año. Cada festival tiene su propio tema, actividades únicas y recompensas especiales. Estos eventos duran típicamente unas 3 semanas y ofrecen oportunidades únicas para el farmeo y obtener objetos exclusivos.",
@@ -1363,7 +1326,6 @@
   "festivals.info.exclusiveItems.description": "Aspectos, armas y otros objetos que solo están disponibles durante el festival.",
   "festivals.info.tempRewards.title": "Recompensas Temporales",
   "festivals.info.tempRewards.description": "Materiales, monedas y otros recursos que se pueden vender por oro en el Trading Post.",
-  
   "festivals.farming.title": "Estrategias de Farmeo de Festivales",
   "festivals.farming.during.title": "Durante el Festival",
   "festivals.farming.during.participate.title": "Participar en Actividades",
@@ -1375,7 +1337,6 @@
   "festivals.farming.after.selling.description": "Espera a que los precios suban después del festival.",
   "festivals.farming.after.analysis.title": "Análisis de Mercado",
   "festivals.farming.after.analysis.description": "Monitorea los precios para identificar el mejor momento de venta.",
-  
   "festivals.goldEarning.title": "¿Cómo Ganar Oro en Festivales?",
   "festivals.goldEarning.description": "Los festivales son una de las mejores oportunidades para generar oro en Guild Wars 2. Cada festival tiene métodos específicos de farmeo que pueden generar entre 20-30g por hora dependiendo de tu eficiencia y el festival en cuestión.",
   "festivals.goldEarning.main.title": "Métodos Principales",
@@ -1392,7 +1353,6 @@
   "festivals.goldEarning.advanced.multiChar.description": "Usa varios personajes para maximizar las recompensas diarias.",
   "festivals.goldEarning.proTip.title": "Consejo Pro",
   "festivals.goldEarning.proTip.description": "Los festivales más rentables son generalmente Halloween (Bolsas de Dulce o Truco) y Wintersday (Regalos de Wintersday). Estos pueden generar 30-40g por hora con farmeo eficiente. Usa nuestras calculadoras específicas para determinar la rentabilidad exacta de cada actividad.",
-  
   "festivals.tips.title": "Consejos Generales",
   "festivals.tips.planning.title": "Planificación",
   "festivals.tips.planning.description": "Investiga los festivales con anticipación y prepara tus personajes.",
@@ -1402,53 +1362,42 @@
   "festivals.tips.community.description": "Únete a grupos organizados para maximizar la eficiencia.",
   "festivals.tips.enjoy.title": "Disfruta",
   "festivals.tips.enjoy.description": "Recuerda que los festivales están diseñados para ser divertidos.",
-  
   "festivals.names.lunar": "Festival de Año Nuevo Lunar",
   "festivals.names.dragonBash": "Festival del Dragonicidio",
   "festivals.names.fourWinds": "Festival de los Cuatro Vientos",
   "festivals.names.halloween": "Festival de Halloween",
   "festivals.names.wintersday": "Festival del Día Invernal",
-  
   "festivals.descriptions.lunar": "La celebración del año nuevo en el calendario cantiano",
   "festivals.descriptions.dragonBash": "Festival de verano que celebra la resistencia contra los Dragones Ancianos",
   "festivals.descriptions.fourWinds": "Festival de verano con carreras de monturas y aventuras",
   "festivals.descriptions.halloween": "El terrorífico festival del Rey Loco Thorn",
   "festivals.descriptions.wintersday": "Festival de invierno que celebra el año nuevo en el calendario mouveliano",
-  
   "festivals.features.lunar.luckyEnvelopes": "Sobres de la Suerte",
   "festivals.features.lunar.essenceLuck": "Esencia de la Suerte",
   "festivals.features.lunar.dragonBall": "Arena de Pelota de Dragón",
   "festivals.features.lunar.fireworks": "Fuegos Artificiales",
-  
   "festivals.features.dragonBash.holographic": "Súbditos de Dragón Holográficos",
   "festivals.features.dragonBash.racing": "Eventos de Carreras",
   "festivals.features.dragonBash.tokens": "Vales del Festival",
   "festivals.features.dragonBash.rewards": "Recompensas Temáticas de Dragón",
-  
   "festivals.features.fourWinds.mountRaces": "Carreras de Monturas",
   "festivals.features.fourWinds.bossBlitz": "Boss Blitz",
   "festivals.features.fourWinds.gauntlet": "Guantelete de la Reina",
   "festivals.features.fourWinds.scavenger": "Búsquedas del Tesoro",
-  
   "festivals.features.halloween.bags": "Bolsas de Dulce o Truco",
   "festivals.features.halloween.corn": "Trozo de Caramelo",
   "festivals.features.halloween.labyrinth": "Laberinto del Rey Loco",
   "festivals.features.halloween.tower": "Rompecabezas de la Torre del Reloj",
-  
   "festivals.features.wintersday.gifts": "Regalos de Wintersday",
   "festivals.features.wintersday.wonderland": "País de las Maravillas Invernal",
   "festivals.features.wintersday.choir": "Conjunto de Campanas del Coro",
   "festivals.features.wintersday.toypocalypse": "Toypocalypse",
-  
   "festivals.difficulty.easy": "Fácil",
   "festivals.difficulty.medium": "Medio",
   "festivals.difficulty.hard": "Difícil",
-  
   "festivals.timeRequired.short": "2-3 horas",
   "festivals.timeRequired.medium": "3-4 horas",
   "festivals.timeRequired.long": "4+ horas",
-
-
   "fractals.items.blood": "Vial de Sangre Poderosa",
   "fractals.items.bone": "Hueso Grande",
   "fractals.items.claw": "Garra Grande",
@@ -1491,7 +1440,6 @@
   "fractals.items.silverOre": "Mineral de Plata",
   "fractals.items.copperOre": "Mineral de Cobre",
   "fractals.items.tinOre": "Mineral de Estaño",
-
   "fractals.sections.trophies": "Trofeos",
   "fractals.dataSource.label": "Fuente de Datos:",
   "fractals.dataSource.description": "Análisis basado en",
@@ -1500,7 +1448,6 @@
   "fractals.sections.materialsT5": "Materiales T5",
   "fractals.sections.otherDrops": "Otros Drops",
   "fractals.sections.profits": "Profits",
-  
   "fractals.table.name": "Item",
   "fractals.table.basePrice": "Precio Base",
   "fractals.table.maxPrice": "Precio Max",
@@ -1509,29 +1456,24 @@
   "fractals.table.proof": "Prueba",
   "fractals.table.treaties": "Tratado",
   "fractals.table.postulate": "Postulado",
-  
   "fractals.calculations.totalPerBox": "Total Por Caja",
   "fractals.calculations.bestIncomePerBox": "Mejor Income Por Caja",
   "fractals.calculations.totalPerBoxOther": "Total por Caja",
-  
   "fractals.items.infusion": "Infusión +1",
   "fractals.items.fractalKey": "Llave Fractal",
   "fractals.items.relicBag": "Bolsa Reliquias",
-  
   "fractals.profits.boxKey90": "Caja + Llave 90%",
   "fractals.profits.boxKeyBuyOrder": "Caja + Llave BuyOrder",
   "fractals.profits.boxKeySellOrder": "Caja + Llave SellOrder",
   "fractals.profits.boxMinKey20s": "Caja MIN + Llave 20s",
   "fractals.profits.boxMinKey25s04c": "Caja MIN + Llave 25s04c",
   "fractals.profits.boxMinKey30s": "Caja MIN + Llave 30s",
-  
   "fractals.profits.table.boxKeyTypes": "Caja + Llave Tipos",
   "fractals.profits.table.box": "Caja",
   "fractals.profits.table.key": "Llave",
   "fractals.profits.table.total": "Total",
   "fractals.profits.table.profitAvg": "Profit AVG",
   "fractals.profits.table.roi": "ROI",
-
   "researchNotesPage.title": "Notas de Investigación",
   "researchNotesPage.subtitle": "Calcula el costo y eficiencia de obtener Notas de Investigación a través del reciclaje. Maximiza tus ganancias entendiendo el costo real por nota.",
   "researchNotesPage.backToSalvaging": "← Volver al Reciclaje",
@@ -1549,7 +1491,6 @@
   "researchNotesPage.tip4": "Las Notas de Investigación se usan en la artesanía de equipo ascendido",
   "researchNotesPage.tip5": "Los precios pueden fluctuar según la demanda de artesanía",
   "researchNotesPage.tip6": "El reciclaje en masa puede reducir los costos generales",
-
   "researchNotesPage.table.item": "Item",
   "researchNotesPage.table.craftingLevel": "Nivel de Artesanía",
   "researchNotesPage.table.level": "Nivel",
@@ -1566,7 +1507,6 @@
   "researchNotesPage.table.useSellPrices": "Usar precios de venta (Sell) para el coste",
   "researchNotesPage.loading": "Cargando datos de items...",
   "researchNotesPage.discipline.jeweler": "Joyería",
-
   "researchNotesPage.table.buy": "Comprar",
   "researchNotesPage.table.sell": "Vender",
   "researchNotesPage.suffixes.elder": "Ancestral",
@@ -1631,7 +1571,6 @@
   "salvagePage.features.boxValue": "Análisis del valor de la caja",
   "salvagePage.features.marketPrices": "Comparación de precios del mercado",
   "salvagePage.features.openOrSell": "Decisión de abrir o vender",
-
   "pageTitles.home": "Inicio",
   "pageTitles.farmingRoutes": "Rutas de Farmeo",
   "pageTitles.dailyRoutine": "Rutina Diaria",
@@ -1919,7 +1858,6 @@
   "pageTitles.salvageMasterwork": "Reciclaje - Maestría",
   "pageTitles.salvageRare": "Reciclaje - Raro",
   "pageTitles.researchNotes": "Notas de Investigación - Reciclaje",
-
   "termsOfService.title": "Términos de Servicio",
   "termsOfService.lastUpdated": "Última actualización",
   "termsOfService.agreementToTerms": "Acuerdo de Términos",
@@ -1944,7 +1882,6 @@
   "termsOfService.disclaimers.asIs": "Nuestros servicios se proporcionan \"tal como están\" sin garantías",
   "termsOfService.disclaimers.noLiability": "No somos responsables de pérdidas o daños resultantes del uso de nuestros servicios",
   "termsOfService.disclaimers.noAffiliation": "No estamos afiliados con ArenaNet, NCsoft o Guild Wars 2",
-
   "cookieBanner.title": "Utilizamos cookies para mejorar tu experiencia",
   "cookieBanner.description": "Utilizamos cookies esenciales para que nuestro sitio funcione y cookies publicitarias para mostrarte contenido relevante. Puedes aceptar todas las cookies o rechazarlas todas.",
   "cookieBanner.privacyPolicy": "Política de Privacidad",
@@ -1952,7 +1889,6 @@
   "cookieBanner.rejectAll": "Rechazar Todo",
   "cookieBanner.customize": "Personalizar",
   "cookieBanner.acceptAll": "Aceptar Todo",
-
   "cookieSettings.title": "Configuración de Cookies",
   "cookieSettings.description": "Utilizamos diferentes tipos de cookies para proporcionar y mejorar nuestros servicios. Puedes personalizar tus preferencias a continuación.",
   "cookieSettings.essential.title": "Cookies Esenciales",
@@ -1968,7 +1904,6 @@
   "cookieSettings.info.title": "Tus elecciones importan",
   "cookieSettings.info.description": "Puedes cambiar tus preferencias de cookies en cualquier momento. Algunas funciones pueden no funcionar correctamente si desactivas ciertos tipos de cookies.",
   "cookieSettings.savePreferences": "Guardar Preferencias",
-
   "glossary.title": "Glosario de GW2",
   "glossary.subtitle": "Guía completa de conceptos y términos importantes para ganar oro en Guild Wars 2",
   "glossary.search.placeholder": "Buscar conceptos...",
@@ -2001,13 +1936,10 @@
   "glossary.items.festivals.tips.tip2": "Cada festival tiene mecánicas y recompensas únicas",
   "glossary.items.festivals.tips.tip3": "Los festivales pueden repetirse anualmente",
   "glossary.sections.tips": "Consejos",
-
   "glossary.noResults.title": "No se encontraron resultados",
   "glossary.noResults.description": "Intenta ajustar tus términos de búsqueda o filtro de categoría",
-
   "nav.giftOfMastery": "Don del Dominio",
   "nav.giftOfJadeMastery": "Don del Dominio de Jade",
-
   "giftOfJadeMasteryPage.title": "Don del Dominio de Jade",
   "giftOfJadeMasteryPage.loading": "Cargando información del Don del Dominio de Jade...",
   "giftOfJadeMasteryPage.error.title": "Error al cargar el item",
@@ -2112,7 +2044,6 @@
   "giftOfJadeMasteryPage.process.step5Text": "Cuando comprador reciba la legendaria, este mandará el pago acordado por este GOJM.",
   "giftOfJadeMasteryPage.process.noteText": "Cuando se manda las 115 monedas y 115 ectos al vendedor, este tendrá que tirar a forja hasta que salgan los 38 tréboles. Si sobrasen monedas y ectoplasmas se los quedaría igual que TODO lo que salga en la forja. Si NO llegase, tendría que poner los que faltan de su bolsillo.",
   "giftOfJadeMasteryPage.price.currentPrice": "450/500 oros",
-  
   "conversionGuidePage.title": "Guía de Conversiones T6",
   "conversionGuidePage.subtitle": "Aprende a maximizar tus ganancias con las conversiones de materiales T5 a T6 y la venta de Esquirlas Espirituales",
   "conversionGuidePage.sidebar.title": "Guía de Conversiones",
@@ -2145,7 +2076,6 @@
   "conversionGuidePage.sections.asSeller.content4": "Si buscáis hacer este tipo de tratos tenéis tanto compradores como vendedores en el servidor de Discord de",
   "conversionGuidePage.sections.asSeller.discordLink": "Overflow Trading Company",
   "conversionGuidePage.cta.button": "Ir a la Calculadora de Conversiones",
-  
   "conversionGuidePage.images.conversionTable": "Tabla de conversiones T6 con materiales y precios",
   "conversionGuidePage.images.mysticForge": "Forja Mística de Guild Wars 2",
   "conversionGuidePage.images.conversionRecipe": "Forja Mística - Receta de Conversión T5 a T6",
@@ -2154,12 +2084,10 @@
   "conversionGuidePage.images.philosopherStones": "Piedras filosofales en la Forja Mística",
   "conversionGuidePage.images.menu": "Menú",
   "conversionGuidePage.images.gold": "Oro",
-
   "error404.title": "Página no encontrada",
   "error404.subtitle": "Estamos trabajando en este apartado",
   "error404.description": "Esta sección está en desarrollo. ¡Vuelve pronto para ver las nuevas funcionalidades!",
   "error404.backHome": "Volver al inicio",
-
   "fourWindsPrizeBag.title": "Saco de premios de los Cuatro Vientos",
   "fourWindsPrizeBag.subtitle": "Análisis basado en 40,000 aperturas reales",
   "fourWindsPrizeBag.backButton": "Volver",
@@ -2245,7 +2173,6 @@
   "halloween.labyrinth.scrapper.usage.superspeedFallback": "supervelocidad",
   "halloween.labyrinth.scrapper.usage.part2": "para obtener el máximo de esta.",
   "halloween.labyrinth.scrapper.usage.priority": "Como prioridad usaremos",
-  
   "halloween.labyrinth.herald.p1": "Por ello, con los cambios hechos en la obtención del loot, ahora podemos llevar muchos más jugadores sin que nos molesten, para ello podremos llevar supports que vayan en un sub-grupo con un ladrón.",
   "halloween.labyrinth.herald.p2": "Ojo, importante, hace falta un mínimo de 10 ladrones, si haces como fotos que han salido de 20 heraldos soporte y 4 ladrones, no vas a lootear ni 5 oros por hora.",
   "halloween.labyrinth.herald.p3": "En armas llevaremos maza espada y mandoble, básicamente nos interesa tener movilidad, saltos, dashes, nada de daño ya que NO atacaremos a los enemigos. Esto irá con sellos de energía y purificación. ",
@@ -2253,13 +2180,10 @@
   "halloween.labyrinth.herald.p5": "Como reliquia llevaremos la de velocidad para que nuestra celeridad nos de un 66% de velocidad de movimiento y, por último, como leyenda usaremos Glint, la dragona.",
   "halloween.labyrinth.herald.p6": "Su forma de uso se centra en tener elementos y caos permanentemente activas para dar un bufo de celeridad y otro de protección y así no dar bufos ofensivos. Una vez tenemos esto solo correremos, nos limpiaremos condiciones si nos atan y usaremos las esquivas siempre que vayamos cerca de momias ya que nos pueden parar. Además de esto usaremos los teletransportes en enemigos lejanos para ir al ritmo de los ladrones. Lo más importante NO ATACAR A NADA ya que nos llevamos loot por bufar a nuestros compañeros.",
   "halloween.labyrinth.herald.p7": "Ahora, a leechear y disfrutar de mucho oro por dar vueltas sin hacer nada.",
-  
   "account.addApiKey": "Agregar API key",
-
   "bank.searchResults": "Resultados de búsqueda",
   "bank.slot": "Slot",
   "bank.empty": "vacío",
-
   "common.later": "Después",
   "common.retry": "Reintentar",
   "common.close": "Cerrar",
@@ -2374,7 +2298,6 @@
   "halloween.labyrinth.rewards.candyCorn.description": "Moneda especial de Halloween para comprar items exclusivos.",
   "halloween.labyrinth.rewards.rareItems.title": "Items Raros",
   "halloween.labyrinth.rewards.rareItems.description": "Ocasionalmente puedes obtener items muy valiosos como infusiones.",
-  
   "giveaways.title": "Sorteos Comunitarios",
   "giveaways.subtitle": "¡Participa en nuestros sorteos mensuales y gana increíbles premios del juego!",
   "giveaways.currentlyActive": "Actualmente Activo",
@@ -2443,7 +2366,6 @@
   "pageTitles.giftOfJadeMastery": "Regalo de Maestría de Jade",
   "pageTitles.magic": "Magia",
   "pageTitles.ectogambling": "Apuestas de Ecto",
-  
   "months.january": "Enero",
   "months.february": "Febrero",
   "months.march": "Marzo",
@@ -2510,7 +2432,6 @@
   "fractals.items.aetherizeSkins": "Diseños etéreos",
   "fractals.items.ascendedRecipes": "Recetas Ascendidas",
   "fractals.dataSource.publicData": "Datos Públicos",
-
   "riftEssenceCoffer.calculator.title": "Calculadora de Esencia de fisura",
   "riftEssenceCoffer.calculator.essencesToAmalgamated": "Esencias → Amalgamadas",
   "riftEssenceCoffer.calculator.amalgamatedToCoffers": "Amalgamadas → Cofres",
@@ -2540,7 +2461,6 @@
   "riftEssenceCoffer.backToContainers": "Volver a Contenedores",
   "riftEssenceCoffer.bagValue": "Valor por bolsa (85%)",
   "riftEssenceCoffer.table.value": "Valor 85%",
-
   "pageTitles.altParking": "Alt Parking",
   "pageTitles.draconisMonsLocation": "Draconis Mons",
   "altParking.backToHome": "Volver al Inicio",
@@ -2609,7 +2529,6 @@
   "altParking.popularLocations.title": "Ubicaciones Populares",
   "altParking.optimization.title": "Guías de Optimización",
   "altParking.explore": "Explorar",
-  
   "magicMirrors.maps.starlitWeald": "Bosquezuelo Estelar",
   "magicMirrors.maps.shipwreckStrand": "Litoral del Naufragio",
   "magicMirrors.clickNode": "Haz clic en un nodo para marcar o desmarcar como completado.",
@@ -2631,8 +2550,8 @@
   "magicMirrors.modal.rewards": "Recompensas:",
   "magicMirrors.modal.rewardsDescription": "Al completar el mini-juego, obtienes un Long-Lost Keepsake Box y múltiples Obscured Chests en el área.",
   "magicMirrors.modal.markAsNotCompleted": "Marcar como No Completado",
-  "magicMirrors.modal.markAsCompleted": "Marcar como Completado"
-,
+  "magicMirrors.modal.markAsCompleted": "Marcar como Completado",
+  "holidayCalendar.closed": "CERRADO",
   "holidayCalendar.closedPending": "CERRADO - PENDIENTE",
   "holidayCalendar.awaitingWinners": "En espera de ganadores"
 }

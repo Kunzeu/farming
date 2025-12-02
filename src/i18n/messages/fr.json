@@ -5,7 +5,6 @@
   "halloween.labyrinth.builds.daredevilPower.keepAheadZerg": "Pour rester devant le zerg",
   "halloween.labyrinth.builds.daredevilPower.bowExceptional": "L'arc court aurait une attaque de base exceptionnelle pour ce farm",
   "halloween.labyrinth.builds.daredevilPower.useFourAoEDoors": " et nous pourrions utiliser la compétence 4 pour infliger des dégâts de zone dans des endroits comme les portes.",
-  
   "halloween.labyrinth.advanced.title": "Conseils Avancés",
   "halloween.labyrinth.advanced.maximizeEfficiency.title": "Maximiser l'Efficacité",
   "halloween.labyrinth.advanced.maximizeEfficiency.description": "Utilisez ces boosters et améliorations pour maximiser votre expérience et vos récompenses dans le Labyrinthe d'Halloween.",
@@ -14,7 +13,6 @@
   "halloween.labyrinth.advanced.festivalBoosters.title": "Boosters de Festival",
   "halloween.labyrinth.advanced.maximumEfficiencyTip.title": "Conseil d'Efficacité Maximale",
   "halloween.labyrinth.advanced.maximumEfficiencyTip.description": "Combinez plusieurs boosters pour obtenir le maximum de bénéfices. Les boosters s'accumulent de manière multiplicative, donc en utiliser plusieurs à la fois peut résulter en des gains d'expérience extrêmement élevés. Planifiez votre session de farming pour tirer le meilleur parti de ces améliorations !",
-  
   "halloween.labyrinth.advanced.blackLionBoost.description": "50% d'expérience supplémentaire pendant 30 minutes. Obtenu avec des statuettes du lion noir.",
   "halloween.labyrinth.advanced.experienceBonus.description": "50% de bonus supplémentaire de gain d'expérience. Obtenu de la {bonfire}.",
   "halloween.labyrinth.advanced.killStreak.description": "10% d'expérience supplémentaire par pile (jusqu'à 10 piles). Obtenu du {zampacaramelos}.",
@@ -22,7 +20,6 @@
   "halloween.labyrinth.advanced.celebrationBoost.description": "On l'obtient via les récompenses quotidiennes ou les cadeaux d'anniversaire. On peut accumuler jusqu'à 7 jours de ce bonus et il nous donne 100% d'expérience supplémentaire.",
   "halloween.labyrinth.advanced.strawberryGhost.description": "40% d'expérience supplémentaire pendant 30 minutes. Nourriture.",
   "halloween.labyrinth.advanced.chatoyantElixir.description": "40% d'expérience supplémentaire pendant 30 minutes. Amélioration.",
-  
   "halloween.labyrinth.advanced.blackLionBoost.fallback": "Amélioration du Lion Noir",
   "halloween.labyrinth.advanced.experienceBonus.alt": "Bonus d'expérience 50%",
   "halloween.labyrinth.advanced.killStreak.alt": "Série de tueries active!",
@@ -38,13 +35,10 @@
   "lang.german": "Deutsch",
   "lang.spanish": "Español",
   "lang.french": "Français",
-  
   "apiWarning.title": "L'API officielle de Guild Wars 2 sera désactivée du 24 au 30 octobre pour éviter les spoilers.",
   "apiWarning.subtitle": "Cela signifie que la plupart des pages sur True Farming ne se chargeront pas pendant cette période.",
   "apiWarning.close": "Fermer la bannière",
-  
   "giveaways.items.19721": "Boule d'Ectoplasme",
-  
   "pageTitles.changelog": "Journal des Modifications",
   "pageTitles.magicMirrors": "Miroirs Magiques",
   "changelog.subtitle": "Registre des mises à jour, améliorations et corrections",
@@ -347,17 +341,14 @@
   "dashboard.tradingPost.description": "Accédez aux prix actualisés du Trading Post et aux analyses de marché.",
   "dashboard.community.title": "Communauté Active",
   "dashboard.community.description": "Connectez-vous avec d'autres joueurs et partagez des stratégies de farming.",
-
   "cta.activeEvent": "Événement actif : {name}",
   "cta.viewCalculator": "Voir la calculatrice",
   "cta.seeFullDescription": "Voir la description complète",
   "cta.purchaseNow": "Acheter Maintenant",
   "cta.checkNewTool": "Découvrez notre nouvel outil",
-
   "section.availableTools": "Outils disponibles",
   "festivals.title": "Festivals de Guild Wars 2",
   "nav.backToSalvaging": "Retour au Recyclage",
-
   "dashboard.farms.title": "Itinéraires",
   "dashboard.farms.description": "Itinéraires optimisés pour une efficacité maximale",
   "dashboard.dailyRoutine.title": "Routine Quotidienne",
@@ -370,7 +361,6 @@
   "dashboard.festivals.description": "Informations sur les événements et festivals",
   "dashboard.farmingTracker.title": "Fractales",
   "dashboard.farmingTracker.description": "Suivez les progrès et analysez les données de farming",
-
   "farmingRoutes.title": "Itinéraires de Farm",
   "farmingRoutes.subtitle": "Les meilleurs itinéraires pour faire de l'or dans Guild Wars 2",
   "farmingRoutes.loading": "Chargement des itinéraires depuis la base de données...",
@@ -378,7 +368,6 @@
   "farmingRoutes.mode.solo": "Solo",
   "farmingRoutes.mode.squad": "Escouade",
   "farmingRoutes.clickToCopy": "Cliquez pour copier le point de passage",
-
   "farmingTracker.title": "Analyse des Coffres de Fractales",
   "farmingTracker.subtitle": "Crédit de données: gad.7365 (T1, T2, T3, T4)",
   "farmingTracker.sections.fractal": "Coffre du Maître (T4)",
@@ -407,11 +396,7 @@
   "farmingTracker.summary.itemsShown": "Objets Affichés",
   "farmingTracker.summary.totalValueFiltered": "Valeur Totale Filtrée",
   "farmingTracker.summary.avgValuePerChest": "Valeur Moyenne/Coffre",
-
-
-
   "common.all": "Tous",
-
   "currency.gold": "Pièces",
   "currency.spiritShards": "Éclats Spirituels",
   "currency.karma": "Karma",
@@ -421,28 +406,23 @@
   "currency.riftEssences": "Essence de brèche raffinée",
   "currency.mysticClovers": "Trèfle mystique",
   "currency.imperialFavor": "Faveur impériale",
-
   "salvage.dropdown.common": "Raffiné",
   "salvage.dropdown.masterwork": "Chef-d'œuvre",
   "salvage.dropdown.rare": "Rare",
-
   "salvage.note.title": "Remarque",
   "salvage.note.showMore": "Voir plus",
   "salvage.note.showLess": "Voir moins",
   "salvage.note.common": "Les prix sont obtenus en temps réel depuis l'API GW2. Le \"Prix traité\" inclut les frais du Comptoir (réduction de 15% sur le prix de vente). Le coût de l'équipement non identifié utilise le prix d'achat actuel au Comptoir. Les taux de butin sont basés sur des données officielles du Wiki GW2 pour la Pièce d'équipement non identifié (Raffiné), ouverte puis recyclée avec le Copper-Fed Salvage-o-Matic. Recommandation : disposez d'un inventaire de 280 emplacements pour faciliter le processus.",
   "salvage.note.masterwork": "Les prix sont obtenus en temps réel depuis l'API GW2. Le \"Prix traité\" inclut les frais du Comptoir (réduction de 15% sur le prix de vente). Le coût de l'équipement non identifié utilise le prix d'achat actuel au Comptoir. Les taux de butin sont basés sur des données officielles du Wiki GW2 pour la Pièce d'équipement non identifié (Chef-d'œuvre), ouverte puis recyclée avec le Runecrafter's Salvage-o-Matic. Recommandation : disposez d'un inventaire de 280 emplacements pour faciliter le processus.",
   "salvage.note.rare": "Les prix sont obtenus en temps réel depuis l'API GW2. Le \"Prix traité\" inclut les frais du Comptoir (réduction de 15% sur le prix de vente). Le coût de l'équipement non identifié utilise le prix d'achat actuel au Comptoir. Les taux de butin sont basés sur des données officielles du Wiki GW2 pour la Pièce d'équipement non identifié rare, ouverte puis recyclée avec le Silver-Fed Salvage-o-Matic. Recommandation : disposez d'un inventaire de 280 emplacements pour faciliter le processus.",
-
   "salvage.header.common": "Équipement non identifié - Raffiné",
   "salvage.header.masterwork": "Équipement non identifié - Chef-d'œuvre",
   "salvage.header.rare": "Équipement non identifié - Rare",
   "salvage.header.desc.common": "Calculez combien d'or vous gagnez en ouvrant et recyclant une Pièce d'équipement non identifié (Raffiné)",
   "salvage.header.desc.masterwork": "Calculez combien d'or vous gagnez en ouvrant et recyclant une Pièce d'équipement non identifié (Chef-d'œuvre)",
   "salvage.header.desc.rare": "Calculez combien d'or vous gagnez en ouvrant et recyclant une Pièce d'équipement non identifié (Rare)",
-
   "salvage.viewWiki": "Voir le Wiki",
   "salvage.lastUpdated": "Dernière mise à jour : {time}",
-
   "salvage.kit.copper": "Copper-Fed Salvage-o-Matic",
   "salvage.kit.runecrafter": "Runecrafter's Salvage-o-Matic",
   "salvage.kit.silver": "Silver-Fed Salvage-o-Matic",
@@ -453,7 +433,6 @@
   "salvage.commonShort": "Éq. raffiné",
   "salvage.masterworkShort": "Éq. non id.",
   "salvage.rareShort": "Éq. rare",
-
   "salvage.label.costPerUse": "Coût par utilisation",
   "salvage.label.dropRates": "Taux de butin",
   "salvage.label.estimated": "Estimé",
@@ -461,16 +440,13 @@
   "salvage.profit.low": "Faible",
   "salvage.profit.mid": "Moyenne",
   "salvage.profit.high": "Élevée",
-
   "salvage.controls.quantityLabel": "Quantité de {name}",
   "salvage.controls.updatePrices": "Mettre à jour les prix",
-
   "salvage.summary.totalMaterialsValue": "Valeur totale des matériaux",
   "salvage.summary.costGear": "Coût de {quantity} {name}",
   "salvage.summary.eachTpSuffix": "chacun (TP)",
   "salvage.summary.kitCost": "Coût du kit",
   "salvage.summary.totalProfit": "Bénéfice total",
-
   "salvage.table.material": "Matériau",
   "salvage.table.matPerUnit": "Mat par unité",
   "salvage.table.sellPrice": "Prix de vente",
@@ -493,7 +469,6 @@
   "status.upcoming": "À venir",
   "status.ended": "Terminé",
   "home.hero.subtitle": "Accédez à toutes les fonctionnalités et outils disponibles pour optimiser votre expérience de farm dans Guild Wars 2",
-
   "festival.fourWinds": "Festival des Quatre Vents",
   "festival.halloween": "Ombre du Roi Dément (Halloween)",
   "festival.lunarNewYear": "Nouvel An lunaire",
@@ -682,18 +657,17 @@
   "footer.useThisLink": "Utilisez ce lien pour nous soutenir !",
   "footer.supportSite": "Soutenez le site web",
   "footer.becomePatron": "Devenez mécène",
-    "footer.communityContact": "Communauté",
-    "footer.developer": "Développeur Principal",
-    "footer.botCreator": "Créateur du Bot",
-    "footer.supportWebsite": "Soutenir le site web",
-    "footer.supportDescription": "Votre soutien nous aide à améliorer constamment la plateforme",
-    "footer.discordBot": "Ajoutez notre bot à Discord",
-    "footer.github": "Code source",
-    "footer.email": "Email",
-    "footer.emailDesc": "Contact direct",
-    "footer.disclaimer": "Les données affichées proviennent de l'API officielle de Guild Wars 2. True Farming est un projet communautaire indépendant.",
+  "footer.communityContact": "Communauté",
+  "footer.developer": "Développeur Principal",
+  "footer.botCreator": "Créateur du Bot",
+  "footer.supportWebsite": "Soutenir le site web",
+  "footer.supportDescription": "Votre soutien nous aide à améliorer constamment la plateforme",
+  "footer.discordBot": "Ajoutez notre bot à Discord",
+  "footer.github": "Code source",
+  "footer.email": "Email",
+  "footer.emailDesc": "Contact direct",
+  "footer.disclaimer": "Les données affichées proviennent de l'API officielle de Guild Wars 2. True Farming est un projet communautaire indépendant.",
   "footer.discordContact": "Contact direct via Discord",
-  
   "dailyRoutine.title": "Routine Quotidienne",
   "dailyRoutine.subtitle": "Sélectionnez vos farms préférés et créez votre routine quotidienne parfaite",
   "dailyRoutine.summary": "Résumé de votre Routine Quotidienne",
@@ -734,7 +708,6 @@
   "modal.goldPerHour": "Or par heure:",
   "modal.spiritShardsPerHour": "Éclats d'esprit par heure:",
   "modal.close": "Fermer",
-
   "festivals.description": "Calculatrices spécifiques et guides pour maximiser vos profits pendant les festivals annuels",
   "festivals.info.title": "Que sont les Festivals ?",
   "festivals.info.description": "Les festivals dans Guild Wars 2 sont des célébrations saisonnières qui ont lieu tout au long de l'année. Chaque festival a son propre thème, des activités uniques et des récompenses spéciales. Ces événements durent généralement environ 3 semaines et offrent des opportunités uniques pour le farm et l'obtention d'objets exclusifs.",
@@ -744,7 +717,6 @@
   "festivals.info.exclusiveItems.description": "Skins, armes et autres objets qui ne sont disponibles que pendant le festival.",
   "festivals.info.tempRewards.title": "Récompenses Temporaires",
   "festivals.info.tempRewards.description": "Matériaux, monnaies et autres ressources qui peuvent être vendus contre de l'or au Comptoir.",
-  
   "festivals.farming.title": "Stratégies de Farm des Festivals",
   "festivals.farming.during.title": "Pendant le Festival",
   "festivals.farming.during.participate.title": "Participer aux Activités",
@@ -756,7 +728,6 @@
   "festivals.farming.after.selling.description": "Attendre que les prix montent après le festival.",
   "festivals.farming.after.analysis.title": "Analyse de Marché",
   "festivals.farming.after.analysis.description": "Surveiller les prix pour identifier le meilleur moment de vente.",
-  
   "festivals.goldEarning.title": "Comment Gagner de l'Or dans les Festivals ?",
   "festivals.goldEarning.description": "Les festivals sont l'une des meilleures opportunités pour générer de l'or dans Guild Wars 2. Chaque festival a des méthodes de farm spécifiques qui peuvent générer entre 20-30g par heure selon votre efficacité et le festival en question.",
   "festivals.goldEarning.main.title": "Méthodes Principales",
@@ -773,7 +744,6 @@
   "festivals.goldEarning.advanced.multiChar.description": "Utiliser plusieurs personnages pour maximiser les récompenses quotidiennes.",
   "festivals.goldEarning.proTip.title": "💡 Conseil Pro",
   "festivals.goldEarning.proTip.description": "Les festivals les plus rentables sont généralement Halloween (Sacs de friandises) et Hivernel (Cadeaux d'Hivernel). Ceux-ci peuvent générer 30-40g par heure avec un farm efficace. Utilisez nos calculatrices spécifiques pour déterminer la rentabilité exacte de chaque activité.",
-  
   "festivals.tips.title": "Conseils Généraux",
   "festivals.tips.planning.title": "Planification",
   "festivals.tips.planning.description": "Rechercher les festivals à l'avance et préparer vos personnages.",
@@ -783,52 +753,42 @@
   "festivals.tips.community.description": "Rejoindre des groupes organisés pour maximiser l'efficacité.",
   "festivals.tips.enjoy.title": "Profiter",
   "festivals.tips.enjoy.description": "Se rappeler que les festivals sont conçus pour être amusants.",
-  
   "festivals.names.lunar": "Festival du Nouvel An Lunaire",
   "festivals.names.dragonBash": "Festival de la Foire du Dragon",
   "festivals.names.fourWinds": "Le Festival des Quatre Vents",
   "festivals.names.halloween": "Festival d'Halloween",
   "festivals.names.wintersday": "Festival d'Hivernel",
-  
   "festivals.descriptions.lunar": "La célébration du nouvel an dans le calendrier canthien",
   "festivals.descriptions.dragonBash": "Festival d'été célébrant la résistance contre les Dragons Anciens",
   "festivals.descriptions.fourWinds": "Festival d'été avec des courses de montures et des aventures",
   "festivals.descriptions.halloween": "Le terrifiant festival du Roi Dément Thorn",
   "festivals.descriptions.wintersday": "Festival d'hiver célébrant le nouvel an dans le calendrier mouvelien",
-  
   "festivals.features.lunar.luckyEnvelopes": "Enveloppes Porte-Bonheur",
   "festivals.features.lunar.essenceLuck": "Essence de Chance",
   "festivals.features.lunar.dragonBall": "Arène de Balle de Dragon",
   "festivals.features.lunar.fireworks": "Feux d'Artifice",
-  
   "festivals.features.dragonBash.holographic": "Sbires de Dragon Holographiques",
   "festivals.features.dragonBash.racing": "Événements de Course",
   "festivals.features.dragonBash.tokens": "Jetons du Festival",
   "festivals.features.dragonBash.rewards": "Récompenses à Thème Dragon",
-  
   "festivals.features.fourWinds.mountRaces": "Courses de Montures",
   "festivals.features.fourWinds.bossBlitz": "Blitz des Boss",
   "festivals.features.fourWinds.gauntlet": "Gantelet de la Reine",
   "festivals.features.fourWinds.scavenger": "Chasses au Trésor",
-  
   "festivals.features.halloween.bags": "Sacs de Friandises",
   "festivals.features.halloween.corn": "Morceau de Bonbon",
   "festivals.features.halloween.labyrinth": "Labyrinthe du Roi Dément",
   "festivals.features.halloween.tower": "Puzzle de la Tour de l'Horloge",
-  
   "festivals.features.wintersday.gifts": "Cadeaux d'Hivernel",
   "festivals.features.wintersday.wonderland": "Pays des Merveilles d'Hiver",
   "festivals.features.wintersday.choir": "Ensemble de Chœur de Cloches",
   "festivals.features.wintersday.toypocalypse": "Jouetpocalypse",
-  
   "festivals.difficulty.easy": "Facile",
   "festivals.difficulty.medium": "Moyen",
   "festivals.difficulty.hard": "Difficile",
-  
   "festivals.timeRequired.short": "2-3 heures",
   "festivals.timeRequired.medium": "3-4 heures",
   "festivals.timeRequired.long": "4+ heures",
-
   "salvagePage.title": "Recyclage",
   "salvagePage.subtitle": "Guide complet du recyclage dans Guild Wars 2. Apprenez les techniques, calculez la rentabilité et maximisez vos profits.",
   "salvagePage.whatIsSalvaging": "Qu'est-ce que le Recyclage ?",
@@ -865,7 +825,6 @@
   "salvagePage.checkPrices": "Vérifier les prix avant de recycler",
   "salvagePage.considerValue": "Considérer la valeur de l'objet complet",
   "salvagePage.useAppropriateKit": "Utiliser le kit approprié pour chaque type",
-
   "craftingPage.title": "Analyse de Matériaux",
   "craftingPage.subtitle": "Calculateur de rentabilité pour matériaux T6, Magie Volatile et Magie Déliée",
   "craftingPage.overview": "Aperçu",
@@ -1017,7 +976,6 @@
   "craftingPage.continuousMonitoringDesc": "Les prix changent constamment. Vérifie régulièrement les tableaux pour identifier de nouvelles opportunités.",
   "craftingPage.fromGW2API": "depuis l'API GW2",
   "craftingPage.autoUpdate": "Mise à jour automatique toutes les 5 minutes",
-
   "dashboard.advancedSettings": "Paramètres Avancés",
   "dashboard.advancedSettingsShort": "Paramètres",
   "dashboard.loginRequired.title": "Connexion requise",
@@ -1048,7 +1006,6 @@
   "dashboard.buyout.description": "Calculez le coût d'achat de matériaux en gros",
   "dashboard.garden.title": "Jardins",
   "dashboard.garden.description": "Gérez vos jardins et cultures",
-
   "gardenPage.title": "Guide des Jardins - Farming de Magie Volatile",
   "gardenPage.titleShort": "Guide des Jardins",
   "gardenPage.subtitle": "Guide complet pour maximiser les profits dans ce farming de magie volatile",
@@ -1262,7 +1219,6 @@
   "dashboard.altParking.description": "Guide complet pour optimiser l'utilisation des personnages alternatifs",
   "dashboard.others.title": "Autres",
   "dashboard.others.description": "Outils et utilitaires supplémentaires",
-
   "giftOfMasteryPage.title": "Don de maîtrise - GOM",
   "giftOfMasteryPage.loading": "Chargement des informations du Don de maîtrise...",
   "giftOfMasteryPage.error.title": "Erreur lors du chargement de l'objet",
@@ -1352,7 +1308,6 @@
   "giftOfMasteryPage.tips.paymentOrder.title": "3. Ordre de Paiement",
   "giftOfMasteryPage.tips.paymentOrder.description": "Le paiement se fait toujours après avoir reçu la légendaire, dans le cas où c'est par Overflow, on pourrait accepter que le paiement soit envoyé en premier si l'acheteur n'a pas de réputation et que le vendeur en a.",
   "giftOfMasteryPage.tips.goodLuck": "Bonne chance avec la vente et l'achat de GOMs !",
-
   "salvageCommon.title": "Équipement non identifié - Raffiné",
   "salvageCommon.description": "Calculez combien d'or vous gagnez en ouvrant et recyclant une Pièce d'équipement non identifié (Raffiné)",
   "salvageCommon.backToSalvaging": "Retour au Recyclage",
@@ -1362,7 +1317,6 @@
   "salvageCommon.quantityLabel": "Quantité d'équipement non identifié raffiné",
   "salvageCommon.costGear": "Coût de {quantity}",
   "salvageCommon.loadingPrice": "Chargement du prix...",
-
   "salvageMasterwork.title": "Équipement non identifié - Chef-d'œuvre",
   "salvageMasterwork.description": "Calculez combien d'or vous gagnez en ouvrant et recyclant une Pièce d'équipement non identifié Chef-d'œuvre",
   "salvageMasterwork.note": "Les prix sont obtenus en temps réel depuis l'API GW2. Le \"Prix traité\" inclut les frais du Comptoir (réduction de 15% sur le prix de vente). Le coût de l'équipement non identifié utilise le prix d'achat actuel au Comptoir. Les taux de butin sont basés sur des données officielles du Wiki GW2 pour la Pièce d'équipement non identifié (Chef-d'œuvre), ouverte puis recyclée avec le Runecrafter's Salvage-o-Matic. Recommandation : disposez d'un inventaire de 280 emplacements pour faciliter le processus.",
@@ -1370,7 +1324,6 @@
   "salvageMasterwork.recommendedKit": "Kit recommandé pour équipement non identifié chef-d'œuvre",
   "salvageMasterwork.quantityLabel": "Quantité d'équipement non identifié",
   "salvageMasterwork.costGear": "Coût de {quantity}",
-
   "salvageRare.title": "Équipement non identifié - Rare",
   "salvageRare.description": "Calculez combien d'or vous gagnez en ouvrant et recyclant une Pièce d'équipement non identifié rare",
   "salvageRare.note": "Les prix sont obtenus en temps réel depuis l'API GW2. Le \"Prix traité\" inclut les frais du Comptoir (réduction de 15% sur le prix de vente). Le coût de l'équipement non identifié utilise le prix d'achat actuel au Comptoir. Les taux de butin sont basés sur des données officielles du Wiki GW2 pour la Pièce d'équipement non identifié rare, ouverte puis recyclée avec le Silver-Fed Salvage-o-Matic. Recommandation : disposez d'un inventaire de 280 emplacements pour faciliter le processus.",
@@ -1378,7 +1331,6 @@
   "salvageRare.recommendedKit": "Kit recommandé pour équipement non identifié rare",
   "salvageRare.quantityLabel": "Quantité d'équipement non identifié rare",
   "salvageRare.costGear": "Coût de {quantity}",
-
   "salvagePages.viewWiki": "Voir le Wiki",
   "salvagePages.lastUpdated": "Dernière mise à jour : {time}",
   "salvagePages.costPerUse": "Coût par utilisation",
@@ -1396,12 +1348,9 @@
   "salvagePages.wikiLinks.common": "https://wiki-fr.guildwars2.com/wiki/Pi%C3%A8ce_d%27%C3%A9quipement_non_identifi%C3%A9_(Commun)",
   "salvagePages.wikiLinks.masterwork": "https://wiki-fr.guildwars2.com/wiki/Pi%C3%A8ce_d%27%C3%A9quipement_non_identifi%C3%A9",
   "salvagePages.wikiLinks.rare": "https://wiki-fr.guildwars2.com/wiki/Pi%C3%A8ce_d%27%C3%A9quipement_non_identifi%C3%A9_(Rare)",
-  
   "farmingTracker.search.updating": "Mise à jour...",
   "farmingTracker.search.updatePrices": "Mettre à jour les prix",
   "farmingTracker.search.lastUpdate": "Dernière mise à jour",
-
-
   "fractals.items.blood": "Fiole de Sang Puissant",
   "fractals.items.bone": "Grand Os",
   "fractals.items.claw": "Grande Griffe",
@@ -1444,7 +1393,6 @@
   "fractals.items.silverOre": "Minerai d'Argent",
   "fractals.items.copperOre": "Minerai de Cuivre",
   "fractals.items.tinOre": "Minerai d'Étain",
-
   "fractals.sections.trophies": "Trophées",
   "fractals.dataSource.label": "Source de Données :",
   "fractals.dataSource.description": "Analyse basée sur",
@@ -1453,7 +1401,6 @@
   "fractals.sections.materialsT5": "Matériaux T5",
   "fractals.sections.otherDrops": "Autres Butins",
   "fractals.sections.profits": "Profits",
-  
   "fractals.table.name": "Objet",
   "fractals.table.basePrice": "Prix de Base",
   "fractals.table.maxPrice": "Prix Max",
@@ -1462,29 +1409,24 @@
   "fractals.table.proof": "Preuve",
   "fractals.table.treaties": "Traités",
   "fractals.table.postulate": "Postulat",
-  
   "fractals.calculations.totalPerBox": "Total par Caisse",
   "fractals.calculations.bestIncomePerBox": "Meilleur Revenu par Caisse",
   "fractals.calculations.totalPerBoxOther": "Total par Caisse",
-  
   "fractals.items.infusion": "Infusion +1",
   "fractals.items.fractalKey": "Clé de Fractale",
   "fractals.items.relicBag": "Sac de Reliques",
-  
   "fractals.profits.boxKey90": "Caisse + Clé 90%",
   "fractals.profits.boxKeyBuyOrder": "Caisse + Clé Ordre d'Achat",
   "fractals.profits.boxKeySellOrder": "Caisse + Clé Ordre de Vente",
   "fractals.profits.boxMinKey20s": "Caisse MIN + Clé 20s",
   "fractals.profits.boxMinKey25s04c": "Caisse MIN + Clé 25s04c",
   "fractals.profits.boxMinKey30s": "Caisse MIN + Clé 30s",
-  
   "fractals.profits.table.boxKeyTypes": "Types Caisse + Clé",
   "fractals.profits.table.box": "Caisse",
   "fractals.profits.table.key": "Clé",
   "fractals.profits.table.total": "Total",
   "fractals.profits.table.profitAvg": "Profit AVG",
   "fractals.profits.table.roi": "ROI",
-
   "researchNotesPage.title": "Notes de Recherche",
   "researchNotesPage.subtitle": "Calculez le coût et l'efficacité d'obtenir des Notes de Recherche par le démantèlement. Maximisez vos profits en comprenant le vrai coût par note.",
   "researchNotesPage.backToSalvaging": "← Retour au Démantèlement",
@@ -1503,7 +1445,6 @@
   "researchNotesPage.tip4": "Les Notes de Recherche sont utilisées dans l'artisanat d'équipement ascendant",
   "researchNotesPage.tip5": "Les prix peuvent fluctuer selon la demande d'artisanat",
   "researchNotesPage.tip6": "Le démantèlement en masse peut réduire les coûts globaux",
-
   "researchNotesPage.table.item": "Objet",
   "researchNotesPage.table.craftingLevel": "Niveau d'Artisanat",
   "researchNotesPage.table.level": "Niveau",
@@ -1582,7 +1523,6 @@
   "salvagePage.features.marketPrices": "Comparaison des prix du marché",
   "salvagePage.features.openOrSell": "Décision d'ouvrir ou vendre",
   "researchNotesPage.discipline.jeweler": "Joaillier",
-
   "pageTitles.home": "Accueil",
   "pageTitles.farmingRoutes": "Routes de Farming",
   "pageTitles.dailyRoutine": "Routine Quotidienne",
@@ -1869,7 +1809,6 @@
   "pageTitles.salvageMasterwork": "Démantèlement - Chef-d'œuvre",
   "pageTitles.salvageRare": "Démantèlement - Rare",
   "pageTitles.researchNotes": "Notes de Recherche - Démantèlement",
-
   "termsOfService.title": "Conditions d'Utilisation",
   "termsOfService.lastUpdated": "Dernière mise à jour",
   "termsOfService.agreementToTerms": "Accord aux Conditions",
@@ -1894,7 +1833,6 @@
   "termsOfService.disclaimers.asIs": "Nos services sont fournis \"en l'état\" sans garanties",
   "termsOfService.disclaimers.noLiability": "Nous ne sommes pas responsables des pertes ou dommages résultant de l'utilisation de nos services",
   "termsOfService.disclaimers.noAffiliation": "Nous ne sommes pas affiliés à ArenaNet, NCsoft ou Guild Wars 2",
-
   "cookieBanner.title": "Nous utilisons des cookies pour améliorer votre expérience",
   "cookieBanner.description": "Nous utilisons des cookies essentiels pour faire fonctionner notre site, des cookies d'analyse pour comprendre comment vous utilisez notre site, et des cookies publicitaires pour vous montrer du contenu pertinent. Vous pouvez choisir quels cookies accepter.",
   "cookieBanner.privacyPolicy": "Politique de Confidentialité",
@@ -1902,7 +1840,6 @@
   "cookieBanner.rejectAll": "Tout Rejeter",
   "cookieBanner.customize": "Personnaliser",
   "cookieBanner.acceptAll": "Tout Accepter",
-
   "cookieSettings.title": "Paramètres des Cookies",
   "cookieSettings.description": "Nous utilisons différents types de cookies pour fournir et améliorer nos services. Vous pouvez personnaliser vos préférences ci-dessous.",
   "cookieSettings.essential.title": "Cookies Essentiels",
@@ -1918,7 +1855,6 @@
   "cookieSettings.info.title": "Vos choix comptent",
   "cookieSettings.info.description": "Vous pouvez modifier vos préférences de cookies à tout moment. Certaines fonctionnalités peuvent ne pas fonctionner correctement si vous désactivez certains types de cookies.",
   "cookieSettings.savePreferences": "Enregistrer les Préférences",
-
   "glossary.title": "Glossaire GW2",
   "glossary.subtitle": "Guide complet des concepts et termes importants pour gagner de l'or dans Guild Wars 2",
   "glossary.search.placeholder": "Rechercher des concepts...",
@@ -1933,9 +1869,9 @@
   "glossary.items.salvaging.tips.tip3": "Le démantèlement peut générer de la Chance pour le joueur",
   "glossary.items.salvageKits.title": "Kits de Démantèlement",
   "glossary.items.salvageKits.description": "Outils qui permettent de décomposer des objets en matériaux. Chaque kit a un taux de succès spécifique et un coût par utilisation. Les kits de meilleure qualité ont une plus grande probabilité d'obtenir des matériaux rares.",
-        "glossary.items.salvageKits.tips.tip1": "{kitName}: Objets communs et bon marché",
-      "glossary.items.salvageKits.tips.tip2": "{kitName}: Objets chef-d'œuvre avec des runes",
-      "glossary.items.salvageKits.tips.tip3": "{kitName}: Objets rares et exotiques",
+  "glossary.items.salvageKits.tips.tip1": "{kitName}: Objets communs et bon marché",
+  "glossary.items.salvageKits.tips.tip2": "{kitName}: Objets chef-d'œuvre avec des runes",
+  "glossary.items.salvageKits.tips.tip3": "{kitName}: Objets rares et exotiques",
   "glossary.items.luckCalculator.title": "Calculateur de Chance",
   "glossary.items.luckCalculator.description": "Outil pour calculer l'efficacité du coût par point de Chance obtenu lors du démantèlement d'objets. La Chance est un système de progression qui augmente définitivement les statistiques du personnage.",
   "glossary.items.researchNotes.title": "Notes de Recherche",
@@ -1954,10 +1890,8 @@
   "glossary.sections.relatedLinks": "Liens Connexes",
   "glossary.noResults.title": "Aucun résultat trouvé",
   "glossary.noResults.description": "Essayez d'ajuster vos termes de recherche ou filtre de catégorie",
-
   "nav.giftOfMastery": "Don de maîtrise",
   "nav.giftOfJadeMastery": "Don de maîtrise du jade",
-
   "giftOfJadeMasteryPage.title": "Don de maîtrise du jade",
   "giftOfJadeMasteryPage.loading": "Chargement des informations Don de maîtrise du jade...",
   "giftOfJadeMasteryPage.error.title": "Erreur lors du chargement de l'objet",
@@ -2061,7 +1995,6 @@
   "giftOfJadeMasteryPage.process.step5Text": "Quand l'acheteur recevra la légendaire, il enverra le paiement convenu pour ce GOJM.",
   "giftOfJadeMasteryPage.process.noteText": "Quand 115 pièces et 115 ectos sont envoyés au vendeur, il devra forger jusqu'à ce que 38 trèfles sortent. Si des pièces et ectoplasmes restent, il les garderait comme TOUT ce qui sort de la forge. Si ce n'est pas suffisant, il devrait mettre ceux qui manquent de sa poche.",
   "giftOfJadeMasteryPage.price.currentPrice": "450/500 or",
-  
   "conversionGuidePage.title": "Guide de Conversion T6",
   "conversionGuidePage.subtitle": "Apprenez à maximiser vos profits avec les conversions de matériaux T5 vers T6 et la vente d'Éclats Spirituels",
   "conversionGuidePage.sidebar.title": "Guide de Conversion",
@@ -2094,7 +2027,6 @@
   "conversionGuidePage.sections.asSeller.content4": "Si vous voulez faire ce type d'affaires vous avez à la fois des acheteurs et des vendeurs sur le serveur Discord d'",
   "conversionGuidePage.sections.asSeller.discordLink": "Overflow Trading Company",
   "conversionGuidePage.cta.button": "Aller au Calculateur de Conversion",
-  
   "conversionGuidePage.images.conversionTable": "Tableau de conversions T6 avec matériaux et prix",
   "conversionGuidePage.images.mysticForge": "Forge Mystique de Guild Wars 2",
   "conversionGuidePage.images.conversionRecipe": "Forge Mystique - Recette de Conversion T5 vers T6",
@@ -2103,12 +2035,10 @@
   "conversionGuidePage.images.philosopherStones": "Pierres philosophales à la Forge Mystique",
   "conversionGuidePage.images.menu": "Menu",
   "conversionGuidePage.images.gold": "Or",
-
   "error404.title": "Page non trouvée",
   "error404.subtitle": "Nous travaillons sur cette section",
   "error404.description": "Cette section est en développement. Revenez bientôt pour voir les nouvelles fonctionnalités !",
   "error404.backHome": "Retour à l'accueil",
-
   "fourWindsPrizeBag.title": "Sac de prix des Quatre Vents",
   "fourWindsPrizeBag.subtitle": "Analyse basée sur 40 000 ouvertures réelles",
   "fourWindsPrizeBag.backButton": "Retour",
@@ -2191,11 +2121,9 @@
   "account.noApiKeyStorage": "Ajoutez votre clé API Guild Wars 2 dans Paramètres pour activer le Stockage de Matériaux.",
   "account.noApiKeyCharacters": "Ajoutez votre clé API Guild Wars 2 dans Paramètres pour activer les Personnages.",
   "account.addApiKey": "Ajouter une clé API",
-
   "bank.searchResults": "Résultats de recherche",
   "bank.slot": "Emplacement",
   "bank.empty": "vide",
-
   "common.later": "Plus tard",
   "common.retry": "Réessayer",
   "common.close": "Fermer",
@@ -2208,7 +2136,6 @@
   "apiStatus.status": "Statut :",
   "apiStatus.working": "ArenaNet travaille sur une solution",
   "common.and": "et",
-  
   "halloween.labyrinth.herald.p1": "Avec les changements apportés au loot, nous pouvons désormais amener beaucoup plus de joueurs sans gêner, en incluant des supports dans un sous-groupe avec un voleur.",
   "halloween.labyrinth.herald.p2": "Attention, il faut au minimum 10 voleurs. Si vous faites comme sur certaines photos avec 20 hérauts supports et 4 voleurs, vous ne looterez même pas 5 ors par heure.",
   "halloween.labyrinth.herald.p3": "Armes : masse-épée et espadon. Nous voulons de la mobilité, des sauts, des dashs, pas de dégâts, car nous n'attaquerons PAS les ennemis. Utilisez des d'énergie et purification.",
@@ -2323,7 +2250,6 @@
   "halloween.labyrinth.rewards.rareItems.title": "Objets Rares",
   "halloween.labyrinth.rewards.rareItems.description": "Occasionnellement, vous pouvez obtenir des objets très précieux comme des infusions.",
   "common.dueTo": "en raison de",
-  
   "giveaways.title": "Concours Communautaires",
   "giveaways.subtitle": "Participez à nos concours mensuels et gagnez des prix incroyables en jeu !",
   "giveaways.currentlyActive": "Actuellement Actif",
@@ -2368,7 +2294,6 @@
   "giveaways.november2025.description": "Notre concours mensuel de novembre : gagnez des codes de gemmes et des matériaux précieux !",
   "giveaways.loading": "Chargement...",
   "giveaways.alreadyEntered": "Déjà participé",
-  
   "pageTitles.giveaways": "Concours Communautaires",
   "pageTitles.opened": "Conteneurs Ouvrables",
   "pageTitles.garden": "Jardin",
@@ -2393,7 +2318,6 @@
   "holidayCalendar.loading": "Chargement...",
   "holidayCalendar.linkApiKey": "LIER LA CLÉ API",
   "holidayCalendar.winner": "GAGNANT",
-  
   "months.january": "Janvier",
   "months.february": "Février",
   "months.march": "Mars",
@@ -2460,7 +2384,6 @@
   "fractals.items.aetherizeSkins": "Apparences éthérées",
   "fractals.items.ascendedRecipes": "Recettes Ascendantes",
   "fractals.dataSource.publicData": "Données Publiques",
-
   "riftEssenceCoffer.calculator.title": "Calculateur d'Essence de Faille",
   "riftEssenceCoffer.calculator.essencesToAmalgamated": "Essences → Amalgamées",
   "riftEssenceCoffer.calculator.amalgamatedToCoffers": "Amalgamées → Coffres",
@@ -2490,7 +2413,6 @@
   "riftEssenceCoffer.backToContainers": "Retour aux Conteneurs",
   "riftEssenceCoffer.bagValue": "Valeur par sac (85%)",
   "riftEssenceCoffer.table.value": "Valeur 85%",
-
   "pageTitles.altParking": "Alt Parking",
   "pageTitles.draconisMonsLocation": "Mont Draconis",
   "altParking.backToHome": "Retour à l'accueil",
@@ -2556,7 +2478,6 @@
   "altParking.popularLocations.title": "Emplacements Populaires",
   "altParking.optimization.title": "Guides d'Optimisation",
   "altParking.explore": "Explorer",
-  
   "magicMirrors.maps.starlitWeald": "Bois étoilé",
   "magicMirrors.maps.shipwreckStrand": "Rive aux épaves",
   "magicMirrors.clickNode": "Cliquez sur un nœud pour le marquer ou le démarquer comme terminé.",
@@ -2578,8 +2499,8 @@
   "magicMirrors.modal.rewards": "Récompenses :",
   "magicMirrors.modal.rewardsDescription": "En complétant le mini-jeu, vous obtenez une Boîte de Souvenir Perdu et plusieurs Coffres Obscurcis dans la zone.",
   "magicMirrors.modal.markAsNotCompleted": "Marquer comme Non Terminé",
-  "magicMirrors.modal.markAsCompleted": "Marquer comme Terminé"
-,
+  "magicMirrors.modal.markAsCompleted": "Marquer comme Terminé",
+  "holidayCalendar.closed": "FERMÉ",
   "holidayCalendar.closedPending": "FERMÉ - EN ATTENTE",
   "holidayCalendar.awaitingWinners": "En attente des gagnants"
 }

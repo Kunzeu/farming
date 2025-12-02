@@ -99,7 +99,7 @@ export const GIVEAWAYS: Giveaway[] = [
 export function generateAdventGiveaways(year: number = 2025): Giveaway[] {
   const adventGiveaways: Giveaway[] = [];
 
-  for (let day = 1; day <= 31; day++) {
+  for (let day = 1; day <= 32; day++) {
     const dayStr = day.toString().padStart(2, '0');
 
     // Cada sorteo inicia el día anterior a las 14:00
@@ -108,6 +108,9 @@ export function generateAdventGiveaways(year: number = 2025): Giveaway[] {
     if (day === 1) {
       // Día 1 inicia el 30 de noviembre a las 14:00
       startLocal = new Date(`${year}-11-30T14:00:00-05:00`);
+    } else if (day === 32) {
+      // Día 32 (admin-only) inicia el 1 de diciembre a las 14:00 para pruebas
+      startLocal = new Date(`${year}-12-01T14:00:00-05:00`);
     } else {
       // Días 2-31 inician el día anterior de diciembre a las 14:00
       const prevDay = String(day - 1).padStart(2, '0');
@@ -118,10 +121,13 @@ export function generateAdventGiveaways(year: number = 2025): Giveaway[] {
     // Día 1 cierra el 1 de diciembre, día 2 cierra el 2 de diciembre, etc.
     let endLocal: Date;
     if (day === 31) {
-      // El día 31 termina el 31 de diciembre a las 13:10
+      // El día 31 termina el 31 de diciembre a las 13:59
       endLocal = new Date(`${year}-12-31T13:59:00-05:00`);
+    } else if (day === 32) {
+      // Día 32 (admin-only) termina el 2 de diciembre a las 12:00 para pruebas (cerrado)
+      endLocal = new Date(`${year}-12-02T12:00:00-05:00`);
     } else {
-      // Días 1-30 terminan el mismo día de diciembre a las 13:10
+      // Días 1-30 terminan el mismo día de diciembre a las 13:59
       endLocal = new Date(`${year}-12-${dayStr}T13:59:00-05:00`);
     }
 
@@ -164,8 +170,7 @@ export function generateAdventGiveaways(year: number = 2025): Giveaway[] {
         { position: 1, prize: '250', icon: 'package', itemId: 19721, quantity: 250 }, // Glob of Ectoplasm
         { position: 2, prize: '1', icon: 'materials', itemId: 102013, quantity: 1 }, // Chromatic Assassin Spear Skin
         { position: 3, prize: '1', icon: 'package', itemId: 96330, quantity: 1 }, // Dragon's Wing
-        { position: 2, prize: '400', icon: 'gem', quantity: 400, gemPrize: true }, // Gems
-
+        { position: 4, prize: '400', icon: 'gem', quantity: 400, gemPrize: true }, // Gems
       ],
       6: [
         { position: 1, prize: '100', icon: 'materials', itemId: 24325, quantity: 100 }, // Destroyer Lodestone
@@ -176,6 +181,11 @@ export function generateAdventGiveaways(year: number = 2025): Giveaway[] {
         { position: 1, prize: '1', icon: 'package', itemId: 30703, quantity: 1 }, // Sunrise
         { position: 2, prize: '400', icon: 'gem', quantity: 400, gemPrize: true }, // Gems
         { position: 3, prize: '400', icon: 'gem', quantity: 400, gemPrize: true }, // Gems
+      ],
+      8: [
+        { position: 1, prize: '250', icon: 'package', itemId: 19721, quantity: 250 }, // Glob of Ectoplasm
+        { position: 2, prize: '1', icon: 'materials', itemId: 102013, quantity: 1 }, // Chromatic Assassin Spear Skin
+        { position: 3, prize: '400', icon: 'gem', quantity: 400, gemPrize: true }, // Pre aun no escogemos
       ],
       14: [
         { position: 1, prize: '800', icon: 'gem', quantity: 800, gemPrize: true },
@@ -201,6 +211,12 @@ export function generateAdventGiveaways(year: number = 2025): Giveaway[] {
         { position: 1, prize: '1200', icon: 'gem', quantity: 1200, gemPrize: true },
         { position: 2, prize: '800', icon: 'gem', quantity: 800, gemPrize: true },
         { position: 3, prize: '400', icon: 'gem', quantity: 400, gemPrize: true },
+      ],
+      32: [
+        // Día 32 - Admin only test day
+        { position: 1, prize: '800', icon: 'gem', quantity: 800, gemPrize: true },
+        { position: 2, prize: '400', icon: 'gem', quantity: 400, gemPrize: true },
+        { position: 3, prize: '250', icon: 'package', itemId: 19721, quantity: 250 }, // Glob of Ectoplasm
       ],
     };
 
