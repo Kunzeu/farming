@@ -68,6 +68,8 @@ async function getActivePatrons() {
   return result.rows;
 }
 
+import { getAllGiveawaysWithAdvent } from '@/config/giveaways';
+
 async function enrollUser(user: DbUserRow, giveawayIds: string[]) {
   if (!qualifiesForGiveaway(user)) {
     return { inserted: [] as string[], skipped: giveawayIds, accountName: null as string | null };
@@ -77,7 +79,36 @@ async function enrollUser(user: DbUserRow, giveawayIds: string[]) {
   const inserted: string[] = [];
   const skipped: string[] = [];
 
+  // Obtener todos los sorteos configurados
+  const allGiveaways = getAllGiveawaysWithAdvent(2025);
+  const now = new Date();
+
   for (const giveawayId of giveawayIds) {
+    // Validar que el sorteo exista y esté abierto
+    const giveaway = allGiveaways.find(g => g.id === giveawayId);
+
+    if (!giveaway) {
+      console.log(`Giveaway ${giveawayId} not found in configuration`);
+      skipped.push(giveawayId);
+      continue;
+    }
+
+    const startDate = new Date(giveaway.startDate);
+    const endDate = new Date(giveaway.endDate);
+
+    // Validar fechas estrictamente en el servidor
+    if (now < startDate) {
+      console.log(`Giveaway ${giveawayId} not started yet. Starts: ${startDate.toISOString()}, Now: ${now.toISOString()}`);
+      skipped.push(giveawayId);
+      continue;
+    }
+
+    if (now > endDate) {
+      console.log(`Giveaway ${giveawayId} already ended. Ended: ${endDate.toISOString()}, Now: ${now.toISOString()}`);
+      skipped.push(giveawayId);
+      continue;
+    }
+
     const existing = await pool.query(
       `SELECT id
        FROM giveaway_participants

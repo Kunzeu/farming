@@ -844,14 +844,15 @@ export default function AdventCalendar({
                       src={
                         day.day === 1 ? "/images/assets/day1.webp" :
                           day.day === 2 ? "/images/assets/day2.webp" :
-                            day.day === 7 ? "/images/assets/daily.webp" :
-                              day.day === 14 ? "/images/assets/daily.webp" :
-                                day.day === 21 ? "/images/assets/daily.webp" :
-                                  day.day === 25 ? "/images/assets/day25.webp" :
-                                    day.day === 28 ? "/images/assets/daily.webp" :
-                                      day.day === 31 ? `/images/assets/daily.webp?v=${Date.now()}` :
+                            (day.day === 3 && day.isAvailable) ? "/images/assets/day3.webp" :
+                              day.day === 7 ? "/images/assets/daily.webp" :
+                                day.day === 14 ? "/images/assets/daily.webp" :
+                                  day.day === 21 ? "/images/assets/daily.webp" :
+                                    day.day === 25 ? "/images/assets/day25.webp" :
+                                      day.day === 28 ? "/images/assets/daily.webp" :
+                                        day.day === 31 ? `/images/assets/daily.webp?v=${Date.now()}` :
 
-                                        "/images/assets/soon.webp"
+                                          "/images/assets/soon.webp"
                       }
                       alt={`Día ${day.day}`}
                       fill
