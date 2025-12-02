@@ -5,8 +5,8 @@ import { motion } from 'framer-motion';
 import Navigation from '@/components/layout/Navigation';
 import ProtectedRoute from '@/components/auth/ProtectedRoute';
 import { useAuth } from '@/contexts/AuthContext';
-import { 
-  User, 
+import {
+  User,
   Save,
   Edit,
   Shield,
@@ -44,6 +44,20 @@ export default function ProfilePage() {
   // Username change state
   const [newUsername, setNewUsername] = useState<string>('');
   const [showUsernameConfirm, setShowUsernameConfirm] = useState(false);
+
+  const [showPasswordConfirm, setShowPasswordConfirm] = useState(false);
+  const [showNewPassword, setShowNewPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [errorModal, setErrorModal] = useState<{ isOpen: boolean; title: string; message: string }>({
+    isOpen: false,
+    title: '',
+    message: ''
+  });
+  const [successModal, setSuccessModal] = useState<{ isOpen: boolean; title: string; message: string }>({
+    isOpen: false,
+    title: '',
+    message: ''
+  });
   useEffect(() => {
     setNewUsername(user?.username || '');
   }, [user?.username]);
@@ -104,56 +118,78 @@ export default function ProfilePage() {
     try {
       const { getDbService } = await import('@/lib/database-switch');
       const dbService = await getDbService();
-      
+
       if (user?.id) {
         const updates: { preferences?: typeof preferences; password?: string } = {};
-        
+
         // Guardar preferencias
         updates.preferences = preferences;
-        
+
         // Validar y cambiar contraseña si se proporcionaron datos
         if (passwordData.newPassword || passwordData.confirmPassword) {
-          if (!passwordData.newPassword) {
-            alert(t('profile.passwordRequired'));
-            return;
-          }
-          
-          if (passwordData.newPassword !== passwordData.confirmPassword) {
-            alert(t('profile.passwordsNoMatch'));
-            return;
-          }
-          
-          if (passwordData.newPassword.length < 6) {
-            alert(t('profile.passwordTooShort'));
-            return;
-          }
-          
           updates.password = passwordData.newPassword;
         }
-        
+
         await dbService.updateUser(user.id, updates);
-        
+
         // Actualizar localStorage
-        const updatedUser = { 
-          ...user, 
+        const updatedUser = {
+          ...user,
           preferences,
           ...(updates.password && { password: updates.password })
         };
         localStorage.setItem('gw2_user', JSON.stringify(updatedUser));
-        
+
         // Limpiar campos de contraseña
         setPasswordData({
           newPassword: '',
           confirmPassword: ''
         });
-        
+
         setIsEditing(false);
-        alert(t('profile.saveSuccess'));
+        setShowPasswordConfirm(false);
+
+        if (updates.password) {
+          setSuccessModal({
+            isOpen: true,
+            title: t('profile.password.success', 'Contraseña cambiada con éxito'),
+            message: t('profile.password.success', 'Contraseña cambiada con éxito')
+          });
+        } else {
+          setSuccessModal({
+            isOpen: true,
+            title: t('profile.saveSuccess'),
+            message: t('profile.saveSuccess')
+          });
+        }
       }
     } catch (error) {
       console.error('Error saving preferences:', error);
       alert(t('profile.saveError'));
     }
+  };
+
+  const handlePasswordSaveClick = () => {
+    if (!passwordData.newPassword) {
+      alert(t('profile.passwordRequired'));
+      return;
+    }
+
+    if (passwordData.newPassword !== passwordData.confirmPassword) {
+      setErrorModal({
+        isOpen: true,
+        title: t('profile.password.error.title', 'Error'),
+        message: t('profile.passwordsNoMatch')
+      });
+      return;
+    }
+
+    if (passwordData.newPassword.length < 6) {
+      alert(t('profile.passwordTooShort'));
+      return;
+    }
+
+    setShowPasswordConfirm(true);
   };
 
   const handleSaveUsername = async () => {
@@ -226,7 +262,7 @@ export default function ProfilePage() {
               const confirmData = await confirmResp.json();
               setHasApiKey(!!confirmData.hasApiKey);
             }
-          } catch {}
+          } catch { }
           // No validar automáticamente para evitar tráfico adicional
         } else {
           const errorData = await response.json();
@@ -262,7 +298,7 @@ export default function ProfilePage() {
         setHasApiKey(false);
         setApiKeyMessage('');
         setShowApiKey(false);
-        
+
         // Show success message
         setApiKeyMessage(t('profile.apiKey.deleted', 'API key deleted successfully'));
         setTimeout(() => setApiKeyMessage(''), 3000);
@@ -274,14 +310,14 @@ export default function ProfilePage() {
       console.error('Error deleting API key:', error);
       setApiKeyMessage(t('profile.apiKey.errorDelete', 'Error deleting API key'));
     }
-    
+
     // Close modal
     setShowDeleteApiKeyModal(false);
   };
 
   const handleCopyApiKey = async () => {
     if (!apiKey) return;
-    
+
     try {
       await navigator.clipboard.writeText(apiKey);
       setCopyMessage(t('profile.apiKey.copied', 'Copied!'));
@@ -300,7 +336,7 @@ export default function ProfilePage() {
     <ProtectedRoute>
       <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
         <Navigation />
-        
+
         <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           {/* Header Hero */}
           <motion.div
@@ -352,9 +388,9 @@ export default function ProfilePage() {
                     <div className="text-2xl font-bold text-purple-400 mb-1">
                       {memberSinceDate
                         ? memberSinceDate.toLocaleDateString(locale, {
-                            year: 'numeric',
-                            month: 'short'
-                          })
+                          year: 'numeric',
+                          month: 'short'
+                        })
                         : 'N/A'}
                     </div>
                     <div className="text-gray-400 text-sm font-medium uppercase tracking-wider">{t('profile.memberSince')}</div>
@@ -419,7 +455,7 @@ export default function ProfilePage() {
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.3 }}
               className="space-y-6">
-              
+
               {/* Password Settings Card */}
               <div className="bg-gradient-to-br from-gray-800/95 to-gray-900/95 backdrop-blur-xl rounded-3xl p-8 border border-gray-700/50 shadow-2xl">
                 <div className="flex items-center gap-4 mb-8">
@@ -444,28 +480,48 @@ export default function ProfilePage() {
                       <label className="block text-gray-300 text-sm font-semibold mb-3">
                         {t('profile.newPassword')}
                       </label>
-                      <input
-                        type="password"
-                        value={passwordData.newPassword}
-                        onChange={(e) => setPasswordData({...passwordData, newPassword: e.target.value})}
-                        disabled={!isEditing}
-                        placeholder={t('profile.newPasswordPlaceholder')}
-                        className="w-full px-4 py-4 bg-gray-700/50 border border-gray-600/50 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent disabled:opacity-50 transition-all duration-300"
-                      />
+                      <div className="relative">
+                        <input
+                          type={showNewPassword ? "text" : "password"}
+                          value={passwordData.newPassword}
+                          onChange={(e) => setPasswordData({ ...passwordData, newPassword: e.target.value })}
+                          disabled={!isEditing}
+                          placeholder={t('profile.newPasswordPlaceholder')}
+                          className="w-full px-4 py-4 pr-12 bg-gray-700/50 border border-gray-600/50 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent disabled:opacity-50 transition-all duration-300"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => setShowNewPassword(!showNewPassword)}
+                          disabled={!isEditing}
+                          className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-white transition-colors disabled:opacity-50"
+                        >
+                          {showNewPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                        </button>
+                      </div>
                     </div>
 
                     <div>
                       <label className="block text-gray-300 text-sm font-semibold mb-3">
                         {t('profile.confirmPassword')}
                       </label>
-                      <input
-                        type="password"
-                        value={passwordData.confirmPassword}
-                        onChange={(e) => setPasswordData({...passwordData, confirmPassword: e.target.value})}
-                        disabled={!isEditing}
-                        placeholder={t('profile.confirmPasswordPlaceholder')}
-                        className="w-full px-4 py-4 bg-gray-700/50 border border-gray-600/50 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent disabled:opacity-50 transition-all duration-300"
-                      />
+                      <div className="relative">
+                        <input
+                          type={showConfirmPassword ? "text" : "password"}
+                          value={passwordData.confirmPassword}
+                          onChange={(e) => setPasswordData({ ...passwordData, confirmPassword: e.target.value })}
+                          disabled={!isEditing}
+                          placeholder={t('profile.confirmPasswordPlaceholder')}
+                          className="w-full px-4 py-4 pr-12 bg-gray-700/50 border border-gray-600/50 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent disabled:opacity-50 transition-all duration-300"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                          disabled={!isEditing}
+                          className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-white transition-colors disabled:opacity-50"
+                        >
+                          {showConfirmPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                        </button>
+                      </div>
                     </div>
                   </div>
 
@@ -475,7 +531,7 @@ export default function ProfilePage() {
                       animate={{ opacity: 1, y: 0 }}
                       className="flex justify-end pt-4">
                       <button
-                        onClick={handleSave}
+                        onClick={handlePasswordSaveClick}
                         className="group inline-flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-green-500 to-blue-600 hover:from-green-600 hover:to-blue-700 text-white font-semibold rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105">
                         <Save className="w-5 h-5 group-hover:rotate-12 transition-transform duration-300" />
                         <span>{t('profile.saveChanges')}</span>
@@ -492,7 +548,7 @@ export default function ProfilePage() {
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.4 }}
               className="space-y-6">
-              
+
               {/* API Key Card */}
               <div className="bg-gradient-to-br from-gray-800/95 to-gray-900/95 backdrop-blur-xl rounded-2xl p-6 border border-gray-700/50 shadow-xl">
                 <div className="flex items-center gap-3 mb-6">
@@ -585,7 +641,7 @@ export default function ProfilePage() {
                         </div>
                       )}
                     </div>
-                    
+
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                       <button
                         onClick={handleSaveApiKey}
@@ -617,11 +673,10 @@ export default function ProfilePage() {
                         </button>
                       )}
                     </div>
-                    
+
                     {apiKeyMessage && (
-                      <div className={`flex items-center space-x-2 p-3 rounded-xl ${
-                        isApiKeyValid ? 'bg-green-900/20 text-green-400 border border-green-500/30' : 'bg-red-900/20 text-red-400 border border-red-500/30'
-                      }`}>
+                      <div className={`flex items-center space-x-2 p-3 rounded-xl ${isApiKeyValid ? 'bg-green-900/20 text-green-400 border border-green-500/30' : 'bg-red-900/20 text-red-400 border border-red-500/30'
+                        }`}>
                         {isApiKeyValid ? <CheckCircle className="w-4 h-4" /> : <AlertCircle className="w-4 h-4" />}
                         <span className="text-sm font-medium">{apiKeyMessage}</span>
                       </div>
@@ -653,11 +708,11 @@ export default function ProfilePage() {
                   {t('profile.apiKey.deleteModal.title', 'Confirm Deletion')}
                 </h3>
               </div>
-              
+
               <p className="text-gray-300 mb-6">
                 {t('profile.apiKey.deleteModal.message', 'Are you sure you want to delete the API key? This action cannot be undone and you will lose access to GW2 account features.')}
               </p>
-              
+
               <div className="flex space-x-3 justify-end">
                 <button
                   onClick={() => setShowDeleteApiKeyModal(false)}
@@ -713,7 +768,105 @@ export default function ProfilePage() {
             </motion.div>
           </div>
         )}
+
+        {/* Password Confirmation Modal */}
+        {showPasswordConfirm && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              className="bg-gradient-to-br from-gray-800/95 to-gray-900/95 backdrop-blur-xl rounded-2xl p-6 max-w-md w-full mx-4 border border-gray-700/50 shadow-xl">
+              <div className="flex items-center space-x-3 mb-4">
+                <div className="w-10 h-10 bg-yellow-500/20 rounded-full flex items-center justify-center">
+                  <Shield className="w-5 h-5 text-yellow-400" />
+                </div>
+                <h3 className="text-lg font-semibold text-white">
+                  {t('profile.password.confirm.title', 'Confirmar cambio de contraseña')}
+                </h3>
+              </div>
+              <p className="text-gray-300 mb-6">
+                {t('profile.password.confirm.message', '¿Estás seguro de que deseas cambiar tu contraseña?')}
+              </p>
+              <div className="flex space-x-3 justify-end">
+                <button
+                  onClick={() => setShowPasswordConfirm(false)}
+                  className="px-4 py-2 bg-gray-600 hover:bg-gray-500 text-white rounded-lg transition-colors"
+                >
+                  {t('profile.password.confirm.cancel', 'Cancelar')}
+                </button>
+                <button
+                  onClick={handleSave}
+                  className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors flex items-center space-x-2"
+                >
+                  <Save className="w-4 h-4" />
+                  <span>{t('profile.password.confirm.accept', 'Confirmar')}</span>
+                </button>
+              </div>
+            </motion.div>
+          </div>
+        )}
+
+        {/* Error Modal */}
+        {errorModal.isOpen && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              className="bg-gradient-to-br from-gray-800/95 to-gray-900/95 backdrop-blur-xl rounded-2xl p-6 max-w-md w-full mx-4 border border-gray-700/50 shadow-xl">
+              <div className="flex items-center space-x-3 mb-4">
+                <div className="w-10 h-10 bg-red-500/20 rounded-full flex items-center justify-center">
+                  <AlertCircle className="w-5 h-5 text-red-400" />
+                </div>
+                <h3 className="text-lg font-semibold text-white">
+                  {errorModal.title}
+                </h3>
+              </div>
+              <p className="text-gray-300 mb-6">
+                {errorModal.message}
+              </p>
+              <div className="flex justify-end">
+                <button
+                  onClick={() => setErrorModal({ ...errorModal, isOpen: false })}
+                  className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors"
+                >
+                  OK
+                </button>
+              </div>
+            </motion.div>
+          </div>
+        )}
+
+
+        {/* Success Modal */}
+        {successModal.isOpen && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              className="bg-gradient-to-br from-gray-800/95 to-gray-900/95 backdrop-blur-xl rounded-2xl p-6 max-w-md w-full mx-4 border border-gray-700/50 shadow-xl">
+              <div className="flex items-center space-x-3 mb-4">
+                <div className="w-10 h-10 bg-green-500/20 rounded-full flex items-center justify-center">
+                  <CheckCircle className="w-5 h-5 text-green-400" />
+                </div>
+                <h3 className="text-lg font-semibold text-white">
+                  {successModal.title}
+                </h3>
+              </div>
+              <p className="text-gray-300 mb-6">
+                {successModal.message}
+              </p>
+              <div className="flex justify-end">
+                <button
+                  onClick={() => setSuccessModal({ ...successModal, isOpen: false })}
+                  className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors"
+                >
+                  OK
+                </button>
+              </div>
+            </motion.div>
+          </div>
+        )}
       </div>
-    </ProtectedRoute>
+    </ProtectedRoute >
   );
 }

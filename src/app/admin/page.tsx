@@ -20,9 +20,9 @@ type AdminSection = 'farms' | 'users' | 'pending-farms';
 export default function AdminPanel() {
   const { dbService } = useDatabase();
   const { user } = useAuth();
-  
+
   usePageTitle(
-    user?.role === 'admin' ? 'pageTitles.admin' : 'pageTitles.moderation', 
+    user?.role === 'admin' ? 'pageTitles.admin' : 'pageTitles.moderation',
     user?.role === 'admin' ? 'Admin Panel' : 'Moderator Panel'
   );
   const [activeSection, setActiveSection] = useState<AdminSection>('farms');
@@ -106,8 +106,8 @@ export default function AdminPanel() {
       loadFarms();
     }
   };
-  
-  
+
+
   // Estados para crear farm
   const [selectedCurrencies, setSelectedCurrencies] = useState<string[]>(['gold']);
   const [newFarm, setNewFarm] = useState({
@@ -127,7 +127,7 @@ export default function AdminPanel() {
   });
 
   const DESCRIPTION_MAX = 500;
-  
+
   // Modal state
   const [modal, setModal] = useState<{
     isOpen: boolean;
@@ -168,12 +168,12 @@ export default function AdminPanel() {
   const formatTimeInput = (value: string): string => {
     // Solo permitir números
     const cleaned = value.replace(/[^\d]/g, '');
-    
+
     if (cleaned.length === 0) return '';
     if (cleaned.length <= 2) return cleaned;
     if (cleaned.length <= 4) return `${cleaned.slice(0, 2)}:${cleaned.slice(2)}`;
     if (cleaned.length <= 6) return `${cleaned.slice(0, 2)}:${cleaned.slice(2, 4)}:${cleaned.slice(4)}`;
-    
+
     return `${cleaned.slice(0, 2)}:${cleaned.slice(2, 4)}:${cleaned.slice(4, 6)}`;
   };
 
@@ -183,15 +183,15 @@ export default function AdminPanel() {
   const handleTimeChange = (value: string, isEdit = false) => {
     // Obtener solo los números del valor actual (sin los dos puntos)
     const currentNumbers = value.replace(/[^\d]/g, '');
-    
+
     // Limitar a 6 dígitos máximo
     if (currentNumbers.length > 6) return;
-    
+
     const formatted = formatTimeInput(currentNumbers);
     if (isEdit && editingFarm) {
-      setEditingFarm({...editingFarm, estimatedTime: formatted});
+      setEditingFarm({ ...editingFarm, estimatedTime: formatted });
     } else {
-      setNewFarm({...newFarm, estimatedTime: formatted});
+      setNewFarm({ ...newFarm, estimatedTime: formatted });
     }
   };
 
@@ -211,29 +211,29 @@ export default function AdminPanel() {
   const formatGoldInput = (value: string): string => {
     // Remover todo excepto números
     const numbersOnly = value.replace(/[^\d]/g, '');
-    
+
     if (!numbersOnly) return '';
-    
+
     // Padear con ceros a la izquierda para tener al menos 6 dígitos (GGSSCC)
     const paddedValue = numbersOnly.padStart(6, '0');
-    
+
     // Interpretar como formato posicional: últimos 6 dígitos son GGSSCC
     const lastSixDigits = paddedValue.slice(-6);
     const gold = parseInt(lastSixDigits.slice(0, 2)) || 0;
     const silver = parseInt(lastSixDigits.slice(2, 4)) || 0;
     const copper = parseInt(lastSixDigits.slice(4, 6)) || 0;
-    
+
     // Si hay más de 6 dígitos, los primeros son oro adicional
     if (paddedValue.length > 6) {
       const extraGoldDigits = paddedValue.slice(0, -6);
       const extraGold = parseInt(extraGoldDigits) || 0;
       const totalGold = extraGold * 100 + gold;
-      
+
       const silverFormatted = silver.toString().padStart(2, '0');
       const copperFormatted = copper.toString().padStart(2, '0');
       return `${totalGold}g ${silverFormatted}s ${copperFormatted}c`;
     }
-    
+
     // Construir el string formateado
     let result = '';
     if (gold > 0) {
@@ -249,7 +249,7 @@ export default function AdminPanel() {
       // Para solo cobre: 00c
       result += `${copper.toString().padStart(2, '0')}c`;
     }
-    
+
     return result.trim();
   };
 
@@ -260,7 +260,7 @@ export default function AdminPanel() {
     if (currency === 'gold' && value) {
       formattedValue = formatGoldInput(value);
     }
-    
+
     setNewFarm({
       ...newFarm,
       estimatedRewards: {
@@ -272,13 +272,13 @@ export default function AdminPanel() {
 
   const handleEditingCurrencyChange = (currency: string, value: string) => {
     if (!editingFarm) return;
-    
+
     // Formatear oro automáticamente
     let formattedValue = value;
     if (currency === 'gold' && value) {
       formattedValue = formatGoldInput(value);
     }
-    
+
     setEditingFarm({
       ...editingFarm,
       estimatedRewards: {
@@ -306,27 +306,27 @@ export default function AdminPanel() {
   const handleExpansionToggle = (expansionValue: 'core' | 'hot' | 'pof' | 'eod' | 'soto' | 'jw' | 'voe', isEdit = false) => {
     if (isEdit && editingFarm) {
       // Asegurar que expansion sea un array
-      const currentExpansions = Array.isArray(editingFarm.expansion) 
-        ? editingFarm.expansion 
+      const currentExpansions = Array.isArray(editingFarm.expansion)
+        ? editingFarm.expansion
         : [editingFarm.expansion];
-      
+
       const newExpansions = currentExpansions.includes(expansionValue)
         ? currentExpansions.filter(exp => exp !== expansionValue)
         : [...currentExpansions, expansionValue];
-      
+
       // Asegurar que al menos una expansión esté seleccionada
       if (newExpansions.length > 0) {
-        setEditingFarm({...editingFarm, expansion: newExpansions});
+        setEditingFarm({ ...editingFarm, expansion: newExpansions });
       }
     } else {
       const currentExpansions = newFarm.expansion;
       const newExpansions = currentExpansions.includes(expansionValue)
         ? currentExpansions.filter(exp => exp !== expansionValue)
         : [...currentExpansions, expansionValue];
-      
+
       // Asegurar que al menos una expansión esté seleccionada
       if (newExpansions.length > 0) {
-        setNewFarm({...newFarm, expansion: newExpansions});
+        setNewFarm({ ...newFarm, expansion: newExpansions });
       }
     }
   };
@@ -368,7 +368,7 @@ export default function AdminPanel() {
   // Crear nuevo farm
   const handleCreateFarm = async () => {
     if (!dbService) return;
-    
+
     // Validar campos requeridos
     if (!newFarm.name.trim() || !newFarm.description.trim() || !newFarm.estimatedTime.trim()) {
       showError('Error de Validación', 'Nombre, descripción y tiempo son campos requeridos');
@@ -384,7 +384,7 @@ export default function AdminPanel() {
     // Verificar que al menos una recompensa esté especificada (formato antiguo o nuevo)
     const hasOldRewards = newFarm.estimatedGold?.trim() || newFarm.estimatedSpirit?.trim();
     const hasNewRewards = Object.values(newFarm.estimatedRewards).some(value => value && value.trim() !== '');
-    
+
     if (!hasOldRewards && !hasNewRewards) {
       showError('Error de Validación', 'Debes especificar al menos una recompensa estimada');
       return;
@@ -399,7 +399,7 @@ export default function AdminPanel() {
         createdByRole: 'admin',
         order: farms.length // Asignar order al final de la lista
       });
-      
+
       // Limpiar formulario
       setNewFarm(prev => ({
         name: '',
@@ -420,7 +420,7 @@ export default function AdminPanel() {
       setSelectedCurrencies(['gold']);
       setIsCreating(false);
       await loadFarms();
-      
+
       showSuccess('¡Éxito!', `Farm "${newFarm.name}" creado exitosamente`);
     } catch (err) {
       console.error('Error creating farm:', err);
@@ -431,7 +431,7 @@ export default function AdminPanel() {
   // Actualizar farm
   const handleUpdateFarm = async () => {
     if (!editingFarm || !dbService) return;
-    
+
     // Validar campos requeridos
     if (!editingFarm.name.trim() || !editingFarm.description.trim() || !editingFarm.estimatedTime.trim()) {
       showError('Validation Error', 'Name, description and time are required fields');
@@ -445,12 +445,12 @@ export default function AdminPanel() {
     }
 
     // Validar que al menos una recompensa esté presente
-    const hasRewards = editingFarm.estimatedRewards && 
-      Object.values(editingFarm.estimatedRewards).some((value: unknown) => 
+    const hasRewards = editingFarm.estimatedRewards &&
+      Object.values(editingFarm.estimatedRewards).some((value: unknown) =>
         typeof value === 'string' && value.trim() !== ''
       );
     const hasLegacyRewards = editingFarm.estimatedGold?.trim() || editingFarm.estimatedSpirit?.trim();
-    
+
     if (!hasRewards && !hasLegacyRewards) {
       showError('Validation Error', 'You must specify at least one reward type');
       return;
@@ -466,7 +466,7 @@ export default function AdminPanel() {
       //   expansion: editingFarm.expansion,
       //   type: editingFarm.type
       // });
-      
+
       await dbService.updateFarm(editingFarm.id, {
         name: editingFarm.name,
         description: editingFarm.description,
@@ -479,11 +479,11 @@ export default function AdminPanel() {
         requiresSquad: editingFarm.requiresSquad,
         waypoint: editingFarm.waypoint
       });
-      
+
       const farmName = editingFarm.name;
       setEditingFarm(null);
       await loadFarms();
-      
+
       showSuccess('Updated!', `Farm "${farmName}" updated successfully`);
     } catch (err) {
       console.error('Error updating farm:', err);
@@ -494,15 +494,15 @@ export default function AdminPanel() {
   // Eliminar farm
   const handleDeleteFarm = async (id: string) => {
     if (!dbService) return;
-    
+
     const farm = farms.find(f => f.id === id);
     const farmName = farm?.name || 'Farm';
-    
+
     if (confirm(`¿Estás seguro de que quieres eliminar "${farmName}"?`)) {
       try {
         await dbService.deleteFarm(id);
         await loadFarms();
-        
+
         showSuccess('¡Eliminado!', `Farm "${farmName}" eliminado correctamente`);
       } catch (err) {
         console.error('Error deleting farm:', err);
@@ -532,7 +532,7 @@ export default function AdminPanel() {
   // Crear usuario
   const handleCreateUser = async () => {
     if (!dbService) return;
-    
+
     if (!newUser.email.trim() || !newUser.username.trim()) {
       showError('Validation Error', 'Email and username are required');
       return;
@@ -576,21 +576,21 @@ export default function AdminPanel() {
   // Confirmar eliminación de usuario
   const confirmDeleteUser = async () => {
     if (!userToDelete || !dbService) return;
-    
+
     try {
       const result = await dbService.deleteUser(userToDelete.id);
       await loadUsers();
-      
+
       let successMessage = `User "${userToDelete.username}" has been deleted successfully.`;
       if (result.farmsPreserved > 0) {
         successMessage += ` ${result.farmsPreserved} farms have been preserved.`;
       } else {
         successMessage += ' There were no associated farms.';
       }
-      
+
       // Nota: No es necesario invalidar la sesión aquí porque el usuario ya no existe en la BD
       // La próxima vez que el usuario intente acceder, la verificación de autenticación fallará
-      
+
       showSuccess('Usuario eliminado', successMessage);
     } catch (err) {
       console.error('Error deleting user:', err);
@@ -607,20 +607,20 @@ export default function AdminPanel() {
   // Actualizar usuario
   const handleUpdateUser = async () => {
     if (!editingUser || !dbService) return;
-    
+
     try {
       // Obtener el usuario actual para comparar cambios
       const currentUser = users.find(user => user.id === editingUser.id);
       const roleChanged = currentUser && currentUser.role !== editingUser.role;
       const isActiveChanged = currentUser && currentUser.isActive !== editingUser.isActive;
-      
+
       await dbService.updateUser(editingUser.id, {
         email: editingUser.email,
         username: editingUser.username,
         role: editingUser.role,
         isActive: editingUser.isActive
       });
-      
+
       // Invalidar sesión SOLO si el usuario fue desactivado
       if (isActiveChanged && !editingUser.isActive) {
         try {
@@ -637,7 +637,7 @@ export default function AdminPanel() {
       } else {
         showSuccess('Éxito', 'Usuario actualizado correctamente.');
       }
-      
+
       await loadUsers();
       setEditingUser(null);
     } catch (err) {
@@ -649,14 +649,14 @@ export default function AdminPanel() {
   // Cargar farms pendientes
   const loadPendingFarms = useCallback(async () => {
     if (!dbService) return;
-    
+
     try {
       setIsLoadingPendingFarms(true);
       const allFarms = await dbService.getAllFarms();
       const pendingFarms = allFarms.filter((farm: FarmItem) => farm.status === 'pending');
-      
 
-      
+
+
 
       setPendingFarms(pendingFarms);
     } catch (error) {
@@ -669,7 +669,7 @@ export default function AdminPanel() {
   // Aprobar farm
   const handleApproveFarm = async (farmId: string) => {
     if (!dbService) return;
-    
+
     try {
       await dbService.updateFarm(farmId, { status: 'approved' });
       await loadPendingFarms();
@@ -683,7 +683,7 @@ export default function AdminPanel() {
   // Rechazar farm (eliminar completamente)
   const handleRejectFarm = async (farmId: string) => {
     if (!dbService) return;
-    
+
     try {
 
       await dbService.deleteFarm(farmId);
@@ -698,27 +698,27 @@ export default function AdminPanel() {
   // Función para limpiar farms rechazados existentes (one-time cleanup)
   const handleCleanupRejectedFarms = async () => {
     if (!dbService) return;
-    
+
     try {
       setIsLoading(true);
       const allFarms = await dbService.getAllFarms();
       const rejectedFarms = allFarms.filter((farm: FarmItem) => farm.status === 'rejected');
-      
+
       if (rejectedFarms.length === 0) {
         showSuccess('Limpieza completada', 'No hay farms rechazados para eliminar');
         return;
       }
-      
+
       // Eliminar cada farm rechazado
       for (const farm of rejectedFarms) {
         await dbService.deleteFarm(farm.id);
       }
-      
+
       showSuccess('Limpieza completada', `${rejectedFarms.length} farm(s) rechazado(s) eliminado(s) correctamente`);
-      
+
       // Recargar datos
       await loadPendingFarms();
-      
+
     } catch (err) {
       console.error('❌ Error durante la limpieza:', err);
       showError('Error', 'No se pudo completar la limpieza de farms rechazados');
@@ -768,7 +768,7 @@ export default function AdminPanel() {
           className="bg-gray-800 rounded-lg p-6 border border-gray-700"
         >
           <h3 className="text-xl font-bold text-white mb-4">Crear Nuevo Farm</h3>
-          
+
           <div className="space-y-4">
             <div>
               <label className="block text-sm font-medium text-gray-300 mb-2">
@@ -777,19 +777,19 @@ export default function AdminPanel() {
               <input
                 type="text"
                 value={newFarm.name}
-                onChange={(e) => setNewFarm({...newFarm, name: e.target.value})}
+                onChange={(e) => setNewFarm({ ...newFarm, name: e.target.value })}
                 className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-purple-500"
                 placeholder="Ej: Silverwastes RIBA"
               />
             </div>
-            
+
             <div>
               <label className="block text-sm font-medium text-gray-300 mb-2">
                 Descripción
               </label>
               <textarea
                 value={newFarm.description}
-                onChange={(e) => setNewFarm({...newFarm, description: e.target.value})}
+                onChange={(e) => setNewFarm({ ...newFarm, description: e.target.value })}
                 className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-purple-500"
                 rows={3}
                 placeholder="Descripción del farm..."
@@ -821,7 +821,7 @@ export default function AdminPanel() {
                   <input
                     type="text"
                     value={newFarm.waypoint || ''}
-                    onChange={(e) => setNewFarm({...newFarm, waypoint: e.target.value})}
+                    onChange={(e) => setNewFarm({ ...newFarm, waypoint: e.target.value })}
                     className="flex-1 px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-purple-500"
                     placeholder="[&AQAAAA==]"
                   />
@@ -845,17 +845,17 @@ export default function AdminPanel() {
                 <input
                   type="checkbox"
                   checked={newFarm.isSolo}
-                  onChange={(e) => setNewFarm({...newFarm, isSolo: e.target.checked})}
+                  onChange={(e) => setNewFarm({ ...newFarm, isSolo: e.target.checked })}
                   className="w-4 h-4 text-purple-600 bg-gray-700 border-gray-600 rounded focus:ring-purple-500"
                 />
                 <span className="text-white">Farm Solitario</span>
               </label>
-              
+
               <label className="flex items-center gap-2 p-3 bg-gray-700 rounded-lg border border-gray-600 hover:border-purple-500 cursor-pointer">
                 <input
                   type="checkbox"
                   checked={newFarm.requiresSquad}
-                  onChange={(e) => setNewFarm({...newFarm, requiresSquad: e.target.checked})}
+                  onChange={(e) => setNewFarm({ ...newFarm, requiresSquad: e.target.checked })}
                   className="w-4 h-4 text-purple-600 bg-gray-700 border-gray-600 rounded focus:ring-purple-500"
                 />
                 <span className="text-white">Requiere Squad</span>
@@ -867,7 +867,7 @@ export default function AdminPanel() {
               <label className="block text-sm font-medium text-gray-300 mb-2">
                 Recompensas Estimadas (por hora)
               </label>
-              
+
               {/* Tipos de Moneda */}
               <div>
                 <label className="block text-sm font-medium text-gray-300 mb-3">
@@ -924,7 +924,7 @@ export default function AdminPanel() {
                 <p className="text-xs text-gray-400 mt-2">Selecciona uno o más tipos de recompensa</p>
               </div>
             </div>
-            
+
             <div>
               <label className="block text-sm font-medium text-gray-300 mb-2">
                 Expansiones Requeridas
@@ -964,7 +964,7 @@ export default function AdminPanel() {
                 <strong>Modalidad:</strong> Marca si el farm se puede hacer solo, si requiere squad, o ambos. El waypoint es opcional pero recomendado para facilitar el acceso.
               </p>
             </div>
-            
+
             <div className="flex gap-3 mt-6">
               <button
                 onClick={handleCreateFarm}
@@ -993,7 +993,7 @@ export default function AdminPanel() {
           className="bg-gray-800 rounded-lg p-6 border border-gray-700"
         >
           <h3 className="text-xl font-bold text-white mb-4">Editar Farm</h3>
-          
+
           <div className="space-y-4">
             <div>
               <label className="block text-sm font-medium text-gray-300 mb-2">
@@ -1002,18 +1002,18 @@ export default function AdminPanel() {
               <input
                 type="text"
                 value={editingFarm.name || ''}
-                onChange={(e) => setEditingFarm({...editingFarm, name: e.target.value})}
+                onChange={(e) => setEditingFarm({ ...editingFarm, name: e.target.value })}
                 className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-purple-500"
               />
             </div>
-            
+
             <div>
               <label className="block text-sm font-medium text-gray-300 mb-2">
                 Descripción
               </label>
               <textarea
                 value={editingFarm.description || ''}
-                onChange={(e) => setEditingFarm({...editingFarm, description: e.target.value})}
+                onChange={(e) => setEditingFarm({ ...editingFarm, description: e.target.value })}
                 className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-purple-500"
                 rows={3}
                 maxLength={DESCRIPTION_MAX}
@@ -1030,7 +1030,7 @@ export default function AdminPanel() {
                 <input
                   type="text"
                   value={editingFarm.waypoint || ''}
-                  onChange={(e) => setEditingFarm({...editingFarm, waypoint: e.target.value})}
+                  onChange={(e) => setEditingFarm({ ...editingFarm, waypoint: e.target.value })}
                   className="flex-1 px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-purple-500"
                   placeholder="[&BBAHAAA=]"
                 />
@@ -1057,17 +1057,17 @@ export default function AdminPanel() {
                   <input
                     type="checkbox"
                     checked={editingFarm.isSolo || false}
-                    onChange={(e) => setEditingFarm({...editingFarm, isSolo: e.target.checked})}
+                    onChange={(e) => setEditingFarm({ ...editingFarm, isSolo: e.target.checked })}
                     className="w-4 h-4 text-green-600 bg-gray-700 border-gray-600 rounded focus:ring-green-500"
                   />
                   <span className="text-white text-sm">Farm Solitario</span>
                 </label>
-                
+
                 <label className="flex items-center gap-2 cursor-pointer">
                   <input
                     type="checkbox"
                     checked={editingFarm.requiresSquad || false}
-                    onChange={(e) => setEditingFarm({...editingFarm, requiresSquad: e.target.checked})}
+                    onChange={(e) => setEditingFarm({ ...editingFarm, requiresSquad: e.target.checked })}
                     className="w-4 h-4 text-purple-600 bg-gray-700 border-gray-600 rounded focus:ring-purple-500"
                   />
                   <span className="text-white text-sm">Requiere Squad</span>
@@ -1147,7 +1147,7 @@ export default function AdminPanel() {
               </div>
               <p className="text-xs text-gray-400 mt-2">Selecciona uno o más tipos de recompensa</p>
             </div>
-            
+
             <div>
               <label className="block text-sm font-medium text-gray-300 mb-2">
                 Expansiones Requeridas
@@ -1177,7 +1177,7 @@ export default function AdminPanel() {
             </div>
 
 
-            
+
             <div className="flex gap-3 mt-6">
               <button
                 onClick={handleUpdateFarm}
@@ -1229,12 +1229,12 @@ export default function AdminPanel() {
                   <h3 className="text-lg font-semibold text-white mb-1">
                     {farm.name}
                   </h3>
-                                <div className="p-3 rounded-lg mb-3">
-                <MarkdownText 
-                  text={farm.description.length > 120 ? `${farm.description.substring(0, 120)}...` : farm.description}
-                  className="text-gray-400 text-xs whitespace-pre-wrap break-all"
-                />
-              </div>
+                  <div className="p-3 rounded-lg mb-3">
+                    <MarkdownText
+                      text={farm.description.length > 120 ? `${farm.description.substring(0, 120)}...` : farm.description}
+                      className="text-gray-400 text-xs whitespace-pre-wrap break-all"
+                    />
+                  </div>
                 </div>
                 <div className="flex gap-1">
                   {(Array.isArray(farm.expansion) ? farm.expansion : [farm.expansion]).map((exp) => (
@@ -1242,13 +1242,13 @@ export default function AdminPanel() {
                   ))}
                 </div>
               </div>
-              
+
               <div className="flex items-center gap-4 text-sm mb-3">
                 <div className="flex items-center gap-1">
                   <Clock className="w-4 h-4 text-blue-400" />
                   <span className="text-blue-400">{farm.estimatedTime}</span>
                 </div>
-                
+
                 {/* Mostrar modalidad */}
                 <div className="flex gap-2">
                   {farm.isSolo && (
@@ -1282,7 +1282,7 @@ export default function AdminPanel() {
                 {/* Mostrar estimatedRewards (nuevo sistema) */}
                 {farm.estimatedRewards && Object.entries(farm.estimatedRewards).map(([currencyType, value]) => {
                   if (!value || !value.trim()) return null;
-                  
+
                   const currencyConfig = currencyOptions.find(c => c.value === currencyType);
                   if (!currencyConfig) return null;
 
@@ -1293,25 +1293,25 @@ export default function AdminPanel() {
                     </div>
                   );
                 })}
-                
+
                 {/* Backward compatibility - mostrar legacy fields si no están duplicados en estimatedRewards */}
-                {farm.estimatedGold && farm.estimatedGold.trim() && 
-                 (!farm.estimatedRewards || !farm.estimatedRewards.gold || !farm.estimatedRewards.gold.trim()) && (
-                  <div className="flex items-center gap-1">
-                    <GW2Icon type="gold" size="sm" />
-                    <span className="text-yellow-400">{farm.estimatedGold}</span>
-                  </div>
-                )}
-                
-                {farm.estimatedSpirit && farm.estimatedSpirit.trim() && 
-                 (!farm.estimatedRewards || !farm.estimatedRewards.spiritShards || !farm.estimatedRewards.spiritShards.trim()) && (
-                  <div className="flex items-center gap-1">
-                    <GW2Icon type="spirit-shard" size="sm" />
-                    <span className="text-purple-400">{farm.estimatedSpirit}</span>
-                  </div>
-                )}
+                {farm.estimatedGold && farm.estimatedGold.trim() &&
+                  (!farm.estimatedRewards || !farm.estimatedRewards.gold || !farm.estimatedRewards.gold.trim()) && (
+                    <div className="flex items-center gap-1">
+                      <GW2Icon type="gold" size="sm" />
+                      <span className="text-yellow-400">{farm.estimatedGold}</span>
+                    </div>
+                  )}
+
+                {farm.estimatedSpirit && farm.estimatedSpirit.trim() &&
+                  (!farm.estimatedRewards || !farm.estimatedRewards.spiritShards || !farm.estimatedRewards.spiritShards.trim()) && (
+                    <div className="flex items-center gap-1">
+                      <GW2Icon type="spirit-shard" size="sm" />
+                      <span className="text-purple-400">{farm.estimatedSpirit}</span>
+                    </div>
+                  )}
               </div>
-              
+
               {/* Botones de reordenamiento */}
               <div className="flex gap-2 mb-3">
                 <button
@@ -1343,9 +1343,9 @@ export default function AdminPanel() {
                       expansion: Array.isArray(farm.expansion) ? farm.expansion : [farm.expansion],
                       estimatedRewards: farm.estimatedRewards || {}
                     };
-              
+
                     setEditingFarm(farmToEdit);
-                    
+
                     // Configurar monedas seleccionadas basadas en el farm actual
                     const selectedCurrencies = [];
                     if (farmToEdit.estimatedRewards && Object.keys(farmToEdit.estimatedRewards).length > 0) {
@@ -1456,13 +1456,13 @@ export default function AdminPanel() {
                     ))}
                   </div>
                 </div>
-                            <div className="p-3 rounded-lg">
-              <p className="text-gray-400 text-xs whitespace-pre-wrap break-all" title={farm.description}>
-                {farm.description.length > 120 ? `${farm.description.substring(0, 120)}...` : farm.description}
-              </p>
-            </div>
+                <div className="p-3 rounded-lg">
+                  <p className="text-gray-400 text-xs whitespace-pre-wrap break-all" title={farm.description}>
+                    {farm.description.length > 120 ? `${farm.description.substring(0, 120)}...` : farm.description}
+                  </p>
+                </div>
               </div>
-              
+
               <div className="flex items-center gap-4 text-sm mb-4">
                 <div className="flex items-center gap-1">
                   <Clock className="w-4 h-4 text-blue-400" />
@@ -1470,8 +1470,8 @@ export default function AdminPanel() {
                 </div>
                 {farm.estimatedGold && farm.estimatedGold.trim() && (
                   <div className="flex items-center gap-1">
-                    <Image 
-                      src="/images/expansions/Gold.webp" 
+                    <Image
+                      src="/images/expansions/Gold.webp"
                       alt="Gold"
                       width={16}
                       height={16}
@@ -1482,8 +1482,8 @@ export default function AdminPanel() {
                 )}
                 {farm.estimatedSpirit && farm.estimatedSpirit.trim() && (
                   <div className="flex items-center gap-1">
-                    <Image 
-                      src="/images/expansions/Spirit_Shard.webp" 
+                    <Image
+                      src="/images/expansions/Spirit_Shard.webp"
                       alt="Spirit Shard"
                       width={16}
                       height={16}
@@ -1493,7 +1493,7 @@ export default function AdminPanel() {
                   </div>
                 )}
               </div>
-              
+
               <div className="flex gap-2">
                 <button
                   onClick={() => handleApproveFarm(farm.id)}
@@ -1528,340 +1528,336 @@ export default function AdminPanel() {
     });
 
     return (
-    <div className="space-y-6">
-      {/* Header con búsqueda y botón crear */}
-      <div className="flex flex-col md:flex-row gap-4 justify-between items-start md:items-center">
-        <h2 className="text-2xl font-bold text-white">Gestión de Usuarios</h2>
-        
-        <div className="flex flex-col sm:flex-row gap-4 w-full md:w-auto">
-          {/* Buscador */}
-          <div className="relative flex-1 sm:flex-none">
-            <input
-              type="text"
-              placeholder="Buscar por username o email..."
-              value={userSearchQuery}
-              onChange={(e) => setUserSearchQuery(e.target.value)}
-              className="w-full sm:w-80 pl-10 pr-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-            />
-            <UserIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-          </div>
-          
-          {!isCreatingUser && (
-            <button
-              onClick={() => setIsCreatingUser(true)}
-              className="flex items-center gap-2 px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors"
-            >
-              <Plus className="w-4 h-4" />
-              Nuevo Usuario
-            </button>
-          )}
-        </div>
-      </div>
+      <div className="space-y-6">
+        {/* Header con búsqueda y botón crear */}
+        <div className="flex flex-col md:flex-row gap-4 justify-between items-start md:items-center">
+          <h2 className="text-2xl font-bold text-white">Gestión de Usuarios</h2>
 
-      {/* Create User Modal */}
-      {isCreatingUser && (
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="bg-gray-800 rounded-lg p-6 border border-gray-700"
-        >
-          <h3 className="text-xl font-bold text-white mb-4">Crear Nuevo Usuario</h3>
-          
-          <div className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">
-                Email
-              </label>
-              <input
-                type="email"
-                value={newUser.email}
-                onChange={(e) => setNewUser({...newUser, email: e.target.value})}
-                className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-purple-500"
-                placeholder="usuario@ejemplo.com"
-              />
-            </div>
-            
-            <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">
-                Username
-              </label>
+          <div className="flex flex-col sm:flex-row gap-4 w-full md:w-auto">
+            {/* Buscador */}
+            <div className="relative flex-1 sm:flex-none">
               <input
                 type="text"
-                value={newUser.username}
-                onChange={(e) => setNewUser({...newUser, username: e.target.value})}
-                className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-purple-500"
-                placeholder="nombre usuario"/>
-            </div>
-            
-
-            <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">
-                Rol
-              </label>
-              <select
-                value={newUser.role}
-                onChange={(e) => setNewUser({...newUser, role: e.target.value as 'user' | 'admin' | 'moderator'})}
-                className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-purple-500"
-              >
-                <option value="user">Usuario</option>
-                <option value="moderator">Moderador</option>
-                <option value="admin">Administrador</option>
-              </select>
-            </div>
-            
-            <div className="flex gap-3 mt-6">
-              <button
-                onClick={handleCreateUser}
-                className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors"
-              >
-                <Save className="w-4 h-4" />
-                Crear
-              </button>
-              <button
-                onClick={() => setIsCreatingUser(false)}
-                className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-lg transition-colors"
-              >
-                <X className="w-4 h-4" />
-                Cancelar
-              </button>
-            </div>
-          </div>
-        </motion.div>
-      )}
-
-      {/* Edit User Modal */}
-      {editingUser && (
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="bg-gray-800 rounded-lg p-6 border border-gray-700"
-        >
-          <h3 className="text-xl font-bold text-white mb-4">Editar Usuario</h3>
-          
-          <div className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">
-                Email
-              </label>
-              <input
-                type="email"
-                value={editingUser.email}
-                onChange={(e) => setEditingUser({...editingUser, email: e.target.value})}
-                className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-purple-500"
-                placeholder="usuario@ejemplo.com"
+                placeholder="Buscar por username o email..."
+                value={userSearchQuery}
+                onChange={(e) => setUserSearchQuery(e.target.value)}
+                className="w-full sm:w-80 pl-10 pr-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
               />
+              <UserIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
             </div>
-            
-            <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">
-                Username
-              </label>
-              <input
-                type="text"
-                value={editingUser.username}
-                onChange={(e) => setEditingUser({...editingUser, username: e.target.value})}
-                className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-purple-500"
-                placeholder="nombre usuario"/>
-            </div>
-            
-            <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">
-                Rol
-              </label>
-              <select
-                value={editingUser.role}
-                onChange={(e) => setEditingUser({...editingUser, role: e.target.value as 'user' | 'admin' | 'moderator'})}
-                className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-purple-500"
-              >
-                <option value="user">Usuario</option>
-                <option value="moderator">Moderador</option>
-                <option value="admin">Administrador</option>
-              </select>
-            </div>
-            
-            <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">
-                Estado
-              </label>
-              <select
-                value={editingUser.isActive ? 'active' : 'inactive'}
-                onChange={(e) => setEditingUser({...editingUser, isActive: e.target.value === 'active'})}
-                className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-purple-500">
-                <option value="active">Activo</option>
-                <option value="inactive">Inactivo</option>
-              </select>
-            </div>
-            
-            <div className="flex gap-3 mt-6">
-              <button
-                onClick={handleUpdateUser}
-                className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors"
-              >
-                <Save className="w-4 h-4" />
-                Actualizar
-              </button>
-              <button
-                onClick={() => setEditingUser(null)}
-                className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-lg transition-colors"
-              >
-                <X className="w-4 h-4" />
-                Cancelar
-              </button>
-            </div>
-          </div>
-        </motion.div>
-      )}
 
-      {/* Users List */}
-      {isLoadingUsers ? (
-        <div className="text-center text-gray-400">Cargando usuarios...</div>
-      ) : (
-        <>
-          {/* Contador de resultados */}
-          <div className="text-sm text-gray-400 mb-4">
-            {userSearchQuery ? (
-              <span>Mostrando {filteredUsers.length} de {users.length} usuarios</span>
-            ) : (
-              <span>Total de usuarios: {users.length}</span>
+            {!isCreatingUser && (
+              <button
+                onClick={() => setIsCreatingUser(true)}
+                className="flex items-center gap-2 px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors"
+              >
+                <Plus className="w-4 h-4" />
+                Nuevo Usuario
+              </button>
             )}
           </div>
-          
-          {/* Desktop Table View */}
-          <div className="hidden md:block bg-gray-800 rounded-lg border border-gray-700 overflow-hidden">
-            <table className="w-full">
-              <thead className="bg-gray-700">
-                <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
-                    Usuario
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
-                    Email
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
-                    Rol
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
-                    Estado
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
-                    Acciones
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-700">
-                {filteredUsers.map((user) => (
-                  <tr key={user.id} className="hover:bg-gray-700">
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="flex items-center">
-                        <div className="text-sm font-medium text-white">{user.username}</div>
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm text-gray-300">{user.email}</div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
-                        user.role === 'admin' 
-                          ? 'bg-purple-100 text-purple-800' 
-                          : user.role === 'moderator'
+        </div>
+
+        {/* Create User Modal */}
+        {isCreatingUser && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="bg-gray-800 rounded-lg p-6 border border-gray-700"
+          >
+            <h3 className="text-xl font-bold text-white mb-4">Crear Nuevo Usuario</h3>
+
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-2">
+                  Email
+                </label>
+                <input
+                  type="email"
+                  value={newUser.email}
+                  onChange={(e) => setNewUser({ ...newUser, email: e.target.value })}
+                  className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-purple-500"
+                  placeholder="usuario@ejemplo.com"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-2">
+                  Username
+                </label>
+                <input
+                  type="text"
+                  value={newUser.username}
+                  onChange={(e) => setNewUser({ ...newUser, username: e.target.value })}
+                  className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-purple-500"
+                  placeholder="nombre usuario" />
+              </div>
+
+
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-2">
+                  Rol
+                </label>
+                <select
+                  value={newUser.role}
+                  onChange={(e) => setNewUser({ ...newUser, role: e.target.value as 'user' | 'admin' | 'moderator' })}
+                  className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-purple-500"
+                >
+                  <option value="user">Usuario</option>
+                  <option value="moderator">Moderador</option>
+                  <option value="admin">Administrador</option>
+                </select>
+              </div>
+
+              <div className="flex gap-3 mt-6">
+                <button
+                  onClick={handleCreateUser}
+                  className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors"
+                >
+                  <Save className="w-4 h-4" />
+                  Crear
+                </button>
+                <button
+                  onClick={() => setIsCreatingUser(false)}
+                  className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-lg transition-colors"
+                >
+                  <X className="w-4 h-4" />
+                  Cancelar
+                </button>
+              </div>
+            </div>
+          </motion.div>
+        )}
+
+        {/* Edit User Modal */}
+        {editingUser && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="bg-gray-800 rounded-lg p-6 border border-gray-700"
+          >
+            <h3 className="text-xl font-bold text-white mb-4">Editar Usuario</h3>
+
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-2">
+                  Email
+                </label>
+                <input
+                  type="email"
+                  value={editingUser.email}
+                  onChange={(e) => setEditingUser({ ...editingUser, email: e.target.value })}
+                  className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-purple-500"
+                  placeholder="usuario@ejemplo.com"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-2">
+                  Username
+                </label>
+                <input
+                  type="text"
+                  value={editingUser.username}
+                  onChange={(e) => setEditingUser({ ...editingUser, username: e.target.value })}
+                  className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-purple-500"
+                  placeholder="nombre usuario" />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-2">
+                  Rol
+                </label>
+                <select
+                  value={editingUser.role}
+                  onChange={(e) => setEditingUser({ ...editingUser, role: e.target.value as 'user' | 'admin' | 'moderator' })}
+                  className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-purple-500"
+                >
+                  <option value="user">Usuario</option>
+                  <option value="moderator">Moderador</option>
+                  <option value="admin">Administrador</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-2">
+                  Estado
+                </label>
+                <select
+                  value={editingUser.isActive ? 'active' : 'inactive'}
+                  onChange={(e) => setEditingUser({ ...editingUser, isActive: e.target.value === 'active' })}
+                  className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-purple-500">
+                  <option value="active">Activo</option>
+                  <option value="inactive">Inactivo</option>
+                </select>
+              </div>
+
+              <div className="flex gap-3 mt-6">
+                <button
+                  onClick={handleUpdateUser}
+                  className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors"
+                >
+                  <Save className="w-4 h-4" />
+                  Actualizar
+                </button>
+                <button
+                  onClick={() => setEditingUser(null)}
+                  className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-lg transition-colors"
+                >
+                  <X className="w-4 h-4" />
+                  Cancelar
+                </button>
+              </div>
+            </div>
+          </motion.div>
+        )}
+
+        {/* Users List */}
+        {isLoadingUsers ? (
+          <div className="text-center text-gray-400">Cargando usuarios...</div>
+        ) : (
+          <>
+            {/* Contador de resultados */}
+            <div className="text-sm text-gray-400 mb-4">
+              {userSearchQuery ? (
+                <span>Mostrando {filteredUsers.length} de {users.length} usuarios</span>
+              ) : (
+                <span>Total de usuarios: {users.length}</span>
+              )}
+            </div>
+
+            {/* Desktop Table View */}
+            <div className="hidden md:block bg-gray-800 rounded-lg border border-gray-700 overflow-hidden">
+              <table className="w-full">
+                <thead className="bg-gray-700">
+                  <tr>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
+                      Usuario
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
+                      Email
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
+                      Rol
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
+                      Estado
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
+                      Acciones
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-700">
+                  {filteredUsers.map((user) => (
+                    <tr key={user.id} className="hover:bg-gray-700">
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="flex items-center">
+                          <div className="text-sm font-medium text-white">{user.username}</div>
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="text-sm text-gray-300">{user.email}</div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${user.role === 'admin'
+                            ? 'bg-purple-100 text-purple-800'
+                            : user.role === 'moderator'
+                              ? 'bg-orange-100 text-orange-800'
+                              : 'bg-blue-100 text-blue-800'
+                          }`}>
+                          {user.role === 'admin' ? 'Administrador' : user.role === 'moderator' ? 'Moderador' : 'Usuario'}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${user.isActive
+                            ? 'bg-green-100 text-green-800'
+                            : 'bg-red-100 text-red-800'
+                          }`}>
+                          {user.isActive ? 'Activo' : 'Inactivo'}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                        <div className="flex gap-2">
+                          <button
+                            onClick={() => setEditingUser(user)}
+                            className="text-blue-400 hover:text-blue-300"
+                            title="Editar usuario"
+                          >
+                            <Edit className="w-4 h-4" />
+                          </button>
+                          <button
+                            onClick={() => handleDeleteUser(user.id)}
+                            className="text-red-400 hover:text-red-300"
+                            title="Eliminar usuario"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+
+            {/* Mobile Card View */}
+            <div className="md:hidden space-y-4">
+              {filteredUsers.map((user) => (
+                <div key={user.id} className="bg-gray-800 rounded-lg border border-gray-700 p-4">
+                  <div className="flex items-start justify-between mb-3">
+                    <div className="flex-1">
+                      <h3 className="text-lg font-semibold text-white mb-1">{user.username}</h3>
+                      <p className="text-sm text-gray-300">{user.email}</p>
+                    </div>
+                    <div className="flex gap-2">
+                      <button
+                        onClick={() => setEditingUser(user)}
+                        className="text-blue-400 hover:text-blue-300 p-1"
+                        title="Editar usuario"
+                      >
+                        <Edit className="w-4 h-4" />
+                      </button>
+                      <button
+                        onClick={() => handleDeleteUser(user.id)}
+                        className="text-red-400 hover:text-red-300 p-1"
+                        title="Eliminar usuario"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    </div>
+                  </div>
+
+                  <div className="flex flex-wrap gap-2">
+                    <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${user.role === 'admin'
+                        ? 'bg-purple-100 text-purple-800'
+                        : user.role === 'moderator'
                           ? 'bg-orange-100 text-orange-800'
                           : 'bg-blue-100 text-blue-800'
                       }`}>
-                        {user.role === 'admin' ? 'Administrador' : user.role === 'moderator' ? 'Moderador' : 'Usuario'}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
-                        user.isActive 
-                          ? 'bg-green-100 text-green-800' 
-                          : 'bg-red-100 text-red-800'
+                      {user.role === 'admin' ? 'Administrador' : user.role === 'moderator' ? 'Moderador' : 'Usuario'}
+                    </span>
+                    <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${user.isActive
+                        ? 'bg-green-100 text-green-800'
+                        : 'bg-red-100 text-red-800'
                       }`}>
-                        {user.isActive ? 'Activo' : 'Inactivo'}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                      <div className="flex gap-2">
-                        <button
-                          onClick={() => setEditingUser(user)}
-                          className="text-blue-400 hover:text-blue-300"
-                          title="Editar usuario"
-                        >
-                          <Edit className="w-4 h-4" />
-                        </button>
-                        <button
-                          onClick={() => handleDeleteUser(user.id)}
-                          className="text-red-400 hover:text-red-300"
-                          title="Eliminar usuario"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-
-          {/* Mobile Card View */}
-          <div className="md:hidden space-y-4">
-            {filteredUsers.map((user) => (
-              <div key={user.id} className="bg-gray-800 rounded-lg border border-gray-700 p-4">
-                <div className="flex items-start justify-between mb-3">
-                  <div className="flex-1">
-                    <h3 className="text-lg font-semibold text-white mb-1">{user.username}</h3>
-                    <p className="text-sm text-gray-300">{user.email}</p>
-                  </div>
-                  <div className="flex gap-2">
-                    <button
-                      onClick={() => setEditingUser(user)}
-                      className="text-blue-400 hover:text-blue-300 p-1"
-                      title="Editar usuario"
-                    >
-                      <Edit className="w-4 h-4" />
-                    </button>
-                    <button
-                      onClick={() => handleDeleteUser(user.id)}
-                      className="text-red-400 hover:text-red-300 p-1"
-                      title="Eliminar usuario"
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </button>
+                      {user.isActive ? 'Activo' : 'Inactivo'}
+                    </span>
                   </div>
                 </div>
-                
-                <div className="flex flex-wrap gap-2">
-                  <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
-                    user.role === 'admin' 
-                      ? 'bg-purple-100 text-purple-800' 
-                      : user.role === 'moderator'
-                      ? 'bg-orange-100 text-orange-800'
-                      : 'bg-blue-100 text-blue-800'
-                  }`}>
-                    {user.role === 'admin' ? 'Administrador' : user.role === 'moderator' ? 'Moderador' : 'Usuario'}
-                  </span>
-                  <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
-                    user.isActive 
-                      ? 'bg-green-100 text-green-800' 
-                      : 'bg-red-100 text-red-800'
-                  }`}>
-                    {user.isActive ? 'Activo' : 'Inactivo'}
-                  </span>
-                </div>
-              </div>
-            ))}
-          </div>
-        </>
-      )}
-    </div>
-  );
+              ))}
+            </div>
+          </>
+        )}
+      </div>
+    );
   };
 
   return (
     <AdminRoute>
       <div className="min-h-screen bg-gradient-to-br from-slate-900 to-slate-800">
         <Navigation />
-        
+
         <div className="container mx-auto px-4 py-8">
           {/* Header */}
           <motion.div
@@ -1873,7 +1869,7 @@ export default function AdminPanel() {
               {user?.role === 'admin' ? 'Panel de Admin' : 'Panel de Moderación'}
             </h1>
             <p className="text-gray-300">
-              {user?.role === 'admin' 
+              {user?.role === 'admin'
                 ? 'Gestiona los farms y usuarios de la aplicación'
                 : 'Gestiona tus farms y revisa contenido pendiente'
               }
@@ -1889,33 +1885,30 @@ export default function AdminPanel() {
             <div className="bg-slate-800 p-1 rounded-lg border border-slate-700 flex">
               <button
                 onClick={() => setActiveSection('farms')}
-                className={`flex items-center gap-2 px-6 py-3 rounded-lg transition-colors ${
-                  activeSection === 'farms'
+                className={`flex items-center gap-2 px-6 py-3 rounded-lg transition-colors ${activeSection === 'farms'
                     ? 'bg-blue-600 text-white'
                     : 'text-gray-400 hover:text-white'
-                }`}
+                  }`}
               >
                 <Map className="w-5 h-5" />
                 Farms
               </button>
               <button
                 onClick={() => setActiveSection('users')}
-                className={`flex items-center gap-2 px-6 py-3 rounded-lg transition-colors ${
-                  activeSection === 'users'
+                className={`flex items-center gap-2 px-6 py-3 rounded-lg transition-colors ${activeSection === 'users'
                     ? 'bg-blue-600 text-white'
                     : 'text-gray-400 hover:text-white'
-                }`}
+                  }`}
               >
                 <Users className="w-5 h-5" />
                 Usuarios
               </button>
               <button
                 onClick={() => setActiveSection('pending-farms')}
-                className={`flex items-center gap-2 px-6 py-3 rounded-lg transition-colors ${
-                  activeSection === 'pending-farms'
+                className={`flex items-center gap-2 px-6 py-3 rounded-lg transition-colors ${activeSection === 'pending-farms'
                     ? 'bg-blue-600 text-white'
                     : 'text-gray-400 hover:text-white'
-                }`}
+                  }`}
               >
                 <CheckCircle className="w-5 h-5" />
                 Pendientes
@@ -1965,14 +1958,14 @@ export default function AdminPanel() {
                 <X className="w-5 h-5" />
               </button>
             </div>
-            
+
             {/* Content */}
             <div className="p-6">
               <p className="text-gray-300">
                 {modal.message}
               </p>
             </div>
-            
+
             {/* Footer */}
             <div className="flex justify-end gap-3 p-6 border-t border-gray-700">
               <button
@@ -1985,7 +1978,7 @@ export default function AdminPanel() {
           </div>
         </div>
       )}
-      
+
       {/* Modal de confirmación de eliminación de usuario */}
       {showDeleteModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
@@ -2005,7 +1998,7 @@ export default function AdminPanel() {
                 <X className="w-5 h-5" />
               </button>
             </div>
-            
+
             {/* Content */}
             <div className="p-6">
               <p className="text-gray-300">
@@ -2015,7 +2008,7 @@ export default function AdminPanel() {
                 Los farms creados por este usuario permanecerán disponibles pero sin información del autor. Esta acción no se puede deshacer.
               </p>
             </div>
-            
+
             {/* Footer */}
             <div className="flex justify-end gap-3 p-6 border-t border-gray-700">
               <button
@@ -2034,7 +2027,7 @@ export default function AdminPanel() {
           </div>
         </div>
       )}
-      
+
     </AdminRoute>
   );
 } 

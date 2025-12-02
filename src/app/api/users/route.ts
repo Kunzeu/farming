@@ -13,7 +13,7 @@ function loadEnvFile() {
   if (fs.existsSync(envPath)) {
     const envContent = fs.readFileSync(envPath, 'utf8');
     const envVars: Record<string, string> = {};
-    
+
     envContent.split('\n').forEach(line => {
       const [key, ...valueParts] = line.split('=');
       if (key && valueParts.length > 0) {
@@ -21,7 +21,7 @@ function loadEnvFile() {
         envVars[key.trim()] = value;
       }
     });
-    
+
     return envVars;
   }
   return {};
@@ -61,9 +61,9 @@ export async function GET(request: NextRequest) {
       // Importar la función de autorización
       const { authorizeRequest } = await import('@/lib/server/jwt-utils');
       const authResult = authorizeRequest(request, 'admin');
-      
+
       if (!authResult.isAuthorized) {
-        return NextResponse.json({ 
+        return NextResponse.json({
           error: 'Unauthorized. Admin access required to list all users.',
           details: authResult.error
         }, { status: 401 });
@@ -78,19 +78,19 @@ export async function GET(request: NextRequest) {
         FROM users 
         WHERE email = $1
       `;
-      
+
       const result = await pool.query(query, [email]);
       if (result.rows.length === 0) {
         return NextResponse.json({ error: 'User not found' }, { status: 404 });
       }
-      
+
       const row = result.rows[0];
       return NextResponse.json({
         ...row,
         createdAt: new Date(row.createdAt),
         updatedAt: new Date(row.updatedAt)
       });
-      
+
     } else if (username) {
       // Buscar por username
       const query = `
@@ -100,19 +100,19 @@ export async function GET(request: NextRequest) {
         FROM users 
         WHERE username = $1
       `;
-      
+
       const result = await pool.query(query, [username]);
       if (result.rows.length === 0) {
         return NextResponse.json({ error: 'User not found' }, { status: 404 });
       }
-      
+
       const row = result.rows[0];
       return NextResponse.json({
         ...row,
         createdAt: new Date(row.createdAt),
         updatedAt: new Date(row.updatedAt)
       });
-      
+
     } else if (discordId) {
       // Buscar por Discord ID
       const query = `
@@ -122,23 +122,23 @@ export async function GET(request: NextRequest) {
         FROM users 
         WHERE discord_id = $1
       `;
-      
+
       const result = await pool.query(query, [discordId]);
       if (result.rows.length === 0) {
         return NextResponse.json({ error: 'User not found' }, { status: 404 });
       }
-      
+
       const row = result.rows[0];
       return NextResponse.json({
         ...row,
         createdAt: new Date(row.createdAt),
         updatedAt: new Date(row.updatedAt)
       });
-      
+
     } else if (userId) {
       // Obtener perfil específico (usando RLS)
       await pool.query('SELECT set_current_user_id($1)', [userId]);
-      
+
       const query = `
         SELECT id, email, username, role, is_active as "isActive",
                created_at as "createdAt", updated_at as "updatedAt", discord_id as "discordId",
@@ -147,19 +147,19 @@ export async function GET(request: NextRequest) {
         FROM users 
         WHERE id = $1
       `;
-      
+
       const result = await pool.query(query, [userId]);
       if (result.rows.length === 0) {
         return NextResponse.json({ error: 'User not found' }, { status: 404 });
       }
-      
+
       const row = result.rows[0];
       return NextResponse.json({
         ...row,
         createdAt: new Date(row.createdAt),
         updatedAt: new Date(row.updatedAt)
       });
-      
+
     } else {
       // Obtener todos los usuarios (solo para admins)
       // Nota: Esto requeriría verificar que el usuario actual es admin
@@ -170,7 +170,7 @@ export async function GET(request: NextRequest) {
         FROM users 
         ORDER BY created_at DESC
       `;
-      
+
       const result = await pool.query(query);
       const users = result.rows.map(row => ({
         ...row,
@@ -182,8 +182,8 @@ export async function GET(request: NextRequest) {
     }
   } catch (error) {
     console.error('Error fetching users:', error);
-    return NextResponse.json({ 
-      error: 'Error fetching users', 
+    return NextResponse.json({
+      error: 'Error fetching users',
       details: error instanceof Error ? error.message : String(error),
       code: error instanceof Error && 'code' in error ? error.code : 'UNKNOWN'
     }, { status: 500 });
@@ -193,34 +193,34 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    
+
     // Validar campos requeridos
     if (!body.email || !body.username) {
-      return NextResponse.json({ 
-        error: 'Email y username son requeridos' 
+      return NextResponse.json({
+        error: 'Email y username son requeridos'
       }, { status: 400 });
     }
-    
+
     // Para usuarios regulares (no OAuth), validar contraseña
     if (!body.discordId && !body.patreonId && !body.password) {
-      return NextResponse.json({ 
-        error: 'Contraseña es requerida para usuarios regulares' 
+      return NextResponse.json({
+        error: 'Contraseña es requerida para usuarios regulares'
       }, { status: 400 });
     }
-    
+
     // Validar que email, username, discordId y patreonId sean únicos
     const checkQuery = `
       SELECT email, username, discord_id, patreon_id FROM users 
       WHERE email = $1 OR username = $2 OR (discord_id = $3 AND $3 IS NOT NULL) OR (patreon_id = $4 AND $4 IS NOT NULL)
     `;
-    
+
     const checkResult = await pool.query(checkQuery, [body.email, body.username, body.discordId, body.patreonId]);
-    
+
     if (checkResult.rows.length > 0) {
       const existingUser = checkResult.rows[0];
       let errorMessage = '';
       let field = '';
-      
+
       if (existingUser.email === body.email) {
         errorMessage = 'El email ya está registrado';
         field = 'email';
@@ -234,21 +234,21 @@ export async function POST(request: NextRequest) {
         errorMessage = 'Esta cuenta de Patreon ya está vinculada';
         field = 'patreonId';
       }
-      
-      return NextResponse.json({ 
+
+      return NextResponse.json({
         error: errorMessage,
         field: field
       }, { status: 409 }); // 409 Conflict
     }
-    
+
     const id = crypto.randomUUID();
-    
+
     // Hash the password before storing (only if password is provided)
     let hashedPassword = null;
     if (body.password) {
       hashedPassword = await hashPassword(body.password);
     }
-    
+
     const query = `
       INSERT INTO users (id, email, username, password, role, is_active, discord_id, gw2_api_key, patreon_id, patreon_tier, patreon_status)
       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
@@ -256,21 +256,21 @@ export async function POST(request: NextRequest) {
                 created_at as "createdAt", updated_at as "updatedAt", discord_id as "discordId",
                 gw2_api_key as "gw2ApiKey", patreon_id as "patreonId", patreon_tier as "patreonTier", patreon_status as "patreonStatus"
     `;
-    
+
     const values = [
-      id, 
-      body.email, 
-      body.username, 
-      hashedPassword, 
-      body.role || 'user', 
-      body.isActive !== undefined ? body.isActive : true, 
-      body.discordId || null, 
+      id,
+      body.email,
+      body.username,
+      hashedPassword,
+      body.role || 'user',
+      body.isActive !== undefined ? body.isActive : true,
+      body.discordId || null,
       body.gw2ApiKey || null,
       body.patreonId || null,
       body.patreonTier || null,
       body.patreonStatus || null
     ];
-    
+
     console.log('Creating user with values:', {
       id: id.substring(0, 8) + '...',
       email: body.email,
@@ -283,10 +283,10 @@ export async function POST(request: NextRequest) {
       patreonTier: body.patreonTier || null,
       patreonStatus: body.patreonStatus || null
     });
-    
+
     const result = await pool.query(query, values);
     const row = result.rows[0];
-    
+
     console.log('User created, row returned from database:', {
       id: row.id,
       email: row.email,
@@ -295,13 +295,13 @@ export async function POST(request: NextRequest) {
       patreonTier: row.patreonTier,
       patreonStatus: row.patreonStatus
     });
-    
+
     const user = {
       ...row,
       createdAt: new Date(row.createdAt),
       updatedAt: new Date(row.updatedAt)
     };
-    
+
     console.log('User object to return:', {
       id: user.id,
       email: user.email,
