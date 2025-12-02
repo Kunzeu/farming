@@ -4,7 +4,7 @@ import { getAllGiveaways, getAllGiveawaysWithAdvent, getItemInfo } from '../../.
 import { authorizeRequest } from '@/lib/server/jwt-utils';
 
 export const runtime = 'nodejs';
-export const revalidate = 300; // Revalidar cada 5 minutos
+export const revalidate = 0; // Sin caché - actualización inmediata de ganadores
 
 // GET /api/giveaways/winners - Get winners
 export async function GET(request: NextRequest) {
@@ -108,7 +108,9 @@ export async function GET(request: NextRequest) {
       { winners },
       {
         headers: {
-          'Cache-Control': 'public, s-maxage=300, stale-while-revalidate=600',
+          'Cache-Control': 'no-store, no-cache, must-revalidate, max-age=0',
+          'Pragma': 'no-cache',
+          'Expires': '0',
         },
       }
     );

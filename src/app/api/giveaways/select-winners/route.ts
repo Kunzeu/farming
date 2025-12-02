@@ -10,11 +10,27 @@ export async function POST(request: NextRequest) {
     // Verificar autenticación y autorización (solo administradores)
     const authResult = authorizeRequest(request, 'admin');
 
+    // Logging detallado para diagnóstico
+    console.log('=== AUTHORIZATION DEBUG ===');
+    console.log('Is Authorized:', authResult.isAuthorized);
+    console.log('User:', authResult.user);
+    console.log('Error:', authResult.error);
+    console.log('User Role:', authResult.user?.role);
+    console.log('User Username:', authResult.user?.username);
+    console.log('User Active:', authResult.user?.isActive);
+    console.log('=========================');
+
     if (!authResult.isAuthorized) {
       console.log('Unauthorized giveaway winner selection:', authResult.error);
       return NextResponse.json({
         error: 'Unauthorized. Admin access required to select winners.',
-        details: authResult.error
+        details: authResult.error,
+        debug: {
+          hasUser: !!authResult.user,
+          userRole: authResult.user?.role,
+          username: authResult.user?.username,
+          isActive: authResult.user?.isActive
+        }
       }, { status: 401 });
     }
 
