@@ -180,6 +180,7 @@ const LEGENDARY_ITEM_IDS: Record<string, number> = {
   'Jade Bot Core: Tier 10': 96613,
   'Hard Wood Logging Node': 79085,
   'Orichalcum Mining Node': 68094,
+  'Community Chest': 94704,
 
 
 };
@@ -670,6 +671,14 @@ const getEventData = (t: (key: string) => string): ContributionEvent => {
         name: '', // Donación anónima - no se mostrará el nombre
         items: [
           { name: 'Gold', quantity: 900, price: 10000, icon: '/images/expansions/Gold.webp' },
+        ]
+      },
+      {
+        name: 'ArenaNet', // Donación anónima - no se mostrará el nombre
+        items: [
+         { name: 'giveaways.gems', quantity: 7200, icon: 'https://wiki.guildwars2.com/images/8/88/Gem_%28highres%29.png', price: 30040000},
+         { name: 'Community Chest', quantity: 7  },
+
         ]
       },
       
