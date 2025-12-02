@@ -868,7 +868,7 @@ export default function AdventCalendar({
 
                   {/* Botón APUNTATE - Sobre la imagen */}
                   {showButton && (
-                    <div className="absolute top-[65%] left-1/2 transform -translate-x-1/2 w-[85%] px-2">
+                    <div className="absolute top-[calc(65%_-_6px)] left-1/2 transform -translate-x-1/2 w-[85%] px-2">
                       {!isAuthenticated ? (
                         <Link
                           href="/login"
