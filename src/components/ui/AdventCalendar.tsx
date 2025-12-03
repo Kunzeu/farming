@@ -904,12 +904,12 @@ export default function AdventCalendar({
                         ) : !hasApiKey || !apiKeyValid ? (
                           <Link
                             href="/profile"
-                            className="inline-flex items-center justify-center gap-2 bg-yellow-600 hover:bg-yellow-700 text-white font-semibold py-2 rounded-lg transition-colors w-full"
+                            className="inline-flex items-center justify-center gap-2 bg-yellow-600 hover:bg-yellow-700 text-white font-semibold text-2xl py-3.5 rounded-lg transition-colors w-full"
                           >
                             {t("holidayCalendar.linkApiKey", "VINCULA API KEY")}
                           </Link>
                         ) : participatedDays.has(day.giveawayId || '') ? (
-                          <div className="inline-flex items-center justify-center gap-2 bg-gray-600 text-gray-300 font-semibold py-2 rounded-lg w-full">
+                          <div className="inline-flex items-center justify-center gap-2 bg-gray-600 text-white font-bold text-2xl py-3.5 rounded-lg w-full">
                             {accountInfo?.name || t("holidayCalendar.registered", "APUNTADO")}
                           </div>
                         ) : (
