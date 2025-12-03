@@ -808,7 +808,7 @@ export default function AdventCalendar({
           .filter(day => {
             // Filtrar día 32: solo visible para administradores
             if (day.day === 32) {
-              return isAdmin;
+              return false;
             }
             return true;
           })
@@ -844,8 +844,8 @@ export default function AdventCalendar({
                       src={
                         day.day === 1 ? "/images/assets/day1.webp" :
                           day.day === 2 ? "/images/assets/day2.webp" :
-                            (day.day === 3 && day.isAvailable) ? "/images/assets/day3.webp" :
-                              (day.day === 4 && day.isAvailable) ? "/images/assets/day4.webp" :
+                            day.day === 3 ? "/images/assets/day3.webp" :
+                              day.day === 4 ? "/images/assets/day4.webp" :
                                 (day.day === 5 && day.isAvailable) ? "/images/assets/day5.webp" :
                                   day.day === 7 ? "/images/assets/daily.webp" :
                                     day.day === 14 ? "/images/assets/daily.webp" :
