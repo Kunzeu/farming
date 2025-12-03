@@ -43,7 +43,7 @@ const nextConfig = {
       }
     ],
   },
-  
+
   // Configuración de Turbopack
   turbopack: {
     // Especificar el directorio raíz del proyecto para evitar warnings de múltiples lockfiles
@@ -55,7 +55,7 @@ const nextConfig = {
       },
     },
   },
-  
+
   // Configuración experimental
   experimental: {
     // Optimizaciones de paquetes
@@ -70,18 +70,18 @@ const nextConfig = {
     // Tree shaking mejorado
     esmExternals: true,
   },
-  
+
   // Configuración para prevenir problemas con Cloudflare
   poweredByHeader: false,
   generateEtags: false,
-  
+
   // Compresión automática
   compress: true,
-  
+
   // Source maps para debugging en producción
   productionBrowserSourceMaps: true,
-  
-  
+
+
   // Headers de seguridad y rendimiento
   async headers() {
     return [
@@ -500,7 +500,7 @@ const nextConfig = {
       // Nota: En Next.js, las redirecciones se definen en "async redirects()" más abajo
     ];
   },
-  
+
   // Redirecciones permanentes para evitar 404 en idiomas no implementados
   async redirects() {
     return [
@@ -512,7 +512,7 @@ const nextConfig = {
       { source: '/de/(.*)', destination: '/', permanent: true },
     ];
   },
-  
+
   // Configuración de Webpack solo para producción
   webpack: (config, { dev, isServer }) => {
     // Bundle Analyzer deshabilitado en Vercel para evitar problemas de build
@@ -589,28 +589,28 @@ const nextConfig = {
           priority: 5,
         },
       };
-      
+
       // Optimización de chunks
       config.optimization.runtimeChunk = 'single';
-      
+
       // Optimizaciones adicionales para CSS
       config.optimization.usedExports = true;
       config.optimization.sideEffects = false;
-      
+
       // Optimizaciones de JavaScript para reducir TBT
       config.optimization.concatenateModules = true;
       config.optimization.providedExports = true;
       config.optimization.usedExports = true;
-      
+
       // Tree shaking más agresivo para eliminar código no utilizado
       config.optimization.sideEffects = false;
       config.optimization.usedExports = true;
       config.optimization.providedExports = true;
-      
+
       // Optimización de módulos para reducir bundle size
       config.optimization.mangleExports = true;
       config.optimization.innerGraph = true;
-      
+
       // Eliminar polyfills innecesarios para navegadores modernos
       config.resolve.fallback = {
         ...config.resolve.fallback,
@@ -623,48 +623,44 @@ const nextConfig = {
         "path": false,
         "os": false,
       };
-      
+
       // Configuración de chunks más agresiva
       config.optimization.splitChunks.maxAsyncRequests = 5;
       config.optimization.splitChunks.maxInitialRequests = 3;
       config.optimization.splitChunks.minSize = 20000;
       config.optimization.splitChunks.maxSize = 244000;
-      
+
       // Optimizaciones adicionales para reducir TBT
       config.optimization.moduleIds = 'deterministic';
       config.optimization.chunkIds = 'deterministic';
-      
+
       // Configuración de paralelización
       config.parallelism = 4;
     }
-    
+
     // Configuración para SVG
     config.module.rules.push({
       test: /\.svg$/,
       use: ['@svgr/webpack'],
     });
-    
+
     return config;
   },
-  
+
   // Configuración de compilación
   compiler: {
     // Eliminar console.log en producción
     removeConsole: process.env.NODE_ENV === 'production',
   },
-    
-  
+
+
   // Configuración de TypeScript
   typescript: {
     // Ignorar errores de TypeScript durante la compilación
     ignoreBuildErrors: false,
   },
-  
-  // Configuración de ESLint
-  eslint: {
-    // Ignorar errores de ESLint durante la compilación
-    ignoreDuringBuilds: false,
-  },
+
+
 };
 
 export default nextConfig;

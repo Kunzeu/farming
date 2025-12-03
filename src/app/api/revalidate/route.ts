@@ -14,7 +14,7 @@ export async function POST(request: NextRequest) {
 
     // Revalidar paths específicos
     const pathsToRevalidate = path ? [path] : ['/farming-routes', '/admin', '/moderator'];
-    
+
     for (const pathToRevalidate of pathsToRevalidate) {
       try {
         revalidatePath(pathToRevalidate, 'page');
@@ -27,9 +27,10 @@ export async function POST(request: NextRequest) {
 
     // Revalidar tags
     const tagsToRevalidate = tag ? [tag] : ['farms', 'farming-routes', 'admin-farms'];
-    
+
     for (const tagToRevalidate of tagsToRevalidate) {
       try {
+        // @ts-expect-error - Next.js 15 type mismatch
         revalidateTag(tagToRevalidate);
         console.log(`Revalidated tag: ${tagToRevalidate}`);
       } catch (tagError) {
@@ -41,6 +42,7 @@ export async function POST(request: NextRequest) {
     if (force) {
       try {
         revalidatePath('/', 'layout');
+        // @ts-expect-error - Next.js 15 type mismatch
         revalidateTag('all');
         console.log('Force revalidated all paths and tags');
       } catch (forceError) {
@@ -48,8 +50,8 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    const response = NextResponse.json({ 
-      revalidated: true, 
+    const response = NextResponse.json({
+      revalidated: true,
       now: Date.now(),
       path: path || 'farming-routes',
       tag: tag || 'farms',
@@ -69,8 +71,8 @@ export async function POST(request: NextRequest) {
     return response;
   } catch (error) {
     console.error('Error revalidating:', error);
-    return NextResponse.json({ 
-      error: 'Error revalidating', 
+    return NextResponse.json({
+      error: 'Error revalidating',
       details: error instanceof Error ? error.message : String(error)
     }, { status: 500 });
   }
