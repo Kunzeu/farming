@@ -846,16 +846,17 @@ export default function AdventCalendar({
                           day.day === 2 ? "/images/assets/day2.webp" :
                             (day.day === 3 && day.isAvailable) ? "/images/assets/day3.webp" :
                               (day.day === 4 && day.isAvailable) ? "/images/assets/day4.webp" :
-                                day.day === 7 ? "/images/assets/daily.webp" :
-                                  day.day === 14 ? "/images/assets/daily.webp" :
-                                    (day.day === 17 && day.isAvailable) ? "/images/assets/day17.webp" :
-                                      day.day === 21 ? "/images/assets/daily.webp" :
-                                        day.day === 25 ? "/images/assets/day25.webp" :
-                                          day.day === 28 ? "/images/assets/daily.webp" :
-                                            day.day === 31 ? "/images/assets/daily.webp" :
-                                              (day.day === 32 && isAdmin) ? "/images/assets/day3.webp" :
+                                (day.day === 5 && day.isAvailable) ? "/images/assets/day5.webp" :
+                                  day.day === 7 ? "/images/assets/daily.webp" :
+                                    day.day === 14 ? "/images/assets/daily.webp" :
+                                      (day.day === 17 && day.isAvailable) ? "/images/assets/day17.webp" :
+                                        day.day === 21 ? "/images/assets/daily.webp" :
+                                          day.day === 25 ? "/images/assets/day25.webp?v=2" :
+                                            day.day === 28 ? "/images/assets/daily.webp" :
+                                              day.day === 31 ? "/images/assets/daily.webp" :
+                                                (day.day === 32 && isAdmin) ? "/images/assets/day3.webp" :
 
-                                                "/images/assets/soon.webp"
+                                                  "/images/assets/soon.webp"
                       }
                       alt={`Día ${day.day}`}
                       fill
