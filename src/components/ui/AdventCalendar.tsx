@@ -889,7 +889,7 @@ export default function AdventCalendar({
 
                     {/* Botón APUNTATE - Sobre la imagen */}
                     {showButton && (
-                      <div className="absolute top-[calc(65%_-_6px)] left-1/2 transform -translate-x-1/2 w-[85%] px-2">
+                      <div className="absolute top-[64.8%] sm:top-[calc(65%_-_6px)] left-1/2 transform -translate-x-1/2 w-[85%] px-2">
                         {!isAuthenticated ? (
                           <Link
                             href="/login"
@@ -917,8 +917,8 @@ export default function AdventCalendar({
                             onClick={() => handleParticipateClick(day.day)}
                             disabled={isParticipating}
                             className={`
-                            w-full py-2.5 rounded-lg
-                            font-bold text-white text-sm
+                            w-full py-3 rounded-lg
+                            font-bold text-white text-base
                             transition-all duration-200
                             bg-gradient-to-r from-teal-600 to-green-600 hover:from-teal-700 hover:to-green-700 active:scale-95 shadow-lg
                           `}
@@ -945,10 +945,10 @@ export default function AdventCalendar({
 
                     {/* Lista de ganadores */}
                     {dayWinners.length > 0 && (
-                      <div className="absolute bottom-[calc(2.5rem-18px)] left-1/2 transform -translate-x-1/2 w-[85%] px-2">
-                        <div className="space-y-0.9">
+                      <div className="absolute bottom-[2.75rem] sm:bottom-[calc(2.5rem-18px)] left-1/2 transform -translate-x-1/2 w-[85%] px-2">
+                        <div className="space-y-0.5 sm:space-y-1">
                           {dayWinners.map((winner) => (
-                            <div key={winner.position} className="text-sm text-gray-900 text-center font-medium leading-tight flex items-center justify-center gap-1.5">
+                            <div key={winner.position} className="text-sm text-gray-900 text-center font-medium leading-tight flex items-center justify-center gap-1 sm:gap-1.5">
                               <span className="font-bold">{winner.position}º</span>
                               {/* Icono del premio */}
                               {winner.gemPrize ? (
