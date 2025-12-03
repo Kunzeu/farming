@@ -893,23 +893,23 @@ export default function AdventCalendar({
                         {!isAuthenticated ? (
                           <Link
                             href="/login"
-                            className="inline-flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3.5 rounded-lg transition-colors w-full"
+                            className="inline-flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 rounded-lg transition-colors w-full"
                           >
                             {t("holidayCalendar.login", "INICIA SESIÓN")}
                           </Link>
                         ) : isLoadingApiKey || isLoadingParticipations ? (
-                          <div className="inline-flex items-center justify-center gap-2 bg-gray-600 text-gray-300 font-semibold py-3.5 rounded-lg w-full">
+                          <div className="inline-flex items-center justify-center gap-2 bg-gray-600 text-gray-300 font-semibold py-2 rounded-lg w-full">
                             {t("holidayCalendar.loading", "Cargando...")}
                           </div>
                         ) : !hasApiKey || !apiKeyValid ? (
                           <Link
                             href="/profile"
-                            className="inline-flex items-center justify-center gap-2 bg-yellow-600 hover:bg-yellow-700 text-white font-semibold py-3.5 rounded-lg transition-colors w-full"
+                            className="inline-flex items-center justify-center gap-2 bg-yellow-600 hover:bg-yellow-700 text-white font-semibold py-2 rounded-lg transition-colors w-full"
                           >
                             {t("holidayCalendar.linkApiKey", "VINCULA API KEY")}
                           </Link>
                         ) : participatedDays.has(day.giveawayId || '') ? (
-                          <div className="inline-flex items-center justify-center gap-2 bg-gray-600 text-gray-300 font-semibold py-3.5 rounded-lg w-full">
+                          <div className="inline-flex items-center justify-center gap-2 bg-gray-600 text-gray-300 font-semibold py-2 rounded-lg w-full">
                             {accountInfo?.name || t("holidayCalendar.registered", "APUNTADO")}
                           </div>
                         ) : (
@@ -917,8 +917,8 @@ export default function AdventCalendar({
                             onClick={() => handleParticipateClick(day.day)}
                             disabled={isParticipating}
                             className={`
-                            w-full py-4 rounded-lg
-                            font-bold text-white text-lg
+                            w-full py-4 lg:py-3 rounded-lg
+                            font-bold text-white text-lg lg:text-base
                             transition-all duration-200
                             bg-gradient-to-r from-teal-600 to-green-600 hover:from-teal-700 hover:to-green-700 active:scale-95 shadow-lg
                           `}
