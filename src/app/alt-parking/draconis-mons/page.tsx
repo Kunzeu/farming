@@ -255,6 +255,29 @@ export default function DraconisMonsLocationPage() {
 
     fetchRecipeData();
   }, [t]);
+  const [prices, setPrices] = useState<Record<number, number>>({});
+
+  // Fetch prices for Unidentified Gear, Recipe, Crystal, Orbs, and Medallions
+  useEffect(() => {
+    const fetchPrices = async () => {
+      try {
+        const ids = [84731, 83008, 67178, 24473, 24508, 24476, 24533]; // Green Unid, Yellow Unid, Recipe, Crystal, Orb, Medallion, Crest
+        const response = await fetch(`https://api.guildwars2.com/v2/commerce/prices?ids=${ids.join(',')}`);
+        if (response.ok) {
+          const data = await response.json();
+          const newPrices: Record<number, number> = {};
+          data.forEach((item: any) => {
+            newPrices[item.id] = item.sells.unit_price;
+          });
+          setPrices(newPrices);
+        }
+      } catch (error) {
+        console.error('Error fetching prices:', error);
+      }
+    };
+
+    fetchPrices();
+  }, []);
 
   const categories = [
     { key: "all", label: t("altParking.stats.allCategories", "Todas las categorías") },
@@ -280,10 +303,65 @@ export default function DraconisMonsLocationPage() {
   };
 
   const formatNumber = (num: number) => {
-    return num.toLocaleString('en-US', { 
-      minimumFractionDigits: 0, 
-      maximumFractionDigits: 2 
+    return num.toLocaleString('en-US', {
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 2
     });
+  };
+
+  const getUnitPrice = (reward: typeof draconisMonsData.rewards[0]) => {
+    switch (reward.nameKey) {
+      case "altParking.rewards.unboundMagic":
+        return 0.0009; // 9 copper
+      case "altParking.rewards.fireOrchidBlossom":
+        return 0.0324; // 15 copper (User requested)
+      case "altParking.rewards.greenUnids":
+        return (prices[84731] || 0) / 10000; // Price in Gold (after tax)
+      case "altParking.rewards.yellowUnids":
+      case "altParking.rewards.rare":
+        return (prices[83008] || 0) / 10000; // Price in Gold (after tax)
+      case "altParking.rewards.recipes":
+        return (prices[67178] || 0) / 10000; // Price in Gold (after tax)
+      case "altParking.rewards.empyreal":
+        return 0.0030; // 30 copper
+      case "altParking.rewards.exotic":
+        return 0.45; // 45 silver
+      case "altParking.rewards.crystal":
+        return (prices[24473] || 0) / 10000; // Price in Gold (after tax)
+      case "altParking.rewards.orbs":
+        return (prices[24508] || 0) / 10000; // Price in Gold (after tax)
+      case "altParking.rewards.medallion":
+        return (prices[24476] || 0) / 10000; // Price in Gold (after tax)
+      case "altParking.rewards.crest":
+        return (prices[24533] || 0) / 10000; // Price in Gold (after tax)
+      default:
+        return 0;
+    }
+  };
+
+  const calculateValue = (reward: typeof draconisMonsData.rewards[0]) => {
+    const avg = reward.avgPerCharacter;
+    return avg * getUnitPrice(reward);
+  };
+
+  const formatGold = (amount: number) => {
+    const gold = Math.floor(amount);
+    const silver = Math.floor((amount - gold) * 100);
+    const copper = Math.round(((amount - gold) * 100 - silver) * 100);
+
+    return (
+      <div className="flex items-center justify-end gap-1">
+        <span className="flex items-center text-gray-300">
+          {gold} <Image src="https://wiki.guildwars2.com/images/d/d1/Gold_coin.png" alt="Gold" width={14} height={14} className="ml-0.5" />
+        </span>
+        <span className="flex items-center text-gray-300">
+          {silver.toString().padStart(2, '0')} <Image src="https://wiki.guildwars2.com/images/3/3c/Silver_coin.png" alt="Silver" width={14} height={14} className="ml-0.5" />
+        </span>
+        <span className="flex items-center text-gray-300">
+          {copper.toString().padStart(2, '0')} <Image src="https://wiki.guildwars2.com/images/e/eb/Copper_coin.png" alt="Copper" width={14} height={14} className="ml-0.5" />
+        </span>
+      </div>
+    );
   };
 
   const filteredRewards = getFilteredRewards();
@@ -349,6 +427,24 @@ export default function DraconisMonsLocationPage() {
                   {t("altParking.draconisMons.exoticWarning", "Cabe la posibilidad, ínfima, de que caigan exóticos y ascendidos")}
                 </p>
               </div>
+
+
+
+              {/* Data Source Credits */}
+              <div className="mt-8 text-center border-t border-gray-700/50 pt-6">
+                <p className="text-gray-400 text-sm">
+                  {t("altParking.dataSource", "Data Source")}:{" "}
+                  <a
+                    href="https://www.twitch.tv/vortus43"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-purple-400 hover:text-purple-300 font-medium transition-colors"
+                  >
+                    Vortus43
+                  </a>
+                  , <span className="text-gray-300">NeoXare.1625</span>, <span className="text-gray-300">Rc Ganz.2315</span>, <span className="text-gray-300">kusanagi.1093</span>
+                </p>
+              </div>
             </motion.div>
           </div>
 
@@ -369,8 +465,8 @@ export default function DraconisMonsLocationPage() {
                 </div>
                 <p className="text-2xl font-bold text-white">{draconisMonsData.totalCharacters}</p>
               </div>
-              
-              
+
+
               <div className="bg-gradient-to-r from-yellow-500/10 to-orange-500/10 rounded-lg p-4 border border-yellow-500/20">
                 <div className="flex items-center gap-2 mb-2">
                   <Clock className="w-4 h-4 text-yellow-400" />
@@ -380,7 +476,7 @@ export default function DraconisMonsLocationPage() {
                 </div>
                 <p className="text-2xl font-bold text-white">{t("altParking.stats.timeRequiredValue", "1 minuto")}</p>
               </div>
-              
+
               <div className="bg-gradient-to-r from-purple-500/10 to-pink-500/10 rounded-lg p-4 border border-purple-500/20">
                 <div className="flex items-center gap-2 mb-2">
                   <Coins className="w-4 h-4 text-purple-400" />
@@ -388,7 +484,10 @@ export default function DraconisMonsLocationPage() {
                     {t("altParking.stats.dailyReward", "Diario")}
                   </span>
                 </div>
-                <p className="text-2xl font-bold text-white">{t("altParking.draconisMons.dailyReward", "2-5g")}</p>
+                <div className="text-2xl font-bold text-white">
+                  {formatGold(draconisMonsData.rewards
+                    .reduce((acc, reward) => acc + calculateValue(reward), 0))}
+                </div>
               </div>
             </div>
           </motion.div>
@@ -415,7 +514,7 @@ export default function DraconisMonsLocationPage() {
                   </p>
                 </div>
               </div>
-              
+
               {/* Filtro de categorías */}
               <div className="flex items-center gap-2">
                 <select
@@ -446,6 +545,12 @@ export default function DraconisMonsLocationPage() {
                     <th className="text-right py-3 px-4 text-sm font-semibold text-gray-300">
                       {t("altParking.stats.avgPerCharacter", "Promedio por Personaje")}
                     </th>
+                    <th className="text-right py-3 px-4 text-sm font-semibold text-gray-300">
+                      {t("altParking.stats.unitPrice", "Precio Unitario")}
+                    </th>
+                    <th className="text-right py-3 px-4 text-sm font-semibold text-gray-300">
+                      {t("altParking.stats.estimatedValue", "Valor Estimado")}
+                    </th>
                   </tr>
                 </thead>
                 <tbody>
@@ -455,17 +560,16 @@ export default function DraconisMonsLocationPage() {
                       initial={{ opacity: 0, y: 10 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: 0.5 + index * 0.05 }}
-                      className={`border-b border-gray-700/30 hover:bg-gray-800/30 transition-colors ${
-                        index % 2 === 0 ? 'bg-orange-500/5' : 'bg-blue-500/5'
-                      }`}
+                      className={`border-b border-gray-700/30 hover:bg-gray-800/30 transition-colors ${index % 2 === 0 ? 'bg-orange-500/5' : 'bg-blue-500/5'
+                        }`}
                     >
                       <td className="py-3 px-4">
                         <div className="flex items-center gap-2">
                           <div className={`w-3 h-3 rounded-full bg-gradient-to-r ${getCategoryColor(reward.category)}`}></div>
                           {reward.nameKey === "altParking.rewards.fireOrchidBlossom" ? (
                             <div className="flex items-center gap-2">
-                              <Image 
-                                src={fireOrchidData?.icon || "https://wiki.guildwars2.com/images/e/ed/Fire_Orchid_Blossom.png"} 
+                              <Image
+                                src={fireOrchidData?.icon || "https://wiki.guildwars2.com/images/e/ed/Fire_Orchid_Blossom.png"}
                                 alt={fireOrchidData?.name || "Fire Orchid Blossom"}
                                 width={32}
                                 height={32}
@@ -481,8 +585,8 @@ export default function DraconisMonsLocationPage() {
                             </div>
                           ) : reward.nameKey === "altParking.rewards.greenUnids" ? (
                             <div className="flex items-center gap-2">
-                              <Image 
-                                src={greenUnidsData?.icon || "https://wiki.guildwars2.com/images/4/47/Piece_of_Unidentified_Gear.png"} 
+                              <Image
+                                src={greenUnidsData?.icon || "https://wiki.guildwars2.com/images/4/47/Piece_of_Unidentified_Gear.png"}
                                 alt={greenUnidsData?.name || "Piece of Unidentified Gear"}
                                 width={32}
                                 height={32}
@@ -498,8 +602,8 @@ export default function DraconisMonsLocationPage() {
                             </div>
                           ) : reward.nameKey === "altParking.rewards.yellowUnids" ? (
                             <div className="flex items-center gap-2">
-                              <Image 
-                                src={yellowUnidsData?.icon || "https://wiki.guildwars2.com/images/e/e5/Piece_of_Rare_Unidentified_Gear.png"} 
+                              <Image
+                                src={yellowUnidsData?.icon || "https://wiki.guildwars2.com/images/e/e5/Piece_of_Rare_Unidentified_Gear.png"}
                                 alt={yellowUnidsData?.name || "Piece of Rare Unidentified Gear"}
                                 width={32}
                                 height={32}
@@ -515,8 +619,8 @@ export default function DraconisMonsLocationPage() {
                             </div>
                           ) : reward.nameKey === "altParking.rewards.crystal" ? (
                             <div className="flex items-center gap-2">
-                              <Image 
-                                src="https://wiki.guildwars2.com/images/b/b7/Emerald_Crystal.png" 
+                              <Image
+                                src="https://wiki.guildwars2.com/images/b/b7/Emerald_Crystal.png"
                                 alt="Crystal"
                                 width={32}
                                 height={32}
@@ -532,8 +636,8 @@ export default function DraconisMonsLocationPage() {
                             </div>
                           ) : reward.nameKey === "altParking.rewards.orbs" ? (
                             <div className="flex items-center gap-2">
-                              <Image 
-                                src="https://wiki.guildwars2.com/images/7/73/Ruby_Orb.png" 
+                              <Image
+                                src="https://wiki.guildwars2.com/images/7/73/Ruby_Orb.png"
                                 alt="Ruby Orb"
                                 width={32}
                                 height={32}
@@ -549,8 +653,8 @@ export default function DraconisMonsLocationPage() {
                             </div>
                           ) : reward.nameKey === "altParking.rewards.medallion" ? (
                             <div className="flex items-center gap-2">
-                              <Image 
-                                src="https://wiki.guildwars2.com/images/c/cc/Medallion_of_the_Shaman.png" 
+                              <Image
+                                src="https://wiki.guildwars2.com/images/c/cc/Medallion_of_the_Shaman.png"
                                 alt="Medallion of the Shaman"
                                 width={32}
                                 height={32}
@@ -566,8 +670,8 @@ export default function DraconisMonsLocationPage() {
                             </div>
                           ) : reward.nameKey === "altParking.rewards.crest" ? (
                             <div className="flex items-center gap-2">
-                              <Image 
-                                src="https://wiki.guildwars2.com/images/d/d2/Crest_of_the_Assassin.png" 
+                              <Image
+                                src="https://wiki.guildwars2.com/images/d/d2/Crest_of_the_Assassin.png"
                                 alt="Crest of the Assassin"
                                 width={32}
                                 height={32}
@@ -583,8 +687,8 @@ export default function DraconisMonsLocationPage() {
                             </div>
                           ) : reward.nameKey === "altParking.rewards.empyreal" ? (
                             <div className="flex items-center gap-2">
-                              <Image 
-                                src={empyrealData?.icon || "https://wiki.guildwars2.com/images/2/2f/Empyreal_Fragment.png"} 
+                              <Image
+                                src={empyrealData?.icon || "https://wiki.guildwars2.com/images/2/2f/Empyreal_Fragment.png"}
                                 alt={empyrealData?.name || "Empyreal Fragment"}
                                 width={32}
                                 height={32}
@@ -600,8 +704,8 @@ export default function DraconisMonsLocationPage() {
                             </div>
                           ) : reward.nameKey === "altParking.rewards.recipes" ? (
                             <div className="flex items-center gap-2">
-                              <Image 
-                                src={recipeData?.icon || "https://wiki.guildwars2.com/images/6/60/Recipe_sheet_superior_rune.png"} 
+                              <Image
+                                src={recipeData?.icon || "https://wiki.guildwars2.com/images/6/60/Recipe_sheet_superior_rune.png"}
                                 alt={recipeData?.name || "Recipe Sheet"}
                                 width={32}
                                 height={32}
@@ -617,8 +721,8 @@ export default function DraconisMonsLocationPage() {
                             </div>
                           ) : reward.nameKey === "altParking.rewards.unboundMagic" ? (
                             <div className="flex items-center gap-2">
-                              <Image 
-                                src="https://wiki.guildwars2.com/images/1/19/Unbound_Magic_%28highres%29.png" 
+                              <Image
+                                src="https://wiki.guildwars2.com/images/1/19/Unbound_Magic_%28highres%29.png"
                                 alt="Unbound Magic"
                                 width={32}
                                 height={32}
@@ -634,7 +738,7 @@ export default function DraconisMonsLocationPage() {
                             </div>
                           ) : reward.nameKey === "altParking.rewards.exotic" ? (
                             <div className="flex items-center gap-2">
-                              <Image 
+                              <Image
                                 src={exoticData?.icon || "https://wiki.guildwars2.com/images/0/07/X7-10_Alpha.png"}
                                 alt={exoticData?.name || "Exotic Item"}
                                 width={32}
@@ -651,7 +755,7 @@ export default function DraconisMonsLocationPage() {
                             </div>
                           ) : reward.nameKey === "altParking.rewards.rare" ? (
                             <div className="flex items-center gap-2">
-                              <Image 
+                              <Image
                                 src={rareData?.icon || "https://wiki.guildwars2.com/images/6/6b/Fine_Greatsword.png"}
                                 alt={rareData?.name || "Rare Item"}
                                 width={32}
@@ -678,8 +782,14 @@ export default function DraconisMonsLocationPage() {
                       </td>
                       <td className="py-3 px-4 text-right">
                         <span className="text-green-400 font-semibold">
-                          {`${formatNumber(reward.avgPerCharacter)} %`}
+                          {formatNumber(reward.avgPerCharacter)}
                         </span>
+                      </td>
+                      <td className="py-3 px-4 text-right">
+                        {formatGold(getUnitPrice(reward))}
+                      </td>
+                      <td className="py-3 px-4 text-right">
+                        {formatGold(calculateValue(reward))}
                       </td>
                     </motion.tr>
                   ))}

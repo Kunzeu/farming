@@ -458,7 +458,9 @@ export default function AdventCalendar({
             }
           }
 
-          // Recargar sorteos para actualizar contadores
+          // No recargar sorteos inmediatamente para evitar bucles infinitos y sobrecarga de API
+          // Los contadores se actualizarán en el siguiente intervalo de 30 segundos
+          /*
           const giveawaysResponse = await fetch("/api/giveaways", {
             cache: "no-store",
             headers: {
@@ -466,41 +468,12 @@ export default function AdventCalendar({
             },
           });
           if (giveawaysResponse.ok) {
-            const giveawaysData = await giveawaysResponse.json();
-            const giveawaysMap: Record<string, {
-              id: string;
-              startDate: string;
-              endDate: string;
-              status: string;
-              participantCount: number;
-              prizes: Array<{
-                itemId?: number;
-                quantity?: number;
-                gemPrize?: boolean;
-                itemIcon?: string;
-              }>;
-            }> = {};
-            giveawaysData.giveaways?.forEach((giveaway: {
-              id: string;
-              startDate: string;
-              endDate: string;
-              status: string;
-              participantCount: number;
-              prizes: Array<{
-                itemId?: number;
-                quantity?: number;
-                gemPrize?: boolean;
-                itemIcon?: string;
-              }>;
-            }) => {
-              if (giveaway.id.startsWith('advent-')) {
-                giveawaysMap[giveaway.id] = giveaway;
-              }
-            });
-            setGiveaways(giveawaysMap);
+             // ... (código eliminado para evitar bucle)
           }
+          */
         }
-      } catch (error) {
+      }
+      catch (error) {
         console.error("Error auto-enrolling Patreons:", error);
       }
     };

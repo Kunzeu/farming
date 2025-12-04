@@ -2471,6 +2471,8 @@
   "altParking.stats.reward": "Récompense",
   "altParking.stats.quantity": "Quantité",
   "altParking.stats.avgPerCharacter": "Moyenne par Personnage",
+  "altParking.stats.unitPrice": "Prix Unitaire",
+  "altParking.stats.estimatedValue": "Valeur Estimée",
   "altParking.stats.note": "Ces statistiques sont basées sur des données réelles de la communauté Guild Wars 2.",
   "altParking.locations.draconisMonsDescription": "Emplacement idéal pour collecter les récompenses quotidiennes. Excellent pour les débutants.",
   "altParking.locations.tequatlDescription": "Excellent emplacement pour collecter les récompenses du boss mondial Tequatl. Nécessite de la coordination.",
