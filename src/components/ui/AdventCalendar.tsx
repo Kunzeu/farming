@@ -820,14 +820,15 @@ export default function AdventCalendar({
                             day.day === 3 ? "/images/assets/day3.webp" :
                               day.day === 4 ? "/images/assets/day4.webp" :
                                 (day.day === 5 && day.isAvailable) ? "/images/assets/day5.webp" :
-                                  day.day === 7 ? "/images/assets/daily.webp" :
-                                    day.day === 14 ? "/images/assets/daily.webp" :
-                                      (day.day === 17 && day.isAvailable) ? "/images/assets/day17.webp" :
-                                        day.day === 21 ? "/images/assets/daily.webp" :
-                                          day.day === 25 ? "/images/assets/day25.webp?v=2" :
-                                            day.day === 28 ? "/images/assets/daily.webp" :
-                                              day.day === 31 ? "/images/assets/daily.webp" :
-                                                (day.day === 32 && isAdmin) ? "/images/assets/day3.webp" :
+                                 (day.day === 6 && day.isAvailable) ? "/images/assets/day6.webp" :
+                                   day.day === 7 ? "/images/assets/daily.webp" :
+                                     day.day === 14 ? "/images/assets/daily.webp" :
+                                       (day.day === 17 && day.isAvailable) ? "/images/assets/day17.webp" :
+                                         day.day === 21 ? "/images/assets/daily.webp" :
+                                           day.day === 25 ? "/images/assets/day25.webp?v=2" :
+                                             day.day === 28 ? "/images/assets/daily.webp" :
+                                               day.day === 31 ? "/images/assets/daily.webp" :
+                                                 (day.day === 32 && isAdmin) ? "/images/assets/day3.webp" :
 
                                                   "/images/assets/soon.webp"
                       }
