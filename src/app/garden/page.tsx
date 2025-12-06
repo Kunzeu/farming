@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-;
+
 import { motion } from 'framer-motion';
 import Navigation from '@/components/layout/Navigation';
 import Image from 'next/image';
@@ -24,22 +24,24 @@ import {
 import { useI18n } from '@/contexts/I18nContext';
 import { usePageTitle } from '@/hooks/usePageTitle';
 import { useGW2Items } from '@/hooks/useGW2ItemCache';
+import WikiTooltip from '@/components/ui/WikiTooltip';
+import { GW2Item } from '@/types/gw2';
 
 const JardinesPage = () => {
   const { t, lang } = useI18n();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [selectedSection, setSelectedSection] = useState('introduction');
-  const [consortiumSickleData, setConsortiumSickleData] = useState<{ name: string, icon: string } | null>(null);
-  const [unboundMiningData, setUnboundMiningData] = useState<{ name: string, icon: string } | null>(null);
-  const [unboundLoggingData, setUnboundLoggingData] = useState<{ name: string, icon: string } | null>(null);
-  const [alternativeSickleData, setAlternativeSickleData] = useState<{ name: string, icon: string } | null>(null);
-  const [alternativeMSickleData, setAlternativeMSickleData] = useState<{ name: string, icon: string } | null>(null);
-  const [volatileHarvestingSickleData, setVolatileHarvestingSickleData] = useState<{ name: string, icon: string } | null>(null);
-  const [itemBoosterData, setItemBoosterData] = useState<{ name: string, icon: string } | null>(null);
-  const [guildBannerData, setGuildBannerData] = useState<{ name: string, icon: string } | null>(null);
-  const [xpBoosterData, setXpBoosterData] = useState<{ name: string, icon: string } | null>(null);
-  const [candyGobblerData, setCandyGobblerData] = useState<{ name: string, icon: string } | null>(null);
-  const [volatileMagicGlyphData, setVolatileMagicGlyphData] = useState<{ name: string, icon: string } | null>(null);
+  const [consortiumSickleData, setConsortiumSickleData] = useState<GW2Item | null>(null);
+  const [unboundMiningData, setUnboundMiningData] = useState<GW2Item | null>(null);
+  const [unboundLoggingData, setUnboundLoggingData] = useState<GW2Item | null>(null);
+  const [alternativeSickleData, setAlternativeSickleData] = useState<GW2Item | null>(null);
+  const [alternativeMSickleData, setAlternativeMSickleData] = useState<GW2Item | null>(null);
+  const [volatileHarvestingSickleData, setVolatileHarvestingSickleData] = useState<GW2Item | null>(null);
+  const [itemBoosterData, setItemBoosterData] = useState<GW2Item | null>(null);
+  const [guildBannerData, setGuildBannerData] = useState<GW2Item | null>(null);
+  const [xpBoosterData, setXpBoosterData] = useState<GW2Item | null>(null);
+  const [candyGobblerData, setCandyGobblerData] = useState<GW2Item | null>(null);
+  const [volatileMagicGlyphData, setVolatileMagicGlyphData] = useState<GW2Item | null>(null);
   const [copiedWaypoint, setCopiedWaypoint] = useState<string | null>(null);
   const [list1Copied, setList1Copied] = useState(false);
   const [list2Copied, setList2Copied] = useState(false);
@@ -110,7 +112,7 @@ const JardinesPage = () => {
   ];
 
   // Obtener datos de los items de la API con caché optimizado
-  const itemIds = [42594, 80977, 80979, 102000, 67032, 20003, 39699, 20002, 67393, 87698];
+  const itemIds = [42594, 80977, 80979, 102000, 67032, 20003, 39699, 20002, 67393, 87698, 85733];
   const { items: itemsData } = useGW2Items(itemIds, lang);
 
   // Mapear los resultados a los estados correspondientes cuando los datos estén disponibles
@@ -118,7 +120,8 @@ const JardinesPage = () => {
     if (!itemsData || Object.keys(itemsData).length === 0) return;
 
     Object.values(itemsData).forEach((item) => {
-      const itemData = { name: item.name, icon: item.icon || '' };
+      // Usar el objeto completo, no solo nombre e icono
+      const itemData = item;
 
       switch (item.id) {
         case 42594:
@@ -258,16 +261,6 @@ const JardinesPage = () => {
     window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
-
-  // Función para generar URL de la wiki
-  const getWikiUrl = (name: string) => {
-    if (!name) return '#';
-    const normalizedName = name.replace(/ /g, '_');
-    if (lang === 'en') {
-      return `https://wiki.guildwars2.com/wiki/${normalizedName}`;
-    }
-    return `https://wiki-${lang}.guildwars2.com/wiki/${normalizedName}`;
-  };
 
 
   // Función para copiar waypoint al portapapeles
@@ -696,16 +689,16 @@ const JardinesPage = () => {
                                 target.src = "https://wiki.guildwars2.com/images/3/3e/Consortium_Harvesting_Sickle.png";
                               }}
                             />
-                            <a
-                              href={getWikiUrl(consortiumSickleData?.name || t('gardenPage.sections.gardenTypes.consortiumSickle'))}
-                              target="_blank"
-                              rel="noopener noreferrer"
+                            <WikiTooltip
+                              itemId={42594}
+                              itemData={consortiumSickleData}
+                              fallbackName={t('gardenPage.sections.gardenTypes.consortiumSickle')}
                               className="text-emerald-300 font-medium text-sm hover:text-emerald-200 hover:underline transition-colors"
                             >
                               {consortiumSickleData?.name || t('gardenPage.sections.gardenTypes.consortiumSickle')}
-                            </a>
+                            </WikiTooltip>
                           </div>
-                          <span className="text-xs text-emerald-400/70 ml-9">{t('gardenPage.sections.gardenTypes.speed')}: 166%</span>
+                          <span className="text-xs text-emerald-400/70 ml-9">{t('gardenPage.sections.gardenTypes.speed')}: 150%</span>
                         </div>
 
                         {/* Herramienta Alternativa */}
@@ -723,16 +716,16 @@ const JardinesPage = () => {
                                 target.src = "https://wiki.guildwars2.com/images/d/df/Eldritch_Horror_Harvesting_Tool.png";
                               }}
                             />
-                            <a
-                              href={getWikiUrl(alternativeSickleData?.name || t('gardenPage.sections.gardenTypes.eldritchHorrorHarvestingTool'))}
-                              target="_blank"
-                              rel="noopener noreferrer"
+                            <WikiTooltip
+                              itemId={102000}
+                              itemData={alternativeSickleData}
+                              fallbackName={t('gardenPage.sections.gardenTypes.eldritchHorrorHarvestingTool')}
                               className="text-emerald-300 font-medium text-sm hover:text-emerald-200 hover:underline transition-colors"
                             >
                               {alternativeSickleData?.name || t('gardenPage.sections.gardenTypes.eldritchHorrorHarvestingTool')}
-                            </a>
+                            </WikiTooltip>
                           </div>
-                          <span className="text-xs text-emerald-400/70 ml-9">{t('gardenPage.sections.gardenTypes.speed')}: 150%</span>
+                          <span className="text-xs text-emerald-400/70 ml-9">{t('gardenPage.sections.gardenTypes.speed')}: 166%</span>
                         </div>
 
                         {/* Herramienta Alternativa 2 */}
@@ -750,14 +743,14 @@ const JardinesPage = () => {
                                 target.src = "https://wiki.guildwars2.com/images/1/1b/Fused_Molten_Sickle.png";
                               }}
                             />
-                            <a
-                              href={getWikiUrl(alternativeMSickleData?.name || t('gardenPage.sections.gardenTypes.fusedMoltenSickle'))}
-                              target="_blank"
-                              rel="noopener noreferrer"
+                            <WikiTooltip
+                              itemId={67032}
+                              itemData={alternativeMSickleData}
+                              fallbackName={t('gardenPage.sections.gardenTypes.fusedMoltenSickle')}
                               className="text-emerald-300 font-medium text-sm hover:text-emerald-200 hover:underline transition-colors"
                             >
                               {alternativeMSickleData?.name || t('gardenPage.sections.gardenTypes.fusedMoltenSickle')}
-                            </a>
+                            </WikiTooltip>
                           </div>
                           <span className="text-xs text-emerald-400/70 ml-9">{t('gardenPage.sections.gardenTypes.speed')}: 150%</span>
                         </div>
@@ -777,14 +770,14 @@ const JardinesPage = () => {
                                 target.src = "https://wiki.guildwars2.com/images/5/57/Volatile_Harvesting_Sickle.png";
                               }}
                             />
-                            <a
-                              href={getWikiUrl(volatileHarvestingSickleData?.name || t('gardenPage.sections.gardenTypes.volatileHarvestingSickle'))}
-                              target="_blank"
-                              rel="noopener noreferrer"
+                            <WikiTooltip
+                              itemId={85733}
+                              itemData={volatileHarvestingSickleData}
+                              fallbackName={t('gardenPage.sections.gardenTypes.volatileHarvestingSickle')}
                               className="text-emerald-300 font-medium text-sm hover:text-emerald-200 hover:underline transition-colors"
                             >
                               {volatileHarvestingSickleData?.name || t('gardenPage.sections.gardenTypes.volatileHarvestingSickle')}
-                            </a>
+                            </WikiTooltip>
                           </div>
                           <span className="text-xs text-emerald-400/70 ml-9">{t('gardenPage.sections.gardenTypes.speed')}: 100%</span>
                         </div>
@@ -824,14 +817,14 @@ const JardinesPage = () => {
                               target.src = "https://wiki.guildwars2.com/images/f/f2/Unbound_Magic_Mining_Beam.png";
                             }}
                           />
-                          <a
-                            href={getWikiUrl(unboundMiningData?.name || t('gardenPage.sections.gardenTypes.unboundMining'))}
-                            target="_blank"
-                            rel="noopener noreferrer"
+                          <WikiTooltip
+                            itemId={80977}
+                            itemData={unboundMiningData}
+                            fallbackName={t('gardenPage.sections.gardenTypes.unboundMining')}
                             className="text-emerald-300 font-medium text-sm hover:text-emerald-200 hover:underline transition-colors"
                           >
                             {unboundMiningData?.name || t('gardenPage.sections.gardenTypes.unboundMining')}
-                          </a>
+                          </WikiTooltip>
                         </div>
                       </div>
                     </div>
@@ -865,14 +858,14 @@ const JardinesPage = () => {
                               target.src = "https://wiki.guildwars2.com/images/c/c5/Unbound_Magic_Logging_Pulse.png";
                             }}
                           />
-                          <a
-                            href={getWikiUrl(unboundLoggingData?.name || t('gardenPage.sections.gardenTypes.unboundLogging'))}
-                            target="_blank"
-                            rel="noopener noreferrer"
+                          <WikiTooltip
+                            itemId={80979}
+                            itemData={unboundLoggingData}
+                            fallbackName={t('gardenPage.sections.gardenTypes.unboundLogging')}
                             className="text-emerald-300 font-medium text-sm hover:text-emerald-200 hover:underline transition-colors"
                           >
                             {unboundLoggingData?.name || t('gardenPage.sections.gardenTypes.unboundLogging')}
-                          </a>
+                          </WikiTooltip>
                         </div>
                       </div>
                     </div>
@@ -898,14 +891,14 @@ const JardinesPage = () => {
                       className="rounded inline"
                       unoptimized
                     />
-                    <a
-                      href={getWikiUrl(volatileMagicGlyphData?.name || t('gardenPage.sections.glyphs.fallbackName'))}
-                      target="_blank"
-                      rel="noopener noreferrer"
+                    <WikiTooltip
+                      itemId={87698}
+                      itemData={volatileMagicGlyphData}
+                      fallbackName={t('gardenPage.sections.glyphs.fallbackName')}
                       className="hover:text-emerald-200 hover:underline transition-colors"
                     >
                       {volatileMagicGlyphData?.name || t('gardenPage.sections.glyphs.fallbackName')}
-                    </a>
+                    </WikiTooltip>
                   </span>
                   {t('gardenPage.sections.glyphs.benefit')}
                 </p>
@@ -938,14 +931,14 @@ const JardinesPage = () => {
                           />
                         )}
                         <h3 className="text-xl font-bold text-white">
-                          <a
-                            href={getWikiUrl(itemBoosterData?.name || t('gardenPage.sections.buffs.itemBooster.title'))}
-                            target="_blank"
-                            rel="noopener noreferrer"
+                          <WikiTooltip
+                            itemId={20003}
+                            itemData={itemBoosterData}
+                            fallbackName={t('gardenPage.sections.buffs.itemBooster.title')}
                             className="hover:text-emerald-400 transition-colors"
                           >
                             {itemBoosterData?.name || t('gardenPage.sections.buffs.itemBooster.title')}
-                          </a>
+                          </WikiTooltip>
                         </h3>
                       </div>
                       <p className="text-gray-300 mb-2">{t('gardenPage.sections.buffs.itemBooster.description')}</p>
@@ -966,14 +959,14 @@ const JardinesPage = () => {
                           />
                         )}
                         <h3 className="text-xl font-bold text-white">
-                          <a
-                            href={getWikiUrl(guildBannerData?.name || t('gardenPage.sections.buffs.guildBanner.title'))}
-                            target="_blank"
-                            rel="noopener noreferrer"
+                          <WikiTooltip
+                            itemId={39699}
+                            itemData={guildBannerData}
+                            fallbackName={t('gardenPage.sections.buffs.guildBanner.title')}
                             className="hover:text-emerald-400 transition-colors"
                           >
                             {guildBannerData?.name || t('gardenPage.sections.buffs.guildBanner.title')}
-                          </a>
+                          </WikiTooltip>
                         </h3>
                       </div>
                     </div>
@@ -992,14 +985,14 @@ const JardinesPage = () => {
                               unoptimized
                             />
                           )}
-                          <a
-                            href={getWikiUrl(xpBoosterData?.name || 'XP Booster')}
-                            target="_blank"
-                            rel="noopener noreferrer"
+                          <WikiTooltip
+                            itemId={20002}
+                            itemData={xpBoosterData}
+                            fallbackName="XP Booster"
                             className="text-xl font-bold text-white hover:text-emerald-400 transition-colors"
                           >
                             {xpBoosterData?.name || 'XP Booster'}
-                          </a>
+                          </WikiTooltip>
                         </div>
                         <span className="text-gray-400 text-xl">/</span>
                         <div className="flex items-center gap-2">
@@ -1013,14 +1006,14 @@ const JardinesPage = () => {
                               unoptimized
                             />
                           )}
-                          <a
-                            href={getWikiUrl(candyGobblerData?.name || 'Candy Gobbler')}
-                            target="_blank"
-                            rel="noopener noreferrer"
+                          <WikiTooltip
+                            itemId={67393}
+                            itemData={candyGobblerData}
+                            fallbackName="Candy Gobbler"
                             className="text-xl font-bold text-white hover:text-emerald-400 transition-colors"
                           >
                             {candyGobblerData?.name || 'Candy Gobbler'}
-                          </a>
+                          </WikiTooltip>
                         </div>
                       </div>
                     </div>
