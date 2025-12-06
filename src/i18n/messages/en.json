@@ -1052,6 +1052,8 @@
   "gardenPage.sections.gardenTypes.unboundMining": "Unbound Magic Mining Beam",
   "gardenPage.sections.gardenTypes.unboundLogging": "Unbound Magic Logging Pulse",
   "gardenPage.sections.gardenTypes.fusedMoltenSickle": "Fused Molten Sickle",
+  "gardenPage.sections.gardenTypes.volatileHarvestingSickle": "Volatile Harvesting Sickle",
+  "gardenPage.sections.gardenTypes.speed": "Speed",
   "gardenPage.sections.buffs.title": "Buffs",
   "gardenPage.sections.glyphs.requirement": "You will need at least 1 ",
   "gardenPage.sections.glyphs.benefit": ", on average, this glyph will give you 6 volatile magic per node.",

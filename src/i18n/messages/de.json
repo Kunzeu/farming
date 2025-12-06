@@ -1048,6 +1048,8 @@
   "gardenPage.sections.gardenTypes.unboundMining": "Bergbaustrahl durch Entfesselte Magie",
   "gardenPage.sections.gardenTypes.unboundLogging": "Holzfäller-Puls durch Entfesselte Magie",
   "gardenPage.sections.gardenTypes.fusedMoltenSickle": "Feurige Pyro-Sichel",
+  "gardenPage.sections.gardenTypes.volatileHarvestingSickle": "Flüchtige Erntesichel",
+  "gardenPage.sections.gardenTypes.speed": "Geschwindigkeit",
   "gardenPage.sections.buffs.title": "Verstärkungen",
   "gardenPage.sections.glyphs.requirement": "Du wirst mindestens 1 ",
   "gardenPage.sections.glyphs.benefit": ", im Durchschnitt gibt dir diese Glyphe 6 Flüchtige Magie pro Knoten.",

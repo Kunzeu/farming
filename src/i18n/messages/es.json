@@ -953,6 +953,8 @@
   "gardenPage.sections.gardenTypes.unboundMining": "Rayo de minería de magia liberada",
   "gardenPage.sections.gardenTypes.unboundLogging": "Pulso de tala de magia liberada",
   "gardenPage.sections.gardenTypes.fusedMoltenSickle": "Hoz fundida fusionada",
+  "gardenPage.sections.gardenTypes.volatileHarvestingSickle": "Hoz de recolección volátil",
+  "gardenPage.sections.gardenTypes.speed": "Velocidad",
   "gardenPage.sections.buffs.title": "Mejoras",
   "gardenPage.sections.glyphs.requirement": "Necesitarás al menos 1 ",
   "gardenPage.sections.glyphs.benefit": ", de media, este glifo te dará 6 de magia volátil por cada nodo.",
