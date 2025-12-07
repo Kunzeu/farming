@@ -86,6 +86,7 @@ export default function AdventCalendar({
   }>>([]);
   const [giveawayToSelectWinners, setGiveawayToSelectWinners] = useState<string | null>(null);
   const [autoParticipatedGiveaways, setAutoParticipatedGiveaways] = useState<Set<string>>(new Set());
+  const [hasAutoEnrolled, setHasAutoEnrolled] = useState(false);
 
   // Cargar sorteos desde la API
   useEffect(() => {
@@ -140,8 +141,8 @@ export default function AdventCalendar({
 
     loadGiveaways();
 
-    // Recargar cada 30 segundos para actualizar contadores
-    const interval = setInterval(loadGiveaways, 30000);
+    // Recargar cada 5 minutos para actualizar contadores
+    const interval = setInterval(loadGiveaways, 300000);
 
     return () => clearInterval(interval);
   }, []);
@@ -362,6 +363,11 @@ export default function AdventCalendar({
   // y los inscribe automáticamente en sorteos disponibles
   useEffect(() => {
     const autoEnrollAllPatreons = async () => {
+      // Si ya se ha ejecutado el auto-enroll, no volver a ejecutar
+      if (hasAutoEnrolled) {
+        return;
+      }
+
       // Esperar a que se carguen los datos
       if (isLoadingApiKey || isLoadingParticipations || adventDays.length === 0) {
         return;
@@ -475,6 +481,8 @@ export default function AdventCalendar({
       }
       catch (error) {
         console.error("Error auto-enrolling Patreons:", error);
+      } finally {
+        setHasAutoEnrolled(true);
       }
     };
 
@@ -485,7 +493,7 @@ export default function AdventCalendar({
     }, delay);
 
     return () => clearTimeout(timeoutId);
-  }, [isLoadingApiKey, isLoadingParticipations, adventDays, autoParticipatedGiveaways, isAuthenticated, user?.id, year, month]);
+  }, [isLoadingApiKey, isLoadingParticipations, adventDays, autoParticipatedGiveaways, isAuthenticated, user?.id, year, month, hasAutoEnrolled]);
 
   // Abrir modal de confirmación
   const handleParticipateClick = (day: number) => {
@@ -820,23 +828,23 @@ export default function AdventCalendar({
                             day.day === 3 ? "/images/assets/day3.webp" :
                               day.day === 4 ? "/images/assets/day4.webp" :
                                 day.day === 5 ? "/images/assets/day5.webp" :
-                                 day.day === 6 ? "/images/assets/day6.webp" :
-                                  day.day === 7 ? "/images/assets/day7.webp" :
-                                   day.day === 8 && day.isAvailable ? "/images/assets/day8.webp" :
-                                    day.day === 9 && !day.isAvailable ? "/images/assets/day9.webp" :
-                                      day.day === 10 && day.isAvailable ? "/images/assets/day10.webp" :
-                                        day.day === 11 && !day.isAvailable ? "/images/assets/day11.webp" :
-                                          day.day === 12 && day.isAvailable ? "/images/assets/day12.webp" :
-                                           day.day === 13 && !day.isAvailable ? "/images/assets/day13.webp" :
-                                            day.day === 14 ? "/images/assets/daily.webp" :
-                                              (day.day === 17 && day.isAvailable) ? "/images/assets/day17.webp" :
-                                                day.day === 21 ? "/images/assets/daily.webp" :
-                                                  day.day === 25 ? "/images/assets/day25.webp?v=2" :
-                                                    day.day === 28 ? "/images/assets/daily.webp" :
-                                                      day.day === 31 ? "/images/assets/daily.webp" :
-                                                        (day.day === 32 && isAdmin) ? "/images/assets/day3.webp" :
+                                  day.day === 6 ? "/images/assets/day6.webp" :
+                                    day.day === 7 ? "/images/assets/day7.webp" :
+                                      day.day === 8 && day.isAvailable ? "/images/assets/day8.webp" :
+                                        day.day === 9 && !day.isAvailable ? "/images/assets/day9.webp" :
+                                          day.day === 10 && day.isAvailable ? "/images/assets/day10.webp" :
+                                            day.day === 11 && !day.isAvailable ? "/images/assets/day11.webp" :
+                                              day.day === 12 && day.isAvailable ? "/images/assets/day12.webp" :
+                                                day.day === 13 && !day.isAvailable ? "/images/assets/day13.webp" :
+                                                  day.day === 14 ? "/images/assets/daily.webp" :
+                                                    (day.day === 17 && day.isAvailable) ? "/images/assets/day17.webp" :
+                                                      day.day === 21 ? "/images/assets/daily.webp" :
+                                                        day.day === 25 ? "/images/assets/day25.webp?v=2" :
+                                                          day.day === 28 ? "/images/assets/daily.webp" :
+                                                            day.day === 31 ? "/images/assets/daily.webp" :
+                                                              (day.day === 32 && isAdmin) ? "/images/assets/day3.webp" :
 
-                                                  "/images/assets/soon.webp"
+                                                                "/images/assets/soon.webp"
                       }
                       alt={`Día ${day.day}`}
                       fill
