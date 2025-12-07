@@ -179,9 +179,7 @@ export function generateAdventGiveaways(year: number = 2025): Giveaway[] {
       ],
       7: [
         { position: 1, prize: '1', icon: 'package', itemId: 30703, quantity: 1 }, // Sunrise
-        { position: 2, prize: '400', icon: 'gem', quantity: 400, gemPrize: true }, // Gems
-        { position: 3, prize: '400', icon: 'gem', quantity: 400, gemPrize: true }, // Gems
-        { position: 4, prize: '400', icon: 'gem', quantity: 400, gemPrize: true }, // Gems
+        { position: 2, prize: '1200', icon: 'gem', quantity: 1200, gemPrize: true }, // Gems
 
       ],
       8: [
@@ -198,6 +196,21 @@ export function generateAdventGiveaways(year: number = 2025): Giveaway[] {
         { position: 1, prize: '250', icon: 'package', itemId: 19721, quantity: 250 }, // Glob of Ectoplasm
         { position: 2, prize: '1', icon: 'materials', itemId: 104209, quantity: 1 }, // Imperial Everbloom Greatsword Skin
         { position: 3, prize: '1', icon: 'package', itemId: 95814, quantity: 1 }, // Dragon's Flight
+      ],
+      11: [
+        { position: 1, prize: '250', icon: 'package', itemId: 19721, quantity: 250 }, // Glob of Ectoplasm
+        { position: 2, prize: '1', icon: 'materials', itemId: 102013, quantity: 1 }, // Chromatic Assassin Spear Skin
+        { position: 3, prize: '1', icon: 'package', itemId: 95967, quantity: 1 }, // Dragon's Claw
+      ],
+      12: [
+        { position: 1, prize: '250', icon: 'package', itemId: 19721, quantity: 250 }, // Glob of Ectoplasm
+        { position: 2, prize: '1', icon: 'materials', itemId: 104228, quantity: 1 }, // Imperial Everbloom Spear
+        { position: 3, prize: '1', icon: 'package', itemId: 96357, quantity: 1 }, // Dragon's Bite
+      ],
+      13: [
+        { position: 1, prize: '100', icon: 'materials', itemId: 24325, quantity: 100 }, // Destroyer Lodestone
+        { position: 2, prize: '1', icon: 'materials', itemId: 102013, quantity: 1 }, // Chromatic Assassin Spear Skin
+        { position: 3, prize: '1', icon: 'package', itemId: 96613, quantity: 1 }, // Jade Bot Core: Tier 10
       ],
       14: [
         { position: 1, prize: '800', icon: 'gem', quantity: 800, gemPrize: true },
