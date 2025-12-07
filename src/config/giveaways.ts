@@ -179,7 +179,10 @@ export function generateAdventGiveaways(year: number = 2025): Giveaway[] {
       ],
       7: [
         { position: 1, prize: '1', icon: 'package', itemId: 30703, quantity: 1 }, // Sunrise
-        { position: 2, prize: '1200', icon: 'gem', quantity: 1200, gemPrize: true }, // Gems
+        { position: 2, prize: '400', icon: 'gem', quantity: 400, gemPrize: true }, // Gems
+        { position: 3, prize: '400', icon: 'gem', quantity: 400, gemPrize: true }, // Gems
+        { position: 4, prize: '400', icon: 'gem', quantity: 400, gemPrize: true }, // Gems
+
 
       ],
       8: [

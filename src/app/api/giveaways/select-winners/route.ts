@@ -63,6 +63,20 @@ export async function POST(request: NextRequest) {
       }, { status: 400 });
     }
 
+    // VERIFICACIÓN DE SEGURIDAD: Comprobar si ya existen ganadores para este sorteo
+    const existingWinnersResult = await pool.query(
+      'SELECT COUNT(*) FROM giveaway_winners WHERE giveaway_id = $1',
+      [giveawayId]
+    );
+
+    if (parseInt(existingWinnersResult.rows[0].count) > 0) {
+      return NextResponse.json({
+        error: 'Winners already selected',
+        message: 'Ya se han seleccionado ganadores para este sorteo. No se pueden volver a sortear por seguridad.',
+        details: 'Giveaway already has winners selected.'
+      }, { status: 400 });
+    }
+
     // 1. Get all participants for the giveaway
     const participantsResult = await pool.query(
       'SELECT user_id, account_name FROM giveaway_participants WHERE giveaway_id = $1',
