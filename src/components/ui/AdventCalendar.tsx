@@ -831,11 +831,11 @@ export default function AdventCalendar({
                                   day.day === 6 ? "/images/assets/day6.webp" :
                                     day.day === 7 ? "/images/assets/day7.webp" :
                                       day.day === 8 && day.isAvailable ? "/images/assets/day8.webp" :
-                                        day.day === 9 && !day.isAvailable ? "/images/assets/day9.webp" :
+                                        day.day === 9 && day.isAvailable ? "/images/assets/day9.webp" :
                                           day.day === 10 && day.isAvailable ? "/images/assets/day10.webp" :
-                                            day.day === 11 && !day.isAvailable ? "/images/assets/day11.webp" :
+                                            day.day === 11 && day.isAvailable ? "/images/assets/day11.webp" :
                                               day.day === 12 && day.isAvailable ? "/images/assets/day12.webp" :
-                                                day.day === 13 && !day.isAvailable ? "/images/assets/day13.webp" :
+                                                day.day === 13 && day.isAvailable ? "/images/assets/day13.webp" :
                                                   day.day === 14 ? "/images/assets/daily.webp" :
                                                     (day.day === 17 && day.isAvailable) ? "/images/assets/day17.webp" :
                                                       day.day === 21 ? "/images/assets/daily.webp" :
