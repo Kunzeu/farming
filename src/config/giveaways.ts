@@ -339,6 +339,26 @@ const customItemIcons: Record<number, string> = {
   95994: 'https://render.guildwars2.com/file/24F07065A51E4BE8F00F9573FF76B221BAAAA6D8/2596936.png', // Dragon's Fang
   19721: 'https://render.guildwars2.com/file/18CE5D78317265000CF3C23ED76AB3CEE86BA60E/65941.png', // Glob of Ectoplasm
   24295: 'https://render.guildwars2.com/file/1A930A6A7B5B01EAB4CB36E79014C12B500BF6B3/66950.png', // Vial of Powerful Blood
+  // Advent Calendar Items
+  102013: 'https://render.guildwars2.com/file/54241BE201CBEC07B0314AC1033AC30CA0714702/3321387.png', // Chromatic Assassin Spear Skin
+  101340: 'https://render.guildwars2.com/file/F3229393303043609B10FFA99E92B35AD8E102A4/3214958.png', // Thundercrag Sword Skin
+  24340: 'https://render.guildwars2.com/file/CCC31822DA0D7D930D067B17C958A5CB1F4A24A5/66986.png', // Corrupted Lodestone
+  95920: 'https://render.guildwars2.com/file/7A9D0C591BD81B32B1605146AF0D28C2E14B5FE3/2595013.png', // Dragon's Weight
+  88045: 'https://render.guildwars2.com/file/1A97067CB6B41D3E777CA805D271DF74F2F57943/1998930.png', // Glyph of Volatility (Unused)
+  68094: 'https://render.guildwars2.com/file/C794670D0300082C1BA45921FBAD4EB63217722B/919376.png', // Orichalcum Mining Node
+  96330: 'https://render.guildwars2.com/file/105CCB0A37522041CB3FCDC6F53EDF1F0C0A1254/2593875.png', // Dragon's Wing
+  24325: 'https://render.guildwars2.com/file/77BE2565DD345ADFEF3850A5B647FE50C144AAF8/66976.png', // Destroyer Lodestone
+  24283: 'https://render.guildwars2.com/file/543EC37900EA2A57E77FA891193A48D66AA224AB/66939.png', // Powerful Venom Sac
+  97449: 'https://render.guildwars2.com/file/ADD63A12DB491D2A1B3BA33C5305B2D99462260D/2593579.png', // Dragon's Rending
+  30703: 'https://render.guildwars2.com/file/EFF16C4F19792627355DC294E6D7093F544921E7/456030.png', // Sunrise
+  95834: 'https://render.guildwars2.com/file/265301FE5D6AAA0CEE7DC29C351B7A6C91F2E5DD/2593874.png', // Dragon's Flight
+  79085: 'https://render.guildwars2.com/file/4FF414CDA454586B499E04AE0F3908BCBEB5A46B/1465617.png', // Hard Wood Logging Node
+  104209: 'https://render.guildwars2.com/file/610DF19E044462999F95050304AB3B1FF717F801/3584471.png', // Imperial Everbloom Greatsword Skin
+  95814: 'https://render.guildwars2.com/file/72BC443D4FBE512332255B56214ED6DBD83A3804/2596890.png', // Dragon's Insight
+  95967: 'https://render.guildwars2.com/file/4B139E1101030276540A21FEBBC30AE3B9BD80B8/2594360.png', // Dragon's Claw
+  104228: 'https://render.guildwars2.com/file/EFEE77D97D00F4F00FD1287D77220CE81FE72C96/3584542.png', // Imperial Everbloom Spear
+  96357: 'https://render.guildwars2.com/file/5DAE684E989D9446E304ABF4C06593499BBD37AE/2594852.png', // Dragon's Bite
+  96613: 'https://render.guildwars2.com/file/E4F0CDDEAA0C0BCFF158A5A3042AD3C4A3021A22/2595067.png', // Jade Bot Core: Tier 10
 };
 
 // Función para obtener información de un item de GW2
@@ -356,8 +376,10 @@ export async function getItemInfo(itemId: number, lang: string = 'en'): Promise<
 
       const gw2Lang = gw2LangMap[lang] || 'en';
 
-      // Obtener el nombre desde la API
-      const response = await fetch(`https://api.guildwars2.com/v2/items/${itemId}?lang=${gw2Lang}`);
+      // Obtener el nombre desde la API con caching
+      const response = await fetch(`https://api.guildwars2.com/v2/items/${itemId}?lang=${gw2Lang}`, {
+        next: { revalidate: 86400 } // Cache for 24 hours
+      });
       if (response.ok) {
         const item = await response.json();
         return {
@@ -377,8 +399,10 @@ export async function getItemInfo(itemId: number, lang: string = 'en'): Promise<
 
     const gw2Lang = gw2LangMap[lang] || 'en';
 
-    // Hacer la petición con el parámetro de idioma
-    const response = await fetch(`https://api.guildwars2.com/v2/items/${itemId}?lang=${gw2Lang}`);
+    // Hacer la petición con el parámetro de idioma y caching
+    const response = await fetch(`https://api.guildwars2.com/v2/items/${itemId}?lang=${gw2Lang}`, {
+      next: { revalidate: 86400 } // Cache for 24 hours
+    });
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
