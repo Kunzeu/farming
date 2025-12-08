@@ -92,11 +92,44 @@ export default function AdventCalendar({
   useEffect(() => {
     const loadGiveaways = async () => {
       try {
+        // Verificar caché local primero
+        const CACHE_KEY = 'giveaways_cache';
+        const CACHE_TIME_KEY = 'giveaways_cache_time';
+        const CACHE_DURATION = 60000; // 1 minuto
+
+        const cachedData = localStorage.getItem(CACHE_KEY);
+        const cachedTime = localStorage.getItem(CACHE_TIME_KEY);
+
+        if (cachedData && cachedTime) {
+          const timeDiff = Date.now() - parseInt(cachedTime);
+          if (timeDiff < CACHE_DURATION) {
+            const data = JSON.parse(cachedData);
+            const giveawaysMap: Record<string, any> = {};
+
+            data.giveaways?.forEach((giveaway: any) => {
+              if (giveaway.id.startsWith('advent-')) {
+                giveawaysMap[giveaway.id] = giveaway;
+              }
+            });
+
+            setGiveaways(giveawaysMap);
+            // Si la caché es válida, no hacemos fetch a menos que sea el inicio
+            // Pero queremos actualizar si ha pasado el tiempo en el intervalo...
+            // La lógica del intervalo llamará a loadGiveaways, así que si la caché es válida, retornamos
+            return;
+          }
+        }
+
         const response = await fetch("/api/giveaways", {
-          next: { revalidate: 300 } // 5 minutes
+          next: { revalidate: 60 } // 1 minute
         });
         if (response.ok) {
           const data = await response.json();
+
+          // Guardar en caché
+          localStorage.setItem(CACHE_KEY, JSON.stringify(data));
+          localStorage.setItem(CACHE_TIME_KEY, Date.now().toString());
+
           const giveawaysMap: Record<string, {
             id: string;
             startDate: string;
@@ -138,8 +171,8 @@ export default function AdventCalendar({
 
     loadGiveaways();
 
-    // Recargar cada 5 minutos para actualizar contadores
-    const interval = setInterval(loadGiveaways, 300000);
+    // Recargar cada 1 minuto para actualizar contadores (usando caché si es reciente)
+    const interval = setInterval(loadGiveaways, 60000);
 
     return () => clearInterval(interval);
   }, []);
