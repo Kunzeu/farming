@@ -4,7 +4,7 @@ import { getAllGiveaways, getAllGiveawaysWithAdvent, getItemInfo } from '../../.
 import { authorizeRequest } from '@/lib/server/jwt-utils';
 
 export const runtime = 'nodejs';
-export const revalidate = 0; // Sin caché - actualización inmediata de ganadores
+export const revalidate = 60; // Revalidar cada 1 minuto
 
 // GET /api/giveaways/winners - Get winners
 export async function GET(request: NextRequest) {
@@ -46,10 +46,8 @@ export async function GET(request: NextRequest) {
     // Combinar datos de ganadores con configuración de sorteos y obtener iconos
     const winners = await Promise.all(result.rows.map(async (row) => {
       const cleanGiveawayId = String(row.giveaway_id).trim();
-      console.log('Looking for giveaway:', cleanGiveawayId);
-      console.log('Available giveaways:', configuredGiveaways.map(g => g.id));
+      // console.log('Looking for giveaway:', cleanGiveawayId);
       const giveaway = configuredGiveaways.find(g => g.id === cleanGiveawayId);
-      console.log('Found giveaway:', giveaway?.title || 'NOT FOUND');
 
       let itemIcon = null;
       let gemPrize = false;
@@ -108,9 +106,7 @@ export async function GET(request: NextRequest) {
       { winners },
       {
         headers: {
-          'Cache-Control': 'no-store, no-cache, must-revalidate, max-age=0',
-          'Pragma': 'no-cache',
-          'Expires': '0',
+          'Cache-Control': 'public, s-maxage=60, stale-while-revalidate=300',
         },
       }
     );

@@ -76,7 +76,7 @@ export async function GET(request: NextRequest) {
       { participants },
       {
         headers: {
-          'Cache-Control': 'no-store, no-cache, must-revalidate, max-age=0',
+          'Cache-Control': 'private, max-age=30, stale-while-revalidate=60',
           'Pragma': 'no-cache',
           'Expires': '0',
         },

@@ -93,10 +93,7 @@ export default function AdventCalendar({
     const loadGiveaways = async () => {
       try {
         const response = await fetch("/api/giveaways", {
-          cache: "no-store",
-          headers: {
-            "Cache-Control": "no-cache, no-store, must-revalidate",
-          },
+          next: { revalidate: 300 } // 5 minutes
         });
         if (response.ok) {
           const data = await response.json();
@@ -152,10 +149,7 @@ export default function AdventCalendar({
     const loadWinners = async () => {
       try {
         const response = await fetch("/api/giveaways/winners", {
-          cache: "no-store",
-          headers: {
-            "Cache-Control": "no-cache, no-store, must-revalidate",
-          },
+          next: { revalidate: 60 } // 1 minute
         });
         if (response.ok) {
           const data = await response.json();
@@ -364,7 +358,11 @@ export default function AdventCalendar({
   useEffect(() => {
     const autoEnrollAllPatreons = async () => {
       // Si ya se ha ejecutado el auto-enroll, no volver a ejecutar
-      if (hasAutoEnrolled) {
+      // Check if we've already checked recently (every 1 hour)
+      const lastAutoEnrollCheck = localStorage.getItem(`lastAuthEnrollCheck_${user?.id}`);
+      const now = Date.now();
+      if (lastAutoEnrollCheck && (now - parseInt(lastAutoEnrollCheck)) < 3600000) {
+        setHasAutoEnrolled(true);
         return;
       }
 
@@ -483,6 +481,8 @@ export default function AdventCalendar({
         console.error("Error auto-enrolling Patreons:", error);
       } finally {
         setHasAutoEnrolled(true);
+        // Save the check time so we don't spam the server
+        localStorage.setItem(`lastAuthEnrollCheck_${user?.id}`, Date.now().toString());
       }
     };
 
