@@ -707,6 +707,10 @@ const Navigation = () => {
                     {t('nav.holidayCalendar', 'Calendario de Adviento')}
                   </span>
                 </Link>
+
+
+                {/* Patreon Button */}
+
               </div>
 
               {/* Navigation Items + User Menu - Esquina Derecha */}
@@ -758,8 +762,8 @@ const Navigation = () => {
                                 key={item.href}
                                 href={item.href}
                                 className={`flex items-center space-x-3 px-4 py-2 text-gray-300 transition-colors ${index === selectedSearchIndex
-                                    ? 'bg-gray-700 text-white'
-                                    : 'hover:bg-gray-700 hover:text-white'
+                                  ? 'bg-gray-700 text-white'
+                                  : 'hover:bg-gray-700 hover:text-white'
                                   }`}
                                 onClick={() => {
                                   if (!isLargeScreen) {
@@ -1094,6 +1098,11 @@ const Navigation = () => {
                             </div>
                           </div>
 
+
+
+                          {/* Mobile Patreon Button */}
+
+
                           {navItems.map((item) => (
                             <Link
                               key={item.href}
@@ -1269,115 +1278,117 @@ const Navigation = () => {
                   </div>
                 </div>
               </div>
-            </div>
-          </div>
-        </nav>
+            </div >
+          </div >
+        </nav >
 
         {/* Language Switcher Flotante */}
-        <div className="relative">
+        < div className="relative" >
           <div className="absolute top-2 left-2 sm:top-4 sm:left-4 z-50 transform-none will-change-auto">
             <FloatingLanguageSwitcher />
           </div>
-        </div>
+        </div >
 
         {/* Mobile Search Modal */}
-        {isMobileSearchOpen && (
-          <div className="lg:hidden fixed inset-0 z-50 flex items-center justify-center">
-            {/* Overlay */}
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              onClick={() => {
-                setIsMobileSearchOpen(false);
-                setSearchQuery('');
-              }}
-              className="absolute inset-0 bg-black/70 backdrop-blur-sm"
-            />
-
-            {/* Modal Content */}
-            <motion.div
-              initial={{ opacity: 0, scale: 0.9, y: 20 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.9, y: 20 }}
-              className="relative w-[90%] max-w-md bg-gray-800/95 backdrop-blur-md rounded-2xl border border-gray-600 shadow-2xl p-4"
-            >
-              {/* Close Button */}
-              <button
+        {
+          isMobileSearchOpen && (
+            <div className="lg:hidden fixed inset-0 z-50 flex items-center justify-center">
+              {/* Overlay */}
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
                 onClick={() => {
                   setIsMobileSearchOpen(false);
                   setSearchQuery('');
                 }}
-                className="absolute top-2 right-3 text-gray-400 hover:text-white hover:bg-gray-700 rounded-lg transition-colors"
+                className="absolute inset-0 bg-black/70 backdrop-blur-sm"
+              />
+
+              {/* Modal Content */}
+              <motion.div
+                initial={{ opacity: 0, scale: 0.9, y: 20 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.9, y: 20 }}
+                className="relative w-[90%] max-w-md bg-gray-800/95 backdrop-blur-md rounded-2xl border border-gray-600 shadow-2xl p-4"
               >
-                <X className="w-5 h-5" />
-              </button>
+                {/* Close Button */}
+                <button
+                  onClick={() => {
+                    setIsMobileSearchOpen(false);
+                    setSearchQuery('');
+                  }}
+                  className="absolute top-2 right-3 text-gray-400 hover:text-white hover:bg-gray-700 rounded-lg transition-colors"
+                >
+                  <X className="w-5 h-5" />
+                </button>
 
-              {/* Search Input */}
-              <div className="mt-2">
-                <div className="relative bg-gray-700/50 border border-gray-600 rounded-lg overflow-hidden">
-                  <Search className="w-5 h-5 text-gray-400 absolute left-3 top-1/2 transform -translate-y-1/2" />
-                  <input
-                    type="text"
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    onKeyDown={handleSearchKeyDown}
-                    placeholder={t('nav.search', 'Buscar...')}
-                    className="w-full bg-transparent text-white pl-11 pr-3 py-3 text-base focus:outline-none"
-                    autoFocus
-                  />
+                {/* Search Input */}
+                <div className="mt-2">
+                  <div className="relative bg-gray-700/50 border border-gray-600 rounded-lg overflow-hidden">
+                    <Search className="w-5 h-5 text-gray-400 absolute left-3 top-1/2 transform -translate-y-1/2" />
+                    <input
+                      type="text"
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      onKeyDown={handleSearchKeyDown}
+                      placeholder={t('nav.search', 'Buscar...')}
+                      className="w-full bg-transparent text-white pl-11 pr-3 py-3 text-base focus:outline-none"
+                      autoFocus
+                    />
+                  </div>
                 </div>
-              </div>
 
-              {/* Search Results */}
-              {searchResults.length > 0 && (
-                <div className="mt-3 bg-gray-700/30 rounded-lg border border-gray-600 max-h-[60vh] overflow-y-auto">
-                  {searchResults.map((item, index) => (
-                    <Link
-                      key={item.href}
-                      href={item.href}
-                      className={`flex items-center space-x-3 px-4 py-3 transition-colors ${index === selectedSearchIndex
+                {/* Search Results */}
+                {searchResults.length > 0 && (
+                  <div className="mt-3 bg-gray-700/30 rounded-lg border border-gray-600 max-h-[60vh] overflow-y-auto">
+                    {searchResults.map((item, index) => (
+                      <Link
+                        key={item.href}
+                        href={item.href}
+                        className={`flex items-center space-x-3 px-4 py-3 transition-colors ${index === selectedSearchIndex
                           ? 'bg-gray-600/70 text-white'
                           : 'text-gray-300 hover:text-white hover:bg-gray-600/50'
-                        }`}
-                      onClick={() => {
-                        setIsMobileSearchOpen(false);
-                        setSearchQuery('');
-                      }}
-                      onMouseEnter={() => setSelectedSearchIndex(index)}
-                    >
-                      {item.isImage ? (
-                        <Image
-                          src={getImageSrc(item.icon as string)}
-                          alt={item.label}
-                          width={20}
-                          height={20}
-                          className="w-5 h-5"
-                          unoptimized={item.icon === 'magic-mirror' || item.icon === 'conversion-guide' || item.icon === 'garden'}
-                        />
-                      ) : (
-                        typeof item.icon === 'function' ? (
-                          <item.icon className="w-5 h-5" />
-                        ) : null
-                      )}
-                      <span className="text-base font-medium">{item.label}</span>
-                    </Link>
-                  ))}
-                </div>
-              )}
+                          }`}
+                        onClick={() => {
+                          setIsMobileSearchOpen(false);
+                          setSearchQuery('');
+                        }}
+                        onMouseEnter={() => setSelectedSearchIndex(index)}
+                      >
+                        {item.isImage ? (
+                          <Image
+                            src={getImageSrc(item.icon as string)}
+                            alt={item.label}
+                            width={20}
+                            height={20}
+                            className="w-5 h-5"
+                            unoptimized={item.icon === 'magic-mirror' || item.icon === 'conversion-guide' || item.icon === 'garden'}
+                          />
+                        ) : (
+                          typeof item.icon === 'function' ? (
+                            <item.icon className="w-5 h-5" />
+                          ) : null
+                        )}
+                        <span className="text-base font-medium">{item.label}</span>
+                      </Link>
+                    ))}
+                  </div>
+                )}
 
-              {/* No results message */}
-              {searchQuery.trim() && searchResults.length === 0 && (
-                <div className="mt-3 bg-gray-700/30 rounded-lg border border-gray-600 py-8 px-4">
-                  <p className="text-gray-400 text-base text-center">
-                    {t('nav.noResults', 'No se encontraron resultados')}
-                  </p>
-                </div>
-              )}
-            </motion.div>
-          </div>
-        )}
-      </div>
+                {/* No results message */}
+                {searchQuery.trim() && searchResults.length === 0 && (
+                  <div className="mt-3 bg-gray-700/30 rounded-lg border border-gray-600 py-8 px-4">
+                    <p className="text-gray-400 text-base text-center">
+                      {t('nav.noResults', 'No se encontraron resultados')}
+                    </p>
+                  </div>
+                )}
+              </motion.div>
+            </div>
+          )
+        }
+      </div >
 
     </>
   );

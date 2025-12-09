@@ -6,7 +6,7 @@ import Image from "next/image";
 import { useAuth } from "@/contexts/AuthContext";
 import { useI18n } from "@/contexts/I18nContext";
 import Link from "next/link";
-import { Crown, AlertCircle, Users } from "lucide-react";
+import { Crown, AlertCircle, Users, Trophy, Gift } from "lucide-react";
 
 interface AdventDay {
   day: number;
@@ -740,6 +740,37 @@ export default function AdventCalendar({
         </div>
       </div>
 
+      {/* Patreon Promo Banner - Only for non-active patrons */}
+      {isAuthenticated && user?.patreonStatus !== 'active_patron' && (
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="bg-gradient-to-r from-red-600/90 to-orange-600/90 backdrop-blur-md p-4 rounded-xl border border-red-400/30 shadow-xl max-w-xl mx-auto mt-6"
+        >
+          <div className="flex items-center gap-3">
+            <div className="bg-white/10 p-2 rounded-lg">
+              <Trophy className="w-6 h-6 text-yellow-300" />
+            </div>
+            <div className="flex-1 text-left">
+              <h3 className="text-white font-bold text-sm md:text-base leading-tight">
+                {t('advent.promo.title', '¿Cansado de entrar cada día?')}
+              </h3>
+              <p className="text-red-100 text-xs md:text-sm">
+                {t('advent.promo.desc', 'Hazte Patreon y te inscribiremos automáticamente en TODOS los sorteos.')}
+              </p>
+            </div>
+            <a
+              href="https://www.patreon.com/KunzeuLabs"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="whitespace-nowrap px-4 py-2 bg-white text-red-600 font-bold rounded-lg text-xs md:text-sm hover:bg-gray-100 transition-colors shadow-sm"
+            >
+              {t('advent.promo.btn', 'Desbloquear')}
+            </a>
+          </div>
+        </motion.div>
+      )}
+
       {/* Grid de tarjetas */}
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 md:gap-8 lg:gap-10">
         {adventDays
@@ -958,200 +989,208 @@ export default function AdventCalendar({
       </div>
 
       {/* Modal de confirmación */}
-      {showConfirmModal && selectedDay && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
-          <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            className="bg-gray-800 rounded-xl p-6 max-w-md w-full mx-4 border border-gray-700"
-          >
-            <h3 className="text-xl font-bold text-white mb-4 text-center">
-              {t("holidayCalendar.confirmTitle", "Confirmar participación")}
-            </h3>
-            <p className="text-gray-300 mb-6 text-center">
-              {t("holidayCalendar.confirmMessage", `¿Estás seguro de que quieres participar en el sorteo del día ${selectedDay}?`).replace("{day}", selectedDay.toString())}
-            </p>
-            <div className="flex gap-4">
-              <button
-                onClick={() => {
-                  setShowConfirmModal(false);
-                  setSelectedDay(null);
-                }}
-                className="flex-1 py-2.5 px-4 bg-gray-600 hover:bg-gray-700 text-white font-semibold rounded-lg transition-colors"
-              >
-                {t("holidayCalendar.cancel", "Cancelar")}
-              </button>
-              <button
-                onClick={handleConfirmParticipate}
-                disabled={isParticipating}
-                className="flex-1 py-2.5 px-4 bg-gradient-to-r from-teal-600 to-green-600 hover:from-teal-700 hover:to-green-700 text-white font-semibold rounded-lg transition-colors disabled:opacity-50"
-              >
-                {isParticipating ? t("holidayCalendar.participating", "Participando...") : t("holidayCalendar.confirm", "Confirmar")}
-              </button>
-            </div>
-          </motion.div>
-        </div>
-      )}
-
-      {/* Modal de confirmación para seleccionar ganadores */}
-      {showSelectWinnersModal && giveawayToSelectWinners && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
-          <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            className="bg-gray-800 rounded-xl p-6 max-w-md w-full mx-4 border border-gray-700"
-          >
-            <div className="text-center">
-              <div className="w-16 h-16 bg-yellow-600/20 rounded-full flex items-center justify-center mx-auto mb-4">
-                <Crown className="w-8 h-8 text-yellow-400" />
-              </div>
-              <h3 className="text-2xl font-bold text-white mb-4">
-                Seleccionar Ganadores
+      {
+        showConfirmModal && selectedDay && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              className="bg-gray-800 rounded-xl p-6 max-w-md w-full mx-4 border border-gray-700"
+            >
+              <h3 className="text-xl font-bold text-white mb-4 text-center">
+                {t("holidayCalendar.confirmTitle", "Confirmar participación")}
               </h3>
-              <p className="text-gray-300 mb-6">
-                ¿Estás seguro de que quieres seleccionar ganadores al azar para este sorteo? Esta acción no se puede deshacer.
+              <p className="text-gray-300 mb-6 text-center">
+                {t("holidayCalendar.confirmMessage", `¿Estás seguro de que quieres participar en el sorteo del día ${selectedDay}?`).replace("{day}", selectedDay.toString())}
               </p>
-              <div className="bg-gray-700/50 rounded-lg p-4 mb-6">
-                <p className="text-sm text-gray-400 mb-2">
-                  Información del sorteo:
-                </p>
-                <p className="text-white font-semibold">
-                  Día {adventDays.find(d => d.giveawayId === giveawayToSelectWinners)?.day || 'N/A'}
-                </p>
-                <p className="text-gray-300 text-sm">
-                  {adventDays.find(d => d.giveawayId === giveawayToSelectWinners)?.participantCount || 0} participantes •{" "}
-                  {adventDays.find(d => d.giveawayId === giveawayToSelectWinners)?.prizes?.length || 0} premios
-                </p>
-              </div>
-              <div className="flex gap-3">
+              <div className="flex gap-4">
                 <button
                   onClick={() => {
-                    setShowSelectWinnersModal(false);
-                    setGiveawayToSelectWinners(null);
+                    setShowConfirmModal(false);
+                    setSelectedDay(null);
                   }}
-                  className="flex-1 bg-gray-600 hover:bg-gray-700 text-white font-semibold py-3 px-6 rounded-lg transition-colors"
+                  className="flex-1 py-2.5 px-4 bg-gray-600 hover:bg-gray-700 text-white font-semibold rounded-lg transition-colors"
                 >
-                  Cancelar
+                  {t("holidayCalendar.cancel", "Cancelar")}
                 </button>
                 <button
-                  onClick={handleConfirmSelectWinners}
-                  disabled={isSelectingWinners}
-                  className="flex-1 bg-yellow-600 hover:bg-yellow-700 disabled:bg-gray-600 disabled:cursor-not-allowed text-white font-semibold py-3 px-6 rounded-lg transition-colors"
+                  onClick={handleConfirmParticipate}
+                  disabled={isParticipating}
+                  className="flex-1 py-2.5 px-4 bg-gradient-to-r from-teal-600 to-green-600 hover:from-teal-700 hover:to-green-700 text-white font-semibold rounded-lg transition-colors disabled:opacity-50"
                 >
-                  {isSelectingWinners ? "Seleccionando..." : "Confirmar"}
+                  {isParticipating ? t("holidayCalendar.participating", "Participando...") : t("holidayCalendar.confirm", "Confirmar")}
                 </button>
               </div>
-            </div>
-          </motion.div>
-        </div>
-      )}
+            </motion.div>
+          </div>
+        )
+      }
 
-      {/* Modal de resultado de ganadores */}
-      {showWinnersResultModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            className="relative max-w-2xl w-[90%] bg-gray-900 border border-gray-700 rounded-2xl p-8"
-          >
-            <div className="text-center">
-              <div className="w-16 h-16 bg-green-600/20 rounded-full flex items-center justify-center mx-auto mb-4">
-                <Crown className="w-8 h-8 text-green-400" />
-              </div>
-              <h3 className="text-2xl font-bold text-white mb-4">
-                ¡Ganadores Seleccionados!
-              </h3>
-              <p className="text-gray-300 mb-6">
-                Se han seleccionado {selectedWinners.length} ganadores al azar para el sorteo.
-              </p>
-
-              <div className="bg-gray-800/60 rounded-lg p-6 mb-6">
-                <h4 className="text-lg font-semibold text-white mb-4">
-                  Lista de Ganadores
-                </h4>
-                <div className="grid grid-cols-3 gap-4">
-                  {selectedWinners
-                    .sort((a, b) => a.position - b.position)
-                    .map((winner, index) => (
-                      <div
-                        key={index}
-                        className="bg-gray-700/50 rounded-lg p-4 flex flex-col items-center text-center"
-                      >
-                        <div className="w-12 h-12 bg-yellow-600 rounded-full flex items-center justify-center text-white font-bold text-lg mb-3">
-                          {winner.position}
-                        </div>
-                        <p className="text-white font-semibold mb-2 text-sm">
-                          {winner.account_name}
-                        </p>
-                        {/* Mostrar icono del premio */}
-                        <div className="flex items-center justify-center gap-2 mb-2">
-                          {winner.gem_prize ? (
-                            <img
-                              src="https://wiki.guildwars2.com/images/8/88/Gem_%28highres%29.png"
-                              alt="Gems"
-                              className="w-8 h-8 object-contain"
-                            />
-                          ) : winner.item_icon ? (
-                            <img
-                              src={winner.item_icon}
-                              alt={`Item ${winner.item_id}`}
-                              className="w-8 h-8 object-contain"
-                              onError={(e) => {
-                                // Fallback si la imagen no carga
-                                e.currentTarget.style.display = 'none';
-                              }}
-                            />
-                          ) : null}
-                        </div>
-                        <p className="text-gray-300 text-xs font-semibold">
-                          {winner.gem_prize
-                            ? `${winner.prize_value} Gems`
-                            : winner.quantity && winner.item_id
-                              ? `${winner.quantity}x`
-                              : winner.prize_description
-                          }
-                        </p>
-                      </div>
-                    ))}
+      {/* Modal de confirmación para seleccionar ganadores */}
+      {
+        showSelectWinnersModal && giveawayToSelectWinners && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              className="bg-gray-800 rounded-xl p-6 max-w-md w-full mx-4 border border-gray-700"
+            >
+              <div className="text-center">
+                <div className="w-16 h-16 bg-yellow-600/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <Crown className="w-8 h-8 text-yellow-400" />
+                </div>
+                <h3 className="text-2xl font-bold text-white mb-4">
+                  Seleccionar Ganadores
+                </h3>
+                <p className="text-gray-300 mb-6">
+                  ¿Estás seguro de que quieres seleccionar ganadores al azar para este sorteo? Esta acción no se puede deshacer.
+                </p>
+                <div className="bg-gray-700/50 rounded-lg p-4 mb-6">
+                  <p className="text-sm text-gray-400 mb-2">
+                    Información del sorteo:
+                  </p>
+                  <p className="text-white font-semibold">
+                    Día {adventDays.find(d => d.giveawayId === giveawayToSelectWinners)?.day || 'N/A'}
+                  </p>
+                  <p className="text-gray-300 text-sm">
+                    {adventDays.find(d => d.giveawayId === giveawayToSelectWinners)?.participantCount || 0} participantes •{" "}
+                    {adventDays.find(d => d.giveawayId === giveawayToSelectWinners)?.prizes?.length || 0} premios
+                  </p>
+                </div>
+                <div className="flex gap-3">
+                  <button
+                    onClick={() => {
+                      setShowSelectWinnersModal(false);
+                      setGiveawayToSelectWinners(null);
+                    }}
+                    className="flex-1 bg-gray-600 hover:bg-gray-700 text-white font-semibold py-3 px-6 rounded-lg transition-colors"
+                  >
+                    Cancelar
+                  </button>
+                  <button
+                    onClick={handleConfirmSelectWinners}
+                    disabled={isSelectingWinners}
+                    className="flex-1 bg-yellow-600 hover:bg-yellow-700 disabled:bg-gray-600 disabled:cursor-not-allowed text-white font-semibold py-3 px-6 rounded-lg transition-colors"
+                  >
+                    {isSelectingWinners ? "Seleccionando..." : "Confirmar"}
+                  </button>
                 </div>
               </div>
+            </motion.div>
+          </div>
+        )
+      }
 
-              <button
-                onClick={() => setShowWinnersResultModal(false)}
-                className="bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-8 rounded-lg transition-colors"
-              >
-                Cerrar
-              </button>
-            </div>
-          </motion.div>
-        </div>
-      )}
+      {/* Modal de resultado de ganadores */}
+      {
+        showWinnersResultModal && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              className="relative max-w-2xl w-[90%] bg-gray-900 border border-gray-700 rounded-2xl p-8"
+            >
+              <div className="text-center">
+                <div className="w-16 h-16 bg-green-600/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <Crown className="w-8 h-8 text-green-400" />
+                </div>
+                <h3 className="text-2xl font-bold text-white mb-4">
+                  ¡Ganadores Seleccionados!
+                </h3>
+                <p className="text-gray-300 mb-6">
+                  Se han seleccionado {selectedWinners.length} ganadores al azar para el sorteo.
+                </p>
+
+                <div className="bg-gray-800/60 rounded-lg p-6 mb-6">
+                  <h4 className="text-lg font-semibold text-white mb-4">
+                    Lista de Ganadores
+                  </h4>
+                  <div className="grid grid-cols-3 gap-4">
+                    {selectedWinners
+                      .sort((a, b) => a.position - b.position)
+                      .map((winner, index) => (
+                        <div
+                          key={index}
+                          className="bg-gray-700/50 rounded-lg p-4 flex flex-col items-center text-center"
+                        >
+                          <div className="w-12 h-12 bg-yellow-600 rounded-full flex items-center justify-center text-white font-bold text-lg mb-3">
+                            {winner.position}
+                          </div>
+                          <p className="text-white font-semibold mb-2 text-sm">
+                            {winner.account_name}
+                          </p>
+                          {/* Mostrar icono del premio */}
+                          <div className="flex items-center justify-center gap-2 mb-2">
+                            {winner.gem_prize ? (
+                              <img
+                                src="https://wiki.guildwars2.com/images/8/88/Gem_%28highres%29.png"
+                                alt="Gems"
+                                className="w-8 h-8 object-contain"
+                              />
+                            ) : winner.item_icon ? (
+                              <img
+                                src={winner.item_icon}
+                                alt={`Item ${winner.item_id}`}
+                                className="w-8 h-8 object-contain"
+                                onError={(e) => {
+                                  // Fallback si la imagen no carga
+                                  e.currentTarget.style.display = 'none';
+                                }}
+                              />
+                            ) : null}
+                          </div>
+                          <p className="text-gray-300 text-xs font-semibold">
+                            {winner.gem_prize
+                              ? `${winner.prize_value} Gems`
+                              : winner.quantity && winner.item_id
+                                ? `${winner.quantity}x`
+                                : winner.prize_description
+                            }
+                          </p>
+                        </div>
+                      ))}
+                  </div>
+                </div>
+
+                <button
+                  onClick={() => setShowWinnersResultModal(false)}
+                  className="bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-8 rounded-lg transition-colors"
+                >
+                  Cerrar
+                </button>
+              </div>
+            </motion.div>
+          </div>
+        )
+      }
 
       {/* Modal de error */}
-      {showErrorModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            className="relative max-w-md w-[90%] bg-gray-900 border border-red-500 rounded-2xl p-8"
-          >
-            <div className="text-center">
-              <div className="w-16 h-16 bg-red-600/20 rounded-full flex items-center justify-center mx-auto mb-4">
-                <AlertCircle className="w-8 h-8 text-red-400" />
+      {
+        showErrorModal && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              className="relative max-w-md w-[90%] bg-gray-900 border border-red-500 rounded-2xl p-8"
+            >
+              <div className="text-center">
+                <div className="w-16 h-16 bg-red-600/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <AlertCircle className="w-8 h-8 text-red-400" />
+                </div>
+                <h3 className="text-2xl font-bold text-white mb-4">Error</h3>
+                <p className="text-gray-300 mb-6">{errorMessage}</p>
+                <button
+                  onClick={() => setShowErrorModal(false)}
+                  className="bg-red-600 hover:bg-red-700 text-white font-semibold py-3 px-8 rounded-lg transition-colors"
+                >
+                  Cerrar
+                </button>
               </div>
-              <h3 className="text-2xl font-bold text-white mb-4">Error</h3>
-              <p className="text-gray-300 mb-6">{errorMessage}</p>
-              <button
-                onClick={() => setShowErrorModal(false)}
-                className="bg-red-600 hover:bg-red-700 text-white font-semibold py-3 px-8 rounded-lg transition-colors"
-              >
-                Cerrar
-              </button>
-            </div>
-          </motion.div>
-        </div>
-      )}
-    </div>
+            </motion.div>
+          </div>
+        )
+      }
+    </div >
   );
 }
 

@@ -5,8 +5,8 @@ import Link from 'next/link'
 import Image from 'next/image'
 import Head from 'next/head'
 import Navigation from '@/components/layout/Navigation'
-import { 
-  Package, 
+import {
+  Package,
   Gift,
   Hammer,
   Route,
@@ -27,7 +27,8 @@ import {
   Dice6,
   RefreshCw,
   Map,
-  Sparkles
+  Sparkles,
+  Crown
 } from 'lucide-react'
 import { usePageTitle } from '@/hooks/usePageTitle'
 import { useI18n } from '@/contexts/I18nContext'
@@ -243,8 +244,8 @@ const initialCards: DashboardCard[] = [
     delay: 2.0,
     visible: true,
     order: 17
-  }
-  
+  },
+
 ];
 
 export default function HomePage() {
@@ -252,7 +253,7 @@ export default function HomePage() {
   const { t } = useI18n();
   const { user } = useAuth();
   const { preferences, isLoading, toggleCardVisibility: toggleVisibility, updateCardOrder } = useDashboardPreferences();
-  
+
   // Estados para personalización
   const [isEditMode, setIsEditMode] = useState(false);
   const [dashboardCards, setDashboardCards] = useState<DashboardCard[]>([]);
@@ -272,7 +273,7 @@ export default function HomePage() {
       large: 'w-10 h-10'
     };
     const iconClass = iconSizeMap[size];
-    
+
     const iconMap: Record<string, React.ReactNode> = {
       "farms": <Route className={iconClass} />,
       "dailyRoutine": <Clock className={iconClass} />,
@@ -290,9 +291,10 @@ export default function HomePage() {
       "ectogambling": <Dice6 className={iconClass} />,
       "conversionGuide": <RefreshCw className={iconClass} />,
       "altParking": <Map className={iconClass} />,
-      "magicMirrors": <Sparkles className={iconClass} />
+      "magicMirrors": <Sparkles className={iconClass} />,
+
     };
-    
+
     return iconMap[cardId] || <Package className={iconClass} />;
   };
 
@@ -315,28 +317,30 @@ export default function HomePage() {
       "ectogambling": <Dice6 className="w-8 h-8" />,
       "conversionGuide": <RefreshCw className="w-8 h-8" />,
       "altParking": <Map className="w-8 h-8" />,
-      "magicMirrors": <Sparkles className="w-8 h-8" />
+      "magicMirrors": <Sparkles className="w-8 h-8" />,
+
     };
 
-  const colorMap: Record<string, string> = {
-    "farms": "from-blue-500 to-blue-600",
-    "dailyRoutine": "from-green-500 to-green-600",
-    "salvaging": "from-orange-500 to-orange-600",
-    "magic": "from-purple-500 to-purple-600",
-    "festivals": "from-pink-500 to-pink-600",
-    "farmingTracker": "from-indigo-500 to-indigo-600",
-    "glossary": "from-teal-500 to-teal-600",
-    "orrianJewelry": "from-rose-500 to-rose-600",
-    "giftOfMastery": "from-amber-500 to-yellow-600",
-    "giftOfJadeMastery": "from-cyan-500 to-teal-600",
-    "garden": "from-emerald-500 to-green-600",
-    "giveaways": "from-yellow-500 to-orange-600",
-    "opened": "from-violet-500 to-purple-600",
-    "ectogambling": "from-red-500 to-pink-600",
-    "conversionGuide": "from-sky-500 to-blue-600",
-    "altParking": "from-lime-500 to-green-600",
-    "magicMirrors": "from-purple-500 to-indigo-600"
-  };
+    const colorMap: Record<string, string> = {
+      "farms": "from-blue-500 to-blue-600",
+      "dailyRoutine": "from-green-500 to-green-600",
+      "salvaging": "from-orange-500 to-orange-600",
+      "magic": "from-purple-500 to-purple-600",
+      "festivals": "from-pink-500 to-pink-600",
+      "farmingTracker": "from-indigo-500 to-indigo-600",
+      "glossary": "from-teal-500 to-teal-600",
+      "orrianJewelry": "from-rose-500 to-rose-600",
+      "giftOfMastery": "from-amber-500 to-yellow-600",
+      "giftOfJadeMastery": "from-cyan-500 to-teal-600",
+      "garden": "from-emerald-500 to-green-600",
+      "giveaways": "from-yellow-500 to-orange-600",
+      "opened": "from-violet-500 to-purple-600",
+      "ectogambling": "from-red-500 to-pink-600",
+      "conversionGuide": "from-sky-500 to-blue-600",
+      "altParking": "from-lime-500 to-green-600",
+      "magicMirrors": "from-purple-500 to-indigo-600",
+
+    };
 
     return {
       ...savedCard,
@@ -350,7 +354,7 @@ export default function HomePage() {
     if (isLoading) return;
 
     // Filtrar tarjetas basado en preferencias del usuario
-    const filteredCards = initialCards.filter(card => 
+    const filteredCards = initialCards.filter(card =>
       !preferences.hiddenCards.includes(card.id)
     );
 
@@ -363,12 +367,12 @@ export default function HomePage() {
     reconstructedFilteredCards.forEach(card => {
       cardHrefs[card.id] = card.href;
     });
-    
+
     const utilityOrder = getUtilityOrder(
       reconstructedFilteredCards.map(card => card.id),
       cardHrefs
     );
-    
+
     // Si el usuario ha personalizado el orden manualmente, combinar ambos:
     // Mantener las tarjetas ocultas según preferencias del usuario
     // Pero usar el orden por utilidad para las tarjetas visibles
@@ -383,7 +387,7 @@ export default function HomePage() {
       .filter(Boolean) as DashboardCard[];
 
     // Agregar tarjetas que no están en el orden final
-    const remainingCards = reconstructedFilteredCards.filter(card => 
+    const remainingCards = reconstructedFilteredCards.filter(card =>
       !finalOrder.includes(card.id)
     );
 
@@ -396,21 +400,21 @@ export default function HomePage() {
   const updateOrderByUtility = useRef(() => {
     if (isLoading) return;
 
-    const filteredCards = initialCards.filter(card => 
+    const filteredCards = initialCards.filter(card =>
       !preferences.hiddenCards.includes(card.id)
     );
     const reconstructedFilteredCards = filteredCards.map(card => reconstructCardWithIcon(card));
-    
+
     const cardHrefs: Record<string, string> = {};
     reconstructedFilteredCards.forEach(card => {
       cardHrefs[card.id] = card.href;
     });
-    
+
     const utilityOrder = getUtilityOrder(
       reconstructedFilteredCards.map(card => card.id),
       cardHrefs
     );
-    
+
     const orderedCards = utilityOrder
       .map(cardId => {
         const foundCard = reconstructedFilteredCards.find(card => card.id === cardId);
@@ -418,7 +422,7 @@ export default function HomePage() {
       })
       .filter(Boolean) as DashboardCard[];
 
-    const remainingCards = reconstructedFilteredCards.filter(card => 
+    const remainingCards = reconstructedFilteredCards.filter(card =>
       !utilityOrder.includes(card.id)
     );
 
@@ -432,21 +436,21 @@ export default function HomePage() {
     updateOrderByUtility.current = () => {
       if (isLoading) return;
 
-      const filteredCards = initialCards.filter(card => 
+      const filteredCards = initialCards.filter(card =>
         !preferences.hiddenCards.includes(card.id)
       );
       const reconstructedFilteredCards = filteredCards.map(card => reconstructCardWithIcon(card));
-      
+
       const cardHrefs: Record<string, string> = {};
       reconstructedFilteredCards.forEach(card => {
         cardHrefs[card.id] = card.href;
       });
-      
+
       const utilityOrder = getUtilityOrder(
         reconstructedFilteredCards.map(card => card.id),
         cardHrefs
       );
-      
+
       const orderedCards = utilityOrder
         .map(cardId => {
           const foundCard = reconstructedFilteredCards.find(card => card.id === cardId);
@@ -454,7 +458,7 @@ export default function HomePage() {
         })
         .filter(Boolean) as DashboardCard[];
 
-      const remainingCards = reconstructedFilteredCards.filter(card => 
+      const remainingCards = reconstructedFilteredCards.filter(card =>
         !utilityOrder.includes(card.id)
       );
 
@@ -475,7 +479,7 @@ export default function HomePage() {
 
     // Escuchar el evento personalizado cuando se actualiza el tracking
     window.addEventListener('pageUsageUpdated', handleUsageUpdate);
-    
+
     // También escuchar cambios en localStorage (para otros tabs)
     window.addEventListener('storage', handleUsageUpdate);
 
@@ -499,7 +503,7 @@ export default function HomePage() {
       visible: true,
       order: 17
     };
-    
+
     setMostUsedDashboard(reconstructCardWithIcon(magicMirrorsCard));
   }, []);
 
@@ -511,10 +515,10 @@ export default function HomePage() {
       if (hideTimeoutRef.current) {
         clearTimeout(hideTimeoutRef.current);
       }
-      
+
       // Mostrar el mensaje
       setShowNewToolMessage(true);
-      
+
       // Ocultar después de 4 segundos
       hideTimeoutRef.current = setTimeout(() => {
         setShowNewToolMessage(false);
@@ -562,9 +566,9 @@ export default function HomePage() {
 
   const toggleCardVisibility = (cardId: string) => {
     toggleVisibility(cardId);
-    setDashboardCards(prev => 
-      prev.map(card => 
-        card.id === cardId 
+    setDashboardCards(prev =>
+      prev.map(card =>
+        card.id === cardId
           ? { ...card, visible: !preferences.hiddenCards.includes(cardId) }
           : card
       )
@@ -575,17 +579,17 @@ export default function HomePage() {
     const newCards = [...dashboardCards];
     const [movedCard] = newCards.splice(fromIndex, 1);
     newCards.splice(toIndex, 0, movedCard);
-    
+
     // Actualizar el orden
     const updatedCards = newCards.map((card, index) => ({
       ...card,
       order: index
     }));
-    
+
     // Actualizar el orden en las preferencias
     const newOrder = updatedCards.map(card => card.id);
     updateCardOrder(newOrder);
-    
+
     setDashboardCards(updatedCards);
   };
 
@@ -625,20 +629,20 @@ export default function HomePage() {
 
   return (
     <div className="home-page">
-        <Head>
-          <link 
-            rel="preload" 
-            href="/images/backgrounds/voe-background.webp" 
-            as="image" 
-            type="image/webp"
-            fetchPriority="high"
-          />
-        </Head>
-        <Navigation />
-      
+      <Head>
+        <link
+          rel="preload"
+          href="/images/backgrounds/voe-background.webp"
+          as="image"
+          type="image/webp"
+          fetchPriority="high"
+        />
+      </Head>
+      <Navigation />
+
       {/* Container principal */}
       <div className="container mx-auto px-4 pb-8 pt-16">
-        
+
         {/* Hero Section - Banner Promocional */}
         <section className="relative overflow-hidden rounded-xl mb-2 h-72 md:h-96">
           {/* Imagen de fondo de Visions of Eternity */}
@@ -661,8 +665,8 @@ export default function HomePage() {
 
           {/* Logo a la derecha */}
           <div className="absolute top-1/2 right-0 md:right-4 lg:right-8 transform -translate-y-1/2 -mt-8 md:-mt-10">
-            <Image 
-              src="/images/backgrounds/GuildWars2.webp" 
+            <Image
+              src="/images/backgrounds/GuildWars2.webp"
               alt="Guild Wars 2: Visions of Eternity"
               width={295}
               height={295}
@@ -701,15 +705,15 @@ export default function HomePage() {
                   {/* Icono con contenedor para el mensaje */}
                   <div className="flex-shrink-0 relative">
                     <div className="transform translate-y-12">
-                      <Image 
-                        src="/images/icons/icoon.webp" 
+                      <Image
+                        src="/images/icons/icoon.webp"
                         alt="Icon"
                         width={128}
                         height={128}
                         className="w-32 h-32 drop-shadow-2xl"
                       />
                     </div>
-                    
+
                     {/* Nube de mensaje debajo del icono - posicionamiento absoluto para no afectar el layout */}
                     {showNewToolMessage && (
                       <div className="absolute top-full left-1/2 transform -translate-x-1/2 mt-1 z-10">
@@ -726,7 +730,7 @@ export default function HomePage() {
                               {t('cta.checkNewTool', 'Check our new tool')}
                             </p>
                           </div>
-                          
+
                           {/* Cola de la nube que apunta al icono - más grande */}
                           <div className="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-full">
                             <div className="w-0 h-0 border-l-12 border-r-12 border-b-12 border-l-transparent border-r-transparent border-b-blue-500/95"></div>
@@ -735,10 +739,10 @@ export default function HomePage() {
                       </div>
                     )}
                   </div>
-                  
+
                   {/* Espacio fijo reservado para el mensaje (mantiene el dashboard fijo) */}
                   <div className="h-[40px]"></div>
-                  
+
                   {/* Tarjeta del dashboard */}
                   <div className="w-64 mt-4">
                     <Link href={mostUsedDashboard.href}>
@@ -764,16 +768,16 @@ export default function HomePage() {
 
           {/* Slogan aleatorio - Móvil */}
           <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 block md:hidden">
-            <Slogan 
-              variant="random" 
+            <Slogan
+              variant="random"
               className="text-yellow-400 drop-shadow-2xl font-bold text-base"
             />
           </div>
 
           {/* Slogan aleatorio - Desktop */}
           <div className="absolute top-1/2 left-6 ml-12 transform -translate-y-1/2 hidden md:block" style={{ transform: 'translateY(-50%) rotate(-20deg)' }}>
-            <Slogan 
-              variant="random" 
+            <Slogan
+              variant="random"
               className="text-yellow-400 drop-shadow-2xl font-bold text-base md:text-lg lg:text-xl"
             />
           </div>
@@ -785,7 +789,7 @@ export default function HomePage() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6 }}
               className="space-y-4">
-        
+
               {/* Botón Purchase Now */}
               <div className="pt-2">
                 <motion.a
@@ -798,14 +802,14 @@ export default function HomePage() {
                 >
                   {t('cta.purchaseNow', 'Purchase Now')}
                 </motion.a>
-                
+
                 <div className="mt-3 flex justify-center">
                   <div className="w-20 h-1 bg-gradient-to-r from-transparent via-blue-400 to-transparent rounded-full opacity-60"></div>
                 </div>
               </div>
             </motion.div>
           </div>
-        </section> 
+        </section>
 
         {/* Sección de herramientas principales */}
         <section className="mb-12 pb-8">
@@ -833,7 +837,7 @@ export default function HomePage() {
               <p className="text-gray-400 max-w-2xl mx-auto mb-6">
                 {t('home.hero.subtitle')}
               </p>
-              
+
               {/* Controles de personalización */}
               <div className="flex items-center justify-end gap-2">
                 {isEditMode ? (
@@ -880,7 +884,7 @@ export default function HomePage() {
                 )}
               </div>
             </div>
-            
+
             {isEditMode && (
               <div className="bg-blue-900/20 border border-blue-700/30 rounded-lg p-4 mb-6">
                 <p className="text-blue-300 text-sm text-center">
@@ -891,8 +895,8 @@ export default function HomePage() {
           </motion.div>
 
           {/* Grid de herramientas */}
-          <div className={preferences.layout === 'list' 
-            ? 'space-y-4' 
+          <div className={preferences.layout === 'list'
+            ? 'space-y-4'
             : 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6'
           }>
             {dashboardCards
@@ -926,9 +930,8 @@ export default function HomePage() {
                     onDragOver={handleDragOver}
                     onDrop={(e) => handleDrop(e, index)}
                     onDragEnd={handleDragEnd}
-                    className={`relative ${isEditMode ? 'cursor-move' : ''} ${
-                      preferences.layout === 'list' ? 'w-full' : ''
-                    }`}
+                    className={`relative ${isEditMode ? 'cursor-move' : ''} ${preferences.layout === 'list' ? 'w-full' : ''
+                      }`}
                   >
                     {isEditMode && (
                       <div className="absolute top-2 right-2 z-10 flex gap-1">
@@ -944,17 +947,15 @@ export default function HomePage() {
                         </div>
                       </div>
                     )}
-                    
+
                     <Link href={card.href} className={isEditMode ? 'pointer-events-none' : ''}>
-                      <div className={`bg-gradient-to-br ${card.color} ${sizeClasses[cardSize]} rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 cursor-pointer h-full border border-white/10 ${
-                        preferences.layout === 'list' ? 'flex items-center space-x-4' : ''
-                      } ${
-                        isEditMode 
-                          ? card.visible 
-                            ? 'opacity-90' 
+                      <div className={`bg-gradient-to-br ${card.color} ${sizeClasses[cardSize]} rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 cursor-pointer h-full border border-white/10 ${preferences.layout === 'list' ? 'flex items-center space-x-4' : ''
+                        } ${isEditMode
+                          ? card.visible
+                            ? 'opacity-90'
                             : 'opacity-50 border-dashed border-2 border-gray-500'
                           : ''
-                      }`}>
+                        }`}>
                         <div className={`text-white ${preferences.layout === 'list' ? 'flex-shrink-0' : ''}`}>
                           {getIcon(card.id, cardSize)}
                         </div>
@@ -975,12 +976,12 @@ export default function HomePage() {
         </section>
 
       </div>
-      
+
       {/* Modal de configuración avanzada */}
       <Suspense fallback={<div className="fixed inset-0 bg-black/50 flex items-center justify-center"><div className="text-white">Cargando...</div></div>}>
-        <DashboardSettings 
-          isOpen={showSettings} 
-          onClose={() => setShowSettings(false)} 
+        <DashboardSettings
+          isOpen={showSettings}
+          onClose={() => setShowSettings(false)}
         />
       </Suspense>
 
