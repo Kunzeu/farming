@@ -182,8 +182,6 @@ export function generateAdventGiveaways(year: number = 2025): Giveaway[] {
         { position: 2, prize: '400', icon: 'gem', quantity: 400, gemPrize: true }, // Gems
         { position: 3, prize: '400', icon: 'gem', quantity: 400, gemPrize: true }, // Gems
         { position: 4, prize: '400', icon: 'gem', quantity: 400, gemPrize: true }, // Gems
-
-
       ],
       8: [
         { position: 1, prize: '250', icon: 'package', itemId: 19721, quantity: 250 }, // Glob of Ectoplasm
@@ -192,7 +190,7 @@ export function generateAdventGiveaways(year: number = 2025): Giveaway[] {
       ],
       9: [
         { position: 1, prize: '250', icon: 'package', itemId: 19721, quantity: 250 }, // Glob of Ectoplasm
-        { position: 2, prize: '100', icon: 'materials', itemId: 24340, quantity: 100 }, // Corrupted Lodestone
+        { position: 2, prize: '250', icon: 'materials', itemId: 24340, quantity: 250 }, // Corrupted Lodestone
         { position: 3, prize: '1', icon: 'package', itemId: 79085, quantity: 1 }, // Hard Wood Logging Node
       ],
       10: [
