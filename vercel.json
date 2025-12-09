@@ -5,7 +5,9 @@
       "maxDuration": 10
     }
   },
-  "regions": ["iad1"],
+  "regions": [
+    "iad1"
+  ],
   "headers": [
     {
       "source": "/(.*)",
@@ -28,6 +30,11 @@
         }
       ]
     }
+  ],
+  "crons": [
+    {
+      "path": "/api/giveaways/auto-enroll-patreons",
+      "schedule": "5 14 * * *"
+    }
   ]
 }
-

@@ -7,16 +7,62 @@ export const runtime = 'nodejs';
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { giveawayIds } = body;
+    let { giveawayIds } = body;
+    const { userId } = body;
+
+    // Verificar permisos
+    // Si se pasa userId, verificamos que sea el propio usuario o admin
+    // Si NO se pasa userId (bulk enroll), DEBE ser admin
+
+    // Importar dinámicamente para evitar ciclos si fuera necesario, 
+    // pero aquí server/jwt-utils es seguro.
+    const { authorizeRequest } = await import('@/lib/server/jwt-utils');
+    const authResult = authorizeRequest(request);
+
+    // Verificar si es una llamada de Cron (Vercel Cron Jobs)
+    const authHeader = request.headers.get('authorization');
+    const cronSecret = process.env.CRON_SECRET;
+    const isCron = cronSecret && authHeader === `Bearer ${cronSecret}`;
 
     if (!giveawayIds || !Array.isArray(giveawayIds) || giveawayIds.length === 0) {
-      return NextResponse.json(
-        { error: 'giveawayIds array is required' },
-        { status: 400 }
-      );
+      // Si es Cron, podemos cargar los IDs activos automáticamente
+      if (isCron) {
+        // Si no se pasaron IDs y es Cron, obtenemos los activos por defecto
+        // Esto permite que el Cron simplemente llame al endpoint sin body
+        const { updateGiveawayStatuses } = await import('@/config/giveaways');
+        const activeGiveaways = updateGiveawayStatuses().filter((g) => g.status === 'active');
+        // Solo procedemos si no se proporcionaron IDs explícitos
+        giveawayIds = activeGiveaways.map(g => g.id);
+      } else {
+        return NextResponse.json(
+          { error: 'giveawayIds array is required' },
+          { status: 400 }
+        );
+      }
     }
 
-    const result = await autoEnrollPatrons({ giveawayIds });
+    // Lógica de seguridad
+    if (userId) {
+      // Queremos inscribir a un usuario específico
+      if (!authResult.isAuthorized && !isCron) {
+        return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      }
+      // Verificar que el usuario sea él mismo o admin (o Cron)
+      const isSelf = authResult.user?.userId === userId;
+      const isAdmin = authResult.user?.role === 'admin';
+
+      if (!isSelf && !isAdmin && !isCron) {
+        return NextResponse.json({ error: 'Forbidden: Cannot enroll other users' }, { status: 403 });
+      }
+    } else {
+      // Bulk enroll (todos los usuarios)
+      // SOLO ADMIN o CRON
+      if (!isCron && (!authResult.isAuthorized || authResult.user?.role !== 'admin')) {
+        return NextResponse.json({ error: 'Forbidden: Admin access required for bulk enrollment' }, { status: 403 });
+      }
+    }
+
+    const result = await autoEnrollPatrons({ giveawayIds, userId });
 
     return NextResponse.json({
       success: true,
@@ -29,7 +75,7 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error('Error auto-enrolling Patreons:', error);
     return NextResponse.json(
-      { 
+      {
         error: 'Failed to auto-enroll Patreon users',
         details: error instanceof Error ? error.message : String(error)
       },
