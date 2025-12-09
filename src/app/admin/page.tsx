@@ -6,7 +6,7 @@ import { motion } from 'framer-motion';
 import Image from 'next/image';
 import Navigation from '@/components/layout/Navigation';
 import AdminRoute from '@/components/auth/AdminRoute';
-import { Plus, Edit, Trash2, Save, X, Map, Clock, Users, CheckCircle, Calendar, User as UserIcon, AlertCircle, Copy, User, ChevronUp, ChevronDown } from 'lucide-react';
+import { Plus, Edit, Trash2, Save, X, Map, Clock, Users, CheckCircle, Calendar, User as UserIcon, AlertCircle, Copy, User, ChevronUp, ChevronDown, Gift } from 'lucide-react';
 import { validateEmailFormat } from '@/utils/emailValidation';
 import { useDatabase, FarmItem, User as UserType } from '@/hooks/useDatabase';
 import { useAuth } from '@/contexts/AuthContext';
@@ -19,7 +19,7 @@ type AdminSection = 'farms' | 'users' | 'pending-farms';
 
 export default function AdminPanel() {
   const { dbService } = useDatabase();
-  const { user } = useAuth();
+  const { user, token } = useAuth();
 
   usePageTitle(
     user?.role === 'admin' ? 'pageTitles.admin' : 'pageTitles.moderation',
@@ -743,6 +743,8 @@ export default function AdminPanel() {
       loadPendingFarms();
     }
   }, [dbService, loadPendingFarms]);
+
+
 
   const renderFarmsManager = () => (
     <div className="space-y-6">
@@ -1761,18 +1763,18 @@ export default function AdminPanel() {
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${user.role === 'admin'
-                            ? 'bg-purple-100 text-purple-800'
-                            : user.role === 'moderator'
-                              ? 'bg-orange-100 text-orange-800'
-                              : 'bg-blue-100 text-blue-800'
+                          ? 'bg-purple-100 text-purple-800'
+                          : user.role === 'moderator'
+                            ? 'bg-orange-100 text-orange-800'
+                            : 'bg-blue-100 text-blue-800'
                           }`}>
                           {user.role === 'admin' ? 'Administrador' : user.role === 'moderator' ? 'Moderador' : 'Usuario'}
                         </span>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${user.isActive
-                            ? 'bg-green-100 text-green-800'
-                            : 'bg-red-100 text-red-800'
+                          ? 'bg-green-100 text-green-800'
+                          : 'bg-red-100 text-red-800'
                           }`}>
                           {user.isActive ? 'Activo' : 'Inactivo'}
                         </span>
@@ -1830,16 +1832,16 @@ export default function AdminPanel() {
 
                   <div className="flex flex-wrap gap-2">
                     <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${user.role === 'admin'
-                        ? 'bg-purple-100 text-purple-800'
-                        : user.role === 'moderator'
-                          ? 'bg-orange-100 text-orange-800'
-                          : 'bg-blue-100 text-blue-800'
+                      ? 'bg-purple-100 text-purple-800'
+                      : user.role === 'moderator'
+                        ? 'bg-orange-100 text-orange-800'
+                        : 'bg-blue-100 text-blue-800'
                       }`}>
                       {user.role === 'admin' ? 'Administrador' : user.role === 'moderator' ? 'Moderador' : 'Usuario'}
                     </span>
                     <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${user.isActive
-                        ? 'bg-green-100 text-green-800'
-                        : 'bg-red-100 text-red-800'
+                      ? 'bg-green-100 text-green-800'
+                      : 'bg-red-100 text-red-800'
                       }`}>
                       {user.isActive ? 'Activo' : 'Inactivo'}
                     </span>
@@ -1886,8 +1888,8 @@ export default function AdminPanel() {
               <button
                 onClick={() => setActiveSection('farms')}
                 className={`flex items-center gap-2 px-6 py-3 rounded-lg transition-colors ${activeSection === 'farms'
-                    ? 'bg-blue-600 text-white'
-                    : 'text-gray-400 hover:text-white'
+                  ? 'bg-blue-600 text-white'
+                  : 'text-gray-400 hover:text-white'
                   }`}
               >
                 <Map className="w-5 h-5" />
@@ -1896,8 +1898,8 @@ export default function AdminPanel() {
               <button
                 onClick={() => setActiveSection('users')}
                 className={`flex items-center gap-2 px-6 py-3 rounded-lg transition-colors ${activeSection === 'users'
-                    ? 'bg-blue-600 text-white'
-                    : 'text-gray-400 hover:text-white'
+                  ? 'bg-blue-600 text-white'
+                  : 'text-gray-400 hover:text-white'
                   }`}
               >
                 <Users className="w-5 h-5" />
@@ -1905,19 +1907,22 @@ export default function AdminPanel() {
               </button>
               <button
                 onClick={() => setActiveSection('pending-farms')}
-                className={`flex items-center gap-2 px-6 py-3 rounded-lg transition-colors ${activeSection === 'pending-farms'
-                    ? 'bg-blue-600 text-white'
-                    : 'text-gray-400 hover:text-white'
+                className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-colors ${activeSection === 'pending-farms'
+                  ? 'bg-purple-600 text-white'
+                  : 'text-gray-400 hover:text-white hover:bg-white/10'
                   }`}
               >
-                <CheckCircle className="w-5 h-5" />
-                Pendientes
-                {pendingFarms.length > 0 && (
-                  <span className="inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-white bg-red-600 rounded-full">
-                    {pendingFarms.length}
-                  </span>
-                )}
+                <div className="relative">
+                  <Clock className="w-5 h-5" />
+                  {pendingFarms.length > 0 && (
+                    <span className="absolute -top-2 -right-2 bg-red-500 text-white text-[10px] font-bold w-4 h-4 flex items-center justify-center rounded-full">
+                      {pendingFarms.length}
+                    </span>
+                  )}
+                </div>
+                <span className="hidden md:inline">Pendientes</span>
               </button>
+
             </div>
           </motion.div>
 
@@ -1931,6 +1936,7 @@ export default function AdminPanel() {
             {activeSection === 'farms' && renderFarmsManager()}
             {activeSection === 'users' && renderUsersManager()}
             {activeSection === 'pending-farms' && renderPendingFarmsManager()}
+
           </motion.div>
         </div>
       </div>

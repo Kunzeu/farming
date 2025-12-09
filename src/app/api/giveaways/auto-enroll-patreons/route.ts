@@ -25,9 +25,9 @@ export async function POST(request: NextRequest) {
     const isCron = cronSecret && authHeader === `Bearer ${cronSecret}`;
 
     if (!giveawayIds || !Array.isArray(giveawayIds) || giveawayIds.length === 0) {
-      // Si es Cron, podemos cargar los IDs activos automáticamente
-      if (isCron) {
-        // Si no se pasaron IDs y es Cron, obtenemos los activos por defecto
+      // Si es Cron O ADMIN, podemos cargar los IDs activos automáticamente
+      if (isCron || (authResult.isAuthorized && authResult.user?.role === 'admin')) {
+        // Si no se pasaron IDs y es Cron/Admin, obtenemos los activos por defecto
         // Esto permite que el Cron simplemente llame al endpoint sin body
         const { updateGiveawayStatuses } = await import('@/config/giveaways');
         const activeGiveaways = updateGiveawayStatuses().filter((g) => g.status === 'active');

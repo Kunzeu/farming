@@ -312,8 +312,9 @@ export function getAllGiveaways(): Giveaway[] {
 // Función para actualizar estado de sorteos basado en fechas
 export function updateGiveawayStatuses(): Giveaway[] {
   const now = new Date();
+  const allGiveaways = getAllGiveawaysWithAdvent(2025);
 
-  return GIVEAWAYS.map(giveaway => {
+  return allGiveaways.map(giveaway => {
     const start = new Date(giveaway.startDate);
     const end = new Date(giveaway.endDate);
 

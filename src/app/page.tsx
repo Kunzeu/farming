@@ -292,6 +292,7 @@ export default function HomePage() {
       "conversionGuide": <RefreshCw className={iconClass} />,
       "altParking": <Map className={iconClass} />,
       "magicMirrors": <Sparkles className={iconClass} />,
+      "orphanRoute": <Map className={iconClass} />,
 
     };
 
@@ -318,6 +319,7 @@ export default function HomePage() {
       "conversionGuide": <RefreshCw className="w-8 h-8" />,
       "altParking": <Map className="w-8 h-8" />,
       "magicMirrors": <Sparkles className="w-8 h-8" />,
+      "orphanRoute": <Map className="w-8 h-8" />,
 
     };
 
@@ -339,6 +341,7 @@ export default function HomePage() {
       "conversionGuide": "from-sky-500 to-blue-600",
       "altParking": "from-lime-500 to-green-600",
       "magicMirrors": "from-purple-500 to-indigo-600",
+      "orphanRoute": "from-cyan-500 to-blue-600",
 
     };
 
@@ -489,22 +492,22 @@ export default function HomePage() {
     };
   }, [isLoading]);
 
-  // Obtener el último dashboard agregado (magic-mirrors)
+  // Obtener el último dashboard agregado (orphanRoute)
   useEffect(() => {
-    // Crear tarjeta para magic-mirrors (última agregada)
-    const magicMirrorsCard: DashboardCard = {
-      id: "magicMirrors",
-      title: "nav.magicMirrors",
-      description: "magicMirrors.interactiveMap",
-      href: "/castora/magic-mirrors",
-      icon: <Sparkles className="w-8 h-8" />,
-      color: "from-purple-500 to-indigo-600",
+    // Crear tarjeta para orphanRoute (última agregada)
+    const orphanRouteCard: DashboardCard = {
+      id: "orphanRoute",
+      title: "wintersday.orphan.title",
+      description: "wintersday.orphan.cardDesc",
+      href: "/festivals/wintersday/Orphan",
+      icon: <Map className="w-8 h-8" />,
+      color: "from-cyan-500 to-blue-600",
       delay: 0,
       visible: true,
       order: 17
     };
 
-    setMostUsedDashboard(reconstructCardWithIcon(magicMirrorsCard));
+    setMostUsedDashboard(reconstructCardWithIcon(orphanRouteCard));
   }, []);
 
   // Mostrar mensaje "Check our new tool" cada 6 segundos

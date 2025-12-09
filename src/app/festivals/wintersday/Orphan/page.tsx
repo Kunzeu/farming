@@ -4,20 +4,8 @@ import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import Image from 'next/image';
 import Navigation from '@/components/layout/Navigation';
-import {
-    ArrowLeft,
-    Info,
-    Zap,
-    Youtube,
-    Snowflake,
-    Map as MapIcon,
-    Gift,
-    Target,
-    Calculator,
-    ArrowUp,
-    ArrowDown,
-    ChevronsUpDown
-} from 'lucide-react';
+import { ArrowLeft, Clock, Coins, Info, Calculator, Zap, Map as MapIcon, RotateCcw, ArrowUp, ArrowDown, ChevronsUpDown, HelpCircle, ShoppingCart, MapPin, Gift, Target, Youtube, Snowflake } from 'lucide-react';
+import MarkdownText from '@/components/ui/MarkdownText';
 import { usePageTitle } from '@/hooks/usePageTitle';
 import { useI18n } from '@/contexts/I18nContext';
 import Link from 'next/link';
@@ -38,6 +26,7 @@ const WintersdayOrphanPage = () => {
     const [communityServiceTipsData, setCommunityServiceTipsData] = useState<{ name: string, icon: string, wikiUrl: string } | null>(null);
     const [celebrationBoosterData, setCelebrationBoosterData] = useState<{ name: string, icon: string, wikiUrl: string } | null>(null);
     const [spiritBannerData, setSpiritBannerData] = useState<{ name: string, icon: string, wikiUrl: string } | null>(null);
+    const [guildKarmaBoostData, setGuildKarmaBoostData] = useState<{ name: string, icon: string, wikiUrl: string } | null>(null);
 
     // Calculator State
     const [prices, setPrices] = useState<Record<number, number>>({});
@@ -178,11 +167,25 @@ const WintersdayOrphanPage = () => {
         // Spirit Banner (91146)
         fetchItemData(91146, setSpiritBannerData, t('wintersday.items.spiritBanner'), 'https://wiki.guildwars2.com/images/thumb/5/5e/Celebration_Booster.png/48px-Celebration_Booster.png');
 
-        // Community Service Tips (Effect) - Manual Set
+        // Community Service Tips (Effect) -
         setCommunityServiceTipsData({
             name: t('wintersday.items.communityServiceTips', "Community Service Tips"),
             icon: 'https://wiki.guildwars2.com/images/4/4c/Story_Unlock-_Entanglement.png',
             wikiUrl: buildWikiUrl(t('wintersday.items.communityServiceTips', "Community Service Tips"))
+        });
+
+        // Guild Karma Bonus - Manual Set
+        let guildKarmaWikiUrl = 'https://wiki.guildwars2.com/wiki/Guild_Karma_Bonus';
+        if (lang === 'fr') {
+            guildKarmaWikiUrl = 'https://wiki-fr.guildwars2.com/wiki/Augmentation_de_karma_de_guilde';
+        } else if (lang === 'de') {
+            guildKarmaWikiUrl = 'https://wiki-de.guildwars2.com/wiki/Gilden-Verst%C3%A4rkung:_Karma';
+        }
+
+        setGuildKarmaBoostData({
+            name: t('wintersday.items.guildKarmaBonus', "Guild Karma Bonus"),
+            icon: 'https://wiki.guildwars2.com/images/e/ec/Nourishment_%28Birthday_Blaster%29.png',
+            wikiUrl: guildKarmaWikiUrl
         });
 
 
@@ -299,11 +302,11 @@ const WintersdayOrphanPage = () => {
                         {/* Botón Volver */}
                         <div className="flex justify-start mb-4">
                             <Link
-                                href="/"
+                                href="/festivals/wintersday"
                                 className="flex items-center gap-2 px-4 py-2 bg-gray-900/80 hover:bg-gray-800/90 border border-cyan-500/30 text-white rounded-lg transition-all duration-200 hover:scale-105 hover:shadow-lg hover:shadow-cyan-500/20"
                             >
                                 <ArrowLeft className="w-4 h-4" />
-                                {t('nav.home', 'Inicio')}
+                                {t('festival.wintersday', 'Wintersday')}
                             </Link>
                         </div>
 
@@ -422,6 +425,7 @@ const WintersdayOrphanPage = () => {
                                                 color: "orange"
                                             },
                                             { data: guildKarmaBannerData, desc: "+15% Karma", color: "yellow" },
+                                            { data: guildKarmaBoostData, desc: "+10% Karma", color: "green" },
                                             { data: karmaEnrichmentData, desc: "+15% Karma (Amulet)", color: "pink" },
                                             { data: snowflakeGobblerData, desc: "+15% Karma", color: "cyan" },
                                             { data: candyCornGobblerData, desc: "+10% Karma", color: "orange" },

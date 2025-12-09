@@ -745,18 +745,18 @@ export default function AdventCalendar({
         <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="bg-gradient-to-r from-red-600/90 to-orange-600/90 backdrop-blur-md p-4 rounded-xl border border-red-400/30 shadow-xl max-w-xl mx-auto mt-6"
+          className="bg-gradient-to-r from-red-600/90 to-orange-600/90 backdrop-blur-md p-4 rounded-xl border border-red-400/30 shadow-xl max-w-xl mx-auto mt-6 mb-8"
         >
           <div className="flex items-center gap-3">
             <div className="bg-white/10 p-2 rounded-lg">
               <Trophy className="w-6 h-6 text-yellow-300" />
             </div>
             <div className="flex-1 text-left">
-              <h3 className="text-white font-bold text-sm md:text-base leading-tight">
+              <h3 className="text-white font-bold text-sm md:text-base leading-tight mb-1">
                 {t('advent.promo.title', '¿Cansado de entrar cada día?')}
               </h3>
               <p className="text-red-100 text-xs md:text-sm">
-                {t('advent.promo.desc', 'Hazte Patreon y te inscribiremos automáticamente en TODOS los sorteos.')}
+                {t('advent.promo.desc', 'Hazte patreon de cualquier tier y participa automáticamente en los sorteos.')}
               </p>
             </div>
             <a
