@@ -6,7 +6,7 @@ import Link from 'next/link';
 import { usePageTitle } from '@/hooks/usePageTitle';
 import { useI18n } from '@/contexts/I18nContext';
 import Navigation from '@/components/layout/Navigation';
-import { 
+import {
   ArrowLeft,
   Calendar,
   Bug,
@@ -38,6 +38,18 @@ const ChangelogPage = () => {
   }, []);
 
   const changelogData: ChangelogEntry[] = useMemo(() => [
+    {
+      version: '2.1.4',
+      date: '2025-12-09',
+      type: 'patch',
+      changes: [
+        {
+          type: 'feature',
+          title: t('changelog.orphan.created', 'Orphan Route - New Section'),
+          description: t('changelog.orphan.created.desc', 'Complete guide for the orphan karma route. Includes interactive map, tips, and gift calculator with real-time prices.')
+        }
+      ]
+    },
     {
       version: '2.1.3',
       date: '2025-11-22',
@@ -204,10 +216,10 @@ const ChangelogPage = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
       <Navigation />
-      
+
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           className="text-center mb-8"
@@ -222,7 +234,7 @@ const ChangelogPage = () => {
               {t('nav.backToHome', 'Volver al Inicio')}
             </Link>
           </div>
-          
+
           <div className="flex items-center justify-center mb-4">
             <Package className="w-12 h-12 text-green-400 mr-3" />
             <h1 className="text-3xl sm:text-4xl font-bold text-white">{t('pageTitles.changelog', 'Changelog')}</h1>
@@ -245,90 +257,90 @@ const ChangelogPage = () => {
             </div>
           ) : (
             changelogData.map((entry, index) => (
-            <div
-              key={entry.version}
-              className="bg-gray-900/80 backdrop-blur-sm border border-gray-700/50 rounded-lg p-6 shadow-2xl"
-            >
-              {/* Version Header */}
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-4 pb-4 border-b border-gray-700/50">
-                <div className="flex items-center gap-3 mb-2 sm:mb-0">
-                  <span className={`px-3 py-1 rounded-full text-sm font-semibold ${getVersionTypeColor(entry.type)}`}>
-                    v{entry.version}
-                  </span>
-                  <div className="flex items-center gap-2 text-gray-400">
-                    <Calendar className="w-4 h-4" />
-                    <span className="text-sm">{entry.date}</span>
+              <div
+                key={entry.version}
+                className="bg-gray-900/80 backdrop-blur-sm border border-gray-700/50 rounded-lg p-6 shadow-2xl"
+              >
+                {/* Version Header */}
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-4 pb-4 border-b border-gray-700/50">
+                  <div className="flex items-center gap-3 mb-2 sm:mb-0">
+                    <span className={`px-3 py-1 rounded-full text-sm font-semibold ${getVersionTypeColor(entry.type)}`}>
+                      v{entry.version}
+                    </span>
+                    <div className="flex items-center gap-2 text-gray-400">
+                      <Calendar className="w-4 h-4" />
+                      <span className="text-sm">{entry.date}</span>
+                    </div>
                   </div>
-                </div>
-                <button
-                  onClick={() => setSelectedVersion(selectedVersion === entry.version ? null : entry.version)}
-                  className="text-gray-400 hover:text-white transition-colors text-sm"
-                >
-                  {selectedVersion === entry.version
-                    ? t('changelog.toggle.hide', 'Hide details')
-                    : t('changelog.toggle.show', 'View details')}
-                </button>
-              </div>
-
-              {/* Changes List */}
-              <div className="space-y-3">
-                {entry.changes.map((change, changeIndex) => (
-                  <motion.div
-                    key={changeIndex}
-                    initial={{ opacity: 0, x: -20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: index * 0.1 + changeIndex * 0.05 }}
-                    className={`p-4 rounded-lg border ${getTypeColor(change.type)}`}
+                  <button
+                    onClick={() => setSelectedVersion(selectedVersion === entry.version ? null : entry.version)}
+                    className="text-gray-400 hover:text-white transition-colors text-sm"
                   >
-                    <div className="flex items-start gap-3">
-                      {getTypeIcon(change.type)}
-                      <div className="flex-1">
-                        <h3 className="text-white font-semibold mb-1">{change.title}</h3>
-                        <p className="text-gray-300 text-sm">{change.description}</p>
+                    {selectedVersion === entry.version
+                      ? t('changelog.toggle.hide', 'Hide details')
+                      : t('changelog.toggle.show', 'View details')}
+                  </button>
+                </div>
+
+                {/* Changes List */}
+                <div className="space-y-3">
+                  {entry.changes.map((change, changeIndex) => (
+                    <motion.div
+                      key={changeIndex}
+                      initial={{ opacity: 0, x: -20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: index * 0.1 + changeIndex * 0.05 }}
+                      className={`p-4 rounded-lg border ${getTypeColor(change.type)}`}
+                    >
+                      <div className="flex items-start gap-3">
+                        {getTypeIcon(change.type)}
+                        <div className="flex-1">
+                          <h3 className="text-white font-semibold mb-1">{change.title}</h3>
+                          <p className="text-gray-300 text-sm">{change.description}</p>
+                        </div>
+                      </div>
+                    </motion.div>
+                  ))}
+                </div>
+
+                {/* Detailed Stats (when expanded) */}
+                {selectedVersion === entry.version && (
+                  <motion.div
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: 'auto' }}
+                    exit={{ opacity: 0, height: 0 }}
+                    className="mt-4 pt-4 border-t border-gray-700/50"
+                  >
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                      <div className="text-center">
+                        <div className="text-2xl font-bold text-green-400">
+                          {entry.changes.filter(c => c.type === 'feature').length}
+                        </div>
+                        <div className="text-xs text-gray-400">{t('changelog.stats.features', 'New Features')}</div>
+                      </div>
+                      <div className="text-center">
+                        <div className="text-2xl font-bold text-red-400">
+                          {entry.changes.filter(c => c.type === 'bugfix').length}
+                        </div>
+                        <div className="text-xs text-gray-400">{t('changelog.stats.bugfixes', 'Bug fixes')}</div>
+                      </div>
+                      <div className="text-center">
+                        <div className="text-2xl font-bold text-blue-400">
+                          {entry.changes.filter(c => c.type === 'improvement').length}
+                        </div>
+                        <div className="text-xs text-gray-400">{t('changelog.stats.improvements', 'Improvements')}</div>
+                      </div>
+                      <div className="text-center">
+                        <div className="text-2xl font-bold text-orange-400">
+                          {entry.changes.filter(c => c.type === 'breaking').length}
+                        </div>
+                        <div className="text-xs text-gray-400">{t('changelog.stats.breaking', 'Breaking changes')}</div>
                       </div>
                     </div>
                   </motion.div>
-                ))}
+                )}
               </div>
-
-              {/* Detailed Stats (when expanded) */}
-              {selectedVersion === entry.version && (
-                <motion.div
-                  initial={{ opacity: 0, height: 0 }}
-                  animate={{ opacity: 1, height: 'auto' }}
-                  exit={{ opacity: 0, height: 0 }}
-                  className="mt-4 pt-4 border-t border-gray-700/50"
-                >
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                  <div className="text-center">
-                    <div className="text-2xl font-bold text-green-400">
-                      {entry.changes.filter(c => c.type === 'feature').length}
-                    </div>
-                    <div className="text-xs text-gray-400">{t('changelog.stats.features', 'New Features')}</div>
-                  </div>
-                  <div className="text-center">
-                    <div className="text-2xl font-bold text-red-400">
-                      {entry.changes.filter(c => c.type === 'bugfix').length}
-                    </div>
-                    <div className="text-xs text-gray-400">{t('changelog.stats.bugfixes', 'Bug fixes')}</div>
-                  </div>
-                  <div className="text-center">
-                    <div className="text-2xl font-bold text-blue-400">
-                      {entry.changes.filter(c => c.type === 'improvement').length}
-                    </div>
-                    <div className="text-xs text-gray-400">{t('changelog.stats.improvements', 'Improvements')}</div>
-                  </div>
-                  <div className="text-center">
-                    <div className="text-2xl font-bold text-orange-400">
-                      {entry.changes.filter(c => c.type === 'breaking').length}
-                    </div>
-                    <div className="text-xs text-gray-400">{t('changelog.stats.breaking', 'Breaking changes')}</div>
-                  </div>
-                  </div>
-                </motion.div>
-              )}
-            </div>
-          ))
+            ))
           )}
         </motion.div>
 
@@ -340,10 +352,10 @@ const ChangelogPage = () => {
           className="mt-8 text-center"
         >
           <div className="bg-gray-900/40 backdrop-blur-sm border border-gray-700/30 rounded-lg p-4">
-            <p 
+            <p
               className="text-gray-400 text-sm"
-              dangerouslySetInnerHTML={{ 
-                __html: t('changelog.footer', 'Para reportar bugs o sugerir nuevas funciones, visita nuestro Discord.') 
+              dangerouslySetInnerHTML={{
+                __html: t('changelog.footer', 'Para reportar bugs o sugerir nuevas funciones, visita nuestro Discord.')
               }}
             />
           </div>

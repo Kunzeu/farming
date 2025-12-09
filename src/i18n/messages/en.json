@@ -2347,6 +2347,11 @@
   "wintersday.orphan.boosters.title": "Karma Boosters",
   "wintersday.orphan.boosters.intro": "In this post I will show you which boosters you should use to get the most out of this Karma farm.",
   "wintersday.orphan.cardDesc": "Complete guide and calculator for the orphan route.",
+  "wintersday.orphan.route.guide.part1": "You must buy the cheapest item in the",
+  "wintersday.orphan.route.guide.calculator": "calculator",
+  "wintersday.orphan.route.guide.part2": "and talk to the Charity Corps Seraph to buy",
+  "wintersday.orphan.route.guide.part3": "and craft the",
+  "wintersday.orphan.route.guide.part4": "to deliver it to the orphans following this route.",
   "wintersday.orphan.cta": "Don't fall behind, let's start!",
   "wintersday.orphan.video.title": "Route Video",
   "wintersday.orphan.map.title": "Route Map",
@@ -2588,5 +2593,7 @@
   "magicMirrors.modal.markAsCompleted": "Mark as Completed",
   "holidayCalendar.closed": "CLOSED",
   "holidayCalendar.closedPending": "CLOSED - PENDING",
-  "holidayCalendar.awaitingWinners": "Awaiting winners"
+  "holidayCalendar.awaitingWinners": "Awaiting winners",
+  "changelog.orphan.created": "Orphan Route - New Section",
+  "changelog.orphan.created.desc": "Complete guide for the orphan karma route. Includes route map, tips, and gift calculator with real-time prices and sorting."
 }

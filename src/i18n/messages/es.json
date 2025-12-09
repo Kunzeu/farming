@@ -141,6 +141,11 @@
   "wintersday.orphan.sections.calculator": "Calculadora",
   "wintersday.orphan.title": "Ruta de Huérfanos",
   "wintersday.orphan.cardDesc": "Guía completa y calculadora para la ruta de huérfanos.",
+  "wintersday.orphan.route.guide.part1": "Debes comprar el objeto más barato en la",
+  "wintersday.orphan.route.guide.calculator": "calculadora",
+  "wintersday.orphan.route.guide.part2": "y hablar con Serafín del cuerpo de la caridad para comprar",
+  "wintersday.orphan.route.guide.part3": "y fabricar el",
+  "wintersday.orphan.route.guide.part4": "para entregárselo a los huérfanos siguiendo esta ruta.",
   "wintersday.calculator.title": "Calculadora de Regalos",
   "wintersday.calculator.desc": "Compara el costo de obtener los Regalos Envueltos necesarios con diferentes objetos.",
   "wintersday.calculator.item": "Objeto",
@@ -2617,5 +2622,7 @@
   "magicMirrors.modal.markAsCompleted": "Marcar como Completado",
   "holidayCalendar.closed": "CERRADO",
   "holidayCalendar.closedPending": "CERRADO - PENDIENTE",
-  "holidayCalendar.awaitingWinners": "En espera de ganadores"
+  "holidayCalendar.awaitingWinners": "En espera de ganadores",
+  "changelog.orphan.created": "Ruta de Huérfanos - Nueva Sección",
+  "changelog.orphan.created.desc": "Guía completa para la ruta de karma de huérfanos. Incluye mapa de ruta, consejos y calculadora de regalos con precios en tiempo real y función de ordenamiento."
 }
