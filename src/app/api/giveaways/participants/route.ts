@@ -76,9 +76,10 @@ export async function GET(request: NextRequest) {
       { participants },
       {
         headers: {
-          'Cache-Control': 'private, max-age=30, stale-while-revalidate=60',
-          'Pragma': 'no-cache',
-          'Expires': '0',
+          // Cache privado por 5 minutos. El cliente debe invalidar si hace una acción.
+          'Cache-Control': 'private, max-age=300, stale-while-revalidate=60',
+          'Pragma': 'cache',
+          'Expires': new Date(Date.now() + 300000).toUTCString(),
         },
       }
     );

@@ -88,93 +88,159 @@ export default function AdventCalendar({
   const [autoParticipatedGiveaways, setAutoParticipatedGiveaways] = useState<Set<string>>(new Set());
   const [hasAutoEnrolled, setHasAutoEnrolled] = useState(false);
 
-  // Cargar sorteos desde la API
+  // Cargar sorteos (Configuración Estática + Conteos Dinámicos)
   useEffect(() => {
-    const loadGiveaways = async () => {
-      try {
-        // Verificar caché local primero
-        const CACHE_KEY = 'giveaways_cache';
-        const CACHE_TIME_KEY = 'giveaways_cache_time';
-        const CACHE_DURATION = 60000; // 1 minuto
+    let isMounted = true;
 
-        const cachedData = localStorage.getItem(CACHE_KEY);
-        const cachedTime = localStorage.getItem(CACHE_TIME_KEY);
+    // 1. Cargar Configuración Estática (IDs, Fechas, Premios, Imágenes)
+    // Esto cambia muy poco (al hacer deploy), así que se guarda en localStorage por tiempo largo
+    const loadGiveawaysConfig = async () => {
+      try {
+        const CONFIG_CACHE_KEY = 'giveaways_config_cache_v1';
+        const CONFIG_CACHE_TIME = 'giveaways_config_time';
+        // 24 horas de cache local para configuración
+        // Si el usuario hace deploy, la API devuelve cache-header nuevo, pero el cliente podría tener versión vieja
+        // Para respetar "apenas se haga deploy", podemos reducir este cache local o confiar en que el usuario recarga
+        // Vamos a poner 30 minutos local para balancear
+        const CACHE_DURATION = 1800000;
+
+        const cachedData = localStorage.getItem(CONFIG_CACHE_KEY);
+        const cachedTime = localStorage.getItem(CONFIG_CACHE_TIME);
 
         if (cachedData && cachedTime) {
           const timeDiff = Date.now() - parseInt(cachedTime);
           if (timeDiff < CACHE_DURATION) {
             const data = JSON.parse(cachedData);
-            const giveawaysMap: Record<string, any> = {};
-
-            data.giveaways?.forEach((giveaway: any) => {
-              if (giveaway.id.startsWith('advent-')) {
-                giveawaysMap[giveaway.id] = giveaway;
-              }
-            });
-
-            setGiveaways(giveawaysMap);
-            // Si la caché es válida, no hacemos fetch a menos que sea el inicio
-            // Pero queremos actualizar si ha pasado el tiempo en el intervalo...
-            // La lógica del intervalo llamará a loadGiveaways, así que si la caché es válida, retornamos
+            processGiveawaysData(data.giveaways);
             return;
           }
         }
 
-        const response = await fetch("/api/giveaways", {
-          next: { revalidate: 60 } // 1 minute
-        });
-        if (response.ok) {
+        const response = await fetch("/api/giveaways");
+        if (response.ok && isMounted) {
           const data = await response.json();
-
-          // Guardar en caché
-          localStorage.setItem(CACHE_KEY, JSON.stringify(data));
-          localStorage.setItem(CACHE_TIME_KEY, Date.now().toString());
-
-          const giveawaysMap: Record<string, {
-            id: string;
-            startDate: string;
-            endDate: string;
-            status: string;
-            participantCount: number;
-            prizes: Array<{
-              itemId?: number;
-              quantity?: number;
-              gemPrize?: boolean;
-              itemIcon?: string;
-            }>;
-          }> = {};
-
-          data.giveaways?.forEach((giveaway: {
-            id: string;
-            startDate: string;
-            endDate: string;
-            status: string;
-            participantCount: number;
-            prizes: Array<{
-              itemId?: number;
-              quantity?: number;
-              gemPrize?: boolean;
-              itemIcon?: string;
-            }>;
-          }) => {
-            if (giveaway.id.startsWith('advent-')) {
-              giveawaysMap[giveaway.id] = giveaway;
-            }
-          });
-
-          setGiveaways(giveawaysMap);
+          localStorage.setItem(CONFIG_CACHE_KEY, JSON.stringify(data));
+          localStorage.setItem(CONFIG_CACHE_TIME, Date.now().toString());
+          processGiveawaysData(data.giveaways);
         }
       } catch (error) {
-        console.error("Error loading giveaways:", error);
+        console.error("Error loading giveaways config:", error);
       }
     };
 
-    loadGiveaways();
+    // Helper para procesar la data y setear estado
+    const processGiveawaysData = (giveawaysList: any[]) => {
+      const giveawaysMap: Record<string, any> = {};
+      giveawaysList?.forEach((giveaway: any) => {
+        if (giveaway.id.startsWith('advent-')) {
+          giveawaysMap[giveaway.id] = {
+            ...giveaway,
+            participantCount: 0, // Inicializar en 0, luego se llena con dinámica
+            // Status base, luego se sobrescribe
+          };
+        }
+      });
+      // Importante: No sobrescribir todo el estado si ya tenemos counts, hacemos merge
+      setGiveaways(prev => {
+        const newState = { ...prev };
+        Object.keys(giveawaysMap).forEach(key => {
+          newState[key] = {
+            ...newState[key], // Mantener datos previos (counts) si existen
+            ...giveawaysMap[key], // Actualizar config
+            participantCount: newState[key]?.participantCount || 0
+          };
+        });
+        return newState;
+      });
+    };
 
-    // Recargar cada 1 minuto para actualizar contadores (usando caché si es reciente)
-    const interval = setInterval(loadGiveaways, 60000);
+    // 2. Cargar Datos Dinámicos (Conteos, Estado real)
+    // Esto se hace cada 5 minutos
+    const loadGiveawaysCounts = async () => {
+      // Si la pestaña no está visible, no hacemos poll
+      if (document.hidden) return;
 
-    return () => clearInterval(interval);
+      try {
+        // Cache local breve (5 min) alineado con servidor
+        const COUNTS_CACHE_KEY = 'giveaways_counts_cache';
+        const COUNTS_CACHE_TIME = 'giveaways_counts_time';
+        const COUNTS_DURATION = 300000; // 5 minutos
+
+        const cachedData = localStorage.getItem(COUNTS_CACHE_KEY);
+        const cachedTime = localStorage.getItem(COUNTS_CACHE_TIME);
+        const now = Date.now();
+
+        if (cachedData && cachedTime) {
+          const timeDiff = now - parseInt(cachedTime);
+          if (timeDiff < COUNTS_DURATION) {
+            const data = JSON.parse(cachedData);
+            updateGiveawaysWithCounts(data.data);
+            return;
+          }
+        }
+
+        const response = await fetch("/api/giveaways/counts");
+        if (response.ok && isMounted) {
+          const data = await response.json();
+          // data.data es { 'id': { status: 'active', count: 123 } }
+
+          localStorage.setItem(COUNTS_CACHE_KEY, JSON.stringify(data));
+          localStorage.setItem(COUNTS_CACHE_TIME, now.toString());
+
+          updateGiveawaysWithCounts(data.data);
+        }
+      } catch (error) {
+        console.error("Error loading giveaway counts:", error);
+      }
+    };
+
+    const updateGiveawaysWithCounts = (countsData: Record<string, { status: string; count: number }>) => {
+      setGiveaways(prev => {
+        const newState = { ...prev };
+        let hasChanges = false;
+
+        Object.keys(countsData).forEach(id => {
+          if (newState[id]) {
+            const newCount = countsData[id].count;
+            const newStatus = countsData[id].status;
+
+            if (newState[id].participantCount !== newCount || newState[id].status !== newStatus) {
+              newState[id] = {
+                ...newState[id],
+                participantCount: newCount,
+                status: newStatus
+              };
+              hasChanges = true;
+            }
+          }
+        });
+
+        return hasChanges ? newState : prev;
+      });
+    };
+
+    // Ejecución inicial
+    loadGiveawaysConfig().then(() => {
+      // Cargar counts después de config
+      loadGiveawaysCounts();
+    });
+
+    // Intervalo para counts (5 minutos)
+    const interval = setInterval(loadGiveawaysCounts, 300000);
+
+    // Re-fetch al volver a la pestaña
+    const handleVisibilityChange = () => {
+      if (!document.hidden) {
+        loadGiveawaysCounts();
+      }
+    };
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+
+    return () => {
+      isMounted = false;
+      clearInterval(interval);
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
   }, []);
 
   // Cargar ganadores
@@ -394,7 +460,9 @@ export default function AdventCalendar({
       // Check if we've already checked recently (every 1 hour)
       const lastAutoEnrollCheck = localStorage.getItem(`lastAuthEnrollCheck_${user?.id}`);
       const now = Date.now();
-      if (lastAutoEnrollCheck && (now - parseInt(lastAutoEnrollCheck)) < 3600000) {
+
+      // Aumentamos el throttle a 2 horas para reducir carga, ya que esto es heavy
+      if (lastAutoEnrollCheck && (now - parseInt(lastAutoEnrollCheck)) < 7200000) {
         setHasAutoEnrolled(true);
         return;
       }

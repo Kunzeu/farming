@@ -145,8 +145,8 @@ export async function autoEnrollPatrons(options: { giveawayIds: string[]; userId
     };
   }
 
+  // 1. Obtener usuarios elegibles (activos y con tier válido)
   let users: DbUserRow[] = [];
-
   if (userId) {
     const userResult = await pool.query<DbUserRow>(
       `SELECT id, username, patreon_status, patreon_tier, gw2_api_key
@@ -154,57 +154,124 @@ export async function autoEnrollPatrons(options: { giveawayIds: string[]; userId
        WHERE id = $1`,
       [userId]
     );
-
-    if (userResult.rows.length === 0) {
-      return {
-        processedUsers: 0,
-        inserted: [],
-        skipped: [],
-        perUser: [],
-        error: 'User not found',
-      };
-    }
-
+    if (userResult.rows.length === 0) return { processedUsers: 0, inserted: [], skipped: [], perUser: [], error: 'User not found' };
     users = userResult.rows;
   } else {
     users = await getActivePatrons();
-    if (users.length === 0) {
-      return {
-        processedUsers: 0,
-        inserted: [],
-        skipped: [],
-        perUser: [],
-        message: 'No active patrons found',
-      };
-    }
+    if (users.length === 0) return { processedUsers: 0, inserted: [], skipped: [], perUser: [], message: 'No active patrons found' };
   }
 
-  const insertedSet = new Set<string>();
-  const skippedSet = new Set<string>();
-  const perUser: Array<{
-    userId: string;
-    inserted: string[];
-    skipped: string[];
-    accountName: string | null;
-  }> = [];
+  // 2. Filtrar usuarios que califican (status, tier, api key)
+  const qualifiedUsers = users.filter(qualifiesForGiveaway);
 
-  for (const user of users) {
-    const result = await enrollUser(user, giveawayIds);
-    result.inserted.forEach((id) => insertedSet.add(id));
-    result.skipped.forEach((id) => skippedSet.add(id));
-    perUser.push({
+  // 3. Obtener sorteos válidos y abiertos
+  const allGiveaways = getAllGiveawaysWithAdvent(2025);
+  const now = new Date();
+
+  const validGiveaways = giveawayIds.filter(id => {
+    const g = allGiveaways.find(giveaway => giveaway.id === id);
+    if (!g) return false;
+    const start = new Date(g.startDate);
+    const end = new Date(g.endDate);
+    return now >= start && now <= end;
+  });
+
+  if (validGiveaways.length === 0) {
+    return { processedUsers: qualifiedUsers.length, inserted: [], skipped: giveawayIds, perUser: [], message: 'No valid/active giveaways found' };
+  }
+
+  // 4. Precaer participaciones existentes para TODOS los usuarios y sorteos relevantes en UNA sola query
+  // Esto evita N * M queries a la base de datos
+  const userIds = qualifiedUsers.map(u => u.id);
+
+  // Si hay muchos usuarios, podríamos necesitar chunking, pero PG soporta miles en ANY
+  const existingParticipationsResult = await pool.query<{ user_id: string; giveaway_id: string }>(
+    `SELECT user_id, giveaway_id 
+     FROM giveaway_participants 
+     WHERE user_id = ANY($1) AND giveaway_id = ANY($2)`,
+    [userIds, validGiveaways]
+  );
+
+  const existingMap = new Set<string>();
+  existingParticipationsResult.rows.forEach(row => {
+    existingMap.add(`${row.user_id}:${row.giveaway_id}`);
+  });
+
+  // 5. Preparar inserciones en lote (batch insert)
+  const inserts: { giveaway_id: string; user_id: string; account_name: string }[] = [];
+  const insertedSet = new Set<string>();
+  const perUserResult: any[] = [];
+
+  for (const user of qualifiedUsers) {
+    // Resolver account name (esto sí podría requerir queries individuales si no está cacheado, 
+    // pero resolveAccountName intenta buscar en participaciones anteriores primero)
+    // Optimización futura: cachear account names en users table.
+    const accountName = await resolveAccountName(user.id, user.gw2_api_key, user.username);
+
+    const userInserted: string[] = [];
+    const userSkipped: string[] = [];
+
+    for (const gwId of giveawayIds) {
+      if (!validGiveaways.includes(gwId)) {
+        userSkipped.push(gwId);
+        continue;
+      }
+
+      if (existingMap.has(`${user.id}:${gwId}`)) {
+        userSkipped.push(gwId);
+        continue;
+      }
+
+      inserts.push({
+        giveaway_id: gwId,
+        user_id: user.id,
+        account_name: accountName
+      });
+      userInserted.push(gwId);
+      insertedSet.add(gwId);
+    }
+
+    perUserResult.push({
       userId: user.id,
-      inserted: result.inserted,
-      skipped: result.skipped,
-      accountName: result.accountName,
+      inserted: userInserted,
+      skipped: userSkipped,
+      accountName
     });
   }
 
+  // 6. Ejecutar inserción masiva
+  if (inserts.length > 0) {
+    // Postgres permite insertar múltiples filas en un solo INSERT
+    // Construir query dinámica: VALUES ($1, $2, $3), ($4, $5, $6), ...
+    // Nota: PG tiene límite de parámetros (65535). Si inserts es muy grande, dividir en chunks.
+    const CHUNK_SIZE = 500; // Seguro para 3 columnas (1500 params)
+
+    for (let i = 0; i < inserts.length; i += CHUNK_SIZE) {
+      const chunk = inserts.slice(i, i + CHUNK_SIZE);
+      const values: string[] = [];
+      const params: any[] = [];
+      let pIndex = 1;
+
+      chunk.forEach(item => {
+        values.push(`($${pIndex++}, $${pIndex++}, $${pIndex++})`);
+        params.push(item.giveaway_id, item.user_id, item.account_name);
+      });
+
+      const query = `
+        INSERT INTO giveaway_participants (giveaway_id, user_id, account_name)
+        VALUES ${values.join(', ')}
+        ON CONFLICT DO NOTHING
+      `;
+
+      await pool.query(query, params);
+    }
+  }
+
   return {
-    processedUsers: users.length,
+    processedUsers: qualifiedUsers.length,
     inserted: Array.from(insertedSet),
-    skipped: Array.from(skippedSet),
-    perUser,
+    skipped: giveawayIds.filter(id => !insertedSet.has(id)), // Aprox
+    perUser: perUserResult
   };
 }
 

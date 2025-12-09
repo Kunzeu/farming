@@ -149,9 +149,9 @@ function extractPatreonInfo(patreonData: PatreonIdentityResponse) {
 
   const patreonStatus =
     membership.attributes.patron_status &&
-    (membership.attributes.patron_status === 'active_patron' ||
-      membership.attributes.patron_status === 'declined_patron' ||
-      membership.attributes.patron_status === 'former_patron')
+      (membership.attributes.patron_status === 'active_patron' ||
+        membership.attributes.patron_status === 'declined_patron' ||
+        membership.attributes.patron_status === 'former_patron')
       ? membership.attributes.patron_status
       : null;
 
@@ -177,7 +177,7 @@ function extractPatreonInfo(patreonData: PatreonIdentityResponse) {
 function AuthProviderInternal({ children }: { children: ReactNode }) {
   const [state, dispatch] = useReducer(authReducer, initialState);
   const router = useRouter();
-  
+
   const lastUserRefreshRef = useRef<number>(0);
   const didInitialRefreshRef = useRef<boolean>(false);
   const inflightRefreshRef = useRef<Promise<void> | null>(null);
@@ -194,7 +194,7 @@ function AuthProviderInternal({ children }: { children: ReactNode }) {
       if (token && userData) {
         try {
           const user = JSON.parse(userData);
-          
+
           // Parsear preferencias si vienen como string JSON
           if (user.preferences && typeof user.preferences === 'string') {
             try {
@@ -203,7 +203,7 @@ function AuthProviderInternal({ children }: { children: ReactNode }) {
               // Si falla el parse, mantener como está
             }
           }
-          
+
           // Parsear preferencias de dashboard si existen
           if (user.preferences?.dashboard && typeof user.preferences.dashboard === 'string') {
             try {
@@ -212,7 +212,7 @@ function AuthProviderInternal({ children }: { children: ReactNode }) {
               // Si falla el parse, mantener como está
             }
           }
-          
+
           dispatch({
             type: 'AUTH_SUCCESS',
             payload: { user, token },
@@ -358,11 +358,11 @@ function AuthProviderInternal({ children }: { children: ReactNode }) {
               if (!s) return;
               try {
                 sessionStorage.setItem('gw2_user_last_summary', JSON.stringify({ hasApiKey: !!s.hasApiKey, apiKeyValid: s.apiKeyValid ?? null }));
-              } catch {}
+              } catch { }
             })
-            .catch(() => {});
+            .catch(() => { });
         }, 300);
-      } catch {}
+      } catch { }
 
     } catch (error) {
       dispatch({
@@ -428,7 +428,7 @@ function AuthProviderInternal({ children }: { children: ReactNode }) {
       // Limpiar localStorage en caso de error
       localStorage.removeItem('gw2_token');
       localStorage.removeItem('gw2_user');
-      
+
       dispatch({
         type: 'AUTH_FAILURE',
         payload: error instanceof Error ? error.message : 'Registration error',
@@ -441,7 +441,7 @@ function AuthProviderInternal({ children }: { children: ReactNode }) {
     localStorage.removeItem('gw2_token');
     localStorage.removeItem('gw2_user');
     dispatch({ type: 'AUTH_LOGOUT' });
-    
+
     // Redirigir a la página principal
     router.push('/');
   }, [router]);
@@ -460,7 +460,7 @@ function AuthProviderInternal({ children }: { children: ReactNode }) {
       // Actualizar en el contexto - fusionar preferencias correctamente
       // Si se actualizaron preferencias, fusionarlas con las existentes
       let mergedPreferences = state.user.preferences;
-      
+
       if (updates.preferences) {
         // Si se actualizaron preferencias, fusionarlas
         mergedPreferences = {
@@ -478,7 +478,7 @@ function AuthProviderInternal({ children }: { children: ReactNode }) {
         // Si no se actualizaron preferencias pero updatedUser tiene preferencias, usarlas
         mergedPreferences = updatedUser.preferences;
       }
-      
+
       const newUser = {
         ...state.user,
         ...updatedUser,
@@ -508,7 +508,7 @@ function AuthProviderInternal({ children }: { children: ReactNode }) {
     dispatch({ type: 'AUTH_START' });
 
     try {
-      
+
       // Intercambiar el código por un token de acceso
       const tokenResponse = await fetch('/api/auth/patreon/token', {
         method: 'POST',
@@ -569,7 +569,7 @@ function AuthProviderInternal({ children }: { children: ReactNode }) {
 
       const patreonData = await identityResponse.json();
       const patreonUser = patreonData.data;
-      
+
       // Usar función auxiliar y normalizar
       const { patreonStatus, patreonTier } = extractPatreonInfo(patreonData);
       let finalStatus = patreonStatus;
@@ -615,8 +615,8 @@ function AuthProviderInternal({ children }: { children: ReactNode }) {
             email: patreonUser.attributes.email,
             username: patreonUser.attributes.vanity || patreonUser.attributes.full_name || `patreon_${patreonUser.id}`,
             patreonId: patreonUser.id,
-        patreonTier: finalTier || undefined,
-        patreonStatus: finalStatus || undefined,
+            patreonTier: finalTier || undefined,
+            patreonStatus: finalStatus || undefined,
             role: 'user',
             isActive: true,
           });
@@ -638,7 +638,7 @@ function AuthProviderInternal({ children }: { children: ReactNode }) {
         }
       } else {
 
-        
+
         // En lugar de actualizar en la BD (que requiere autenticación),
         // simplemente sobrescribir los datos localmente con la info actual de Patreon
         // La actualización en BD se hará cuando el usuario use la app normalmente
@@ -649,7 +649,7 @@ function AuthProviderInternal({ children }: { children: ReactNode }) {
       }
 
       const dbUserWithPatreon = dbUser as User & { patreonId?: string; patreonTier?: string; patreonStatus?: 'active_patron' | 'declined_patron' | 'former_patron' | null };
-      
+
 
       // Crear objeto de usuario para el contexto
       // Usar los datos más recientes de Patreon obtenidos en este login
@@ -704,7 +704,7 @@ function AuthProviderInternal({ children }: { children: ReactNode }) {
 
       // Verificar qué se va a guardar
 
-      
+
       // Guardar en localStorage
       localStorage.setItem('gw2_token', token);
       localStorage.setItem('gw2_user', JSON.stringify(user));
@@ -737,14 +737,14 @@ function AuthProviderInternal({ children }: { children: ReactNode }) {
         }
       }
     }
-    
+
     if (!currentUser) {
       throw new Error('Debes iniciar sesión primero');
     }
 
     try {
 
-      
+
       // Intercambiar el código por un token de acceso
       const tokenResponse = await fetch('/api/auth/patreon/token', {
         method: 'POST',
@@ -794,7 +794,7 @@ function AuthProviderInternal({ children }: { children: ReactNode }) {
 
       const patreonData = await identityResponse.json();
       const patreonUser = patreonData.data;
-      
+
       // Usar función auxiliar y normalizar
       const { patreonStatus, patreonTier } = extractPatreonInfo(patreonData);
       let finalStatus = patreonStatus;
@@ -819,7 +819,7 @@ function AuthProviderInternal({ children }: { children: ReactNode }) {
         patreonTier: finalTier ?? null,
         patreonStatus: finalStatus ?? null
       };
-      
+
 
       // Persistir en BD inmediatamente por email
       try {
@@ -831,7 +831,7 @@ function AuthProviderInternal({ children }: { children: ReactNode }) {
         if (!persistRes.ok) {
           await persistRes.text();
         }
-      } catch {}
+      } catch { }
 
 
 
@@ -872,7 +872,7 @@ function AuthProviderInternal({ children }: { children: ReactNode }) {
 
     try {
 
-      
+
       // Intercambiar el código por un token de acceso
       const tokenResponse = await fetch('/api/auth/discord/token', {
         method: 'POST',
@@ -906,7 +906,7 @@ function AuthProviderInternal({ children }: { children: ReactNode }) {
 
       const discordUser = await userResponse.json();
 
-  
+
 
       // Buscar o crear usuario en la base de datos
       const { getDbService } = await import('@/lib/database-switch');
@@ -915,7 +915,7 @@ function AuthProviderInternal({ children }: { children: ReactNode }) {
       // Buscar usuario existente por Discord ID
 
       let dbUser = await dbService.getUserByDiscordId(discordUser.id);
-      
+
 
       if (!dbUser) {
 
@@ -927,7 +927,7 @@ function AuthProviderInternal({ children }: { children: ReactNode }) {
           role: 'user',
           isActive: true,
         });
-        
+
 
         // Usar el usuario recién creado
         dbUser = createdUser;
@@ -990,20 +990,20 @@ function AuthProviderInternal({ children }: { children: ReactNode }) {
   // Función para verificar permisos
   const hasPermission = useCallback((role: 'admin' | 'moderator' | 'user'): boolean => {
     if (!state.user) return false;
-    
+
     // Admin tiene todos los permisos
     if (state.user.role === 'admin') return true;
-    
+
     // Moderator tiene permisos de moderator y user
     if (state.user.role === 'moderator') {
       return role === 'moderator' || role === 'user';
     }
-    
+
     // User solo tiene permisos de user
     if (state.user.role === 'user') {
       return role === 'user';
     }
-    
+
     return false;
   }, [state.user]);
 
@@ -1014,78 +1014,78 @@ function AuthProviderInternal({ children }: { children: ReactNode }) {
     // Throttle y coalescencia de llamadas
     const now = Date.now();
     if (now - lastUserRefreshRef.current < refreshThrottleMs && inflightRefreshRef.current) {
-      try { await inflightRefreshRef.current; } catch {}
+      try { await inflightRefreshRef.current; } catch { }
       return;
     }
     lastUserRefreshRef.current = now;
 
     const doRefresh = (async () => {
       try {
-      const response = await fetch(`/api/users/${currentUser.id}?full=true`, {
-        cache: 'no-store',
-        headers: {
-          'Cache-Control': 'no-cache, no-store, must-revalidate',
-          'Pragma': 'no-cache',
-        }
-      });
+        const response = await fetch(`/api/users/${currentUser.id}?full=true`, {
+          cache: 'no-store',
+          headers: {
+            'Cache-Control': 'no-cache, no-store, must-revalidate',
+            'Pragma': 'no-cache',
+          }
+        });
 
-      if (!response.ok) {
-        // Si el usuario no existe o fue desactivado, hacer logout
-        if (response.status === 404 || response.status === 403) {
+        if (!response.ok) {
+          // Si el usuario no existe o fue desactivado, hacer logout
+          if (response.status === 404 || response.status === 403) {
+            localStorage.removeItem('gw2_token');
+            localStorage.removeItem('gw2_user');
+            dispatch({ type: 'AUTH_LOGOUT' });
+            return;
+          }
+          throw new Error('Failed to refresh user data');
+        }
+
+        const data = await response.json();
+
+
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const { password: _, ...safeUser } = data;
+
+        const refreshedUser: User = {
+          ...currentUser,
+          email: safeUser.email,
+          username: safeUser.username,
+          role: safeUser.role,
+          isActive: safeUser.isActive,
+          discordId: safeUser.discordId,
+          gw2ApiKey: safeUser.gw2ApiKey,
+          // Si la API devuelve null/undefined, conservar lo que ya tengamos en memoria
+          patreonId: safeUser.patreonId ?? currentUser.patreonId,
+          patreonTier: safeUser.patreonTier ?? currentUser.patreonTier,
+          patreonStatus: (safeUser.patreonStatus !== undefined ? safeUser.patreonStatus : currentUser.patreonStatus) ?? null,
+          preferences: safeUser.preferences,
+          isAdmin: safeUser.role === 'admin',
+          joinDate: currentUser.joinDate,
+          lastLogin: currentUser.lastLogin,
+        };
+
+
+        // Actualizar localStorage
+        localStorage.setItem('gw2_user', JSON.stringify(refreshedUser));
+
+        // Verificar si el usuario fue desactivado
+        const wasActive = currentUser.isActive;
+        const nowActive = refreshedUser.isActive;
+
+        // Solo hacer logout si el usuario fue desactivado
+        if (wasActive && !nowActive) {
           localStorage.removeItem('gw2_token');
           localStorage.removeItem('gw2_user');
           dispatch({ type: 'AUTH_LOGOUT' });
           return;
         }
-        throw new Error('Failed to refresh user data');
-      }
 
-      const data = await response.json();
-      
-      
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      const { password: _, ...safeUser } = data;
-      
-      const refreshedUser: User = {
-        ...currentUser,
-        email: safeUser.email,
-        username: safeUser.username,
-        role: safeUser.role,
-        isActive: safeUser.isActive,
-        discordId: safeUser.discordId,
-        gw2ApiKey: safeUser.gw2ApiKey,
-        // Si la API devuelve null/undefined, conservar lo que ya tengamos en memoria
-        patreonId: safeUser.patreonId ?? currentUser.patreonId,
-        patreonTier: safeUser.patreonTier ?? currentUser.patreonTier,
-        patreonStatus: (safeUser.patreonStatus !== undefined ? safeUser.patreonStatus : currentUser.patreonStatus) ?? null,
-        preferences: safeUser.preferences,
-        isAdmin: safeUser.role === 'admin',
-        joinDate: currentUser.joinDate,
-        lastLogin: currentUser.lastLogin,
-      };
-
-
-      // Actualizar localStorage
-      localStorage.setItem('gw2_user', JSON.stringify(refreshedUser));
-
-      // Verificar si el usuario fue desactivado
-      const wasActive = currentUser.isActive;
-      const nowActive = refreshedUser.isActive;
-
-      // Solo hacer logout si el usuario fue desactivado
-      if (wasActive && !nowActive) {
-        localStorage.removeItem('gw2_token');
-        localStorage.removeItem('gw2_user');
-        dispatch({ type: 'AUTH_LOGOUT' });
-        return;
-      }
-
-      // Actualizar el contexto con los nuevos datos (incluso si cambió el rol)
-      dispatch({
-        type: 'REFRESH_USER',
-        payload: refreshedUser
-      });
-      try { sessionStorage.setItem('gw2_user_full_refreshed_at', String(Date.now())); } catch {}
+        // Actualizar el contexto con los nuevos datos (incluso si cambió el rol)
+        dispatch({
+          type: 'REFRESH_USER',
+          payload: refreshedUser
+        });
+        try { sessionStorage.setItem('gw2_user_full_refreshed_at', String(Date.now())); } catch { }
       } catch (error) {
         console.error('Error refreshing user data:', error);
       }
@@ -1108,18 +1108,18 @@ function AuthProviderInternal({ children }: { children: ReactNode }) {
           if (resp.ok) {
             const data = await resp.json();
             lastSummaryRef.current = { hasApiKey: !!data.hasApiKey, apiKeyValid: data.apiKeyValid ?? null };
-            try { sessionStorage.setItem('gw2_user_last_summary', JSON.stringify(lastSummaryRef.current)); } catch {}
+            try { sessionStorage.setItem('gw2_user_last_summary', JSON.stringify(lastSummaryRef.current)); } catch { }
           }
           return;
         }
-      } catch {}
+      } catch { }
 
       // Inicializar snapshot desde sessionStorage si no existe aún
       if (!lastSummaryRef.current) {
         try {
           const snapshot = sessionStorage.getItem('gw2_user_last_summary');
           if (snapshot) lastSummaryRef.current = JSON.parse(snapshot);
-        } catch {}
+        } catch { }
       }
 
       const resp = await fetch(`/api/users/${currentUser.id}/summary`, { cache: 'no-store' });
@@ -1130,11 +1130,11 @@ function AuthProviderInternal({ children }: { children: ReactNode }) {
       // Solo disparar full cuando cambia hasApiKey (apiKeyValid puede fluctuar por salud externa)
       const changed = !current || current.hasApiKey !== next.hasApiKey;
       lastSummaryRef.current = next;
-      try { sessionStorage.setItem('gw2_user_last_summary', JSON.stringify(next)); } catch {}
+      try { sessionStorage.setItem('gw2_user_last_summary', JSON.stringify(next)); } catch { }
       if (changed) {
         await refreshUserData();
       }
-    } catch {}
+    } catch { }
   }, [state.user, refreshUserData]);
 
   // Refrescar datos del usuario inmediatamente después de autenticarse (una vez por sesión)
@@ -1170,7 +1170,10 @@ function AuthProviderInternal({ children }: { children: ReactNode }) {
 
     // Verificar cada 10 minutos para reducir invocaciones
     const interval = setInterval(() => {
-      refreshUserSummary();
+      // Si la pestaña no está visible, no refrescar
+      if (!document.hidden) {
+        refreshUserSummary();
+      }
     }, 600000);
 
     // Debounce para evitar múltiples llamadas cuando el usuario vuelve a la pestaña
@@ -1183,11 +1186,11 @@ function AuthProviderInternal({ children }: { children: ReactNode }) {
       if (now - lastFocusTime < FOCUS_DEBOUNCE_MS) {
         return; // Ignorar si fue hace menos de 30 segundos
       }
-      
+
       if (focusTimeout) {
         clearTimeout(focusTimeout);
       }
-      
+
       focusTimeout = setTimeout(() => {
         lastFocusTime = Date.now();
         refreshUserSummary();
@@ -1249,21 +1252,21 @@ export function useAuth() {
     if (typeof window === 'undefined') {
       return {
         ...initialState,
-        login: async () => {},
-        register: async () => {},
-        loginWithDiscord: async () => {},
-        loginWithPatreon: async () => {},
-        linkPatreon: async () => {},
-        unlinkPatreon: async () => {},
-        logout: () => {},
-        clearError: () => {},
+        login: async () => { },
+        register: async () => { },
+        loginWithDiscord: async () => { },
+        loginWithPatreon: async () => { },
+        linkPatreon: async () => { },
+        unlinkPatreon: async () => { },
+        logout: () => { },
+        clearError: () => { },
         hasPermission: () => false,
-        updateUser: async () => {},
-        refreshUserData: async () => {},
+        updateUser: async () => { },
+        refreshUserData: async () => { },
       };
     }
     throw new Error('useAuth debe ser usado dentro de un AuthProvider');
   }
   return context;
-} 
+}
 

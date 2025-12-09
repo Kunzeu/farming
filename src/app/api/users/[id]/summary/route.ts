@@ -92,6 +92,13 @@ export async function GET(
       }
     }
 
+    // 3) Limpieza básica del cache si crece demasiado (prevención de fugas de memoria)
+    if (summaryCache.size > 1000) {
+      // Estrategia simple: borrar todo cuando llega a un límite
+      // En un entorno serverless real, esto se resetea constantemente de todos modos
+      summaryCache.clear();
+    }
+
     return NextResponse.json(
       {
         hasApiKey,
@@ -103,7 +110,9 @@ export async function GET(
       },
       {
         headers: {
-          'Cache-Control': 'private, no-store',
+          // Permitir cache en el navegador por 2 minutos para reducir requests
+          // "private" asegura que no se cachee en CDN compartido
+          'Cache-Control': 'private, max-age=120, stale-while-revalidate=60',
         },
       }
     );
