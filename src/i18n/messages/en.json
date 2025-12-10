@@ -2391,6 +2391,8 @@
   "wintersday.orphan.overview.objective.text": "Find and gift 30 orphans scattered around Divinity's Reach daily.",
   "wintersday.orphan.overview.rewards.title": "Rewards",
   "wintersday.orphan.overview.rewards.text": "Massive amounts of Karma + Liquid Karma. It is the most efficient source of Karma in the game if done correctly.",
+  "wintersday.orphan.overview.tips.pvp.part1": "TIP: The Bell Choir, Jumping Puzzle, and Toypocalypse are PvP instances. Open the bouncing wooden chests in Divinity's Reach so the",
+  "wintersday.orphan.overview.tips.pvp.part2": "takes effect.",
   "nav.holidayCalendar": "Advent Calendar",
   "nav.holidayCalendarMobile": "Advent",
   "holidayCalendar.title": "Advent Calendar - December {year}",

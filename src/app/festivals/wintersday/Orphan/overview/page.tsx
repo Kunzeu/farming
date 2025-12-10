@@ -1,10 +1,27 @@
 'use client';
 
+import { useState, useEffect } from 'react';
+import Image from 'next/image';
 import { Info, Target, Gift } from 'lucide-react';
 import { useI18n } from '@/contexts/I18nContext';
 
 export default function OrphanOverviewPage() {
-    const { t } = useI18n();
+    const { t, lang } = useI18n();
+    const [karmaEnrichment, setKarmaEnrichment] = useState<{ name: string, icon: string } | null>(null);
+
+    useEffect(() => {
+        const fetchItem = async () => {
+            const apiLang = lang === 'es' ? 'es' : lang === 'de' ? 'de' : lang === 'fr' ? 'fr' : 'en';
+            try {
+                const res = await fetch(`https://api.guildwars2.com/v2/items/39332?lang=${apiLang}`);
+                const data = await res.json();
+                setKarmaEnrichment({ name: data.name, icon: data.icon });
+            } catch (error) {
+                console.error("Error fetching item 39332", error);
+            }
+        };
+        fetchItem();
+    }, [lang]);
 
     return (
         <div id="section-overview" className="space-y-8">
@@ -37,6 +54,18 @@ export default function OrphanOverviewPage() {
                             <p className="text-gray-300 text-sm">
                                 {t('wintersday.orphan.overview.rewards.text', 'Enormes cantidades de Karma + Karma líquido. Es la fuente más eficiente de Karma del juego si se hace correctamente.')}
                             </p>
+                        </div>
+                    </div>
+
+                    <div className="bg-yellow-900/20 border border-yellow-500/30 rounded-lg p-4 mt-6 flex items-start">
+                        <Info className="w-5 h-5 text-yellow-500 mr-3 flex-shrink-0 mt-0.5" />
+                        <div className="text-gray-300 text-sm leading-relaxed">
+                            {t('wintersday.orphan.overview.tips.pvp.part1', 'TIP: Las instancias de las campanas, prueba de salto y el Juguetecalipsis son instancias de PvP. Abran los cofres saltarines de madera en Linde para que haga efecto el')}
+                            <span className="inline-flex items-center mx-1 font-semibold text-white bg-black/30 px-2 py-0.5 rounded align-middle">
+                                {karmaEnrichment && <Image src={karmaEnrichment.icon} alt={karmaEnrichment.name} width={16} height={16} className="mr-1.5 rounded-sm inline-block" />}
+                                {karmaEnrichment ? karmaEnrichment.name : 'Karmic Enrichment'}
+                            </span>
+                            {t('wintersday.orphan.overview.tips.pvp.part2', '.')}
                         </div>
                     </div>
                 </div>

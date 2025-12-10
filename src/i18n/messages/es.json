@@ -178,6 +178,8 @@
   "wintersday.orphan.overview.objective.text": "Encontrar y dar regalos a los 30 huérfanos repartidos por Linde de la Divinidad diariamente.",
   "wintersday.orphan.overview.rewards.title": "Recompensas",
   "wintersday.orphan.overview.rewards.text": "Enormes cantidades de Karma + Karma líquido. Es la fuente más eficiente de Karma del juego si se hace correctamente.",
+  "wintersday.orphan.overview.tips.pvp.part1": "TIP: Las instancias de las campanas, prueba de salto y el Juguetecalipsis son instancias de PvP. Abran los cofres saltarines de madera en Linde de la Divinidad para que haga efecto el",
+  "wintersday.orphan.overview.tips.pvp.part2": ".",
   "auth.login": "Acceder",
   "auth.logout": "Cerrar sesión",
   "auth.profile": "Perfil",

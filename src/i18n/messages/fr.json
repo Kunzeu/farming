@@ -2572,5 +2572,7 @@
   "wintersday.orphan.overview.objective.title": "Objectif",
   "wintersday.orphan.overview.objective.text": "Trouver et offrir des cadeaux aux 30 orphelins dispersés dans le Promontoire Divin quotidiennement.",
   "wintersday.orphan.overview.rewards.title": "Récompenses",
-  "wintersday.orphan.overview.rewards.text": "D'énormes quantités de Karma + Karma liquide. C'est la source de Karma la plus efficace du jeu si elle est faite correctement."
+  "wintersday.orphan.overview.rewards.text": "D'énormes quantités de Karma + Karma liquide. C'est la source de Karma la plus efficace du jeu si elle est faite correctement.",
+  "wintersday.orphan.overview.tips.pvp.part1": "ASTUCE : Le Chœur des cloches, le Puzzle de saut et la Jouetpocalypse sont des instances JcJ. Ouvrez les coffres en bois rebondissants au Promontoire Divin pour que l'",
+  "wintersday.orphan.overview.tips.pvp.part2": "fasse effet."
 }

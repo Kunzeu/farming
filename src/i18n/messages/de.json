@@ -2578,5 +2578,7 @@
   "wintersday.orphan.overview.objective.title": "Ziel",
   "wintersday.orphan.overview.objective.text": "Finde und beschenke täglich 30 Waisenkinder, die in Götterfels verstreut sind.",
   "wintersday.orphan.overview.rewards.title": "Belohnungen",
-  "wintersday.orphan.overview.rewards.text": "Riesige Mengen an Karma + Flüssiges Karma. Es ist die effizienteste Karma-Quelle im Spiel, wenn man es richtig macht."
+  "wintersday.orphan.overview.rewards.text": "Riesige Mengen an Karma + Flüssiges Karma. Es ist die effizienteste Karma-Quelle im Spiel, wenn man es richtig macht.",
+  "wintersday.orphan.overview.tips.pvp.part1": "TIPP: Das Glockenspiel, das Sprungrätsel und die Spielzeugapokalypse sind PvP-Instanzen. Öffnet die hüpfenden Holztruhen in Götterfels, damit die",
+  "wintersday.orphan.overview.tips.pvp.part2": "wirkt."
 }
