@@ -60,7 +60,7 @@ export default function OrphanOverviewPage() {
                     <div className="bg-yellow-900/20 border border-yellow-500/30 rounded-lg p-4 mt-6 flex items-start">
                         <Info className="w-5 h-5 text-yellow-500 mr-3 flex-shrink-0 mt-0.5" />
                         <div className="text-gray-300 text-sm leading-relaxed">
-                            {t('wintersday.orphan.overview.tips.pvp.part1', 'TIP: Las instancias de las campanas, prueba de salto y el Juguetecalipsis son instancias de PvP. Abran los cofres saltarines de madera en Linde para que haga efecto el')}
+                            {t('wintersday.orphan.overview.tips.pvp.part1', 'TIP: Las instancias de las campanas, prueba de salto y el Juguetecalipsis   son instancias de PvP. Abran los cofres saltarines de madera en Linde para que haga efecto el')}
                             <span className="inline-flex items-center mx-1 font-semibold text-white bg-black/30 px-2 py-0.5 rounded align-middle">
                                 {karmaEnrichment && <Image src={karmaEnrichment.icon} alt={karmaEnrichment.name} width={16} height={16} className="mr-1.5 rounded-sm inline-block" />}
                                 {karmaEnrichment ? karmaEnrichment.name : 'Karmic Enrichment'}
