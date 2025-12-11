@@ -6,7 +6,7 @@ import { useI18n } from "@/contexts/I18nContext";
 import { X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
-export default function AdBlockerBanner() {
+export default function SupportNotice() {
     const { user } = useAuth();
     const { t } = useI18n();
     const [hasAdBlocker, setHasAdBlocker] = useState(false);

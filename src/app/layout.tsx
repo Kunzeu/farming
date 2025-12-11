@@ -14,7 +14,7 @@ import PageUsageTracker from "@/components/PageUsageTracker";
 import { generateDynamicMetadata } from "@/lib/metadata";
 import GoogleAdsLoader from '@/components/GoogleAdsLoader';
 import AdBlocker from '@/components/AdBlocker';
-import AdBlockerBanner from '@/components/ui/AdBlockerBanner';
+import SupportNotice from '@/components/ui/SupportNotice';
 
 // Optimización de fuentes para Desktop
 const inter = Inter({
@@ -192,7 +192,7 @@ export default function RootLayout({
                 </div>
                 <ScrollToTop />
                 <CookieBanner />
-                <AdBlockerBanner />
+                <SupportNotice />
                 <GoogleAdsLoader />
                 <AdBlocker />
                 {/* <Analytics /> Deshabilitado para reducir carga */}
