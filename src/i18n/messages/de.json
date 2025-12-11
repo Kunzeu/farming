@@ -2580,5 +2580,18 @@
   "wintersday.orphan.overview.rewards.title": "Belohnungen",
   "wintersday.orphan.overview.rewards.text": "Riesige Mengen an Karma + Flüssiges Karma. Es ist die effizienteste Karma-Quelle im Spiel, wenn man es richtig macht.",
   "wintersday.orphan.overview.tips.pvp.part1": "TIPP: Das Glockenspiel, das Sprungrätsel und die Spielzeugapokalypse sind PvP-Instanzen. Öffnet die hüpfenden Holztruhen in Götterfels, damit die",
-  "wintersday.orphan.overview.tips.pvp.part2": "wirkt."
+  "wintersday.orphan.overview.tips.pvp.part2": "wirkt.",
+  "adBlocker.title": "Bitte deaktivieren Sie den Werbeblocker Ihres Browsers",
+  "adBlocker.subtitle": "Ihre Unterstützung hält True Farming am Laufen. Bitte denken Sie darüber nach, Ihren Werbeblocker zu deaktivieren, damit wir diese Tools warten können.",
+  "adBlocker.supportPatreon": "Unterstützen Sie uns auf Patreon",
+  "adBlocker.needHelp": "Brauchen Sie Hilfe?",
+  "adBlocker.howToDisable": "So deaktivieren Sie den Werbeblocker:",
+  "adBlocker.uBlockOrigin": "uBlock Origin:",
+  "adBlocker.uBlockOriginDesc": "Klicken Sie auf das Erweiterungssymbol → Klicken Sie auf den Ein-/Ausschalter, um diese Seite zu deaktivieren → Aktualisieren Sie die Seite",
+  "adBlocker.adBlockPlus": "AdBlock / AdBlock Plus:",
+  "adBlocker.adBlockPlusDesc": "Klicken Sie auf das Erweiterungssymbol → Klicken Sie auf \"Nicht auf Seiten dieser Domain ausführen\" → Aktualisieren Sie die Seite",
+  "adBlocker.brave": "Brave Browser:",
+  "adBlocker.braveDesc": "Klicken Sie auf das Brave-Symbol (Löwe) in der Adressleiste → Deaktivieren Sie \"Schilde\" → Aktualisieren Sie die Seite",
+  "adBlocker.others": "Andere Werbeblocker:",
+  "adBlocker.othersDesc": "Suchen Sie nach dem Erweiterungssymbol in Ihrer Browser-Symbolleiste → Deaktivieren Sie es für diese Seite → Aktualisieren Sie die Seite"
 }

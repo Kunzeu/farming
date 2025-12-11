@@ -34,7 +34,7 @@
   "crons": [
     {
       "path": "/api/giveaways/auto-enroll-patreons",
-      "schedule": "5 14 * * *"
+      "schedule": "5 19 * * *"
     }
   ]
 }

@@ -3,12 +3,25 @@ import { autoEnrollPatrons } from '@/lib/server/patreon-auto-enroll';
 
 export const runtime = 'nodejs';
 
+// GET /api/giveaways/auto-enroll-patreons - Manual trigger for admins
+export async function GET(request: NextRequest) {
+  return POST(request);
+}
+
 // POST /api/giveaways/auto-enroll-patreons - Auto-enroll all active Patreon users in giveaways
 export async function POST(request: NextRequest) {
   try {
-    const body = await request.json();
-    let { giveawayIds } = body;
-    const { userId } = body;
+    let body = {};
+    try {
+      if (request.method === 'POST') {
+        body = await request.json();
+      }
+    } catch (e) {
+      // Body vacío o inválido es aceptable si es triggered manualmente o por cron sin body
+    }
+
+    let { giveawayIds } = body as any;
+    const { userId } = body as any;
 
     // Verificar permisos
     // Si se pasa userId, verificamos que sea el propio usuario o admin
@@ -35,7 +48,7 @@ export async function POST(request: NextRequest) {
         giveawayIds = activeGiveaways.map(g => g.id);
       } else {
         return NextResponse.json(
-          { error: 'giveawayIds array is required' },
+          { error: 'giveawayIds array is required or admin access needed' },
           { status: 400 }
         );
       }

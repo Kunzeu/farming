@@ -2597,5 +2597,18 @@
   "holidayCalendar.closedPending": "CLOSED - PENDING",
   "holidayCalendar.awaitingWinners": "Awaiting winners",
   "changelog.orphan.created": "Orphan Route - New Section",
-  "changelog.orphan.created.desc": "Complete guide for the orphan karma route. Includes route map, tips, and gift calculator with real-time prices and sorting."
+  "changelog.orphan.created.desc": "Complete guide for the orphan karma route. Includes route map, tips, and gift calculator with real-time prices and sorting.",
+  "adBlocker.title": "Please disable your browser's ad-blocker",
+  "adBlocker.subtitle": "Your support keeps True Farming running. Please consider disabling your ad-blocker to help us maintain these tools.",
+  "adBlocker.supportPatreon": "Support us on Patreon",
+  "adBlocker.needHelp": "Need Help?",
+  "adBlocker.howToDisable": "How to disable ad-blocker:",
+  "adBlocker.uBlockOrigin": "uBlock Origin:",
+  "adBlocker.uBlockOriginDesc": "Click the extension icon → Click the power button to disable for this site → Refresh the page",
+  "adBlocker.adBlockPlus": "AdBlock / AdBlock Plus:",
+  "adBlocker.adBlockPlusDesc": "Click the extension icon → Click \"Don't run on pages on this domain\" → Refresh the page",
+  "adBlocker.brave": "Brave Browser:",
+  "adBlocker.braveDesc": "Click the Brave icon (lion) in the address bar → Turn off \"Shields\" → Refresh the page",
+  "adBlocker.others": "Other ad-blockers:",
+  "adBlocker.othersDesc": "Look for the extension icon in your browser toolbar → Disable it for this site → Refresh the page"
 }

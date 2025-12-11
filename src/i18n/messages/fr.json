@@ -2574,5 +2574,18 @@
   "wintersday.orphan.overview.rewards.title": "Récompenses",
   "wintersday.orphan.overview.rewards.text": "D'énormes quantités de Karma + Karma liquide. C'est la source de Karma la plus efficace du jeu si elle est faite correctement.",
   "wintersday.orphan.overview.tips.pvp.part1": "ASTUCE : Le Chœur des cloches, le Puzzle de saut et la Jouetpocalypse sont des instances JcJ. Ouvrez les coffres en bois rebondissants au Promontoire Divin pour que l'",
-  "wintersday.orphan.overview.tips.pvp.part2": "fasse effet."
+  "wintersday.orphan.overview.tips.pvp.part2": "fasse effet.",
+  "adBlocker.title": "Veuillez désactiver le bloqueur de publicités de votre navigateur",
+  "adBlocker.subtitle": "Votre soutien permet de maintenir True Farming en activité. Veuillez envisager de désactiver votre bloqueur de publicité pour nous aider à maintenir ces outils.",
+  "adBlocker.supportPatreon": "Soutenez-nous sur Patreon",
+  "adBlocker.needHelp": "Besoin d'aide?",
+  "adBlocker.howToDisable": "Comment désactiver le bloqueur de publicités:",
+  "adBlocker.uBlockOrigin": "uBlock Origin:",
+  "adBlocker.uBlockOriginDesc": "Cliquez sur l'icône de l'extension → Cliquez sur le bouton d'alimentation pour désactiver ce site → Actualisez la page",
+  "adBlocker.adBlockPlus": "AdBlock / AdBlock Plus:",
+  "adBlocker.adBlockPlusDesc": "Cliquez sur l'icône de l'extension → Cliquez sur \"Ne pas exécuter sur les pages de ce domaine\" → Actualisez la page",
+  "adBlocker.brave": "Navigateur Brave:",
+  "adBlocker.braveDesc": "Cliquez sur l'icône Brave (lion) dans la barre d'adresse → Désactivez \"Boucliers\" → Actualisez la page",
+  "adBlocker.others": "Autres bloqueurs de publicités:",
+  "adBlocker.othersDesc": "Recherchez l'icône de l'extension dans la barre d'outils de votre navigateur → Désactivez-la pour ce site → Actualisez la page"
 }

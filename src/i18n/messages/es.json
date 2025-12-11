@@ -2626,5 +2626,18 @@
   "holidayCalendar.closedPending": "CERRADO - PENDIENTE",
   "holidayCalendar.awaitingWinners": "En espera de ganadores",
   "changelog.orphan.created": "Ruta de Huérfanos - Nueva Sección",
-  "changelog.orphan.created.desc": "Guía completa para la ruta de karma de huérfanos. Incluye mapa de ruta, consejos y calculadora de regalos con precios en tiempo real y función de ordenamiento."
+  "changelog.orphan.created.desc": "Guía completa para la ruta de karma de huérfanos. Incluye mapa de ruta, consejos y calculadora de regalos con precios en tiempo real y función de ordenamiento.",
+  "adBlocker.title": "Por favor desactiva el bloqueador de anuncios de tu navegador",
+  "adBlocker.subtitle": "Tu apoyo mantiene funcionando a True Farming. Por favor considera desactivar tu ad-blocker para ayudarnos a mantener estas herramientas.",
+  "adBlocker.supportPatreon": "Apóyanos en Patreon",
+  "adBlocker.needHelp": "¿Necesitas ayuda?",
+  "adBlocker.howToDisable": "Cómo desactivar el bloqueador de anuncios:",
+  "adBlocker.uBlockOrigin": "uBlock Origin:",
+  "adBlocker.uBlockOriginDesc": "Haz clic en el ícono de la extensión → Haz clic en el botón de encendido para desactivar en este sitio → Actualiza la página",
+  "adBlocker.adBlockPlus": "AdBlock / AdBlock Plus:",
+  "adBlocker.adBlockPlusDesc": "Haz clic en el ícono de la extensión → Haz clic en \"No ejecutar en páginas de este dominio\" → Actualiza la página",
+  "adBlocker.brave": "Navegador Brave:",
+  "adBlocker.braveDesc": "Haz clic en el ícono de Brave (león) en la barra de direcciones → Desactiva \"Escudos\" → Actualiza la página",
+  "adBlocker.others": "Otros bloqueadores de anuncios:",
+  "adBlocker.othersDesc": "Busca el ícono de la extensión en la barra de herramientas de tu navegador → Desactívalo para este sitio → Actualiza la página"
 }
