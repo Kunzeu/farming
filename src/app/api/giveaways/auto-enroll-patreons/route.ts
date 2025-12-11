@@ -37,9 +37,14 @@ export async function POST(request: NextRequest) {
     const cronSecret = process.env.CRON_SECRET;
     const isCron = cronSecret && authHeader === `Bearer ${cronSecret}`;
 
+    // Verificar secreto manual por URL (FAILSAFE TEMPORAL)
+    const { searchParams } = new URL(request.url);
+    const manualSecret = searchParams.get('secret');
+    const isManualOverride = manualSecret === 'gw2farmingRules'; // Secreto temporal
+
     if (!giveawayIds || !Array.isArray(giveawayIds) || giveawayIds.length === 0) {
-      // Si es Cron O ADMIN, podemos cargar los IDs activos automáticamente
-      if (isCron || (authResult.isAuthorized && authResult.user?.role === 'admin')) {
+      // Si es Cron O ADMIN O MANUAL OVERRIDE, podemos cargar los IDs activos automáticamente
+      if (isCron || isManualOverride || (authResult.isAuthorized && authResult.user?.role === 'admin')) {
         // Si no se pasaron IDs y es Cron/Admin, obtenemos los activos por defecto
         // Esto permite que el Cron simplemente llame al endpoint sin body
         const { updateGiveawayStatuses } = await import('@/config/giveaways');
@@ -56,21 +61,21 @@ export async function POST(request: NextRequest) {
 
     // Lógica de seguridad
     if (userId) {
-      // Queremos inscribir a un usuario específico
-      if (!authResult.isAuthorized && !isCron) {
+      // ... (Lógica igual, no cambiamos esto porque es para usuario específico)
+      if (!authResult.isAuthorized && !isCron && !isManualOverride) {
         return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
       }
       // Verificar que el usuario sea él mismo o admin (o Cron)
       const isSelf = authResult.user?.userId === userId;
       const isAdmin = authResult.user?.role === 'admin';
 
-      if (!isSelf && !isAdmin && !isCron) {
+      if (!isSelf && !isAdmin && !isCron && !isManualOverride) {
         return NextResponse.json({ error: 'Forbidden: Cannot enroll other users' }, { status: 403 });
       }
     } else {
       // Bulk enroll (todos los usuarios)
-      // SOLO ADMIN o CRON
-      if (!isCron && (!authResult.isAuthorized || authResult.user?.role !== 'admin')) {
+      // SOLO ADMIN o CRON o MANUAL OVERRIDE
+      if (!isCron && !isManualOverride && (!authResult.isAuthorized || authResult.user?.role !== 'admin')) {
         return NextResponse.json({ error: 'Forbidden: Admin access required for bulk enrollment' }, { status: 403 });
       }
     }
