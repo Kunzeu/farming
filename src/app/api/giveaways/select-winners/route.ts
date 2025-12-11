@@ -77,9 +77,12 @@ export async function POST(request: NextRequest) {
       }, { status: 400 });
     }
 
-    // 1. Get all participants for the giveaway
+    // 1. Get all participants with user info for weighting
     const participantsResult = await pool.query(
-      'SELECT user_id, account_name FROM giveaway_participants WHERE giveaway_id = $1',
+      `SELECT gp.user_id, gp.account_name, u.patreon_tier, u.patreon_status 
+       FROM giveaway_participants gp
+       LEFT JOIN users u ON gp.user_id = u.id 
+       WHERE gp.giveaway_id = $1`,
       [giveawayId]
     );
     const participants = participantsResult.rows;
@@ -91,20 +94,68 @@ export async function POST(request: NextRequest) {
       }, { status: 200 });
     }
 
-    // 2. Shuffle participants (Fisher-Yates algorithm)
-    for (let i = participants.length - 1; i > 0; i--) {
+    // 2. Create weighted pool based on Patreon tier
+    const weightedPool: any[] = [];
+    // Pesos por tier (configuración hardcoded por ahora, podría moverse a DB/Config)
+    // Pesos por tier (configuración hardcoded por ahora, podría moverse a DB/Config)
+    const TIER_WEIGHTS: Record<string, number> = {
+      'bronze': 1,    // 1x chance (igual que base)
+      'silver': 2,    // 2x chance
+      'gold': 3,     // 3x chance
+      'legends': 4   // 4x chance
+    };
+
+    // Factor de multiplicación (1 = sin multiplicador extra, ya que usamos enteros)
+    const ENTRY_MULTIPLIER = 1;
+
+    participants.forEach(p => {
+      let weight = 1; // Probabilidad base
+      if (p.patreon_status === 'active_patron' && p.patreon_tier) {
+        const tier = p.patreon_tier.trim().toLowerCase();
+        if (TIER_WEIGHTS[tier]) {
+          weight = TIER_WEIGHTS[tier];
+        }
+      }
+
+      // Calcular número de "tickets" totales (redondeado para evitar errores)
+      const totalEntries = Math.round(weight * ENTRY_MULTIPLIER);
+
+      // Add participant to the pool multiple times
+      for (let k = 0; k < totalEntries; k++) {
+        weightedPool.push(p);
+      }
+    });
+
+    console.log(`Giveaway ${giveawayId}: ${participants.length} participants expanded to ${weightedPool.length} entries (weighted).`);
+
+    // 3. Shuffle weighted pool (Fisher-Yates algorithm)
+    for (let i = weightedPool.length - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * (i + 1));
-      [participants[i], participants[j]] = [participants[j], participants[i]];
+      [weightedPool[i], weightedPool[j]] = [weightedPool[j], weightedPool[i]];
     }
 
-    // 3. Select winners based on prize count
+    // 4. Select unique winners based on prize count
     const winnersToInsert = [];
+    const selectedUserIds = new Set<string>();
     const prizeCount = giveaway.prizes.length;
-    const participantCount = participants.length;
 
-    for (let i = 0; i < prizeCount && i < participantCount; i++) {
-      const participant = participants[i];
-      const prize = giveaway.prizes[i];
+    let poolIndex = 0;
+    let prizeIndex = 0;
+
+    while (prizeIndex < prizeCount && poolIndex < weightedPool.length) {
+      const participant = weightedPool[poolIndex];
+      poolIndex++;
+
+      // Skip if this user already won a prize in this giveaway
+      if (selectedUserIds.has(participant.user_id)) {
+        continue;
+      }
+
+      // Mark user as selected
+      selectedUserIds.add(participant.user_id);
+
+      const prize = giveaway.prizes[prizeIndex];
+      prizeIndex++;
 
       // Obtener información del item si existe
       let itemIcon = null;
@@ -164,8 +215,8 @@ export async function POST(request: NextRequest) {
     if (winnersToInsert.length === 0) {
       return NextResponse.json({
         error: 'No se pudieron seleccionar ganadores',
-        message: `No se pudieron seleccionar ganadores. El sorteo tiene ${participantCount} participantes pero ${prizeCount} premios configurados.`,
-        details: `Participants: ${participantCount}, Prizes: ${prizeCount}`
+        message: `No se pudieron seleccionar ganadores. El sorteo tiene ${participants.length} participantes pero ${prizeCount} premios configurados.`,
+        details: `Participants: ${participants.length}, Prizes: ${prizeCount}`
       }, { status: 400 });
     }
 

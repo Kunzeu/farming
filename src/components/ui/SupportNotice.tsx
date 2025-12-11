@@ -34,19 +34,27 @@ export default function SupportNotice() {
             }
         }
 
-        // Si es Patron, salir con log
-        if (user?.patreonStatus === 'active_patron') {
-            console.log('[SupportNotice] Usuario es Patron. Detección cancelada.');
-            return;
-        }
-
         // Verificar cooldown de 24h
         const dismissedAt = localStorage.getItem('adblocker_dismissed_at');
-        if (dismissedAt) {
-            const oneDay = 24 * 60 * 60 * 1000;
-            if (Date.now() - parseInt(dismissedAt) < oneDay) {
-                console.log('[SupportNotice] Banner en cooldown de 24h.');
+        const isDebug = new URLSearchParams(window.location.search).get('debug-adblock') === 'true';
+
+        if (isDebug) {
+            console.log('[SupportNotice] Modo DEBUG activado. Ignorando cooldowns y status de Patron.');
+        }
+
+        // Si no es debug, aplicar filtros normales
+        if (!isDebug) {
+            if (user?.patreonStatus === 'active_patron') {
+                console.log('[SupportNotice] Usuario es Patron. Detección cancelada.');
                 return;
+            }
+
+            if (dismissedAt) {
+                const oneDay = 24 * 60 * 60 * 1000;
+                if (Date.now() - parseInt(dismissedAt) < oneDay) {
+                    console.log('[SupportNotice] Banner en cooldown de 24h.');
+                    return;
+                }
             }
         }
 
@@ -55,22 +63,29 @@ export default function SupportNotice() {
             console.log('[SupportNotice] Iniciando pruebas de adblock...');
             let detected = false;
 
-            // Método 1: CSS Bait
+            // Método 1: CSS Bait Mejorado
             try {
                 const testAd = document.createElement('div');
                 testAd.innerHTML = '&nbsp;';
-                testAd.className = 'adsbox ad-placement ad-placeholder adbadge BannerAd';
+                // Usamos clases e IDs que son "imanes" para AdBlockers
+                testAd.className = 'adsbox ad-placement ad-placeholder adbadge BannerAd text-ads';
+                testAd.id = 'ads-wrapper'; // ID muy común bloqueado
                 testAd.style.position = 'absolute';
                 testAd.style.top = '-9999px';
                 testAd.style.left = '-9999px';
+                testAd.style.width = '1px';
+                testAd.style.height = '1px';
                 document.body.appendChild(testAd);
 
-                await new Promise(resolve => setTimeout(resolve, 100));
+                // Esperar un momento a que el bloqueador actúe
+                await new Promise(resolve => setTimeout(resolve, 300));
 
+                const styles = window.getComputedStyle(testAd);
                 const isBlocked = testAd.offsetHeight === 0 ||
                     testAd.offsetWidth === 0 ||
-                    window.getComputedStyle(testAd).display === 'none' ||
-                    window.getComputedStyle(testAd).visibility === 'hidden';
+                    styles.display === 'none' ||
+                    styles.visibility === 'hidden' ||
+                    styles.opacity === '0';
 
                 document.body.removeChild(testAd);
 
@@ -78,30 +93,37 @@ export default function SupportNotice() {
                     console.log('[SupportNotice] ¡DETECTADO! Elemento CSS oculto por bloqueador.');
                     detected = true;
                 } else {
-                    console.log('[SupportNotice] Prueba CSS negativa (elemento visible).');
+                    console.log('[SupportNotice] Prueba CSS: Elemento visible (no bloqueado por CSS).');
                 }
             } catch (error) {
                 console.error('[SupportNotice] Error en prueba CSS:', error);
             }
 
-            // Método 2: Network Bait (DoubleClick)
+            // Método 2: Network Baits (Múltiples intentos)
             if (!detected) {
-                try {
-                    // Usar un dominio de publicidad real y notorio
-                    const req = new Request('https://static.doubleclick.net/instream/ad_status.js', {
-                        method: 'HEAD',
-                        mode: 'no-cors' // Importante para evitar CORS errors (queremos ver si falla la red, no la seguridad)
-                    });
+                const baits = [
+                    'https://static.doubleclick.net/instream/ad_status.js',
+                    'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js',
+                    'https://www.google-analytics.com/analytics.js'
+                ];
 
-                    await fetch(req).then(() => {
-                        console.log('[SupportNotice] Red: Conexión a DoubleClick EXITOSA (No hay bloqueo).');
-                    }).catch((e) => {
-                        console.log('[SupportNotice] ¡DETECTADO! Se bloqueó la conexión a DoubleClick.', e);
+                for (const url of baits) {
+                    if (detected) break;
+                    try {
+                        const req = new Request(url, {
+                            method: 'HEAD',
+                            mode: 'no-cors'
+                        });
+
+                        await fetch(req).then(() => {
+                            console.log(`[SupportNotice] Red: Acceso a ${url} EXITOSO.`);
+                        }).catch((e) => {
+                            console.log(`[SupportNotice] ¡DETECTADO! Bloqueo de red en: ${url}`, e);
+                            detected = true;
+                        });
+                    } catch (e) {
                         detected = true;
-                    });
-                } catch (e) {
-                    console.log('[SupportNotice] ¡DETECTADO! Error al crear request de publicidad.', e);
-                    detected = true;
+                    }
                 }
             }
 
