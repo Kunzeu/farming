@@ -41,21 +41,23 @@ export default function AdBlockerBanner() {
             }
         }
 
-        // Detectar ad-blocker
+        // Detección de AdBlocker
         const detectAdBlocker = async () => {
+            let detected = false;
+
+            // Método 1: Div Bait (Trampa de elementos CSS)
             try {
-                // Método 1: Intentar cargar un script de ads común
                 const testAd = document.createElement('div');
                 testAd.innerHTML = '&nbsp;';
                 testAd.className = 'adsbox ad-placement ad-placeholder adbadge BannerAd';
                 testAd.style.position = 'absolute';
-                testAd.style.left = '-999px';
+                testAd.style.top = '-9999px'; // Usar top en vez de left para evitar scroll horizontal
+                testAd.style.left = '-9999px';
                 document.body.appendChild(testAd);
 
                 // Esperar un momento para que el ad-blocker actúe
                 await new Promise(resolve => setTimeout(resolve, 100));
 
-                // Verificar si el elemento fue bloqueado
                 const isBlocked = testAd.offsetHeight === 0 ||
                     testAd.offsetWidth === 0 ||
                     window.getComputedStyle(testAd).display === 'none' ||
@@ -64,16 +66,47 @@ export default function AdBlockerBanner() {
                 document.body.removeChild(testAd);
 
                 if (isBlocked) {
-                    setHasAdBlocker(true);
-                    setShowBanner(true);
+                    console.log('[AdBlockerBanner] Detectado por CSS Bait');
+                    detected = true;
                 }
             } catch (error) {
-                console.error('Error detecting ad-blocker:', error);
+                console.error('[AdBlockerBanner] Error en CSS Bait:', error);
+            }
+
+            // Método 2: Network Request Bait (Trampa de petición de red)
+            // Solo si no se detectó por CSS, para confirmar
+            if (!detected) {
+                try {
+                    const req = new Request('https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js', {
+                        method: 'HEAD',
+                        mode: 'no-cors'
+                    });
+
+                    await fetch(req).then(() => {
+                        // Si llega aquí, NO está bloqueado (o el modo no-cors permitió pasar sin error de red, pero uBlock suele lanzar error)
+                        console.log('[AdBlockerBanner] Petición de ads permitida');
+                    }).catch(() => {
+                        // Si falla (ERR_BLOCKED_BY_CLIENT), es AdBlock
+                        console.log('[AdBlockerBanner] Detectado por bloqueo de red');
+                        detected = true;
+                    });
+                } catch (e) {
+                    console.log('[AdBlockerBanner] Error/Bloqueo en petición de red', e);
+                    detected = true;
+                }
+            }
+
+            if (detected) {
+                console.log('[AdBlockerBanner] AdBlocker detectado. Mostrando banner.');
+                setHasAdBlocker(true);
+                setShowBanner(true);
+            } else {
+                console.log('[AdBlockerBanner] No se detectó AdBlocker.');
             }
         };
 
-        // Ejecutar detección después de un pequeño delay
-        const timer = setTimeout(detectAdBlocker, 1000);
+        // Ejecutar detección
+        const timer = setTimeout(detectAdBlocker, 1500); // Dar un poco más de tiempo al cargar la página
 
         return () => clearTimeout(timer);
     }, [user]);
