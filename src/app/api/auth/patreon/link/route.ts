@@ -64,6 +64,33 @@ export async function POST(request: NextRequest) {
     }
 
     const row = result.rows[0];
+
+    // Auto-enroll en sorteos activos si es patreon activo con tier válido
+    if (patreonStatus === 'active_patron' && tierNormalized && tierNormalized !== 'free') {
+      try {
+        // Importar la función de auto-enrollment
+        const { autoEnrollPatrons } = await import('@/lib/server/patreon-auto-enroll');
+        const { updateGiveawayStatuses } = await import('@/config/giveaways');
+
+        // Obtener sorteos activos
+        const activeGiveaways = updateGiveawayStatuses().filter((g) => g.status === 'active');
+        const giveawayIds = activeGiveaways.map(g => g.id);
+
+        if (giveawayIds.length > 0) {
+          // Inscribir al usuario en los sorteos activos
+          const enrollResult = await autoEnrollPatrons({
+            giveawayIds,
+            userId: row.id
+          });
+
+          console.log(`Auto-enrolled user ${row.id} in ${enrollResult.inserted.length} giveaways:`, enrollResult.inserted);
+        }
+      } catch (enrollError) {
+        // No fallar la vinculación si falla el auto-enrollment
+        console.error('Error auto-enrolling patron in giveaways:', enrollError);
+      }
+    }
+
     return NextResponse.json({
       ...row,
       createdAt: new Date(row.createdAt),
