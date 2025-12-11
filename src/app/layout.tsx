@@ -14,9 +14,10 @@ import PageUsageTracker from "@/components/PageUsageTracker";
 import { generateDynamicMetadata } from "@/lib/metadata";
 import GoogleAdsLoader from '@/components/GoogleAdsLoader';
 import AdBlocker from '@/components/AdBlocker';
+import AdBlockerBanner from '@/components/ui/AdBlockerBanner';
 
 // Optimización de fuentes para Desktop
-const inter = Inter({ 
+const inter = Inter({
   subsets: ["latin"],
   display: 'swap', // Mejora LCP
   preload: true,
@@ -45,14 +46,14 @@ export default function RootLayout({
         <link rel="preconnect" href="https://static.cloudflareinsights.com" />
         <link rel="dns-prefetch" href="https://render.guildwars2.com" />
         <link rel="dns-prefetch" href="https://wiki.guildwars2.com" />
-        
+
         {/* Google Ads Script - se carga dinámicamente en el cliente */}
-        
+
         {/* Meta tags para prevenir caché de HTML */}
         <meta httpEquiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
         <meta httpEquiv="Pragma" content="no-cache" />
         <meta httpEquiv="Expires" content="0" />
-        
+
         {/* CSS Crítico Inline - Above the fold */}
         <style dangerouslySetInnerHTML={{
           __html: `
@@ -146,34 +147,34 @@ export default function RootLayout({
             }
           `
         }} />
-        
+
         {/* Eliminado script de optimización que podía reescribir links de CSS */}
-        
-        <meta name="google-site-verification" content="6QMoVlJ1hD8y5DCBubEKA5qv_oLb3O4EVRB8OS03LZU"/>
+
+        <meta name="google-site-verification" content="6QMoVlJ1hD8y5DCBubEKA5qv_oLb3O4EVRB8OS03LZU" />
         <meta name="msapplication-TileColor" content="#c1272d" />
         <meta name="msapplication-TileImage" content="/images/icons/favicon.svg" />
-        
+
         {/* Favicon adicionales para mejor compatibilidad móvil */}
         <link rel="icon" href="/images/icons/favicon.svg" type="image/svg+xml" />
         <link rel="icon" href="/images/icons/icon.ico" type="image/x-icon" />
         <link rel="apple-touch-icon" href="/images/icons/favicon.svg" />
         <link rel="apple-touch-icon-precomposed" href="/images/icons/favicon.svg" />
-        
+
         {/* Meta tags para mejor indexación en móviles */}
         <meta name="mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
         <meta name="apple-mobile-web-app-title" content="True Farming" />
-          
+
         {/* Meta tags are automatically generated from the metadata object above */}
         <meta name="theme-color" content="#c1272d" />
         <link rel="canonical" href="https://www.true-farming.com" />
         <link rel="alternate" hrefLang="x-default" href="https://www.true-farming.com" />
         <link rel="alternate" hrefLang="en" href="https://www.true-farming.com" />
-        
+
         {/* Meta tags adicionales específicos */}
         <meta name="twitter:site" content="@true-farming" />
-        <meta name="twitter:creator" content="@true-farming"/>
+        <meta name="twitter:creator" content="@true-farming" />
       </head>
       <body className={inter.className}>
         <CookieConsentProvider>
@@ -191,6 +192,7 @@ export default function RootLayout({
                 </div>
                 <ScrollToTop />
                 <CookieBanner />
+                <AdBlockerBanner />
                 <GoogleAdsLoader />
                 <AdBlocker />
                 {/* <Analytics /> Deshabilitado para reducir carga */}
@@ -410,7 +412,7 @@ export default function RootLayout({
             
           `
         }} />
-        
+
       </body>
     </html>
   );
