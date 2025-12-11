@@ -44,18 +44,17 @@ export default function SupportNotice() {
 
         // Si no es debug, aplicar filtros normales
         if (!isDebug) {
+            // Log para diagnosticar status
+            if (user?.patreonStatus) {
+                console.log('[SupportNotice] Status Patreon detectado:', user.patreonStatus, 'Tier:', user.patreonTier);
+            }
+
             if (user?.patreonStatus === 'active_patron') {
                 console.log('[SupportNotice] Usuario es Patron. Detección cancelada.');
                 return;
             }
 
-            if (dismissedAt) {
-                const oneDay = 24 * 60 * 60 * 1000;
-                if (Date.now() - parseInt(dismissedAt) < oneDay) {
-                    console.log('[SupportNotice] Banner en cooldown de 24h.');
-                    return;
-                }
-            }
+            // COOLDOWN ELIMINADO POR SOLICITUD - El banner se mostrará en cada sesión si hay AdBlock
         }
 
         // Detección de AdBlocker mejorada
