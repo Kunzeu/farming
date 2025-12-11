@@ -14,48 +14,57 @@ export default function SupportNotice() {
     const [showHelp, setShowHelp] = useState(false);
 
     useEffect(() => {
-        // Verificar si hay un parámetro de URL para forzar mostrar el banner (para testing)
-        const urlParams = new URLSearchParams(window.location.search);
-        const forceShow = urlParams.get('show-adblocker-banner') === 'true' ||
-            localStorage.getItem('force_adblocker_banner') === 'true';
+        // LOG INICIAL CRÍTICO
+        console.log('[SupportNotice] Componente detectado e iniciado. Usuario:', user?.patreonStatus || 'Anónimo');
 
-        if (forceShow) {
-            console.log('[AdBlockerBanner] Force showing banner');
-            setHasAdBlocker(true);
-            setShowBanner(true);
-            return;
-        }
-
-        // No mostrar banner a patreons activos
-        if (user?.patreonStatus === 'active_patron') {
-            setShowBanner(false);
-            return;
-        }
-
-        // Verificar si ya cerró el banner en las últimas 24 horas
-        const dismissedAt = localStorage.getItem('adblocker_dismissed_at');
-        if (dismissedAt) {
-            const oneDay = 24 * 60 * 60 * 1000;
-            if (Date.now() - parseInt(dismissedAt) < oneDay) {
+        // Bypasses (Query Param o LocalStorage)
+        if (typeof window !== 'undefined') {
+            const params = new URLSearchParams(window.location.search);
+            if (params.get('show-adblocker-banner') === 'true') {
+                console.log('[SupportNotice] Forzando banner por URL');
+                setHasAdBlocker(true);
+                setShowBanner(true);
+                return;
+            }
+            if (localStorage.getItem('force_adblocker_banner') === 'true') {
+                console.log('[SupportNotice] Forzando banner por LocalStorage');
+                setHasAdBlocker(true);
+                setShowBanner(true);
                 return;
             }
         }
 
-        // Detección de AdBlocker
+        // Si es Patron, salir con log
+        if (user?.patreonStatus === 'active_patron') {
+            console.log('[SupportNotice] Usuario es Patron. Detección cancelada.');
+            return;
+        }
+
+        // Verificar cooldown de 24h
+        const dismissedAt = localStorage.getItem('adblocker_dismissed_at');
+        if (dismissedAt) {
+            const oneDay = 24 * 60 * 60 * 1000;
+            if (Date.now() - parseInt(dismissedAt) < oneDay) {
+                console.log('[SupportNotice] Banner en cooldown de 24h.');
+                return;
+            }
+        }
+
+        // Detección de AdBlocker mejorada
         const detectAdBlocker = async () => {
+            console.log('[SupportNotice] Iniciando pruebas de adblock...');
             let detected = false;
 
-            // Método 1: Div Bait (Trampa de elementos CSS)
+            // Método 1: CSS Bait
             try {
                 const testAd = document.createElement('div');
                 testAd.innerHTML = '&nbsp;';
                 testAd.className = 'adsbox ad-placement ad-placeholder adbadge BannerAd';
                 testAd.style.position = 'absolute';
-                testAd.style.top = '-9999px'; // Usar top en vez de left para evitar scroll horizontal
+                testAd.style.top = '-9999px';
                 testAd.style.left = '-9999px';
                 document.body.appendChild(testAd);
 
-                // Esperar un momento para que el ad-blocker actúe
                 await new Promise(resolve => setTimeout(resolve, 100));
 
                 const isBlocked = testAd.offsetHeight === 0 ||
@@ -66,48 +75,46 @@ export default function SupportNotice() {
                 document.body.removeChild(testAd);
 
                 if (isBlocked) {
-                    console.log('[AdBlockerBanner] Detectado por CSS Bait');
+                    console.log('[SupportNotice] ¡DETECTADO! Elemento CSS oculto por bloqueador.');
                     detected = true;
+                } else {
+                    console.log('[SupportNotice] Prueba CSS negativa (elemento visible).');
                 }
             } catch (error) {
-                console.error('[AdBlockerBanner] Error en CSS Bait:', error);
+                console.error('[SupportNotice] Error en prueba CSS:', error);
             }
 
-            // Método 2: Network Request Bait (Trampa de petición de red)
-            // Solo si no se detectó por CSS, para confirmar
+            // Método 2: Network Bait (DoubleClick)
             if (!detected) {
                 try {
-                    const req = new Request('https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js', {
+                    // Usar un dominio de publicidad real y notorio
+                    const req = new Request('https://static.doubleclick.net/instream/ad_status.js', {
                         method: 'HEAD',
-                        mode: 'no-cors'
+                        mode: 'no-cors' // Importante para evitar CORS errors (queremos ver si falla la red, no la seguridad)
                     });
 
                     await fetch(req).then(() => {
-                        // Si llega aquí, NO está bloqueado (o el modo no-cors permitió pasar sin error de red, pero uBlock suele lanzar error)
-                        console.log('[AdBlockerBanner] Petición de ads permitida');
-                    }).catch(() => {
-                        // Si falla (ERR_BLOCKED_BY_CLIENT), es AdBlock
-                        console.log('[AdBlockerBanner] Detectado por bloqueo de red');
+                        console.log('[SupportNotice] Red: Conexión a DoubleClick EXITOSA (No hay bloqueo).');
+                    }).catch((e) => {
+                        console.log('[SupportNotice] ¡DETECTADO! Se bloqueó la conexión a DoubleClick.', e);
                         detected = true;
                     });
                 } catch (e) {
-                    console.log('[AdBlockerBanner] Error/Bloqueo en petición de red', e);
+                    console.log('[SupportNotice] ¡DETECTADO! Error al crear request de publicidad.', e);
                     detected = true;
                 }
             }
 
             if (detected) {
-                console.log('[AdBlockerBanner] AdBlocker detectado. Mostrando banner.');
+                console.log('[SupportNotice] Detección finalizada: SI hay bloqueo. Mostrando banner.');
                 setHasAdBlocker(true);
                 setShowBanner(true);
             } else {
-                console.log('[AdBlockerBanner] No se detectó AdBlocker.');
+                console.log('[SupportNotice] Detección finalizada: NO hay bloqueo detectado.');
             }
         };
 
-        // Ejecutar detección
-        const timer = setTimeout(detectAdBlocker, 1500); // Dar un poco más de tiempo al cargar la página
-
+        const timer = setTimeout(detectAdBlocker, 2000);
         return () => clearTimeout(timer);
     }, [user]);
 
