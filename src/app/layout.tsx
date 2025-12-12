@@ -49,6 +49,17 @@ export default function RootLayout({
 
         {/* Google Ads Script - se carga dinámicamente en el cliente */}
 
+        {/* Google Analytics */}
+        <script async src="https://www.googletagmanager.com/gtag/js?id=G-WXS6KYHEXT"></script>
+        <script dangerouslySetInnerHTML={{
+          __html: `
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', 'G-WXS6KYHEXT');
+          `
+        }} />
+
         {/* Meta tags para prevenir caché de HTML */}
         <meta httpEquiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
         <meta httpEquiv="Pragma" content="no-cache" />
