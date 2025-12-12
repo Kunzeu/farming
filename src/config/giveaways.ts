@@ -207,6 +207,7 @@ export function generateAdventGiveaways(year: number = 2025): Giveaway[] {
         { position: 1, prize: '250', icon: 'package', itemId: 19721, quantity: 250 }, // Glob of Ectoplasm
         { position: 2, prize: '1', icon: 'materials', itemId: 104228, quantity: 1 }, // Imperial Everbloom Spear
         { position: 3, prize: '1', icon: 'package', itemId: 96357, quantity: 1 }, // Dragon's Bite
+        { position: 4, prize: '400', icon: 'gem', quantity: 400, gemPrize: true }, // Gems
       ],
       13: [
         { position: 1, prize: '100', icon: 'materials', itemId: 24325, quantity: 100 }, // Destroyer Lodestone

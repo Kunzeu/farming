@@ -63,18 +63,29 @@ export async function POST(request: NextRequest) {
       }, { status: 400 });
     }
 
-    // VERIFICACIÓN DE SEGURIDAD: Comprobar si ya existen ganadores para este sorteo
+    // VERIFICACIÓN DE SEGURIDAD: Comprobar ganadores existentes y posiciones ocupadas
     const existingWinnersResult = await pool.query(
-      'SELECT COUNT(*) FROM giveaway_winners WHERE giveaway_id = $1',
+      'SELECT user_id, position FROM giveaway_winners WHERE giveaway_id = $1',
       [giveawayId]
     );
 
-    if (parseInt(existingWinnersResult.rows[0].count) > 0) {
+    const existingWinners = existingWinnersResult.rows;
+    const existingPositions = new Set(existingWinners.map(w => w.position));
+    // Inicializar el set de usuarios seleccionados con los que ya ganaron para evitar repetidos
+    const selectedUserIds = new Set(existingWinners.map(w => w.user_id));
+
+    // Si ya están todos los premios cubiertos, entonces sí detenemos el proceso
+    const totalPrizes = giveaway.prizes.length;
+    const allPositionsCovered = giveaway.prizes.every(p => existingPositions.has(p.position));
+
+    if (existingWinners.length > 0 && allPositionsCovered) {
       return NextResponse.json({
         error: 'Winners already selected',
-        message: 'Ya se han seleccionado ganadores para este sorteo. No se pueden volver a sortear por seguridad.',
-        details: 'Giveaway already has winners selected.'
+        message: 'Ya se han seleccionado todos los ganadores para este sorteo.',
+        details: 'All prizes have been awarded.'
       }, { status: 400 });
+    } else if (existingWinners.length > 0) {
+      console.log(`Giveaway ${giveawayId}: Found ${existingWinners.length} existing winners. Proceeding to fill missing positions.`);
     }
 
     // 1. Get all participants with user info for weighting
@@ -136,13 +147,22 @@ export async function POST(request: NextRequest) {
 
     // 4. Select unique winners based on prize count
     const winnersToInsert = [];
-    const selectedUserIds = new Set<string>();
+    // selectedUserIds ya fue inicializado y poblado anteriormente
+
     const prizeCount = giveaway.prizes.length;
 
     let poolIndex = 0;
     let prizeIndex = 0;
 
     while (prizeIndex < prizeCount && poolIndex < weightedPool.length) {
+      const prize = giveaway.prizes[prizeIndex];
+
+      // Si ya existe un ganador para esta posición, la saltamos
+      if (existingPositions.has(prize.position)) {
+        prizeIndex++;
+        continue;
+      }
+
       const participant = weightedPool[poolIndex];
       poolIndex++;
 
@@ -153,9 +173,6 @@ export async function POST(request: NextRequest) {
 
       // Mark user as selected
       selectedUserIds.add(participant.user_id);
-
-      const prize = giveaway.prizes[prizeIndex];
-      prizeIndex++;
 
       // Obtener información del item si existe
       let itemIcon = null;
@@ -210,6 +227,8 @@ export async function POST(request: NextRequest) {
         gem_prize: prize.gemPrize || false,
         item_icon: itemIcon // URL real del icono
       });
+
+      prizeIndex++;
     }
 
     if (winnersToInsert.length === 0) {
