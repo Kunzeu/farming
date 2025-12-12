@@ -2610,5 +2610,16 @@
   "adBlocker.brave": "Brave Browser:",
   "adBlocker.braveDesc": "Click the Brave icon (lion) in the address bar → Turn off \"Shields\" → Refresh the page",
   "adBlocker.others": "Other ad-blockers:",
-  "adBlocker.othersDesc": "Look for the extension icon in your browser toolbar → Disable it for this site → Refresh the page"
+  "adBlocker.othersDesc": "Look for the extension icon in your browser toolbar → Disable it for this site → Refresh the page",
+  "support.title": "Support True Farming",
+  "support.subtitle": "Choose the tier that suits you best and unlock exclusive features while supporting the development.",
+  "support.status.current": "Your current status",
+  "support.price.free": "Free",
+  "support.button.supportPatreon": "Patreon",
+  "support.button.freePlan": "Free Plan",
+  "support.features.freeFeatures": "All free features",
+  "support.features.adFree": "Advertisement-free",
+  "support.features.lottery": "Automatic entry into all Lottery draws",
+  "support.features.discordColor": "Discord: Specially colored username",
+  "support.tier.custom": "Custom"
 }

@@ -2593,5 +2593,16 @@
   "adBlocker.brave": "Brave Browser:",
   "adBlocker.braveDesc": "Klicken Sie auf das Brave-Symbol (Löwe) in der Adressleiste → Deaktivieren Sie \"Schilde\" → Aktualisieren Sie die Seite",
   "adBlocker.others": "Andere Werbeblocker:",
-  "adBlocker.othersDesc": "Suchen Sie nach dem Erweiterungssymbol in Ihrer Browser-Symbolleiste → Deaktivieren Sie es für diese Seite → Aktualisieren Sie die Seite"
+  "adBlocker.othersDesc": "Suchen Sie nach dem Erweiterungssymbol in Ihrer Browser-Symbolleiste → Deaktivieren Sie es für diese Seite → Aktualisieren Sie die Seite",
+  "support.title": "Unterstützen Sie True Farming",
+  "support.subtitle": "Wählen Sie die Stufe, die am besten zu Ihnen passt, und schalten Sie exklusive Funktionen frei, während Sie die Entwicklung unterstützen.",
+  "support.status.current": "Ihr aktueller Status",
+  "support.price.free": "Kostenlos",
+  "support.button.supportPatreon": "Patreon",
+  "support.button.freePlan": "Kostenloser Plan",
+  "support.features.freeFeatures": "Alle kostenlosen Funktionen",
+  "support.features.adFree": "Werbefrei",
+  "support.features.lottery": "Automatische Teilnahme an allen Lotterieziehungen",
+  "support.features.discordColor": "Discord: Speziell gefärbter Benutzername",
+  "support.tier.custom": "Benutzerdefiniert"
 }

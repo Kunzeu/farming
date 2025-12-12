@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import Link from "next/link";
 import { useAuth } from "@/contexts/AuthContext";
 import { useI18n } from "@/contexts/I18nContext";
 import { X } from "lucide-react";
@@ -204,14 +205,12 @@ export default function SupportNotice() {
 
                                 {/* Buttons */}
                                 <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-                                    <a
-                                        href="https://www.patreon.com/KunzeuLabs"
-                                        target="_blank"
-                                        rel="noopener noreferrer"
+                                    <Link
+                                        href="/support"
                                         className="px-8 py-3 bg-orange-500 hover:bg-orange-600 text-white font-semibold rounded-lg transition-colors shadow-md hover:shadow-lg w-full sm:w-auto text-center"
                                     >
                                         {t("adBlocker.supportPatreon", "Support us on Patreon")}
-                                    </a>
+                                    </Link>
                                     <button
                                         onClick={handleNeedHelp}
                                         className="px-8 py-3 bg-orange-500 hover:bg-orange-600 text-white font-semibold rounded-lg transition-colors shadow-md hover:shadow-lg w-full sm:w-auto"
