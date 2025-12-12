@@ -788,8 +788,8 @@ export default function AdventCalendar({
             const showButton = day.giveawayId && day.isAvailable && !isClosed;
             // Para admin: mostrar botón en todas las tarjetas
             const showAdminButton = isAdmin && day.giveawayId;
-            // El botón está habilitado solo si el día está cerrado, no hay ganadores y hay participantes
-            const canSelectWinners = day.isClosed && dayWinners.length === 0 && (day.participantCount || 0) > 0;
+            // El botón está habilitado solo si el día está cerrado, faltan ganadores y hay participantes
+            const canSelectWinners = day.isClosed && dayWinners.length < (day.prizes?.length || 0) && (day.participantCount || 0) > 0;
 
             return (
               <motion.div
@@ -951,8 +951,8 @@ export default function AdventCalendar({
                       </div>
                     )}
 
-                    {/* Botón de Admin para seleccionar ganadores - Aparece en todas las tarjetas para admins, pero se oculta si ya hay ganadores */}
-                    {showAdminButton && dayWinners.length === 0 && (
+                    {/* Botón de Admin para seleccionar ganadores - Aparece en todas las tarjetas para admins, si faltan ganadores */}
+                    {showAdminButton && dayWinners.length < (day.prizes?.length || 0) && (
                       <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 w-[85%] px-2 z-20">
                         <button
                           onClick={() => handleSelectWinnersClick(day.giveawayId!)}
@@ -964,7 +964,7 @@ export default function AdventCalendar({
                           title={
                             !day.isClosed
                               ? "El sorteo aún no ha cerrado"
-                              : dayWinners.length > 0
+                              : dayWinners.length >= (day.prizes?.length || 0)
                                 ? "Ya hay ganadores seleccionados"
                                 : (day.participantCount || 0) === 0
                                   ? "No hay participantes"
