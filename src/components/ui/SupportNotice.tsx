@@ -42,23 +42,25 @@ export default function SupportNotice() {
             console.log('[SupportNotice] Modo DEBUG activado. Ignorando cooldowns y status de Patron.');
         }
 
-        // Si no es debug, aplicar filtros normales
-        if (!isDebug) {
-            // Log para diagnosticar status
-            if (user?.patreonStatus) {
-                console.log('[SupportNotice] Status Patreon detectado:', user.patreonStatus, 'Tier:', user.patreonTier);
-            }
-
-            if (user?.patreonStatus === 'active_patron') {
-                console.log('[SupportNotice] Usuario es Patron. Detección cancelada.');
-                return;
-            }
-
-            // COOLDOWN ELIMINADO POR SOLICITUD - El banner se mostrará en cada sesión si hay AdBlock
-        }
-
         // Detección de AdBlocker mejorada
         const detectAdBlocker = async () => {
+            // Verificar cooldown de 2h (LocalStorage)
+            if (!isDebug) {
+                const dismissedAt = localStorage.getItem('adblocker_dismissed_at');
+                if (dismissedAt) {
+                    const twoHours = 2 * 60 * 60 * 1000;
+                    if (Date.now() - parseInt(dismissedAt) < twoHours) {
+                        console.log('[SupportNotice] Banner en cooldown de 2h.');
+                        return;
+                    }
+                }
+
+                if (user?.patreonStatus === 'active_patron') {
+                    console.log('[SupportNotice] Usuario es Patron. Detección cancelada.');
+                    return;
+                }
+            }
+
             console.log('[SupportNotice] Iniciando pruebas de adblock...');
             let detected = false;
 
@@ -141,8 +143,10 @@ export default function SupportNotice() {
 
     const handleClose = () => {
         setShowBanner(false);
-        // Guardar timestamp actual para no mostrar por 24h
+        // Guardar timestamp actual para no mostrar por 2h
         localStorage.setItem('adblocker_dismissed_at', Date.now().toString());
+        // Limpiamos sessionStorage viejo por si acaso
+        sessionStorage.removeItem('adblocker_dismissed');
     };
 
     const handleNeedHelp = () => {
