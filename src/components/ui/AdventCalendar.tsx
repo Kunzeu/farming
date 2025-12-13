@@ -92,16 +92,11 @@ export default function AdventCalendar({
     let isMounted = true;
 
     // 1. Cargar Configuración Estática (IDs, Fechas, Premios, Imágenes)
-    // Esto cambia muy poco (al hacer deploy), así que se guarda en localStorage por tiempo largo
     const loadGiveawaysConfig = async () => {
       try {
         const CONFIG_CACHE_KEY = 'giveaways_config_cache_v1';
         const CONFIG_CACHE_TIME = 'giveaways_config_time';
-        // 24 horas de cache local para configuración
-        // Si el usuario hace deploy, la API devuelve cache-header nuevo, pero el cliente podría tener versión vieja
-        // Para respetar "apenas se haga deploy", podemos reducir este cache local o confiar en que el usuario recarga
-        // Vamos a poner 30 minutos local para balancear
-        const CACHE_DURATION = 1800000;
+        const CACHE_DURATION = 1800000; // 30 minutos
 
         const cachedData = localStorage.getItem(CONFIG_CACHE_KEY);
         const cachedTime = localStorage.getItem(CONFIG_CACHE_TIME);
@@ -135,11 +130,9 @@ export default function AdventCalendar({
           giveawaysMap[giveaway.id] = {
             ...giveaway,
             participantCount: 0, // Inicializar en 0, luego se llena con dinámica
-            // Status base, luego se sobrescribe
           };
         }
       });
-      // Importante: No sobrescribir todo el estado si ya tenemos counts, hacemos merge
       setGiveaways(prev => {
         const newState = { ...prev };
         Object.keys(giveawaysMap).forEach(key => {

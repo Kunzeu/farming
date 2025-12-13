@@ -108,7 +108,6 @@ export async function POST(request: NextRequest) {
     // 2. Create weighted pool based on Patreon tier
     const weightedPool: any[] = [];
     // Pesos por tier (configuración hardcoded por ahora, podría moverse a DB/Config)
-    // Pesos por tier (configuración hardcoded por ahora, podría moverse a DB/Config)
     const TIER_WEIGHTS: Record<string, number> = {
       'bronze': 1,    // 1x chance (igual que base)
       'silver': 2,    // 2x chance
