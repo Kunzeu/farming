@@ -3,7 +3,7 @@ import pool from '@/lib/postgres-db';
 import { getAllGiveawaysWithAdvent } from '../../../../config/giveaways';
 
 export const runtime = 'nodejs';
-export const revalidate = 300; // Cache de 5 minutos para datos dinámicos
+export const revalidate = 120; // Cache de 2 minutos (SWR)
 
 // GET /api/giveaways/counts - Endpoint ligero para datos dinámicos (estado y contador)
 export async function GET() {
@@ -89,8 +89,8 @@ export async function GET() {
             { data: dynamicData },
             {
                 headers: {
-                    // Cache público de 5 minutos (Vercel CDN) + SWR 5 min
-                    'Cache-Control': 'public, s-maxage=300, stale-while-revalidate=300',
+                    // Cache compartido de 2 minutos.
+                    'Cache-Control': 'public, s-maxage=120, stale-while-revalidate=60',
                 },
             }
         );

@@ -153,10 +153,10 @@ export default function AdventCalendar({
       if (document.hidden) return;
 
       try {
-        // Cache local breve (5 min) alineado con servidor
+        // Cache local breve (2 min) alineado con servidor
         const COUNTS_CACHE_KEY = 'giveaways_counts_cache';
         const COUNTS_CACHE_TIME = 'giveaways_counts_time';
-        const COUNTS_DURATION = 300000; // 5 minutos
+        const COUNTS_DURATION = 120000; // 2 minutos
 
         const cachedData = localStorage.getItem(COUNTS_CACHE_KEY);
         const cachedTime = localStorage.getItem(COUNTS_CACHE_TIME);
@@ -171,7 +171,7 @@ export default function AdventCalendar({
           }
         }
 
-        const response = await fetch("/api/giveaways/counts");
+        const response = await fetch("/api/giveaways/counts", { cache: 'no-store' });
         if (response.ok && isMounted) {
           const data = await response.json();
           // data.data es { 'id': { status: 'active', count: 123 } }
@@ -217,8 +217,8 @@ export default function AdventCalendar({
       loadGiveawaysCounts();
     });
 
-    // Intervalo para counts (5 minutos)
-    const interval = setInterval(loadGiveawaysCounts, 300000);
+    // Intervalo para counts (2 minutos)
+    const interval = setInterval(loadGiveawaysCounts, 120000);
 
     // Re-fetch al volver a la pestaña
     const handleVisibilityChange = () => {
