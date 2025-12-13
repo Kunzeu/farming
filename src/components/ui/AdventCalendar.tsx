@@ -817,7 +817,7 @@ export default function AdventCalendar({
                                             day.day === 11 && day.isAvailable ? "/images/assets/day11.webp" :
                                               day.day === 12 && day.isAvailable ? "/images/assets/day12.webp" :
                                                 day.day === 13 && day.isAvailable ? "/images/assets/day13.webp" :
-                                                  day.day === 14 ? "/images/assets/daily.webp" :
+                                                  day.day === 14 && day.isAvailable ? "/images/assets/day14.webp" :
                                                     (day.day === 17 && day.isAvailable) ? "/images/assets/day17.webp" :
                                                       day.day === 21 ? "/images/assets/daily.webp" :
                                                         day.day === 25 ? "/images/assets/day25.webp?v=2" :

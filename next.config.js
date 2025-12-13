@@ -291,21 +291,13 @@ const nextConfig = {
           },
         ],
       },
-      // Sin caché para APIs de usuarios (cambios inmediatos)
+      // Sin caché para APIs de usuarios (permitir caché privado corto)
       {
         source: '/api/users/(.*)',
         headers: [
           {
             key: 'Cache-Control',
-            value: 'no-cache, no-store, must-revalidate',
-          },
-          {
-            key: 'Pragma',
-            value: 'no-cache',
-          },
-          {
-            key: 'Expires',
-            value: '0',
+            value: 'private, max-age=60, stale-while-revalidate=60',
           },
         ],
       },
@@ -345,21 +337,13 @@ const nextConfig = {
           },
         ],
       },
-      // Caché corto para APIs de giveaways (cambios frecuentes)
+      // Caché para APIs de giveaways (5 min shared)
       {
         source: '/api/giveaways/(.*)',
         headers: [
           {
             key: 'Cache-Control',
-            value: 'no-cache, no-store, must-revalidate',
-          },
-          {
-            key: 'Pragma',
-            value: 'no-cache',
-          },
-          {
-            key: 'Expires',
-            value: '0',
+            value: 'public, s-maxage=300, stale-while-revalidate=300',
           },
         ],
       },

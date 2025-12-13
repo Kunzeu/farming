@@ -218,6 +218,7 @@ export function generateAdventGiveaways(year: number = 2025): Giveaway[] {
         { position: 1, prize: '800', icon: 'gem', quantity: 800, gemPrize: true },
         { position: 2, prize: '400', icon: 'gem', quantity: 400, gemPrize: true },
         { position: 3, prize: '250', icon: 'package', itemId: 19721, quantity: 250 }, // Glob of Ectoplasm
+        { position: 4, prize: '400', icon: 'gem', quantity: 400, gemPrize: true }, // Gems
       ],
       21: [
         { position: 1, prize: '800', icon: 'gem', quantity: 800, gemPrize: true },
