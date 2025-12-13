@@ -22,7 +22,8 @@ import {
   ShoppingCart,
   Star,
   Gift,
-  Search
+  Search,
+  Heart
 } from 'lucide-react';
 import { useI18n } from '@/contexts/I18nContext';
 
@@ -709,7 +710,7 @@ const Navigation = () => {
                 </Link>
 
 
-                {/* Patreon Button */}
+
 
               </div>
 
@@ -1098,9 +1099,6 @@ const Navigation = () => {
                             </div>
                           </div>
 
-
-
-                          {/* Mobile Patreon Button */}
 
 
                           {navItems.map((item) => (

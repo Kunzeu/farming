@@ -677,6 +677,8 @@
   "footer.thinkingExpansion": "Thinking about buying the expansion or another account?",
   "footer.useThisLink": "Use this link to support us!",
   "footer.supportSite": "Support the website",
+  "footer.viewBenefits": "View benefits and tiers",
+  "nav.support": "Support",
   "footer.becomePatron": "Become a patron",
   "footer.communityContact": "Community",
   "footer.developer": "Lead Developer",
@@ -2615,11 +2617,13 @@
   "support.subtitle": "Choose the tier that suits you best and unlock exclusive features while supporting the development.",
   "support.status.current": "Your current status",
   "support.price.free": "Free",
+  "support.price.month": "/ month",
   "support.button.supportPatreon": "Patreon",
   "support.button.freePlan": "Free Plan",
   "support.features.freeFeatures": "All free features",
   "support.features.adFree": "Advertisement-free",
   "support.features.lottery": "Automatic entry into all Lottery draws",
   "support.features.discordColor": "Discord: Specially colored username",
+  "support.features.luck": "Luck Multiplier",
   "support.tier.custom": "Custom"
 }

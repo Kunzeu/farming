@@ -667,6 +667,8 @@
   "footer.thinkingExpansion": "Denkst du darüber nach, die Erweiterung oder ein anderes Konto zu kaufen?",
   "footer.useThisLink": "Nutze diesen Link, um uns zu unterstützen!",
   "footer.supportSite": "Unterstütze die Website",
+  "footer.viewBenefits": "Vorteile und Stufen ansehen",
+  "nav.support": "Unterstützen",
   "footer.supportDescription": "Ihre Unterstützung hilft uns, die Plattform ständig zu verbessern.",
   "footer.contributors": "Mitwirkende",
   "footer.contributorsDescription": "Anerkennung für unsere Mitwirkenden",
@@ -2598,11 +2600,13 @@
   "support.subtitle": "Wählen Sie die Stufe, die am besten zu Ihnen passt, und schalten Sie exklusive Funktionen frei, während Sie die Entwicklung unterstützen.",
   "support.status.current": "Ihr aktueller Status",
   "support.price.free": "Kostenlos",
+  "support.price.month": "/ Monat",
   "support.button.supportPatreon": "Patreon",
   "support.button.freePlan": "Kostenloser Plan",
   "support.features.freeFeatures": "Alle kostenlosen Funktionen",
   "support.features.adFree": "Werbefrei",
   "support.features.lottery": "Automatische Teilnahme an allen Lotterieziehungen",
   "support.features.discordColor": "Discord: Speziell gefärbter Benutzername",
+  "support.features.luck": "Glücksmultiplikator",
   "support.tier.custom": "Benutzerdefiniert"
 }

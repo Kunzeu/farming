@@ -12,13 +12,15 @@ export default function SupportPage() {
 
     const isCurrentTier = (tierName: string) => {
         // Free Tier check (Basic)
-        if (tierName === 'Free') {
+        if (tierName === 'Free Tier') {
             return !user || user.patreonStatus !== 'active_patron';
         }
 
         // Patreon Tiers check
         if (user?.patreonStatus === 'active_patron' && user?.patreonTier) {
-            return user.patreonTier.toLowerCase().includes(tierName.toLowerCase());
+            // Remove " Tier" suffix for comparison if present in the config name
+            const cleanTierName = tierName.replace(' Tier', '').toLowerCase();
+            return user.patreonTier.toLowerCase().includes(cleanTierName);
         }
 
         return false;
@@ -28,75 +30,85 @@ export default function SupportPage() {
         {
             name: 'Free Tier',
             price: t('support.price.free'),
-            subtitle: isCurrentTier('Free'),
+            isActive: isCurrentTier('Free Tier'),
+            subtitle: isCurrentTier('Free Tier') ? t('support.status.current') : null,
             color: 'bg-stone-700',
             textColor: 'text-stone-100',
-            buttonVariant: 'outline',
+            buttonVariant: 'secondary',
             url: null,
             features: {
                 freeFeatures: true,
                 adFree: false,
                 lottery: false,
+                luck: false,
                 discordColor: false,
             }
         },
         {
             name: 'Bronze Tier',
-            price: '$3 / month',
-            subtitle: isCurrentTier('Bronze'),
-            color: 'bg-orange-700', // Bronze
+            price: '$3 ' + t('support.price.month'),
+            isActive: isCurrentTier('Bronze Tier'),
+            subtitle: isCurrentTier('Bronze Tier') ? t('support.status.current') : null,
+            color: 'bg-orange-700',
             textColor: 'text-orange-100',
             buttonVariant: 'primary',
-            url: 'https://www.patreon.com/KunzeuLabs',
+            url: 'https://www.patreon.com/truefarming/membership',
             features: {
                 freeFeatures: true,
                 adFree: true,
                 lottery: true,
+                luck: '1x',
                 discordColor: '#2ecc71',
             }
         },
         {
             name: 'Silver Tier',
-            price: '$5 / month',
-            subtitle: isCurrentTier('Silver'),
-            color: 'bg-slate-400', // Silver
+            price: '$5 ' + t('support.price.month'),
+            isActive: isCurrentTier('Silver Tier'),
+            subtitle: isCurrentTier('Silver Tier') ? t('support.status.current') : null,
+            color: 'bg-slate-400',
             textColor: 'text-slate-900',
             buttonVariant: 'primary',
-            url: 'https://www.patreon.com/KunzeuLabs',
+            url: 'https://www.patreon.com/truefarming/membership',
             features: {
                 freeFeatures: true,
                 adFree: true,
                 lottery: true,
+                luck: '2x',
                 discordColor: '#e74c3c',
             }
         },
         {
             name: 'Gold Tier',
-            price: '$10 / month',
-            subtitle: isCurrentTier('Gold'),
-            color: 'bg-yellow-500', // Gold
+            price: '$10 ' + t('support.price.month'),
+            isActive: isCurrentTier('Gold Tier'),
+            subtitle: isCurrentTier('Gold Tier') ? t('support.status.current') : null,
+            color: 'bg-yellow-500',
             textColor: 'text-yellow-900',
             buttonVariant: 'primary',
-            url: 'https://www.patreon.com/KunzeuLabs',
+            url: 'https://www.patreon.com/truefarming/membership',
             features: {
                 freeFeatures: true,
                 adFree: true,
                 lottery: true,
+                luck: '3x',
                 discordColor: '#f1c40f',
             }
         },
         {
             name: 'Legends Tier',
-            price: '$20 / month',
-            subtitle: isCurrentTier('Legends') ? t('support.status.current') : null,
-            color: 'bg-cyan-200', // Platinum/Diamond-ish
+            price: '$25 ' + t('support.price.month'),
+            isActive: isCurrentTier('Legends Tier'),
+            subtitle: isCurrentTier('Legends Tier') ? t('support.status.current') : null,
+            color: 'bg-cyan-200',
             textColor: 'text-cyan-900',
             buttonVariant: 'primary',
-            url: 'https://www.patreon.com/KunzeuLabs',
+            url: 'https://www.patreon.com/truefarming/membership',
             features: {
                 freeFeatures: true,
                 adFree: true,
                 lottery: true,
+                luck: '4x',
                 discordColor: '#71368a',
             }
         }
@@ -106,11 +118,12 @@ export default function SupportPage() {
         { label: t('support.features.freeFeatures'), key: 'freeFeatures' },
         { label: t('support.features.adFree'), key: 'adFree' },
         { label: t('support.features.lottery'), key: 'lottery' },
+        { label: t('support.features.luck'), key: 'luck' },
         { label: t('support.features.discordColor'), key: 'discordColor' },
     ];
 
     const renderValue = (value: string | boolean, key?: string) => {
-        if (value === true) return <Check className="w-6 h-6 text-green-500 mx-auto" />;
+        if (value === true) return <Check className="w-6 h-6 text-[#2ecc71] mx-auto" />;
         if (value === false) return <Minus className="w-6 h-6 text-gray-600 mx-auto" />;
 
         if (key === 'discordColor') {
@@ -118,7 +131,6 @@ export default function SupportPage() {
                 return (
                     <div className="flex items-center justify-center gap-2">
                         <div className="w-6 h-6 rounded-full border border-white/10 shadow-sm" style={{ backgroundColor: value }} />
-                        <span className="lg:hidden text-sm" style={{ color: value }}>{value}</span>
                     </div>
                 );
             }
@@ -138,7 +150,7 @@ export default function SupportPage() {
     return (
         <>
             <Navigation />
-            <div className="container mx-auto px-4 py-12">
+            <div className="w-full max-w-[1600px] mx-auto px-4 py-12">
                 <div className="text-center mb-12">
                     <h1 className="text-4xl font-bold mb-4 text-white">{t('support.title')}</h1>
                     <p className="text-xl text-gray-300 max-w-2xl mx-auto">
@@ -154,10 +166,10 @@ export default function SupportPage() {
                                 <th className="p-6 bg-gray-950 border-b border-r border-gray-800 sticky left-0 z-10 w-1/6"></th>
                                 {tiers.map((tier) => (
                                     <th key={tier.name} className="p-0 border-b border-gray-800 w-1/6 align-top">
-                                        <div className={`h-full flex flex-col items-center justify-center p-6 ${tier.name === 'Free Tier' ? 'bg-red-300 text-red-950' : ''}`}>
-                                            <h3 className={`text-xl font-bold ${tier.name === 'Free Tier' ? 'text-red-950' : 'text-white'}`}>{tier.name}</h3>
-                                            {tier.name === 'Free Tier' && (
-                                                <span className="text-sm font-semibold opacity-75">{t('support.status.current')}</span>
+                                        <div className={`h-full flex flex-col items-center justify-center p-6 ${tier.isActive ? `${tier.color} ${tier.textColor}` : ''}`}>
+                                            <h3 className={`text-xl font-bold ${tier.isActive ? tier.textColor : 'text-white'}`}>{tier.name}</h3>
+                                            {tier.subtitle && (
+                                                <span className="text-sm font-semibold opacity-75">{tier.subtitle}</span>
                                             )}
                                         </div>
                                     </th>
@@ -197,7 +209,7 @@ export default function SupportPage() {
                                             ) : (
                                                 <span className="text-xl font-bold text-gray-500">{t('')}</span>
                                             )}
-                                            {tier.subtitle && <span className="text-xs text-gray-500">{tier.subtitle}</span>}
+
                                         </div>
                                     </td>
                                 ))}
@@ -210,24 +222,24 @@ export default function SupportPage() {
                 <div className="lg:hidden space-y-6">
                     {tiers.map((tier) => (
                         <div key={tier.name} className="border border-gray-700 rounded-xl overflow-hidden bg-gray-900/50 backdrop-blur">
-                            <div className={`p-4 ${tier.name === 'Free Tier' ? 'bg-red-300 text-red-950' : 'bg-gray-800 text-white'} flex justify-between items-center`}>
+                            <div className={`p-4 ${tier.isActive ? `${tier.color} ${tier.textColor}` : 'bg-gray-800 text-white'} flex justify-between items-center`}>
                                 <div>
                                     <h3 className="text-xl font-bold">{tier.name}</h3>
-                                    {tier.name === 'Free Tier' && <span className="text-sm opacity-75">{t('support..current')}</span>}
+
+                                    {tier.subtitle && <span className="text-sm opacity-75 block">{tier.subtitle}</span>}
                                 </div>
                                 <div className="text-right">
                                     <div className="font-bold text-lg">{tier.price}</div>
-                                    {tier.subtitle && <div className="text-xs">{tier.subtitle}</div>}
                                 </div>
                             </div>
                             <div className="p-4 space-y-3">
                                 {featuresList.map((feature) => (
                                     <div key={feature.label} className="flex justify-between items-center py-2 border-b border-gray-800 last:border-0">
-                                        <span className="text-sm text-gray-400 w-1/2">{feature.label}</span>
-                                        <span className="w-1/2 text-right">
+                                        <div className="text-sm text-gray-400 w-1/2">{feature.label}</div>
+                                        <div className="w-1/2 flex justify-end">
                                             {/* @ts-ignore */}
                                             {renderValue(tier.features[feature.key], feature.key)}
-                                        </span>
+                                        </div>
                                     </div>
                                 ))}
                             </div>
