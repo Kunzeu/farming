@@ -837,12 +837,14 @@ export default function AdventCalendar({
                                               day.day === 12 && day.isAvailable ? "/images/assets/day12.webp" :
                                                 day.day === 13 && day.isAvailable ? "/images/assets/dayy13.webp" :
                                                   day.day === 14 && day.isAvailable ? "/images/assets/day14.webp" :
-                                                    (day.day === 17 && day.isAvailable) ? "/images/assets/day17.webp" :
-                                                      day.day === 21 ? "/images/assets/daily.webp" :
-                                                        day.day === 25 ? "/images/assets/day25.webp?v=2" :
-                                                          day.day === 28 ? "/images/assets/daily.webp" :
-                                                            day.day === 31 ? "/images/assets/daily.webp" :
-                                                              (day.day === 32 && isAdmin) ? "/images/assets/day3.webp" :
+                                                    day.day === 15 && day.isAvailable ? "/images/assets/daily.webp" :
+                                                      day.day === 16 && day.isAvailable ? "/images/assets/daily.webp" :
+                                                      (day.day === 17 && day.isAvailable) ? "/images/assets/day17.webp" :
+                                                        day.day === 21 ? "/images/assets/daily.webp" :
+                                                          day.day === 25 ? "/images/assets/day25.webp?v=2" :
+                                                            day.day === 28 ? "/images/assets/daily.webp" :
+                                                              day.day === 31 ? "/images/assets/daily.webp" :
+                                                                (day.day === 32 && isAdmin) ? "/images/assets/day3.webp" :
 
                                                                 "/images/assets/soon.webp"
                       }

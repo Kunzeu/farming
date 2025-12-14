@@ -225,6 +225,21 @@ export function generateAdventGiveaways(year: number = 2025): Giveaway[] {
         { position: 2, prize: '1', icon: 'materials', itemId: 104221, quantity: 1 }, // Imperial Everbloom Sword
         { position: 3, prize: '1', icon: 'package', itemId: 96915, quantity: 1 }, // Dragon's Argument
       ],
+      16: [
+        { position: 1, prize: '250', icon: 'package', itemId: 19721, quantity: 250 }, // Glob of Ectoplasm
+        { position: 2, prize: '100', icon: 'materials', itemId: 24340, quantity: 100 }, // Corrupted Lodestone
+        { position: 3, prize: '1', icon: 'package', itemId: 97691, quantity: 1 }, // Dragon's Scale
+      ],
+      17: [
+        { position: 1, prize: '250', icon: 'package', itemId: 19721, quantity: 250 }, // Glob of Ectoplasm
+        { position: 2, prize: '1', icon: 'materials', itemId: 104212, quantity: 1 }, // Imperial Everbloom Dagger
+        { position: 3, prize: '50', icon: 'package', itemId: 19976, quantity: 50 }, // Mystic Coin
+      ],
+      18: [
+        { position: 1, prize: '250', icon: 'package', itemId: 19721, quantity: 250 }, // Glob of Ectoplasm
+        { position: 2, prize: '1', icon: 'materials', itemId: 102013, quantity: 1 }, // Chromatic Assassin Spear Skin
+        { position: 3, prize: '1', icon: 'materials', itemId: 95994, quantity: 1 }, // Dragon's Fang
+      ],
       21: [
         { position: 1, prize: '800', icon: 'gem', quantity: 800, gemPrize: true },
         { position: 2, prize: '400', icon: 'gem', quantity: 400, gemPrize: true },
