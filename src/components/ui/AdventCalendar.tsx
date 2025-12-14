@@ -147,16 +147,16 @@ export default function AdventCalendar({
     };
 
     // 2. Cargar Datos Dinámicos (Conteos, Estado real)
-    // Esto se hace cada 5 minutos
+    // Esto se hace cada 5 minutos para reducir invocations
     const loadGiveawaysCounts = async () => {
       // Si la pestaña no está visible, no hacemos poll
       if (document.hidden) return;
 
       try {
-        // Cache local breve (2 min) alineado con servidor
+        // Cache local más largo (5 min) alineado con intervalo
         const COUNTS_CACHE_KEY = 'giveaways_counts_cache';
         const COUNTS_CACHE_TIME = 'giveaways_counts_time';
-        const COUNTS_DURATION = 120000; // 2 minutos
+        const COUNTS_DURATION = 300000; // 5 minutos (reducido de 2min para menos invocations)
 
         const cachedData = localStorage.getItem(COUNTS_CACHE_KEY);
         const cachedTime = localStorage.getItem(COUNTS_CACHE_TIME);
@@ -171,7 +171,8 @@ export default function AdventCalendar({
           }
         }
 
-        const response = await fetch("/api/giveaways/counts", { cache: 'no-store' });
+        // Usar cache del navegador (el endpoint tiene s-maxage=120)
+        const response = await fetch("/api/giveaways/counts");
         if (response.ok && isMounted) {
           const data = await response.json();
           // data.data es { 'id': { status: 'active', count: 123 } }
@@ -217,8 +218,8 @@ export default function AdventCalendar({
       loadGiveawaysCounts();
     });
 
-    // Intervalo para counts (2 minutos)
-    const interval = setInterval(loadGiveawaysCounts, 120000);
+    // Intervalo para counts (5 minutos) - Reducido de 2min para menos invocations
+    const interval = setInterval(loadGiveawaysCounts, 300000);
 
     // Re-fetch al volver a la pestaña
     const handleVisibilityChange = () => {
@@ -235,13 +236,48 @@ export default function AdventCalendar({
     };
   }, []);
 
-  // Cargar ganadores
+  // Cargar ganadores con caché local
   useEffect(() => {
     const loadWinners = async () => {
       try {
-        const response = await fetch("/api/giveaways/winners", {
-          next: { revalidate: 60 } // 1 minute
-        });
+        // Cache local para winners (5 minutos)
+        const WINNERS_CACHE_KEY = 'giveaways_winners_cache';
+        const WINNERS_CACHE_TIME = 'giveaways_winners_time';
+        const WINNERS_DURATION = 300000; // 5 minutos
+
+        const cachedData = localStorage.getItem(WINNERS_CACHE_KEY);
+        const cachedTime = localStorage.getItem(WINNERS_CACHE_TIME);
+        const now = Date.now();
+
+        if (cachedData && cachedTime) {
+          const timeDiff = now - parseInt(cachedTime);
+          if (timeDiff < WINNERS_DURATION) {
+            const data = JSON.parse(cachedData);
+            const winnersMap: Record<string, Array<{ position: number; accountName: string; itemIcon?: string; gemPrize?: boolean }>> = {};
+            data.winners?.forEach((winner: {
+              giveawayId: string;
+              position: number;
+              accountName: string;
+              itemIcon?: string;
+              gemPrize?: boolean;
+            }) => {
+              if (!winnersMap[winner.giveawayId]) {
+                winnersMap[winner.giveawayId] = [];
+              }
+              winnersMap[winner.giveawayId].push({
+                position: winner.position,
+                accountName: winner.accountName,
+                itemIcon: winner.itemIcon,
+                gemPrize: winner.gemPrize
+              });
+            });
+            setWinners(winnersMap);
+            return;
+          }
+        }
+
+        // Usar cache del navegador (el endpoint tiene revalidate=60)
+        const response = await fetch("/api/giveaways/winners");
         if (response.ok) {
           const data = await response.json();
           const winnersMap: Record<string, Array<{ position: number; accountName: string; itemIcon?: string; gemPrize?: boolean }>> = {};
@@ -263,6 +299,10 @@ export default function AdventCalendar({
               gemPrize: winner.gemPrize
             });
           });
+
+          // Guardar en cache local
+          localStorage.setItem(WINNERS_CACHE_KEY, JSON.stringify(data));
+          localStorage.setItem(WINNERS_CACHE_TIME, now.toString());
 
           setWinners(winnersMap);
         }
@@ -335,7 +375,7 @@ export default function AdventCalendar({
     setAdventDays(days);
   }, [year, month, giveaways, participatedDays, winners]);
 
-  // Verificar API key y cuenta
+  // Verificar API key y cuenta con caché local
   useEffect(() => {
     const controller = new AbortController();
     const checkApiKey = async () => {
@@ -349,8 +389,29 @@ export default function AdventCalendar({
       }
 
       try {
+        // Cache local para API key check (5 minutos)
+        const API_KEY_CACHE_KEY = `api_key_check_${user.id}`;
+        const API_KEY_CACHE_TIME = `api_key_check_time_${user.id}`;
+        const API_KEY_DURATION = 300000; // 5 minutos
+
+        const cachedData = localStorage.getItem(API_KEY_CACHE_KEY);
+        const cachedTime = localStorage.getItem(API_KEY_CACHE_TIME);
+        const now = Date.now();
+
+        if (cachedData && cachedTime) {
+          const timeDiff = now - parseInt(cachedTime);
+          if (timeDiff < API_KEY_DURATION) {
+            const data = JSON.parse(cachedData);
+            setHasApiKey(Boolean(data.hasApiKey));
+            setApiKeyValid(Boolean(data.apiKeyValid));
+            setAccountInfo(data.accountInfo || null);
+            setIsLoadingApiKey(false);
+            return;
+          }
+        }
+
+        // Permitir cache del navegador (el endpoint puede tener cache)
         const response = await fetch(`/api/users/${user.id}/summary`, {
-          cache: "no-store",
           signal: controller.signal,
         });
         if (response.ok) {
@@ -358,6 +419,10 @@ export default function AdventCalendar({
           setHasApiKey(Boolean(data.hasApiKey));
           setApiKeyValid(Boolean(data.apiKeyValid));
           setAccountInfo(data.accountInfo || null);
+          
+          // Guardar en cache local
+          localStorage.setItem(API_KEY_CACHE_KEY, JSON.stringify(data));
+          localStorage.setItem(API_KEY_CACHE_TIME, now.toString());
         } else {
           setHasApiKey(false);
           setApiKeyValid(false);
@@ -392,7 +457,7 @@ export default function AdventCalendar({
 
       if (cached && cacheTime) {
         const timeDiff = Date.now() - parseInt(cacheTime);
-        if (timeDiff < 90000) { // 90 seconds cache
+        if (timeDiff < 300000) { // 5 minutes cache (aumentado de 90s)
           const cachedArray = JSON.parse(cached) as string[];
           const participatedSet = new Set<string>(cachedArray);
           setParticipatedDays(participatedSet);
@@ -402,11 +467,8 @@ export default function AdventCalendar({
       }
 
       try {
+        // Permitir cache del navegador en lugar de forzar no-cache
         const response = await fetch(`/api/giveaways/participants?userId=${user.id}`, {
-          cache: "no-cache",
-          headers: {
-            "Cache-Control": "no-cache, no-store, must-revalidate",
-          },
           signal: controller.signal,
         });
         if (response.ok) {
@@ -505,46 +567,19 @@ export default function AdventCalendar({
         newParticipatedDays.add(dayData.giveawayId);
         setParticipatedDays(newParticipatedDays);
 
-        // Recargar sorteos desde la API para obtener el contador real actualizado
-        const giveawaysResponse = await fetch("/api/giveaways", {
-          cache: "no-store",
-          headers: {
-            "Cache-Control": "no-cache, no-store, must-revalidate",
-          },
-        });
-        if (giveawaysResponse.ok) {
-          const giveawaysData = await giveawaysResponse.json();
-          const giveawaysMap: Record<string, {
-            id: string;
-            startDate: string;
-            endDate: string;
-            status: string;
-            participantCount: number;
-            prizes: Array<{
-              itemId?: number;
-              quantity?: number;
-              gemPrize?: boolean;
-              itemIcon?: string;
-            }>;
-          }> = {};
-          giveawaysData.giveaways?.forEach((giveaway: {
-            id: string;
-            startDate: string;
-            endDate: string;
-            status: string;
-            participantCount: number;
-            prizes: Array<{
-              itemId?: number;
-              quantity?: number;
-              gemPrize?: boolean;
-              itemIcon?: string;
-            }>;
-          }) => {
-            if (giveaway.id.startsWith('advent-')) {
-              giveawaysMap[giveaway.id] = giveaway;
+        // Actualizar solo el count del sorteo específico en lugar de recargar todo
+        // El intervalo de counts se encargará de actualizar el contador completo
+        if (dayData.giveawayId) {
+          setGiveaways(prev => {
+            const newState = { ...prev };
+            if (newState[dayData.giveawayId!]) {
+              newState[dayData.giveawayId!] = {
+                ...newState[dayData.giveawayId!],
+                participantCount: (newState[dayData.giveawayId!].participantCount || 0) + 1
+              };
             }
+            return newState;
           });
-          setGiveaways(giveawaysMap);
         }
 
         // Update cache
@@ -632,76 +667,60 @@ export default function AdventCalendar({
       setSelectedWinners(data.winners || []);
       setShowWinnersResultModal(true);
 
-      // Recargar ganadores y sorteos para mostrar datos actualizados
-      const winnersResponse = await fetch("/api/giveaways/winners", {
-        cache: "no-store",
-        headers: {
-          "Cache-Control": "no-cache, no-store, must-revalidate",
-        },
-      });
-      if (winnersResponse.ok) {
-        const winnersData = await winnersResponse.json();
-        const winnersMap: Record<string, Array<{ position: number; accountName: string; itemIcon?: string; gemPrize?: boolean }>> = {};
-        winnersData.winners?.forEach((winner: {
-          giveawayId: string;
-          position: number;
-          accountName: string;
-          itemIcon?: string;
-          gemPrize?: boolean;
-        }) => {
-          if (!winnersMap[winner.giveawayId]) {
-            winnersMap[winner.giveawayId] = [];
-          }
-          winnersMap[winner.giveawayId].push({
-            position: winner.position,
-            accountName: winner.accountName,
-            itemIcon: winner.itemIcon,
-            gemPrize: winner.gemPrize
-          });
+      // Actualizar estado local directamente con los ganadores recibidos
+      // en lugar de hacer fetch adicionales
+      const winnersMap: Record<string, Array<{ position: number; accountName: string; itemIcon?: string; gemPrize?: boolean }>> = {};
+      (data.winners || []).forEach((winner: {
+        giveaway_id: string;
+        position: number;
+        account_name: string;
+        item_icon?: string | null;
+        gem_prize?: boolean;
+      }) => {
+        if (!winnersMap[winner.giveaway_id]) {
+          winnersMap[winner.giveaway_id] = [];
+        }
+        winnersMap[winner.giveaway_id].push({
+          position: winner.position,
+          accountName: winner.account_name,
+          itemIcon: winner.item_icon || undefined,
+          gemPrize: winner.gem_prize || false
         });
-        setWinners(winnersMap);
-      }
-
-      const giveawaysResponse = await fetch("/api/giveaways", {
-        cache: "no-store",
-        headers: {
-          "Cache-Control": "no-cache, no-store, must-revalidate",
-        },
       });
-      if (giveawaysResponse.ok) {
-        const giveawaysData = await giveawaysResponse.json();
-        const giveawaysMap: Record<string, {
-          id: string;
-          startDate: string;
-          endDate: string;
-          status: string;
-          participantCount: number;
-          prizes: Array<{
-            itemId?: number;
-            quantity?: number;
-            gemPrize?: boolean;
-            itemIcon?: string;
-          }>;
-        }> = {};
-        giveawaysData.giveaways?.forEach((giveaway: {
-          id: string;
-          startDate: string;
-          endDate: string;
-          status: string;
-          participantCount: number;
-          prizes: Array<{
-            itemId?: number;
-            quantity?: number;
-            gemPrize?: boolean;
-            itemIcon?: string;
-          }>;
-        }) => {
-          if (giveaway.id.startsWith('advent-')) {
-            giveawaysMap[giveaway.id] = giveaway;
-          }
-        });
-        setGiveaways(giveawaysMap);
-      }
+      
+      // Actualizar winners localmente y cache
+      setWinners(prev => {
+        const updatedWinners = { ...prev, ...winnersMap };
+        
+        // Actualizar cache local de winners
+        const WINNERS_CACHE_KEY = 'giveaways_winners_cache';
+        const WINNERS_CACHE_TIME = 'giveaways_winners_time';
+        const winnersArray = Object.keys(updatedWinners).flatMap(giveawayId =>
+          updatedWinners[giveawayId].map(w => ({
+            giveawayId,
+            position: w.position,
+            accountName: w.accountName,
+            itemIcon: 'itemIcon' in w ? w.itemIcon : undefined,
+            gemPrize: 'gemPrize' in w ? w.gemPrize : undefined
+          }))
+        );
+        localStorage.setItem(WINNERS_CACHE_KEY, JSON.stringify({ winners: winnersArray }));
+        localStorage.setItem(WINNERS_CACHE_TIME, Date.now().toString());
+        
+        return updatedWinners;
+      });
+      
+      // Actualizar estado del sorteo localmente
+      setGiveaways(prev => {
+        const newState = { ...prev };
+        if (newState[giveawayToSelectWinners]) {
+          newState[giveawayToSelectWinners] = {
+            ...newState[giveawayToSelectWinners],
+            status: 'winners_announced'
+          };
+        }
+        return newState;
+      });
     } catch (error) {
       console.error("Error selecting winners:", error);
       setIsSelectingWinners(false);
