@@ -104,7 +104,8 @@ function SimpleWikiTooltip({
   icon, 
   boost, 
   notes, 
-  wikiUrl, 
+  wikiUrl,
+  onlyEnglish = false,
   children 
 }: { 
   name: string
@@ -112,6 +113,7 @@ function SimpleWikiTooltip({
   boost: string
   notes?: string
   wikiUrl: string
+  onlyEnglish?: boolean
   children: React.ReactNode 
 }) {
   const [isOpen, setIsOpen] = useState(false)
@@ -241,7 +243,7 @@ function SimpleWikiTooltip({
           <div className="border-t border-gray-700 pt-2">
             <p className="text-gray-400 text-xs mb-2">Wiki:</p>
             <div className="flex flex-wrap gap-2">
-              {(['en', 'es', 'de', 'fr'] as const).map((l) => (
+              {(onlyEnglish ? ['en'] : ['en', 'es', 'de', 'fr'] as const).map((l) => (
                 <a
                   key={l}
                   href={getLocalizedWikiUrl(wikiUrl, l)}
@@ -374,6 +376,13 @@ export default function ExpBuffsPage() {
               const icon = item?.icon || buffConfig.fallbackIcon || ''
               const wikiUrl = buffConfig.fallbackWiki || (item ? getWikiUrl(item.name, lang) : '#')
               const notes = buffConfig.notes ? t(buffConfig.notes, buffConfig.notes) : undefined
+              
+              // Solo mostrar wiki EN para estos buffs (no tienen páginas en otros idiomas)
+              const onlyEnglishWiki = !!buffConfig.fallbackName && [
+                'expBuffs.resting.name',
+                'expBuffs.enlightenment.name', 
+                'expBuffs.ancientCanthan.name'
+              ].includes(buffConfig.fallbackName)
 
               return (
                 <motion.div
@@ -413,6 +422,7 @@ export default function ExpBuffsPage() {
                         boost={buffConfig.boost}
                         notes={notes}
                         wikiUrl={wikiUrl}
+                        onlyEnglish={onlyEnglishWiki}
                       >
                         <div className="w-16 h-16 bg-slate-700/50 rounded-lg flex items-center justify-center border border-slate-600/50 overflow-hidden hover:border-purple-500/50 transition-colors cursor-pointer">
                           {icon ? (
@@ -447,6 +457,7 @@ export default function ExpBuffsPage() {
                           boost={buffConfig.boost}
                           notes={notes}
                           wikiUrl={wikiUrl}
+                          onlyEnglish={onlyEnglishWiki}
                         >
                           <h3 className="text-lg font-bold text-white mb-1 break-words hover:text-purple-400 transition-colors cursor-pointer">
                             {name}

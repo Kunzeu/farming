@@ -1168,13 +1168,13 @@ function AuthProviderInternal({ children }: { children: ReactNode }) {
   useEffect(() => {
     if (!state.isAuthenticated || !state.user) return;
 
-    // Verificar cada 10 minutos para reducir invocaciones
+    // Verificar cada 15 minutos para reducir invocaciones en Vercel
     const interval = setInterval(() => {
       // Si la pestaña no está visible, no refrescar
       if (!document.hidden) {
         refreshUserSummary();
       }
-    }, 600000);
+    }, 900000);
 
     // Debounce para evitar múltiples llamadas cuando el usuario vuelve a la pestaña
     let focusTimeout: NodeJS.Timeout | null = null;

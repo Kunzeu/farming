@@ -147,16 +147,16 @@ export default function AdventCalendar({
     };
 
     // 2. Cargar Datos Dinámicos (Conteos, Estado real)
-    // Esto se hace cada 5 minutos para reducir invocations
+    // Esto se hace cada 10 minutos para reducir invocations
     const loadGiveawaysCounts = async () => {
       // Si la pestaña no está visible, no hacemos poll
       if (document.hidden) return;
 
       try {
-        // Cache local más largo (5 min) alineado con intervalo
+        // Cache local más largo (10 min) alineado con intervalo
         const COUNTS_CACHE_KEY = 'giveaways_counts_cache';
         const COUNTS_CACHE_TIME = 'giveaways_counts_time';
-        const COUNTS_DURATION = 300000; // 5 minutos (reducido de 2min para menos invocations)
+        const COUNTS_DURATION = 600000; // 10 minutos
 
         const cachedData = localStorage.getItem(COUNTS_CACHE_KEY);
         const cachedTime = localStorage.getItem(COUNTS_CACHE_TIME);
@@ -218,8 +218,8 @@ export default function AdventCalendar({
       loadGiveawaysCounts();
     });
 
-    // Intervalo para counts (5 minutos) - Reducido de 2min para menos invocations
-    const interval = setInterval(loadGiveawaysCounts, 300000);
+    // Intervalo para counts (10 minutos) - Optimizado para reducir invocations en Vercel
+    const interval = setInterval(loadGiveawaysCounts, 600000);
 
     // Re-fetch al volver a la pestaña
     const handleVisibilityChange = () => {

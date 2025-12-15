@@ -110,9 +110,9 @@ export async function GET(
       },
       {
         headers: {
-          // Permitir cache en el navegador por 2 minutos para reducir requests
+          // Cache privado de 5 minutos - Optimizado para Vercel
           // "private" asegura que no se cachee en CDN compartido
-          'Cache-Control': 'private, max-age=120, stale-while-revalidate=60',
+          'Cache-Control': 'private, max-age=300, stale-while-revalidate=120',
         },
       }
     );
