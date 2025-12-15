@@ -54,6 +54,37 @@ export default function FarmingRoutes() {
     setSelectedRoute(null);
   };
 
+  // Función para truncar texto preservando links markdown completos
+  const truncateDescription = (text: string, maxLength: number = 200): string => {
+    if (text.length <= maxLength) return text;
+    
+    // Buscar todos los links markdown en el texto
+    const markdownLinkRegex = /\[([^\]]+)\]\(([^)]+)\)/g;
+    const links = Array.from(text.matchAll(markdownLinkRegex));
+    
+    if (links.length === 0) {
+      // Si no hay links, truncar normalmente
+      return text.substring(0, maxLength) + '...';
+    }
+    
+    // Verificar si algún link estaría cortado
+    for (const link of links) {
+      const linkStart = link.index!;
+      const linkEnd = linkStart + link[0].length;
+      
+      // Si cortaríamos un link, extender hasta después del link
+      if (linkStart < maxLength && linkEnd > maxLength) {
+        // Si el link termina en una posición razonable (< maxLength + 100), incluirlo completo
+        if (linkEnd < maxLength + 100) {
+          return text.substring(0, linkEnd) + '...';
+        }
+      }
+    }
+    
+    // Si llegamos aquí, podemos truncar normalmente
+    return text.substring(0, maxLength) + '...';
+  };
+
   // Mapeo de tipos de moneda a iconos y labels
   const currencyMap = {
     gold: { icon: 'gold' as const, labelKey: 'currency.gold', suffix: '' },
@@ -359,7 +390,7 @@ export default function FarmingRoutes() {
                       >
                                       <div className="p-3 rounded-lg">
                 <MarkdownText 
-                  text={route.description.length > 150 ? `${route.description.substring(0, 150)}...` : route.description}
+                  text={truncateDescription(route.description, 200)}
                   className="text-gray-400 text-sm leading-relaxed whitespace-pre-wrap break-all group-hover:text-gray-300 transition-colors"
                 />
               </div>
