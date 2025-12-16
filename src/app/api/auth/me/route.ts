@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { authenticateRequest } from '@/lib/server/jwt-utils';
 
 export const runtime = 'nodejs';
-export const revalidate = 300; // Cache de 5 minutos - Optimizado para Vercel
+export const revalidate = 600; // Cache de 10 minutos - Optimizado para Vercel
 
 export async function GET(request: NextRequest) {
     try {
@@ -32,8 +32,8 @@ export async function GET(request: NextRequest) {
             timestamp: new Date().toISOString()
         }, {
             headers: {
-                // Cache privado de 5 minutos - Optimizado para Vercel
-                'Cache-Control': 'private, max-age=300, stale-while-revalidate=120',
+                // Cache privado de 10 minutos - Optimizado para Vercel
+                'Cache-Control': 'private, max-age=600, stale-while-revalidate=120',
             }
         });
 

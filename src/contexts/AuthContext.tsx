@@ -352,7 +352,7 @@ function AuthProviderInternal({ children }: { children: ReactNode }) {
         // Refrescar datos luego de persistir
         setTimeout(() => {
           // Best-effort ligero: solo leer summary para snapshot inicial; evitar full
-          fetch(`/api/users/${user.id}/summary`, { cache: 'no-store' })
+          fetch(`/api/users/${user.id}/summary`)
             .then(r => r.ok ? r.json() : null)
             .then(s => {
               if (!s) return;
@@ -1104,7 +1104,7 @@ function AuthProviderInternal({ children }: { children: ReactNode }) {
       try {
         const lastFull = Number(sessionStorage.getItem('gw2_user_full_refreshed_at') || '0');
         if (Date.now() - lastFull < refreshThrottleMs) {
-          const resp = await fetch(`/api/users/${currentUser.id}/summary`, { cache: 'no-store' });
+          const resp = await fetch(`/api/users/${currentUser.id}/summary`);
           if (resp.ok) {
             const data = await resp.json();
             lastSummaryRef.current = { hasApiKey: !!data.hasApiKey, apiKeyValid: data.apiKeyValid ?? null };
@@ -1122,7 +1122,7 @@ function AuthProviderInternal({ children }: { children: ReactNode }) {
         } catch { }
       }
 
-      const resp = await fetch(`/api/users/${currentUser.id}/summary`, { cache: 'no-store' });
+      const resp = await fetch(`/api/users/${currentUser.id}/summary`);
       if (!resp.ok) return;
       const data = await resp.json();
       const current = lastSummaryRef.current;
@@ -1168,13 +1168,13 @@ function AuthProviderInternal({ children }: { children: ReactNode }) {
   useEffect(() => {
     if (!state.isAuthenticated || !state.user) return;
 
-    // Verificar cada 15 minutos para reducir invocaciones en Vercel
+    // Verificar cada 30 minutos para reducir invocaciones en Vercel
     const interval = setInterval(() => {
       // Si la pestaña no está visible, no refrescar
       if (!document.hidden) {
         refreshUserSummary();
       }
-    }, 900000);
+    }, 1800000); // 30 minutos
 
     // Debounce para evitar múltiples llamadas cuando el usuario vuelve a la pestaña
     let focusTimeout: NodeJS.Timeout | null = null;

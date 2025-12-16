@@ -92,7 +92,7 @@ export default function ProfilePage() {
       if (!user?.id) return;
 
       try {
-        const response = await fetch(`/api/users/${user.id}/summary`, { cache: 'no-store' });
+        const response = await fetch(`/api/users/${user.id}/summary`);
         if (response.ok) {
           const data = await response.json();
           setHasApiKey(!!data.hasApiKey);

@@ -69,7 +69,7 @@ const WalletPage = () => {
       let apiKeyAllowed = true;
       if (user?.id) {
         try {
-          const summaryResp = await fetch(`/api/users/${user.id}/summary`, { cache: 'no-store' });
+          const summaryResp = await fetch(`/api/users/${user.id}/summary`);
           if (summaryResp.ok) {
             const summary = await summaryResp.json();
             apiKeyAllowed = !!summary.hasApiKey && summary.apiKeyValid !== false;
@@ -83,7 +83,7 @@ const WalletPage = () => {
       if (!apiKeyAllowed) {
         // Si la API key es inválida, informar para guiar al usuario
         try {
-          const resp = user?.id ? await fetch(`/api/users/${user.id}/summary`, { cache: 'no-store' }) : null;
+          const resp = user?.id ? await fetch(`/api/users/${user.id}/summary`) : null;
           const data = resp && resp.ok ? await resp.json() : null;
           if (data && data.apiKeyValid === false) {
             setApiError(t('profile.apiKey.invalid', 'Invalid API key. Check permissions.'));

@@ -378,7 +378,7 @@ class DatabaseClientService {
 
   async getUserById(id: string): Promise<{ role: string; isActive: boolean } | null> {
     // Usar summary ligero para evitar descargar el usuario completo
-    const response = await fetch(`/api/users/${id}/summary`, { cache: 'no-store' });
+    const response = await fetch(`/api/users/${id}/summary`);
     if (!response.ok) {
       if (response.status === 404) {
         return null;

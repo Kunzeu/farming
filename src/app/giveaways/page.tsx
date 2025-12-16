@@ -295,7 +295,6 @@ const GiveawaysPage = () => {
 
       try {
         const response = await fetch(`/api/users/${user.id}/summary`, {
-          cache: "no-store",
           signal: controller.signal,
         });
         if (response.ok) {

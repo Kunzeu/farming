@@ -153,10 +153,10 @@ export default function AdventCalendar({
       if (document.hidden) return;
 
       try {
-        // Cache local más largo (10 min) alineado con intervalo
+        // Cache local más largo (20 min) alineado con intervalo para reducir invocations
         const COUNTS_CACHE_KEY = 'giveaways_counts_cache';
         const COUNTS_CACHE_TIME = 'giveaways_counts_time';
-        const COUNTS_DURATION = 600000; // 10 minutos
+        const COUNTS_DURATION = 1200000; // 20 minutos (reducido para Vercel limits)
 
         const cachedData = localStorage.getItem(COUNTS_CACHE_KEY);
         const cachedTime = localStorage.getItem(COUNTS_CACHE_TIME);
@@ -218,8 +218,8 @@ export default function AdventCalendar({
       loadGiveawaysCounts();
     });
 
-    // Intervalo para counts (10 minutos) - Optimizado para reducir invocations en Vercel
-    const interval = setInterval(loadGiveawaysCounts, 600000);
+    // Intervalo para counts (20 minutos) - Optimizado para reducir invocations en Vercel
+    const interval = setInterval(loadGiveawaysCounts, 1200000);
 
     // Re-fetch al volver a la pestaña
     const handleVisibilityChange = () => {

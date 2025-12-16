@@ -13,7 +13,7 @@ let isGloballyProcessing = false;
 let activeInstances = 0;
 
 // Cache en memoria para evitar llamadas innecesarias
-const CACHE_DURATION = 600000; // 10 minutos de caché
+const CACHE_DURATION = 1200000; // 20 minutos de caché (optimizado para Vercel)
 
 export function useRoleCheck() {
   const { user, isAuthenticated, refreshUserData } = useAuth();
@@ -42,7 +42,7 @@ export function useRoleCheck() {
       }
 
       // Usar summary ligero en lugar de descargar el usuario completo
-      const resp = await fetch(`/api/users/${user.id}/summary`, { cache: 'no-store' });
+      const resp = await fetch(`/api/users/${user.id}/summary`);
       if (!resp.ok) {
         isGloballyProcessing = false;
         return;
@@ -121,9 +121,9 @@ export function useRoleCheck() {
         checkRole();
       }
 
-      // Configurar intervalo de 15 minutos solo una vez (reducir de 5 a 15 minutos)
+      // Configurar intervalo de 30 minutos solo una vez (optimizado para Vercel)
       if (!globalIntervalRef) {
-        globalIntervalRef = setInterval(checkRole, 900000); // 15 minutos
+        globalIntervalRef = setInterval(checkRole, 1800000); // 30 minutos
       }
     }
 

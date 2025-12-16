@@ -21,7 +21,7 @@ type SummaryCacheEntry = {
   expiry: number;
 };
 const summaryCache = new Map<string, SummaryCacheEntry>();
-const SUMMARY_TTL_MS = 5 * 60 * 1000; // 5 minutos
+const SUMMARY_TTL_MS = 10 * 60 * 1000; // 10 minutos (optimizado para Vercel)
 
 // GET /api/users/[id]/summary
 // Resumen para cliente: hasApiKey, validación básica y accountInfo (si aplica)
@@ -110,9 +110,9 @@ export async function GET(
       },
       {
         headers: {
-          // Cache privado de 5 minutos - Optimizado para Vercel
+          // Cache privado de 10 minutos - Optimizado para Vercel
           // "private" asegura que no se cachee en CDN compartido
-          'Cache-Control': 'private, max-age=300, stale-while-revalidate=120',
+          'Cache-Control': 'private, max-age=600, stale-while-revalidate=120',
         },
       }
     );
