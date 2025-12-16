@@ -229,11 +229,13 @@ export default function WikiTooltip({ itemId, itemData: initialItemData, fallbac
 
         if (initialItemData?.chat_link || fetchedData?.chat_link) {
             const chatLink = initialItemData?.chat_link || fetchedData?.chat_link;
-            return `https://${subdomain}.guildwars2.com/wiki/Special:Search/${chatLink}`;
+            // Usar index.php?search para evitar problemas con caracteres especiales en la URL
+            const encodedChatLink = encodeURIComponent(chatLink);
+            return `https://${subdomain}.guildwars2.com/index.php?title=Special:Search&search=${encodedChatLink}`;
         }
 
         // Fallback to ID search if everything else fails
-        return `https://${subdomain}.guildwars2.com/wiki/Special:Search/${itemId}`;
+        return `https://${subdomain}.guildwars2.com/index.php?title=Special:Search&search=${itemId}`;
     };
 
     // Helper functions

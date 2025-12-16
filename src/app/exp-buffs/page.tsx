@@ -51,6 +51,10 @@ const EXP_BUFFS_CONFIG: ExpBuffConfig[] = [
     boost: '+25% Exp',
   },
   {
+    itemId: 77656,
+    boost: '+10% Exp',
+  },
+  {
     itemId: 89002, // Soul Pastry
     boost: '+15% Exp',
     notes: 'expBuffs.soulPastry.notes', // Tiene renderizado especial con item 42877 clickeable
@@ -72,6 +76,21 @@ const EXP_BUFFS_CONFIG: ExpBuffConfig[] = [
   {
     itemId: 39330, // Experienced Enrichment
     boost: '+20% Exp',
+  },
+  {
+    itemId: null, // Guild XP Gain 
+    boost: '+10% Exp',
+    notes: 'expBuffs.guildXP.notes',
+    fallbackName: 'expBuffs.guildXP.name',
+    fallbackIcon: 'https://wiki.guildwars2.com/images/f/fe/Endless_Gift_Dolyak_Tonic.png',
+    fallbackWiki: 'https://wiki.guildwars2.com/wiki/Guild_XP_Gain'
+  },
+  {
+    itemId: null, // Guild Heroes Banner Boost
+    boost: '+15% Exp',
+    fallbackName: 'expBuffs.guildHeroesBanner.name',
+    fallbackIcon: 'https://wiki.guildwars2.com/images/a/ae/Guild_Heroes_Banner.png',
+    fallbackWiki: 'https://wiki.guildwars2.com/wiki/Guild_Heroes_Banner_Boost'
   },
   {
     itemId: null, // Resting
@@ -104,7 +123,7 @@ function SimpleWikiTooltip({
   icon, 
   boost, 
   notes, 
-  wikiUrl,
+  buffKey,
   onlyEnglish = false,
   children 
 }: { 
@@ -112,7 +131,7 @@ function SimpleWikiTooltip({
   icon: string
   boost: string
   notes?: string
-  wikiUrl: string
+  buffKey?: string
   onlyEnglish?: boolean
   children: React.ReactNode 
 }) {
@@ -161,16 +180,12 @@ function SimpleWikiTooltip({
     setIsOpen(!isOpen)
   }
 
-  const getLocalizedWikiUrl = (baseUrl: string, targetLang: string) => {
-    // Extract the page name from the base URL
-    const pageName = baseUrl.split('/wiki/')[1]
-    if (!pageName) return baseUrl
-
-    // Special translations for specific pages
-    const pageTranslations: Record<string, Record<string, string>> = {
+  const getLocalizedWikiUrl = (buffName: string, targetLang: string) => {
+    // Traducciones de nombres de buffs por idioma
+    const buffNames: Record<string, Record<string, string>> = {
       'Resting': {
         'en': 'Resting',
-        'es': 'Resting', // La wiki española usa el nombre inglés
+        'es': 'Resting',
         'de': 'Ausruhen',
         'fr': 'Repos'
       },
@@ -180,19 +195,34 @@ function SimpleWikiTooltip({
         'de': 'Erleuchtung',
         'fr': 'Illumination'
       },
-      'Ancient_Canthan_Secret_(effect)': {
-        'en': 'Ancient_Canthan_Secret_(effect)',
-        'es': 'Ancient_Canthan_Secret_(effect)',
-        'de': 'Uraltes_canthisches_Geheimnis_(Effekt)',
-        'fr': 'Ancien_secret_canthan_(effet)'
+      'Ancient Canthan Secret': {
+        'en': 'Ancient Canthan Secret (effect)',
+        'es': 'Ancient Canthan Secret (effect)',
+        'de': 'Uraltes canthisches Geheimnis (Effekt)',
+        'fr': 'Ancien secret canthan (effet)'
+      },
+      'Guild XP Gain': {
+        'en': 'Guild XP Gain',
+        'es': 'Guild XP Gain',
+        'de': 'Gilden-Verstärkung: EP-Gewinn',
+        'fr': 'Gain d\'EXP de guilde'
+      },
+      'Guild Heroes Banner': {
+        'en': 'Guild Heroes Banner Boost',
+        'es': 'Potenciador de estandarte de héroes del clan',
+        'de': 'Gilden-Banner für Helden',
+        'fr': 'Bannière des héros de guilde'
       }
     }
 
-    // Check if we have a translation for this page
-    const translatedPage = pageTranslations[pageName]?.[targetLang] || pageName
-
+    // Obtener el nombre traducido (funciona igual que WikiTooltip)
+    const translatedName = buffNames[buffName]?.[targetLang] || buffName
+    
+    // Construir URL igual que WikiTooltip: simplemente reemplaza espacios por _
+    const normalizedName = translatedName.replace(/ /g, '_')
     const subdomain = targetLang === 'en' ? 'wiki' : `wiki-${targetLang}`
-    return `https://${subdomain}.guildwars2.com/wiki/${translatedPage}`
+    
+    return `https://${subdomain}.guildwars2.com/wiki/${normalizedName}`
   }
 
   return (
@@ -243,18 +273,30 @@ function SimpleWikiTooltip({
           <div className="border-t border-gray-700 pt-2">
             <p className="text-gray-400 text-xs mb-2">Wiki:</p>
             <div className="flex flex-wrap gap-2">
-              {(onlyEnglish ? ['en'] : ['en', 'es', 'de', 'fr'] as const).map((l) => (
-                <a
-                  key={l}
-                  href={getLocalizedWikiUrl(wikiUrl, l)}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1 text-xs text-purple-400 hover:text-purple-300 transition-colors cursor-pointer"
-                >
-                  {l.toUpperCase()}
-                  <ExternalLink className="w-3 h-3" />
-                </a>
-              ))}
+              {(onlyEnglish ? ['en'] : ['en', 'es', 'de', 'fr'] as const).map((l) => {
+                // Mapear buffKey a nombre inglés base
+                const buffNameMap: Record<string, string> = {
+                  'expBuffs.resting.name': 'Resting',
+                  'expBuffs.enlightenment.name': 'Enlightenment',
+                  'expBuffs.ancientCanthan.name': 'Ancient Canthan Secret',
+                  'expBuffs.guildXP.name': 'Guild XP Gain',
+                  'expBuffs.guildHeroesBanner.name': 'Guild Heroes Banner'
+                }
+                const baseName = (buffKey && buffNameMap[buffKey]) || name
+                
+                return (
+                  <a
+                    key={l}
+                    href={getLocalizedWikiUrl(baseName, l)}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1 text-xs text-purple-400 hover:text-purple-300 transition-colors cursor-pointer"
+                  >
+                    {l.toUpperCase()}
+                    <ExternalLink className="w-3 h-3" />
+                  </a>
+                )
+              })}
             </div>
           </div>
         </div>,
@@ -421,7 +463,7 @@ export default function ExpBuffsPage() {
                         icon={icon}
                         boost={buffConfig.boost}
                         notes={notes}
-                        wikiUrl={wikiUrl}
+                        buffKey={buffConfig.fallbackName}
                         onlyEnglish={onlyEnglishWiki}
                       >
                         <div className="w-16 h-16 bg-slate-700/50 rounded-lg flex items-center justify-center border border-slate-600/50 overflow-hidden hover:border-purple-500/50 transition-colors cursor-pointer">
@@ -456,7 +498,7 @@ export default function ExpBuffsPage() {
                           icon={icon}
                           boost={buffConfig.boost}
                           notes={notes}
-                          wikiUrl={wikiUrl}
+                          buffKey={buffConfig.fallbackName}
                           onlyEnglish={onlyEnglishWiki}
                         >
                           <h3 className="text-lg font-bold text-white mb-1 break-words hover:text-purple-400 transition-colors cursor-pointer">
