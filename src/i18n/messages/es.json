@@ -2649,6 +2649,7 @@
   "support.price.month": "/ mes",
   "support.button.supportPatreon": "Patreon",
   "support.button.freePlan": "Plan Gratuito",
+  "support.button.refreshStatus": "Actualizar estado",
   "support.features.freeFeatures": "Todas las características gratuitas",
   "support.features.adFree": "Sin publicidad",
   "support.features.lottery": "Entrada automática en todos los sorteos",

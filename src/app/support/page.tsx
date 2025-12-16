@@ -1,14 +1,33 @@
 "use client";
 
 import Link from 'next/link';
-import { Check, X, Minus } from 'lucide-react';
+import { Check, X, Minus, RefreshCw } from 'lucide-react';
 import Navigation from '@/components/layout/Navigation';
 import { useAuth } from '@/contexts/AuthContext';
 import { useI18n } from '@/contexts/I18nContext';
+import { useEffect, useState } from 'react';
 
 export default function SupportPage() {
-    const { user } = useAuth();
+    const { user, refreshUserData } = useAuth();
     const { t } = useI18n();
+    const [isRefreshing, setIsRefreshing] = useState(false);
+
+    // Refrescar datos del usuario al montar la página
+    useEffect(() => {
+        if (user) {
+            refreshUserData();
+        }
+    }, []); // Solo al montar
+
+    // Función para refrescar manualmente
+    const handleRefresh = async () => {
+        setIsRefreshing(true);
+        try {
+            await refreshUserData();
+        } finally {
+            setTimeout(() => setIsRefreshing(false), 1000);
+        }
+    };
 
     const isCurrentTier = (tierName: string) => {
         // Free Tier check (Basic)
@@ -57,7 +76,7 @@ export default function SupportPage() {
                 freeFeatures: true,
                 adFree: true,
                 lottery: true,
-                luck: '1x',
+                luck: '2x',
                 discordColor: '#2ecc71',
             }
         },
@@ -74,7 +93,7 @@ export default function SupportPage() {
                 freeFeatures: true,
                 adFree: true,
                 lottery: true,
-                luck: '2x',
+                luck: '3x',
                 discordColor: '#e74c3c',
             }
         },
@@ -91,7 +110,7 @@ export default function SupportPage() {
                 freeFeatures: true,
                 adFree: true,
                 lottery: true,
-                luck: '3x',
+                luck: '4x',
                 discordColor: '#f1c40f',
             }
         },
@@ -108,7 +127,7 @@ export default function SupportPage() {
                 freeFeatures: true,
                 adFree: true,
                 lottery: true,
-                luck: '4x',
+                luck: '5x',
                 discordColor: '#71368a',
             }
         }
@@ -152,7 +171,19 @@ export default function SupportPage() {
             <Navigation />
             <div className="w-full max-w-[1600px] mx-auto px-4 py-12">
                 <div className="text-center mb-12">
-                    <h1 className="text-4xl font-bold mb-4 text-white">{t('support.title')}</h1>
+                    <div className="flex items-center justify-center gap-4 mb-4">
+                        <h1 className="text-4xl font-bold text-white">{t('support.title')}</h1>
+                        {user && (
+                            <button
+                                onClick={handleRefresh}
+                                disabled={isRefreshing}
+                                className="p-2 rounded-lg bg-blue-600 hover:bg-blue-700 disabled:bg-gray-600 transition-colors"
+                                title={t('support.button.refreshStatus', 'Refresh status')}
+                            >
+                                <RefreshCw className={`w-5 h-5 text-white ${isRefreshing ? 'animate-spin' : ''}`} />
+                            </button>
+                        )}
+                    </div>
                     <p className="text-xl text-gray-300 max-w-2xl mx-auto">
                         {t('support.subtitle')}
                     </p>

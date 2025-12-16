@@ -107,19 +107,20 @@ export async function POST(request: NextRequest) {
 
     // 2. Create weighted pool based on Patreon tier
     const weightedPool: any[] = [];
-    // Pesos por tier (configuración hardcoded por ahora, podría moverse a DB/Config)
+    // Pesos por tier - Optimizado para dar ventaja real a Patreons
     const TIER_WEIGHTS: Record<string, number> = {
-      'bronze': 1,    // 1x chance (igual que base)
-      'silver': 2,    // 2x chance
-      'gold': 3,     // 3x chance
-      'legends': 4   // 4x chance
+      'bronze': 2,    // 2x chance
+      'silver': 3,    // 3x chance
+      'gold': 4,      // 4x chance
+      'legends': 5    // 5x chance
     };
 
-    // Factor de multiplicación (1 = sin multiplicador extra, ya que usamos enteros)
-    const ENTRY_MULTIPLIER = 1;
+    // Free users tienen weight base de 1
+    const FREE_USER_WEIGHT = 1;
 
     participants.forEach(p => {
-      let weight = 1; // Probabilidad base
+      let weight = FREE_USER_WEIGHT; // Probabilidad base para usuarios free
+      
       if (p.patreon_status === 'active_patron' && p.patreon_tier) {
         const tier = p.patreon_tier.trim().toLowerCase();
         if (TIER_WEIGHTS[tier]) {
@@ -127,16 +128,14 @@ export async function POST(request: NextRequest) {
         }
       }
 
-      // Calcular número de "tickets" totales (redondeado para evitar errores)
-      const totalEntries = Math.round(weight * ENTRY_MULTIPLIER);
+      // Calcular número de "tickets" totales
+      const totalEntries = Math.round(weight);
 
       // Add participant to the pool multiple times
       for (let k = 0; k < totalEntries; k++) {
         weightedPool.push(p);
       }
     });
-
-    console.log(`Giveaway ${giveawayId}: ${participants.length} participants expanded to ${weightedPool.length} entries (weighted).`);
 
     // 3. Shuffle weighted pool (Fisher-Yates algorithm)
     for (let i = weightedPool.length - 1; i > 0; i--) {
