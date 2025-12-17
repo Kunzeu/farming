@@ -840,11 +840,14 @@ export default function AdventCalendar({
                                                     day.day === 15 && day.isAvailable ? "/images/assets/day15.webp" :
                                                       day.day === 16 && day.isAvailable ? "/images/assets/day16.webp" :
                                                       (day.day === 17 && day.isAvailable) ? "/images/assets/day17.webp" :
-                                                        day.day === 21 ? "/images/assets/daily.webp" :
-                                                          day.day === 25 ? "/images/assets/day25.webp?v=2" :
-                                                            day.day === 28 ? "/images/assets/daily.webp" :
-                                                              day.day === 31 ? "/images/assets/daily.webp" :
-                                                                (day.day === 32 && isAdmin) ? "/images/assets/day3.webp" :
+                                                        (day.day === 18 && day.isAvailable) ? "/images/assets/day18.webp" :
+                                                          (day.day === 19 && day.isAvailable) ? "/images/assets/day19.webp" :
+                                                            (day.day === 20 && day.isAvailable) ? "/images/assets/day20.webp" :
+                                                              day.day === 21 ? "/images/assets/daily.webp" :
+                                                                day.day === 25 ? "/images/assets/day25.webp?v=2" :
+                                                                  day.day === 28 ? "/images/assets/daily.webp" :
+                                                                    day.day === 31 ? "/images/assets/daily.webp" :
+                                                                      (day.day === 32 && isAdmin) ? "/images/assets/day3.webp" :
 
                                                                 "/images/assets/soon.webp"
                       }
