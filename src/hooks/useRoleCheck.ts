@@ -121,10 +121,11 @@ export function useRoleCheck() {
         checkRole();
       }
 
+      // MODO EMERGENCIA: DESACTIVADO para reducir consumo en Vercel
       // Configurar intervalo de 30 minutos solo una vez (optimizado para Vercel)
-      if (!globalIntervalRef) {
+      /* if (!globalIntervalRef) {
         globalIntervalRef = setInterval(checkRole, 1800000); // 30 minutos
-      }
+      } */
     }
 
     // Limpiar al desmontar
@@ -132,16 +133,17 @@ export function useRoleCheck() {
       activeInstances--;
       
       // Solo limpiar el interval cuando no queden instancias activas
-      if (activeInstances === 0 && globalIntervalRef) {
+      /* if (activeInstances === 0 && globalIntervalRef) {
         clearInterval(globalIntervalRef);
         globalIntervalRef = null;
-      }
+      } */
     };
   }, [isAuthenticated, user, dbService, checkRole]);
 
+  // MODO EMERGENCIA: DESACTIVADO para reducir consumo en Vercel
   // También verificar cuando la ventana vuelve a estar activa (con debouncing agresivo)
   // Solo registrar el listener una vez usando el contador de instancias
-  useEffect(() => {
+  /* useEffect(() => {
     if (!isAuthenticated || !user || !dbService) {
       return;
     }
@@ -188,5 +190,5 @@ export function useRoleCheck() {
         }
       }
     };
-  }, [isAuthenticated, user, dbService, checkRole]);
+  }, [isAuthenticated, user, dbService, checkRole]); */
 } 

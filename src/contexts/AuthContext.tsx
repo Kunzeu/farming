@@ -1164,8 +1164,9 @@ function AuthProviderInternal({ children }: { children: ReactNode }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [state.isAuthenticated]); // Solo cuando se autentica inicialmente
 
+  // MODO EMERGENCIA: DESACTIVADO para reducir consumo en Vercel
   // Verificar y refrescar datos del usuario periódicamente (baja frecuencia) usando summary
-  useEffect(() => {
+  /* useEffect(() => {
     if (!state.isAuthenticated || !state.user) return;
 
     // Verificar cada 30 minutos para reducir invocaciones en Vercel
@@ -1206,7 +1207,7 @@ function AuthProviderInternal({ children }: { children: ReactNode }) {
         clearTimeout(focusTimeout);
       }
     };
-  }, [state.isAuthenticated, state.user, refreshUserSummary]);
+  }, [state.isAuthenticated, state.user, refreshUserSummary]); */
 
   const value: AuthContextType = {
     ...state,

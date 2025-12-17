@@ -219,7 +219,7 @@ export default function AdventCalendar({
     });
 
     // Intervalo para counts (20 minutos) - Optimizado para reducir invocations en Vercel
-    const interval = setInterval(loadGiveawaysCounts, 1200000);
+    const interval = setInterval(loadGiveawaysCounts, 1200000); // 20 minutos
 
     // Re-fetch al volver a la pestaña
     const handleVisibilityChange = () => {
