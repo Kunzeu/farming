@@ -240,6 +240,13 @@ export function generateAdventGiveaways(year: number = 2025): Giveaway[] {
         { position: 2, prize: '1', icon: 'materials', itemId: 102013, quantity: 1 }, // Chromatic Assassin Spear Skin
         { position: 3, prize: '1', icon: 'materials', itemId: 95994, quantity: 1 }, // Dragon's Fang
       ],
+      19: [
+        { position: 1, prize: '250', icon: 'package', itemId: 19721, quantity: 250 }, // Glob of Ectoplasm
+        { position: 2, prize: '1', icon: 'materials', itemId: 104210, quantity: 1 }, // Imperial Everbloom Dagger
+        { position: 3, prize: '1', icon: 'materials', itemId: 29170, quantity: 1 }, // The Colossus
+        { position: 4, prize: '400', icon: 'gem', quantity: 400, gemPrize: true }, // Gems
+
+      ],
       21: [
         { position: 1, prize: '800', icon: 'gem', quantity: 800, gemPrize: true },
         { position: 2, prize: '400', icon: 'gem', quantity: 400, gemPrize: true },
