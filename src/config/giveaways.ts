@@ -245,27 +245,70 @@ export function generateAdventGiveaways(year: number = 2025): Giveaway[] {
         { position: 2, prize: '1', icon: 'materials', itemId: 104210, quantity: 1 }, // Imperial Everbloom Dagger
         { position: 3, prize: '1', icon: 'materials', itemId: 29170, quantity: 1 }, // The Colossus
         { position: 4, prize: '400', icon: 'gem', quantity: 400, gemPrize: true }, // Gems
-
+      ],
+      20: [
+        { position: 1, prize: '100', icon: 'materials', itemId: 24325, quantity: 100 }, // Destroyer Lodestone
+        { position: 2, prize: '1', icon: 'materials', itemId: 102013, quantity: 1 }, // Chromatic Assassin Spear Skin
+        { position: 3, prize: '1', icon: 'package', itemId: 95814, quantity: 1 }, // Dragon's Flight
       ],
       21: [
-        { position: 1, prize: '800', icon: 'gem', quantity: 800, gemPrize: true },
-        { position: 2, prize: '400', icon: 'gem', quantity: 400, gemPrize: true },
-        { position: 3, prize: '250', icon: 'package', itemId: 19721, quantity: 250 }, // Glob of Ectoplasm
+        { position: 1, prize: '1', icon: 'package', itemId: 96652, quantity: 1 }, // Aurene's Insight
+        { position: 2, prize: '400', icon: 'gem', quantity: 400, gemPrize: true }, // Gems
+        { position: 3, prize: '400', icon: 'gem', quantity: 400, gemPrize: true }, // Gems
+        { position: 4, prize: '400', icon: 'gem', quantity: 400, gemPrize: true }, // Gems
+      ],
+      22: [
+        { position: 1, prize: '250', icon: 'package', itemId: 24325, quantity: 250 }, // Glob of Ectoplasm
+        { position: 2, prize: '100', icon: 'materials', itemId: 24340, quantity: 100 }, // Corrupted Lodestone
+        { position: 3, prize: '1', icon: 'package', itemId: 97535, quantity: 1 }, // Scavenger Protocol: Magic Trophies
+      ],
+      23: [
+        { position: 1, prize: '250', icon: 'package', itemId: 19721, quantity: 250 }, // Glob of Ectoplasm
+        { position: 2, prize: '1', icon: 'materials', itemId: 102013, quantity: 1 }, // Chromatic Assassin Spear Skin
+        { position: 3, prize: '1', icon: 'package', itemId: 96357, quantity: 1 }, // Dragon's Bite
+      ],
+      24: [
+        { position: 1, prize: '100', icon: 'materials', itemId: 24325, quantity: 100 }, // Destroyer Lodestone
+        { position: 2, prize: '1', icon: 'materials', itemId: 104207, quantity: 1 }, // Imperial Everbloom Mace Skin
+        { position: 3, prize: '1', icon: 'materials', itemId: 29178, quantity: 1 }, // The Lover
+        { position: 4, prize: '1200', icon: 'gem', quantity: 1200, gemPrize: true }, // Gems
       ],
       25: [
-        { position: 1, prize: '1200', icon: 'gem', quantity: 1200, gemPrize: true },
-        { position: 2, prize: '800', icon: 'gem', quantity: 800, gemPrize: true },
-        { position: 3, prize: '400', icon: 'gem', quantity: 400, gemPrize: true },
+        { position: 1, prize: '1', icon: 'package', itemId: 81701, quantity: 1 }, // Queen Bee
+        { position: 2, prize: '1', icon: 'materials', itemId: 105497, quantity: 1 }, // Aetheric Anchor
+        { position: 3, prize: '1', icon: 'package', itemId: 103815, quantity: 1 }, // Klobjarne Geirr
+        { position: 4, prize: '2000', icon: 'gem', quantity: 2000, gemPrize: true }, // Gems
+      ],
+      26: [
+        { position: 1, prize: '250', icon: 'package', itemId: 19721, quantity: 250 }, // Glob of Ectoplasm
+        { position: 2, prize: '1', icon: 'materials', itemId: 102013, quantity: 1 }, // Chromatic Assassin Spear Skin
+        { position: 3, prize: '1', icon: 'materials', itemId: 96193, quantity: 1 }, // Dragon's Wisdom
+      ],
+      27: [
+        { position: 1, prize: '100', icon: 'materials', itemId: 24325, quantity: 100 }, // Destroyer Lodestone
+        { position: 2, prize: '1', icon: 'materials', itemId: 101365, quantity: 1 }, // Thundercrag Greatsword Skin
+        { position: 3, prize: '250', icon: 'materials', itemId: 89098, quantity: 250 }, // Symbol of Control
       ],
       28: [
-        { position: 1, prize: '800', icon: 'gem', quantity: 800, gemPrize: true },
-        { position: 2, prize: '400', icon: 'gem', quantity: 400, gemPrize: true },
+        { position: 1, prize: '1', icon: 'materials', itemId: 30694, quantity: 1 }, // The Predator
+        { position: 2, prize: '400', icon: 'gem', quantity: 400, gemPrize: true }, // Gems
         { position: 3, prize: '250', icon: 'package', itemId: 19721, quantity: 250 }, // Glob of Ectoplasm
       ],
+      29: [
+        { position: 1, prize: '250', icon: 'package', itemId: 19721, quantity: 250 }, // Glob of Ectoplasm
+        { position: 2, prize: '1', icon: 'materials', itemId: 102013, quantity: 1 }, // Chromatic Assassin Spear Skin
+        { position: 3, prize: '1', icon: 'package', itemId: 96827, quantity: 1 }, // Dragon's Tail
+      ],
+      30: [
+        { position: 1, prize: '250', icon: 'package', itemId: 19721, quantity: 250 }, // Glob of Ectoplasm
+        { position: 2, prize: '100', icon: 'materials', itemId: 24340, quantity: 100 }, // Corrupted Lodestone
+        { position: 3, prize: '1', icon: 'package', itemId: 89070, quantity: 1 }, // Polysaturating Reverberating Infusion (Purple)
+      ],
       31: [
-        { position: 1, prize: '1200', icon: 'gem', quantity: 1200, gemPrize: true },
-        { position: 2, prize: '800', icon: 'gem', quantity: 800, gemPrize: true },
-        { position: 3, prize: '400', icon: 'gem', quantity: 400, gemPrize: true },
+        { position: 1, prize: '1', icon: 'package', itemId:  81918, quantity: 1 }, // Liquid Aurillium Infusion
+        { position: 2, prize: '250', icon: 'gold', quantity: 250, gemPrize: true }, // Gold
+        { position: 3, prize: '250', icon: 'gold', quantity: 250, gemPrize: true }, // Gold
+        { position: 4, prize: '1200', icon: 'gem', quantity: 1200, gemPrize: true }, // Gems
       ],
       32: [
         // Día 32 - Admin only test day
@@ -486,7 +529,15 @@ export async function getGiveawayItemsInfo(giveaway: Giveaway, lang: string = 'e
 }>> {
   const prizesWithItems = await Promise.all(
     giveaway.prizes.map(async (prize) => {
-      if (prize.gemPrize) {
+      // Verificar primero el icono 'gold' antes de gemPrize
+      if (prize.icon === 'gold') {
+        // Para premios de oro, usar el icono oficial de GW2
+        return {
+          ...prize,
+          itemName: t ? t('currency.gold', 'Oro') : 'Gold',
+          itemIcon: '/images/expansions/Gold.webp'
+        };
+      } else if (prize.gemPrize) {
         // Para premios de gemas, usar el icono oficial de GW2
         return {
           ...prize,

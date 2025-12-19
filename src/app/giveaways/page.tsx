@@ -20,6 +20,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
+import GW2Icon from "@/components/ui/GW2Icon";
 
 // Utilidad para detectar AbortError sin usar 'any'
 function isAbortError(error: unknown): boolean {
@@ -372,6 +373,8 @@ const GiveawaysPage = () => {
         return <Gem className="w-4 h-4 text-yellow-400" />;
       case "package":
         return <Gift className="w-4 h-4 text-blue-400" />;
+      case "gold":
+        return <GW2Icon type="gold" size="sm" className="w-4 h-4" />;
       default:
         return <Gift className="w-4 h-4 text-gray-400" />;
     }

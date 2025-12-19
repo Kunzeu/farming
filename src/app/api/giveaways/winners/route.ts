@@ -75,7 +75,7 @@ export async function GET(request: NextRequest) {
               'gem': 'https://wiki.guildwars2.com/images/8/88/Gem_%28highres%29.png',
               'package': 'https://wiki.guildwars2.com/images/5/5e/Daily_Achievement_Chest.png',
               'materials': 'https://wiki.guildwars2.com/images/7/75/Trophy_case.png',
-              'gold': 'https://wiki.guildwars2.com/images/d/d1/Coin_gold.png'
+              'gold': '/images/expansions/Gold.webp'
             };
             itemIcon = FALLBACK_ICONS[prizeConfig.icon] || FALLBACK_ICONS['package'];
           }
