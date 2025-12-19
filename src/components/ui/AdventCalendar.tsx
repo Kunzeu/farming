@@ -843,13 +843,18 @@ export default function AdventCalendar({
                                                         (day.day === 18 && day.isAvailable) ? "/images/assets/day18.webp" :
                                                           (day.day === 19 && day.isAvailable) ? "/images/assets/day19.webp" :
                                                             (day.day === 20 && day.isAvailable) ? "/images/assets/day20.webp" :
-                                                              day.day === 21 ? "/images/assets/daily.webp" :
-                                                                day.day === 25 ? "/images/assets/day25.webp?v=2" :
-                                                                  day.day === 28 ? "/images/assets/daily.webp" :
-                                                                    day.day === 31 ? "/images/assets/daily.webp" :
-                                                                      (day.day === 32 && isAdmin) ? "/images/assets/day3.webp" :
-
-                                                                "/images/assets/soon.webp"
+                                                            (day.day === 21 && day.isAvailable) ? "/images/assets/day21.webp" :
+                                                            (day.day === 22 && day.isAvailable) ? "/images/assets/day22.webp" :
+                                                            (day.day === 23 && day.isAvailable) ? "/images/assets/day23.webp" :
+                                                            (day.day === 24 && day.isAvailable) ? "/images/assets/day24.webp?v=3" :
+                                                            (day.day === 25 && day.isAvailable) ? "/images/assets/day25.webp" :
+                                                            (day.day === 26 && day.isAvailable) ? "/images/assets/day26.webp" :
+                                                            (day.day === 27 && day.isAvailable) ? "/images/assets/day27.webp" :
+                                                            (day.day === 28 && day.isAvailable) ? "/images/assets/day28.webp" :
+                                                            (day.day === 29 && day.isAvailable) ? "/images/assets/day29.webp" :
+                                                            (day.day === 30 && day.isAvailable) ? "/images/assets/day30.webp" :
+                                                            (day.day === 31 && day.isAvailable) ? "/images/assets/day31.webp" :                                                            
+                                                              "/images/assets/soon.webp"
                       }
                       alt={`Día ${day.day}`}
                       fill
