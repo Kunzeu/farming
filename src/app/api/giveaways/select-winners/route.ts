@@ -121,17 +121,18 @@ export async function POST(request: NextRequest) {
     participants.forEach(p => {
       let weight = FREE_USER_WEIGHT; // Probabilidad base para usuarios free
       
+      // Verificar si es patreon activo con tier válido
       if (p.patreon_status === 'active_patron' && p.patreon_tier) {
-        const tier = p.patreon_tier.trim().toLowerCase();
+        const tier = String(p.patreon_tier).trim().toLowerCase();
         if (TIER_WEIGHTS[tier]) {
           weight = TIER_WEIGHTS[tier];
         }
       }
 
-      // Calcular número de "tickets" totales
-      const totalEntries = Math.round(weight);
+      // Calcular número de "tickets" totales (mínimo 1)
+      const totalEntries = Math.max(1, Math.round(weight));
 
-      // Add participant to the pool multiple times
+      // Add participant to the pool multiple times según su peso
       for (let k = 0; k < totalEntries; k++) {
         weightedPool.push(p);
       }
@@ -194,7 +195,7 @@ export async function POST(request: NextRequest) {
           'gem': 'https://wiki.guildwars2.com/images/8/88/Gem_%28highres%29.png',
           'package': 'https://wiki.guildwars2.com/images/5/5e/Daily_Achievement_Chest.png',
           'materials': 'https://wiki.guildwars2.com/images/7/75/Trophy_case.png',
-          'gold': 'https://wiki.guildwars2.com/images/d/d1/Coin_gold.png'
+          'gold': '/images/expansions/Gold.webp'
         };
         itemIcon = FALLBACK_ICONS[prize.icon] || FALLBACK_ICONS['package'];
       }

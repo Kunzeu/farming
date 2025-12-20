@@ -66,7 +66,7 @@ export default function SupportPage() {
                 adFree: true,
                 lottery: true,
                 luck: '2x',
-                discordColor: '#2ecc71',
+                discordColor: '#ffa467',
             }
         },
         {
@@ -83,7 +83,7 @@ export default function SupportPage() {
                 adFree: true,
                 lottery: true,
                 luck: '3x',
-                discordColor: '#e74c3c',
+                discordColor: '#ace5ff',
             }
         },
         {
@@ -117,7 +117,7 @@ export default function SupportPage() {
                 adFree: true,
                 lottery: true,
                 luck: '5x',
-                discordColor: '#71368a',
+                discordColor: '#9329c0',
             }
         }
     ];
