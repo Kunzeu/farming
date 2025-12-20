@@ -46,7 +46,7 @@ export default function AdventCalendar({
   const [adventDays, setAdventDays] = useState<AdventDay[]>([]);
   const [participatedDays, setParticipatedDays] = useState<Set<string>>(new Set());
   const [hasApiKey, setHasApiKey] = useState(false);
-  const [apiKeyValid, setApiKeyValid] = useState(false);
+  const [apiKeyValid, setApiKeyValid] = useState<boolean | null>(null);
   const [accountInfo, setAccountInfo] = useState<{ id: string; name: string } | null>(null);
   const [isParticipating, setIsParticipating] = useState(false);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
@@ -403,7 +403,8 @@ export default function AdventCalendar({
           if (timeDiff < API_KEY_DURATION) {
             const data = JSON.parse(cachedData);
             setHasApiKey(Boolean(data.hasApiKey));
-            setApiKeyValid(Boolean(data.apiKeyValid));
+            // Manejar null correctamente: null significa "no verificado", no "inválido"
+            setApiKeyValid(data.apiKeyValid === null ? null : Boolean(data.apiKeyValid));
             setAccountInfo(data.accountInfo || null);
             setIsLoadingApiKey(false);
             return;
@@ -417,7 +418,9 @@ export default function AdventCalendar({
         if (response.ok) {
           const data = await response.json();
           setHasApiKey(Boolean(data.hasApiKey));
-          setApiKeyValid(Boolean(data.apiKeyValid));
+          // Manejar null correctamente: null significa "no verificado", no "inválido"
+          // Solo considerar false si explícitamente es false, no si es null
+          setApiKeyValid(data.apiKeyValid === null ? null : Boolean(data.apiKeyValid));
           setAccountInfo(data.accountInfo || null);
           
           // Guardar en cache local
@@ -425,7 +428,7 @@ export default function AdventCalendar({
           localStorage.setItem(API_KEY_CACHE_TIME, now.toString());
         } else {
           setHasApiKey(false);
-          setApiKeyValid(false);
+          setApiKeyValid(null); // No sabemos si es válida o no
         }
       } catch (error: unknown) {
         if (error instanceof Error && error.name === 'AbortError') return;
@@ -519,10 +522,13 @@ export default function AdventCalendar({
       return;
     }
 
-    if (!hasApiKey || !apiKeyValid) {
+    if (!hasApiKey || apiKeyValid === false) {
       window.location.href = "/profile";
       return;
     }
+    
+    // Si apiKeyValid es null (aún no verificado), permitir intentar participar
+    // El backend validará la API key al procesar la participación
 
     if (!accountInfo) {
       alert("Información de cuenta no disponible. Por favor intenta de nuevo.");
@@ -900,7 +906,7 @@ export default function AdventCalendar({
                           <div className="inline-flex items-center justify-center gap-2 bg-gray-600 text-gray-300 font-semibold py-2 rounded-lg w-full">
                             {t("holidayCalendar.loading", "Cargando...")}
                           </div>
-                        ) : !hasApiKey || !apiKeyValid ? (
+                        ) : !hasApiKey || apiKeyValid === false ? (
                           <Link
                             href="/profile"
                             className="inline-flex items-center justify-center gap-2 bg-yellow-600 hover:bg-yellow-700 text-white font-semibold text-2xl py-3.5 rounded-lg transition-colors w-full"

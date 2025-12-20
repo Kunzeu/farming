@@ -52,7 +52,7 @@ export async function GET(
     const hasApiKey = Boolean(gw2ApiKey && gw2ApiKey.length > 0);
 
     // 2) Validar API key si existe (tokeninfo + account)
-    let apiKeyValid = false;
+    let apiKeyValid: boolean | null = null;
     let accountInfo: { id: string; name: string } | null = null;
 
     if (hasApiKey && gw2ApiKey) {
@@ -74,6 +74,8 @@ export async function GET(
           fetch(`https://api.guildwars2.com/v2/tokeninfo?access_token=${gw2ApiKey}`),
           fetch(`https://api.guildwars2.com/v2/account?access_token=${gw2ApiKey}`),
         ]);
+        
+        // Verificar si ambas respuestas son exitosas
         if (tokenRes.ok && accountRes.ok) {
           const acct = await accountRes.json();
           apiKeyValid = true;
@@ -83,12 +85,25 @@ export async function GET(
             data: { hasApiKey, apiKeyValid, accountInfo, role, isActive, lastValidatedAt: nowTs },
             expiry: nowTs + SUMMARY_TTL_MS,
           });
+        } else {
+          // Si alguna respuesta no es ok, la API key es inválida
+          apiKeyValid = false;
+          // Guardar en cache para evitar verificaciones repetidas
+          summaryCache.set(id, {
+            data: { hasApiKey, apiKeyValid, accountInfo: null, role, isActive, lastValidatedAt: nowTs },
+            expiry: nowTs + SUMMARY_TTL_MS,
+          });
         }
-      } catch {
+      } catch (error) {
         // En caso de error de red, mantener estado anterior si existe para no flapping
         const prev = summaryCache.get(id);
-        apiKeyValid = prev?.data.apiKeyValid ?? false;
-        accountInfo = prev?.data.accountInfo ?? null;
+        if (prev) {
+          apiKeyValid = prev.data.apiKeyValid;
+          accountInfo = prev.data.accountInfo;
+        } else {
+          // Si no hay cache previo y hay error de red, devolver null (no se pudo verificar)
+          apiKeyValid = null;
+        }
       }
     }
 
