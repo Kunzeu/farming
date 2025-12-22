@@ -47,10 +47,21 @@ export async function POST(request: NextRequest) {
       if (isCron || isManualOverride || (authResult.isAuthorized && authResult.user?.role === 'admin')) {
         // Si no se pasaron IDs y es Cron/Admin, obtenemos los activos por defecto
         // Esto permite que el Cron simplemente llame al endpoint sin body
-        const { updateGiveawayStatuses } = await import('@/config/giveaways');
-        const activeGiveaways = updateGiveawayStatuses().filter((g) => g.status === 'active');
+        const { getAllGiveawaysWithAdvent } = await import('@/config/giveaways');
+        const allGiveaways = getAllGiveawaysWithAdvent(2025);
+        const now = new Date();
+
+        // Filtrar sorteos que están activos basándose en las fechas
+        const activeGiveaways = allGiveaways.filter((g) => {
+          const start = new Date(g.startDate);
+          const end = new Date(g.endDate);
+          return now >= start && now <= end;
+        });
+
         // Solo procedemos si no se proporcionaron IDs explícitos
         giveawayIds = activeGiveaways.map(g => g.id);
+
+        console.log(`[Auto-Enroll] Found ${activeGiveaways.length} active giveaways:`, giveawayIds);
       } else {
         return NextResponse.json(
           { error: 'giveawayIds array is required or admin access needed' },
@@ -82,13 +93,25 @@ export async function POST(request: NextRequest) {
 
     const result = await autoEnrollPatrons({ giveawayIds, userId });
 
+    console.log('[Auto-Enroll] Result:', {
+      processedUsers: result.processedUsers,
+      inserted: result.inserted,
+      skipped: result.skipped,
+      giveawayIds,
+      message: result.message
+    });
+
     return NextResponse.json({
       success: true,
       processedUsers: result.processedUsers,
       inserted: result.inserted,
       skipped: result.skipped,
       perUser: result.perUser,
-      message: result.message
+      message: result.message || `Processed ${result.processedUsers} users for ${giveawayIds.length} giveaways`,
+      debug: {
+        giveawayIdsProvided: giveawayIds,
+        totalGiveaways: giveawayIds.length
+      }
     });
   } catch (error) {
     console.error('Error auto-enrolling Patreons:', error);

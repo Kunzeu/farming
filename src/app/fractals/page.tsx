@@ -1145,9 +1145,9 @@ export default function FarmingTrackerPage() {
            </div>
          </div>
  
-                  {/* Content based on active section */}
+          {/* Content based on active section */}
          
-                   {/* Initiate Section (T1) */}
+          {/* Initiate Section (T1) */}
          {activeSection === 'T1' && (
            <>
              <div id="T1" className="invisible absolute -top-20"></div>

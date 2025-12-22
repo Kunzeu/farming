@@ -158,11 +158,13 @@ export async function autoEnrollPatrons(options: { giveawayIds: string[]; userId
     users = userResult.rows;
   } else {
     users = await getActivePatrons();
+    console.log(`[Auto-Enroll] Found ${users.length} active patrons in database`);
     if (users.length === 0) return { processedUsers: 0, inserted: [], skipped: [], perUser: [], message: 'No active patrons found' };
   }
 
   // 2. Filtrar usuarios que califican (status, tier, api key)
   const qualifiedUsers = users.filter(qualifiesForGiveaway);
+  console.log(`[Auto-Enroll] ${qualifiedUsers.length} out of ${users.length} users qualify for giveaways`);
 
   // 3. Obtener sorteos válidos y abiertos
   const allGiveaways = getAllGiveawaysWithAdvent(2025);
@@ -175,6 +177,8 @@ export async function autoEnrollPatrons(options: { giveawayIds: string[]; userId
     const end = new Date(g.endDate);
     return now >= start && now <= end;
   });
+
+  console.log(`[Auto-Enroll] ${validGiveaways.length} out of ${giveawayIds.length} giveaways are valid and open`);
 
   if (validGiveaways.length === 0) {
     return { processedUsers: qualifiedUsers.length, inserted: [], skipped: giveawayIds, perUser: [], message: 'No valid/active giveaways found' };
