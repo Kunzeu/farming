@@ -258,7 +258,7 @@ export function generateAdventGiveaways(year: number = 2025): Giveaway[] {
         { position: 4, prize: '400', icon: 'gem', quantity: 400, gemPrize: true }, // Gems
       ],
       22: [
-        { position: 1, prize: '250', icon: 'package', itemId: 24325, quantity: 250 }, // Glob of Ectoplasm
+        { position: 1, prize: '250', icon: 'package', itemId: 19721, quantity: 250 }, // Glob of Ectoplasm
         { position: 2, prize: '100', icon: 'materials', itemId: 24340, quantity: 100 }, // Corrupted Lodestone
         { position: 3, prize: '1', icon: 'package', itemId: 97535, quantity: 1 }, // Scavenger Protocol: Magic Trophies
       ],
@@ -305,7 +305,7 @@ export function generateAdventGiveaways(year: number = 2025): Giveaway[] {
         { position: 3, prize: '1', icon: 'package', itemId: 89070, quantity: 1 }, // Polysaturating Reverberating Infusion (Purple)
       ],
       31: [
-        { position: 1, prize: '1', icon: 'package', itemId:  81918, quantity: 1 }, // Liquid Aurillium Infusion
+        { position: 1, prize: '1', icon: 'package', itemId: 81918, quantity: 1 }, // Liquid Aurillium Infusion
         { position: 2, prize: '250', icon: 'gold', quantity: 250, gemPrize: true }, // Gold
         { position: 3, prize: '250', icon: 'gold', quantity: 250, gemPrize: true }, // Gold
         { position: 4, prize: '1200', icon: 'gem', quantity: 1200, gemPrize: true }, // Gems
