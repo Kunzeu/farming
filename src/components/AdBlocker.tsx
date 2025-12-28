@@ -49,18 +49,18 @@ export default function AdBlocker() {
         if (adScript) {
           adScript.remove();
         }
-        
+
         // Limpiar el objeto global de AdSense
         if (window.adsbygoogle) {
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           delete (window as any).adsbygoogle;
         }
-        
+
         // Bloquear todos los contenedores de anuncios
         const adContainers = document.querySelectorAll(
-          '.adsbygoogle, [data-ad-client], [data-ad-slot], ins.adsbygoogle, iframe[src*="googlesyndication"], iframe[src*="doubleclick"], iframe[src*="googleads"], div[id*="google_ads"]'
+          '.adsbygoogle, [data-ad-client], [data-ad-slot], ins.adsbygoogle, iframe[src*="googlesyndication"], iframe[src*="doubleclick"], iframe[src*="googleads"], div[id*="google_ads"], .google-auto-placed, .apb-container'
         );
-        
+
         adContainers.forEach((ad) => {
           const element = ad as HTMLElement;
           // Eliminar el elemento completamente si es posible
@@ -90,7 +90,7 @@ export default function AdBlocker() {
             element.style.position = 'absolute';
             element.style.left = '-9999px';
           }
-          
+
           // Prevenir clics en todos los hijos
           const children = element.querySelectorAll('*');
           children.forEach((child) => {
@@ -104,6 +104,30 @@ export default function AdBlocker() {
             };
           });
         });
+
+        // Bloqueo específico por contenido de texto para "Ad Intents" fallidos
+        try {
+          const textToFind = "We couldn't find results for";
+          const xpath = `//*[contains(text(), "${textToFind}")]`;
+          const matchingElements = document.evaluate(xpath, document, null, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
+
+          for (let i = 0; i < matchingElements.snapshotLength; i++) {
+            const element = matchingElements.snapshotItem(i) as HTMLElement;
+            if (element) {
+              element.style.display = 'none';
+              element.style.setProperty('display', 'none', 'important');
+
+              // Intentar ocultar el contenedor padre si parece ser un wrapper del anuncio
+              const parent = element.parentElement;
+              if (parent && (parent.tagName === 'DIV' || parent.tagName === 'INS')) {
+                parent.style.display = 'none';
+                parent.style.setProperty('display', 'none', 'important');
+              }
+            }
+          }
+        } catch (e) {
+          // Ignorar errores de XPath
+        }
       };
 
       // Ejecutar inmediatamente
@@ -126,7 +150,7 @@ export default function AdBlocker() {
         const blockedAd = target.closest(
           '.adsbygoogle, [data-ad-client], [data-ad-slot]'
         ) as HTMLElement;
-        
+
         if (blockedAd && blockedAd.style.display === 'none') {
           e.preventDefault();
           e.stopPropagation();
