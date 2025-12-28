@@ -96,7 +96,7 @@ export default function AdventCalendar({
       try {
         const CONFIG_CACHE_KEY = 'giveaways_config_cache_v1';
         const CONFIG_CACHE_TIME = 'giveaways_config_time';
-        const CACHE_DURATION = 1800000; // 30 minutos
+        const CACHE_DURATION = 300000; // 5 minutos
 
         const cachedData = localStorage.getItem(CONFIG_CACHE_KEY);
         const cachedTime = localStorage.getItem(CONFIG_CACHE_TIME);
@@ -156,7 +156,7 @@ export default function AdventCalendar({
         // Cache local más largo (20 min) alineado con intervalo para reducir invocations
         const COUNTS_CACHE_KEY = 'giveaways_counts_cache';
         const COUNTS_CACHE_TIME = 'giveaways_counts_time';
-        const COUNTS_DURATION = 1200000; // 20 minutos (reducido para Vercel limits)
+        const COUNTS_DURATION = 60000; // 1 minuto
 
         const cachedData = localStorage.getItem(COUNTS_CACHE_KEY);
         const cachedTime = localStorage.getItem(COUNTS_CACHE_TIME);
@@ -219,7 +219,7 @@ export default function AdventCalendar({
     });
 
     // Intervalo para counts (20 minutos) - Optimizado para reducir invocations en Vercel
-    const interval = setInterval(loadGiveawaysCounts, 1200000); // 20 minutos
+    const interval = setInterval(loadGiveawaysCounts, 60000); // 1 minuto
 
     // Re-fetch al volver a la pestaña
     const handleVisibilityChange = () => {
@@ -243,7 +243,7 @@ export default function AdventCalendar({
         // Cache local para winners (5 minutos)
         const WINNERS_CACHE_KEY = 'giveaways_winners_cache';
         const WINNERS_CACHE_TIME = 'giveaways_winners_time';
-        const WINNERS_DURATION = 300000; // 5 minutos
+        const WINNERS_DURATION = 60000; // 1 minuto
 
         const cachedData = localStorage.getItem(WINNERS_CACHE_KEY);
         const cachedTime = localStorage.getItem(WINNERS_CACHE_TIME);
@@ -392,7 +392,7 @@ export default function AdventCalendar({
         // Cache local para API key check (5 minutos)
         const API_KEY_CACHE_KEY = `api_key_check_${user.id}`;
         const API_KEY_CACHE_TIME = `api_key_check_time_${user.id}`;
-        const API_KEY_DURATION = 300000; // 5 minutos
+        const API_KEY_DURATION = 60000; // 1 minuto
 
         const cachedData = localStorage.getItem(API_KEY_CACHE_KEY);
         const cachedTime = localStorage.getItem(API_KEY_CACHE_TIME);
@@ -422,7 +422,7 @@ export default function AdventCalendar({
           // Solo considerar false si explícitamente es false, no si es null
           setApiKeyValid(data.apiKeyValid === null ? null : Boolean(data.apiKeyValid));
           setAccountInfo(data.accountInfo || null);
-          
+
           // Guardar en cache local
           localStorage.setItem(API_KEY_CACHE_KEY, JSON.stringify(data));
           localStorage.setItem(API_KEY_CACHE_TIME, now.toString());
@@ -460,7 +460,7 @@ export default function AdventCalendar({
 
       if (cached && cacheTime) {
         const timeDiff = Date.now() - parseInt(cacheTime);
-        if (timeDiff < 300000) { // 5 minutes cache (aumentado de 90s)
+        if (timeDiff < 60000) { // 1 minute cache
           const cachedArray = JSON.parse(cached) as string[];
           const participatedSet = new Set<string>(cachedArray);
           setParticipatedDays(participatedSet);
@@ -526,7 +526,7 @@ export default function AdventCalendar({
       window.location.href = "/profile";
       return;
     }
-    
+
     // Si apiKeyValid es null (aún no verificado), permitir intentar participar
     // El backend validará la API key al procesar la participación
 
@@ -693,11 +693,11 @@ export default function AdventCalendar({
           gemPrize: winner.gem_prize || false
         });
       });
-      
+
       // Actualizar winners localmente y cache
       setWinners(prev => {
         const updatedWinners = { ...prev, ...winnersMap };
-        
+
         // Actualizar cache local de winners
         const WINNERS_CACHE_KEY = 'giveaways_winners_cache';
         const WINNERS_CACHE_TIME = 'giveaways_winners_time';
@@ -712,10 +712,10 @@ export default function AdventCalendar({
         );
         localStorage.setItem(WINNERS_CACHE_KEY, JSON.stringify({ winners: winnersArray }));
         localStorage.setItem(WINNERS_CACHE_TIME, Date.now().toString());
-        
+
         return updatedWinners;
       });
-      
+
       // Actualizar estado del sorteo localmente
       setGiveaways(prev => {
         const newState = { ...prev };
@@ -845,22 +845,22 @@ export default function AdventCalendar({
                                                   day.day === 14 && day.isAvailable ? "/images/assets/day14.webp" :
                                                     day.day === 15 && day.isAvailable ? "/images/assets/day15.webp" :
                                                       day.day === 16 && day.isAvailable ? "/images/assets/day16.webp" :
-                                                      (day.day === 17 && day.isAvailable) ? "/images/assets/day17.webp" :
-                                                        (day.day === 18 && day.isAvailable) ? "/images/assets/day18.webp" :
-                                                          (day.day === 19 && day.isAvailable) ? "/images/assets/day19.webp" :
-                                                            (day.day === 20 && day.isAvailable) ? "/images/assets/day20.webp" :
-                                                            (day.day === 21 && day.isAvailable) ? "/images/assets/day21.webp" :
-                                                            (day.day === 22 && day.isAvailable) ? "/images/assets/day22.webp" :
-                                                            (day.day === 23 && day.isAvailable) ? "/images/assets/day23.webp" :
-                                                            (day.day === 24 && day.isAvailable) ? "/images/assets/day24.webp?v=3" :
-                                                            (day.day === 25 && day.isAvailable) ? "/images/assets/day25.webp" :
-                                                            (day.day === 26 && day.isAvailable) ? "/images/assets/day26.webp" :
-                                                            (day.day === 27 && day.isAvailable) ? "/images/assets/day27.webp" :
-                                                            (day.day === 28 && day.isAvailable) ? "/images/assets/day28.webp" :
-                                                            (day.day === 29 && day.isAvailable) ? "/images/assets/day29.webp" :
-                                                            (day.day === 30 && day.isAvailable) ? "/images/assets/day30.webp" :
-                                                            (day.day === 31 && day.isAvailable) ? "/images/assets/day31.webp" :                                                            
-                                                              "/images/assets/soon.webp"
+                                                        (day.day === 17 && day.isAvailable) ? "/images/assets/day17.webp" :
+                                                          (day.day === 18 && day.isAvailable) ? "/images/assets/day18.webp" :
+                                                            (day.day === 19 && day.isAvailable) ? "/images/assets/day19.webp" :
+                                                              (day.day === 20 && day.isAvailable) ? "/images/assets/day20.webp" :
+                                                                (day.day === 21 && day.isAvailable) ? "/images/assets/day21.webp" :
+                                                                  (day.day === 22 && day.isAvailable) ? "/images/assets/day22.webp" :
+                                                                    (day.day === 23 && day.isAvailable) ? "/images/assets/day23.webp" :
+                                                                      (day.day === 24 && day.isAvailable) ? "/images/assets/day24.webp?v=3" :
+                                                                        (day.day === 25 && day.isAvailable) ? "/images/assets/day25.webp" :
+                                                                          (day.day === 26 && day.isAvailable) ? "/images/assets/day26.webp" :
+                                                                            (day.day === 27 && day.isAvailable) ? "/images/assets/day27.webp" :
+                                                                              (day.day === 28 && day.isAvailable) ? "/images/assets/day28.webp" :
+                                                                                (day.day === 29 && day.isAvailable) ? "/images/assets/day29.webp" :
+                                                                                  (day.day === 30 && day.isAvailable) ? "/images/assets/day30.webp" :
+                                                                                    (day.day === 31 && day.isAvailable) ? "/images/assets/day31.webp" :
+                                                                                      "/images/assets/soon.webp"
                       }
                       alt={`Día ${day.day}`}
                       fill

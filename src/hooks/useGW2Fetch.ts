@@ -17,7 +17,7 @@ export function useGW2Fetch<T>(url: string | null, dependencies: unknown[] = [])
         headers: {
           'Accept': 'application/json',
           'Accept-Encoding': 'gzip, deflate, br',
-          'Cache-Control': 'public, max-age=300'
+          'Cache-Control': 'public, max-age=60'
         }
       });
 
@@ -43,18 +43,18 @@ export function useGW2Fetch<T>(url: string | null, dependencies: unknown[] = [])
 
 // Hook específico para items de GW2
 export function useGW2Items(itemIds: number[], language: string = 'en') {
-  const url = itemIds.length > 0 
+  const url = itemIds.length > 0
     ? `https://api.guildwars2.com/v2/items?ids=${itemIds.join(',')}&lang=${language}`
     : null;
-  
-  return useGW2Fetch<{id: number, name: string, icon: string}[]>(url, [itemIds, language]);
+
+  return useGW2Fetch<{ id: number, name: string, icon: string }[]>(url, [itemIds, language]);
 }
 
 // Hook específico para precios de GW2
 export function useGW2Prices(itemIds: number[]) {
-  const url = itemIds.length > 0 
+  const url = itemIds.length > 0
     ? `https://api.guildwars2.com/v2/commerce/prices?ids=${itemIds.join(',')}`
     : null;
-  
-  return useGW2Fetch<{id: number, buys?: {unit_price: number}, sells?: {unit_price: number}}[]>(url, [itemIds]);
+
+  return useGW2Fetch<{ id: number, buys?: { unit_price: number }, sells?: { unit_price: number } }[]>(url, [itemIds]);
 }

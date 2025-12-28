@@ -449,7 +449,7 @@ export async function getItemInfo(itemId: number, lang: string = 'en'): Promise<
 
       // Obtener el nombre desde la API con caching
       const response = await fetch(`https://api.guildwars2.com/v2/items/${itemId}?lang=${gw2Lang}`, {
-        next: { revalidate: 86400 } // Cache for 24 hours
+        next: { revalidate: 3600 } // Cache for 1 hour
       });
       if (response.ok) {
         const item = await response.json();
@@ -472,7 +472,7 @@ export async function getItemInfo(itemId: number, lang: string = 'en'): Promise<
 
     // Hacer la petición con el parámetro de idioma y caching
     const response = await fetch(`https://api.guildwars2.com/v2/items/${itemId}?lang=${gw2Lang}`, {
-      next: { revalidate: 86400 } // Cache for 24 hours
+      next: { revalidate: 3600 } // Cache for 1 hour
     });
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);

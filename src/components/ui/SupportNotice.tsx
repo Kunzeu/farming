@@ -138,7 +138,7 @@ export default function SupportNotice() {
             }
         };
 
-        const timer = setTimeout(detectAdBlocker, 2000);
+        const timer = setTimeout(detectAdBlocker, 1000);
         return () => clearTimeout(timer);
     }, [user]);
 

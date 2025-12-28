@@ -216,7 +216,7 @@ export default function RootLayout({
             // Bloquear contenido no deseado relacionado con gold selling
             function blockUnwantedContent() {
               // Buscar y ocultar elementos que contengan texto no deseado
-              const unwantedTerms = ['gold selling', 'GW2 gold', 'buy gold', 'sell gold', 'RMT'];
+              const unwantedTerms = ['gold selling', 'GW2 gold', 'buy gold', 'sell gold', 'RMT', 'vpn', 'premium vpn'];
               
               unwantedTerms.forEach(term => {
                 const elements = document.querySelectorAll('*');
@@ -235,108 +235,79 @@ export default function RootLayout({
               });
             }
             
-            // Bloquear el widget "Discover more" de AdSense y contenido no deseado
-            function blockDiscoverMore() {
-              // Términos específicos del widget "Discover more" y contenido no deseado
-              const discoverMoreTerms = ['discover more', 'gift cards for games', 'ergonomic gaming mouse'];
-              
-              // Términos de contenido no deseado que deben bloquearse SIEMPRE (no solo discover widgets)
-              const unwantedAdTerms = ['gaming keyboard', 'keyboard', 'mechanical keyboard', "we couldn't find results", "couldn't find results", 'no results found', "we couldn't find results for", "couldn't find results for", 'external hard drive', 'hard drive', 'external drive', 'usb drive', 'game giveaways', 'giveaways', 'free games', 'win games', 'game prizes'];
-              
-              // Función para verificar si un elemento contiene términos no deseados
-              function hasUnwantedContent(element) {
-                const text = (element.textContent || '').toLowerCase();
-                const title = (element.title || '').toLowerCase();
-                const href = (element.href || '').toLowerCase();
-                const alt = (element.alt || '').toLowerCase();
-                const allText = text + ' ' + title + ' ' + href + ' ' + alt;
-                return unwantedAdTerms.some(term => allText.includes(term.toLowerCase()));
-              }
-              
-              // Solo buscar dentro de elementos de AdSense específicos
-              const adSenseContainers = document.querySelectorAll('.adsbygoogle, [data-ad-client], [data-ad-slot], ins.adsbygoogle');
-              
-              adSenseContainers.forEach(adContainer => {
-                // Buscar solo dentro de este contenedor de anuncio
-                const elements = adContainer.querySelectorAll('*');
-                const containerText = (adContainer.textContent || '').toLowerCase();
+            // Bloquear formatos de anuncios molestos (Ad Intents, Related Search, Widgets de texto)
+            function blockAnnoyingAdFormats() {
+              // Términos "basura" típicos en widgets de búsqueda y enlaces de texto
+              // Estos términos cubren la mayoría de los anuncios de bajo valor/spam
+              const spamTerms = [
+                // Navegación/Sistema
+                "couldn't find results", "no results found", "related search", "discover more", "related topics",
                 
-                // Verificar también en atributos href, title, alt, etc.
-                const hasUnwantedInContainer = hasUnwantedContent(adContainer);
+                // Tech/Software Spam
+                "vpn", "premium vpn", "browser", "extension", "download", "install", "update", "driver", 
+                "cleaner", "antivirus", "scan", "fix", "repair", "software", "tool",
                 
-                // Bloquear SIEMPRE si contiene términos no deseados (gaming keyboard, etc.)
-                if (hasUnwantedInContainer) {
-                  // Ocultar completamente este anuncio
-                  adContainer.style.display = 'none';
-                  adContainer.style.visibility = 'hidden';
-                  adContainer.style.height = '0';
-                  adContainer.style.width = '0';
-                  adContainer.style.overflow = 'hidden';
-                  adContainer.style.opacity = '0';
-                  adContainer.style.pointerEvents = 'none';
-                  
-                  // Prevenir clics en todos los elementos hijos
-                  elements.forEach(el => {
-                    el.style.pointerEvents = 'none';
-                    el.style.cursor = 'default';
-                    el.onclick = function(e) { e.preventDefault(); e.stopPropagation(); return false; };
-                    el.addEventListener('click', function(e) { e.preventDefault(); e.stopPropagation(); return false; }, true);
-                  });
-                  
-                  return;
-                }
+                // Financiero/Servicios (High CPC spam)
+                "insurance", "loan", "credit", "mortgage", "attorney", "lawyer", "donate", "degree", 
+                "hosting", "trading", "crypto", "bitcoin", "forex", "invest", "claim", "settlement",
+                "transfer", "recovery", "refinance",
                 
-                // Verificar si el contenedor o sus hijos contienen los términos de discover
-                const hasDiscoverMore = discoverMoreTerms.some(term => containerText.includes(term.toLowerCase()));
+                // Otros
+                "gift card", "prize", "winner", "giveaway", "sweepstakes", "dating", "meet", "singles"
+              ];
+              
+              const annoyingSelectors = [
+                '.adsbygoogle', 
+                '[data-ad-client]', 
+                '[data-ad-slot]', 
+                '.google-auto-placed',
+                'iframe[src*="googlesyndication"]',
+                'iframe[src*="googleads"]'
+              ];
+              
+              // 1. Verificar contenido de texto en contenedores de anuncios
+              const adContainers = document.querySelectorAll(annoyingSelectors.join(', '));
+              
+              adContainers.forEach(container => {
+                // Si ya está oculto, ignorar
+                if (container.style.display === 'none') return;
                 
-                if (hasDiscoverMore) {
-                  // Verificar si es realmente un widget "Discover more" (no un anuncio normal)
-                  // Los widgets "Discover more" suelen tener estas características:
-                  const isDiscoverWidget = adContainer.querySelector('[class*="discover"]') ||
-                                          adContainer.querySelector('[id*="discover"]') ||
-                                          adContainer.closest('[class*="discover"]') ||
-                                          containerText.includes('discover more') ||
-                                          adContainer.querySelector('iframe[src*="discover"]') ||
-                                          adContainer.querySelector('iframe[src*="native"]');
-                  
-                  if (isDiscoverWidget) {
-                    // Ocultar solo este contenedor específico
-                    adContainer.style.display = 'none';
-                    adContainer.style.visibility = 'hidden';
-                    adContainer.style.height = '0';
-                    adContainer.style.width = '0';
-                    adContainer.style.overflow = 'hidden';
-                    adContainer.style.opacity = '0';
-                    adContainer.style.pointerEvents = 'none';
-                  }
+                const text = (container.textContent || '').toLowerCase();
+                const title = (container.title || '').toLowerCase();
+                
+                // Verificar si contiene términos de spam
+                const hasSpam = spamTerms.some(term => 
+                  text.includes(term.toLowerCase()) || title.includes(term.toLowerCase())
+                );
+                
+                // Verificar si es un widget de "Búsqueda" o "Enlaces" (suelen tener poco texto real y muchos keywords)
+                const isSearchWidget = text.includes('search') || text.includes('results') || text.includes('ads');
+                
+                if (hasSpam || (isSearchWidget && text.length < 100)) { // Widgets pequeños con texto de búsqueda
+                  container.style.display = 'none';
+                  container.style.visibility = 'hidden';
+                  container.style.height = '0';
+                  container.style.overflow = 'hidden';
+                  // console.log('Bloqueado anuncio molesto:', text.substring(0, 50));
                 }
               });
               
-              // Bloquear iframes de AdSense que contengan contenido no deseado
-              const adIframes = document.querySelectorAll('iframe[src*="googlesyndication"], iframe[src*="doubleclick"]');
-              adIframes.forEach(iframe => {
-                const iframeSrc = (iframe.src || '').toLowerCase();
-                const iframeId = (iframe.id || '').toLowerCase();
+              // 2. Lógica específica para "Auto Placed" (Anuncios insertados automáticamente en el texto)
+              // A veces Google inserta bloques de enlaces de texto que son muy molestos
+              const autoPlaced = document.querySelectorAll('.google-auto-placed');
+              autoPlaced.forEach(ad => {
+                const style = window.getComputedStyle(ad);
+                const height = parseFloat(style.height);
                 
-                // Verificar que esté dentro de un contenedor de AdSense
-                const adContainer = iframe.closest('.adsbygoogle, [data-ad-client], [data-ad-slot]');
-                if (adContainer) {
-                  // Bloquear si es discover widget o contiene términos no deseados
-                  const containerText = (adContainer.textContent || '').toLowerCase();
-                  const hasUnwanted = unwantedAdTerms.some(term => containerText.includes(term.toLowerCase()));
-                  const isDiscover = iframeSrc.includes('discover') || 
-                                    iframeSrc.includes('native') ||
-                                    iframeId.includes('discover');
-                  
-                  if (isDiscover || hasUnwanted) {
-                    iframe.style.display = 'none';
-                    iframe.style.visibility = 'hidden';
-                    iframe.style.height = '0';
-                    iframe.style.width = '0';
-                    iframe.style.overflow = 'hidden';
-                    iframe.style.opacity = '0';
-                    iframe.style.pointerEvents = 'none';
-                  }
+                // Si es muy bajito (barra de enlaces) o contiene palabras clave de spam
+                if (height > 0 && height < 100) {
+                    // Posible barra de "Ad Intent" o "Anchor"
+                    // Verificar si tiene pinta de texto spam
+                    const text = ad.textContent.toLowerCase();
+                    if (spamTerms.some(t => text.includes(t))) {
+                        ad.style.display = 'none !important';
+                        ad.style.setProperty('display', 'none', 'important');
+                    }
                 }
               });
             }
@@ -389,12 +360,12 @@ export default function RootLayout({
             
             // Ejecutar inmediatamente y periódicamente
             blockUnwantedContent();
-            blockDiscoverMore();
+            blockAnnoyingAdFormats();
             preventClicksOnBlockedAds();
             blockAdsInNavigation();
             setInterval(() => {
               blockUnwantedContent();
-              blockDiscoverMore();
+              blockAnnoyingAdFormats();
               preventClicksOnBlockedAds();
               blockAdsInNavigation();
             }, 2000);
@@ -402,7 +373,7 @@ export default function RootLayout({
             // También ejecutar cuando se cargan nuevos elementos
             const observer = new MutationObserver(() => {
               blockUnwantedContent();
-              blockDiscoverMore();
+              blockAnnoyingAdFormats();
               preventClicksOnBlockedAds();
               blockAdsInNavigation();
             });
