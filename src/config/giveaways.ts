@@ -249,7 +249,7 @@ export function generateAdventGiveaways(year: number = 2025): Giveaway[] {
       20: [
         { position: 1, prize: '100', icon: 'materials', itemId: 24325, quantity: 100 }, // Destroyer Lodestone
         { position: 2, prize: '1', icon: 'materials', itemId: 102013, quantity: 1 }, // Chromatic Assassin Spear Skin
-        { position: 3, prize: '1', icon: 'package', itemId: 95814, quantity: 1 }, // Dragon's Flight
+        { position: 3, prize: '1', icon: 'package', itemId: 95834, quantity: 1 }, // Dragon's Flight
       ],
       21: [
         { position: 1, prize: '1', icon: 'package', itemId: 96652, quantity: 1 }, // Aurene's Insight
