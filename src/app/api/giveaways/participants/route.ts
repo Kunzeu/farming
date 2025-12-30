@@ -77,9 +77,9 @@ export async function GET(request: NextRequest) {
       {
         headers: {
           // Cache privado por 5 minutos. El cliente debe invalidar si hace una acción.
-          'Cache-Control': 'private, max-age=300, stale-while-revalidate=60',
-          'Pragma': 'cache',
-          'Expires': new Date(Date.now() + 300000).toUTCString(),
+          'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
+          'Pragma': 'no-cache',
+          'Expires': '0',
         },
       }
     );

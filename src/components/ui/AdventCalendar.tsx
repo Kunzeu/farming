@@ -454,25 +454,27 @@ export default function AdventCalendar({
         return;
       }
 
-      const cacheKey = `participated_${user.id}`;
-      const cached = localStorage.getItem(cacheKey);
-      const cacheTime = localStorage.getItem(`${cacheKey}_time`);
+      // Removed local caching to ensure fresh data
+      // const cacheKey = `participated_${user.id}`;
+      // const cached = localStorage.getItem(cacheKey);
+      // const cacheTime = localStorage.getItem(`${cacheKey}_time`);
 
-      if (cached && cacheTime) {
-        const timeDiff = Date.now() - parseInt(cacheTime);
-        if (timeDiff < 60000) { // 1 minute cache
-          const cachedArray = JSON.parse(cached) as string[];
-          const participatedSet = new Set<string>(cachedArray);
-          setParticipatedDays(participatedSet);
-          setIsLoadingParticipations(false);
-          return;
-        }
-      }
+      // if (cached && cacheTime) {
+      //   const timeDiff = Date.now() - parseInt(cacheTime);
+      //   if (timeDiff < 60000) { // 1 minute cache
+      //     const cachedArray = JSON.parse(cached) as string[];
+      //     const participatedSet = new Set<string>(cachedArray);
+      //     setParticipatedDays(participatedSet);
+      //     setIsLoadingParticipations(false);
+      //     return;
+      //   }
+      // }
 
       try {
         // Permitir cache del navegador en lugar de forzar no-cache
         const response = await fetch(`/api/giveaways/participants?userId=${user.id}`, {
           signal: controller.signal,
+          cache: 'no-store'
         });
         if (response.ok) {
           const data = await response.json();
@@ -480,11 +482,11 @@ export default function AdventCalendar({
             data.participants.map((p: { giveawayId: string }) => p.giveawayId)
           );
 
-          localStorage.setItem(
-            cacheKey,
-            JSON.stringify(Array.from(participatedSet))
-          );
-          localStorage.setItem(`${cacheKey}_time`, Date.now().toString());
+          // localStorage.setItem(
+          //   cacheKey,
+          //   JSON.stringify(Array.from(participatedSet))
+          // );
+          // localStorage.setItem(`${cacheKey}_time`, Date.now().toString());
 
           setParticipatedDays(participatedSet);
         } else {

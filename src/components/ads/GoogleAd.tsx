@@ -11,8 +11,8 @@ interface GoogleAdProps {
   className?: string;
 }
 
-export default function GoogleAd({ 
-  adSlot, 
+export default function GoogleAd({
+  adSlot,
   adFormat = 'auto',
   adStyle = { display: 'block' },
   className = ''
@@ -44,7 +44,7 @@ export default function GoogleAd({
       if (rect.width === 0) {
         let timeoutFired = false;
         let observerDisconnected = false;
-        
+
         // Esperar a que tenga ancho
         const ro = new ResizeObserver(() => {
           if (observerDisconnected || timeoutFired) return;
@@ -61,7 +61,7 @@ export default function GoogleAd({
           }
         });
         ro.observe(el);
-        
+
         // Timeout de seguridad: inicializar después de 2 segundos aunque no tenga ancho
         setTimeout(() => {
           if (!observerDisconnected) {
