@@ -306,8 +306,8 @@ export function generateAdventGiveaways(year: number = 2025): Giveaway[] {
       ],
       31: [
         { position: 1, prize: '1', icon: 'package', itemId: 81918, quantity: 1 }, // Liquid Aurillium Infusion
-        { position: 2, prize: '250', icon: 'gold', quantity: 250, gemPrize: true }, // Gold
-        { position: 3, prize: '250', icon: 'gold', quantity: 250, gemPrize: true }, // Gold
+        { position: 2, prize: '250', icon: 'gold', quantity: 250, gemPrize: false }, // Gold
+        { position: 3, prize: '250', icon: 'gold', quantity: 250, gemPrize: false }, // Gold
         { position: 4, prize: '1200', icon: 'gem', quantity: 1200, gemPrize: true }, // Gems
       ],
       32: [

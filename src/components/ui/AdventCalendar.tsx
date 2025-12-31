@@ -241,7 +241,7 @@ export default function AdventCalendar({
     const loadWinners = async () => {
       try {
         // Cache local para winners (5 minutos)
-        const WINNERS_CACHE_KEY = 'giveaways_winners_cache';
+        const WINNERS_CACHE_KEY = 'giveaways_winners_cache_v2';
         const WINNERS_CACHE_TIME = 'giveaways_winners_time';
         const WINNERS_DURATION = 60000; // 1 minuto
 
