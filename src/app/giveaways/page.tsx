@@ -99,7 +99,7 @@ const GiveawaysPage = () => {
   const [selectedGiveaway, setSelectedGiveaway] = useState<Giveaway | null>(
     null
   );
-  const [participantCount, setParticipantCount] = useState(0);
+
   const [hasApiKey, setHasApiKey] = useState(false);
   const [apiKeyValid, setApiKeyValid] = useState(false);
   const [accountInfo, setAccountInfo] = useState<AccountInfo | null>(null);
@@ -170,11 +170,37 @@ const GiveawaysPage = () => {
   const loadGiveaways = useCallback(async () => {
     try {
       setIsLoadingGiveaways(true);
-      const response = await fetch("/api/giveaways");
-      if (response.ok) {
-        const data = await response.json();
+
+      // Load config and counts in parallel
+      const [configResponse, countsResponse] = await Promise.all([
+        fetch("/api/giveaways"),
+        fetch("/api/giveaways/counts")
+      ]);
+
+      if (configResponse.ok) {
+        const configData = await configResponse.json();
+        let giveawaysData = configData.giveaways;
+
+        // If counts loaded successfully, merge them
+        if (countsResponse.ok) {
+          const countsData = await countsResponse.json();
+          const dynamicData = countsData.data || {};
+
+          giveawaysData = giveawaysData.map((g: Giveaway) => {
+            const dynamicD = dynamicData[g.id];
+            if (dynamicD) {
+              return {
+                ...g,
+                status: dynamicD.status || g.status,
+                participantCount: dynamicD.count || 0
+              };
+            }
+            return g;
+          });
+        }
+
         // Filtrar sorteos de adviento - no deben mostrarse en esta página
-        const filteredGiveaways = data.giveaways.filter((g: Giveaway) => !g.id.startsWith('advent-'));
+        const filteredGiveaways = giveawaysData.filter((g: Giveaway) => !g.id.startsWith('advent-'));
         setGiveaways(filteredGiveaways);
 
         // Prefetch solo sorteo activo y el siguiente
@@ -351,21 +377,7 @@ const GiveawaysPage = () => {
     }
   }, [user?.id, isAuthenticated, loadParticipatedGiveaways]);
 
-  // Update participant count based on actual participants
-  useEffect(() => {
-    setParticipantCount(participatedAccounts.size);
-  }, [participatedAccounts]);
 
-  // Update the active giveaway's participant count
-  useEffect(() => {
-    setGiveaways((prev) =>
-      prev.map((giveaway) =>
-        giveaway.status === "active"
-          ? { ...giveaway, participants: participantCount }
-          : giveaway
-      )
-    );
-  }, [participantCount]);
 
   const getPrizeIcon = (icon: string) => {
     switch (icon) {
