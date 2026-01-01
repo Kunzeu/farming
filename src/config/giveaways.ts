@@ -92,6 +92,40 @@ export const GIVEAWAYS: Giveaway[] = [
       'Prizes will be delivered within 48 hours'
     ],
     maxParticipants: undefined
+  },
+  {
+    id: 'january-2026',
+    slug: 'january-2026-gems',
+    title: 'giveaways.january2026.title',
+    description: 'giveaways.january2026.description',
+    startDate: '2026-01-01T00:00:00.000Z',
+    endDate: '2026-02-01T00:00:00.000Z',
+    status: 'active',
+    prizes: [
+      { position: 1, prize: '1200', icon: 'gem', quantity: 1200, gemPrize: true },
+      { position: 2, prize: '800', icon: 'gem', quantity: 800, gemPrize: true },
+      { position: 3, prize: '400', icon: 'gem', quantity: 400, gemPrize: true },
+      { position: 4, prize: '400', icon: 'gem', quantity: 400, gemPrize: true },
+      { position: 5, prize: '250', icon: 'package', itemId: 19721, quantity: 250 },
+      { position: 6, prize: '250', icon: 'package', itemId: 19721, quantity: 250 },
+      { position: 7, prize: '250', icon: 'package', itemId: 19721, quantity: 250 },
+      { position: 8, prize: '250', icon: 'package', itemId: 19721, quantity: 250 },
+      { position: 9, prize: '250', icon: 'package', itemId: 19721, quantity: 250 },
+      { position: 10, prize: '250', icon: 'package', itemId: 19721, quantity: 250 }
+    ],
+    requirements: [
+      'Link your GW2 API key to your account',
+      'Join our Discord server',
+      'Follow us on social media'
+    ],
+    rules: [
+      'One entry per person',
+      'Must have valid GW2 account',
+      'API key must be active during the entire giveaway period',
+      'Winners will be selected randomly',
+      'Prizes will be delivered within 48 hours'
+    ],
+    maxParticipants: undefined
   }
 ];
 

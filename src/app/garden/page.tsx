@@ -99,16 +99,17 @@ const JardinesPage = () => {
     '/images/garden/LS5-2.webp',                 // 39. Drizzlewood Coast
     '/images/garden/LS5-4.webp',                 // 40. Drizzlewood Coast
     '/images/garden/LS5-5.webp',                 // 41. Drizzlewood Coast
-    '/images/garden/EoD-1-709x1024.webp',        // 42. New Kaineng City
-    '/images/garden/EoD-2.webp',                 // 43. New Kaineng City
-    '/images/garden/EoD-3.webp',                 // 44. New Kaineng City
-    '/images/garden/EoD-4.webp',                 // 45. New Kaineng City
-    '/images/garden/SOTO-1-1024x458.webp',       // 46. Skywatch Archipelago
-    '/images/garden/SOTO-2-514x1024.webp',       // 47. Skywatch Archipelago
-    '/images/garden/JW-1.png',                   // 48. The Echovald Wilds
-    '/images/garden/JW-2.png',                   // 49. Lowland Shore
-    '/images/garden/Lion-Arch.webp',             // 50. Lion's Arch
-    '/images/garden/VoE.webp'                    // 51. Shipwreck Strand
+    '/images/garden/EoD-5.webp',                 // 42. Seitung
+    '/images/garden/EoD-1-709x1024.webp',        // 43. New Kaineng City
+    '/images/garden/EoD-2.webp',                 // 44. New Kaineng City
+    '/images/garden/EoD-3.webp',                 // 45. New Kaineng City
+    '/images/garden/EoD-4.webp',                 // 46. New Kaineng City
+    '/images/garden/SOTO-1-1024x458.webp',       // 47. Skywatch Archipelago
+    '/images/garden/SOTO-2-514x1024.webp',       // 48. Skywatch Archipelago
+    '/images/garden/JW-1.png',                   // 49. The Echovald Wilds
+    '/images/garden/JW-2.png',                   // 50. Lowland Shore
+    '/images/garden/Lion-Arch.webp',             // 51. Lion's Arch
+    '/images/garden/VoE.webp'                    // 52. Shipwreck Strand
   ];
 
   // Obtener datos de los items de la API con caché optimizado
@@ -166,7 +167,7 @@ const JardinesPage = () => {
     const fetchMapData = async () => {
       try {
         // IDs de los mapas que usamos en la página
-        const mapIds = [15, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 39, 50, 51, 53, 54, 73, 988, 1045, 1052, 1175, 1178, 1195, 1210, 1211, 1226, 1271, 1288, 1330, 1343, 1371, 1438, 1452, 1510, 1550]; // Todos los mapas de jardines
+        const mapIds = [15, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 39, 50, 51, 53, 54, 73, 988, 1045, 1052, 1175, 1178, 1195, 1210, 1211, 1226, 1271, 1288, 1330, 1343, 1371, 1442, 1438, 1452, 1510, 1550]; // Todos los mapas de jardines
 
         const response = await fetch(`https://api.guildwars2.com/v2/maps?ids=${mapIds.join(',')}&lang=${lang}`, {
           headers: {
@@ -4025,6 +4026,77 @@ const JardinesPage = () => {
                             <Copy className="w-4 h-4" />
                           )}
                           {copiedWaypoint === '[&BGQMAAA=]'
+                            ? t('gardenPage.sections.locations.waypointCopied')
+                            : t('gardenPage.sections.locations.copyWaypoint')
+                          }
+                        </button>
+                      </div>
+                    </div>
+
+
+                    {/* Seitung Province */}
+                    <div className="group relative overflow-hidden rounded-2xl bg-slate-800/50 backdrop-blur-sm border border-slate-700/50 hover:border-emerald-400/60 transition-all duration-300 hover:shadow-xl hover:shadow-emerald-500/20 h-full flex flex-col">
+                      {/* Imagen con dimensiones uniformes */}
+                      <div
+                        className="relative h-72 w-full overflow-hidden cursor-pointer"
+                        onClick={() => openImageModal('/images/garden/EoD-5.webp', gardenImages)}
+                      >
+                        <Image
+                          src="/images/garden/EoD-5.webp"
+                          alt="Seitung Province Garden Location"
+                          fill
+                          className="object-contain group-hover:scale-105 transition-transform duration-500"
+                          unoptimized
+                        />
+                        {/* Overlay sutil para legibilidad */}
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+
+                        {/* Icono de zoom para indicar que se puede hacer clic */}
+                        <div className="absolute top-2 right-2 opacity-100 transition-opacity duration-300">
+                          <Image
+                            src="/images/garden/zoom-in.webp"
+                            alt="Zoom"
+                            width={20}
+                            height={20}
+                            className="w-5 h-5 invert"
+                            unoptimized
+                          />
+                        </div>
+
+                      </div>
+
+                      {/* Contenido uniforme */}
+                      <div className="p-6 flex-1 flex flex-col">
+                        <h3 className="text-xl font-bold text-white mb-4">
+                          {mapData[1442]?.name || 'Seitung Province'}
+                        </h3>
+
+                        <div className="bg-slate-700/50 rounded-lg p-4 border border-slate-600/40 mb-4">
+                          <p className="text-emerald-300 font-semibold flex items-center gap-3 text-sm">
+                            <Image
+                              src="/images/icons/waypoint-icon.webp"
+                              alt="Waypoint"
+                              width={20}
+                              height={20}
+                              className="w-7 h-7"
+                            />
+                            {t('gardenPage.waypoints.seitung')}
+                          </p>
+                        </div>
+
+                        <button
+                          onClick={() => copyWaypoint('[&BJ4MAAA=]')}
+                          className={`w-full font-bold py-3 px-4 rounded-lg transition-all duration-300 flex items-center justify-center gap-2 text-sm mt-auto ${copiedWaypoint === '[&BJ4MAAA=]'
+                            ? 'bg-green-600 text-white shadow-xl'
+                            : 'bg-gradient-to-r from-emerald-600 to-green-600 hover:from-emerald-500 hover:to-green-500 text-white shadow-lg hover:shadow-xl hover:scale-105'
+                            }`}
+                        >
+                          {copiedWaypoint === '[&BJ4MAAA=]' ? (
+                            <CheckCircle className="w-4 h-4" />
+                          ) : (
+                            <Copy className="w-4 h-4" />
+                          )}
+                          {copiedWaypoint === '[&BJ4MAAA=]'
                             ? t('gardenPage.sections.locations.waypointCopied')
                             : t('gardenPage.sections.locations.copyWaypoint')
                           }

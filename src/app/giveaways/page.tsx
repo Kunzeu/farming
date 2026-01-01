@@ -205,7 +205,7 @@ const GiveawaysPage = () => {
       if (response.ok) {
         const data = await response.json();
         setWinners(data.winners);
-        
+
         // Cargar items de los giveaways de los ganadores si hay ganadores
         if (data.winners && data.winners.length > 0) {
           const winners = data.winners as Array<{ giveawayId: string }>;
@@ -466,7 +466,7 @@ const GiveawaysPage = () => {
     const targetGiveaway = giveaway || activeGiveaway;
     if (targetGiveaway) {
       setGiveawayToSelectWinners(targetGiveaway);
-    setShowSelectWinnersModal(true);
+      setShowSelectWinnersModal(true);
     }
   };
 
@@ -482,12 +482,12 @@ const GiveawaysPage = () => {
 
       // Obtener token de localStorage
       const token = typeof window !== 'undefined' ? localStorage.getItem('gw2_token') : null;
-      
+
       // Preparar headers con autenticación
       const headers: HeadersInit = {
         "Content-Type": "application/json",
       };
-      
+
       if (token) {
         headers["Authorization"] = `Bearer ${token}`;
       }
@@ -512,8 +512,7 @@ const GiveawaysPage = () => {
         const errorData = await response.json();
         console.error("Error selecting winners:", errorData);
         setErrorMessage(
-          `Error seleccionando ganadores: ${
-            errorData.error || "Error desconocido"
+          `Error seleccionando ganadores: ${errorData.error || "Error desconocido"
           }`
         );
         setShowErrorModal(true);
@@ -542,18 +541,18 @@ const GiveawaysPage = () => {
     const isNotFinished = g.status !== "ended" && g.status !== "winners_announced" && g.status !== "cancelled";
     return start <= now && end > now && isActiveStatus && isNotFinished;
   });
-  
+
   // Si hay múltiples, seleccionar el más reciente (mayor startDate)
-  const activeGiveaway = activeByDate.length > 0 
+  const activeGiveaway = activeByDate.length > 0
     ? activeByDate.sort((a, b) => new Date(b.startDate).getTime() - new Date(a.startDate).getTime())[0]
     : giveaways.find((g) => {
-        // Fallback: buscar sorteo activo que esté dentro de fechas y no tenga ganadores
-        const start = new Date(g.startDate);
-        const end = new Date(g.endDate);
-        const isActiveStatus = g.status === "active";
-        const isNotFinished = g.status !== "ended" && g.status !== "winners_announced" && g.status !== "cancelled";
-        return isActiveStatus && isNotFinished && start <= now && end > now;
-      });
+      // Fallback: buscar sorteo activo que esté dentro de fechas y no tenga ganadores
+      const start = new Date(g.startDate);
+      const end = new Date(g.endDate);
+      const isActiveStatus = g.status === "active";
+      const isNotFinished = g.status !== "ended" && g.status !== "winners_announced" && g.status !== "cancelled";
+      return isActiveStatus && isNotFinished && start <= now && end > now;
+    });
 
   // Check if user is admin
   const isAdmin = user?.role === "admin" || user?.isAdmin === true;
@@ -622,13 +621,7 @@ const GiveawaysPage = () => {
           <p className="text-xl text-gray-300 max-w-2xl mx-auto mb-4">
             {t("giveaways.subtitle")}
           </p>
-          <Link
-            href="/contributions"
-            className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-cyan-400 to-blue-500 rounded-lg text-white font-medium text-sm hover:shadow-lg transition-all duration-300"
-          >
-            <Trophy className="w-4 h-4" />
-            <span>{t('pageTitles.contributions', 'Contribuciones')}</span>
-          </Link>
+
         </div>
 
         {/* Loading State */}
@@ -678,7 +671,7 @@ const GiveawaysPage = () => {
                   {Math.ceil(
                     (new Date(activeGiveaway.endDate).getTime() -
                       new Date().getTime()) /
-                      (1000 * 60 * 60 * 24)
+                    (1000 * 60 * 60 * 24)
                   )}
                 </div>
                 <div className="text-gray-400">{t("giveaways.daysLeft")}</div>
@@ -784,6 +777,14 @@ const GiveawaysPage = () => {
               <h2 className="text-2xl font-bold text-white mb-2">
                 {t(winners[0].giveawayTitle)}
               </h2>
+              <Link
+                href="/holiday-calendar"
+                className="inline-flex items-center gap-2 px-6 py-2 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-500 hover:to-emerald-500 text-white rounded-full font-semibold shadow-lg shadow-green-900/40 hover:shadow-green-900/60 transform hover:-translate-y-0.5 transition-all duration-200 mt-4"
+              >
+                <Gift className="w-4 h-4" />
+                <span>{t('nav.holidayCalendar', 'Calendario de Adviento')}</span>
+                <ExternalLink className="w-3 h-3 ml-1 opacity-70" />
+              </Link>
             </div>
 
             <div className="grid grid-cols-3 gap-4">
@@ -795,22 +796,22 @@ const GiveawaysPage = () => {
                   // Obtener información completa del premio desde giveawayItems
                   const items = giveawayItems[`${lang}:${winner.giveawayId}`] || [];
                   const itemInfo = items.find((item) => item.position === winner.position);
-                  
+
                   // Fallback: intentar obtener del giveaway directo si no hay itemInfo
                   let prizeInfo = null;
                   if (!itemInfo) {
                     const giveawayInfo = giveaways.find(g => g.id === winner.giveawayId);
                     prizeInfo = giveawayInfo?.prizes.find(p => p.position === winner.position);
                   }
-                  
+
                   return (
-                <div
-                  key={`${winner.giveawayId}-${winner.position}`}
+                    <div
+                      key={`${winner.giveawayId}-${winner.position}`}
                       className="bg-gray-800/60 border border-gray-700/60 rounded-lg p-4 flex flex-col items-center text-center"
-                >
+                    >
                       <div className="w-12 h-12 rounded-full bg-yellow-500/20 text-yellow-400 text-lg font-bold flex items-center justify-center mb-3">
-                      {winner.position}
-                    </div>
+                        {winner.position}
+                      </div>
                       <div className="font-medium text-white mb-1 text-sm">
                         {winner.accountName}
                       </div>
@@ -886,8 +887,8 @@ const GiveawaysPage = () => {
                         ) : (
                           <span>{winner.prizeDescription}</span>
                         )}
+                      </div>
                     </div>
-                  </div>
                   );
                 })}
             </div>
@@ -949,8 +950,8 @@ const GiveawaysPage = () => {
             // Incluir sorteos terminados por status o por fecha
             const endDate = new Date(g.endDate);
             const hasEndedByDate = endDate <= now;
-            return (g.status === "ended" || g.status === "winners_announced") || 
-                   (hasEndedByDate && g.status === "active");
+            return (g.status === "ended" || g.status === "winners_announced") ||
+              (hasEndedByDate && g.status === "active");
           }).length > 0 && (
             <div className="mb-8">
               <h2 className="text-2xl font-bold text-white mb-6">
@@ -962,14 +963,14 @@ const GiveawaysPage = () => {
                     // Incluir sorteos terminados por status o por fecha
                     const endDate = new Date(g.endDate);
                     const hasEndedByDate = endDate <= now;
-                    return (g.status === "ended" || g.status === "winners_announced") || 
-                           (hasEndedByDate && g.status === "active");
+                    return (g.status === "ended" || g.status === "winners_announced") ||
+                      (hasEndedByDate && g.status === "active");
                   })
                   .sort((a, b) => new Date(b.endDate).getTime() - new Date(a.endDate).getTime())
                   .map((giveaway) => {
                     // Verificar si ya tiene ganadores
                     const hasWinners = winners.some(w => w.giveawayId === giveaway.id);
-                    
+
                     return (
                       <div
                         key={giveaway.id}
@@ -1006,11 +1007,10 @@ const GiveawaysPage = () => {
                             </div>
                           </div>
                           <div className="flex items-center gap-3">
-                            <div className={`inline-flex items-center gap-2 px-3 py-1 rounded-full text-sm font-medium ${
-                              giveaway.status === "winners_announced" 
-                                ? "bg-green-900/20 text-green-400" 
-                                : "bg-orange-900/20 text-orange-400"
-                            }`}>
+                            <div className={`inline-flex items-center gap-2 px-3 py-1 rounded-full text-sm font-medium ${giveaway.status === "winners_announced"
+                              ? "bg-green-900/20 text-green-400"
+                              : "bg-orange-900/20 text-orange-400"
+                              }`}>
                               <Trophy className="w-4 h-4" />
                               {giveaway.status === "winners_announced" ? "Ganadores anunciados" : "Terminado"}
                             </div>
@@ -1086,7 +1086,7 @@ const GiveawaysPage = () => {
                       {Math.ceil(
                         (new Date(selectedGiveaway.endDate).getTime() -
                           new Date().getTime()) /
-                          (1000 * 60 * 60 * 24)
+                        (1000 * 60 * 60 * 24)
                       )}
                     </div>
                     <div className="text-gray-400">
@@ -1143,29 +1143,28 @@ const GiveawaysPage = () => {
                                 isLoadingApiKey ||
                                 isLoadingParticipations
                               }
-                              className={`w-full font-semibold py-3 px-6 rounded-lg transition-colors ${
-                                hasParticipated ||
+                              className={`w-full font-semibold py-3 px-6 rounded-lg transition-colors ${hasParticipated ||
                                 isLoadingApiKey ||
                                 isLoadingParticipations
-                                  ? "bg-gray-600 text-gray-400 cursor-not-allowed"
-                                  : !isAuthenticated
+                                ? "bg-gray-600 text-gray-400 cursor-not-allowed"
+                                : !isAuthenticated
                                   ? "bg-blue-600 hover:bg-blue-700 text-white"
                                   : !hasApiKey || !apiKeyValid
-                                  ? "bg-yellow-600 hover:bg-yellow-700 text-white"
-                                  : "bg-green-600 hover:bg-green-700 text-white"
-                              }`}
+                                    ? "bg-yellow-600 hover:bg-yellow-700 text-white"
+                                    : "bg-green-600 hover:bg-green-700 text-white"
+                                }`}
                             >
                               {isLoadingApiKey || isLoadingParticipations
                                 ? `${t("giveaways.loading")}...`
                                 : hasParticipated
-                                ? `${accountInfo?.name || "N/A"}`
-                                : !isAuthenticated
-                                ? t("giveaways.loginToEnter")
-                                : !hasApiKey
-                                ? t("giveaways.addApiKeyToEnter")
-                                : !apiKeyValid
-                                ? t("giveaways.fixApiKeyToEnter")
-                                : t("giveaways.enterGiveawayButton")}
+                                  ? `${accountInfo?.name || "N/A"}`
+                                  : !isAuthenticated
+                                    ? t("giveaways.loginToEnter")
+                                    : !hasApiKey
+                                      ? t("giveaways.addApiKeyToEnter")
+                                      : !apiKeyValid
+                                        ? t("giveaways.fixApiKeyToEnter")
+                                        : t("giveaways.enterGiveawayButton")}
                             </button>
                           );
                         })()
@@ -1409,22 +1408,22 @@ const GiveawaysPage = () => {
                         // Obtener información del premio del sorteo activo
                         const targetGiveaway = giveawayToSelectWinners || activeGiveaway;
                         const prizeInfo = targetGiveaway?.prizes.find(p => p.position === winner.position);
-                        const prizeDescription = prizeInfo 
-                          ? (prizeInfo.gemPrize 
-                              ? `${prizeInfo.prize} Gems`
-                              : prizeInfo.itemName 
-                                ? `${prizeInfo.quantity}x ${prizeInfo.itemName}`
-                                : winner.prize_description)
+                        const prizeDescription = prizeInfo
+                          ? (prizeInfo.gemPrize
+                            ? `${prizeInfo.prize} Gems`
+                            : prizeInfo.itemName
+                              ? `${prizeInfo.quantity}x ${prizeInfo.itemName}`
+                              : winner.prize_description)
                           : winner.prize_description;
-                        
+
                         return (
-                      <div
-                        key={index}
+                          <div
+                            key={index}
                             className="bg-gray-700/50 rounded-lg p-4 flex flex-col items-center text-center"
-                      >
+                          >
                             <div className="w-12 h-12 bg-yellow-600 rounded-full flex items-center justify-center text-white font-bold text-lg mb-3">
-                            {winner.position}
-                          </div>
+                              {winner.position}
+                            </div>
                             <p className="text-white font-semibold mb-2 text-sm">
                               {winner.account_name}
                             </p>

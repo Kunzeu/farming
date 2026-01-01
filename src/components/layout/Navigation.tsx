@@ -528,13 +528,7 @@ const Navigation = () => {
     ...navItems,
     ...guidesItems,
     ...toolsItems,
-    {
-      href: '/contributions',
-      label: t('pageTitles.contributions', 'Contribuciones'),
-      icon: Gift,
-      isImage: false,
-      keywords: ['contributions', 'contribuciones', 'help', 'ayuda', 'colaborar', 'support', 'community']
-    },
+
     {
       href: '/giveaways',
       label: t('nav.giveaways', 'Sorteos'),
@@ -698,14 +692,15 @@ const Navigation = () => {
                   />
                 </div>
                 {/* Enlace Calendario de Adviento */}
+                {/* Enlace Giveaways */}
                 <Link
-                  href="/holiday-calendar"
+                  href="/giveaways"
                   className="flex items-center space-x-2 text-green-300 px-3 py-2 rounded-lg bg-green-900/20 border border-green-700/30 hover:bg-green-800/30 hover:text-green-200 transition-all duration-200"
-                  title={t('nav.holidayCalendar', 'Calendario de Adviento')}
+                  title={t('nav.giveaways', 'Sorteos')}
                 >
                   <Gift className="w-4 h-4" />
                   <span className="text-sm font-bold">
-                    {t('nav.holidayCalendar', 'Calendario de Adviento')}
+                    {t('nav.giveaways', 'Sorteos')}
                   </span>
                 </Link>
 
@@ -1019,11 +1014,11 @@ const Navigation = () => {
                           </button>
 
                           <Link
-                            href="/holiday-calendar"
+                            href="/giveaways"
                             className="flex items-center space-x-2 text-green-300 px-3 py-2 rounded-lg bg-green-900/20 border border-green-700/30 hover:bg-green-800/30 hover:text-green-200 transition-all duration-200">
                             <Gift className="w-4 h-4" />
                             <span className="text-xs font-bold whitespace-nowrap">
-                              {t('nav.holidayCalendarMobile', 'Adviento')}
+                              {t('nav.giveaways', 'Sorteos')}
                             </span>
                           </Link>
                         </div>
