@@ -350,7 +350,7 @@ const JardinesPage = () => {
 
   // Función para copiar Lista 3
   const copyList3 = async () => {
-    const list3Text = '[&BNwKAAA=][&BCgKAAA=]x2[&BJEKAAA=][&BEAKAAA=][&BEMLAAA=][&BBsMAAA=][&BCcMAAA=][&BGQMAAA=]x3[&BBkNAAA=]x2[&BCANAAA=][&BNQMAAA=][&BFUOAAA=][&BNwNAAA=][&BK4OAAA=]x2[&BC4EAAA=][&BJEPAAA=]';
+    const list3Text = '[&BNwKAAA=][&BCgKAAA=]x2[&BJEKAAA=][&BEAKAAA=][&BEMLAAA=][&BBsMAAA=][&BCcMAAA=][&BGQMAAA=]x3[&BJ4MAAA=][&BBkNAAA=]x2[&BCANAAA=][&BNQMAAA=][&BFUOAAA=][&BNwNAAA=][&BK4OAAA=]x2[&BC4EAAA=][&BJEPAAA=]';
 
     try {
       await navigator.clipboard.writeText(list3Text);
@@ -1131,7 +1131,7 @@ const JardinesPage = () => {
                       </div>
                       <div className="bg-slate-700/50 rounded-lg p-4 border border-slate-600/50">
                         <div className="text-gray-300 text-lg font-mono break-all leading-relaxed">
-                          [&BNwKAAA=][&BCgKAAA=]<span className="text-yellow-400 font-bold">x2</span>[&BJEKAAA=][&BEAKAAA=][&BEMLAAA=][&BBsMAAA=][&BCcMAAA=][&BGQMAAA=]<span className="text-red-400 font-bold">x3</span>[&BBkNAAA=]<span className="text-yellow-400 font-bold">x2</span>[&BCANAAA=][&BNQMAAA=][&BFUOAAA=][&BNwNAAA=][&BK4OAAA=]<span className="text-yellow-400 font-bold">x2</span>[&BC4EAAA=][&BJEPAAA=]
+                          [&BNwKAAA=][&BCgKAAA=]<span className="text-yellow-400 font-bold">x2</span>[&BJEKAAA=][&BEAKAAA=][&BEMLAAA=][&BBsMAAA=][&BCcMAAA=][&BGQMAAA=]<span className="text-red-400 font-bold">x3</span>[&BJ4MAAA=][&BBkNAAA=]<span className="text-yellow-400 font-bold">x2</span>[&BCANAAA=][&BNQMAAA=][&BFUOAAA=][&BNwNAAA=][&BK4OAAA=]<span className="text-yellow-400 font-bold">x2</span>[&BC4EAAA=][&BJEPAAA=]
                         </div>
                       </div>
                     </div>
