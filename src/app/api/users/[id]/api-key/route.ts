@@ -28,25 +28,26 @@ export async function GET(
       FROM users 
       WHERE id = $1
     `;
-    
+
     const result = await pool.query(query, [id]);
-    
+
     if (result.rows.length === 0) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 });
     }
 
     const user = result.rows[0];
-    
+
+
     // Debug logs para producción
     console.log(`[API Key GET] User ${id}:`, {
       hasApiKey: !!user.gw2ApiKey,
       apiKeyLength: user.gw2ApiKey?.length || 0,
       apiKeyPreview: user.gw2ApiKey ? user.gw2ApiKey.substring(0, 8) + '...' : null
     });
-    
+
     return NextResponse.json({
       hasApiKey: !!user.gw2ApiKey,
-      apiKey: user.gw2ApiKey ? user.gw2ApiKey.substring(0, 8) + '...' : null // Solo mostrar los primeros 8 caracteres por seguridad
+      apiKey: user.gw2ApiKey || null // Devolver la API key completa ya que el usuario está autenticado
     }, {
       headers: {
         'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0',
@@ -57,7 +58,7 @@ export async function GET(
 
   } catch (error) {
     console.error('Error fetching user API key:', error);
-    return NextResponse.json({ 
+    return NextResponse.json({
       error: 'Error fetching API key',
       details: error instanceof Error ? error.message : String(error)
     }, { status: 500 });
@@ -115,22 +116,22 @@ export async function PUT(
       RETURNING id, email, username, role, is_active as "isActive",
                 created_at as "createdAt", updated_at as "updatedAt", discord_id as "discordId"
     `;
-    
+
     const result = await pool.query(query, [apiKey, id]);
-    
+
     if (result.rows.length === 0) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 });
     }
 
     const user = result.rows[0];
-    
+
     // Debug logs para producción
     console.log(`[API Key PUT] User ${id} updated:`, {
       success: true,
       apiKeyLength: apiKey.length,
       updatedAt: user.updatedAt
     });
-    
+
     return NextResponse.json({
       ...user,
       createdAt: new Date(user.createdAt),
@@ -145,7 +146,7 @@ export async function PUT(
 
   } catch (error) {
     console.error('Error updating user API key:', error);
-    return NextResponse.json({ 
+    return NextResponse.json({
       error: 'Error updating API key',
       details: error instanceof Error ? error.message : String(error)
     }, { status: 500 });
@@ -178,15 +179,15 @@ export async function DELETE(
       RETURNING id, email, username, role, is_active as "isActive",
                 created_at as "createdAt", updated_at as "updatedAt", discord_id as "discordId"
     `;
-    
+
     const result = await pool.query(query, [id]);
-    
+
     if (result.rows.length === 0) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 });
     }
 
     const user = result.rows[0];
-    
+
     return NextResponse.json({
       ...user,
       createdAt: new Date(user.createdAt),
@@ -201,7 +202,7 @@ export async function DELETE(
 
   } catch (error) {
     console.error('Error deleting user API key:', error);
-    return NextResponse.json({ 
+    return NextResponse.json({
       error: 'Error deleting API key',
       details: error instanceof Error ? error.message : String(error)
     }, { status: 500 });

@@ -86,26 +86,48 @@ export default function ProfilePage() {
     }
   }, [user?.preferences]);
 
-  // Cargar resumen de usuario (hasApiKey, apiKeyValid, accountInfo)
+  // Cargar datos del usuario (resumen + API key) en una sola llamada optimizada
   useEffect(() => {
-    const loadUserSummary = async () => {
+    const loadUserData = async () => {
       if (!user?.id) return;
 
+      setIsApiKeyLoading(true);
+
       try {
-        const response = await fetch(`/api/users/${user.id}/summary`);
-        if (response.ok) {
-          const data = await response.json();
-          setHasApiKey(!!data.hasApiKey);
-          if (data.accountInfo?.name) {
-            setAccountName(data.accountInfo.name);
+        // Cargar resumen primero
+        const summaryResponse = await fetch(`/api/users/${user.id}/summary`);
+        if (summaryResponse.ok) {
+          const summaryData = await summaryResponse.json();
+          const hasKey = !!summaryData.hasApiKey;
+          setHasApiKey(hasKey);
+
+          if (summaryData.accountInfo?.name) {
+            setAccountName(summaryData.accountInfo.name);
+          }
+
+          // Si tiene API key, cargarla inmediatamente
+          if (hasKey) {
+            try {
+              const apiKeyResponse = await fetch(`/api/users/${user.id}/api-key?user_id=${user.id}`, { cache: 'no-store' });
+              if (apiKeyResponse.ok) {
+                const apiKeyData = await apiKeyResponse.json();
+                if (apiKeyData.apiKey) {
+                  setApiKey(apiKeyData.apiKey);
+                }
+              }
+            } catch (error) {
+              console.error('Error loading API key:', error);
+            }
           }
         }
       } catch (error) {
-        console.error('Error loading user summary:', error);
+        console.error('Error loading user data:', error);
+      } finally {
+        setIsApiKeyLoading(false);
       }
     };
 
-    loadUserSummary();
+    loadUserData();
   }, [user?.id]);
 
   const memberSinceDate = user?.createdAt
@@ -316,7 +338,11 @@ export default function ProfilePage() {
   };
 
   const handleCopyApiKey = async () => {
-    if (!apiKey) return;
+    if (!apiKey) {
+      setApiKeyMessage(t('profile.apiKey.noCopy', 'No API key to copy'));
+      setTimeout(() => setApiKeyMessage(''), 2000);
+      return;
+    }
 
     try {
       await navigator.clipboard.writeText(apiKey);
@@ -324,6 +350,8 @@ export default function ProfilePage() {
       setTimeout(() => setCopyMessage(''), 2000);
     } catch (error) {
       console.error('Failed to copy API key:', error);
+      setCopyMessage(t('profile.apiKey.copyError', 'Failed to copy'));
+      setTimeout(() => setCopyMessage(''), 2000);
     }
   };
 
@@ -606,34 +634,46 @@ export default function ProfilePage() {
                         {t('profile.apiKey.label', 'API Key')}
                       </label>
                       <div className="relative">
-                        <input
-                          type={showApiKey ? "text" : "password"}
-                          value={apiKey}
-                          onChange={(e) => setApiKey(e.target.value)}
-                          placeholder={t('profile.apiKey.placeholder', 'Enter your GW2 API key')}
-                          className="w-full px-4 py-3 pr-20 bg-gray-700/50 border border-gray-600/50 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300"
-                          autoComplete="off"
-                        />
-                        <div className="absolute right-2 top-1/2 transform -translate-y-1/2 flex space-x-1">
-                          <button
-                            type="button"
-                            onClick={toggleShowApiKey}
-                            className="p-1.5 text-gray-400 hover:text-white transition-colors rounded-lg hover:bg-gray-600/50"
-                            title={showApiKey ? t('profile.apiKey.hide', 'Hide') : t('profile.apiKey.show', 'Show')}
-                          >
-                            {showApiKey ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                          </button>
-                          {apiKey && (
-                            <button
-                              type="button"
-                              onClick={handleCopyApiKey}
-                              className="p-1.5 text-gray-400 hover:text-white transition-colors rounded-lg hover:bg-gray-600/50"
-                              title={t('profile.apiKey.copy', 'Copy')}
-                            >
-                              <Copy className="w-4 h-4" />
-                            </button>
-                          )}
-                        </div>
+                        {isApiKeyLoading && !apiKey ? (
+                          // Skeleton loader mientras carga
+                          <div className="w-full px-4 py-3 bg-gray-700/50 border border-gray-600/50 rounded-xl">
+                            <div className="h-5 bg-gray-600/50 rounded animate-pulse"></div>
+                          </div>
+                        ) : (
+                          <>
+                            <input
+                              type={showApiKey ? "text" : "password"}
+                              value={apiKey}
+                              onChange={(e) => setApiKey(e.target.value)}
+                              placeholder={t('profile.apiKey.placeholder', 'Enter your GW2 API key')}
+                              className="w-full px-4 py-3 pr-20 bg-gray-700/50 border border-gray-600/50 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300"
+                              autoComplete="off"
+                              disabled={isApiKeyLoading}
+                            />
+                            <div className="absolute right-2 top-1/2 transform -translate-y-1/2 flex space-x-1">
+                              <button
+                                type="button"
+                                onClick={toggleShowApiKey}
+                                className="p-1.5 text-gray-400 hover:text-white transition-colors rounded-lg hover:bg-gray-600/50"
+                                title={showApiKey ? t('profile.apiKey.hide', 'Hide') : t('profile.apiKey.show', 'Show')}
+                                disabled={isApiKeyLoading}
+                              >
+                                {showApiKey ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                              </button>
+                              {(apiKey || hasApiKey) && (
+                                <button
+                                  type="button"
+                                  onClick={handleCopyApiKey}
+                                  className="p-1.5 text-gray-400 hover:text-white transition-colors rounded-lg hover:bg-gray-600/50"
+                                  title={t('profile.apiKey.copy', 'Copy')}
+                                  disabled={isApiKeyLoading}
+                                >
+                                  <Copy className="w-4 h-4" />
+                                </button>
+                              )}
+                            </div>
+                          </>
+                        )}
                       </div>
                       {copyMessage && (
                         <div className="mt-2 text-xs text-green-400 font-medium">
