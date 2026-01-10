@@ -115,20 +115,28 @@ export function useGW2Inventory({ user }: UseGW2InventoryProps): UseGW2Inventory
                 const BATCH_SIZE = 5;
                 let processed = 0;
 
-                setStatus(`Analizando inventarios (0/${characters.length})...`);
-
                 for (let i = 0; i < characters.length; i += BATCH_SIZE) {
                     if (signal.aborted) break;
 
                     const batch = characters.slice(i, i + BATCH_SIZE);
                     const batchPromises = batch.map(async (charName) => {
                         try {
-                            const res = await fetch(
-                                `${GW2_API_BASE}/characters/${encodeURIComponent(charName)}/inventory?access_token=${apiKey}`,
-                                { signal }
-                            );
-                            if (!res.ok) return null;
-                            return res.json();
+                            const controller = new AbortController();
+                            const timeoutId = setTimeout(() => controller.abort(), 6000); // 6s timeout
+                            const fetchSignal = signal ? AbortSignal.any([signal, controller.signal]) : controller.signal;
+
+                            try {
+                                const res = await fetch(
+                                    `${GW2_API_BASE}/characters/${encodeURIComponent(charName)}/inventory?access_token=${apiKey}`,
+                                    { signal: fetchSignal }
+                                );
+                                clearTimeout(timeoutId);
+                                if (!res.ok) return null;
+                                return res.json();
+                            } catch (error) {
+                                clearTimeout(timeoutId);
+                                throw error;
+                            }
                         } catch (e) { return null; }
                     });
 
@@ -152,10 +160,10 @@ export function useGW2Inventory({ user }: UseGW2InventoryProps): UseGW2Inventory
 
                     processed += batch.length;
                     setProgress((processed / characters.length) * 100);
-                    setStatus(`Analizando inventarios (${Math.min(processed, characters.length)}/${characters.length})...`);
+                    // Status update removed to keep the message static
 
-                    // Small delay to be nice to API/thread
-                    await new Promise(r => setTimeout(r, 200));
+                    // Delay to be nice to API/thread and avoid rate limits
+                    await new Promise(r => setTimeout(r, 1000));
                 }
             }
 
