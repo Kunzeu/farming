@@ -2695,5 +2695,9 @@
   "expBuffs.about.title": "Acerca de Esta Preparación",
   "expBuffs.about.description1": "Esta preparación estándar se centra en obtener",
   "expBuffs.about.spiritShards": "Esquirlas Espirituales",
-  "expBuffs.about.description2": "ya que es una de las monedas más importantes en la economía de Guild Wars 2."
+  "expBuffs.about.description2": "ya que es una de las monedas más importantes en la economía de Guild Wars 2.",
+  "giftOfJadeMasteryPage.tracker.title": "Rastreador de Materiales",
+  "giftOfJadeMasteryPage.tracker.description": "Rastrea tu progreso en todos los materiales necesarios",
+  "giveaways.advent.title": "Sorteo Día {day} - Diciembre {year}",
+  "giveaways.advent.description": "¡Abre el sorteo del día {day} de diciembre y participa para ganar increíbles premios!"
 }

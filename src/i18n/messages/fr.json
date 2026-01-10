@@ -2640,5 +2640,10 @@
   "expBuffs.about.title": "À propos de cette préparation",
   "expBuffs.about.description1": "Cette préparation standard se concentre sur l'obtention d'",
   "expBuffs.about.spiritShards": "Éclats spirituels",
-  "expBuffs.about.description2": "car c'est l'une des monnaies les plus importantes de l'économie de Guild Wars 2."
+  "expBuffs.about.description2": "car c'est l'une des monnaies les plus importantes de l'économie de Guild Wars 2.",
+  "giveaways.advent.title": "Tirage au sort Jour {day} - Décembre {year}",
+  "giveaways.advent.description": "Ouvrez le tirage au sort du jour {day} de décembre et participez pour gagner des prix incroyables!",
+  "giftOfJadeMasteryPage.tracker.title": "Suivi des Matériaux",
+  "giftOfJadeMasteryPage.tracker.description": "Suivez votre progression sur tous les matériaux nécessaires",
+  "giftOfJadeMasteryPage.tracker.goToTracker": "Aller au Tracker"
 }

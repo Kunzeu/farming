@@ -2646,5 +2646,9 @@
   "expBuffs.about.title": "Über diese Vorbereitung",
   "expBuffs.about.description1": "Diese Standardvorbereitung konzentriert sich auf das Erhalten von",
   "expBuffs.about.spiritShards": "Geistsplitter",
-  "expBuffs.about.description2": "da sie eine der wichtigsten Währungen in der Guild Wars 2-Wirtschaft ist."
+  "expBuffs.about.description2": "da sie eine der wichtigsten Währungen in der Guild Wars 2-Wirtschaft ist.",
+  "giveaways.advent.title": "Tag {day} Gewinnspiel - Dezember {year}",
+  "giveaways.advent.description": "Öffnen Sie das Gewinnspiel für Tag {day} im Dezember und nehmen Sie teil, um tolle Preise zu gewinnen!",
+  "giftOfJadeMasteryPage.tracker.title": "Material-Tracker",
+  "giftOfJadeMasteryPage.tracker.description": "Verfolgen Sie Ihren Fortschritt bei allen benötigten Materialien"
 }

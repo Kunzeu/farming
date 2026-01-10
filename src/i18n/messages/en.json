@@ -1215,6 +1215,13 @@
   "gardenPage.waypoints.newKainengCity": "Ministry Ward Waypoint",
   "gardenPage.waypoints.newKainengCity2": "Lutgardis Plaza Waypoint",
   "gardenPage.waypoints.theechovaldwilds": "Qinkai Waypoint",
+  "gardenPage.waypoints.list1": "List 1",
+  "gardenPage.waypoints.list2": "List 2",
+  "gardenPage.waypoints.list3": "List 3",
+  "gardenPage.waypoints.copy": "Copy",
+  "gardenPage.waypoints.copied": "Copied!",
+  "giftOfJadeMasteryPage.tracker.title": "Material Tracker",
+  "giftOfJadeMasteryPage.tracker.description": "Track your progress on all the required materials",
   "gardenPage.waypoints.skywatchArchipelago": "The Fractured Tower",
   "gardenPage.waypoints.skywatchArchipelago2": "Derelict Ruins",
   "gardenPage.waypoints.lowlandShore": "Harvest Den Waypoint",
@@ -2663,5 +2670,7 @@
   "expBuffs.about.title": "About This Preparation",
   "expBuffs.about.description1": "This standard preparation focuses on obtaining",
   "expBuffs.about.spiritShards": "Spirit Shards",
-  "expBuffs.about.description2": "since it's one of the most important currencies in the Guild Wars 2 economy."
+  "expBuffs.about.description2": "since it's one of the most important currencies in the Guild Wars 2 economy.",
+  "giveaways.advent.title": "Day {day} Giveaway - December {year}",
+  "giveaways.advent.description": "Open the giveaway for day {day} of December and participate to win amazing prizes!"
 }

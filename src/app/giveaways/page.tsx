@@ -68,6 +68,8 @@ interface Winner {
   prizeDescription: string;
   prizeValue: string;
   announcedAt: string;
+  itemIcon?: string;
+  gemPrize?: boolean;
 }
 
 interface AccountInfo {
@@ -83,7 +85,28 @@ interface Participant {
   participatedAt: string;
 }
 
+
 // Mock data removed - now using dynamic data from API
+
+// Helper function to translate giveaway title/description with placeholders
+const translateGiveawayText = (text: string, giveawayId: string, t: (key: string, fallback?: string) => string): string => {
+  // Check if it's an advent giveaway (format: advent-YYYY-12-DD)
+  const adventMatch = giveawayId.match(/^advent-(\d{4})-12-(\d{2})$/);
+
+  if (adventMatch && text.startsWith('giveaways.advent.')) {
+    const year = adventMatch[1];
+    const day = parseInt(adventMatch[2], 10).toString(); // Remove leading zero
+
+    // Translate the key and replace placeholders
+    const translated = t(text);
+    return translated
+      .replace('{day}', day)
+      .replace('{year}', year);
+  }
+
+  // For non-advent giveaways, just translate normally
+  return t(text);
+};
 
 const GiveawaysPage = () => {
   const { t, lang } = useI18n();
@@ -655,10 +678,10 @@ const GiveawaysPage = () => {
                 {t("giveaways.currentlyActive")}
               </div>
               <h2 className="text-3xl font-bold text-white mb-2">
-                {t(activeGiveaway.title)}
+                {translateGiveawayText(activeGiveaway.title, activeGiveaway.id, t)}
               </h2>
               <p className="text-gray-300 text-lg">
-                {t(activeGiveaway.description)}
+                {translateGiveawayText(activeGiveaway.description, activeGiveaway.id, t)}
               </p>
             </div>
 
@@ -787,7 +810,7 @@ const GiveawaysPage = () => {
                 {t("giveaways.latestWinners")}
               </div>
               <h2 className="text-2xl font-bold text-white mb-2">
-                {t(winners[0].giveawayTitle)}
+                {translateGiveawayText(winners[0].giveawayTitle, winners[0].giveawayId, t)}
               </h2>
               <Link
                 href="/holiday-calendar"
@@ -828,9 +851,58 @@ const GiveawaysPage = () => {
                         {winner.accountName}
                       </div>
                       <div className="text-xs text-gray-300 flex items-center gap-1.5 justify-center">
-                        {itemInfo && (itemInfo.itemIcon || itemInfo.gemPrize) ? (
+                        {/* First check if winner has direct itemIcon/gemPrize data from API */}
+                        {winner.itemIcon || winner.gemPrize ? (
                           <>
-                            {itemInfo.gemPrize ? (
+                            {winner.gemPrize ? (
+                              <>
+                                <Image
+                                  src={winner.itemIcon || "https://wiki.guildwars2.com/images/8/88/Gem_%28highres%29.png"}
+                                  alt={t('giveaways.gems', 'Gems')}
+                                  width={16}
+                                  height={16}
+                                  className="w-4 h-4 rounded"
+                                  onError={(e: React.SyntheticEvent<HTMLImageElement, Event>) => {
+                                    e.currentTarget.src = "https://render.guildwars2.com/file/65941.png";
+                                  }}
+                                />
+                                <span>{winner.prizeDescription}</span>
+                              </>
+                            ) : winner.itemIcon ? (
+                              <>
+                                <Image
+                                  src={winner.itemIcon}
+                                  alt={winner.prizeDescription}
+                                  width={16}
+                                  height={16}
+                                  className="w-4 h-4 rounded"
+                                  onError={(e: React.SyntheticEvent<HTMLImageElement, Event>) => {
+                                    e.currentTarget.src = "/images/icons/raw.webp";
+                                  }}
+                                />
+                                <span>{winner.prizeDescription}</span>
+                              </>
+                            ) : (
+                              <span>{winner.prizeDescription}</span>
+                            )}
+                          </>
+                        ) : itemInfo && (itemInfo.itemIcon || itemInfo.gemPrize || itemInfo.icon === 'gold') ? (
+                          <>
+                            {itemInfo.icon === 'gold' ? (
+                              <>
+                                <Image
+                                  src={itemInfo.itemIcon || '/images/expansions/Gold.webp'}
+                                  alt={t('currency.gold', 'Oro')}
+                                  width={16}
+                                  height={16}
+                                  className="w-4 h-4 rounded"
+                                  onError={(e: React.SyntheticEvent<HTMLImageElement, Event>) => {
+                                    e.currentTarget.src = '/images/expansions/Gold.webp';
+                                  }}
+                                />
+                                <span>{itemInfo.quantity || itemInfo.prize || ''} {t('currency.gold', 'Oro')}</span>
+                              </>
+                            ) : itemInfo.gemPrize ? (
                               <>
                                 <Image
                                   src={itemInfo.itemIcon || "https://wiki.guildwars2.com/images/8/88/Gem_%28highres%29.png"}
@@ -864,7 +936,21 @@ const GiveawaysPage = () => {
                           </>
                         ) : prizeInfo ? (
                           <>
-                            {prizeInfo.gemPrize ? (
+                            {prizeInfo.icon === 'gold' ? (
+                              <>
+                                <Image
+                                  src="/images/expansions/Gold.webp"
+                                  alt={t('currency.gold', 'Oro')}
+                                  width={16}
+                                  height={16}
+                                  className="w-4 h-4 rounded"
+                                  onError={(e: React.SyntheticEvent<HTMLImageElement, Event>) => {
+                                    e.currentTarget.src = '/images/expansions/Gold.webp';
+                                  }}
+                                />
+                                <span>{prizeInfo.quantity || prizeInfo.prize || ''} {t('currency.gold', 'Oro')}</span>
+                              </>
+                            ) : prizeInfo.gemPrize ? (
                               <>
                                 <Image
                                   src="https://wiki.guildwars2.com/images/8/88/Gem_%28highres%29.png"
@@ -925,10 +1011,10 @@ const GiveawaysPage = () => {
                       <div className="flex items-center justify-between">
                         <div>
                           <h3 className="text-lg font-semibold text-white">
-                            {t(giveaway.title)}
+                            {translateGiveawayText(giveaway.title, giveaway.id, t)}
                           </h3>
                           <p className="text-gray-300">
-                            {t(giveaway.description)}
+                            {translateGiveawayText(giveaway.description, giveaway.id, t)}
                           </p>
                           <div className="flex items-center gap-4 mt-2 text-sm text-gray-400">
                             <span>
@@ -988,29 +1074,29 @@ const GiveawaysPage = () => {
                         key={giveaway.id}
                         className="bg-gray-800/60 border border-gray-700/60 rounded-lg p-6"
                       >
-                        <div className="flex items-center justify-between">
+                        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
                           <div className="flex-1">
                             <h3 className="text-lg font-semibold text-white">
-                              {t(giveaway.title)}
+                              {translateGiveawayText(giveaway.title, giveaway.id, t)}
                             </h3>
                             <p className="text-gray-300 text-sm">
-                              {t(giveaway.description)}
+                              {translateGiveawayText(giveaway.description, giveaway.id, t)}
                             </p>
-                            <div className="flex items-center gap-4 mt-2 text-sm text-gray-400">
+                            <div className="flex flex-wrap items-center gap-2 md:gap-4 mt-2 text-sm text-gray-400">
                               <span>
                                 Finalizó: {new Date(giveaway.endDate).toLocaleDateString()}
                               </span>
-                              <span>•</span>
+                              <span className="hidden md:inline">•</span>
                               <span>
                                 {giveaway.participantCount} participantes
                               </span>
-                              <span>•</span>
+                              <span className="hidden md:inline">•</span>
                               <span>
                                 {giveaway.prizes.length} premios
                               </span>
                               {hasWinners && (
                                 <>
-                                  <span>•</span>
+                                  <span className="hidden md:inline">•</span>
                                   <span className="text-green-400">
                                     Ganadores seleccionados
                                   </span>
@@ -1018,7 +1104,7 @@ const GiveawaysPage = () => {
                               )}
                             </div>
                           </div>
-                          <div className="flex items-center gap-3">
+                          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3">
                             <div className={`inline-flex items-center gap-2 px-3 py-1 rounded-full text-sm font-medium ${giveaway.status === "winners_announced"
                               ? "bg-green-900/20 text-green-400"
                               : "bg-orange-900/20 text-orange-400"
@@ -1030,10 +1116,11 @@ const GiveawaysPage = () => {
                               <button
                                 onClick={() => handleSelectWinnersClick(giveaway)}
                                 disabled={isSelectingWinners || giveaway.participantCount === 0}
-                                className="inline-flex items-center gap-2 bg-yellow-600 hover:bg-yellow-700 disabled:bg-gray-600 disabled:cursor-not-allowed text-white font-semibold py-2 px-4 rounded-lg transition-colors text-sm"
+                                className="inline-flex items-center gap-2 bg-yellow-600 hover:bg-yellow-700 disabled:bg-gray-600 disabled:cursor-not-allowed text-white font-semibold py-2 px-4 rounded-lg transition-colors text-sm whitespace-nowrap"
                               >
                                 <Crown className="w-4 h-4" />
-                                Seleccionar Ganadores
+                                <span className="hidden sm:inline">Seleccionar Ganadores</span>
+                                <span className="sm:hidden">Seleccionar</span>
                               </button>
                             )}
                           </div>
@@ -1072,10 +1159,10 @@ const GiveawaysPage = () => {
                   {t("giveaways.currentlyActive")}
                 </div>
                 <h2 className="text-3xl font-bold text-white mb-2">
-                  {t(selectedGiveaway.title)}
+                  {translateGiveawayText(selectedGiveaway.title, selectedGiveaway.id, t)}
                 </h2>
                 <p className="text-xl text-gray-300 max-w-3xl mx-auto mb-8">
-                  {t(selectedGiveaway.description)}
+                  {translateGiveawayText(selectedGiveaway.description, selectedGiveaway.id, t)}
                 </p>
 
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 max-w-2xl mx-auto">

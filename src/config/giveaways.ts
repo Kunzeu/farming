@@ -360,8 +360,8 @@ export function generateAdventGiveaways(year: number = 2025): Giveaway[] {
     adventGiveaways.push({
       id: `advent-${year}-12-${dayStr}`,
       slug: `advent-${year}-12-${dayStr}`,
-      title: `Sorteo Día ${day} - Diciembre ${year}`,
-      description: `¡Abre el sorteo del día ${day} de diciembre y participa para ganar increíbles premios!`,
+      title: `giveaways.advent.title`,
+      description: `giveaways.advent.description`,
       startDate: startDate,
       endDate: endDate,
       status: 'upcoming', // Se actualizará automáticamente según la fecha
@@ -392,7 +392,17 @@ export function getAllGiveawaysWithAdvent(year: number = 2025): Giveaway[] {
 
 // Función para obtener sorteo por ID
 export function getGiveawayById(id: string): Giveaway | undefined {
-  return GIVEAWAYS.find(g => g.id === id);
+  // First try to find in regular giveaways
+  const regularGiveaway = GIVEAWAYS.find(g => g.id === id);
+  if (regularGiveaway) return regularGiveaway;
+
+  // If not found and it's an advent giveaway, generate and search
+  if (id.startsWith('advent-')) {
+    const adventGiveaways = getAllGiveawaysWithAdvent();
+    return adventGiveaways.find(g => g.id === id);
+  }
+
+  return undefined;
 }
 
 // Función para obtener sorteo por slug

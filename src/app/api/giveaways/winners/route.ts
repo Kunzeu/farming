@@ -51,12 +51,20 @@ export async function GET(request: NextRequest) {
 
       let itemIcon = null;
       let gemPrize = false;
+      let prizeDescription = row.prize_description;
+      let isGoldPrize = false;
 
       // Intentar encontrar el premio en la configuración para obtener el icono
       if (giveaway && giveaway.prizes) {
         const prizeConfig = giveaway.prizes.find(p => p.position == row.position);
         if (prizeConfig) {
           gemPrize = prizeConfig.gemPrize || false;
+          isGoldPrize = prizeConfig.icon === 'gold';
+
+          // Override description for gold prizes
+          if (isGoldPrize) {
+            prizeDescription = `${prizeConfig.quantity || prizeConfig.prize} Gold`;
+          }
 
           if (prizeConfig.itemId) {
             try {
@@ -94,7 +102,7 @@ export async function GET(request: NextRequest) {
         winnersAnnouncedAt: row.announced_at,
         position: row.position,
         accountName: row.account_name,
-        prizeDescription: row.prize_description,
+        prizeDescription: prizeDescription,
         prizeValue: row.prize_value,
         announcedAt: row.announced_at,
         itemIcon,
