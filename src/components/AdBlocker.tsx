@@ -50,15 +50,30 @@ export default function AdBlocker() {
           adScript.remove();
         }
 
+        // Eliminar los scripts de NitroPay si existen
+        const nitroPayScripts = document.querySelectorAll('script[src*="nitropay"], script[data-cfasync="false"]');
+        nitroPayScripts.forEach((script) => {
+          if (script.getAttribute('src')?.includes('nitropay') || 
+              (script.getAttribute('data-cfasync') === 'false' && script.textContent?.includes('nitroAds'))) {
+            script.remove();
+          }
+        });
+
         // Limpiar el objeto global de AdSense
         if (window.adsbygoogle) {
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           delete (window as any).adsbygoogle;
         }
 
+        // Limpiar el objeto global de NitroPay
+        if (window.nitroAds) {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          delete (window as any).nitroAds;
+        }
+
         // Bloquear todos los contenedores de anuncios
         const adContainers = document.querySelectorAll(
-          '.adsbygoogle, [data-ad-client], [data-ad-slot], ins.adsbygoogle, iframe[src*="googlesyndication"], iframe[src*="doubleclick"], iframe[src*="googleads"], div[id*="google_ads"], .google-auto-placed, .apb-container'
+          '.adsbygoogle, [data-ad-client], [data-ad-slot], ins.adsbygoogle, iframe[src*="googlesyndication"], iframe[src*="doubleclick"], iframe[src*="googleads"], div[id*="google_ads"], .google-auto-placed, .apb-container, .nitropay-ad, div[id*="nitropay-ad"], iframe[src*="nitropay"]'
         );
 
         adContainers.forEach((ad) => {
@@ -148,7 +163,7 @@ export default function AdBlocker() {
       const handleClick = (e: Event) => {
         const target = e.target as HTMLElement;
         const blockedAd = target.closest(
-          '.adsbygoogle, [data-ad-client], [data-ad-slot]'
+          '.adsbygoogle, [data-ad-client], [data-ad-slot], .nitropay-ad, div[id*="nitropay-ad"]'
         ) as HTMLElement;
 
         if (blockedAd && blockedAd.style.display === 'none') {

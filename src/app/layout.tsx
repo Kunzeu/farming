@@ -13,6 +13,7 @@ import PageUsageTracker from "@/components/PageUsageTracker";
 // import { Analytics } from "@vercel/analytics/next"; // Deshabilitado para reducir carga
 import { generateDynamicMetadata } from "@/lib/metadata";
 import GoogleAdsLoader from '@/components/GoogleAdsLoader';
+import NitroPayLoader from '@/components/NitroPayLoader';
 import AdBlocker from '@/components/AdBlocker';
 import SupportNotice from '@/components/ui/SupportNotice';
 
@@ -43,11 +44,26 @@ export default function RootLayout({
         {/* Performance: Preconnect crítico para Desktop */}
         <link rel="preconnect" href="https://api.guildwars2.com" />
         <link rel="preconnect" href="https://pagead2.googlesyndication.com" />
+        <link rel="preconnect" href="https://s.nitropay.com" />
         <link rel="preconnect" href="https://static.cloudflareinsights.com" />
         <link rel="dns-prefetch" href="https://render.guildwars2.com" />
         <link rel="dns-prefetch" href="https://wiki.guildwars2.com" />
 
         {/* Google Ads Script - se carga dinámicamente en el cliente */}
+
+        {/* NitroPay Ad Script - Instalación según guía oficial */}
+        {/* Nota: El script se carga aquí en el head según la guía, pero NitroPayLoader lo eliminará si el usuario es Patreon */}
+        <script
+          data-cfasync="false"
+          dangerouslySetInnerHTML={{
+            __html: `window.nitroAds=window.nitroAds||{createAd:function(){return new Promise(e=>{window.nitroAds.queue.push(["createAd",arguments,e])})},addUserToken:function(){window.nitroAds.queue.push(["addUserToken",arguments])},queue:[]};`
+          }}
+        />
+        <script
+          data-cfasync="false"
+          async
+          src="https://s.nitropay.com/ads-2282.js"
+        />
 
         {/* Google Analytics */}
         <script async src="https://www.googletagmanager.com/gtag/js?id=G-WXS6KYHEXT"></script>
@@ -205,6 +221,7 @@ export default function RootLayout({
                 <CookieBanner />
                 <SupportNotice />
                 <GoogleAdsLoader />
+                <NitroPayLoader />
                 <AdBlocker />
                 {/* <Analytics /> Deshabilitado para reducir carga */}
               </div>
@@ -262,7 +279,10 @@ export default function RootLayout({
                 '[data-ad-slot]', 
                 '.google-auto-placed',
                 'iframe[src*="googlesyndication"]',
-                'iframe[src*="googleads"]'
+                'iframe[src*="googleads"]',
+                '.nitropay-ad',
+                'div[id*="nitropay-ad"]',
+                'iframe[src*="nitropay"]'
               ];
               
               // 1. Verificar contenido de texto en contenedores de anuncios
@@ -314,7 +334,7 @@ export default function RootLayout({
             
             // Prevenir clics en anuncios bloqueados
             function preventClicksOnBlockedAds() {
-              const adContainers = document.querySelectorAll('.adsbygoogle, [data-ad-client], [data-ad-slot], ins.adsbygoogle');
+              const adContainers = document.querySelectorAll('.adsbygoogle, [data-ad-client], [data-ad-slot], ins.adsbygoogle, .nitropay-ad, div[id*="nitropay-ad"]');
               adContainers.forEach(container => {
                 if (container.style.display === 'none' || container.style.opacity === '0') {
                   // Si está bloqueado, prevenir todos los clics
@@ -346,7 +366,7 @@ export default function RootLayout({
               if (!nav) return;
               
               // Buscar y bloquear cualquier anuncio dentro del nav
-              const adsInNav = nav.querySelectorAll('.adsbygoogle, [data-ad-client], [data-ad-slot], ins.adsbygoogle, iframe[src*="googlesyndication"], iframe[src*="doubleclick"]');
+              const adsInNav = nav.querySelectorAll('.adsbygoogle, [data-ad-client], [data-ad-slot], ins.adsbygoogle, iframe[src*="googlesyndication"], iframe[src*="doubleclick"], .nitropay-ad, div[id*="nitropay-ad"], iframe[src*="nitropay"]');
               adsInNav.forEach(ad => {
                 ad.style.display = 'none';
                 ad.style.visibility = 'hidden';
@@ -382,7 +402,7 @@ export default function RootLayout({
             // Prevenir clics globalmente en elementos bloqueados
             document.addEventListener('click', function(e) {
               const target = e.target;
-              const blockedAd = target.closest('.adsbygoogle, [data-ad-client], [data-ad-slot]');
+              const blockedAd = target.closest('.adsbygoogle, [data-ad-client], [data-ad-slot], .nitropay-ad, div[id*="nitropay-ad"]');
               if (blockedAd && (blockedAd.style.display === 'none' || blockedAd.style.opacity === '0')) {
                 e.preventDefault();
                 e.stopPropagation();

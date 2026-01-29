@@ -70,21 +70,17 @@ const pageTitleMap: Record<string, string> = {
   '/data-management': 'pageTitles.dataManagement',
 };
 
-// Función para obtener el título de la página basado en la ruta
 function getPageTitle(pathname: string): string {
-  // Buscar coincidencia exacta primero
   if (pageTitleMap[pathname]) {
     return pageTitleMap[pathname];
   }
   
-  // Buscar coincidencia parcial para rutas anidadas
   for (const [route, titleKey] of Object.entries(pageTitleMap)) {
     if (pathname.startsWith(route) && route !== '/') {
       return titleKey;
     }
   }
   
-  // Título por defecto
   return 'pageTitles.home';
 }
 
@@ -96,11 +92,8 @@ export async function generateDynamicMetadata(): Promise<Metadata> {
   const randomSlogan = getRandomSlogan();
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://www.true-farming.com';
   
-  // Obtener el título de la página basado en la ruta
   const pageTitleKey = getPageTitle(pathname);
   
-  // Por ahora usamos títulos en inglés como fallback
-  // En el futuro esto se puede hacer dinámico con el idioma del usuario
   const pageTitles: Record<string, string> = {
     'pageTitles.home': 'Home',
     'pageTitles.farmingRoutes': 'Farming Routes',

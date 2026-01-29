@@ -494,6 +494,12 @@ const nextConfig = {
       { source: '/fr/(.*)', destination: '/', permanent: true },
       { source: '/de', destination: '/', permanent: true },
       { source: '/de/(.*)', destination: '/', permanent: true },
+      // Redirección 301 de ads.txt a la versión alojada de NitroPay
+      { 
+        source: '/ads.txt', 
+        destination: 'https://api.nitropay.com/v1/ads-2282.txt', 
+        permanent: true 
+      },
     ];
   },
 

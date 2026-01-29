@@ -492,22 +492,22 @@ export default function HomePage() {
     };
   }, [isLoading]);
 
-  // Obtener el último dashboard agregado (orphanRoute)
+  // Obtener el último dashboard agregado (garden)
   useEffect(() => {
-    // Crear tarjeta para orphanRoute (última agregada)
-    const orphanRouteCard: DashboardCard = {
-      id: "orphanRoute",
-      title: "wintersday.orphan.title",
-      description: "wintersday.orphan.cardDesc",
-      href: "/festivals/wintersday/Orphan",
-      icon: <Map className="w-8 h-8" />,
-      color: "from-cyan-500 to-blue-600",
+    // Crear tarjeta para garden (última agregada)
+    const gardenCard: DashboardCard = {
+      id: "garden",
+      title: "dashboard.garden.title",
+      description: "dashboard.garden.description",
+      href: "/garden",
+      icon: <TreePine className="w-8 h-8" />,
+      color: "from-emerald-500 to-green-600",
       delay: 0,
       visible: true,
       order: 17
     };
 
-    setMostUsedDashboard(reconstructCardWithIcon(orphanRouteCard));
+    setMostUsedDashboard(reconstructCardWithIcon(gardenCard));
   }, []);
 
   // Mostrar mensaje "Check our new tool" cada 6 segundos
