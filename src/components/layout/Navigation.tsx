@@ -284,8 +284,8 @@ const Navigation = () => {
 
     const calculateSpecialEvent = () => {
       const now = new Date();
-      // 03 de febrero de 2026 a las 11:00 UTC
-      const endTime = new Date('2026-02-03T11:00:00.000Z');
+      // 12 de Mayo de 2026 a las 12:00 UTC
+      const endTime = new Date('2026-05-12T16:00:00.000Z');
 
       const diff = endTime.getTime() - now.getTime();
 
