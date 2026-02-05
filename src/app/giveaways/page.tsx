@@ -346,6 +346,12 @@ const GiveawaysPage = () => {
       try {
         const response = await fetch(`/api/users/${user.id}/summary`, {
           signal: controller.signal,
+          cache: "no-store",
+          headers: {
+            "Cache-Control": "no-cache, no-store, must-revalidate",
+            "Pragma": "no-cache",
+            "Expires": "0",
+          },
         });
         if (response.ok) {
           const data = await response.json();

@@ -21,7 +21,7 @@ type SummaryCacheEntry = {
   expiry: number;
 };
 const summaryCache = new Map<string, SummaryCacheEntry>();
-const SUMMARY_TTL_MS = 10 * 60 * 1000; // 10 minutos (optimizado para Vercel)
+const SUMMARY_TTL_MS = 1 * 60 * 1000; // 1 minuto (reducido para reflejar cambios más rápido)
 
 // GET /api/users/[id]/summary
 // Resumen para cliente: hasApiKey, validación básica y accountInfo (si aplica)
@@ -67,14 +67,14 @@ export async function GET(
           role,
           isActive,
           lastValidatedAt: cached.data.lastValidatedAt,
-        }, { headers: { 'Cache-Control': 'private, max-age=60' } });
+        }, { headers: { 'Cache-Control': 'private, no-cache, no-store, must-revalidate' } });
       }
       try {
         const [tokenRes, accountRes] = await Promise.all([
           fetch(`https://api.guildwars2.com/v2/tokeninfo?access_token=${gw2ApiKey}`),
           fetch(`https://api.guildwars2.com/v2/account?access_token=${gw2ApiKey}`),
         ]);
-        
+
         // Verificar si ambas respuestas son exitosas
         if (tokenRes.ok && accountRes.ok) {
           const acct = await accountRes.json();
@@ -125,9 +125,10 @@ export async function GET(
       },
       {
         headers: {
-          // Cache privado de 10 minutos - Optimizado para Vercel
-          // "private" asegura que no se cachee en CDN compartido
-          'Cache-Control': 'private, max-age=600, stale-while-revalidate=120',
+          // Desactivar cache del navegador para el resumen del usuario
+          'Cache-Control': 'private, no-cache, no-store, must-revalidate',
+          'Pragma': 'no-cache',
+          'Expires': '0'
         },
       }
     );
