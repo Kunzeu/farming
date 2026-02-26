@@ -507,6 +507,12 @@ const Navigation = () => {
       icon: Package,
       keywords: ['salvage', 'salvaging', 'salvar', 'salvamento', 'research notes', 'notas', 'kits', 'copper-fed', 'silver-fed', 'runecrafter']
     },
+    {
+      href: '/homestead',
+      label: t('pageTitles.homestead', 'Homesteading'),
+      icon: Home,
+      keywords: ['homestead', 'hogar', 'casa', 'decoration', 'decoracion', 'forge', 'wood', 'metal', 'fiber']
+    },
 
     // Solo mostrar Buyout Calculator para admins
     ...(user?.role === 'admin' ? [{

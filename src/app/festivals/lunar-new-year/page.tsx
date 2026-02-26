@@ -83,6 +83,7 @@ const LunarNewYearPage = () => {
   // Estados para ordenamiento de envelopes
   const [envelopeSortField, setEnvelopeSortField] = useState<string>('quantity');
   const [envelopeSortDirection, setEnvelopeSortDirection] = useState<'asc' | 'desc'>('desc');
+  const [envelopeMarketPrice, setEnvelopeMarketPrice] = useState(0);
 
   usePageTitle("pageTitles.lunarNewYear", "Lunar New Year");
   const { t, lang } = useI18n();
@@ -268,6 +269,17 @@ const LunarNewYearPage = () => {
         priceBuyPerUnit: d.id === 104154 ? 8888 : d.id === 68640 ? 88888 : (pricesMap[d.id]?.buys?.unit_price ?? 0),
       }));
       setEnvelopeItems(mapped);
+
+      // Fetch market price for Divine Lucky Envelope (68646) for the calculator
+      try {
+        const priceRes = await fetch('https://api.guildwars2.com/v2/commerce/prices/68646');
+        if (priceRes.ok) {
+          const priceData = await priceRes.json();
+          setEnvelopeMarketPrice(priceData.sells.unit_price);
+        }
+      } catch (priceErr) {
+        console.error('Error fetching envelope market price:', priceErr);
+      }
 
       // Guardar en caché
       try {
@@ -588,8 +600,8 @@ const LunarNewYearPage = () => {
                   }
                 }}
                 className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all duration-200 ${selectedSection === tab.id
-                    ? "bg-red-600/80 text-white border border-red-400/50 shadow-lg"
-                    : "bg-gray-900/80 text-gray-300 hover:bg-gray-800/90 border border-red-500/20 hover:border-red-500/40"
+                  ? "bg-red-600/80 text-white border border-red-400/50 shadow-lg"
+                  : "bg-gray-900/80 text-gray-300 hover:bg-gray-800/90 border border-red-500/20 hover:border-red-500/40"
                   }`}
               >
                 <tab.icon className="w-4 h-4" />
@@ -650,14 +662,88 @@ const LunarNewYearPage = () => {
 
             {selectedSection === "calculators" && (
               <div className="space-y-8">
-                <div className="bg-gray-900/80 backdrop-blur-sm border border-red-500/30 rounded-lg p-6 shadow-2xl">
-                  <h2 className="text-2xl font-bold text-white mb-4 flex items-center">
-                    <Calculator className="w-6 h-6 mr-3 text-red-400" />
-                    {t("festivals.tabs.calculators")}
+                <div className="bg-gray-900/80 backdrop-blur-sm border border-red-500/30 rounded-lg p-6 shadow-2xl overflow-hidden relative">
+                  <div className="absolute top-0 right-0 w-64 h-64 bg-red-600/10 rounded-full -mr-32 -mt-32 blur-3xl"></div>
+
+                  <h2 className="text-2xl font-bold text-white mb-6 flex items-center relative z-10">
+                    <Calculator className="w-8 h-8 mr-3 text-red-400 p-1.5 bg-red-400/20 rounded-lg" />
+                    {t("lunarNewYear.calculator.title")}
                   </h2>
-                  <p className="text-gray-300">
-                    {t("festivals.common.comingSoon")}
+
+                  <p className="text-gray-300 mb-8 relative z-10 max-w-2xl">
+                    {t("lunarNewYear.calculator.description")}
                   </p>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 relative z-10">
+                    {/* Tarjeta: Valor Estimado de Apertura */}
+                    <div className="bg-gray-800/60 p-5 rounded-xl border border-red-500/20 shadow-lg group hover:border-red-500/40 transition-all duration-300">
+                      <div className="text-gray-400 text-xs font-bold uppercase tracking-wider mb-2 flex justify-between">
+                        {t("lunarNewYear.calculator.expectedValue")}
+                        <Info className="w-4 h-4 text-red-400/50 group-hover:text-red-400 transition-colors" />
+                      </div>
+                      <div className="text-2xl font-extrabold text-yellow-400 mb-1">
+                        {formatGoldSilverCopper(16400)}
+                      </div>
+                      <div className="text-gray-500 text-[10px] italic">
+                        {t("lunarNewYear.calculator.mfNote")}
+                      </div>
+                    </div>
+
+                    {/* Tarjeta: Precio de Venta (Neto) */}
+                    <div className="bg-gray-800/60 p-5 rounded-xl border border-red-500/20 shadow-lg group hover:border-red-500/40 transition-all duration-300">
+                      <div className="text-gray-400 text-xs font-bold uppercase tracking-wider mb-2">
+                        {t("lunarNewYear.calculator.marketPrice")}
+                      </div>
+                      <div className="text-2xl font-extrabold text-white mb-1">
+                        {envelopeMarketPrice ? formatGoldSilverCopper(Math.floor(envelopeMarketPrice * 0.85)) : '...'}
+                      </div>
+                      <div className="text-gray-500 text-[10px]">
+                        TP Sell: {envelopeMarketPrice ? formatGoldSilverCopper(envelopeMarketPrice) : '...'}
+                      </div>
+                    </div>
+
+                    {/* Tarjeta: Beneficio Resultante */}
+                    <div className="bg-gray-800/60 p-5 rounded-xl border border-red-500/20 shadow-lg group hover:border-red-500/40 transition-all duration-300 flex flex-col justify-between">
+                      <div>
+                        <div className="text-gray-400 text-xs font-bold uppercase tracking-wider mb-2">
+                          {t("lunarNewYear.calculator.profitPerEnvelope")}
+                        </div>
+                        <div className={`text-2xl font-extrabold mb-1 ${16400 - (envelopeMarketPrice * 0.85) > 0 ? 'text-green-400' : 'text-red-400'}`}>
+                          {envelopeMarketPrice ? (16400 - (envelopeMarketPrice * 0.85) > 0 ? '+' : '') : ''}
+                          {envelopeMarketPrice ? formatGoldSilverCopper(Math.floor(16400 - (envelopeMarketPrice * 0.85))) : '...'}
+                        </div>
+                      </div>
+
+                      <div className="mt-4 pt-4 border-t border-gray-700 flex items-center justify-between">
+                        <span className="text-xs font-bold text-gray-400 uppercase tracking-tighter">{t("lunarNewYear.calculator.recommendation")}:</span>
+                        <span className={`px-4 py-1 rounded-md text-[10px] font-black uppercase tracking-widest ${16400 - (envelopeMarketPrice * 0.85) > 0 ? 'bg-green-500/20 text-green-400 border border-green-500/30' : 'bg-red-500/20 text-red-400 border border-red-500/30'}`}>
+                          {16400 - (envelopeMarketPrice * 0.85) > 0 ? t("lunarNewYear.calculator.open") : t("lunarNewYear.calculator.sell")}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Notas y Advertencias */}
+                  <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-6 relative z-10">
+                    <div className="p-4 bg-green-900/10 rounded-xl border border-green-500/20">
+                      <h4 className="flex items-center gap-2 text-green-400 font-bold mb-2 text-sm">
+                        <span className="w-1.5 h-1.5 bg-green-400 rounded-full animate-pulse"></span>
+                        {t("lunarNewYear.calculator.open")}
+                      </h4>
+                      <p className="text-gray-400 text-xs leading-relaxed">
+                        {t("lunarNewYear.calculator.openNote")}
+                      </p>
+                    </div>
+                    <div className="p-4 bg-red-900/10 rounded-xl border border-red-500/20">
+                      <h4 className="flex items-center gap-2 text-red-400 font-bold mb-2 text-sm">
+                        <span className="w-1.5 h-1.5 bg-red-400 rounded-full"></span>
+                        {t("lunarNewYear.calculator.sell")}
+                      </h4>
+                      <p className="text-gray-400 text-xs leading-relaxed">
+                        {t("lunarNewYear.calculator.sellNote")}
+                      </p>
+                    </div>
+                  </div>
                 </div>
               </div>
             )}
