@@ -98,13 +98,54 @@ const translateGiveawayText = (text: string, giveawayId: string, t: (key: string
     const day = parseInt(adventMatch[2], 10).toString(); // Remove leading zero
 
     // Translate the key and replace placeholders
-    const translated = t(text);
-    return translated
+    return t(text)
       .replace('{day}', day)
       .replace('{year}', year);
   }
 
-  // For non-advent giveaways, just translate normally
+  const monthNames = [
+    'january', 'february', 'march', 'april', 'may', 'june',
+    'july', 'august', 'september', 'october', 'november', 'december'
+  ];
+
+  // Try different ID patterns
+  let year: string | null = null;
+  let monthName: string | null = null;
+
+  // Format: monthly-YYYY-MM
+  const monthlyMatch = giveawayId.match(/^monthly-(\d{4})-(\d{1,2})$/);
+  if (monthlyMatch) {
+    year = monthlyMatch[1];
+    const monthIndex = parseInt(monthlyMatch[2], 10) - 1;
+    monthName = t(`months.${monthNames[monthIndex]}`);
+  }
+
+  // Format: monthName-YYYY
+  const reversedMonthMatch = giveawayId.match(/^([a-z]+)-(\d{4})$/i);
+  if (reversedMonthMatch) {
+    const mName = reversedMonthMatch[1].toLowerCase();
+    year = reversedMonthMatch[2];
+    const mIndex = monthNames.indexOf(mName);
+    if (mIndex !== -1) {
+      monthName = t(`months.${monthNames[mIndex]}`);
+    }
+  }
+
+  // Format: YYYY-MM
+  const dateMatch = giveawayId.match(/^(\d{4})-(\d{1,2})$/);
+  if (dateMatch) {
+    year = dateMatch[1];
+    const mIdx = parseInt(dateMatch[2], 10) - 1;
+    monthName = t(`months.${monthNames[mIdx]}`);
+  }
+
+  if (year && monthName && text.includes('monthly')) {
+    return t(text)
+      .replace('{month}', monthName)
+      .replace('{year}', year);
+  }
+
+  // For other giveaways, just translate normally
   return t(text);
 };
 
@@ -630,7 +671,9 @@ const GiveawaysPage = () => {
             height={24}
             className="w-6 h-6 rounded"
             onError={(e: React.SyntheticEvent<HTMLImageElement, Event>) => {
-              e.currentTarget.src = "/images/icons/raw.webp";
+              e.currentTarget.src = itemInfo.gemPrize
+                ? "https://wiki.guildwars2.com/images/8/88/Gem_%28highres%29.png"
+                : "https://render.guildwars2.com/file/65A54DB9415714041ED9367305920C82594D184E/60829.png";
             }}
           />
           <span className="font-medium text-white">
@@ -818,14 +861,6 @@ const GiveawaysPage = () => {
               <h2 className="text-2xl font-bold text-white mb-2">
                 {translateGiveawayText(winners[0].giveawayTitle, winners[0].giveawayId, t)}
               </h2>
-              <Link
-                href="/holiday-calendar"
-                className="inline-flex items-center gap-2 px-6 py-2 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-500 hover:to-emerald-500 text-white rounded-full font-semibold shadow-lg shadow-green-900/40 hover:shadow-green-900/60 transform hover:-translate-y-0.5 transition-all duration-200 mt-4"
-              >
-                <Gift className="w-4 h-4" />
-                <span>{t('nav.holidayCalendar', 'Calendario de Adviento')}</span>
-                <ExternalLink className="w-3 h-3 ml-1 opacity-70" />
-              </Link>
             </div>
 
             <div className="grid grid-cols-3 gap-4">
@@ -869,7 +904,7 @@ const GiveawaysPage = () => {
                                   height={16}
                                   className="w-4 h-4 rounded"
                                   onError={(e: React.SyntheticEvent<HTMLImageElement, Event>) => {
-                                    e.currentTarget.src = "https://render.guildwars2.com/file/65941.png";
+                                    e.currentTarget.src = "https://wiki.guildwars2.com/images/8/88/Gem_%28highres%29.png";
                                   }}
                                 />
                                 <span>{winner.prizeDescription}</span>
@@ -883,7 +918,9 @@ const GiveawaysPage = () => {
                                   height={16}
                                   className="w-4 h-4 rounded"
                                   onError={(e: React.SyntheticEvent<HTMLImageElement, Event>) => {
-                                    e.currentTarget.src = "/images/icons/raw.webp";
+                                    e.currentTarget.src = winner.prizeDescription.toLowerCase().includes('ecto') || winner.prizeDescription.toLowerCase().includes('pegote')
+                                      ? "https://wiki.guildwars2.com/images/9/9b/Glob_of_Ectoplasm.png"
+                                      : "https://wiki.guildwars2.com/images/8/88/Gem_%28highres%29.png";
                                   }}
                                 />
                                 <span>{winner.prizeDescription}</span>
@@ -917,7 +954,7 @@ const GiveawaysPage = () => {
                                   height={16}
                                   className="w-4 h-4 rounded"
                                   onError={(e: React.SyntheticEvent<HTMLImageElement, Event>) => {
-                                    e.currentTarget.src = "https://render.guildwars2.com/file/65941.png";
+                                    e.currentTarget.src = "https://wiki.guildwars2.com/images/8/88/Gem_%28highres%29.png";
                                   }}
                                 />
                                 <span>{itemInfo.prize || itemInfo.quantity || ''}</span>
@@ -931,7 +968,7 @@ const GiveawaysPage = () => {
                                   height={16}
                                   className="w-4 h-4 rounded"
                                   onError={(e: React.SyntheticEvent<HTMLImageElement, Event>) => {
-                                    e.currentTarget.src = "https://wiki.guildwars2.com/images/9/9b/Glob_of_Ectoplasm.png";
+                                    e.currentTarget.src = "https://render.guildwars2.com/file/65A54DB9415714041ED9367305920C82594D184E/60829.png";
                                   }}
                                 />
                                 <span>{itemInfo.quantity || ''}x {itemInfo.itemName.startsWith("giveaways.") ? t(itemInfo.itemName) : itemInfo.itemName}</span>
@@ -973,13 +1010,13 @@ const GiveawaysPage = () => {
                             ) : prizeInfo.itemId ? (
                               <>
                                 <Image
-                                  src="https://wiki.guildwars2.com/images/9/9b/Glob_of_Ectoplasm.png"
+                                  src="https://render.guildwars2.com/file/65A54DB9415714041ED9367305920C82594D184E/60829.png"
                                   alt={prizeInfo.prize}
                                   width={16}
                                   height={16}
                                   className="w-4 h-4 rounded"
                                   onError={(e: React.SyntheticEvent<HTMLImageElement, Event>) => {
-                                    e.currentTarget.src = "/images/icons/raw.webp";
+                                    e.currentTarget.src = "https://render.guildwars2.com/file/65A54DB9415714041ED9367305920C82594D184E/60829.png";
                                   }}
                                 />
                                 <span>{prizeInfo.quantity || prizeInfo.prize || ''}</span>

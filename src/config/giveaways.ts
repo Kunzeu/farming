@@ -24,144 +24,120 @@ export interface Giveaway {
 }
 
 // Configuración de todos los sorteos
-export const GIVEAWAYS: Giveaway[] = [
-  {
-    id: 'october-2025',
-    slug: 'october-2025-gems',
-    title: 'giveaways.october2025.title',
-    description: 'giveaways.october2025.description',
-    startDate: '2025-10-01T00:00:00.000Z', // 1 Oct 2025 00:00 UTC = 30 Sep 2025 19:00 Colombia
-    endDate: '2025-11-01T00:00:00.000Z',   // 1 Nov 2025 00:00 UTC = 31 Oct 2025 19:00 Colombia
-    status: 'winners_announced',
-    prizes: [
-      { position: 1, prize: '1200', icon: 'gem', quantity: 1200, gemPrize: true },
-      { position: 2, prize: '800', icon: 'gem', quantity: 800, gemPrize: true },
-      { position: 3, prize: '400', icon: 'gem', quantity: 400, gemPrize: true },
-      { position: 4, prize: '400', icon: 'gem', quantity: 400, gemPrize: true },
-      { position: 5, prize: '250', icon: 'package', itemId: 19721, quantity: 250 },
-      { position: 6, prize: '250', icon: 'package', itemId: 19721, quantity: 250 },
-      { position: 7, prize: '250', icon: 'package', itemId: 19721, quantity: 250 },
-      { position: 8, prize: '250', icon: 'package', itemId: 19721, quantity: 250 },
-      { position: 9, prize: '250', icon: 'package', itemId: 19721, quantity: 250 },
-      { position: 10, prize: '250', icon: 'package', itemId: 19721, quantity: 250 }
-    ],
-    requirements: [
-      'Link your GW2 API key to your account',
-      'Join our Discord server',
-      'Follow us on social media'
-    ],
-    rules: [
-      'One entry per person',
-      'Must have valid GW2 account',
-      'API key must be active during the entire giveaway period',
-      'Winners will be selected randomly',
-      'Prizes will be delivered within 48 hours'
-    ],
-    maxParticipants: undefined
-  },
-  {
-    id: 'november-2025',
-    slug: 'november-2025-gems',
-    title: 'giveaways.november2025.title',
-    description: 'giveaways.november2025.description',
-    startDate: '2025-11-01T00:00:00.000Z',
-    endDate: '2025-11-30T00:00:00.000Z',
-    status: 'winners_announced',
-    prizes: [
-      { position: 1, prize: '1200', icon: 'gem', quantity: 1200, gemPrize: true },
-      { position: 2, prize: '800', icon: 'gem', quantity: 800, gemPrize: true },
-      { position: 3, prize: '400', icon: 'gem', quantity: 400, gemPrize: true },
-      { position: 4, prize: '400', icon: 'gem', quantity: 400, gemPrize: true },
-      { position: 5, prize: '250', icon: 'package', itemId: 19721, quantity: 250 },
-      { position: 6, prize: '250', icon: 'package', itemId: 19721, quantity: 250 },
-      { position: 7, prize: '250', icon: 'package', itemId: 19721, quantity: 250 },
-      { position: 8, prize: '250', icon: 'package', itemId: 19721, quantity: 250 },
-      { position: 9, prize: '250', icon: 'package', itemId: 19721, quantity: 250 },
-      { position: 10, prize: '250', icon: 'package', itemId: 19721, quantity: 250 }
-    ],
-    requirements: [
-      'Link your GW2 API key to your account',
-      'Join our Discord server',
-      'Follow us on social media'
-    ],
-    rules: [
-      'One entry per person',
-      'Must have valid GW2 account',
-      'API key must be active during the entire giveaway period',
-      'Winners will be selected randomly',
-      'Prizes will be delivered within 48 hours'
-    ],
-    maxParticipants: undefined
-  },
-  {
-    id: 'january-2026',
-    slug: 'january-2026-gems',
-    title: 'giveaways.january2026.title',
-    description: 'giveaways.january2026.description',
-    startDate: '2026-01-01T00:00:00.000Z',
-    endDate: '2026-02-01T00:00:00.000Z',
-    status: 'active',
-    prizes: [
-      { position: 1, prize: '1200', icon: 'gem', quantity: 1200, gemPrize: true },
-      { position: 2, prize: '800', icon: 'gem', quantity: 800, gemPrize: true },
-      { position: 3, prize: '400', icon: 'gem', quantity: 400, gemPrize: true },
-      { position: 4, prize: '400', icon: 'gem', quantity: 400, gemPrize: true },
-      { position: 5, prize: '250', icon: 'package', itemId: 19721, quantity: 250 },
-      { position: 6, prize: '250', icon: 'package', itemId: 19721, quantity: 250 },
-      { position: 7, prize: '250', icon: 'package', itemId: 19721, quantity: 250 },
-      { position: 8, prize: '250', icon: 'package', itemId: 19721, quantity: 250 },
-      { position: 9, prize: '250', icon: 'package', itemId: 19721, quantity: 250 },
-      { position: 10, prize: '250', icon: 'package', itemId: 19721, quantity: 250 }
-    ],
-    requirements: [
-      'Link your GW2 API key to your account',
-      'Join our Discord server',
-      'Follow us on social media'
-    ],
-    rules: [
-      'One entry per person',
-      'Must have valid GW2 account',
-      'API key must be active during the entire giveaway period',
-      'Winners will be selected randomly',
-      'Prizes will be delivered within 48 hours'
-    ],
-    maxParticipants: undefined
-  },
-  {
-    id: 'february-2026',
-    slug: 'february-2026-gems',
-    title: 'giveaways.february2026.title',
-    description: 'giveaways.february2026.description',
-    startDate: '2026-02-01T00:00:00.000Z',
-    endDate: '2026-03-01T00:00:00.000Z',
-    status: 'active',
-    prizes: [
-      { position: 1, prize: '1200', icon: 'gem', quantity: 1200, gemPrize: true },
-      { position: 2, prize: '800', icon: 'gem', quantity: 800, gemPrize: true },
-      { position: 3, prize: '400', icon: 'gem', quantity: 400, gemPrize: true },
-      { position: 4, prize: '400', icon: 'gem', quantity: 400, gemPrize: true },
-      { position: 5, prize: '250', icon: 'package', itemId: 19721, quantity: 250 },
-      { position: 6, prize: '250', icon: 'package', itemId: 19721, quantity: 250 },
-      { position: 7, prize: '250', icon: 'package', itemId: 19721, quantity: 250 },
-      { position: 8, prize: '250', icon: 'package', itemId: 19721, quantity: 250 },
-      { position: 9, prize: '250', icon: 'package', itemId: 19721, quantity: 250 },
-      { position: 10, prize: '250', icon: 'package', itemId: 19721, quantity: 250 }
-    ],
-    requirements: [
-      'Link your GW2 API key to your account',
-      'Join our Discord server',
-      'Follow us on social media'
-    ],
-    rules: [
-      'One entry per person',
-      'Must have valid GW2 account',
-      'API key must be active during the entire giveaway period',
-      'Winners will be selected randomly',
-      'Prizes will be delivered within 48 hours'
-    ],
-    maxParticipants: undefined
-  }
+// Template para sorteos mensuales estándar
+const MONTH_NAMES = [
+  'january', 'february', 'march', 'april', 'may', 'june',
+  'july', 'august', 'september', 'october', 'november', 'december'
 ];
+
+const MONTHLY_GIVEAWAY_TEMPLATE = {
+  prizes: [
+    { position: 1, prize: '1200', icon: 'gem', quantity: 1200, gemPrize: true },
+    { position: 2, prize: '800', icon: 'gem', quantity: 800, gemPrize: true },
+    { position: 3, prize: '400', icon: 'gem', quantity: 400, gemPrize: true },
+    { position: 4, prize: '400', icon: 'gem', quantity: 400, gemPrize: true },
+    { position: 5, prize: '250', icon: 'package', itemId: 19721, quantity: 250 },
+    { position: 6, prize: '250', icon: 'package', itemId: 19721, quantity: 250 },
+    { position: 7, prize: '250', icon: 'package', itemId: 19721, quantity: 250 },
+    { position: 8, prize: '250', icon: 'package', itemId: 19721, quantity: 250 },
+    { position: 9, prize: '250', icon: 'package', itemId: 19721, quantity: 250 },
+    { position: 10, prize: '250', icon: 'package', itemId: 19721, quantity: 250 }
+  ] as Giveaway['prizes'],
+  requirements: [
+    'Link your GW2 API key to your account',
+    'Join our Discord server',
+    'Follow us on social media'
+  ],
+  rules: [
+    'One entry per person',
+    'Must have valid GW2 account',
+    'API key must be active during the entire giveaway period',
+    'Winners will be selected randomly',
+    'Prizes will be delivered within 48 hours'
+  ]
+};
+
+/**
+ * Genera un sorteo mensual basado en el mes y año
+ */
+export function generateMonthlyGiveaway(month: number, year: number): Giveaway {
+  const monthIndex = month - 1;
+  const monthStr = month.toString().padStart(2, '0');
+  const id = `monthly-${year}-${monthStr}`;
+
+  // Fecha de inicio: 1 del mes a las 00:00 UTC
+  const startDate = new Date(Date.UTC(year, monthIndex, 1, 0, 0, 0)).toISOString();
+
+  // Fecha de fin: 1 del siguiente mes a las 00:00 UTC
+  const nextMonth = new Date(Date.UTC(year, monthIndex + 1, 1, 0, 0, 0));
+  const endDate = nextMonth.toISOString();
+
+  // El estado se manejará dinámicamente, pero por defecto lo ponemos como 'upcoming'
+  // A menos que sea pasado, en cuyo caso 'winners_announced' (simulado para histórico)
+  const now = new Date();
+  let status: Giveaway['status'] = 'upcoming';
+  if (now >= nextMonth) {
+    status = 'winners_announced';
+  } else if (now >= new Date(startDate)) {
+    status = 'active';
+  }
+
+  return {
+    id,
+    slug: `${id}-gems`,
+    title: "giveaways.monthly.title",
+    description: "giveaways.monthly.description",
+    startDate,
+    endDate,
+    status,
+    ...MONTHLY_GIVEAWAY_TEMPLATE
+  };
+}
+
+/**
+ * Obtiene una lista de sorteos mensuales en un rango
+ */
+export function getMonthlyGiveawaysRange(
+  startMonth: number,
+  startYear: number,
+  endMonth: number,
+  endYear: number
+): Giveaway[] {
+  const giveaways: Giveaway[] = [];
+  let currMonth = startMonth;
+  let currYear = startYear;
+
+  while (currYear < endYear || (currYear === endYear && currMonth <= endMonth)) {
+    // Saltar diciembre de 2025 si se prefiere manejar exclusivamente por adviento.
+    if (!(currMonth === 12 && currYear === 2025)) {
+      giveaways.push(generateMonthlyGiveaway(currMonth, currYear));
+    }
+
+    currMonth++;
+    if (currMonth > 12) {
+      currMonth = 1;
+      currYear++;
+    }
+  }
+
+  return giveaways;
+}
+
+// Configuración de todos los sorteos (Generada dinámicamente)
+// Empezamos desde Octubre 2025 hasta el mes actual + 1 (para ver el siguiente)
+const currentNow = new Date();
+const currentMonth = currentNow.getUTCMonth() + 1;
+const currentYear = currentNow.getUTCFullYear();
+
+// Siguiente mes para mostrar el "Upcoming"
+let nMonth = currentMonth + 1;
+let nYear = currentYear;
+if (nMonth > 12) {
+  nMonth = 1;
+  nYear++;
+}
+
+export const GIVEAWAYS: Giveaway[] = getMonthlyGiveawaysRange(10, 2025, nMonth, nYear);
 
 // Generar sorteos de adviento para diciembre 2025
 export function generateAdventGiveaways(year: number = 2025): Giveaway[] {
@@ -424,15 +400,53 @@ export function getAllGiveawaysWithAdvent(year: number = 2025): Giveaway[] {
   return [...GIVEAWAYS, ...adventGiveaways];
 }
 
-// Función para obtener sorteo por ID
 export function getGiveawayById(id: string): Giveaway | undefined {
-  // First try to find in regular giveaways
+  if (!id) return undefined;
+
+  // First try to find in regular pre-generated giveaways
   const regularGiveaway = GIVEAWAYS.find(g => g.id === id);
   if (regularGiveaway) return regularGiveaway;
 
+  // Check if it's a monthly giveaway (format: monthly-YYYY-MM or monthly-YYYY-M)
+  const monthlyMatch = id.match(/^monthly-(\d{4})-(\d{1,2})$/);
+  if (monthlyMatch) {
+    const year = parseInt(monthlyMatch[1], 10);
+    const month = parseInt(monthlyMatch[2], 10);
+    if (month >= 1 && month <= 12) {
+      return generateMonthlyGiveaway(month, year);
+    }
+  }
+
+  // Check format: monthName-YYYY (e.g., february-2026)
+  const monthNames = [
+    'january', 'february', 'march', 'april', 'may', 'june',
+    'july', 'august', 'september', 'october', 'november', 'december'
+  ];
+  const reversedMonthMatch = id.match(/^([a-z]+)-(\d{4})$/i);
+  if (reversedMonthMatch) {
+    const monthName = reversedMonthMatch[1].toLowerCase();
+    const year = parseInt(reversedMonthMatch[2], 10);
+    const monthIndex = monthNames.indexOf(monthName);
+    if (monthIndex !== -1) {
+      return generateMonthlyGiveaway(monthIndex + 1, year);
+    }
+  }
+
+  // Check if it's just a YYYY-MM format
+  const dateMatch = id.match(/^(\d{4})-(\d{1,2})$/);
+  if (dateMatch) {
+    const year = parseInt(dateMatch[1], 10);
+    const month = parseInt(dateMatch[2], 10);
+    if (month >= 1 && month <= 12) {
+      return generateMonthlyGiveaway(month, year);
+    }
+  }
+
   // If not found and it's an advent giveaway, generate and search
   if (id.startsWith('advent-')) {
-    const adventGiveaways = getAllGiveawaysWithAdvent();
+    const adventMatch = id.match(/^advent-(\d{4})-12-(\d{2})$/);
+    const year = adventMatch ? parseInt(adventMatch[1], 10) : 2025;
+    const adventGiveaways = generateAdventGiveaways(year);
     return adventGiveaways.find(g => g.id === id);
   }
 
@@ -620,7 +634,7 @@ export async function getGiveawayItemsInfo(giveaway: Giveaway, lang: string = 'e
         return {
           ...prize,
           itemName: t ? t('giveaways.gems', 'Gems') : 'Gems',
-          itemIcon: 'https://wiki.guildwars2.com/images/8/88/Gem_%28highres%29.png'
+          itemIcon: 'https://render.guildwars2.com/file/65941.png'
         };
       } else if (prize.itemId) {
         const itemInfo = await getItemInfo(prize.itemId, lang);
@@ -631,14 +645,18 @@ export async function getGiveawayItemsInfo(giveaway: Giveaway, lang: string = 'e
           return {
             ...prize,
             itemName: translatedName,
-            itemIcon: 'https://wiki.guildwars2.com/images/9/9b/Glob_of_Ectoplasm.png'
+            itemIcon: prize.itemId === 19721
+              ? 'https://render.guildwars2.com/file/65A54DB9415714041ED9367305920C82594D184E/60829.png'
+              : 'https://render.guildwars2.com/file/65A54DB9415714041ED9367305920C82594D184E/60829.png'
           };
         }
 
         return {
           ...prize,
           itemName: itemInfo?.name || prize.prize,
-          itemIcon: itemInfo?.icon || 'https://wiki.guildwars2.com/images/9/9b/Glob_of_Ectoplasm.png'
+          itemIcon: itemInfo?.icon || (prize.itemId === 19721
+            ? 'https://render.guildwars2.com/file/65A54DB9415714041ED9367305920C82594D184E/60829.png'
+            : 'https://render.guildwars2.com/file/65A54DB9415714041ED9367305920C82594D184E/60829.png')
         };
       }
       return prize;

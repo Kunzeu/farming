@@ -2442,6 +2442,8 @@
   "giveaways.joinDiscordServer": "Unirse a nuestro servidor de Discord",
   "giveaways.followSocialMedia": "Seguirnos en redes sociales",
   "giveaways.october2025.description": "¡Nuestro primer sorteo comunitario! Gana increíbles premios del juego incluyendo códigos de gemas y materiales!",
+  "giveaways.monthly.title": "Sorteo de gemas de {month} - {year}",
+  "giveaways.monthly.description": "Gana códigos de gemas y materiales valiosos en nuestro sorteo mensual de {month}. ¡Participa ya y buena suerte!",
   "giveaways.october2025.title": "Sorteo de Gemas de Octubre - 2025",
   "giveaways.november2025.title": "Sorteo de Gemas de Noviembre - 2025",
   "giveaways.november2025.description": "Nuestro sorteo mensual de noviembre: gana códigos de gemas y materiales. ¡Participa y suerte!",

@@ -2327,6 +2327,8 @@
   "giveaways.joinDiscordServer": "Tritt unserem Discord-Server bei",
   "giveaways.followSocialMedia": "Folge uns in den sozialen Medien",
   "giveaways.october2025.description": "Unsere erste Community-Verlosung! Gewinne tolle In-Game-Preise inklusive Edelstein-Codes und Materialien!",
+  "giveaways.monthly.title": "{month} Edelstein-Verlosung - {year}",
+  "giveaways.monthly.description": "Gewinne Edelstein-Codes und wertvolle Materialien in unserer monatlichen Verlosung im {month}. Mach mit und viel Glück!",
   "giveaways.october2025.title": "Oktober-Edelstein-Verlosung - 2025",
   "giveaways.november2025.title": "November-Edelstein-Verlosung - 2025",
   "giveaways.november2025.description": "Unsere monatliche Verlosung im November: Gewinne Edelstein-Codes und wertvolle Materialien!",

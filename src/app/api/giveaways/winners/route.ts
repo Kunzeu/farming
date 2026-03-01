@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import pool from '@/lib/postgres-db';
-import { getAllGiveaways, getAllGiveawaysWithAdvent, getItemInfo } from '../../../../config/giveaways';
+import { getAllGiveaways, getAllGiveawaysWithAdvent, getGiveawayById, getItemInfo } from '../../../../config/giveaways';
 import { authorizeRequest } from '@/lib/server/jwt-utils';
 
 export const runtime = 'nodejs';
@@ -47,7 +47,7 @@ export async function GET(request: NextRequest) {
     const winners = await Promise.all(result.rows.map(async (row) => {
       const cleanGiveawayId = String(row.giveaway_id).trim();
       // console.log('Looking for giveaway:', cleanGiveawayId);
-      const giveaway = configuredGiveaways.find(g => g.id === cleanGiveawayId);
+      const giveaway = getGiveawayById(cleanGiveawayId);
 
       let itemIcon = null;
       let gemPrize = false;

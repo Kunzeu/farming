@@ -2361,6 +2361,8 @@
   "giveaways.joinDiscordServer": "Join our Discord server",
   "giveaways.followSocialMedia": "Follow us on social media",
   "giveaways.october2025.description": "Our first community giveaway! Win amazing in-game prizes including gem codes and materials!",
+  "giveaways.monthly.title": "{month} Gem Giveaway - {year}",
+  "giveaways.monthly.description": "Win gem codes and valuable materials in our {month} monthly giveaway. Join now and good luck!",
   "giveaways.october2025.title": "October Gem Giveaway - 2025",
   "giveaways.november2025.title": "November Gem Giveaway - 2025",
   "giveaways.november2025.description": "Our November monthly giveaway: win gem codes and valuable materials. Join and good luck!",
