@@ -2,14 +2,15 @@
 
 import { motion } from 'framer-motion';
 import { useState, useEffect } from 'react';
-import { 
-  BookOpen, 
+import {
+  BookOpen,
   ArrowLeft,
   Zap,
   Star,
   Info,
   ShoppingCart,
   ArrowRight,
+  ChevronRight,
   X
 } from 'lucide-react';
 import { usePageTitle } from '@/hooks/usePageTitle';
@@ -38,7 +39,7 @@ const PHILOSOPHER_STONE_ID = 20796;
 export default function ConversionGuidePage() {
   const { t, lang } = useI18n();
   usePageTitle(t('conversionGuidePage.title'), t('conversionGuidePage.title'));
-  
+
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [activeSection, setActiveSection] = useState<string>('');
   const [materialIcons, setMaterialIcons] = useState<Record<number, string>>({});
@@ -78,12 +79,12 @@ export default function ConversionGuidePage() {
             'Accept-Encoding': 'gzip, deflate, br'
           }
         });
-        
+
         if (response.ok) {
           const items = await response.json();
           const icons: Record<number, string> = {};
           const names: Record<number, string> = {};
-          
+
           items.forEach((item: { id: number; icon?: string; name?: string }) => {
             if (item.icon) {
               icons[item.id] = item.icon;
@@ -92,7 +93,7 @@ export default function ConversionGuidePage() {
               names[item.id] = item.name;
             }
           });
-          
+
           console.log('Material names loaded:', names);
           setMaterialIcons(icons);
           setMaterialNames(names);
@@ -166,7 +167,7 @@ export default function ConversionGuidePage() {
         top: offsetPosition,
         behavior: 'smooth'
       });
-      
+
       setMobileMenuOpen(false);
     }
   };
@@ -184,67 +185,74 @@ export default function ConversionGuidePage() {
                 <h3 className="text-white font-bold text-lg">{t('conversionGuidePage.sidebar.title')}</h3>
               </div>
               <nav className="space-y-1">
-                  <button 
-                    onClick={() => handleScrollTo('introduccion-detallado')} 
-                  className={`w-full flex items-center px-3 py-3 rounded-lg transition-all duration-200 group ${
-                      activeSection === 'introduccion-detallado' 
-                      ? 'text-blue-400 bg-blue-900/30 border-l-4 border-blue-400 shadow-md' 
-                      : 'text-gray-300 hover:text-white hover:bg-slate-700/40 hover:translate-x-1'
+                <button
+                  onClick={() => handleScrollTo('introduccion-detallado')}
+                  className={`w-full flex items-center px-3 py-3 rounded-lg transition-all duration-200 group ${activeSection === 'introduccion-detallado'
+                    ? 'text-blue-400 bg-blue-900/30 border-l-4 border-blue-400 shadow-md'
+                    : 'text-gray-300 hover:text-white hover:bg-slate-700/40 hover:translate-x-1'
                     }`}
-                  >
-                    <Info className={`w-4 h-4 mr-3 ${
-                      activeSection === 'introduccion-detallado' ? 'text-blue-400' : 'text-gray-400 group-hover:text-blue-400'
+                >
+                  <Info className={`w-4 h-4 mr-3 ${activeSection === 'introduccion-detallado' ? 'text-blue-400' : 'text-gray-400 group-hover:text-blue-400'
                     }`} />
                   <span className="font-medium">{t('conversionGuidePage.sidebar.introduction')}</span>
-                    {activeSection === 'introduccion-detallado' && <ArrowRight className="w-3 h-3 ml-auto text-blue-400" />}
-                  </button>
-                  
-                  <button 
-                    onClick={() => handleScrollTo('como-hacer-conversion')} 
-                  className={`w-full flex items-center px-3 py-3 rounded-lg transition-all duration-200 group ${
-                      activeSection === 'como-hacer-conversion' 
-                      ? 'text-green-400 bg-green-900/30 border-l-4 border-green-400 shadow-md' 
-                      : 'text-gray-300 hover:text-white hover:bg-slate-700/40 hover:translate-x-1'
+                  {activeSection === 'introduccion-detallado' && <ArrowRight className="w-3 h-3 ml-auto text-blue-400" />}
+                </button>
+
+                <button
+                  onClick={() => handleScrollTo('como-hacer-conversion')}
+                  className={`w-full flex items-center px-3 py-3 rounded-lg transition-all duration-200 group ${activeSection === 'como-hacer-conversion'
+                    ? 'text-green-400 bg-green-900/30 border-l-4 border-green-400 shadow-md'
+                    : 'text-gray-300 hover:text-white hover:bg-slate-700/40 hover:translate-x-1'
                     }`}
-                  >
-                    <Zap className={`w-4 h-4 mr-3 ${
-                      activeSection === 'como-hacer-conversion' ? 'text-green-400' : 'text-gray-400 group-hover:text-green-400'
+                >
+                  <Zap className={`w-4 h-4 mr-3 ${activeSection === 'como-hacer-conversion' ? 'text-green-400' : 'text-gray-400 group-hover:text-green-400'
                     }`} />
                   <span className="font-medium">{t('conversionGuidePage.sidebar.conversionProcess')}</span>
-                    {activeSection === 'como-hacer-conversion' && <ArrowRight className="w-3 h-3 ml-auto text-green-400" />}
-                  </button>
-                  
-                  <button 
-                    onClick={() => handleScrollTo('como-comprar-conversiones')} 
-                  className={`w-full flex items-center px-3 py-3 rounded-lg transition-all duration-200 group ${
-                      activeSection === 'como-comprar-conversiones' 
-                      ? 'text-purple-400 bg-purple-900/30 border-l-4 border-purple-400 shadow-md' 
-                      : 'text-gray-300 hover:text-white hover:bg-slate-700/40 hover:translate-x-1'
+                  {activeSection === 'como-hacer-conversion' && <ArrowRight className="w-3 h-3 ml-auto text-green-400" />}
+                </button>
+
+                <button
+                  onClick={() => handleScrollTo('como-comprar-conversiones')}
+                  className={`w-full flex items-center px-3 py-3 rounded-lg transition-all duration-200 group ${activeSection === 'como-comprar-conversiones'
+                    ? 'text-purple-400 bg-purple-900/30 border-l-4 border-purple-400 shadow-md'
+                    : 'text-gray-300 hover:text-white hover:bg-slate-700/40 hover:translate-x-1'
                     }`}
-                  >
-                    <ShoppingCart className={`w-4 h-4 mr-3 ${
-                      activeSection === 'como-comprar-conversiones' ? 'text-purple-400' : 'text-gray-400 group-hover:text-purple-400'
+                >
+                  <ShoppingCart className={`w-4 h-4 mr-3 ${activeSection === 'como-comprar-conversiones' ? 'text-purple-400' : 'text-gray-400 group-hover:text-purple-400'
                     }`} />
                   <span className="font-medium">{t('conversionGuidePage.sidebar.asBuyer')}</span>
-                    {activeSection === 'como-comprar-conversiones' && <ArrowRight className="w-3 h-3 ml-auto text-purple-400" />}
-                  </button>
-                  
-                  <button 
-                    onClick={() => handleScrollTo('como-vender-conversiones')} 
-                  className={`w-full flex items-center px-3 py-3 rounded-lg transition-all duration-200 group ${
-                      activeSection === 'como-vender-conversiones' 
-                      ? 'text-yellow-400 bg-yellow-900/30 border-l-4 border-yellow-400 shadow-md' 
-                      : 'text-gray-300 hover:text-white hover:bg-slate-700/40 hover:translate-x-1'
+                  {activeSection === 'como-comprar-conversiones' && <ArrowRight className="w-3 h-3 ml-auto text-purple-400" />}
+                </button>
+
+                <button
+                  onClick={() => handleScrollTo('como-vender-conversiones')}
+                  className={`w-full flex items-center px-3 py-3 rounded-lg transition-all duration-200 group ${activeSection === 'como-vender-conversiones'
+                    ? 'text-yellow-400 bg-yellow-900/30 border-l-4 border-yellow-400 shadow-md'
+                    : 'text-gray-300 hover:text-white hover:bg-slate-700/40 hover:translate-x-1'
                     }`}
-                  >
-                    <Star className={`w-4 h-4 mr-3 ${
-                      activeSection === 'como-vender-conversiones' ? 'text-yellow-400' : 'text-gray-400 group-hover:text-yellow-400'
+                >
+                  <Star className={`w-4 h-4 mr-3 ${activeSection === 'como-vender-conversiones' ? 'text-yellow-400' : 'text-gray-400 group-hover:text-yellow-400'
                     }`} />
                   <span className="font-medium">{t('conversionGuidePage.sidebar.asSeller')}</span>
-                    {activeSection === 'como-vender-conversiones' && <ArrowRight className="w-3 h-3 ml-auto text-yellow-400" />}
-                  </button>
-                </nav>
-              </div>
+                  {activeSection === 'como-vender-conversiones' && <ArrowRight className="w-3 h-3 ml-auto text-yellow-400" />}
+                </button>
+
+                <div className="pt-4 mt-4 border-t border-slate-700/50">
+                  <Link
+                    href="/conversion-guide-core"
+                    className="w-full flex items-center px-3 py-4 rounded-xl transition-all duration-300 bg-gradient-to-r from-blue-600/10 to-purple-600/10 border border-blue-500/20 hover:border-blue-400 group relative overflow-hidden"
+                  >
+                    <div className="absolute inset-0 bg-gradient-to-r from-blue-500/20 to-purple-500/20 opacity-0 group-hover:opacity-100 transition-opacity" />
+                    <Zap className="w-5 h-5 mr-3 text-blue-400 group-hover:scale-110 transition-transform relative z-10" />
+                    <div className="flex flex-col relative z-10">
+                      <span className="text-[10px] font-black uppercase tracking-[0.2em] text-blue-400 mb-0.5">Premium Guide</span>
+                      <span className="font-black text-white">{t('conversionGuidePage.coreLink')}</span>
+                    </div>
+                    <ChevronRight className="w-4 h-4 ml-auto text-blue-400 group-hover:translate-x-1 transition-transform relative z-10" />
+                  </Link>
+                </div>
+              </nav>
+            </div>
           </aside>
 
           {/* FAB - Floating Action Button - Solo en móvil */}
@@ -263,45 +271,41 @@ export default function ConversionGuidePage() {
               <div className="absolute top-1/2 right-20 transform -translate-y-1/2 bg-slate-800 border border-slate-700 rounded-2xl p-4 shadow-xl min-w-[200px] max-w-[250px] w-auto animate-in slide-in-from-right-4 duration-300">
                 <h3 className="text-white font-bold text-lg mb-3">{t('conversionGuidePage.sidebar.title')}</h3>
                 <nav className="space-y-2">
-                  <button 
-                    onClick={() => handleScrollTo('introduccion-detallado')} 
-                    className={`w-full text-left p-2 rounded-lg transition-all duration-200 ${
-                      activeSection === 'introduccion-detallado' 
-                        ? 'bg-blue-900/50 text-blue-300' 
-                        : 'text-gray-300 hover:text-white hover:bg-slate-700/40'
-                    }`}
+                  <button
+                    onClick={() => handleScrollTo('introduccion-detallado')}
+                    className={`w-full text-left p-2 rounded-lg transition-all duration-200 ${activeSection === 'introduccion-detallado'
+                      ? 'bg-blue-900/50 text-blue-300'
+                      : 'text-gray-300 hover:text-white hover:bg-slate-700/40'
+                      }`}
                   >
-{t('conversionGuidePage.sections.introduction.title')}
+                    {t('conversionGuidePage.sections.introduction.title')}
                   </button>
-                  <button 
-                    onClick={() => handleScrollTo('como-hacer-conversion')} 
-                    className={`w-full text-left p-2 rounded-lg transition-all duration-200 ${
-                      activeSection === 'como-hacer-conversion' 
-                        ? 'bg-green-900/50 text-green-300' 
-                        : 'text-gray-300 hover:text-white hover:bg-slate-700/40'
-                    }`}
+                  <button
+                    onClick={() => handleScrollTo('como-hacer-conversion')}
+                    className={`w-full text-left p-2 rounded-lg transition-all duration-200 ${activeSection === 'como-hacer-conversion'
+                      ? 'bg-green-900/50 text-green-300'
+                      : 'text-gray-300 hover:text-white hover:bg-slate-700/40'
+                      }`}
                   >
-{t('conversionGuidePage.sections.conversionProcess.title')}
+                    {t('conversionGuidePage.sections.conversionProcess.title')}
                   </button>
-                  <button 
-                    onClick={() => handleScrollTo('como-comprar-conversiones')} 
-                    className={`w-full text-left p-2 rounded-lg transition-all duration-200 ${
-                      activeSection === 'como-comprar-conversiones' 
-                        ? 'bg-purple-900/50 text-purple-300' 
-                        : 'text-gray-300 hover:text-white hover:bg-slate-700/40'
-                    }`}
+                  <button
+                    onClick={() => handleScrollTo('como-comprar-conversiones')}
+                    className={`w-full text-left p-2 rounded-lg transition-all duration-200 ${activeSection === 'como-comprar-conversiones'
+                      ? 'bg-purple-900/50 text-purple-300'
+                      : 'text-gray-300 hover:text-white hover:bg-slate-700/40'
+                      }`}
                   >
-{t('conversionGuidePage.sections.asBuyer.title')}
+                    {t('conversionGuidePage.sections.asBuyer.title')}
                   </button>
-                  <button 
-                    onClick={() => handleScrollTo('como-vender-conversiones')} 
-                    className={`w-full text-left p-2 rounded-lg transition-all duration-200 ${
-                      activeSection === 'como-vender-conversiones' 
-                        ? 'bg-yellow-900/50 text-yellow-300' 
-                        : 'text-gray-300 hover:text-white hover:bg-slate-700/40'
-                    }`}
+                  <button
+                    onClick={() => handleScrollTo('como-vender-conversiones')}
+                    className={`w-full text-left p-2 rounded-lg transition-all duration-200 ${activeSection === 'como-vender-conversiones'
+                      ? 'bg-yellow-900/50 text-yellow-300'
+                      : 'text-gray-300 hover:text-white hover:bg-slate-700/40'
+                      }`}
                   >
-{t('conversionGuidePage.sections.asSeller.title')}
+                    {t('conversionGuidePage.sections.asSeller.title')}
                   </button>
                 </nav>
               </div>
@@ -312,7 +316,7 @@ export default function ConversionGuidePage() {
           <div className="lg:col-span-9">
             {/* Botón Volver - Solo Desktop */}
             <div className="hidden lg:block mb-6">
-              <Link 
+              <Link
                 href="/magic"
                 className="inline-flex items-center gap-2 px-4 py-2 bg-gray-700/50 hover:bg-gray-600/50 rounded-lg transition-colors text-gray-300 hover:text-white"
               >
@@ -348,86 +352,74 @@ export default function ConversionGuidePage() {
             >
               <div className="bg-slate-800/50 backdrop-blur-sm border border-slate-700/50 rounded-2xl p-6 shadow-lg">
                 <h2 className="text-xl font-bold text-white mb-4 text-center">📋 {t('conversionGuidePage.sidebar.index')}</h2>
-                
+
                 <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-1 sm:gap-2 justify-items-center">
-                  <button 
-                    onClick={() => handleScrollTo('introduccion-detallado')} 
-                    className={`flex flex-col items-center p-3 rounded-lg transition-all duration-200 group ${
-                      activeSection === 'introduccion-detallado' 
-                        ? 'bg-blue-900/50' 
-                        : 'hover:bg-slate-700/40'
-                    }`}
+                  <button
+                    onClick={() => handleScrollTo('introduccion-detallado')}
+                    className={`flex flex-col items-center p-3 rounded-lg transition-all duration-200 group ${activeSection === 'introduccion-detallado'
+                      ? 'bg-blue-900/50'
+                      : 'hover:bg-slate-700/40'
+                      }`}
                   >
-                    <Info className={`w-6 h-6 mb-2 ${
-                      activeSection === 'introduccion-detallado' 
-                        ? 'text-blue-400' 
-                        : 'text-gray-400 group-hover:text-blue-400'
-                    }`} />
-                    <span className={`font-semibold text-xs ${
-                      activeSection === 'introduccion-detallado' 
-                        ? 'text-blue-300' 
-                        : 'text-white'
-                    }`}>{t('conversionGuidePage.sections.introduction.title')}</span>
+                    <Info className={`w-6 h-6 mb-2 ${activeSection === 'introduccion-detallado'
+                      ? 'text-blue-400'
+                      : 'text-gray-400 group-hover:text-blue-400'
+                      }`} />
+                    <span className={`font-semibold text-xs ${activeSection === 'introduccion-detallado'
+                      ? 'text-blue-300'
+                      : 'text-white'
+                      }`}>{t('conversionGuidePage.sections.introduction.title')}</span>
                   </button>
 
-                  <button 
-                    onClick={() => handleScrollTo('como-hacer-conversion')} 
-                    className={`flex flex-col items-center p-3 rounded-lg transition-all duration-200 group ${
-                      activeSection === 'como-hacer-conversion' 
-                        ? 'bg-green-900/50' 
-                        : 'hover:bg-slate-700/40'
-                    }`}
+                  <button
+                    onClick={() => handleScrollTo('como-hacer-conversion')}
+                    className={`flex flex-col items-center p-3 rounded-lg transition-all duration-200 group ${activeSection === 'como-hacer-conversion'
+                      ? 'bg-green-900/50'
+                      : 'hover:bg-slate-700/40'
+                      }`}
                   >
-                    <Zap className={`w-6 h-6 mb-2 ${
-                      activeSection === 'como-hacer-conversion' 
-                        ? 'text-green-400' 
-                        : 'text-gray-400 group-hover:text-green-400'
-                    }`} />
-                    <span className={`font-semibold text-xs ${
-                      activeSection === 'como-hacer-conversion' 
-                        ? 'text-green-300' 
-                        : 'text-white'
-                    }`}>{t('conversionGuidePage.sections.conversionProcess.title')}</span>
+                    <Zap className={`w-6 h-6 mb-2 ${activeSection === 'como-hacer-conversion'
+                      ? 'text-green-400'
+                      : 'text-gray-400 group-hover:text-green-400'
+                      }`} />
+                    <span className={`font-semibold text-xs ${activeSection === 'como-hacer-conversion'
+                      ? 'text-green-300'
+                      : 'text-white'
+                      }`}>{t('conversionGuidePage.sections.conversionProcess.title')}</span>
                   </button>
 
-                  <button 
-                    onClick={() => handleScrollTo('como-comprar-conversiones')} 
-                    className={`flex flex-col items-center p-3 rounded-lg transition-all duration-200 group ${
-                      activeSection === 'como-comprar-conversiones' 
-                        ? 'bg-purple-900/50' 
-                        : 'hover:bg-slate-700/40'
-                    }`}
+                  <button
+                    onClick={() => handleScrollTo('como-comprar-conversiones')}
+                    className={`flex flex-col items-center p-3 rounded-lg transition-all duration-200 group ${activeSection === 'como-comprar-conversiones'
+                      ? 'bg-purple-900/50'
+                      : 'hover:bg-slate-700/40'
+                      }`}
                   >
-                    <ShoppingCart className={`w-6 h-6 mb-2 ${
-                      activeSection === 'como-comprar-conversiones' 
-                        ? 'text-purple-400' 
-                        : 'text-gray-400 group-hover:text-purple-400'
-                    }`} />
-                    <span className={`font-semibold text-xs ${
-                      activeSection === 'como-comprar-conversiones' 
-                        ? 'text-purple-300' 
-                        : 'text-white'
-                    }`}>{t('conversionGuidePage.sections.asBuyer.title')}</span>
+                    <ShoppingCart className={`w-6 h-6 mb-2 ${activeSection === 'como-comprar-conversiones'
+                      ? 'text-purple-400'
+                      : 'text-gray-400 group-hover:text-purple-400'
+                      }`} />
+                    <span className={`font-semibold text-xs ${activeSection === 'como-comprar-conversiones'
+                      ? 'text-purple-300'
+                      : 'text-white'
+                      }`}>{t('conversionGuidePage.sections.asBuyer.title')}</span>
                   </button>
 
-                  <button 
-                    onClick={() => handleScrollTo('como-vender-conversiones')} 
-                    className={`flex flex-col items-center p-3 rounded-lg transition-all duration-200 group ${
-                      activeSection === 'como-vender-conversiones' 
-                        ? 'bg-yellow-900/50' 
-                        : 'hover:bg-slate-700/40'
-                    }`}
+                  <button
+                    onClick={() => handleScrollTo('como-vender-conversiones')}
+                    className={`flex flex-col items-center p-3 rounded-lg transition-all duration-200 group ${activeSection === 'como-vender-conversiones'
+                      ? 'bg-yellow-900/50'
+                      : 'hover:bg-slate-700/40'
+                      }`}
                   >
-                    <Star className={`w-6 h-6 mb-2 ${
-                      activeSection === 'como-vender-conversiones' 
-                        ? 'text-yellow-400' 
-                        : 'text-gray-400 group-hover:text-yellow-400'
-                    }`} />
-                    <span className={`font-semibold text-xs ${
-                      activeSection === 'como-vender-conversiones' 
-                        ? 'text-yellow-300' 
-                        : 'text-white'
-                    }`}>{t('conversionGuidePage.sections.asSeller.title')}</span>
+                    <Star className={`w-6 h-6 mb-2 ${activeSection === 'como-vender-conversiones'
+                      ? 'text-yellow-400'
+                      : 'text-gray-400 group-hover:text-yellow-400'
+                      }`} />
+                    <span className={`font-semibold text-xs ${activeSection === 'como-vender-conversiones'
+                      ? 'text-yellow-300'
+                      : 'text-white'
+                      }`}>{t('conversionGuidePage.sections.asSeller.title')}</span>
                   </button>
                 </div>
               </div>
@@ -448,16 +440,16 @@ export default function ConversionGuidePage() {
                   </div>
                   <h2 className="text-2xl font-bold text-white">{t('conversionGuidePage.sections.introduction.title')}</h2>
                 </div>
-                
+
                 <div className="bg-slate-800/50 rounded-xl p-6 border border-slate-600/50">
                   <p className="text-gray-300 mb-6 leading-relaxed">
                     {t('conversionGuidePage.sections.introduction.content1')}
                   </p>
-                  
+
                   <p className="text-gray-300 mb-6 leading-relaxed">
                     {t('conversionGuidePage.sections.introduction.content2')}
                   </p>
-                  
+
                 </div>
               </div>
 
@@ -469,35 +461,35 @@ export default function ConversionGuidePage() {
                   </div>
                   <h2 className="text-2xl font-bold text-white">{t('conversionGuidePage.sections.conversionProcess.title')}</h2>
                 </div>
-                
+
                 <div className="bg-slate-800/50 rounded-xl p-6 border border-slate-600/50">
                   <p className="text-gray-300 mb-6 leading-relaxed">
                     {t('conversionGuidePage.sections.conversionProcess.content1')}
                   </p>
-                  
+
                   <p className="text-gray-300 mb-6 leading-relaxed">
                     {t('conversionGuidePage.sections.conversionProcess.content2')}
                   </p>
-                  
+
                   <div className="mb-6 flex justify-center">
-                    <Image 
-                      src="/thumbnails/convertion.webp" 
-                      alt={t('conversionGuidePage.images.conversionRecipe')} 
+                    <Image
+                      src="/thumbnails/convertion.webp"
+                      alt={t('conversionGuidePage.images.conversionRecipe')}
                       width={800}
                       height={600}
                       className="rounded-lg shadow-lg max-w-full h-auto cursor-pointer hover:opacity-90 transition-opacity"
                       onClick={() => openImageModal("/thumbnails/convertion.webp", t('conversionGuidePage.images.conversionRecipe'))}
                     />
                   </div>
-                  
+
                   <p className="text-gray-300 mb-4 leading-relaxed">
                     {t('conversionGuidePage.sections.conversionProcess.content3')}
                   </p>
-                  
+
                   <p className="text-gray-300 mb-6 leading-relaxed">
                     {t('conversionGuidePage.sections.conversionProcess.content4')}
                   </p>
-                  
+
                 </div>
               </div>
 
@@ -509,16 +501,16 @@ export default function ConversionGuidePage() {
                   </div>
                   <h2 className="text-2xl font-bold text-white">{t('conversionGuidePage.sections.asBuyer.title')}</h2>
                 </div>
-                
+
                 <div className="bg-slate-800/50 rounded-xl p-6 border border-slate-600/50">
                   <p className="text-gray-300 mb-6 leading-relaxed">
                     {t('conversionGuidePage.sections.asBuyer.content1')}
                   </p>
-                  
+
                   <p className="text-gray-300 mb-6 leading-relaxed">
                     {t('conversionGuidePage.sections.asBuyer.content2')}
                   </p>
-                  
+
                   <div className="bg-slate-700/50 rounded-lg p-4 mb-6">
                     <ul className="text-gray-300 text-base space-y-1">
                       <li className="flex items-center gap-3 py-1">
@@ -578,27 +570,27 @@ export default function ConversionGuidePage() {
                       </li>
                     </ul>
                   </div>
- 
-                  
+
+
                   <p className="text-gray-300 mb-4 leading-relaxed">
                     {t('conversionGuidePage.sections.asBuyer.content3')}
                   </p>
-                  
+
                   <p className="text-gray-300 mb-6 leading-relaxed">
                     {t('conversionGuidePage.sections.asBuyer.content4')}
                   </p>
                   <div className="mb-6 flex justify-center">
-                    <Image 
-                      src="/thumbnails/t5.webp" 
-                      alt={t('conversionGuidePage.images.t5Materials')} 
+                    <Image
+                      src="/thumbnails/t5.webp"
+                      alt={t('conversionGuidePage.images.t5Materials')}
                       width={800}
                       height={600}
                       className="rounded-lg shadow-lg max-w-full h-auto cursor-pointer hover:opacity-90 transition-opacity"
                       onClick={() => openImageModal("/thumbnails/t5.webp", t('conversionGuidePage.images.t5Materials'))}
                     />
+                  </div>
                 </div>
-                </div>
-                
+
               </div>
 
               {/* Como vender conversiones de T6 */}
@@ -609,40 +601,40 @@ export default function ConversionGuidePage() {
                   </div>
                   <h2 className="text-2xl font-bold text-white">{t('conversionGuidePage.sections.asSeller.title')}</h2>
                 </div>
-                
+
                 <div className="bg-slate-800/50 rounded-xl p-6 border border-slate-600/50">
                   <p className="text-gray-300 mb-6 leading-relaxed">
                     {t('conversionGuidePage.sections.asSeller.content1')}
                   </p>
                   <div className="mb-6 flex justify-center">
-                    <Image 
-                      src="/thumbnails/unknown-11.webp" 
-                      alt={t('conversionGuidePage.images.inventorySetup')} 
+                    <Image
+                      src="/thumbnails/unknown-11.webp"
+                      alt={t('conversionGuidePage.images.inventorySetup')}
                       width={800}
                       height={600}
                       className="rounded-lg shadow-lg max-w-full h-auto cursor-pointer hover:opacity-90 transition-opacity"
                       onClick={() => openImageModal("/thumbnails/unknown-11.webp", t('conversionGuidePage.images.inventorySetup'))}
                     />
                   </div>
-                  
+
                   <p className="text-gray-300 mb-6 leading-relaxed">
                     {t('conversionGuidePage.sections.asSeller.content2')}
                   </p>
                   <div className="mb-6 flex justify-center">
-                    <Image 
-                      src="/thumbnails/unknown-12.webp" 
-                      alt={t('conversionGuidePage.images.philosopherStones')} 
+                    <Image
+                      src="/thumbnails/unknown-12.webp"
+                      alt={t('conversionGuidePage.images.philosopherStones')}
                       width={800}
                       height={600}
                       className="rounded-lg shadow-lg max-w-full h-auto cursor-pointer hover:opacity-90 transition-opacity"
                       onClick={() => openImageModal("/thumbnails/unknown-12.webp", t('conversionGuidePage.images.philosopherStones'))}
                     />
                   </div>
-                  
+
                   <p className="text-gray-300 mb-6 leading-relaxed">
                     {t('conversionGuidePage.sections.asSeller.content3')}
                   </p>
-                  
+
                   <p className="text-gray-300 mb-6 leading-relaxed">
                     {t('conversionGuidePage.sections.asSeller.content4')}&nbsp;
                     <a
@@ -653,7 +645,7 @@ export default function ConversionGuidePage() {
                     >
                       {t('conversionGuidePage.sections.asSeller.discordLink')}
                     </a>.
-                  </p> 
+                  </p>
                 </div>
               </div>
 
@@ -671,7 +663,7 @@ export default function ConversionGuidePage() {
                 className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-bold rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1"
               >
                 <Zap className="w-5 h-5" />
-{t('conversionGuidePage.cta.button')}
+                {t('conversionGuidePage.cta.button')}
               </Link>
             </motion.div>
           </div>
@@ -680,13 +672,13 @@ export default function ConversionGuidePage() {
 
       {/* Modal de imagen */}
       {imageModalOpen && (
-        <div 
+        <div
           className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4"
           onClick={closeImageModal}
         >
           <div className="relative max-w-4xl max-h-full">
-            <Image 
-              src={modalImageSrc} 
+            <Image
+              src={modalImageSrc}
               alt={modalImageAlt}
               width={1200}
               height={900}

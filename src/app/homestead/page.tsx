@@ -69,23 +69,65 @@ const REFINED_MATERIALS: RefinedMaterial[] = [
         icon: 'https://wiki.guildwars2.com/images/1/10/Refined_Homestead_Fiber.png',
         efficiencyKey: 'fiber',
         ingredients: [
-            { id: 12135, name: 'Potato', baseRequirement: 8, efficiencyApplies: true },
-            { id: 82866, name: 'Handful of Red Lentils', baseRequirement: 4, efficiencyApplies: true },
-            { id: 12330, name: 'Zucchini', baseRequirement: 8, efficiencyApplies: true },
-            { id: 12241, name: 'Spinach Leaf', baseRequirement: 4, efficiencyApplies: true },
-            { id: 12254, name: 'Raspberry', baseRequirement: 2, efficiencyApplies: true },
-            { id: 12512, name: 'Artichoke', baseRequirement: 28, efficiencyApplies: true },
-            { id: 12511, name: 'Butternut Squash', baseRequirement: 28, efficiencyApplies: true },
-            { id: 12508, name: 'Leek', baseRequirement: 28, efficiencyApplies: true },
-            { id: 12538, name: 'Sugar Pumpkin', baseRequirement: 32, efficiencyApplies: true },
-            { id: 12510, name: 'Lotus Root', baseRequirement: 16, efficiencyApplies: true },
-            { id: 12533, name: 'Green Onion', baseRequirement: 24, efficiencyApplies: true },
-            { id: 12234, name: 'Vanilla Bean', baseRequirement: 2, efficiencyApplies: true },
-            { id: 12332, name: 'Head of Cabbage', baseRequirement: 40, efficiencyApplies: true },
-            { id: 12534, name: 'Clove', baseRequirement: 4, efficiencyApplies: true },
-            { id: 12128, name: 'Omnomberry', baseRequirement: 4, efficiencyApplies: true },
-            { id: 12532, name: 'Head of Cauliflower', baseRequirement: 32, efficiencyApplies: true },
-            { id: 66524, name: 'Nopal', baseRequirement: 24, efficiencyApplies: true },
+            { id: 82866, name: 'Handful of Red Lentils', baseRequirement: 1, efficiencyApplies: true },
+            { id: 12330, name: 'Zucchini', baseRequirement: 2, efficiencyApplies: true },
+            { id: 12254, name: 'Raspberry', baseRequirement: 0.5, efficiencyApplies: true },
+            { id: 12512, name: 'Artichoke', baseRequirement: 7, efficiencyApplies: true },
+            { id: 12511, name: 'Butternut Squash', baseRequirement: 7, efficiencyApplies: true },
+            { id: 12508, name: 'Leek', baseRequirement: 7, efficiencyApplies: true },
+            { id: 12538, name: 'Sugar Pumpkin', baseRequirement: 8, efficiencyApplies: true },
+            { id: 12243, name: 'Sage Leaf', baseRequirement: 0.5, efficiencyApplies: true },
+            { id: 12533, name: 'Green Onion', baseRequirement: 6, efficiencyApplies: true },
+            { id: 12332, name: 'Head of Cabbage', baseRequirement: 10, efficiencyApplies: true },
+            { id: 12336, name: 'Dill Sprig', baseRequirement: 10, efficiencyApplies: true },
+            { id: 12241, name: 'Spinach Leaf', baseRequirement: 1, efficiencyApplies: true },
+            { id: 12534, name: 'Clove', baseRequirement: 1, efficiencyApplies: true },
+            { id: 12510, name: 'Lotus Root', baseRequirement: 4, efficiencyApplies: true },
+            { id: 12236, name: 'Black Peppercorn', baseRequirement: 0.5, efficiencyApplies: true },
+            { id: 12234, name: 'Vanilla Bean', baseRequirement: 0.5, efficiencyApplies: true },
+            { id: 66524, name: 'Nopal', baseRequirement: 6, efficiencyApplies: true },
+            { id: 12532, name: 'Head of Cauliflower', baseRequirement: 8, efficiencyApplies: true },
+            { id: 12128, name: 'Omnomberry', baseRequirement: 1, efficiencyApplies: true },
+            { id: 12341, name: 'Grape', baseRequirement: 8, efficiencyApplies: true },
+            { id: 12253, name: 'Strawberry', baseRequirement: 1, efficiencyApplies: true }, 
+            { id: 74090, name: 'Pile of Flax Seeds', baseRequirement: 0.5, efficiencyApplies: true },
+            { id: 12509, name: 'Seaweed', baseRequirement: 0.5, efficiencyApplies: true },
+            { id: 12134, name: 'Carrot', baseRequirement: 1, efficiencyApplies: true },
+            { id: 12547, name: 'Saffron Thread', baseRequirement: 0.5, efficiencyApplies: true },
+            { id: 12545, name: 'Orrian Truffle', baseRequirement: 0.5, efficiencyApplies: true },
+            { id: 12255, name: 'Blueberry', baseRequirement: 2, efficiencyApplies: true },
+            { id: 12144, name: 'Snow Truffle', baseRequirement: 2, efficiencyApplies: true },
+            { id: 12238, name: 'Head of Lettuce', baseRequirement: 0.5, efficiencyApplies: true },
+            { id: 12142, name: 'Onion', baseRequirement: 0.5, efficiencyApplies: true },
+            { id: 12162, name: 'Turnip', baseRequirement: 12, efficiencyApplies: true },
+            { id: 12546, name: 'Lemongrass', baseRequirement: 4, efficiencyApplies: true },
+            { id: 12507, name: 'Parsnip', baseRequirement: 7, efficiencyApplies: true },
+            { id: 12537, name: 'Blackberry', baseRequirement: 1, efficiencyApplies: true },
+            { id: 12342, name: 'Sesame Seed', baseRequirement: 2, efficiencyApplies: true },
+            { id: 73504, name: 'Sawgill Mushroom', baseRequirement: 6, efficiencyApplies: true },
+            { id: 36731, name: 'Passion Fruit', baseRequirement: 5, efficiencyApplies: true },
+            { id: 73096, name: 'Pile of Allspice Berries', baseRequirement: 1, efficiencyApplies: true },
+            { id: 12335, name: 'Rosemary Sprig', baseRequirement: 1, efficiencyApplies: true },
+            { id: 12544, name: 'Ghost Pepper', baseRequirement: 1, efficiencyApplies: true },
+            { id: 12135, name: 'Potato', baseRequirement: 4, efficiencyApplies: true },
+            { id: 12536, name: 'Mint Leaf', baseRequirement: 7, efficiencyApplies: true },
+            { id: 12334, name: 'Portobello Mushroomm', baseRequirement: 3.25, efficiencyApplies: true },
+
+            { id: 12506, name: 'Tarragon Leaves', baseRequirement: 1, efficiencyApplies: true },
+            { id: 12333, name: 'Kale Leaf', baseRequirement: 1, efficiencyApplies: true },
+            { id: 12247, name: 'Bay Leaf', baseRequirement: 8, efficiencyApplies: true },
+            { id: 12535, name: 'Rutabaga', baseRequirement: 1, efficiencyApplies: true },
+            { id: 12331, name: 'Chili Pepper', baseRequirement: 2, efficiencyApplies: true },
+            { id: 12248, name: 'Thyme Leaf', baseRequirement: 1, efficiencyApplies: true },
+            { id: 12163, name: 'Head of Garlic', baseRequirement: 1, efficiencyApplies: true },
+            { id: 12147, name: 'Mushroom', baseRequirement: 1, efficiencyApplies: true },
+            { id: 12504, name: 'Cayenne Pepper', baseRequirement: 1, efficiencyApplies: true },
+            { id: 73113, name: 'Cassava Root', baseRequirement: 1, efficiencyApplies: true },
+            { id: 12329, name: 'Yam', baseRequirement: 8, efficiencyApplies: true },
+            { id: 12161, name: 'Beet', baseRequirement: 15, efficiencyApplies: true },
+            { id: 12244, name: 'Oregano Leaf', baseRequirement: 10, efficiencyApplies: true },
+            { id: 66522, name: 'Prickly Pear', baseRequirement: 6, efficiencyApplies: true },
+
         ]
     }
 ];
@@ -336,10 +378,9 @@ const HomesteadPage = () => {
                                     <tbody>
                                         {mat.ingredients
                                             .map(ing => ({ ...ing, ...calculateIngredientCost(ing, efficiencies[mat.efficiencyKey]) }))
-                                            .sort((a, b) => a.totalCost - b.totalCost)
                                             .map((item, iIndex) => (
                                                 <tr
-                                                    key={item.id}
+                                                    key={`${item.id}-${iIndex}`}
                                                     className={`group transition-all duration-300 border-b border-white/[0.03] last:border-0 ${iIndex === 0 ? 'bg-emerald-500/[0.03] hover:bg-emerald-500/[0.06]' : 'hover:bg-white/[0.02]'}`}
                                                 >
                                                     <td className="py-5 px-10">
