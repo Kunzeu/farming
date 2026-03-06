@@ -13,7 +13,6 @@ import PageUsageTracker from "@/components/PageUsageTracker";
 // import { Analytics } from "@vercel/analytics/next"; // Deshabilitado para reducir carga
 import { generateDynamicMetadata } from "@/lib/metadata";
 import GoogleAdsLoader from '@/components/GoogleAdsLoader';
-import NitroPayLoader from '@/components/NitroPayLoader';
 import AdBlocker from '@/components/AdBlocker';
 import SupportNotice from '@/components/ui/SupportNotice';
 
@@ -44,26 +43,14 @@ export default function RootLayout({
         {/* Performance: Preconnect crítico para Desktop */}
         <link rel="preconnect" href="https://api.guildwars2.com" />
         <link rel="preconnect" href="https://pagead2.googlesyndication.com" />
-        <link rel="preconnect" href="https://s.nitropay.com" />
+        {/* NitroPay removed to restore Google AdSense as primary ad provider */}
         <link rel="preconnect" href="https://static.cloudflareinsights.com" />
         <link rel="dns-prefetch" href="https://render.guildwars2.com" />
         <link rel="dns-prefetch" href="https://wiki.guildwars2.com" />
 
         {/* Google Ads Script - se carga dinámicamente en el cliente */}
 
-        {/* NitroPay Ad Script - Instalación según guía oficial */}
-        {/* Nota: El script se carga aquí en el head según la guía, pero NitroPayLoader lo eliminará si el usuario es Patreon */}
-        <script
-          data-cfasync="false"
-          dangerouslySetInnerHTML={{
-            __html: `window.nitroAds=window.nitroAds||{createAd:function(){return new Promise(e=>{window.nitroAds.queue.push(["createAd",arguments,e])})},addUserToken:function(){window.nitroAds.queue.push(["addUserToken",arguments])},queue:[]};`
-          }}
-        />
-        <script
-          data-cfasync="false"
-          async
-          src="https://s.nitropay.com/ads-2282.js"
-        />
+        {/* NitroPay scripts removed to prefer Google AdSense */}
 
         {/* Google Analytics */}
         <script async src="https://www.googletagmanager.com/gtag/js?id=G-WXS6KYHEXT"></script>
@@ -221,7 +208,6 @@ export default function RootLayout({
                 <CookieBanner />
                 <SupportNotice />
                 <GoogleAdsLoader />
-                <NitroPayLoader />
                 <AdBlocker />
                 {/* <Analytics /> Deshabilitado para reducir carga */}
               </div>
