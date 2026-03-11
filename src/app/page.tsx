@@ -293,6 +293,7 @@ export default function HomePage() {
       "altParking": <Map className={iconClass} />,
       "magicMirrors": <Sparkles className={iconClass} />,
       "orphanRoute": <Map className={iconClass} />,
+      "laurels": <Crown className={iconClass} />,
 
     };
 
@@ -318,6 +319,7 @@ export default function HomePage() {
       "ectogambling": <Dice6 className="w-8 h-8" />,
       "conversionGuide": <RefreshCw className="w-8 h-8" />,
       "altParking": <Map className="w-8 h-8" />,
+      "laurels": <Crown className="w-8 h-8" />,
       "magicMirrors": <Sparkles className="w-8 h-8" />,
       "orphanRoute": <Map className="w-8 h-8" />,
 
@@ -342,6 +344,7 @@ export default function HomePage() {
       "altParking": "from-lime-500 to-green-600",
       "magicMirrors": "from-purple-500 to-indigo-600",
       "orphanRoute": "from-cyan-500 to-blue-600",
+      "laurels": "from-amber-500 to-yellow-600",
 
     };
 
@@ -492,22 +495,22 @@ export default function HomePage() {
     };
   }, [isLoading]);
 
-  // Obtener el último dashboard agregado (garden)
+  // Obtener el último dashboard agregado (laurels)
   useEffect(() => {
-    // Crear tarjeta para garden (última agregada)
-    const gardenCard: DashboardCard = {
-      id: "garden",
-      title: "dashboard.garden.title",
-      description: "dashboard.garden.description",
-      href: "/garden",
-      icon: <TreePine className="w-8 h-8" />,
-      color: "from-emerald-500 to-green-600",
+    // Crear tarjeta para laurels (última agregada)
+    const laurelsCard: DashboardCard = {
+      id: "laurels",
+      title: "dashboard.laurels.title",
+      description: "dashboard.laurels.description",
+      href: "/opened/laurels",
+      icon: <Crown className="w-8 h-8" />,
+      color: "from-amber-500 to-yellow-600",
       delay: 0,
       visible: true,
       order: 17
     };
 
-    setMostUsedDashboard(reconstructCardWithIcon(gardenCard));
+    setMostUsedDashboard(reconstructCardWithIcon(laurelsCard));
   }, []);
 
   // Mostrar mensaje "Check our new tool" cada 6 segundos

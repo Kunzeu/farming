@@ -1028,6 +1028,8 @@
   "dashboard.buyout.description": "Calculez le coût d'achat de matériaux en gros",
   "dashboard.garden.title": "Jardins",
   "dashboard.garden.description": "Gérez vos jardins et cultures",
+  "dashboard.laurels.title": "Lauriers",
+  "dashboard.laurels.description": "Guide d'ouverture et de conversion des sacs de lauriers",
   "gardenPage.title": "Guide des Jardins - Farming de Magie Volatile",
   "gardenPage.titleShort": "Guide des Jardins",
   "gardenPage.subtitle": "Guide complet pour maximiser les profits dans ce farming de magie volatile",

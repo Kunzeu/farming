@@ -1042,6 +1042,8 @@
   "dashboard.buyout.description": "Calculate the cost of buying materials in bulk",
   "dashboard.garden.title": "Gardens",
   "dashboard.garden.description": "Manage your gardens and crops",
+  "dashboard.laurels.title": "Laurels",
+  "dashboard.laurels.description": "Laurel bag opening and conversion guide",
   "gardenPage.title": "Garden Guide - Volatile Magic Farming",
   "gardenPage.titleShort": "Garden Guide",
   "gardenPage.subtitle": "Complete guide to maximize profits in this volatile magic farming",
