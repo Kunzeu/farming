@@ -265,10 +265,7 @@ export default function RootLayout({
                 '[data-ad-slot]', 
                 '.google-auto-placed',
                 'iframe[src*="googlesyndication"]',
-                'iframe[src*="googleads"]',
-                '.nitropay-ad',
-                'div[id*="nitropay-ad"]',
-                'iframe[src*="nitropay"]'
+                'iframe[src*="googleads"]'
               ];
               
               // 1. Verificar contenido de texto en contenedores de anuncios
@@ -320,7 +317,7 @@ export default function RootLayout({
             
             // Prevenir clics en anuncios bloqueados
             function preventClicksOnBlockedAds() {
-              const adContainers = document.querySelectorAll('.adsbygoogle, [data-ad-client], [data-ad-slot], ins.adsbygoogle, .nitropay-ad, div[id*="nitropay-ad"]');
+              const adContainers = document.querySelectorAll('.adsbygoogle, [data-ad-client], [data-ad-slot], ins.adsbygoogle');
               adContainers.forEach(container => {
                 if (container.style.display === 'none' || container.style.opacity === '0') {
                   // Si está bloqueado, prevenir todos los clics
@@ -352,7 +349,7 @@ export default function RootLayout({
               if (!nav) return;
               
               // Buscar y bloquear cualquier anuncio dentro del nav
-              const adsInNav = nav.querySelectorAll('.adsbygoogle, [data-ad-client], [data-ad-slot], ins.adsbygoogle, iframe[src*="googlesyndication"], iframe[src*="doubleclick"], .nitropay-ad, div[id*="nitropay-ad"], iframe[src*="nitropay"]');
+              const adsInNav = nav.querySelectorAll('.adsbygoogle, [data-ad-client], [data-ad-slot], ins.adsbygoogle, iframe[src*="googlesyndication"], iframe[src*="doubleclick"]');
               adsInNav.forEach(ad => {
                 ad.style.display = 'none';
                 ad.style.visibility = 'hidden';
@@ -388,7 +385,7 @@ export default function RootLayout({
             // Prevenir clics globalmente en elementos bloqueados
             document.addEventListener('click', function(e) {
               const target = e.target;
-              const blockedAd = target.closest('.adsbygoogle, [data-ad-client], [data-ad-slot], .nitropay-ad, div[id*="nitropay-ad"]');
+              const blockedAd = target.closest('.adsbygoogle, [data-ad-client], [data-ad-slot]');
               if (blockedAd && (blockedAd.style.display === 'none' || blockedAd.style.opacity === '0')) {
                 e.preventDefault();
                 e.stopPropagation();
