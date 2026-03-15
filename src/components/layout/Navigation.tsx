@@ -549,6 +549,13 @@ const Navigation = () => {
       isImage: false,
       keywords: ['daily', 'routine', 'rutina', 'diaria', 'checklist', 'tareas', 'tasks', 'dailies']
     },
+    {
+      href: '/exp-buffs',
+      label: 'EXP Buffs',
+      icon: Star,
+      isImage: false,
+      keywords: ['exp', 'experience', 'experiencia', 'buffs', 'bonus', 'xp', 'nivelar', 'level']
+    },
   ], [navItems, guidesItems, toolsItems, t]);
 
   // Filtrar resultados de búsqueda (cacheado para evitar recalcular)
