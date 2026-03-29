@@ -98,7 +98,7 @@ export async function GET(request: NextRequest) {
             const typedBankItem = bankItem as { id: number };
             const itemDetails = itemsData.find((item: { id: number }) => item.id === typedBankItem.id);
             return {
-              ...bankItem,
+              ...(bankItem as object),
               name: itemDetails?.name || `Item ${typedBankItem.id}`,
               icon: itemDetails?.icon,
               rarity: itemDetails?.rarity,
@@ -115,7 +115,7 @@ export async function GET(request: NextRequest) {
               enrichedBankData = enrichedBankData.map((it: unknown) => {
                 if (!it) return it;
                 const item = it as { id: number };
-                return { ...it, price: idToPrice.get(item.id) } as unknown;
+                return { ...(it as object), price: idToPrice.get(item.id) } as unknown;
               });
             }
           } catch {}
