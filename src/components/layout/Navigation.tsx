@@ -495,6 +495,13 @@ const Navigation = () => {
       keywords: ['ecto', 'ectoplasm', 'gambling', 'apostar', 'rare', 'forge', 'forja', 'mystic forge']
     },
     {
+      href: '/ectoplasm',
+      label: t('ectoplasm.title', 'Ectoplasm Analysis'),
+      icon: 'ecto',
+      isImage: true,
+      keywords: ['ecto', 'ectoplasm', 'salvage', 'analysis', 'luck', 'dust']
+    },
+    {
       href: '/opened',
       label: t('openedPage.title', 'Contenedores Abribles'),
       icon: 'Community',

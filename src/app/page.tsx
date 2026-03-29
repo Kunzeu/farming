@@ -202,6 +202,17 @@ const initialCards: DashboardCard[] = [
     order: 13
   },
   {
+    id: "ectoplasm",
+    title: "ectoplasm.title",
+    description: "ectoplasm.subtitle",
+    href: "/ectoplasm",
+    icon: <BarChart3 className="w-8 h-8" />,
+    color: "from-purple-500 to-blue-600",
+    delay: 1.65,
+    visible: true,
+    order: 14
+  },
+  {
     id: "altParking",
     title: "dashboard.altParking.title",
     description: "dashboard.altParking.description",
@@ -210,7 +221,7 @@ const initialCards: DashboardCard[] = [
     color: "from-lime-500 to-green-600",
     delay: 1.7,
     visible: true,
-    order: 14
+    order: 15
   },
   {
     id: "orrianJewelry",
@@ -294,6 +305,7 @@ export default function HomePage() {
       "magicMirrors": <Sparkles className={iconClass} />,
       "orphanRoute": <Map className={iconClass} />,
       "laurels": <Crown className={iconClass} />,
+      "ectoplasm": <BarChart3 className={iconClass} />,
 
     };
 
@@ -322,6 +334,7 @@ export default function HomePage() {
       "laurels": <Crown className="w-8 h-8" />,
       "magicMirrors": <Sparkles className="w-8 h-8" />,
       "orphanRoute": <Map className="w-8 h-8" />,
+      "ectoplasm": <BarChart3 className="w-8 h-8" />,
 
     };
 
@@ -345,6 +358,7 @@ export default function HomePage() {
       "magicMirrors": "from-purple-500 to-indigo-600",
       "orphanRoute": "from-cyan-500 to-blue-600",
       "laurels": "from-amber-500 to-yellow-600",
+      "ectoplasm": "from-purple-500 to-blue-600",
 
     };
 
@@ -495,7 +509,7 @@ export default function HomePage() {
     };
   }, [isLoading]);
 
-  // Obtener el último dashboard agregado (laurels)
+  // Obtener el último dashboard agregado (ectoplasm)
   useEffect(() => {
     // Crear tarjeta para laurels (última agregada)
     const laurelsCard: DashboardCard = {
@@ -717,6 +731,7 @@ export default function HomePage() {
                         width={128}
                         height={128}
                         className="w-32 h-32 drop-shadow-2xl"
+                        unoptimized
                       />
                     </div>
 

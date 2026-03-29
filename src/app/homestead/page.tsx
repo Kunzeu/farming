@@ -6,6 +6,7 @@ import { usePageTitle } from '@/hooks/usePageTitle';
 import { useI18n } from '@/contexts/I18nContext';
 import Navigation from '@/components/layout/Navigation';
 import Image from 'next/image';
+import Link from 'next/link';
 import {
     Home,
     RefreshCw,

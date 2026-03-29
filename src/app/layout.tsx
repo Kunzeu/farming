@@ -1,4 +1,5 @@
 import { Inter } from "next/font/google";
+import Script from "next/script";
 import "./globals.css";
 // PrimeReact styles removed to avoid lightningcss build issues on Vercel
 import { AuthProvider } from "@/contexts/AuthContext";
@@ -53,15 +54,18 @@ export default function RootLayout({
         {/* NitroPay scripts removed to prefer Google AdSense */}
 
         {/* Google Analytics */}
-        <script async src="https://www.googletagmanager.com/gtag/js?id=G-WXS6KYHEXT"></script>
-        <script dangerouslySetInnerHTML={{
-          __html: `
+        <Script 
+          strategy="afterInteractive" 
+          src="https://www.googletagmanager.com/gtag/js?id=G-WXS6KYHEXT" 
+        />
+        <Script id="google-analytics" strategy="afterInteractive">
+          {`
             window.dataLayer = window.dataLayer || [];
             function gtag(){dataLayer.push(arguments);}
             gtag('js', new Date());
             gtag('config', 'G-WXS6KYHEXT');
-          `
-        }} />
+          `}
+        </Script>
 
         {/* Meta tags para prevenir caché de HTML */}
         <meta httpEquiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
@@ -214,8 +218,8 @@ export default function RootLayout({
             </I18nProvider>
           </AuthProvider>
         </CookieConsentProvider>
-        <script dangerouslySetInnerHTML={{
-          __html: `
+        <Script id="ad-blocker-logic" strategy="afterInteractive">
+          {`
             // Bloquear contenido no deseado relacionado con gold selling
             function blockUnwantedContent() {
               // Buscar y ocultar elementos que contengan texto no deseado
@@ -394,9 +398,8 @@ export default function RootLayout({
               }
             }, true);
             
-            
-          `
-        }} />
+          `}
+        </Script>
 
       </body>
     </html>
