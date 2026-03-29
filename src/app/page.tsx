@@ -511,20 +511,20 @@ export default function HomePage() {
 
   // Obtener el último dashboard agregado (ectoplasm)
   useEffect(() => {
-    // Tarjeta compacta para el análisis de ectoplasmas
-    const ectoHighlight: DashboardCard = {
-      id: "ectoplasm",
-      title: "ectoplasm.title",
-      description: "ectoplasm.subtitle",
-      href: "/ectoplasm",
-      icon: <BarChart3 className="w-8 h-8" />,
-      color: "from-purple-500 to-blue-600",
+    // Crear tarjeta para laurels (última agregada)
+    const laurelsCard: DashboardCard = {
+      id: "laurels",
+      title: "dashboard.laurels.title",
+      description: "dashboard.laurels.description",
+      href: "/opened/laurels",
+      icon: <Crown className="w-8 h-8" />,
+      color: "from-amber-500 to-yellow-600",
       delay: 0,
       visible: true,
-      order: 14
+      order: 17
     };
 
-    setMostUsedDashboard(reconstructCardWithIcon(ectoHighlight));
+    setMostUsedDashboard(reconstructCardWithIcon(laurelsCard));
   }, []);
 
   // Mostrar mensaje "Check our new tool" cada 6 segundos
@@ -726,11 +726,11 @@ export default function HomePage() {
                   <div className="flex-shrink-0 relative">
                     <div className="transform translate-y-12">
                       <Image
-                        src="https://render.guildwars2.com/file/109761356EA16AF4DBAA6D6F41E5D571C3524E4A/456562.png"
-                        alt="Ectoplasm"
-                        width={96}
-                        height={96}
-                        className="w-24 h-24 drop-shadow-2xl"
+                        src="/images/icons/icoon.webp"
+                        alt="Icon"
+                        width={128}
+                        height={128}
+                        className="w-32 h-32 drop-shadow-2xl"
                         unoptimized
                       />
                     </div>
@@ -764,8 +764,8 @@ export default function HomePage() {
                   {/* Espacio fijo reservado para el mensaje (mantiene el dashboard fijo) */}
                   <div className="h-[40px]"></div>
 
-                  {/* Tarjeta del dashboard más pequeña */}
-                  <div className="w-56 mt-2">
+                  {/* Tarjeta del dashboard */}
+                  <div className="w-64 mt-4">
                     <Link href={mostUsedDashboard.href}>
                       <div className={`bg-gradient-to-br ${mostUsedDashboard.color} ${sizeClasses[cardSize]} rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 cursor-pointer h-full border border-white/10`}>
                         <div className="text-white">
