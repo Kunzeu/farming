@@ -387,7 +387,7 @@ export default function EctoplasmSalvagePage() {
                   <td className="px-8 py-5 font-black text-blue-400 uppercase italic tracking-tighter">{t('ectoplasm.table.totals')}</td>
                   {TOTALS.map((total, idx) => (
                     <td key={idx} className="px-6 py-5 font-black text-xl text-white group-hover:scale-105 transition-transform origin-left">
-                      {total.toLocaleString()}
+                      {total.toLocaleString('en-US')}
                     </td>
                   ))}
                 </tr>
@@ -397,7 +397,7 @@ export default function EctoplasmSalvagePage() {
                     <td className="px-8 py-5 text-gray-500 font-mono text-sm">{rowIndex + 1}</td>
                     {row.map((cell, cellIndex) => (
                       <td key={cellIndex} className={`px-6 py-5 font-medium ${cellIndex === 0 ? 'text-white' : 'text-gray-300'}`}>
-                        {cell.toLocaleString()}
+                        {cell.toLocaleString('en-US')}
                       </td>
                     ))}
                   </tr>
