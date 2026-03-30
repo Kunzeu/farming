@@ -1,13 +1,15 @@
 'use client';
-
-import { motion } from 'framer-motion';
+import dynamic from 'next/dynamic';
+const Motion = dynamic(() => import('@/components/ectoplasm/EctoplasmMotion').then(m => m.default), { ssr: false });
 import { useState, useEffect } from 'react';
 import { 
   Table, 
   Layers, 
   TrendingUp, 
   BarChart3, 
-  Info
+  Info,
+  Calculator,
+  ArrowRight
 } from 'lucide-react';
 import { usePageTitle } from '@/hooks/usePageTitle';
 import { useI18n } from '@/contexts/I18nContext';
@@ -112,7 +114,7 @@ export default function EctoplasmSalvagePage() {
 
         {/* Header Section */}
         <div className="text-center mb-16">
-          <motion.div
+          <Motion
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             className="flex items-center justify-center mb-4"
@@ -128,7 +130,7 @@ export default function EctoplasmSalvagePage() {
                 {t('ectoplasm.title')}
               </span>
             </h1>
-          </motion.div>
+          </Motion>
           <p className="text-xl text-gray-400 max-w-2xl mx-auto font-medium">
             {t('ectoplasm.subtitle')}
           </p>
@@ -141,7 +143,7 @@ export default function EctoplasmSalvagePage() {
             { label: t('ectoplasm.table.dust'), value: '185,845', icon: materialismIcon(MATERIAL_IDS.dust), color: 'blue', subtitle: '1.85 Media por Ecto' },
             { label: t('ectoplasm.totalLuck'), value: '772,439', icon: materialismIcon(MATERIAL_IDS.luckOrange), color: 'orange', subtitle: '7.72 Media por Ecto' },
           ].map((stat, i) => (
-            <motion.div
+            <Motion
               key={i}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -162,13 +164,82 @@ export default function EctoplasmSalvagePage() {
                   <p className="text-xs font-bold text-gray-500 uppercase mt-1">{stat.subtitle}</p>
                 </div>
               </div>
-            </motion.div>
+            </Motion>
           ))}
         </div>
 
+          {/* Profitability Analysis Section */}
+          <Motion
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="bg-slate-800/60 backdrop-blur-2xl border border-slate-700/50 rounded-3xl p-8 mb-12 shadow-2xl relative overflow-hidden"
+          >
+          {/* Subtle background icon */}
+          <Layers className="absolute -right-8 -top-8 w-64 h-64 text-purple-500/5 rotate-12" />
+          
+          <div className="relative z-10 text-center mb-8">
+            <h2 className="text-2xl font-black text-white uppercase tracking-tighter flex items-center justify-center gap-3">
+              <Calculator className="w-6 h-6 text-blue-400" />
+              Calculadora de Rentabilidad Directa
+            </h2>
+          </div>
+
+          <div className="flex flex-col md:flex-row items-center justify-center gap-8 relative z-10">
+            {/* 1 Ecto */}
+            <div className="flex flex-col items-center gap-4 bg-slate-900/40 p-6 rounded-2xl border border-white/5 w-full md:w-64">
+              <span className="text-[10px] font-black text-gray-500 uppercase tracking-widest">Inversión</span>
+              <div className="relative group">
+                <div className="absolute inset-0 bg-purple-500 blur-xl opacity-20 group-hover:opacity-40 transition-opacity" />
+                {materialIcons[MATERIAL_IDS.ecto] && <Image src={materialIcons[MATERIAL_IDS.ecto]} alt="" width={64} height={64} className="relative z-10" />}
+              </div>
+              <div className="text-center">
+                <p className="text-white font-black text-lg">1 Ecto</p>
+                <div className="font-mono mt-1">{formatPrice(marketPrices[MATERIAL_IDS.ecto]?.sell || 0)}</div>
+              </div>
+            </div>
+
+            {/* Arrow + Kit */}
+            <div className="flex flex-col items-center gap-2">
+               <div className="p-3 bg-white/5 rounded-full border border-white/10">
+                 <ArrowRight className="w-8 h-8 text-blue-400" />
+               </div>
+               <span className="text-[10px] font-bold text-slate-500 uppercase">Reciclar</span>
+            </div>
+
+            {/* Results */}
+            <div className="flex flex-col items-center gap-4 bg-slate-900/40 p-6 rounded-2xl border border-white/5 w-full md:w-80">
+              <span className="text-[10px] font-black text-gray-500 uppercase tracking-widest">Retorno Estimado</span>
+              <div className="flex items-center gap-6">
+                <div className="flex flex-col items-center">
+                  {materialIcons[MATERIAL_IDS.dust] && <Image src={materialIcons[MATERIAL_IDS.dust]} alt="" width={48} height={48} />}
+                  <span className="text-white font-bold mt-1">1.858 Polvos</span>
+                </div>
+                <div className="text-2xl font-light text-slate-600">+</div>
+                <div className="flex flex-col items-center">
+                  {materialIcons[MATERIAL_IDS.luckOrange] && <Image src={materialIcons[MATERIAL_IDS.luckOrange]} alt="" width={48} height={48} />}
+                  <span className="text-amber-400 font-bold mt-1">104.8 Luck</span>
+                </div>
+              </div>
+              <div className="text-center border-t border-white/5 pt-4 w-full">
+                <div className="font-mono">{formatPrice(Math.floor((marketPrices[MATERIAL_IDS.dust]?.buy || 0) * 1.85845))}</div>
+              </div>
+            </div>
+          </div>
+
+          {/* Profit Indicator */}
+          <div className="mt-8 flex flex-col items-center">
+             <div className="p-4 bg-blue-500/5 border border-blue-500/10 rounded-2xl max-w-lg text-center">
+               <p className="text-xs text-gray-400 font-medium leading-relaxed italic">
+                 Comparativa basada en precios actuales (Venta de Ecto vs Compra de Polvo). 
+                 <span className="text-blue-400 font-bold block mt-1 uppercase tracking-widest">⚠️ Recuerda restar el coste del kit seleccionado abajo</span>
+               </p>
+             </div>
+          </div>
+        </Motion>
+
         {/* Market Analysis Mini-Header */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-12">
-           <motion.div 
+           <Motion 
              initial={{ opacity: 0, x: -20 }}
              animate={{ opacity: 1, x: 0 }}
              className="bg-slate-800/40 p-4 rounded-xl border border-slate-700/50 flex items-center justify-between"
@@ -181,8 +252,8 @@ export default function EctoplasmSalvagePage() {
                 <span className="text-xs text-slate-500 uppercase font-bold">Mercado (Venta)</span>
                 <span className="font-mono">{formatPrice(marketPrices[MATERIAL_IDS.ecto]?.sell || 0)}</span>
               </div>
-           </motion.div>
-           <motion.div 
+           </Motion>
+           <Motion 
              initial={{ opacity: 0, x: 20 }}
              animate={{ opacity: 1, x: 0 }}
              className="bg-slate-800/40 p-4 rounded-xl border border-slate-700/50 flex items-center justify-between"
@@ -194,27 +265,27 @@ export default function EctoplasmSalvagePage() {
               <div className="flex flex-col items-end">
                 <span className="text-xs text-slate-500 uppercase font-bold">Mercado (Compra)</span>
                 <span className="font-mono">{formatPrice(marketPrices[MATERIAL_IDS.dust]?.buy || 0)}</span>
-              </div>
-           </motion.div>
+                </div>
+              </Motion>
         </div>
 
         {/* Salvage Kits Section */}
         <div className="mb-12">
-          <motion.h3 
+          <Motion as="h3" 
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             className="text-2xl font-bold text-white mb-6 flex items-center gap-3"
           >
             <BarChart3 className="w-6 h-6 text-purple-400" />
             {t('ectoplasm.kits.title')}
-          </motion.h3>
+          </Motion>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {[
               { id: 'master', itemId: MATERIAL_IDS.kitMaster, color: 'yellow' },
               { id: 'mystic', itemId: MATERIAL_IDS.kitMystic, color: 'purple' },
               { id: 'silver', itemId: MATERIAL_IDS.kitSilver, color: 'slate' },
             ].map((kit, i) => (
-              <motion.div
+              <Motion
                 key={kit.id}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -244,18 +315,18 @@ export default function EctoplasmSalvagePage() {
                     </span>
                   </div>
                 </div>
-              </motion.div>
+                </Motion>
             ))}
           </div>
         </div>
 
         {/* Main Table Card */}
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.4 }}
-          className="bg-slate-800/50 backdrop-blur-xl border border-slate-700/50 rounded-3xl overflow-hidden shadow-2xl mb-12"
-        >
+          <Motion
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.4 }}
+            className="bg-slate-800/50 backdrop-blur-xl border border-slate-700/50 rounded-3xl overflow-hidden shadow-2xl mb-12"
+          >
           <div className="p-8 border-b border-slate-700/50 flex items-center justify-between bg-slate-800/30">
             <div className="flex items-center gap-3">
               <Table className="w-6 h-6 text-blue-400" />
@@ -334,17 +405,17 @@ export default function EctoplasmSalvagePage() {
               </tbody>
             </table>
           </div>
-        </motion.div>
+        </Motion>
 
 
 
         {/* Info Card */}
-        <motion.div
-           initial={{ opacity: 0 }}
-           animate={{ opacity: 1 }}
-           transition={{ delay: 0.8 }}
-           className="mt-12 bg-blue-900/20 border border-blue-500/20 rounded-2xl p-6 flex gap-4 items-start"
-        >
+          <Motion
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.8 }}
+            className="mt-12 bg-blue-900/20 border border-blue-500/20 rounded-2xl p-6 flex gap-4 items-start"
+          >
           <div className="p-2 bg-blue-500/20 rounded-lg">
             <Info className="w-5 h-5 text-blue-400" />
           </div>
@@ -354,7 +425,7 @@ export default function EctoplasmSalvagePage() {
               {t('ectoplasm.info.content')}
             </p>
           </div>
-        </motion.div>
+        </Motion>
       </main>
     </div>
   );
