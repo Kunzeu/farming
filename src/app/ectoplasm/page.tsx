@@ -46,11 +46,14 @@ export default function EctoplasmSalvagePage() {
 
   const [materialIcons, setMaterialIcons] = useState<Record<number, string>>({});
   const [materialNames, setMaterialNames] = useState<Record<number, string>>({});
+  const [marketPrices, setMarketPrices] = useState<Record<number, { buy: number; sell: number }>>({});
 
   useEffect(() => {
     const fetchMaterialData = async () => {
       try {
         const itemIds = Object.values(MATERIAL_IDS).join(',');
+        
+        // Fetch Names and Icons
         const response = await fetch(`https://api.guildwars2.com/v2/items?ids=${itemIds}&lang=${lang}`);
         if (response.ok) {
           const items = await response.json();
@@ -63,12 +66,38 @@ export default function EctoplasmSalvagePage() {
           setMaterialIcons(icons);
           setMaterialNames(names);
         }
+
+        // Fetch Market Prices
+        const priceIds = [MATERIAL_IDS.ecto, MATERIAL_IDS.dust].join(',');
+        const pricesResponse = await fetch(`https://api.guildwars2.com/v2/commerce/prices?ids=${priceIds}`);
+        if (pricesResponse.ok) {
+          const prices = await pricesResponse.json();
+          const priceMap: Record<number, { buy: number; sell: number }> = {};
+          prices.forEach((p: any) => {
+            priceMap[p.id] = { buy: p.buys.unit_price, sell: p.sells.unit_price };
+          });
+          setMarketPrices(priceMap);
+        }
       } catch (error) {
         console.error('Error fetching material data:', error);
       }
     };
     fetchMaterialData();
   }, [lang]);
+
+  function formatPrice(copper: number) {
+    if (!copper) return '...';
+    const g = Math.floor(copper / 10000);
+    const s = Math.floor((copper % 10000) / 100);
+    const c = copper % 100;
+    return (
+      <span className="flex items-center gap-1">
+        {g > 0 && <span className="text-amber-400">{g}g</span>}
+        {s > 0 && <span className="text-slate-300">{s}s</span>}
+        <span className="text-amber-600">{c}c</span>
+      </span>
+    );
+  }
 
   function materialismIcon(id: number) {
     return materialIcons[id] || null;
@@ -108,9 +137,9 @@ export default function EctoplasmSalvagePage() {
         {/* Stats Grid */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
           {[
-            { label: t('ectoplasm.table.ecto'), value: '100,000', icon: materialismIcon(MATERIAL_IDS.ecto), color: 'purple' },
-            { label: t('ectoplasm.table.dust'), value: '185,845', icon: materialismIcon(MATERIAL_IDS.dust), color: 'blue' },
-            { label: t('ectoplasm.totalLuck'), value: '772,439', icon: materialismIcon(MATERIAL_IDS.luckOrange), color: 'orange' },
+            { label: t('ectoplasm.table.ecto'), value: '100,000', icon: materialismIcon(MATERIAL_IDS.ecto), color: 'purple', subtitle: 'Tamaño de Muestra' },
+            { label: t('ectoplasm.table.dust'), value: '185,845', icon: materialismIcon(MATERIAL_IDS.dust), color: 'blue', subtitle: '1.85 Media por Ecto' },
+            { label: t('ectoplasm.totalLuck'), value: '772,439', icon: materialismIcon(MATERIAL_IDS.luckOrange), color: 'orange', subtitle: '7.72 Media por Ecto' },
           ].map((stat, i) => (
             <motion.div
               key={i}
@@ -128,10 +157,96 @@ export default function EctoplasmSalvagePage() {
               </div>
               <div>
                 <p className="text-sm font-bold text-gray-500 uppercase tracking-widest">{stat.label}</p>
-                <p className="text-3xl font-black text-white">{stat.value}</p>
+                <div className="flex flex-col">
+                  <p className="text-3xl font-black text-white">{stat.value}</p>
+                  <p className="text-xs font-bold text-gray-500 uppercase mt-1">{stat.subtitle}</p>
+                </div>
               </div>
             </motion.div>
           ))}
+        </div>
+
+        {/* Market Analysis Mini-Header */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-12">
+           <motion.div 
+             initial={{ opacity: 0, x: -20 }}
+             animate={{ opacity: 1, x: 0 }}
+             className="bg-slate-800/40 p-4 rounded-xl border border-slate-700/50 flex items-center justify-between"
+           >
+              <div className="flex items-center gap-3">
+                {materialIcons[MATERIAL_IDS.ecto] && <Image src={materialIcons[MATERIAL_IDS.ecto]} alt="" width={32} height={32} />}
+                <span className="text-gray-300 font-bold">{materialNames[MATERIAL_IDS.ecto] || 'Ecto'}</span>
+              </div>
+              <div className="flex flex-col items-end">
+                <span className="text-xs text-slate-500 uppercase font-bold">Mercado (Venta)</span>
+                <span className="font-mono">{formatPrice(marketPrices[MATERIAL_IDS.ecto]?.sell || 0)}</span>
+              </div>
+           </motion.div>
+           <motion.div 
+             initial={{ opacity: 0, x: 20 }}
+             animate={{ opacity: 1, x: 0 }}
+             className="bg-slate-800/40 p-4 rounded-xl border border-slate-700/50 flex items-center justify-between"
+           >
+              <div className="flex items-center gap-3">
+                {materialIcons[MATERIAL_IDS.dust] && <Image src={materialIcons[MATERIAL_IDS.dust]} alt="" width={32} height={32} />}
+                <span className="text-gray-300 font-bold">{materialNames[MATERIAL_IDS.dust] || 'Polvo T6'}</span>
+              </div>
+              <div className="flex flex-col items-end">
+                <span className="text-xs text-slate-500 uppercase font-bold">Mercado (Compra)</span>
+                <span className="font-mono">{formatPrice(marketPrices[MATERIAL_IDS.dust]?.buy || 0)}</span>
+              </div>
+           </motion.div>
+        </div>
+
+        {/* Salvage Kits Section */}
+        <div className="mb-12">
+          <motion.h3 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="text-2xl font-bold text-white mb-6 flex items-center gap-3"
+          >
+            <BarChart3 className="w-6 h-6 text-purple-400" />
+            {t('ectoplasm.kits.title')}
+          </motion.h3>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {[
+              { id: 'master', itemId: MATERIAL_IDS.kitMaster, color: 'yellow' },
+              { id: 'mystic', itemId: MATERIAL_IDS.kitMystic, color: 'purple' },
+              { id: 'silver', itemId: MATERIAL_IDS.kitSilver, color: 'slate' },
+            ].map((kit, i) => (
+              <motion.div
+                key={kit.id}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.1 * i + 0.3 }}
+                className="bg-slate-800/40 border border-slate-700/50 rounded-2xl p-6 hover:border-slate-600/50 transition-all"
+              >
+                <div className="flex items-center gap-4 mb-4">
+                  <div className="p-3 bg-slate-900/50 rounded-xl">
+                    {materialIcons[kit.itemId] && <Image src={materialIcons[kit.itemId]} alt="" width={40} height={40} />}
+                  </div>
+                  <div>
+                    <h4 className="text-white font-bold">{t(`ectoplasm.kits.${kit.id}.name`)}</h4>
+                    <p className="text-xs text-gray-500 font-medium uppercase">{t(`ectoplasm.kits.${kit.id}.desc`)}</p>
+                  </div>
+                </div>
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between p-3 bg-slate-900/30 rounded-lg border border-slate-700/30">
+                    <span className="text-gray-400 text-sm">{t('salvage.label.costPerUse')}</span>
+                    <span className={`font-black ${kit.color === 'yellow' ? 'text-yellow-400' : kit.color === 'purple' ? 'text-purple-400' : 'text-gray-300'}`}>
+                      {t(`ectoplasm.kits.${kit.id}.cost`)}
+                    </span>
+                  </div>
+                  <div className="flex items-center justify-between p-3 bg-blue-500/5 rounded-lg border border-blue-500/10">
+                    <span className="text-blue-400/80 text-xs font-bold uppercase">{t('ectoplasm.kits.totalCost100k')}</span>
+                    <span className="font-black text-white italic">
+                      {t(`ectoplasm.kits.${kit.id}.total`)}
+                    </span>
+                  </div>
+                </div>
+              </motion.div>
+            ))}
+          </div>
         </div>
 
         {/* Main Table Card */}
@@ -221,56 +336,7 @@ export default function EctoplasmSalvagePage() {
           </div>
         </motion.div>
 
-        {/* Salvage Kits Section */}
-        <div className="mb-12">
-          <motion.h3 
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            className="text-2xl font-bold text-white mb-6 flex items-center gap-3"
-          >
-            <BarChart3 className="w-6 h-6 text-purple-400" />
-            {t('ectoplasm.kits.title')}
-          </motion.h3>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {[
-              { id: 'master', itemId: MATERIAL_IDS.kitMaster, color: 'yellow' },
-              { id: 'mystic', itemId: MATERIAL_IDS.kitMystic, color: 'purple' },
-              { id: 'silver', itemId: MATERIAL_IDS.kitSilver, color: 'slate' },
-            ].map((kit, i) => (
-              <motion.div
-                key={kit.id}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.1 * i }}
-                className="bg-slate-800/40 border border-slate-700/50 rounded-2xl p-6 hover:border-slate-600/50 transition-all"
-              >
-                <div className="flex items-center gap-4 mb-4">
-                  <div className="p-3 bg-slate-900/50 rounded-xl">
-                    {materialIcons[kit.itemId] && <Image src={materialIcons[kit.itemId]} alt="" width={40} height={40} />}
-                  </div>
-                  <div>
-                    <h4 className="text-white font-bold">{t(`ectoplasm.kits.${kit.id}.name`)}</h4>
-                    <p className="text-xs text-gray-500 font-medium uppercase">{t(`ectoplasm.kits.${kit.id}.desc`)}</p>
-                  </div>
-                </div>
-                <div className="space-y-3">
-                  <div className="flex items-center justify-between p-3 bg-slate-900/30 rounded-lg border border-slate-700/30">
-                    <span className="text-gray-400 text-sm">{t('salvage.label.costPerUse')}</span>
-                    <span className={`font-black ${kit.color === 'yellow' ? 'text-yellow-400' : kit.color === 'purple' ? 'text-purple-400' : 'text-gray-300'}`}>
-                      {t(`ectoplasm.kits.${kit.id}.cost`)}
-                    </span>
-                  </div>
-                  <div className="flex items-center justify-between p-3 bg-blue-500/5 rounded-lg border border-blue-500/10">
-                    <span className="text-blue-400/80 text-xs font-bold uppercase">{t('ectoplasm.kits.totalCost100k')}</span>
-                    <span className="font-black text-white italic">
-                      {t(`ectoplasm.kits.${kit.id}.total`)}
-                    </span>
-                  </div>
-                </div>
-              </motion.div>
-            ))}
-          </div>
-        </div>
+
 
         {/* Info Card */}
         <motion.div
