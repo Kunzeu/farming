@@ -2229,7 +2229,7 @@
   "ectogamblingPage.sandstormLuckyDraw": "Sorteo Afortunado de Tormenta de Arena",
   "ectogamblingPage.subtitle": "Análisis completo de estadísticas y probabilidades de ectogambling",
   "ectogamblingPage.rolls": "Rolls",
-  "ectogamblingPage.stats": "Estadísticas de Ectogambling",
+  "ectogamblingPage.stats": "Estadísticas de Ectos",
   "ectogamblingPage.totalGoldUsed": "Oro total usado",
   "ectogamblingPage.totalRolls": "Total rolls",
   "ectogamblingPage.avgValue": "Valor promedio",
@@ -2802,5 +2802,14 @@
   "ectoplasm.kits.totalCost100k": "Coste Total (100k Ectos)",
   "ectoplasm.kits.master.total": "614g 40s",
   "ectoplasm.kits.mystic.total": "105g 00s",
-  "ectoplasm.kits.silver.total": "600g 00s"
+  "ectoplasm.kits.silver.total": "600g 00s",
+  "ectoplasm.calc.ectoQuantity": "Número de Ectos",
+  "ectoplasm.calc.dustValueSell": "Valor Polvo (venta)",
+  "ectoplasm.calc.estimatedDust": "Polvos estimados",
+  "ectoplasm.calc.investment": "Inversión (Ectos)",
+  "ectoplasm.calc.returns": "Retorno (Polvos)",
+  "ectoplasm.calc.profit": "Beneficio total",
+  "ectoplasm.calc.valuePerEcto": "Valor por Ecto (en Polvo)",
+  "ectoplasm.calc.disclaimer": "Estimación basada en el valor de venta (sells) del Polvo y del Ecto aplicando un factor del 90% para comparar la rentabilidad de reciclar vs vender directamente.",
+  "ectoplasm.calc.kitNote": "Recuerda restar el coste del kit seleccionado abajo"
 }

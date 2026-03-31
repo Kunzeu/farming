@@ -2766,5 +2766,14 @@
   "ectoplasm.kits.totalCost100k": "Total Cost (100k Ectos)",
   "ectoplasm.kits.master.total": "614g 40s",
   "ectoplasm.kits.mystic.total": "105g 00s",
-  "ectoplasm.kits.silver.total": "600g 00s"
+  "ectoplasm.kits.silver.total": "600g 00s",
+  "ectoplasm.calc.ectoQuantity": "Number of Ectos",
+  "ectoplasm.calc.dustValueSell": "Dust Value (sells)",
+  "ectoplasm.calc.estimatedDust": "Estimated Dust",
+  "ectoplasm.calc.investment": "Investment (Ectos)",
+  "ectoplasm.calc.returns": "Returns (Dust)",
+  "ectoplasm.calc.profit": "Total Profit",
+  "ectoplasm.calc.valuePerEcto": "Value per Ecto (in Dust)",
+  "ectoplasm.calc.disclaimer": "Estimate based on Trading Post sell prices (sells) for Dust and Ectos applying a 90% factor to compare recycling vs direct selling.",
+  "ectoplasm.calc.kitNote": "Remember to subtract the selected kit cost below"
 }

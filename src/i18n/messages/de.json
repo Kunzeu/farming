@@ -2718,5 +2718,14 @@
   "ectoplasm.kits.totalCost100k": "Gesamtkosten (100k Ektos)",
   "ectoplasm.kits.master.total": "614g 40s",
   "ectoplasm.kits.mystic.total": "105g 00s",
-  "ectoplasm.kits.silver.total": "600g 00s"
+  "ectoplasm.kits.silver.total": "600g 00s",
+  "ectoplasm.calc.ectoQuantity": "Anzahl der Ectos",
+  "ectoplasm.calc.dustValueSell": "Staubwert (Verkauf)",
+  "ectoplasm.calc.estimatedDust": "Geschätzter Staub",
+  "ectoplasm.calc.investment": "Investition (Ectos)",
+  "ectoplasm.calc.returns": "Rendite (Staub)",
+  "ectoplasm.calc.profit": "Gesamtgewinn",
+  "ectoplasm.calc.valuePerEcto": "Wert pro Ecto (in Staub)",
+  "ectoplasm.calc.disclaimer": "Schätzung basierend auf den Verkaufswerten (sells) von Staub und Ectos am Handelsposten, wobei ein Faktor von 90% angewendet wird, um Recycling mit Direktverkauf zu vergleichen.",
+  "ectoplasm.calc.kitNote": "Denke daran, die Kosten des unten ausgewählten Kits abzuziehen"
 }

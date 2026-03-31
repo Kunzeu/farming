@@ -2712,5 +2712,14 @@
   "ectoplasm.kits.totalCost100k": "Coût total (100k ectos)",
   "ectoplasm.kits.master.total": "614g 40s",
   "ectoplasm.kits.mystic.total": "105g 00s",
-  "ectoplasm.kits.silver.total": "600g 00s"
+  "ectoplasm.kits.silver.total": "600g 00s",
+  "ectoplasm.calc.ectoQuantity": "Nombre d'Ectos",
+  "ectoplasm.calc.dustValueSell": "Valeur de la Poussière (vente)",
+  "ectoplasm.calc.estimatedDust": "Poussière estimée",
+  "ectoplasm.calc.investment": "Investissement (Ectos)",
+  "ectoplasm.calc.returns": "Revenus (Poussière)",
+  "ectoplasm.calc.profit": "Profit total",
+  "ectoplasm.calc.valuePerEcto": "Valeur par Ecto (en Poussière)",
+  "ectoplasm.calc.disclaimer": "Estimation basée sur les prix de vente (sells) de la Poussière et des Ectos au marché, en appliquant un facteur de 90% pour comparer recycler et vendre directement.",
+  "ectoplasm.calc.kitNote": "N'oubliez pas de soustraire le coût du kit sélectionné ci-dessous"
 }

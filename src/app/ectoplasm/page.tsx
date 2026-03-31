@@ -31,16 +31,16 @@ const MATERIAL_IDS = {
 };
 
 const TABLE_DATA = [
-  [8250, 15155, 60018, 3803, 368, 172],
-  [1730, 3247, 12919, 737, 88, 30],
-  [25000, 46527, 178616, 12158, 1231, 510],
-  [15020, 27849, 107426, 7256, 741, 322],
-  [15000, 28100, 107866, 7273, 672, 294],
-  [15000, 27814, 107585, 7482, 659, 319],
-  [20000, 37153, 142609, 9922, 925, 438],
+  [8250, 15263, 60018, 3803, 368, 172],
+  [1730, 3201, 12919, 737, 88, 30],
+  [25000, 46250, 178616, 12158, 1231, 510],
+  [15020, 27787, 107426, 7256, 741, 322],
+  [15000, 27750, 107866, 7273, 672, 294],
+  [15000, 27750, 107585, 7482, 659, 319],
+  [20000, 36999, 142609, 9922, 925, 438],
 ];
 
-const TOTALS = [100000, 185845, 717039, 48631, 4684, 2085];
+const TOTALS = [100000, 185000, 717039, 48631, 4684, 2085];
 
 export default function EctoplasmSalvagePage() {
   const { t, lang } = useI18n();
@@ -49,6 +49,7 @@ export default function EctoplasmSalvagePage() {
   const [materialIcons, setMaterialIcons] = useState<Record<number, string>>({});
   const [materialNames, setMaterialNames] = useState<Record<number, string>>({});
   const [marketPrices, setMarketPrices] = useState<Record<number, { buy: number; sell: number }>>({});
+  const [ectoCount, setEctoCount] = useState<number>(1);
 
   useEffect(() => {
     const fetchMaterialData = async () => {
@@ -105,12 +106,28 @@ export default function EctoplasmSalvagePage() {
     return materialIcons[id] || null;
   }
 
+  // Calculadora: comparar (polvo * 1.85) a 90% vs ecto (precio mercado)
+  const DUST_MULTIPLIER = 1.85;
+  const COMMON_FACTOR = 0.9; // 90% aplicado al polvo según usuario
+  
+  const ectoPrice = marketPrices[MATERIAL_IDS.ecto]?.sell || 0;
+  const dustPrice = marketPrices[MATERIAL_IDS.dust]?.sell || 0;
+
+  const expectedDust = ectoCount * DUST_MULTIPLIER;
+  
+  // Valor de polvos generados por 1 solo Ecto
+  const valuePerEcto = Math.floor(dustPrice * COMMON_FACTOR * DUST_MULTIPLIER);
+  
+  // Inversión y Retornos Totales (aplicando 90% a ambos para comparar "vender vs reciclar")
+  const totalInvestment = Math.floor(ectoCount * ectoPrice * COMMON_FACTOR);
+  const totalReturns = Math.floor(expectedDust * dustPrice * COMMON_FACTOR);
+  const totalProfit = totalReturns - totalInvestment;
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-900 to-slate-800 flex flex-col">
       <Navigation />
       
       <main className="container mx-auto px-4 py-12 flex-1">
-
 
         {/* Header Section */}
         <div className="text-center mb-16">
@@ -140,7 +157,7 @@ export default function EctoplasmSalvagePage() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
           {[
             { label: t('ectoplasm.table.ecto'), value: '100,000', icon: materialismIcon(MATERIAL_IDS.ecto), color: 'purple', subtitle: 'Tamaño de Muestra' },
-            { label: t('ectoplasm.table.dust'), value: '185,845', icon: materialismIcon(MATERIAL_IDS.dust), color: 'blue', subtitle: '1.85 Media por Ecto' },
+            { label: t('ectoplasm.table.dust'), value: '185,000', icon: materialismIcon(MATERIAL_IDS.dust), color: 'blue', subtitle: '1.85 Media por Ecto' },
             { label: t('ectoplasm.totalLuck'), value: '772,439', icon: materialismIcon(MATERIAL_IDS.luckOrange), color: 'orange', subtitle: '7.72 Media por Ecto' },
           ].map((stat, i) => (
             <Motion
@@ -173,56 +190,66 @@ export default function EctoplasmSalvagePage() {
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             className="bg-slate-800/60 backdrop-blur-2xl border border-slate-700/50 rounded-3xl p-8 mb-12 shadow-2xl relative overflow-hidden"
-          >
-          {/* Subtle background icon */}
-          <Layers className="absolute -right-8 -top-8 w-64 h-64 text-purple-500/5 rotate-12" />
-          
+          >          
           <div className="relative z-10 text-center mb-8">
             <h2 className="text-2xl font-black text-white uppercase tracking-tighter flex items-center justify-center gap-3">
               <Calculator className="w-6 h-6 text-blue-400" />
-              Calculadora de Rentabilidad Directa
+              {t('ectogamblingPage.stats')}
             </h2>
           </div>
-
-          <div className="flex flex-col md:flex-row items-center justify-center gap-8 relative z-10">
-            {/* 1 Ecto */}
-            <div className="flex flex-col items-center gap-4 bg-slate-900/40 p-6 rounded-2xl border border-white/5 w-full md:w-64">
-              <span className="text-[10px] font-black text-gray-500 uppercase tracking-widest">Inversión</span>
-              <div className="relative group">
-                <div className="absolute inset-0 bg-purple-500 blur-xl opacity-20 group-hover:opacity-40 transition-opacity" />
-                {materialIcons[MATERIAL_IDS.ecto] && <Image src={materialIcons[MATERIAL_IDS.ecto]} alt="" width={64} height={64} className="relative z-10" />}
+          <div className="flex flex-col items-center gap-6 relative z-10 max-w-4xl mx-auto">
+            <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-4 items-center">
+              <div className="flex flex-col items-center gap-4 bg-slate-900/40 p-6 rounded-2xl border border-white/5">
+                <span className="text-[10px] font-black text-gray-500 uppercase tracking-widest">{t('ectoplasm.calc.ectoQuantity')}</span>
+                <div className="text-center w-full">
+                  <input
+                    type="number"
+                    min={1}
+                    value={ectoCount}
+                    onChange={(e) => setEctoCount(Math.max(1, Number(e.target.value) || 1))}
+                    className="w-full text-center bg-transparent border border-slate-700/40 rounded-md px-3 py-2 text-white font-black"
+                  />
+                </div>
               </div>
-              <div className="text-center">
-                <p className="text-white font-black text-lg">1 Ecto</p>
-                <div className="font-mono mt-1">{formatPrice(marketPrices[MATERIAL_IDS.ecto]?.sell || 0)}</div>
+
+              <div className="flex flex-col items-center gap-4 bg-slate-900/40 p-6 rounded-2xl border border-white/5">
+                <span className="text-[10px] font-black text-gray-500 uppercase tracking-widest">{t('ectoplasm.calc.dustValueSell')}</span>
+                <div className="text-center font-mono text-white">{formatPrice(dustPrice)}</div>
+                {materialIcons[MATERIAL_IDS.dust] && <Image src={materialIcons[MATERIAL_IDS.dust]} alt="Polvo" width={48} height={48} />}
               </div>
             </div>
 
-            {/* Arrow + Kit */}
-            <div className="flex flex-col items-center gap-2">
-               <div className="p-3 bg-white/5 rounded-full border border-white/10">
-                 <ArrowRight className="w-8 h-8 text-blue-400" />
-               </div>
-               <span className="text-[10px] font-bold text-slate-500 uppercase">Reciclar</span>
+            <div className="w-full bg-slate-900/40 p-6 rounded-2xl border border-white/5 flex flex-col md:flex-row items-center justify-between gap-4">
+              <div className="text-center md:text-left">
+                <p className="text-sm text-gray-400">{t('ectoplasm.calc.estimatedDust')}</p>
+                <p className="text-3xl font-black text-white">{parseFloat(expectedDust.toFixed(2))} <span className="text-xs text-gray-400">{t('ectoplasm.table.dust')}</span></p>
+                <p className="text-xs text-gray-400 mt-2">{t('ectoplasm.calc.valuePerEcto')}: {formatPrice(valuePerEcto)}</p>
+              </div>
+
+              <div className="text-center md:text-right space-y-2">
+                <div className="flex flex-col md:items-end">
+                  <span className="text-xs text-slate-500 uppercase font-bold">{t('ectoplasm.calc.investment')}</span>
+                  <span className="text-lg font-black text-white">{formatPrice(totalInvestment)}</span>
+                </div>
+                <div className="flex flex-col md:items-end">
+                  <span className="text-xs text-slate-500 uppercase font-bold">{t('ectoplasm.calc.returns')}</span>
+                  <span className="text-lg font-black text-blue-400">{formatPrice(totalReturns)}</span>
+                </div>
+                <div className="flex flex-col md:items-end pt-2 border-t border-white/5">
+                  <span className="text-xs text-slate-500 uppercase font-bold">{t('ectoplasm.calc.profit')}</span>
+                  <span className={`text-2xl font-black ${totalProfit >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+                    {formatPrice(Math.abs(totalProfit))}
+                    {totalProfit < 0 ? ' (Pérdida)' : ''}
+                  </span>
+                </div>
+              </div>
             </div>
 
-            {/* Results */}
-            <div className="flex flex-col items-center gap-4 bg-slate-900/40 p-6 rounded-2xl border border-white/5 w-full md:w-80">
-              <span className="text-[10px] font-black text-gray-500 uppercase tracking-widest">Retorno Estimado</span>
-              <div className="flex items-center gap-6">
-                <div className="flex flex-col items-center">
-                  {materialIcons[MATERIAL_IDS.dust] && <Image src={materialIcons[MATERIAL_IDS.dust]} alt="" width={48} height={48} />}
-                  <span className="text-white font-bold mt-1">1.858 Polvos</span>
-                </div>
-                <div className="text-2xl font-light text-slate-600">+</div>
-                <div className="flex flex-col items-center">
-                  {materialIcons[MATERIAL_IDS.luckOrange] && <Image src={materialIcons[MATERIAL_IDS.luckOrange]} alt="" width={48} height={48} />}
-                  <span className="text-amber-400 font-bold mt-1">104.8 Luck</span>
-                </div>
-              </div>
-              <div className="text-center border-t border-white/5 pt-4 w-full">
-                <div className="font-mono">{formatPrice(Math.floor((marketPrices[MATERIAL_IDS.dust]?.buy || 0) * 1.85845))}</div>
-              </div>
+            <div className="w-full text-center">
+              <Link href="/conversion-guide" className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-bold rounded-lg shadow hover:opacity-90 transition-opacity">
+                {t('conversionGuidePage.sidebar.title')}
+                <ArrowRight className="w-4 h-4" />
+              </Link>
             </div>
           </div>
 
@@ -230,8 +257,8 @@ export default function EctoplasmSalvagePage() {
           <div className="mt-8 flex flex-col items-center">
              <div className="p-4 bg-blue-500/5 border border-blue-500/10 rounded-2xl max-w-lg text-center">
                <p className="text-xs text-gray-400 font-medium leading-relaxed italic">
-                 Comparativa basada en precios actuales (Venta de Ecto vs Compra de Polvo). 
-                 <span className="text-blue-400 font-bold block mt-1 uppercase tracking-widest">⚠️ Recuerda restar el coste del kit seleccionado abajo</span>
+                 {t('ectoplasm.calc.disclaimer')}
+                 <span className="text-blue-400 font-bold block mt-1 uppercase tracking-widest">⚠️ {t('ectoplasm.calc.kitNote')}</span>
                </p>
              </div>
           </div>
@@ -249,7 +276,7 @@ export default function EctoplasmSalvagePage() {
                 <span className="text-gray-300 font-bold">{materialNames[MATERIAL_IDS.ecto] || 'Ecto'}</span>
               </div>
               <div className="flex flex-col items-end">
-                <span className="text-xs text-slate-500 uppercase font-bold">Mercado (Venta)</span>
+                <span className="text-xs text-slate-500 uppercase font-bold">TP (Venta)</span>
                 <span className="font-mono">{formatPrice(marketPrices[MATERIAL_IDS.ecto]?.sell || 0)}</span>
               </div>
            </Motion>
@@ -263,8 +290,8 @@ export default function EctoplasmSalvagePage() {
                 <span className="text-gray-300 font-bold">{materialNames[MATERIAL_IDS.dust] || 'Polvo T6'}</span>
               </div>
               <div className="flex flex-col items-end">
-                <span className="text-xs text-slate-500 uppercase font-bold">Mercado (Compra)</span>
-                <span className="font-mono">{formatPrice(marketPrices[MATERIAL_IDS.dust]?.buy || 0)}</span>
+                <span className="text-xs text-slate-500 uppercase font-bold">TP (Venta)</span>
+                <span className="font-mono">{formatPrice(marketPrices[MATERIAL_IDS.dust]?.sell || 0)}</span>
                 </div>
               </Motion>
         </div>
