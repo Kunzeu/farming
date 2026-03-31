@@ -2811,5 +2811,7 @@
   "ectoplasm.calc.profit": "Beneficio total",
   "ectoplasm.calc.valuePerEcto": "Valor por Ecto (en Polvo)",
   "ectoplasm.calc.disclaimer": "Estimación basada en el valor de venta (sells) del Polvo y del Ecto aplicando un factor del 90% para comparar la rentabilidad de reciclar vs vender directamente.",
-  "ectoplasm.calc.kitNote": "Recuerda restar el coste del kit seleccionado abajo"
+  "ectoplasm.calc.kitNote": "Recuerda restar el coste del kit seleccionado abajo",
+  "ectoplasm.calc.selectKit": "Seleccionar Kit de Reciclaje",
+  "ectoplasm.calc.kitCost": "Coste del Kit (Total)"
 }
