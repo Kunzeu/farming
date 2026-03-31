@@ -50,7 +50,7 @@ export default function EctoplasmSalvagePage() {
   const [materialNames, setMaterialNames] = useState<Record<number, string>>({});
   const [marketPrices, setMarketPrices] = useState<Record<number, { buy: number; sell: number }>>({});
   const [ectoCount, setEctoCount] = useState<number>(250);
-  const [selectedKit, setSelectedKit] = useState<string>('mystic'); // Default to Mystic
+  const [selectedKit, setSelectedKit] = useState<string>('silver'); // Default to Silver
 
   useEffect(() => {
     const fetchMaterialData = async () => {
