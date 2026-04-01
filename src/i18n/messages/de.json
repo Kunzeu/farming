@@ -2727,5 +2727,8 @@
   "ectoplasm.calc.profit": "Gesamtgewinn",
   "ectoplasm.calc.valuePerEcto": "Wert pro Ecto (in Staub)",
   "ectoplasm.calc.disclaimer": "Schätzung basierend auf den Verkaufswerten (sells) von Staub und Ectos am Handelsposten, wobei ein Faktor von 90% angewendet wird, um Recycling mit Direktverkauf zu vergleichen.",
-  "ectoplasm.calc.kitNote": "Denke daran, die Kosten des unten ausgewählten Kits abzuziehen"
+  "ectoplasm.calc.addQuantity": "Gib die gewünschte Menge ein",
+  "ectoplasm.calc.kitNote": "Denke daran, die Kosten des unten ausgewählten Kits abzuziehen",
+  "ectoplasm.calc.selectKit": "Kit auswählen",
+  "ectoplasm.calc.kitCost": "Kit-Kosten (Gesamt)"
 }

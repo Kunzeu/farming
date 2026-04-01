@@ -512,19 +512,19 @@ export default function HomePage() {
   // Obtener el último dashboard agregado (ectoplasm)
   useEffect(() => {
     // Crear tarjeta para laurels (última agregada)
-    const laurelsCard: DashboardCard = {
-      id: "laurels",
-      title: "dashboard.laurels.title",
-      description: "dashboard.laurels.description",
-      href: "/opened/laurels",
-      icon: <Crown className="w-8 h-8" />,
-      color: "from-amber-500 to-yellow-600",
+    const ectoCard: DashboardCard = {
+      id: "ectoplasm",
+      title: t('ectoplasm.title', 'Ectoplasm'),
+      description: t('ectoplasm.subtitle', 'Estadísticas y herramientas relacionadas con ectoplasma'),
+      href: "/ectoplasm",
+      icon: <BarChart3 className="w-8 h-8" />,
+      color: "from-purple-500 to-blue-600",
       delay: 0,
       visible: true,
       order: 17
     };
 
-    setMostUsedDashboard(reconstructCardWithIcon(laurelsCard));
+    setMostUsedDashboard(reconstructCardWithIcon(ectoCard));
   }, []);
 
   // Mostrar mensaje "Check our new tool" cada 6 segundos

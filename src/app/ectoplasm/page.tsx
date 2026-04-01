@@ -223,6 +223,7 @@ export default function EctoplasmSalvagePage() {
                     onChange={(e) => setEctoCount(Math.max(1, Number(e.target.value) || 1))}
                     className="w-full text-center bg-transparent border border-slate-700/40 rounded-md px-3 py-2 text-white font-black"
                   />
+                  <p className="text-xs text-gray-400 mt-2">{t('ectoplasm.calc.addQuantity')}</p>
                 </div>
               </div>
 

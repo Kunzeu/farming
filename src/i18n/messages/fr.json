@@ -2721,5 +2721,8 @@
   "ectoplasm.calc.profit": "Profit total",
   "ectoplasm.calc.valuePerEcto": "Valeur par Ecto (en Poussière)",
   "ectoplasm.calc.disclaimer": "Estimation basée sur les prix de vente (sells) de la Poussière et des Ectos au marché, en appliquant un facteur de 90% pour comparer recycler et vendre directement.",
-  "ectoplasm.calc.kitNote": "N'oubliez pas de soustraire le coût du kit sélectionné ci-dessous"
+  "ectoplasm.calc.addQuantity": "Ajoutez la quantité souhaitée",
+  "ectoplasm.calc.kitNote": "N'oubliez pas de soustraire le coût du kit sélectionné ci-dessous",
+  "ectoplasm.calc.selectKit": "Sélectionner le kit",
+  "ectoplasm.calc.kitCost": "Coût du kit (total)"
 }

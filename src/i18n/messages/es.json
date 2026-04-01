@@ -2804,6 +2804,7 @@
   "ectoplasm.kits.mystic.total": "105g 00s",
   "ectoplasm.kits.silver.total": "600g 00s",
   "ectoplasm.calc.ectoQuantity": "Número de Ectos",
+  "ectoplasm.calc.addQuantity": "Agrega la cantidad que quieras",
   "ectoplasm.calc.dustValueSell": "Valor Polvo (venta)",
   "ectoplasm.calc.estimatedDust": "Polvos estimados",
   "ectoplasm.calc.investment": "Inversión (Ectos)",
