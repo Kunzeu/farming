@@ -36,6 +36,17 @@ const pool = new Pool({
   }
 });
 
+async function hasLocationImageColumn(): Promise<boolean> {
+  const result = await pool.query(
+    `SELECT EXISTS (
+      SELECT 1
+      FROM information_schema.columns
+      WHERE table_name = 'farm_items' AND column_name = 'location_image_url'
+    ) AS "exists"`
+  );
+  return Boolean(result.rows[0]?.exists);
+}
+
 // Verificar conexión
 pool.query('SELECT NOW()', (err) => {
   if (err) {
@@ -56,11 +67,18 @@ export async function GET(request: NextRequest) {
       await pool.query('SELECT set_current_user_id($1)', [userId]);
     }
 
+    const includeLocationImage = await hasLocationImageColumn();
+    const locationImageSelect = includeLocationImage
+      ? 'f.location_image_url as "locationImageUrl",'
+      : 'NULL::text as "locationImageUrl",';
+
     const query = `
       SELECT f.id, f.name, f.description, f.estimated_time as "estimatedTime", 
              f.estimated_gold as "estimatedGold", f.estimated_spirit as "estimatedSpirit",
              f.estimated_rewards as "estimatedRewards", f.expansion, f.is_solo as "isSolo",
-             f.requires_squad as "requiresSquad", f.waypoint, f.selected, f."order", f.status,
+             f.requires_squad as "requiresSquad", f.waypoint,
+             ${locationImageSelect}
+             f.selected, f."order", f.status,
              f.created_by as "createdBy", f.created_at as "createdAt", f.updated_at as "updatedAt",
              u.username as "createdByUsername"
       FROM farm_items f
@@ -154,7 +172,21 @@ export async function POST(request: NextRequest) {
 
     const id = crypto.randomUUID();
     
-    const query = `
+    const includeLocationImage = await hasLocationImageColumn();
+    const query = includeLocationImage
+      ? `
+      INSERT INTO farm_items (id, name, description, estimated_time, estimated_gold, 
+                             estimated_spirit, estimated_rewards, expansion, is_solo, 
+                             requires_squad, waypoint, location_image_url, selected, "order", status, created_by)
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16)
+      RETURNING id, name, description, estimated_time as "estimatedTime", 
+                estimated_gold as "estimatedGold", estimated_spirit as "estimatedSpirit",
+                estimated_rewards as "estimatedRewards", expansion, is_solo as "isSolo",
+                requires_squad as "requiresSquad", waypoint, location_image_url as "locationImageUrl",
+                selected, "order", status, 
+                created_by as "createdBy", created_at as "createdAt", updated_at as "updatedAt"
+    `
+      : `
       INSERT INTO farm_items (id, name, description, estimated_time, estimated_gold, 
                              estimated_spirit, estimated_rewards, expansion, is_solo, 
                              requires_squad, waypoint, selected, "order", status, created_by)
@@ -162,7 +194,8 @@ export async function POST(request: NextRequest) {
       RETURNING id, name, description, estimated_time as "estimatedTime", 
                 estimated_gold as "estimatedGold", estimated_spirit as "estimatedSpirit",
                 estimated_rewards as "estimatedRewards", expansion, is_solo as "isSolo",
-                requires_squad as "requiresSquad", waypoint, selected, "order", status, 
+                requires_squad as "requiresSquad", waypoint, NULL::text as "locationImageUrl",
+                selected, "order", status, 
                 created_by as "createdBy", created_at as "createdAt", updated_at as "updatedAt"
     `;
     
@@ -190,6 +223,16 @@ export async function POST(request: NextRequest) {
       status, 
       body.createdBy
     ];
+
+    if (includeLocationImage) {
+      values.splice(
+        11,
+        0,
+        typeof body.locationImageUrl === 'string' && body.locationImageUrl.trim()
+          ? body.locationImageUrl.trim().slice(0, 2048)
+          : null
+      );
+    }
     
     const result = await pool.query(query, values);
     const row = result.rows[0];

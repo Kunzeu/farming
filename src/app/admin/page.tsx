@@ -119,6 +119,7 @@ export default function AdminPanel() {
     estimatedRewards: {} as Record<string, string>,
     expansion: [] as ('core' | 'hot' | 'pof' | 'eod' | 'soto' | 'jw' | 'voe')[],
     waypoint: '',
+    locationImageUrl: '',
     isSolo: false,
     requiresSquad: false,
     createdBy: '',
@@ -412,6 +413,7 @@ export default function AdminPanel() {
         isSolo: false,
         requiresSquad: false,
         waypoint: '',
+        locationImageUrl: '',
         selected: false,
         status: 'approved',
         createdBy: user?.id || prev.createdBy
@@ -477,7 +479,8 @@ export default function AdminPanel() {
         expansion: editingFarm.expansion,
         isSolo: editingFarm.isSolo,
         requiresSquad: editingFarm.requiresSquad,
-        waypoint: editingFarm.waypoint
+        waypoint: editingFarm.waypoint,
+        locationImageUrl: editingFarm.locationImageUrl?.trim() || null
       });
 
       const farmName = editingFarm.name;
@@ -841,6 +844,23 @@ export default function AdminPanel() {
               </div>
             </div>
 
+            <div>
+              <label className="block text-sm font-medium text-gray-300 mb-2">
+                Imagen &quot;dónde jugar&quot; (URL o ruta)
+              </label>
+              <input
+                type="text"
+                value={newFarm.locationImageUrl || ''}
+                onChange={(e) => setNewFarm({ ...newFarm, locationImageUrl: e.target.value })}
+                className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-purple-500 font-mono text-sm"
+                placeholder="/images/routes/mi-ruta.webp"
+              />
+              <p className="text-xs text-gray-400 mt-1">
+                Sube el archivo a <code className="text-gray-300">public/</code> y pon la ruta pública (ej.{' '}
+                <code className="text-gray-300">/images/routes/...</code>) o una URL https.
+              </p>
+            </div>
+
             {/* Checkboxes para Solo/Squad */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <label className="flex items-center gap-2 p-3 bg-gray-700 rounded-lg border border-gray-600 hover:border-purple-500 cursor-pointer">
@@ -1047,6 +1067,22 @@ export default function AdminPanel() {
                 )}
               </div>
               <p className="text-xs text-gray-400 mt-1">Chat code del waypoint para acceder al farm</p>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-300 mb-2">
+                Imagen &quot;dónde jugar&quot; (URL o ruta)
+              </label>
+              <input
+                type="text"
+                value={editingFarm.locationImageUrl || ''}
+                onChange={(e) => setEditingFarm({ ...editingFarm, locationImageUrl: e.target.value })}
+                className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-purple-500 font-mono text-sm"
+                placeholder="/images/routes/mi-ruta.webp"
+              />
+              <p className="text-xs text-gray-400 mt-1">
+                Archivo en <code className="text-gray-300">public/</code> o URL absoluta; se muestra en el modal de Rutas.
+              </p>
             </div>
 
             {/* Modalidad del Farm */}

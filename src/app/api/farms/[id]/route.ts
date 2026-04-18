@@ -8,6 +8,17 @@ const pool = new Pool({
   ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false,
 });
 
+async function hasLocationImageColumn(): Promise<boolean> {
+  const result = await pool.query(
+    `SELECT EXISTS (
+      SELECT 1
+      FROM information_schema.columns
+      WHERE table_name = 'farm_items' AND column_name = 'location_image_url'
+    ) AS "exists"`
+  );
+  return Boolean(result.rows[0]?.exists);
+}
+
 export async function PUT(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
@@ -15,6 +26,7 @@ export async function PUT(
   try {
     const body = await request.json();
     const { id } = await params;
+    const includeLocationImage = await hasLocationImageColumn();
     
 
     
@@ -82,6 +94,21 @@ export async function PUT(
       values.push(body.waypoint);
       paramIndex++;
     }
+
+    if (includeLocationImage && body.locationImageUrl !== undefined) {
+      const raw = body.locationImageUrl;
+      if (raw !== null && typeof raw !== 'string') {
+        return NextResponse.json(
+          { error: 'Validation error', details: 'locationImageUrl must be a string or null' },
+          { status: 400 }
+        );
+      }
+      const trimmed =
+        raw === null || raw === '' ? null : String(raw).trim().slice(0, 2048);
+      updateFields.push(`location_image_url = $${paramIndex}`);
+      values.push(trimmed);
+      paramIndex++;
+    }
     
     if (body.expansion !== undefined) {
       updateFields.push(`expansion = $${paramIndex}`);
@@ -128,6 +155,10 @@ export async function PUT(
     // Agregar el ID al final
     values.push(id);
     
+    const locationImageReturning = includeLocationImage
+      ? 'location_image_url as "locationImageUrl",'
+      : 'NULL::text as "locationImageUrl",';
+
     const query = `
       UPDATE farm_items 
       SET ${updateFields.join(', ')}
@@ -135,7 +166,8 @@ export async function PUT(
       RETURNING id, name, description, estimated_time as "estimatedTime", 
                 estimated_gold as "estimatedGold", estimated_spirit as "estimatedSpirit",
                 estimated_rewards as "estimatedRewards", expansion, is_solo as "isSolo",
-                requires_squad as "requiresSquad", waypoint, selected, "order", status, 
+                requires_squad as "requiresSquad", waypoint, ${locationImageReturning}
+                selected, "order", status, 
                 created_by as "createdBy", created_at as "createdAt", updated_at as "updatedAt"
     `;
     

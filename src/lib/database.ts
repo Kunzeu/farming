@@ -18,6 +18,7 @@ export interface FarmItem {
   isSolo: boolean;
   requiresSquad: boolean;
   waypoint?: string;
+  locationImageUrl?: string;
   selected: boolean;
   createdAt: Date;
   updatedAt: Date;

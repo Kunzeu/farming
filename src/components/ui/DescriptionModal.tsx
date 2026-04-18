@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Map, Clock, Copy, Users, User } from 'lucide-react';
+import { X, Map, Clock, Copy, Users, User, ZoomIn } from 'lucide-react';
 import ExpansionIcon from './ExpansionIcon';
 import GW2Icon from './GW2Icon';
 import MarkdownText from './MarkdownText';
@@ -21,14 +21,37 @@ interface DescriptionModalProps {
     estimatedRewards?: Record<string, string>;
     estimatedGold?: string;
     estimatedSpirit?: string;
+    locationImageUrl?: string;
   } | null;
 }
 
 export default function DescriptionModal({ isOpen, onClose, route }: DescriptionModalProps) {
   const { t } = useI18n();
   const [copiedWaypoint, setCopiedWaypoint] = useState<string | null>(null);
-  
+  const [locationImageZoomOpen, setLocationImageZoomOpen] = useState(false);
+
+  const closeLocationZoom = useCallback(() => {
+    setLocationImageZoomOpen(false);
+  }, []);
+
+  useEffect(() => {
+    if (!isOpen) {
+      setLocationImageZoomOpen(false);
+    }
+  }, [isOpen, route?.id]);
+
+  useEffect(() => {
+    if (!locationImageZoomOpen) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') closeLocationZoom();
+    };
+    document.addEventListener('keydown', onKey);
+    return () => document.removeEventListener('keydown', onKey);
+  }, [locationImageZoomOpen, closeLocationZoom]);
+
   if (!route) return null;
+
+  const locationImg = route.locationImageUrl?.trim() || '';
 
   // Función para procesar la descripción y convertir patrones en saltos de línea
   const processDescription = (description: string): string => {
@@ -134,23 +157,45 @@ export default function DescriptionModal({ isOpen, onClose, route }: Description
             onClick={onClose}
           >
             <div
-              className="bg-gray-800 rounded-lg shadow-xl max-w-2xl w-full border border-gray-700 max-h-[90vh] overflow-y-auto"
+              className="bg-gray-800 rounded-lg shadow-xl max-w-3xl w-full border border-gray-700 max-h-[90vh] overflow-y-auto"
               onClick={(e) => e.stopPropagation()}
             >
-              {/* Header */}
-              <div className="flex items-center justify-between p-6 border-b border-gray-700">
-                <div className="flex items-center gap-3">
-                  <Map className="w-6 h-6 text-blue-400" />
-                  <h3 className="text-xl font-semibold text-white">
+              {/* Header: título + miniatura "dónde jugar" + cerrar */}
+              <div className="flex items-start justify-between gap-4 p-6 border-b border-gray-700">
+                <div className="flex min-w-0 flex-1 items-start gap-3">
+                  <Map className="mt-0.5 h-6 w-6 shrink-0 text-blue-400" />
+                  <h3 className="text-xl font-semibold leading-snug text-white">
                     {route.name}
                   </h3>
                 </div>
-                <button
-                  onClick={onClose}
-                  className="text-gray-400 hover:text-white transition-colors"
-                >
-                  <X className="w-5 h-5" />
-                </button>
+                <div className="flex shrink-0 items-start gap-2">
+                  {locationImg ? (
+                    <button
+                      type="button"
+                      onClick={() => setLocationImageZoomOpen(true)}
+                      className="group relative overflow-hidden rounded-lg border border-gray-600 bg-gray-900/80 shadow-md ring-2 ring-transparent transition hover:border-emerald-500/60 hover:ring-emerald-500/20 focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400"
+                      title={t('modal.locationImageZoom', 'Ver imagen ampliada')}
+                    >
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img
+                        src={locationImg}
+                        alt=""
+                        className="h-20 w-36 object-cover sm:h-24 sm:w-40"
+                      />
+                      <span className="absolute inset-0 flex items-center justify-center bg-black/35 opacity-90 transition group-hover:bg-black/45">
+                        <ZoomIn className="h-8 w-8 text-white drop-shadow-md" aria-hidden />
+                      </span>
+                    </button>
+                  ) : null}
+                  <button
+                    type="button"
+                    onClick={onClose}
+                    className="rounded-lg p-2 text-gray-400 transition-colors hover:bg-gray-700 hover:text-white"
+                    aria-label={t('modal.close', 'Close')}
+                  >
+                    <X className="h-6 w-6" />
+                  </button>
+                </div>
               </div>
               
               {/* Content */}
@@ -306,6 +351,45 @@ export default function DescriptionModal({ isOpen, onClose, route }: Description
               </div>
             </div>
           </motion.div>
+
+          {/* Vista ampliada de la ubicación (encima del modal de ruta) */}
+          <AnimatePresence>
+            {locationImageZoomOpen && locationImg ? (
+              <motion.div
+                key="route-location-zoom"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                className="fixed inset-0 z-[60] flex h-screen w-screen items-center justify-center bg-black/90 p-2 backdrop-blur-sm sm:p-3"
+                onClick={closeLocationZoom}
+                role="presentation"
+              >
+                <motion.div
+                  initial={{ scale: 0.98, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  exit={{ scale: 0.98, opacity: 0 }}
+                  transition={{ type: 'spring', damping: 28, stiffness: 300 }}
+                  className="relative flex h-full w-full items-center justify-center"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <button
+                    type="button"
+                    onClick={closeLocationZoom}
+                    className="absolute right-2 top-2 z-10 rounded-full bg-black/60 p-2 text-white/95 transition hover:bg-black/80 hover:text-white sm:right-4 sm:top-4"
+                    aria-label={t('modal.close', 'Close')}
+                  >
+                    <X className="h-8 w-8" />
+                  </button>
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={locationImg}
+                    alt={t('modal.locationWhereToPlayAlt', 'Ubicación en el mapa')}
+                    className="h-auto max-h-[96vh] w-auto max-w-[96vw] object-contain shadow-2xl"
+                  />
+                </motion.div>
+              </motion.div>
+            ) : null}
+          </AnimatePresence>
         </>
       )}
     </AnimatePresence>

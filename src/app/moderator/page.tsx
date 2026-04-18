@@ -37,6 +37,7 @@ export default function ModeratorPanel() {
     isSolo: false,
     requiresSquad: false,
     waypoint: '',
+    locationImageUrl: '',
     selected: false,
     status: 'pending',
     createdBy: ''
@@ -282,7 +283,8 @@ export default function ModeratorPanel() {
         estimatedTime: editingFarm.estimatedTime,
         estimatedGold: editingFarm.estimatedGold,
         estimatedSpirit: editingFarm.estimatedSpirit,
-        expansion: editingFarm.expansion
+        expansion: editingFarm.expansion,
+        locationImageUrl: editingFarm.locationImageUrl?.trim() || null
       };
 
 
@@ -337,6 +339,7 @@ export default function ModeratorPanel() {
         isSolo: false,
         requiresSquad: false,
         waypoint: '',
+        locationImageUrl: '',
         selected: false,
         status: 'pending',
         createdBy: user?.id || prev.createdBy
@@ -548,6 +551,22 @@ export default function ModeratorPanel() {
                 </div>
                 <p className="text-xs text-gray-400 mt-1">Chat code del waypoint (opcional)</p>
               </div>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-300 mb-2">
+                Imagen &quot;dónde jugar&quot; (URL o ruta)
+              </label>
+              <input
+                type="text"
+                value={newFarm.locationImageUrl || ''}
+                onChange={(e) => setNewFarm({ ...newFarm, locationImageUrl: e.target.value })}
+                className="w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded-lg font-mono text-sm text-white focus:outline-none focus:border-blue-500"
+                placeholder="/images/routes/mi-ruta.webp"
+              />
+              <p className="text-xs text-gray-400 mt-1">
+                Opcional: ruta bajo <code className="text-gray-300">public/</code> o URL https.
+              </p>
             </div>
 
             {/* Checkboxes para Solo/Squad */}
@@ -1138,6 +1157,24 @@ export default function ModeratorPanel() {
                   placeholder="Descripción del farm..."
                 />
               </div>
+
+              {!(editingFarm.status === 'approved' && editingFarm.createdBy !== user?.id) && (
+                <div>
+                  <label className="block text-sm font-medium text-gray-300 mb-2">
+                    Imagen &quot;dónde jugar&quot; (URL o ruta)
+                  </label>
+                  <input
+                    type="text"
+                    value={editingFarm.locationImageUrl || ''}
+                    onChange={(e) => setEditingFarm({ ...editingFarm, locationImageUrl: e.target.value })}
+                    className="w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded-lg font-mono text-sm text-white focus:outline-none focus:border-blue-500"
+                    placeholder="/images/routes/mi-ruta.webp"
+                  />
+                  <p className="text-xs text-gray-400 mt-1">
+                    Opcional: se muestra en el modal de Rutas al abrir la descripción.
+                  </p>
+                </div>
+              )}
 
               <div className="grid grid-cols-3 gap-4">
                                 <div>

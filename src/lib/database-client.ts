@@ -38,6 +38,8 @@ export interface FarmItem {
   isSolo: boolean;
   requiresSquad: boolean;
   waypoint?: string;
+  /** Ruta bajo /public o URL absoluta; se muestra en el modal de rutas como "dónde jugar". */
+  locationImageUrl?: string;
   selected: boolean;
   createdAt: Date;
   updatedAt: Date;

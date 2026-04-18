@@ -112,6 +112,62 @@ const JardinesPage = () => {
     '/images/garden/VoE.webp'                    // 52. Shipwreck Strand
   ];
 
+  /** Chat codes en el mismo orden que `gardenImages` (para copiar en el modal ampliado). */
+  const gardenWaypoints: string[] = [
+    '[&BE8BAAA=]',
+    '[&BAACAAA=]',
+    '[&BOwBAAA=]',
+    '[&BMcDAAA=]',
+    '[&BN4AAAA=]',
+    '[&BB0CAAA=]',
+    '[&BHgCAAA=]',
+    '[&BMAAAAA=]',
+    '[&BOYAAAA=]',
+    '[&BF8CAAA=]',
+    '[&BFECAAA=]',
+    '[&BNECAAA=]',
+    '[&BFgGAAA=]',
+    '[&BMkBAAA=]',
+    '[&BKcBAAA=]',
+    '[&BOQAAAA=]',
+    '[&BKsAAAA=]',
+    '[&BPoAAAA=]',
+    '[&BBIAAAA=]',
+    '[&BEIAAAA=]',
+    '[&BEABAAA=]',
+    '[&BFwAAAA=]',
+    '[&BIYHAAA=]',
+    '[&BKYCAAA=]',
+    '[&BOAHAAA=]',
+    '[&BA4IAAA=]',
+    '[&BFcLAAA=]',
+    '[&BF8JAAA=]',
+    '[&BM0JAAA=]',
+    '[&BH0JAAA=]',
+    '[&BNwKAAA=]',
+    '[&BCgKAAA=]',
+    '[&BCgKAAA=]',
+    '[&BJEKAAA=]',
+    '[&BEAKAAA=]',
+    '[&BEMLAAA=]',
+    '[&BBsMAAA=]',
+    '[&BCcMAAA=]',
+    '[&BGQMAAA=]',
+    '[&BGQMAAA=]',
+    '[&BGQMAAA=]',
+    '[&BJ4MAAA=]',
+    '[&BBkNAAA=]',
+    '[&BBkNAAA=]',
+    '[&BCANAAA=]',
+    '[&BNQMAAA=]',
+    '[&BFUOAAA=]',
+    '[&BNwNAAA=]',
+    '[&BK4OAAA=]',
+    '[&BK4OAAA=]',
+    '[&BC4EAAA=]',
+    '[&BJEPAAA=]'
+  ];
+
   // Obtener datos de los items de la API con caché optimizado
   const itemIds = [42594, 80977, 80979, 102000, 67032, 20003, 39699, 20002, 67393, 87698, 85733];
   const { items: itemsData } = useGW2Items(itemIds, lang);
@@ -4866,47 +4922,89 @@ const JardinesPage = () => {
 
       {/* Modal de visualización de imágenes */}
       {imageModal.isOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 backdrop-blur-sm">
-          <div className="relative max-w-7xl max-h-[90vh] w-full mx-4">
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 backdrop-blur-sm p-4"
+          onClick={closeImageModal}
+          role="presentation"
+        >
+          <div
+            className="relative flex max-h-[90vh] w-full max-w-7xl flex-col overflow-hidden rounded-xl border border-white/10 bg-black/50 shadow-2xl"
+            onClick={(e) => e.stopPropagation()}
+          >
             {/* Botón de cerrar */}
             <button
+              type="button"
               onClick={closeImageModal}
-              className="absolute top-4 right-4 z-10 bg-black/50 hover:bg-black/70 text-white rounded-full p-2 transition-colors"
+              className="absolute right-3 top-3 z-20 rounded-full bg-black/60 p-3 text-white shadow-lg ring-1 ring-white/10 transition-colors hover:bg-black/80"
+              aria-label={t('gardenPage.sections.locations.closeImage', 'Cerrar imagen')}
             >
-              <X className="w-6 h-6" />
+              <X className="h-9 w-9" strokeWidth={2.25} />
             </button>
 
             {/* Botón anterior */}
             <button
+              type="button"
               onClick={() => navigateImage('prev')}
-              className="absolute left-4 top-1/2 -translate-y-1/2 z-10 bg-black/50 hover:bg-black/70 text-white rounded-full p-3 transition-colors"
+              className="absolute left-3 top-1/2 z-20 -translate-y-1/2 rounded-full bg-black/60 p-4 text-white shadow-lg ring-1 ring-white/10 transition-colors hover:bg-black/80"
+              aria-label={t('gardenPage.sections.locations.prevImage', 'Imagen anterior')}
             >
-              <ChevronLeft className="w-6 h-6" />
+              <ChevronLeft className="h-9 w-9" strokeWidth={2.25} />
             </button>
 
             {/* Botón siguiente */}
             <button
+              type="button"
               onClick={() => navigateImage('next')}
-              className="absolute right-4 top-1/2 -translate-y-1/2 z-10 bg-black/50 hover:bg-black/70 text-white rounded-full p-3 transition-colors"
+              className="absolute right-3 top-1/2 z-20 -translate-y-1/2 rounded-full bg-black/60 p-4 text-white shadow-lg ring-1 ring-white/10 transition-colors hover:bg-black/80"
+              aria-label={t('gardenPage.sections.locations.nextImage', 'Imagen siguiente')}
             >
-              <ChevronRight className="w-6 h-6" />
+              <ChevronRight className="h-9 w-9" strokeWidth={2.25} />
             </button>
 
             {/* Imagen principal */}
-            <div className="relative w-full h-full flex items-center justify-center">
+            <div className="relative flex min-h-0 flex-1 items-center justify-center px-14 pb-4 pt-14 sm:px-16">
               <Image
                 src={imageModal.images[imageModal.currentIndex]}
                 alt={`Garden location ${imageModal.currentIndex + 1}`}
                 width={1200}
                 height={800}
-                className="max-w-full max-h-[80vh] object-contain rounded-lg shadow-2xl"
+                className="max-h-[min(72vh,calc(90vh-8rem))] max-w-full object-contain"
                 unoptimized
               />
             </div>
 
-            {/* Indicador de imagen actual */}
-            <div className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-black/50 text-white px-4 py-2 rounded-full text-sm">
-              {imageModal.currentIndex + 1} / {imageModal.images.length}
+            {/* Pie: waypoint + copiar + contador */}
+            <div className="flex shrink-0 flex-col gap-3 border-t border-white/10 bg-black/85 px-4 py-3 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
+              <code className="block min-w-0 flex-1 break-all font-mono text-sm text-emerald-300 sm:text-base">
+                {gardenWaypoints[imageModal.currentIndex] ?? ''}
+              </code>
+              <div className="flex flex-wrap items-center justify-between gap-3 sm:justify-end">
+                <span className="text-sm tabular-nums text-white/80">
+                  {imageModal.currentIndex + 1} / {imageModal.images.length}
+                </span>
+                <button
+                  type="button"
+                  onClick={() => {
+                    const wp = gardenWaypoints[imageModal.currentIndex];
+                    if (wp) void copyWaypoint(wp);
+                  }}
+                  disabled={!gardenWaypoints[imageModal.currentIndex]}
+                  className={`inline-flex shrink-0 items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-sm font-semibold transition-all sm:min-w-[10rem] ${
+                    copiedWaypoint === gardenWaypoints[imageModal.currentIndex]
+                      ? 'bg-green-600 text-white'
+                      : 'bg-gradient-to-r from-emerald-600 to-green-600 text-white hover:from-emerald-500 hover:to-green-500 disabled:cursor-not-allowed disabled:opacity-50'
+                  }`}
+                >
+                  {copiedWaypoint === gardenWaypoints[imageModal.currentIndex] ? (
+                    <CheckCircle className="h-4 w-4 shrink-0" />
+                  ) : (
+                    <Copy className="h-4 w-4 shrink-0" />
+                  )}
+                  {copiedWaypoint === gardenWaypoints[imageModal.currentIndex]
+                    ? t('gardenPage.sections.locations.waypointCopied')
+                    : t('gardenPage.sections.locations.copyWaypoint')}
+                </button>
+              </div>
             </div>
           </div>
         </div>
