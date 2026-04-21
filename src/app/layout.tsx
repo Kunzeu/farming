@@ -34,7 +34,7 @@ export { generateDynamicMetadata as generateMetadata };
 export const dynamic = 'force-dynamic';
 export const revalidate = 3600;
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
@@ -44,9 +44,9 @@ export default function RootLayout({
   // (evitar crash en cliente). Si falla, intentamos leer `document.cookie`.
   let htmlLang: 'en' | 'de' | 'es' | 'fr' = 'en';
   try {
-    const cookieStore = cookies();
-    const langCookie = cookieStore && typeof cookieStore.get === 'function'
-      ? cookieStore.get('tf_lang')?.value as 'en' | 'de' | 'es' | 'fr' | undefined
+    const cookieStore = await cookies();
+    const langCookie = cookieStore && typeof (cookieStore as any).get === 'function'
+      ? (cookieStore as any).get('tf_lang')?.value as 'en' | 'de' | 'es' | 'fr' | undefined
       : undefined;
     if (langCookie) htmlLang = langCookie;
   } catch (e) {
