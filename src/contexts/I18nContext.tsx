@@ -29,13 +29,20 @@ function detectInitialLang(): LangCode {
   return 'en';
 }
 
-export function I18nProvider({ children }: { children: React.ReactNode }) {
-  const [lang, setLangState] = useState<LangCode>(detectInitialLang());
+export function I18nProvider({ children, initialLang }: { children: React.ReactNode; initialLang?: LangCode }) {
+  const initial = initialLang ?? detectInitialLang();
+  const [lang, setLangState] = useState<LangCode>(initial);
 
   const setLang = (next: LangCode) => {
     setLangState(next);
     if (typeof window !== 'undefined') {
-      window.localStorage.setItem(LANG_STORAGE_KEY, next);
+      try {
+        window.localStorage.setItem(LANG_STORAGE_KEY, next);
+        // Escribir cookie para que el servidor pueda renderizar en el idioma correcto en la siguiente petición
+        document.cookie = `${LANG_STORAGE_KEY}=${next}; path=/; max-age=${60 * 60 * 24 * 365}`;
+      } catch (e) {
+        // ignore
+      }
     }
   };
 

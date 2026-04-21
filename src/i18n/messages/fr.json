@@ -2687,6 +2687,8 @@
   "ectoplasm.title1": "Analyse du",
   "ectoplasm.title2": "Recyclage d'ectoplasme",
   "ectoplasm.subtitle": "Données détaillées obtenues après le traitement de grandes quantités de boules d'ectoplasme.",
+  "dashboard.ectoplasm.ctaTitle": "Analyse du recyclage d'ectoplasme",
+  "dashboard.ectoplasm.ctaSubtitle": "Rentabilité et taux du recyclage d'ectoplasme.",
   "ectoplasm.totalLuck": "Essence de chance",
   "ectoplasm.sampleData": "Données d'échantillon",
   "ectoplasm.table.title": "Résultats détaillés",

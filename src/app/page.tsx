@@ -203,8 +203,8 @@ const initialCards: DashboardCard[] = [
   },
   {
     id: "ectoplasm",
-    title: "ectoplasm.title",
-    description: "ectoplasm.subtitle",
+    title: "dashboard.ectoplasm.ctaTitle",
+    description: "dashboard.ectoplasm.ctaSubtitle",
     href: "/ectoplasm",
     icon: <BarChart3 className="w-8 h-8" />,
     color: "from-purple-500 to-blue-600",

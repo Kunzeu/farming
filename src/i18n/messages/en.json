@@ -2741,6 +2741,8 @@
   "conversionGuideCorePage.sections.tips.content2": "Onyx and Molten Cores are usually the most stable for these types of conversions.",
   "ectoplasm.title": "Ectoplasm Salvage Analysis",
   "ectoplasm.subtitle": "Profitability and rates of Ecto salvaging.",
+  "dashboard.ectoplasm.ctaTitle": "Ectoplasm Salvage Analysis",
+  "dashboard.ectoplasm.ctaSubtitle": "Profitability and rates of Ecto salvaging.",
   "ectoplasm.totalLuck": "Essence of Luck",
   "ectoplasm.sampleData": "Sample Data",
   "ectoplasm.table.title": "Detailed Results",

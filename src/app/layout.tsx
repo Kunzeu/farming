@@ -4,6 +4,7 @@ import "./globals.css";
 // PrimeReact styles removed to avoid lightningcss build issues on Vercel
 import { AuthProvider } from "@/contexts/AuthContext";
 import { I18nProvider } from "@/contexts/I18nContext";
+import { cookies } from 'next/headers';
 import { CookieConsentProvider } from "@/contexts/CookieConsentContext";
 import RoleChecker from "@/components/RoleChecker";
 import Footer from "@/components/layout/Footer";
@@ -38,8 +39,29 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  // Leer cookie de idioma en servidor para renderizar HTML en el idioma correcto.
+  // Usamos try/catch porque en algunos entornos `cookies()` no está disponible
+  // (evitar crash en cliente). Si falla, intentamos leer `document.cookie`.
+  let htmlLang: 'en' | 'de' | 'es' | 'fr' = 'en';
+  try {
+    const cookieStore = cookies();
+    const langCookie = cookieStore && typeof cookieStore.get === 'function'
+      ? cookieStore.get('tf_lang')?.value as 'en' | 'de' | 'es' | 'fr' | undefined
+      : undefined;
+    if (langCookie) htmlLang = langCookie;
+  } catch (e) {
+    try {
+      if (typeof document !== 'undefined') {
+        const match = document.cookie.match(new RegExp('(^| )tf_lang=([^;]+)'));
+        if (match) htmlLang = match[2] as 'en' | 'de' | 'es' | 'fr';
+      }
+    } catch (_) {
+      // keep default 'en'
+    }
+  }
+
   return (
-    <html lang="en">
+    <html lang={htmlLang}>
       <head>
         {/* Performance: Preconnect crítico para Desktop */}
         <link rel="preconnect" href="https://api.guildwars2.com" />
@@ -197,7 +219,7 @@ export default function RootLayout({
       <body className={inter.className}>
         <CookieConsentProvider>
           <AuthProvider>
-            <I18nProvider>
+            <I18nProvider initialLang={htmlLang}>
               <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex flex-col">
                 <PageUsageTracker />
                 <RoleChecker />
