@@ -3,13 +3,14 @@ import pool from '@/lib/postgres-db';
 import { getAllGiveawaysWithAdvent } from '../../../../config/giveaways';
 
 export const runtime = 'nodejs';
-export const revalidate = 60; // Cache de 1 minuto (SWR)
+export const revalidate = 0;
 
 // GET /api/giveaways/counts - Endpoint ligero para datos dinámicos (estado y contador)
 export async function GET() {
     try {
         // 1. Calcular estados en tiempo real (backend time validation)
-        const allGiveaways = getAllGiveawaysWithAdvent(2025);
+        // Use current year for advent data to avoid stale hard-coded year mismatches.
+        const allGiveaways = getAllGiveawaysWithAdvent(new Date().getUTCFullYear());
         const now = new Date();
 
         // Mapa de estados dinámicos
@@ -89,8 +90,10 @@ export async function GET() {
             { data: dynamicData },
             {
                 headers: {
-                    // Cache compartido de 10 minutos - Optimizado para Vercel
-                    'Cache-Control': 'public, s-maxage=60, stale-while-revalidate=30',
+                    // Dynamic counters must not be cached to avoid stale 0 participant states.
+                    'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
+                    'Pragma': 'no-cache',
+                    'Expires': '0',
                 },
             }
         );

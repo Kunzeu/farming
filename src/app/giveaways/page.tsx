@@ -238,7 +238,14 @@ const GiveawaysPage = () => {
       // Load config and counts in parallel
       const [configResponse, countsResponse] = await Promise.all([
         fetch("/api/giveaways"),
-        fetch("/api/giveaways/counts")
+        fetch(`/api/giveaways/counts?t=${Date.now()}`, {
+          cache: "no-store",
+          headers: {
+            "Cache-Control": "no-cache, no-store, must-revalidate",
+            Pragma: "no-cache",
+            Expires: "0",
+          },
+        })
       ]);
 
       if (configResponse.ok) {
@@ -525,6 +532,32 @@ const GiveawaysPage = () => {
           )
         );
 
+        // Sync with authoritative backend count to prevent stale/off-by-one states.
+        try {
+          const countResponse = await fetch(
+            `/api/giveaways/count?giveawayId=${encodeURIComponent(giveawayId)}&t=${Date.now()}`,
+            {
+              cache: "no-store",
+              headers: {
+                "Cache-Control": "no-cache, no-store, must-revalidate",
+              },
+            }
+          );
+          if (countResponse.ok) {
+            const countData = await countResponse.json();
+            const nextCount = Number(countData?.count ?? 0);
+            setGiveaways((prev) =>
+              prev.map((giveaway) =>
+                giveaway.id === giveawayId
+                  ? { ...giveaway, participantCount: Number.isFinite(nextCount) ? nextCount : giveaway.participantCount }
+                  : giveaway
+              )
+            );
+          }
+        } catch {
+          // Ignore count sync errors; UI already applied optimistic update.
+        }
+
         // Show success modal
         setShowParticipationSuccess(true);
         setSelectedGiveaway(null);
@@ -534,6 +567,25 @@ const GiveawaysPage = () => {
       } else {
         const errorData = await response.json();
         console.error("Error participating in giveaway:", errorData);
+
+        if (response.status === 409) {
+          // If another request already registered this user, reflect it in UI.
+          const newParticipatedAccounts = new Set(participatedAccounts);
+          newParticipatedAccounts.add(giveawayId);
+          setParticipatedAccounts(newParticipatedAccounts);
+
+          const cacheKey = `participated_${user.id}`;
+          localStorage.setItem(
+            cacheKey,
+            JSON.stringify(Array.from(newParticipatedAccounts))
+          );
+          localStorage.setItem(`${cacheKey}_time`, Date.now().toString());
+
+          setSelectedGiveaway(null);
+          alert("Ya estabas inscrito en este sorteo.");
+          return;
+        }
+
         alert("Error participating in giveaway. Please try again.");
       }
     } catch (error) {

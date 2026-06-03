@@ -105,25 +105,23 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Check if user already participated
-    const existingParticipant = await pool.query(
-      'SELECT id FROM giveaway_participants WHERE giveaway_id = $1 AND user_id = $2',
-      [giveawayId, userId]
+    // Add participant in an idempotent way to avoid race-condition failures.
+    const result = await pool.query(
+      `
+        INSERT INTO giveaway_participants (giveaway_id, user_id, account_name)
+        VALUES ($1, $2, $3)
+        ON CONFLICT (giveaway_id, user_id) DO NOTHING
+        RETURNING *
+      `,
+      [giveawayId, userId, accountName]
     );
 
-    if (existingParticipant.rows.length > 0) {
+    if (result.rows.length === 0) {
       return NextResponse.json(
         { error: 'User has already participated in this giveaway' },
         { status: 409 }
       );
     }
-
-    // Add participant
-    const result = await pool.query(`
-      INSERT INTO giveaway_participants (giveaway_id, user_id, account_name)
-      VALUES ($1, $2, $3)
-      RETURNING *
-    `, [giveawayId, userId, accountName]);
 
     const participant = {
       id: result.rows[0].id,
