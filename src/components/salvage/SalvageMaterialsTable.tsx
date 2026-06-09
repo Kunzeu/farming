@@ -86,7 +86,7 @@ export default function SalvageMaterialsTable({
                 </td>
                 <td className="whitespace-nowrap px-4 py-3.5">
                   <span className="rounded-md bg-white/[0.04] px-2 py-1 font-mono text-xs tabular-nums text-zinc-400">
-                    {(result.material.dropRate * 100).toFixed(3)}%
+                    {result.material.dropRate.toFixed(5)}
                   </span>
                 </td>
                 <td className="whitespace-nowrap px-4 py-3.5">
