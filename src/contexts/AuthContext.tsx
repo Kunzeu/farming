@@ -402,10 +402,18 @@ function AuthProviderInternal({ children }: { children: ReactNode }) {
         throw new Error(data.error || 'Registration failed');
       }
 
-      if (data.requiresEmailVerification) {
+      const needsEmailVerification =
+        data.requiresEmailVerification === true ||
+        (Boolean(data.email) && !data.token);
+
+      if (needsEmailVerification) {
         dispatch({ type: 'AUTH_RESET_LOADING' });
         router.push(`/auth/check-email?email=${encodeURIComponent(data.email)}`);
         return;
+      }
+
+      if (!data.user?.id || !data.token) {
+        throw new Error(data.message || 'Registration failed');
       }
     } catch (error) {
       // Limpiar localStorage en caso de error

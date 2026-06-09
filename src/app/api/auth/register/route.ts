@@ -81,12 +81,29 @@ export async function POST(request: NextRequest) {
     const result = await pool.query(insertQuery, values);
     const user = result.rows[0];
 
-    const token = await createVerificationToken(user.id);
-    await sendVerificationEmail(user.email, user.username, token);
+    if (!user?.id) {
+      console.error('Register insert returned no user row', { id, email });
+      return NextResponse.json({
+        error: 'Error al crear el usuario',
+      }, { status: 500 });
+    }
+
+    const token = await createVerificationToken(id);
+    await sendVerificationEmail(email, username, token);
 
     return NextResponse.json({
       requiresEmailVerification: true,
-      email: user.email,
+      email: user.email ?? email,
+      user: {
+        id: user.id,
+        email: user.email ?? email,
+        username: user.username ?? username,
+        role: user.role,
+        isActive: user.isActive,
+        emailVerified: user.emailVerified,
+        createdAt: user.createdAt,
+        updatedAt: user.updatedAt,
+      },
       message: 'Revisa tu correo para confirmar tu cuenta',
     }, { status: 201 });
   } catch (error) {
