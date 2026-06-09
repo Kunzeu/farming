@@ -6,6 +6,7 @@ import { Package, ChevronRight, Star, FileText, Wrench, Gift } from 'lucide-reac
 import Navigation from '@/components/layout/Navigation';
 import Link from 'next/link';
 import GlossaryLink from '@/components/ui/GlossaryLink';
+import SalvagePageShell from '@/components/salvage/SalvagePageShell';
 import { usePageTitle } from '@/hooks/usePageTitle';
 import { useI18n } from '@/contexts/I18nContext';
 
@@ -70,7 +71,7 @@ export default function SalvagePage() {
       borderColor: 'border-purple-500/30',
       textColor: 'text-purple-400',
       features: [t('salvagePage.features.commonMasterworkRates', 'Common, Masterwork, Rare'), t('salvagePage.features.specificDropRates', 'Specific drop rates'), t('salvagePage.features.profitabilityByType', 'Profitability by type')],
-      href: '/salvage/common'
+      href: '/salvage/unidentified-gear'
     },
     {
       id: 'research-notes' as SalvageSection,
@@ -125,97 +126,75 @@ export default function SalvagePage() {
   return (
     <>
       <Navigation />
-      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
-        <div className="max-w-7xl mx-auto p-4 sm:p-6">
-          {/* Hero Section - REDUCIDO ESPACIO */}
-          <div className="text-center mb-6">
+      <SalvagePageShell>
+        <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6">
+          <header className="mb-8 text-center">
             <motion.div
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
-              className="flex items-center justify-center gap-3 mb-4">
-              <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl shadow-lg flex items-center justify-center">
-                <Package className="h-8 w-8 text-white" />
+              className="mb-4 inline-flex items-center justify-center gap-3"
+            >
+              <div className="flex h-14 w-14 items-center justify-center rounded-2xl border border-violet-500/30 bg-violet-500/10">
+                <Package className="h-7 w-7 text-violet-300" />
               </div>
-              <h1 className="text-4xl font-bold relative">
-                <span 
-                  className="bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent"
-                  style={{
-                    WebkitBackgroundClip: 'text',
-                    WebkitTextFillColor: 'transparent',
-                    backgroundClip: 'text',
-                    color: 'transparent'
-                  }}
-                >
-                  {t('salvagePage.title', 'Salvaging')}
-                </span>
+              <h1 className="text-3xl font-bold text-white sm:text-4xl">
+                {t('salvagePage.title', 'Salvaging')}
               </h1>
             </motion.div>
-            <p className="text-lg text-gray-300 max-w-2xl mx-auto leading-relaxed">
+            <p className="mx-auto max-w-2xl text-sm leading-relaxed text-zinc-500 sm:text-base">
               {t('salvagePage.subtitle', 'Complete guide to salvaging in Guild Wars 2. Learn techniques, calculate profitability, and maximize your profits.')}
             </p>
-          </div>
+          </header>
 
-          {/* Información General - JUSTIFICADA */}
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.5 }}
-            className="bg-gradient-to-r from-slate-800/50 to-slate-700/50 backdrop-blur-sm rounded-xl p-6 mb-6 border border-slate-600/50">
-            <div className="text-center mb-4">
-              <h2 className="text-xl font-semibold text-white mb-2">{t('salvagePage.whatIsSalvaging', 'What is Salvaging?')}</h2>
-              <p className="text-gray-300 text-justify">
-                {t('salvagePage.whatIsSalvagingDesc', 'Salvaging is the process of salvaging equipment to obtain materials. It is one of the most profitable ways to earn gold in Guild Wars 2, especially with certain types of items.')}
-              </p>
-              <div className="mt-3">
-                <GlossaryLink />
-              </div>
+            transition={{ delay: 0.15 }}
+            className="mt-6 rounded-xl border border-slate-600/50 bg-slate-800/50 p-6 backdrop-blur-sm"
+          >
+            <h2 className="text-sm font-bold uppercase tracking-[0.15em] text-zinc-500">
+              {t('salvagePage.whatIsSalvaging', 'What is Salvaging?')}
+            </h2>
+            <p className="mt-3 text-sm leading-relaxed text-zinc-400">
+              {t('salvagePage.whatIsSalvagingDesc', 'Salvaging is the process of salvaging equipment to obtain materials. It is one of the most profitable ways to earn gold in Guild Wars 2, especially with certain types of items.')}
+            </p>
+            <div className="mt-4">
+              <GlossaryLink />
             </div>
           </motion.div>
 
-          {/* Secciones principales - REDUCIDO ESPACIO */}
-          <div className="mb-6">
-            <h2 className="text-2xl font-bold text-white mb-4 text-center">{t('salvagePage.sections', 'Salvage Sections')}</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="mt-8">
+            <h2 className="mb-4 text-sm font-bold uppercase tracking-[0.15em] text-zinc-500">
+              {t('salvagePage.sections', 'Salvage Sections')}
+            </h2>
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
               {salvageSections.map((section, index) => {
                 const IconComponent = section.icon;
                 return (
                   <motion.div
                     key={section.id}
-                    initial={{ opacity: 0, y: 30 }}
+                    initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: index * 0.1 }}
+                    transition={{ delay: index * 0.06 }}
                   >
-                    <Link href={section.href}>
-                      <div className={`group relative overflow-hidden rounded-xl p-4 bg-gradient-to-br ${section.bgGradient} border ${section.borderColor} hover:scale-105 transition-all duration-300 cursor-pointer h-full`}>
-                        {/* Background Pattern */}
-                        <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                        
-                        {/* Content */}
-                        <div className="relative z-10">
-                          {/* Icon */}
-                          <div className={`w-12 h-12 bg-gradient-to-br from-${section.color}-500/30 to-${section.color}-600/30 rounded-lg flex items-center justify-center mb-3 group-hover:scale-110 transition-transform duration-300`}>
-                            <IconComponent className={`h-6 w-6 ${section.textColor}`} />
-                          </div>
-
-                          {/* Title */}
-                          <h3 className="text-base font-bold text-white mb-2">{section.name}</h3>
-                          <p className="text-sm text-gray-300 mb-3">{section.description}</p>
-
-                          {/* Features */}
-                          <div className="space-y-1 mb-3">
-                            {section.features.slice(0, 2).map((feature, idx) => (
-                              <div key={idx} className="flex items-center gap-2">
-                                <div className={`w-1.5 h-1.5 rounded-full bg-${section.color}-400`}></div>
-                                <span className="text-xs text-gray-300">{feature}</span>
-                              </div>
-                            ))}
-                          </div>
-
-                          {/* Button */}
-                          <div className="flex items-center justify-between">
-                            <span className="text-white font-medium text-sm">{t('salvagePage.explore', 'Explore')}</span>
-                            <ChevronRight className={`h-4 w-4 ${section.textColor} group-hover:translate-x-1 transition-transform duration-300`} />
-                          </div>
+                    <Link href={section.href} className="group block h-full">
+                      <div className={`h-full rounded-xl border ${section.borderColor} bg-slate-800/50 p-5 backdrop-blur-sm transition-all duration-200 hover:bg-slate-700/50`}>
+                        <div className={`mb-4 inline-flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br ${section.bgGradient}`}>
+                          <IconComponent className={`h-5 w-5 ${section.textColor}`} />
+                        </div>
+                        <h3 className="font-bold text-white">{section.name}</h3>
+                        <p className="mt-1 text-sm text-zinc-500">{section.description}</p>
+                        <ul className="mt-3 space-y-1">
+                          {section.features.slice(0, 2).map((feature, idx) => (
+                            <li key={idx} className="flex items-center gap-2 text-xs text-zinc-600">
+                              <span className={`h-1 w-1 rounded-full ${section.textColor.replace('text-', 'bg-')}`} />
+                              {feature}
+                            </li>
+                          ))}
+                        </ul>
+                        <div className={`mt-4 flex items-center gap-1 text-sm font-medium ${section.textColor} group-hover:gap-2 transition-all`}>
+                          {t('salvagePage.explore', 'Explore')}
+                          <ChevronRight className="h-4 w-4" />
                         </div>
                       </div>
                     </Link>
@@ -225,59 +204,49 @@ export default function SalvagePage() {
             </div>
           </div>
 
-          {/* Tips Section - REDUCIDO ESPACIO */}
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.6 }}
-            className="bg-gradient-to-r from-slate-800/50 to-slate-700/50 backdrop-blur-sm rounded-xl p-6 border border-slate-600/50">
-            <h2 className="text-xl font-bold text-white mb-4 text-center">{t('salvagePage.proTips', 'Pro Tips')}</h2>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            transition={{ delay: 0.35 }}
+            className="mt-8 rounded-xl border border-slate-600/50 bg-slate-800/50 p-6 backdrop-blur-sm"
+          >
+            <h2 className="mb-5 text-center text-sm font-bold uppercase tracking-[0.15em] text-zinc-500">
+              {t('salvagePage.proTips', 'Pro Tips')}
+            </h2>
+            <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
               <div>
-                <h3 className="text-base font-semibold text-white mb-3 flex items-center gap-2">
-                  <div className="w-2 h-2 bg-blue-400 rounded-full"></div>
+                <h3 className="mb-3 text-xs font-bold uppercase tracking-wider text-sky-400">
                   {t('salvagePage.salvageKits', 'Salvage Kits')}
                 </h3>
-                <div className="space-y-2 text-gray-300 text-sm">
-                  <p><strong className="text-blue-400">{kitNames.copperFed || ''}:</strong> {t('salvagePage.copperFed', 'For Common Gear')}</p>
-                  <p><strong className="text-green-400">{kitNames.runecrafters || ''}:</strong> {t('salvagePage.runecrafters', 'For Masterwork')}</p>
-                  <p><strong className="text-yellow-400">{kitNames.silverFed || ''}:</strong> {t('salvagePage.silverFed', 'For Rare Gear')}</p>
+                <div className="space-y-2 text-sm text-zinc-400">
+                  <p><strong className="text-sky-300">{kitNames.copperFed || '—'}</strong> · {t('salvagePage.copperFed', 'For Common Gear')}</p>
+                  <p><strong className="text-emerald-300">{kitNames.runecrafters || '—'}</strong> · {t('salvagePage.runecrafters', 'For Masterwork')}</p>
+                  <p><strong className="text-amber-300">{kitNames.silverFed || '—'}</strong> · {t('salvagePage.silverFed', 'For Rare Gear')}</p>
                 </div>
               </div>
               <div>
-                <h3 className="text-base font-semibold text-white mb-3 flex items-center gap-2">
-                  <div className="w-2 h-2 bg-green-400 rounded-full"></div>
+                <h3 className="mb-3 text-xs font-bold uppercase tracking-wider text-emerald-400">
                   {t('salvagePage.strategies', 'Strategies')}
                 </h3>
-                <div className="space-y-2 text-gray-300 text-sm">
-                  <p className="flex items-start gap-2">
-                    <span className="text-green-400">•</span>
-                    {t('salvagePage.checkPrices', 'Check prices before salvaging')}
-                  </p>
-                  <p className="flex items-start gap-2">
-                    <span className="text-green-400">•</span>
-                    {t('salvagePage.considerValue', 'Consider the value of the full item')}
-                  </p>
-                  <p className="flex items-start gap-2">
-                    <span className="text-green-400">•</span>
-                    {t('salvagePage.useAppropriateKit', 'Use the appropriate kit for each type')}
-                  </p>
-                </div>
+                <ul className="space-y-2 text-sm text-zinc-400">
+                  <li>{t('salvagePage.checkPrices', 'Check prices before salvaging')}</li>
+                  <li>{t('salvagePage.considerValue', 'Consider the value of the full item')}</li>
+                  <li>{t('salvagePage.useAppropriateKit', 'Use the appropriate kit for each type')}</li>
+                </ul>
               </div>
               <div>
-                <h3 className="text-base font-semibold text-white mb-3 flex items-center gap-2">
-                  <div className="w-2 h-2 bg-purple-400 rounded-full"></div>
+                <h3 className="mb-3 text-xs font-bold uppercase tracking-wider text-violet-400">
                   {t('salvagePage.resources', 'Resources')}
                 </h3>
-                <div className="space-y-2 text-gray-300 text-sm">
-                  <p><a href="https://wiki.guildwars2.com/wiki/Salvage_kit" target="_blank" className="text-purple-400 hover:text-purple-300">GW2 Wiki - Salvage Kits</a></p>
-                  <p><a href="https://wiki.guildwars2.com/wiki/Salvage" target="_blank" className="text-purple-400 hover:text-purple-300">GW2 Wiki - Salvaging</a></p>
+                <div className="space-y-2 text-sm">
+                  <p><a href="https://wiki.guildwars2.com/wiki/Salvage_kit" target="_blank" rel="noreferrer" className="text-violet-300 hover:text-violet-200">GW2 Wiki — Salvage Kits</a></p>
+                  <p><a href="https://wiki.guildwars2.com/wiki/Salvage" target="_blank" rel="noreferrer" className="text-violet-300 hover:text-violet-200">GW2 Wiki — Salvaging</a></p>
                 </div>
               </div>
             </div>
           </motion.div>
         </div>
-      </div>
+      </SalvagePageShell>
     </>
   );
 }

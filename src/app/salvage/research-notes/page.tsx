@@ -4,6 +4,7 @@
 import { motion } from 'framer-motion';
 import { FileText, Gem } from 'lucide-react';
 import Navigation from '@/components/layout/Navigation';
+import SalvagePageShell from '@/components/salvage/SalvagePageShell';
 import Link from 'next/link';
 import Image from 'next/image';
 import { usePageTitle } from '@/hooks/usePageTitle';
@@ -559,80 +560,58 @@ export default function ResearchNotesPage() {
         </div>
       )}
       
-      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
-        <div className="max-w-7xl mx-auto p-4 sm:p-6">
-          {/* Hero Section with Back Button */}
+      <SalvagePageShell>
+        <div className="mx-auto max-w-6xl px-4 py-6 sm:px-6 sm:py-8">
+          <div className="mb-6">
+            <Link
+              href="/salvage"
+              className="inline-flex items-center gap-2 rounded-xl border border-white/[0.08] bg-white/[0.03] px-3.5 py-2 text-sm text-zinc-300 transition-colors hover:bg-white/[0.06] hover:text-white"
+            >
+              {t('researchNotesPage.backToSalvaging')}
+            </Link>
+          </div>
+
+          <header className="mb-6 flex items-start gap-4">
+            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border border-emerald-500/30 bg-emerald-500/10">
+              <FileText className="h-6 w-6 text-emerald-400" />
+            </div>
+            <div>
+              <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-emerald-500/70">
+                {t('salvagePage.researchNotes', 'Research Notes')}
+              </p>
+              <h1 className="mt-1 text-2xl font-bold text-white sm:text-3xl">
+                {t('researchNotesPage.title')}
+              </h1>
+              <p className="mt-2 max-w-2xl text-sm text-zinc-500">
+                {t('researchNotesPage.subtitle')}
+              </p>
+            </div>
+          </header>
+
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
-            className="mb-8">
-              <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 mb-4">
-                {/* Back Button - Top Left on mobile, Left on desktop */}
-                <motion.div
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  className="flex-shrink-0 order-1 sm:order-1">
-                  <Link href="/salvage">
-                    <button className="flex items-center gap-2 px-4 py-2 bg-gray-900/80 hover:bg-gray-800/90 border border-white/30 text-white rounded-lg transition-all duration-200 hover:scale-105 hover:shadow-lg">
-                      <span>{t('researchNotesPage.backToSalvaging')}</span>
-                    </button>
-                  </Link>
-                </motion.div>
+            transition={{ delay: 0.15 }}
+            className="mt-6 overflow-hidden rounded-xl border border-slate-600/50 bg-slate-800/50 backdrop-blur-sm"
+          >
+            <div className="flex items-center justify-between border-b border-slate-600/50 px-5 py-4">
+              <h2 className="text-sm font-bold uppercase tracking-[0.15em] text-zinc-400">
+                {t('researchNotesPage.title')}
+              </h2>
+              {loading && (
+                <div className="flex items-center gap-2 text-xs text-zinc-500">
+                  <div className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-emerald-400 border-t-transparent" />
+                  <span>{t('researchNotesPage.loading')}</span>
+                </div>
+              )}
+            </div>
 
-                                 {/* Title and Icon - Center, full width on mobile */}
-                  <div className="flex flex-col sm:flex-row items-center gap-3 order-2 sm:order-2 flex-1 justify-center w-full">
-                    <div className="w-16 h-16 bg-gradient-to-br from-green-500 to-emerald-600 rounded-xl shadow-lg flex items-center justify-center">
-                      <FileText className="h-8 w-8 text-white" />
-                    </div>
-                     <h1 className="text-3xl sm:text-4xl font-bold text-center">
-                       <span 
-                         className="bg-gradient-to-r from-green-400 to-emerald-400 bg-clip-text text-transparent"
-                         style={{
-                           WebkitBackgroundClip: 'text',
-                           WebkitTextFillColor: 'transparent',
-                           backgroundClip: 'text',
-                           color: 'transparent'
-                         }}
-                       >
-                         {t('researchNotesPage.title')}
-                       </span>
-                     </h1>
-                  </div>
-
-                 {/* Spacer for balance - hidden on mobile */}
-                 <div className="hidden sm:block w-32 flex-shrink-0 order-3"></div>
-               </div>
-            
-             <p className="text-lg text-gray-300 max-w-3xl mx-auto leading-relaxed text-center">
-               {t('researchNotesPage.subtitle')}
-             </p>
-          </motion.div>
-
-                     {/* Research Notes Table */}
-           <motion.div
-             initial={{ opacity: 0, y: 20 }}
-             animate={{ opacity: 1, y: 0 }}
-             transition={{ delay: 0.2 }}
-             className="bg-gradient-to-r from-slate-800/50 to-slate-700/50 backdrop-blur-sm rounded-xl p-6 mb-8 border border-slate-600/50">
-             <div className="flex items-center justify-between mb-6">
-               <div className="flex items-center gap-3">
-                 <FileText className="h-6 w-6 text-green-400" />
-                                  <h2 className="text-2xl font-bold text-white">{t('researchNotesPage.title')}</h2>
-               </div>
-               {loading && (
-                 <div className="flex items-center gap-2 text-sm text-gray-400">
-                   <div className="w-4 h-4 border-2 border-green-400 border-t-transparent rounded-full animate-spin"></div>
-                                                         <span>{t('researchNotesPage.loading')}</span>
-                 </div>
-               )}
-             </div>
-
-                         <div className="overflow-x-auto">
-                    <table className="w-full text-sm">
-                      <thead>
-                        <tr className="border-b border-slate-600/50">
-                          <th className="text-left py-2 px-3 text-gray-300 font-medium">{t('researchNotesPage.table.item')}</th>
-                          <th className="text-center py-2 px-3 text-gray-300 font-medium">
+            <div className="overflow-x-auto p-1">
+              <table className="w-full min-w-[900px] text-sm">
+                <thead>
+                  <tr className="border-b border-slate-600/50 bg-slate-800/80 text-left text-[10px] font-bold uppercase tracking-[0.12em] text-gray-300">
+                          <th className="px-5 py-3">{t('researchNotesPage.table.item')}</th>
+                          <th className="px-4 py-3 text-center">
                             <button
                               onClick={() => handleSortChange('craftingLevel')}
                               className="flex items-center justify-center gap-2 hover:text-white transition-colors group w-full"
@@ -656,10 +635,10 @@ export default function ResearchNotesPage() {
                               </span>
                             </button>
                           </th>
-                                                     <th className="text-left py-2 px-3 text-gray-300 font-medium">
+                          <th className="px-4 py-3">
                              <button
                                onClick={() => handleSortChange('notes')}
-                               className="flex items-center gap-2 hover:text-white transition-colors group"
+                               className="flex items-center gap-2 transition-colors group hover:text-zinc-200"
                                title={`${t('researchNotesPage.table.sortBy')} ${t('researchNotesPage.table.notes')} ${sortField === 'notes' ? (sortOrder === 'desc' ? t('researchNotesPage.table.sortAscending') : t('researchNotesPage.table.sortDescending')) : t('researchNotesPage.table.sortDefault')}`}
                              >
                                {t('researchNotesPage.table.notes')}
@@ -818,7 +797,7 @@ export default function ResearchNotesPage() {
                       </thead>
                       <tbody>
                        {craftingDisciplines[0].items.map((item, itemIndex) => (
-                           <tr key={itemIndex} className="border-b border-slate-600/30 hover:bg-slate-600/20">
+                           <tr key={itemIndex} className="border-b border-slate-600/30 transition-colors hover:bg-slate-700/40">
                              <td className="py-2 px-3">
                                 <div className="flex items-center gap-3">
                                   {item.id === 8868 && item8868?.icon ? (
@@ -947,24 +926,21 @@ export default function ResearchNotesPage() {
                   </div>
          </motion.div>
 
-         {/* Consejo Pro */}
-         <motion.div
-           initial={{ opacity: 0, y: 20 }}
-           animate={{ opacity: 1, y: 0 }}
-           transition={{ delay: 0.4 }}
-           className="bg-gradient-to-r from-blue-800/50 to-blue-700/50 backdrop-blur-sm rounded-xl p-6 mb-8 border border-blue-600/50">
-           <div className="flex items-center gap-3 mb-4">
-             <div className="w-2 h-2 bg-blue-400 rounded-full"></div>
-             <h3 className="text-lg font-semibold text-white">{t('researchNotesPage.tips')}</h3>
-           </div>
-           <p className="text-gray-200 leading-relaxed">
-             {t('researchNotesPage.tip7')}
-           </p>
-         </motion.div>
-
-         
-       </div>
-     </div>
-   </>
- );
+          <motion.div
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3 }}
+            className="mt-6 rounded-xl border border-slate-600/50 bg-slate-800/50 p-5 backdrop-blur-sm"
+          >
+            <h3 className="text-xs font-bold uppercase tracking-[0.15em] text-sky-400">
+              {t('researchNotesPage.tips')}
+            </h3>
+            <p className="mt-3 text-sm leading-relaxed text-zinc-400">
+              {t('researchNotesPage.tip7')}
+            </p>
+          </motion.div>
+        </div>
+      </SalvagePageShell>
+    </>
+  );
 }

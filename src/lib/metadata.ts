@@ -53,6 +53,7 @@ const pageTitleMap: Record<string, string> = {
   '/festivals/lunar-new-year': 'pageTitles.lunarNewYear',
   '/festivals/dragon-bash': 'pageTitles.dragonBash',
   '/festivals/four-winds': 'pageTitles.fourWinds',
+  '/salvage/unidentified-gear': 'salvagePage.unidentifiedGear',
   '/salvage/common': 'pageTitles.salvageCommon',
   '/salvage/masterwork': 'pageTitles.salvageMasterwork',
   '/salvage/rare': 'pageTitles.salvageRare',

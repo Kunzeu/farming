@@ -1,5 +1,8 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  // Permite acceder al dev server vía tunnel (tunnelmole, ngrok, etc.)
+  allowedDevOrigins: ['*.tunnelmole.net'],
+
   // Optimizaciones de imágenes - SIN TRANSFORMACIONES
   images: {
     unoptimized: true, // Desactiva Vercel completamente
