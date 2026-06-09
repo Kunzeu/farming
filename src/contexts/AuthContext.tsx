@@ -46,6 +46,7 @@ type AuthAction =
   | { type: 'AUTH_START' }
   | { type: 'AUTH_SUCCESS'; payload: { user: User; token: string } }
   | { type: 'AUTH_FAILURE'; payload: string }
+  | { type: 'AUTH_RESET_LOADING' }
   | { type: 'AUTH_LOGOUT' }
   | { type: 'REFRESH_USER'; payload: User }
   | { type: 'CLEAR_ERROR' };
@@ -74,6 +75,12 @@ function authReducer(state: AuthState, action: AuthAction): AuthState {
         ...state,
         isLoading: false,
         error: action.payload,
+      };
+    case 'AUTH_RESET_LOADING':
+      return {
+        ...state,
+        isLoading: false,
+        error: null,
       };
     case 'AUTH_LOGOUT':
       return {
@@ -298,6 +305,9 @@ function AuthProviderInternal({ children }: { children: ReactNode }) {
       const data = await response.json();
 
       if (!response.ok) {
+        if (data.code === 'EMAIL_NOT_VERIFIED') {
+          throw new Error('EMAIL_NOT_VERIFIED');
+        }
         throw new Error(data.error || 'Login failed');
       }
 
@@ -392,38 +402,11 @@ function AuthProviderInternal({ children }: { children: ReactNode }) {
         throw new Error(data.error || 'Registration failed');
       }
 
-      // Crear objeto de usuario
-      const user: User = {
-        id: data.user.id,
-        username: data.user.username,
-        email: data.user.email,
-        role: data.user.role,
-        isActive: data.user.isActive,
-        joinDate: data.user.createdAt ? (typeof data.user.createdAt === 'string' ? data.user.createdAt : data.user.createdAt.toISOString()) : new Date().toISOString(),
-        lastLogin: new Date().toISOString(),
-        isAdmin: data.user.role === 'admin',
-        preferences: {
-          theme: 'dark',
-          language: 'es',
-          notifications: {
-            priceAlerts: true,
-            eventReminders: true,
-            buildUpdates: false
-          }
-        }
-      };
-
-      // Usar el JWT token real del servidor
-      const token = data.token;
-
-      // Guardar en localStorage
-      localStorage.setItem('gw2_token', token);
-      localStorage.setItem('gw2_user', JSON.stringify(user));
-
-      dispatch({
-        type: 'AUTH_SUCCESS',
-        payload: { user, token },
-      });
+      if (data.requiresEmailVerification) {
+        dispatch({ type: 'AUTH_RESET_LOADING' });
+        router.push(`/auth/check-email?email=${encodeURIComponent(data.email)}`);
+        return;
+      }
     } catch (error) {
       // Limpiar localStorage en caso de error
       localStorage.removeItem('gw2_token');
@@ -434,9 +417,7 @@ function AuthProviderInternal({ children }: { children: ReactNode }) {
         payload: error instanceof Error ? error.message : 'Registration error',
       });
     }
-  }, []);
-
-  // Función de logout
+  }, [router]);
   const logout = useCallback(() => {
     localStorage.removeItem('gw2_token');
     localStorage.removeItem('gw2_user');

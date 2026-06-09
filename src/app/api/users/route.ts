@@ -249,10 +249,14 @@ export async function POST(request: NextRequest) {
       hashedPassword = await hashPassword(body.password);
     }
 
+    const emailVerified = true;
+    const emailVerifiedAt = new Date();
+
     const query = `
-      INSERT INTO users (id, email, username, password, role, is_active, discord_id, gw2_api_key, patreon_id, patreon_tier, patreon_status)
-      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
+      INSERT INTO users (id, email, username, password, role, is_active, discord_id, gw2_api_key, patreon_id, patreon_tier, patreon_status, email_verified, email_verified_at)
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)
       RETURNING id, email, username, password, role, is_active as "isActive",
+                email_verified as "emailVerified",
                 created_at as "createdAt", updated_at as "updatedAt", discord_id as "discordId",
                 gw2_api_key as "gw2ApiKey", patreon_id as "patreonId", patreon_tier as "patreonTier", patreon_status as "patreonStatus"
     `;
@@ -268,7 +272,9 @@ export async function POST(request: NextRequest) {
       body.gw2ApiKey || null,
       body.patreonId || null,
       body.patreonTier || null,
-      body.patreonStatus || null
+      body.patreonStatus || null,
+      emailVerified,
+      emailVerifiedAt,
     ];
 
     console.log('Creating user with values:', {

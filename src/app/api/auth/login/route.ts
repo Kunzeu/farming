@@ -19,6 +19,7 @@ export async function POST(request: NextRequest) {
     // Get user from database
     const query = `
       SELECT id, email, username, password, role, is_active as "isActive",
+             email_verified as "emailVerified",
              created_at as "createdAt", updated_at as "updatedAt", discord_id as "discordId",
              patreon_id as "patreonId", patreon_tier as "patreonTier", patreon_status as "patreonStatus"
       FROM users 
@@ -39,6 +40,13 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ 
         error: 'Account is deactivated' 
       }, { status: 401 });
+    }
+
+    if (user.emailVerified === false) {
+      return NextResponse.json({
+        error: 'Confirma tu email antes de iniciar sesión',
+        code: 'EMAIL_NOT_VERIFIED',
+      }, { status: 403 });
     }
 
     // Compare password - handle both plain text and hashed passwords

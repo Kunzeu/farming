@@ -7,6 +7,7 @@ export interface User {
   createdAt?: Date; // Opcional para compatibilidad
   updatedAt?: Date; // Opcional para compatibilidad
   isActive?: boolean; // Opcional para compatibilidad
+  emailVerified?: boolean;
   joinDate?: string; // Para compatibilidad con el contexto actual
   lastLogin?: string; // Para compatibilidad con el contexto actual
   preferences?: UserPreferences; // Para compatibilidad con el contexto actual
