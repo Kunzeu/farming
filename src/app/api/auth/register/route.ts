@@ -3,6 +3,7 @@ import { hashPassword } from '@/lib/server/password-utils';
 import { pool } from '@/lib/postgres-db';
 import { createVerificationToken } from '@/lib/server/email-verification';
 import { sendVerificationEmail } from '@/lib/server/email';
+import { EMAIL_SEND_FAILED, parseEmailLocale } from '@/lib/server/email-i18n';
 
 export const runtime = 'nodejs';
 
@@ -88,8 +89,9 @@ export async function POST(request: NextRequest) {
       }, { status: 500 });
     }
 
+    const locale = parseEmailLocale(request, body.locale);
     const token = await createVerificationToken(id);
-    await sendVerificationEmail(email, username, token);
+    await sendVerificationEmail(email, username, token, locale);
 
     return NextResponse.json({
       requiresEmailVerification: true,
@@ -114,8 +116,12 @@ export async function POST(request: NextRequest) {
         error: 'El servicio de email no está configurado',
       }, { status: 503 });
     }
+    const errorCode = error instanceof Error
+      ? (error as Error & { code?: string }).code
+      : undefined;
+
     return NextResponse.json({
-      error: message === 'No se pudo enviar el email de verificación'
+      error: errorCode === EMAIL_SEND_FAILED
         ? message
         : 'Error interno del servidor',
     }, { status: 500 });

@@ -19,7 +19,7 @@ import { validateEmailForLogin } from '@/utils/emailValidation';
 
 export default function LoginForm() {
   const { login, isLoading, error, clearError } = useAuth();
-  const { t } = useI18n();
+  const { t, lang } = useI18n();
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState<LoginCredentials>({
     email: '',
@@ -56,7 +56,7 @@ export default function LoginForm() {
       const response = await fetch('/api/auth/resend-verification', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: formData.email }),
+        body: JSON.stringify({ email: formData.email, locale: lang }),
       });
       const data = await response.json();
 

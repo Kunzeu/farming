@@ -21,7 +21,7 @@ import Link from 'next/link';
 
 export default function RegisterForm() {
   const { register, isLoading, error, clearError } = useAuth();
-  const { t } = useI18n();
+  const { t, lang } = useI18n();
   const [showPassword, setShowPassword] = useState(false);
   const [isFirstUser, setIsFirstUser] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -171,7 +171,7 @@ export default function RegisterForm() {
         return;
       }
       
-      await register(formData);
+      await register({ ...formData, locale: lang });
     }
   };
 

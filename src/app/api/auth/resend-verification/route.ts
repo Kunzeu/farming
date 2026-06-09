@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { pool } from '@/lib/postgres-db';
 import { canResendVerification, createVerificationToken } from '@/lib/server/email-verification';
 import { sendVerificationEmail } from '@/lib/server/email';
+import { EMAIL_SEND_FAILED, parseEmailLocale } from '@/lib/server/email-i18n';
 
 export const runtime = 'nodejs';
 
@@ -44,12 +45,20 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    const locale = parseEmailLocale(request, body.locale);
     const token = await createVerificationToken(user.id);
-    await sendVerificationEmail(user.email, user.username, token);
+    await sendVerificationEmail(user.email, user.username, token, locale);
 
     return NextResponse.json(genericSuccess);
   } catch (error) {
     console.error('Resend verification error:', error);
-    return NextResponse.json({ error: 'Error interno del servidor' }, { status: 500 });
+    const message = error instanceof Error ? error.message : 'Error interno del servidor';
+    const errorCode = error instanceof Error
+      ? (error as Error & { code?: string }).code
+      : undefined;
+
+    return NextResponse.json({
+      error: errorCode === EMAIL_SEND_FAILED ? message : 'Error interno del servidor',
+    }, { status: 500 });
   }
 }

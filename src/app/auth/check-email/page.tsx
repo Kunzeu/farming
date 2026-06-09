@@ -8,7 +8,7 @@ import { Mail, ArrowLeft, CheckCircle, Loader2 } from 'lucide-react';
 import { useI18n } from '@/contexts/I18nContext';
 
 function CheckEmailContent() {
-  const { t } = useI18n();
+  const { t, lang } = useI18n();
   const searchParams = useSearchParams();
   const email = searchParams.get('email') || '';
   const [status, setStatus] = useState<'idle' | 'success' | 'error'>('idle');
@@ -26,7 +26,7 @@ function CheckEmailContent() {
       const response = await fetch('/api/auth/resend-verification', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email }),
+        body: JSON.stringify({ email, locale: lang }),
       });
 
       const data = await response.json();

@@ -51,11 +51,14 @@ export interface LoginCredentials {
   password: string;
 }
 
+export type AuthLocale = 'en' | 'de' | 'es' | 'fr';
+
 export interface RegisterCredentials {
   email: string;
   username: string;
   password: string;
   confirmPassword: string;
+  locale?: AuthLocale;
 }
 
 export interface AuthResponse {
