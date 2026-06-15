@@ -28,17 +28,17 @@ export const festivalDates: Record<string, FestivalDate> = {
     timezone: 'America/Bogota'
   },
   dragonBash: {
-    startDate: '2025-06-17',
-    endDate: '2025-07-08',
+    startDate: '2026-06-02',
+    endDate: '2026-06-23',
     startDateFormatted: 'months.june',
-    endDateFormatted: 'months.july',
+    endDateFormatted: 'months.june',
     startTime: '11:00', // 11:00 AM Colombia (UTC-5)
     endTime: '11:00',
     timezone: 'America/Bogota'
   },
   fourWinds: {
-    startDate: '2025-08-05',
-    endDate: '2025-08-26',
+    startDate: '2026-08-11',
+    endDate: '2026-09-01',
     startDateFormatted: 'months.august',
     endDateFormatted: 'months.august',
     startTime: '11:00', // 11:00 AM Colombia (UTC-5)
@@ -46,8 +46,8 @@ export const festivalDates: Record<string, FestivalDate> = {
     timezone: 'America/Bogota'
   },
   halloween: {
-    startDate: '2025-10-07',
-    endDate: '2025-11-04',
+    startDate: '2026-10-07',
+    endDate: '2026-11-04',
     startDateFormatted: 'months.october',
     endDateFormatted: 'months.november',
     startTime: '11:00', // 11:00 AM Colombia (UTC-5)
@@ -55,7 +55,7 @@ export const festivalDates: Record<string, FestivalDate> = {
     timezone: 'America/Bogota'
   },
   wintersday: {
-    startDate: '2025-12-09',
+    startDate: '2026-12-09',
     endDate: '2026-01-02',
     startDateFormatted: 'months.december',
     endDateFormatted: 'months.january',

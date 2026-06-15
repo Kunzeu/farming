@@ -4,14 +4,13 @@ import { useState, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
 import Navigation from '@/components/layout/Navigation';
-import { Search, Map, Clock, RefreshCw, Star, Copy, Users, User, Info } from 'lucide-react';
+import { Search, Map, Clock, RefreshCw, Star } from 'lucide-react';
 import { useDatabase, FarmItem } from '@/hooks/useDatabase';
 import ExpansionIcon from '@/components/ui/ExpansionIcon';
-import GW2Icon from '@/components/ui/GW2Icon';
 import { usePageTitle } from '@/hooks/usePageTitle';
 import { useI18n } from '@/contexts/I18nContext';
 import DescriptionModal from '@/components/ui/DescriptionModal';
-import MarkdownText from '@/components/ui/MarkdownText';
+import FarmingRouteCard from '@/components/farming-routes/FarmingRouteCard';
 
 export default function FarmingRoutes() {
   usePageTitle('pageTitles.farmingRoutes', 'Farming Routes');
@@ -241,7 +240,7 @@ export default function FarmingRoutes() {
     return (
       <div className="min-h-screen">
         <Navigation />
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 main-content">
+        <div className="mx-auto max-w-5xl px-4 py-8 main-content sm:px-6 lg:px-8">
           <div className="flex items-center justify-center h-64">
             <div className="text-center">
               <RefreshCw className="w-8 h-8 text-blue-400 animate-spin mx-auto mb-4" />
@@ -257,7 +256,7 @@ export default function FarmingRoutes() {
     <div className="min-h-screen">
         <Navigation />
       
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 main-content">
+      <main className="main-content mx-auto w-full max-w-8xl px-3 py-8 sm:px-5 lg:px-8">
         {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -348,169 +347,22 @@ export default function FarmingRoutes() {
           </div>
         </motion.div>
 
-        {/* Routes Grid */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.3 }}
-          className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {filteredRoutes.map((route) => (
-            <motion.div
+        {/* Routes Grid — ancho acotado aparte para que las cards no se estiren con el header */}
+        <div className="mx-auto grid w-full max-w-[960px] grid-cols-1 gap-5 md:grid-cols-2 md:gap-5">
+          {filteredRoutes.map((route, index) => (
+            <FarmingRouteCard
               key={route.id}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.3 }}
-              className="bg-gray-800 rounded-lg shadow-lg overflow-hidden p-6 min-h-[220px] hover:shadow-xl transition-all duration-300">
-                {/* Header */}
-                <div className="flex justify-between items-start mb-4">
-                  <div className="flex-1">
-                    <div className="flex items-center gap-3 mb-3">
-                      <h3 className="text-xl font-bold text-white">{route.name}</h3>
-                      
-                      {/* Modalidad Badges */}
-                      <div className="flex gap-2">
-                        {route.isSolo && (
-                          <span className="px-2 py-1 bg-green-600 text-white text-xs rounded-full flex items-center gap-1">
-                            <User className="w-3 h-3" />
-                            {t('farmingRoutes.mode.solo', 'Solo')}
-                          </span>
-                        )}
-                        {route.requiresSquad && (
-                          <span className="px-2 py-1 bg-purple-600 text-white text-xs rounded-full flex items-center gap-1">
-                            <Users className="w-3 h-3" />
-                            {t('farmingRoutes.mode.squad', 'Squad')}
-                          </span>
-                        )}
-                      </div>
-                    </div>
-                    <div className="mb-3">
-                      <button
-                        onClick={() => openDescriptionModal(route)}
-                        className="text-left w-full group"
-                      >
-                                      <div className="p-3 rounded-lg">
-                <MarkdownText 
-                  text={truncateDescription(route.description, 200)}
-                  className="text-gray-400 text-sm leading-relaxed whitespace-pre-wrap break-all group-hover:text-gray-300 transition-colors"
-                />
-              </div>
-                        <div className="flex items-center gap-2 mt-2 text-blue-400 text-sm">
-                          <Info className="w-4 h-4" />
-                          <span className="text-blue-400">{t('cta.seeFullDescription', 'See full description')}</span>
-                        </div>
-                      </button>
-                    </div>
-                    
-                    {/* Waypoint */}
-                    {route.waypoint && (
-                      <div className="flex items-center gap-2 mb-2">
-                        <span className="text-sm text-gray-500">{t('label.waypoint', 'Waypoint:')}</span>
-                        <div className="relative">
-                          <button
-                            onClick={() => copyWaypointToClipboard(route.waypoint!, route.id)}
-                            className={`flex items-center gap-1 px-2 py-1 text-sm rounded transition-all duration-200 ${
-                              copiedWaypoint === `${route.id}-${route.waypoint}`
-                                ? 'bg-green-600 text-white'
-                                : 'bg-gray-700 hover:bg-gray-600 text-blue-400'
-                            }`}
-                            title={copiedWaypoint === `${route.id}-${route.waypoint}` ? t('notif.copied', 'Copied!') : t('farmingRoutes.clickToCopy', 'Click to copy waypoint')}
-                          >
-                            <span className="font-mono">{route.waypoint}</span>
-                            <Copy className="w-3 h-3" />
-                          </button>
-                          
-                          {/* Notificación local al lado del botón */}
-                          {copiedWaypoint === `${route.id}-${route.waypoint}` && (
-                            <motion.div
-                              initial={{ opacity: 0, x: -10, scale: 0.95 }}
-                              animate={{ opacity: 1, x: 0, scale: 1 }}
-                              exit={{ opacity: 0, x: -10, scale: 0.95 }}
-                              className="absolute left-full ml-2 top-0 bg-green-600 text-white rounded-lg shadow-lg px-3 py-1 flex items-center gap-2 z-50 whitespace-nowrap">
-                              <Copy className="w-3 h-3" />
-                               <span className="text-xs font-medium">{t('notif.copied', 'Waypoint copied!')}</span>
-                            </motion.div>
-                          )}
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                  <div className="flex gap-1">
-                    {(Array.isArray(route.expansion) ? route.expansion : [route.expansion]).map((exp) => (
-                      <ExpansionIcon key={exp} expansion={exp as 'core' | 'hot' | 'pof' | 'eod' | 'soto' | 'jw' | 'voe'} size="md" variant="compact" />
-                    ))}
-                  </div>
-                </div>
-
-                {/* Stats */}
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                  {/* Tiempo - siempre se muestra */}
-                  <div className="flex items-center gap-3">
-                    <Clock className="w-6 h-6 text-blue-400" />
-                    <div>
-                      <p className="text-gray-400 text-sm">{t('label.time', 'Time')}</p>
-                      <p className="text-blue-400 font-semibold text-lg">{route.estimatedTime}</p>
-                    </div>
-                  </div>
-
-                  {/* Nuevas recompensas del sistema flexible */}
-                  {route.estimatedRewards && Object.entries(route.estimatedRewards).map(([currencyType, value]) => {
-                    if (!value || !value.trim()) return null;
-                    
-                    const currency = currencyMap[currencyType as keyof typeof currencyMap];
-                    if (!currency) return null;
-
-                    return (
-                      <div key={currencyType} className="flex items-center gap-3">
-                        <div className="relative">
-                          <GW2Icon 
-                            type={currency.icon} 
-                            size="md"
-                          />
-                        </div>
-                        <div>
-                          <p className="text-gray-400 text-sm">{t(currency.labelKey, currency.labelKey)}</p>
-                          <p className="text-yellow-400 font-semibold text-lg">
-                            {currencyType === 'gold' ? formatGoldDisplay(value) : `${value}${currency.suffix}`}
-                          </p>
-                        </div>
-                      </div>
-                    );
-                  })}
-
-                  {/* Compatibilidad hacia atrás - mostrar campos legacy si no hay estimatedRewards */}
-                  {(!route.estimatedRewards || Object.keys(route.estimatedRewards).length === 0) && (
-                    <>
-                      {/* Oro legacy */}
-                      {route.estimatedGold && route.estimatedGold.trim() && (
-                        <div className="flex items-center gap-3">
-                          <GW2Icon type="gold" size="md" />
-                          <div>
-                            <p className="text-gray-400 text-sm">{t('label.goldPerHour', 'Gold/Hour')}</p>
-                            <p className="text-yellow-400 font-semibold text-lg">{formatGoldDisplay(route.estimatedGold)}</p>
-                          </div>
-                        </div>
-                      )}
-
-                      {/* Spirit Shards legacy */}
-                      {route.estimatedSpirit && route.estimatedSpirit.trim() && (
-                        <div className="flex items-center gap-3">
-                          <GW2Icon type="spirit-shard" size="md" />
-                          <div>
-                            <p className="text-gray-400 text-sm">{t('label.spiritShards', 'Spirit Shards')}</p>
-                            <p className="text-blue-400 font-semibold text-lg">{route.estimatedSpirit}/h</p>
-                          </div>
-                        </div>
-                      )}
-                    </>
-                  )}
-                </div>
-
-
-
-
-            </motion.div>
+              route={route}
+              index={index}
+              copiedWaypoint={copiedWaypoint}
+              onCopyWaypoint={copyWaypointToClipboard}
+              onOpenDescription={openDescriptionModal}
+              truncateDescription={truncateDescription}
+              formatGoldDisplay={formatGoldDisplay}
+              t={t}
+            />
           ))}
-        </motion.div>
+        </div>
 
         {/* Mensaje cuando no hay rutas */}
         {!isLoading && filteredRoutes.length === 0 && (

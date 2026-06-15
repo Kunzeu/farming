@@ -25,9 +25,15 @@ const defaultPreferences: DashboardPreferences = {
     'opened',
     'ectogambling',
     'conversionGuide',
+    'ectoplasm',
     'altParking',
     'orrianJewelry',
-    'glossary'
+    'glossary',
+    'magicMirrors',
+    'homestead',
+    'conversionGuideCore',
+    'holidayCalendar',
+    'expBuffs',
   ],
   hiddenCards: [],
   cardSizes: {}

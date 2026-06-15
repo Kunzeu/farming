@@ -14,6 +14,7 @@ import ExpansionIcon from '@/components/ui/ExpansionIcon';
 import GW2Icon from '@/components/ui/GW2Icon';
 import { usePageTitle } from '@/hooks/usePageTitle';
 import MarkdownText from '@/components/ui/MarkdownText';
+import RouteCardImageField from '@/components/farming-routes/RouteCardImageField';
 
 type AdminSection = 'farms' | 'users' | 'pending-farms';
 
@@ -844,22 +845,12 @@ export default function AdminPanel() {
               </div>
             </div>
 
-            <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">
-                Imagen &quot;dónde jugar&quot; (URL o ruta)
-              </label>
-              <input
-                type="text"
-                value={newFarm.locationImageUrl || ''}
-                onChange={(e) => setNewFarm({ ...newFarm, locationImageUrl: e.target.value })}
-                className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-purple-500 font-mono text-sm"
-                placeholder="/images/routes/mi-ruta.webp"
-              />
-              <p className="text-xs text-gray-400 mt-1">
-                Sube el archivo a <code className="text-gray-300">public/</code> y pon la ruta pública (ej.{' '}
-                <code className="text-gray-300">/images/routes/...</code>) o una URL https.
-              </p>
-            </div>
+            <RouteCardImageField
+              value={newFarm.locationImageUrl || ''}
+              onChange={(url) => setNewFarm({ ...newFarm, locationImageUrl: url })}
+              token={token}
+              farmName={newFarm.name}
+            />
 
             {/* Checkboxes para Solo/Squad */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -1069,21 +1060,13 @@ export default function AdminPanel() {
               <p className="text-xs text-gray-400 mt-1">Chat code del waypoint para acceder al farm</p>
             </div>
 
-            <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">
-                Imagen &quot;dónde jugar&quot; (URL o ruta)
-              </label>
-              <input
-                type="text"
-                value={editingFarm.locationImageUrl || ''}
-                onChange={(e) => setEditingFarm({ ...editingFarm, locationImageUrl: e.target.value })}
-                className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-purple-500 font-mono text-sm"
-                placeholder="/images/routes/mi-ruta.webp"
-              />
-              <p className="text-xs text-gray-400 mt-1">
-                Archivo en <code className="text-gray-300">public/</code> o URL absoluta; se muestra en el modal de Rutas.
-              </p>
-            </div>
+            <RouteCardImageField
+              value={editingFarm.locationImageUrl || ''}
+              onChange={(url) => setEditingFarm({ ...editingFarm, locationImageUrl: url })}
+              token={token}
+              farmId={editingFarm.id}
+              farmName={editingFarm.name}
+            />
 
             {/* Modalidad del Farm */}
             <div>

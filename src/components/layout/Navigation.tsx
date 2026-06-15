@@ -22,8 +22,7 @@ import {
   ShoppingCart,
   Star,
   Gift,
-  Search,
-  Heart
+  Search
 } from 'lucide-react';
 import { useI18n } from '@/contexts/I18nContext';
 
@@ -405,7 +404,7 @@ const Navigation = () => {
       href: '/farming-routes',
       label: t('nav.farms', 'Farms'),
       icon: Map,
-      keywords: ['farms', 'rutas', 'routes', 'farmeo', 'oro', 'gold', 'mapa', 'map']
+      keywords: ['farms', 'rutas', 'routes', 'farmeo', 'oro', 'gold', 'mapa', 'map', 'karma', 'spirit shards', 'esquirlas', 'volatile magic', 'magia volatil', 'unbound magic', 'farm route', 'ruta de farmeo']
     },
 
   ], [t]);
@@ -417,7 +416,13 @@ const Navigation = () => {
       label: t('conversionGuidePage.title', 'Guía de Conversión'),
       icon: 'conversion-guide',
       isImage: true,
-      keywords: ['conversion', 'convertir', 'materiales', 'materials', 'tier', 'promote']
+      keywords: ['conversion', 'convertir', 'materiales', 'materials', 'tier', 'promote', 't5', 't6', 'ascended', 'forja mistica', 'mystic forge']
+    },
+    {
+      href: '/conversion-guide-core',
+      label: t('conversionGuideCorePage.title', 'Core Conversion Guide'),
+      icon: BookOpen,
+      keywords: ['core conversion', 'conversion core', 'lodestone', 'piedra runica', 'nucleo', 'onyx', 'molten', 'glacial', 'destroyer', 'crystal lodestone', 'mystic forge core']
     },
     {
       href: '/garden',
@@ -459,7 +464,13 @@ const Navigation = () => {
       label: t('nav.altParking', 'Alt Parking'),
       icon: 'Explorer',
       isImage: true,
-      keywords: ['alt parking', 'alts', 'personajes', 'characters', 'draconis', 'mons']
+      keywords: ['alt parking', 'alts', 'personajes', 'characters', 'draconis', 'mons', 'parking', 'estacionar', 'mapa alt', 'alt account']
+    },
+    {
+      href: '/exp-buffs',
+      label: t('expBuffs.title', 'EXP Buffs Guide'),
+      icon: Star,
+      keywords: ['exp buffs', 'experience buffs', 'buffs experiencia', 'spirit shards farm', 'esquirlas', 'xp', 'leveling', 'nivelar', 'candy corn gobbler', 'chatoyant', 'enlightenment', 'iluminacion']
     },
 
   ], [t]);
@@ -471,54 +482,72 @@ const Navigation = () => {
       label: t('dashboard.magic.title', 'Magic'),
       icon: 'volatile-magic',
       isImage: true,
-      keywords: ['magic', 'volatile', 'unbound', 'karma', 'converter', 'convertidor', 'currency', 'moneda']
+      keywords: ['magic', 'volatile', 'unbound', 'karma', 'converter', 'convertidor', 'currency', 'moneda', 'magia volatil', 'magia desatada', 'karma converter', 'spirit shard']
     },
     {
       href: '/festivals',
       label: t('nav.festivals', 'Festivales'),
       icon: 'Festival_Collections',
       isImage: true,
-      keywords: ['festivals', 'festivales', 'events', 'eventos', 'halloween', 'wintersday', 'lunar', 'dragon bash', 'four winds']
+      keywords: ['festivals', 'festivales', 'events', 'eventos', 'halloween', 'wintersday', 'lunar', 'dragon bash', 'four winds', 'cuatro vientos', 'dia invernal', 'ano nuevo lunar', 'mad king', 'laberinto', 'orphan', 'huerfanos', 'navidad']
     },
     {
       href: '/fractals',
       label: t('dashboard.farmingTracker.title', 'Fractales'),
       icon: 'fractal-relic',
       isImage: true,
-      keywords: ['fractals', 'fractales', 'daily', 'diarias', 'pristine', 'relics', 'reliquias', 'cms', 't4']
+      keywords: ['fractals', 'fractales', 'daily', 'diarias', 'pristine', 'relics', 'reliquias', 'cms', 't4', 'fractal relic', 'agony', 'agonia', 'mist', 'niebla']
     },
     {
       href: '/ectogambling',
       label: t('ectogamblingPage.title', 'Ectogambling'),
       icon: 'ecto',
       isImage: true,
-      keywords: ['ecto', 'ectoplasm', 'gambling', 'apostar', 'rare', 'forge', 'forja', 'mystic forge']
+      keywords: ['ecto', 'ectoplasm', 'gambling', 'apostar', 'rare', 'forge', 'forja', 'mystic forge', 'forja mistica', 'gamble', 'ectogamble']
     },
     {
       href: '/ectoplasm',
       label: t('ectoplasm.title', 'Ectoplasm Analysis'),
       icon: 'ecto',
       isImage: true,
-      keywords: ['ecto', 'ectoplasm', 'salvage', 'analysis', 'luck', 'dust']
+      keywords: ['ecto', 'ectoplasm', 'salvage', 'analysis', 'luck', 'dust', 'reciclaje ecto', 'ecto analysis', 'profit ecto']
     },
     {
       href: '/opened',
       label: t('openedPage.title', 'Contenedores Abribles'),
       icon: 'Community',
       isImage: true,
-      keywords: ['containers', 'contenedores', 'bags', 'bolsas', 'boxes', 'cajas', 'open', 'abrir', 'loot']
+      keywords: ['containers', 'contenedores', 'bags', 'bolsas', 'boxes', 'cajas', 'open', 'abrir', 'loot', 'laurels', 'laurel', 'essence', 'esencia', 'rift', 'four winds prize', 'premio cuatro vientos']
     },
     {
       href: '/salvage',
       label: t('nav.salvaging', 'Salvaging'),
       icon: Package,
-      keywords: ['salvage', 'salvaging', 'salvar', 'salvamento', 'research notes', 'notas', 'kits', 'copper-fed', 'silver-fed', 'runecrafter']
+      keywords: ['salvage', 'salvaging', 'salvar', 'salvamento', 'reciclaje', 'reciclar', 'research notes', 'notas', 'kits', 'copper-fed', 'silver-fed', 'runecrafter', 'unidentified gear', 'equipo sin identificar', 'common', 'masterwork', 'rare', 'comun', 'maestria', 'raro', 'orrian', 'joyas', 'luck', 'suerte']
     },
     {
       href: '/homestead',
       label: t('pageTitles.homestead', 'Homesteading'),
       icon: Home,
-      keywords: ['homestead', 'hogar', 'casa', 'decoration', 'decoracion', 'forge', 'wood', 'metal', 'fiber']
+      keywords: ['homestead', 'hogar', 'casa', 'decoration', 'decoracion', 'forge', 'wood', 'metal', 'fiber', 'homesteading', 'crafting homestead', 'decor']
+    },
+    {
+      href: '/giveaways',
+      label: t('nav.giveaways', 'Sorteos'),
+      icon: Gift,
+      keywords: ['giveaways', 'sorteos', 'gift', 'regalo', 'prizes', 'premios', 'raffle', 'rifa', 'winners', 'ganadores', 'community giveaway']
+    },
+    {
+      href: '/orrian-jewelry-box',
+      label: t('pageTitles.orrianJewelryBox', 'Orrian Jewelry Box'),
+      icon: Gift,
+      keywords: ['orrian jewelry', 'caja joyas orrianas', 'orrian', 'karma box', 'caja karma', 'lost orrian', 'joyas perdidas', 'jewelry box']
+    },
+    {
+      href: '/holiday-calendar',
+      label: t('nav.holidayCalendar', 'Advent Calendar'),
+      icon: Calendar,
+      keywords: ['holiday calendar', 'calendario adviento', 'advent', 'adviento', 'calendar', 'event calendar', 'calendario eventos']
     },
 
     // Solo mostrar Buyout Calculator para admins
@@ -536,34 +565,12 @@ const Navigation = () => {
     // La redirección se maneja automáticamente en el contexto de autenticación
   };
 
-  // Combinar todos los items para búsqueda (cacheado para evitar recalcular en cada render)
+  // Combinar todos los items para búsqueda (solo páginas raíz / herramientas)
   const allSearchableItems = useMemo(() => [
     ...navItems,
     ...guidesItems,
     ...toolsItems,
-
-    {
-      href: '/giveaways',
-      label: t('nav.giveaways', 'Sorteos'),
-      icon: Gift,
-      isImage: false,
-      keywords: ['giveaways', 'sorteos', 'gift', 'regalo', 'prizes', 'premios', 'raffle', 'rifa', 'winners', 'ganadores']
-    },
-    {
-      href: '/daily-routine',
-      label: t('pageTitles.dailyRoutine', 'Rutina Diaria'),
-      icon: Clock,
-      isImage: false,
-      keywords: ['daily', 'routine', 'rutina', 'diaria', 'checklist', 'tareas', 'tasks', 'dailies']
-    },
-    {
-      href: '/exp-buffs',
-      label: 'EXP Buffs',
-      icon: Star,
-      isImage: false,
-      keywords: ['exp', 'experience', 'experiencia', 'buffs', 'bonus', 'xp', 'nivelar', 'level']
-    },
-  ], [navItems, guidesItems, toolsItems, t]);
+  ], [navItems, guidesItems, toolsItems]);
 
   // Filtrar resultados de búsqueda (cacheado para evitar recalcular)
   const searchResults = useMemo(() => {
@@ -579,7 +586,7 @@ const Navigation = () => {
       ) || false;
 
       return matchesLabel || matchesKeywords;
-    }).slice(0, 8); // Aumentar a 8 resultados
+    }).slice(0, 10);
   }, [searchQuery, allSearchableItems]);
 
   // Resetear índice seleccionado cuando cambien los resultados

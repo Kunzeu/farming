@@ -11,13 +11,14 @@ import GW2Icon from '@/components/ui/GW2Icon';
 import Modal from '@/components/ui/Modal';
 import { useAuth } from '@/contexts/AuthContext';
 import { usePageTitle } from '@/hooks/usePageTitle';
+import RouteCardImageField from '@/components/farming-routes/RouteCardImageField';
 
 type ModeratorSection = 'my-farms' | 'pending-farms' | 'published-farms';
 
 export default function ModeratorPanel() {
   usePageTitle('pageTitles.moderator', 'Moderator Panel');
   const { dbService } = useDatabase();
-  const { user } = useAuth();
+  const { user, token } = useAuth();
   const [activeSection, setActiveSection] = useState<ModeratorSection>('my-farms');
                const [farms, setFarms] = useState<FarmItem[]>([]);
   const [pendingFarms, setPendingFarms] = useState<FarmItem[]>([]);
@@ -553,21 +554,13 @@ export default function ModeratorPanel() {
               </div>
             </div>
 
-            <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">
-                Imagen &quot;dónde jugar&quot; (URL o ruta)
-              </label>
-              <input
-                type="text"
-                value={newFarm.locationImageUrl || ''}
-                onChange={(e) => setNewFarm({ ...newFarm, locationImageUrl: e.target.value })}
-                className="w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded-lg font-mono text-sm text-white focus:outline-none focus:border-blue-500"
-                placeholder="/images/routes/mi-ruta.webp"
-              />
-              <p className="text-xs text-gray-400 mt-1">
-                Opcional: ruta bajo <code className="text-gray-300">public/</code> o URL https.
-              </p>
-            </div>
+            <RouteCardImageField
+              value={newFarm.locationImageUrl || ''}
+              onChange={(url) => setNewFarm({ ...newFarm, locationImageUrl: url })}
+              token={token}
+              farmName={newFarm.name}
+              inputClassName="w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded-lg font-mono text-sm text-white focus:outline-none focus:border-blue-500"
+            />
 
             {/* Checkboxes para Solo/Squad */}
             <div className="grid grid-cols-2 gap-4">
@@ -1159,21 +1152,14 @@ export default function ModeratorPanel() {
               </div>
 
               {!(editingFarm.status === 'approved' && editingFarm.createdBy !== user?.id) && (
-                <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-2">
-                    Imagen &quot;dónde jugar&quot; (URL o ruta)
-                  </label>
-                  <input
-                    type="text"
-                    value={editingFarm.locationImageUrl || ''}
-                    onChange={(e) => setEditingFarm({ ...editingFarm, locationImageUrl: e.target.value })}
-                    className="w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded-lg font-mono text-sm text-white focus:outline-none focus:border-blue-500"
-                    placeholder="/images/routes/mi-ruta.webp"
-                  />
-                  <p className="text-xs text-gray-400 mt-1">
-                    Opcional: se muestra en el modal de Rutas al abrir la descripción.
-                  </p>
-                </div>
+                <RouteCardImageField
+                  value={editingFarm.locationImageUrl || ''}
+                  onChange={(url) => setEditingFarm({ ...editingFarm, locationImageUrl: url })}
+                  token={token}
+                  farmId={editingFarm.id}
+                  farmName={editingFarm.name}
+                  inputClassName="w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded-lg font-mono text-sm text-white focus:outline-none focus:border-blue-500"
+                />
               )}
 
               <div className="grid grid-cols-3 gap-4">

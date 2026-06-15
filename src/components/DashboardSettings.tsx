@@ -27,8 +27,13 @@ const availableCards = [
   { id: 'opened' },
   { id: 'ectogambling' },
   { id: 'conversionGuide' },
+  { id: 'ectoplasm' },
   { id: 'altParking' },
-  { id: 'magicMirrors' }
+  { id: 'magicMirrors' },
+  { id: 'homestead' },
+  { id: 'conversionGuideCore' },
+  { id: 'holidayCalendar' },
+  { id: 'expBuffs' },
 ];
 
 export default function DashboardSettings({ isOpen, onClose }: DashboardSettingsProps) {

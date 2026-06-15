@@ -1,16 +1,22 @@
 'use client';
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import { motion } from 'framer-motion';
-import { FileText, Gem } from 'lucide-react';
+import { Gem } from 'lucide-react';
 import Navigation from '@/components/layout/Navigation';
-import SalvagePageShell from '@/components/salvage/SalvagePageShell';
-import Link from 'next/link';
-import Image from 'next/image';
+import ResearchNotesPageLayout from '@/components/salvage/research-notes/ResearchNotesPageLayout';
+import {
+  getCraftingLevel,
+  getPricePerNoteCopper,
+  parsePriceCopper,
+  type ResearchNotesCraftingItem,
+  type ResearchNotesItemMeta,
+  type ResearchNotesSortField,
+} from '@/components/salvage/research-notes/research-notes-utils';
 import { usePageTitle } from '@/hooks/usePageTitle';
 import { useI18n } from '@/contexts/I18nContext';
 import { useEffect, useState, useMemo, useCallback } from 'react';
 import { FALLBACK_ITEMS, setApiOffline, setApiOnline } from '@/data/fallback-data';
+import { formatGW2Currency } from '@/utils/gw2-currency';
 
 interface GW2Item {
   id: number;
@@ -36,15 +42,7 @@ interface GW2Price {
   };
 }
 
-interface CraftingItem {
-  id?: number;
-  name: string;
-  level: number | string;
-  notes: number;
-  buyPrice?: string;
-  sellPrice?: string;
-  craftingCost?: string;
-}
+interface CraftingItem extends ResearchNotesCraftingItem {}
 
 interface CraftingDiscipline {
   name: string;
@@ -94,61 +92,11 @@ export default function ResearchNotesPage() {
   
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-     const [sortField, setSortField] = useState<'craftingLevel' | 'level' | 'notes' | 'buyPrice' | 'sellPrice' | 'craftingCost' | 'pricePerNote'>('craftingLevel');
+     const [sortField, setSortField] = useState<ResearchNotesSortField>('craftingLevel');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
   const [craftingPriceSide, setCraftingPriceSide] = useState<'buy' | 'sell'>('sell');
 
-     // Función para obtener el color de la rareza
-   const getRarityColor = (rarity: string): string => {
-     switch (rarity.toLowerCase()) {
-       case 'junk':
-         return 'text-gray-400';
-       case 'basic':
-         return 'text-gray-300';
-       case 'fine':
-         return 'text-blue-400';
-       case 'masterwork':
-         return 'text-green-400';
-       case 'rare':
-         return 'text-yellow-400';
-       case 'exotic':
-         return 'text-orange-400';
-       case 'ascended':
-         return 'text-purple-400';
-       case 'legendary':
-         return 'text-yellow-300';
-       default:
-         return 'text-white';
-     }
-   };
-
-   // Función para convertir precios de cobre al formato GW2 (00g 02s 60c)
-   const formatGW2Price = (copperPrice: number): string => {
-    if (copperPrice === 0) return '00g 00s 00c';
-    
-    const gold = Math.floor(copperPrice / 10000);
-    const silver = Math.floor((copperPrice % 10000) / 100);
-    const copper = copperPrice % 100;
-    
-    const goldStr = gold > 0 ? `${gold.toString().padStart(2, '0')}g` : '00g';
-    const silverStr = silver > 0 ? ` ${silver.toString().padStart(2, '0')}s` : ' 00s';
-    const copperStr = copper > 0 ? ` ${copper.toString().padStart(2, '0')}c` : ' 00c';
-    
-    return `${goldStr}${silverStr}${copperStr}`;
-  };
-
-  // Función para obtener el nivel de crafting de un item
-  const getCraftingLevel = (itemId: number): number => {
-    const craftingLevels: { [key: number]: number } = {
-      8868: 400,
-      13436: 300,
-      13437: 300,
-      13435: 300,
-      13438: 75,
-      104934: 0,
-    };
-    return craftingLevels[itemId] || 0;
-  };
+   const formatGW2Price = (copperPrice: number): string => formatGW2Currency(copperPrice);
 
   // Función para ordenar items por cualquier campo
   const sortItemsByField = useCallback((items: CraftingItem[]): CraftingItem[] => {
@@ -170,23 +118,20 @@ export default function ResearchNotesPage() {
           valueB = b.notes;
           break;
         case 'buyPrice':
-          valueA = parseFloat(a.buyPrice?.replace(/[^0-9.]/g, '') || '0');
-          valueB = parseFloat(b.buyPrice?.replace(/[^0-9.]/g, '') || '0');
+          valueA = parsePriceCopper(a.buyPrice);
+          valueB = parsePriceCopper(b.buyPrice);
           break;
         case 'sellPrice':
-          valueA = parseFloat(a.sellPrice?.replace(/[^0-9.]/g, '') || '0');
-          valueB = parseFloat(b.sellPrice?.replace(/[^0-9.]/g, '') || '0');
+          valueA = parsePriceCopper(a.sellPrice);
+          valueB = parsePriceCopper(b.sellPrice);
           break;
                  case 'craftingCost':
-           valueA = parseFloat(a.craftingCost?.replace(/[^0-9.]/g, '') || '0');
-           valueB = parseFloat(b.craftingCost?.replace(/[^0-9.]/g, '') || '0');
+           valueA = parsePriceCopper(a.craftingCost);
+           valueB = parsePriceCopper(b.craftingCost);
            break;
          case 'pricePerNote':
-           // Calcular precio por nota: craftingCost / notes
-           const costA = parseFloat(a.craftingCost?.replace(/[^0-9.]/g, '') || '0');
-           const costB = parseFloat(b.craftingCost?.replace(/[^0-9.]/g, '') || '0');
-           valueA = costA / (a.notes || 1);
-           valueB = costB / (b.notes || 1);
+           valueA = getPricePerNoteCopper(a) ?? 0;
+           valueB = getPricePerNoteCopper(b) ?? 0;
            break;
          default:
            valueA = 0;
@@ -202,7 +147,7 @@ export default function ResearchNotesPage() {
   }, [sortField, sortOrder]);
 
      // Función para manejar el cambio de campo de ordenamiento
-   const handleSortChange = (field: 'craftingLevel' | 'level' | 'notes' | 'buyPrice' | 'sellPrice' | 'craftingCost' | 'pricePerNote') => {
+     const handleSortChange = (field: ResearchNotesSortField) => {
     if (sortField === field) {
       setSortOrder(sortOrder === 'desc' ? 'asc' : 'desc');
     } else {
@@ -534,413 +479,35 @@ export default function ResearchNotesPage() {
      ];
    }, [t, item8868, price8868, item13436, price13436, item13437, price13437, item13435, price13435, item13438, price13438, item104934, price104934, item104934B, price104934B, calculateCraftingCost, sortItemsByField]);
 
-  
+  const tableItems = craftingDisciplines[0]?.items ?? [];
+
+  const itemMeta = useMemo<Record<number, ResearchNotesItemMeta>>(
+    () => ({
+      8868: { icon: item8868?.icon, rarity: item8868?.rarity },
+      13436: { icon: item13436?.icon, rarity: item13436?.rarity },
+      13437: { icon: item13437?.icon, rarity: item13437?.rarity },
+      13435: { icon: item13435?.icon, rarity: item13435?.rarity },
+      13438: { icon: item13438?.icon, rarity: item13438?.rarity },
+      104934: { icon: item104934?.icon, rarity: item104934?.rarity },
+      104934.1: { icon: item104934B?.icon, rarity: item104934B?.rarity },
+    }),
+    [item8868, item13436, item13437, item13435, item13438, item104934, item104934B]
+  );
 
   return (
     <>
       <Navigation />
-      
-      {/* Banner informativo cuando se usan datos de fallback */}
-      {error && (
-        <div className="bg-yellow-900/20 border-b border-yellow-500/30 px-4 py-3">
-          <div className="container mx-auto flex items-center justify-between">
-            <div className="flex items-center space-x-3">
-              <div className="w-2 h-2 bg-yellow-400 rounded-full animate-pulse"></div>
-              <p className="text-yellow-200 text-sm">
-                <strong>Modo offline:</strong> Mostrando datos de respaldo. La API de GW2 está temporalmente deshabilitada.
-              </p>
-            </div>
-            <button 
-              onClick={() => window.location.reload()}
-              className="text-yellow-300 hover:text-yellow-100 text-sm underline"
-            >
-              Reintentar
-            </button>
-          </div>
-        </div>
-      )}
-      
-      <SalvagePageShell>
-        <div className="mx-auto max-w-6xl px-4 py-6 sm:px-6 sm:py-8">
-          <div className="mb-6">
-            <Link
-              href="/salvage"
-              className="inline-flex items-center gap-2 rounded-xl border border-white/[0.08] bg-white/[0.03] px-3.5 py-2 text-sm text-zinc-300 transition-colors hover:bg-white/[0.06] hover:text-white"
-            >
-              {t('researchNotesPage.backToSalvaging')}
-            </Link>
-          </div>
-
-          <header className="mb-6 flex items-start gap-4">
-            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border border-emerald-500/30 bg-emerald-500/10">
-              <FileText className="h-6 w-6 text-emerald-400" />
-            </div>
-            <div>
-              <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-emerald-500/70">
-                {t('salvagePage.researchNotes', 'Research Notes')}
-              </p>
-              <h1 className="mt-1 text-2xl font-bold text-white sm:text-3xl">
-                {t('researchNotesPage.title')}
-              </h1>
-              <p className="mt-2 max-w-2xl text-sm text-zinc-500">
-                {t('researchNotesPage.subtitle')}
-              </p>
-            </div>
-          </header>
-
-          <motion.div
-            initial={{ opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.15 }}
-            className="mt-6 overflow-hidden rounded-xl border border-slate-600/50 bg-slate-800/50 backdrop-blur-sm"
-          >
-            <div className="flex items-center justify-between border-b border-slate-600/50 px-5 py-4">
-              <h2 className="text-sm font-bold uppercase tracking-[0.15em] text-zinc-400">
-                {t('researchNotesPage.title')}
-              </h2>
-              {loading && (
-                <div className="flex items-center gap-2 text-xs text-zinc-500">
-                  <div className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-emerald-400 border-t-transparent" />
-                  <span>{t('researchNotesPage.loading')}</span>
-                </div>
-              )}
-            </div>
-
-            <div className="overflow-x-auto p-1">
-              <table className="w-full min-w-[900px] text-sm">
-                <thead>
-                  <tr className="border-b border-slate-600/50 bg-slate-800/80 text-left text-[10px] font-bold uppercase tracking-[0.12em] text-gray-300">
-                          <th className="px-5 py-3">{t('researchNotesPage.table.item')}</th>
-                          <th className="px-4 py-3 text-center">
-                            <button
-                              onClick={() => handleSortChange('craftingLevel')}
-                              className="flex items-center justify-center gap-2 hover:text-white transition-colors group w-full"
-                              title={`${t('researchNotesPage.table.sortBy')} ${t('researchNotesPage.table.craftingLevel')} ${sortField === 'craftingLevel' ? (sortOrder === 'desc' ? t('researchNotesPage.table.sortAscending') : t('researchNotesPage.table.sortDescending')) : t('researchNotesPage.table.sortDefault')}`}
-                            >
-                              {t('researchNotesPage.table.craftingLevel')}
-                              <span className="text-xs text-gray-400 group-hover:text-white">
-                                {sortField === 'craftingLevel' ? (sortOrder === 'desc' ? (
-                                  <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                                  </svg>
-                                ) : (
-                                  <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
-                                  </svg>
-                                )) : (
-                                  <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4" />
-                                  </svg>
-                                )}
-                              </span>
-                            </button>
-                          </th>
-                          <th className="px-4 py-3">
-                             <button
-                               onClick={() => handleSortChange('notes')}
-                               className="flex items-center gap-2 transition-colors group hover:text-zinc-200"
-                               title={`${t('researchNotesPage.table.sortBy')} ${t('researchNotesPage.table.notes')} ${sortField === 'notes' ? (sortOrder === 'desc' ? t('researchNotesPage.table.sortAscending') : t('researchNotesPage.table.sortDescending')) : t('researchNotesPage.table.sortDefault')}`}
-                             >
-                               {t('researchNotesPage.table.notes')}
-                               <span className="text-xs text-gray-400 group-hover:text-white">
-                                 {sortField === 'notes' ? (sortOrder === 'desc' ? (
-                                   <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                                   </svg>
-                                 ) : (
-                                   <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
-                                   </svg>
-                                 )) : (
-                                   <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4" />
-                                   </svg>
-                                 )}
-                               </span>
-                             </button>
-                           </th>
-                           <th className="text-left py-2 px-2 text-gray-300 font-medium min-w-[100px]">
-                             <button
-                               onClick={() => handleSortChange('pricePerNote')}
-                               className="flex items-center gap-1 hover:text-white transition-colors group"
-                               title={`${t('researchNotesPage.table.sortBy')} ${t('researchNotesPage.table.pricePerNote')} ${sortField === 'pricePerNote' ? (sortOrder === 'desc' ? t('researchNotesPage.table.sortAscending') : t('researchNotesPage.table.sortDescending')) : t('researchNotesPage.table.sortDefault')}`}
-                             >
-                               {t('researchNotesPage.table.pricePerNote')}
-                               <span className="text-xs text-gray-400 group-hover:text-white">
-                                 {sortField === 'pricePerNote' ? (sortOrder === 'desc' ? (
-                                   <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                                   </svg>
-                                 ) : (
-                                   <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
-                                   </svg>
-                                 )) : (
-                                   <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4" />
-                                   </svg>
-                                 )}
-                               </span>
-                             </button>
-                           </th>
-                          <th className="text-left py-2 px-3 text-gray-300 font-medium">
-                            <button
-                              onClick={() => handleSortChange('craftingCost')}
-                              className="flex items-center gap-2 hover:text-white transition-colors group"
-                              title={`${t('researchNotesPage.table.sortBy')} ${t('researchNotesPage.table.craftingCost')} ${sortField === 'craftingCost' ? (sortOrder === 'desc' ? t('researchNotesPage.table.sortAscending') : t('researchNotesPage.table.sortDescending')) : t('researchNotesPage.table.sortDefault')}`}
-                            >
-                              {t('researchNotesPage.table.craftingCost')}
-                              <span className="text-xs text-gray-400 group-hover:text-white">
-                                {sortField === 'craftingCost' ? (sortOrder === 'desc' ? (
-                                  <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                                  </svg>
-                                ) : (
-                                  <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
-                                  </svg>
-                                )) : (
-                                  <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4" />
-                                  </svg>
-                                )}
-                              </span>
-                            </button>
-                            <div className="mt-1 flex gap-2">
-                              <button
-                                onClick={() => setCraftingPriceSide('buy')}
-                                className={`text-xs px-2 py-0.5 rounded ${craftingPriceSide === 'buy' ? 'bg-blue-600 text-white' : 'bg-gray-600 text-gray-200 hover:bg-gray-500'}`}
-                              >
-                                {t('researchNotesPage.table.buy')}
-                              </button>
-                              <button
-                                onClick={() => setCraftingPriceSide('sell')}
-                                className={`text-xs px-2 py-0.5 rounded ${craftingPriceSide === 'sell' ? 'bg-green-600 text-white' : 'bg-gray-600 text-gray-200 hover:bg-gray-500'}`}
-                              >
-                                {t('researchNotesPage.table.sell')}
-                              </button>
-                            </div>
-                          </th>
-                          <th className="text-left py-2 px-3 text-gray-300 font-medium">
-                            <button
-                              onClick={() => handleSortChange('buyPrice')}
-                              className="flex items-center gap-2 hover:text-white transition-colors group"
-                              title={`${t('researchNotesPage.table.sortBy')} ${t('researchNotesPage.table.buyPrice')} ${sortField === 'buyPrice' ? (sortOrder === 'desc' ? t('researchNotesPage.table.sortAscending') : t('researchNotesPage.table.sortDescending')) : t('researchNotesPage.table.sortDefault')}`}
-                            >
-                              {t('researchNotesPage.table.buyPrice')}
-                              <span className="text-xs text-gray-400 group-hover:text-white">
-                                {sortField === 'buyPrice' ? (sortOrder === 'desc' ? (
-                                  <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                                  </svg>
-                                ) : (
-                                  <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
-                                  </svg>
-                                )) : (
-                                  <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4" />
-                                  </svg>
-                                )}
-                              </span>
-                            </button>
-                          </th>
-                          <th className="text-left py-2 px-3 text-gray-300 font-medium">
-                            <button
-                              onClick={() => handleSortChange('sellPrice')}
-                              className="flex items-center gap-2 hover:text-white transition-colors group"
-                              title={`${t('researchNotesPage.table.sortBy')} ${t('researchNotesPage.table.sellPrice')} ${sortField === 'sellPrice' ? (sortOrder === 'desc' ? t('researchNotesPage.table.sortAscending') : t('researchNotesPage.table.sortDescending')) : t('researchNotesPage.table.sortDefault')}`}
-                            >
-                              {t('researchNotesPage.table.sellPrice')}
-                              <span className="text-xs text-gray-400 group-hover:text-white">
-                                {sortField === 'sellPrice' ? (sortOrder === 'desc' ? (
-                                  <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                                  </svg>
-                                ) : (
-                                  <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
-                                  </svg>
-                                )) : (
-                                  <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4" />
-                                  </svg>
-                                )}
-                              </span>
-                            </button>
-                          </th>
-                          <th className="text-left py-2 px-3 text-gray-300 font-medium">
-                            <button
-                              onClick={() => handleSortChange('level')}
-                              className="flex items-center gap-2 hover:text-white transition-colors group"
-                              title={`${t('researchNotesPage.table.sortBy')} ${t('researchNotesPage.table.level')} ${sortField === 'level' ? (sortOrder === 'desc' ? t('researchNotesPage.table.sortAscending') : t('researchNotesPage.table.sortDescending')) : t('researchNotesPage.table.sortDefault')}`}
-                            >
-                              {t('researchNotesPage.table.level')}
-                              <span className="text-xs text-gray-400 group-hover:text-white">
-                                {sortField === 'level' ? (sortOrder === 'desc' ? (
-                                  <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                                  </svg>
-                                ) : (
-                                  <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
-                                  </svg>
-                                )) : (
-                                  <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4" />
-                                  </svg>
-                                )}
-                              </span>
-                            </button>
-                          </th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                       {craftingDisciplines[0].items.map((item, itemIndex) => (
-                           <tr key={itemIndex} className="border-b border-slate-600/30 transition-colors hover:bg-slate-700/40">
-                             <td className="py-2 px-3">
-                                <div className="flex items-center gap-3">
-                                  {item.id === 8868 && item8868?.icon ? (
-                                    <Image 
-                                      src={item8868.icon} 
-                                      alt={item.name}
-                                      width={32}
-                                      height={32}
-                                      className="w-8 h-8 rounded"
-                                    />
-                                  ) : item.id === 13436 && item13436?.icon ? (
-                                    <Image 
-                                      src={item13436.icon} 
-                                      alt={item.name}
-                                      width={32}
-                                      height={32}
-                                      className="w-8 h-8 rounded"
-                                    />
-                                  ) : item.id === 13437 && item13437?.icon ? (
-                                   <Image 
-                                     src={item13437.icon} 
-                                     alt={item.name}
-                                     width={32}
-                                     height={32}
-                                     className="w-8 h-8 rounded"
-                                   />
-                                  ) : item.id === 13435 && item13435?.icon ? (
-                                     <Image 
-                                       src={item13435.icon} 
-                                       alt={item.name}
-                                       width={32}
-                                      height={32}
-                                      className="w-8 h-8 rounded"
-                                     />
-                                                                      ) : item.id === 13438 && item13438?.icon ? (
-                                      <Image 
-                                        src={item13438.icon} 
-                                        alt={item.name}
-                                        width={32}
-                                      height={32}
-                                      className="w-8 h-8 rounded"
-                                      />
-                                   ) : item.id === 104934 && item104934?.icon ? (
-                                     <Image 
-                                       src={item104934.icon} 
-                                       alt={item.name}
-                                       width={32}
-                                      height={32}
-                                      className="w-8 h-8 rounded"
-                                     />
-                                   ) : item.id === 104934.1 && item104934B?.icon ? (
-                                     <Image 
-                                       src={item104934B.icon} 
-                                       alt={item.name}
-                                       width={32}
-                                      height={32}
-                                      className="w-8 h-8 rounded"
-                                     />
-                                   ) : (
-                                     <div className="w-8 h-8 bg-slate-600 rounded"></div>
-                                   )}
-                                                                  <span className={(() => {
-                                    if (item.id === 8868) return getRarityColor(item8868?.rarity || '');
-                                    if (item.id === 13436) return getRarityColor(item13436?.rarity || '');
-                                    if (item.id === 13437) return getRarityColor(item13437?.rarity || '');
-                                    if (item.id === 13435) return getRarityColor(item13435?.rarity || '');
-                                    if (item.id === 13438) return getRarityColor(item13438?.rarity || '');
-                                    if (item.id === 104934) return getRarityColor(item104934?.rarity || '');
-                                    if (item.id === 104934.1) return getRarityColor(item104934B?.rarity || '');
-                                    return 'text-white';
-                                  })()}>
-                                    {item.name}
-                                  </span>
-                               </div>
-                             </td>
-                                <td className="py-2 px-3 text-gray-300 text-center">
-                                 <div className="flex items-center justify-center gap-2">
-                                   {item.id === 8868 ? (
-                                     <Image 
-                                       src="https://wiki.guildwars2.com/images/b/b7/Artificer_tango_icon_20px.png" 
-                                       alt="Artificer" 
-                                       width={20}
-                                       height={20}
-                                       className="w-5 h-5"
-                                     />
-                                   ) : item.id !== 104934 && item.id !== 104934.1 && (
-                                     <Image 
-                                       src="/images/icons/jeweler-icon.webp" 
-                                       alt="Jeweler" 
-                                       width={16}
-                                       height={16}
-                                       className="w-4 h-4"
-                                     />
-                                   )}
-                                   <span>
-                                     {item.id === 13436 ? '300' : 
-                                      item.id === 13437 ? '300' : 
-                                      item.id === 13435 ? '300' :
-                                      item.id === 8868 ? '325' :                                        
-                                      item.id === 13438 ? '325' :  
-                                      item.id === 104934 ? '0' : 
-                                      item.id === 104934.1 ? '0' : '-'}
-                                   </span>
-                                 </div>
-                               </td>
-                             <td className="py-2 px-3 text-green-400 font-medium">{item.notes}</td>
-                             <td className="py-2 px-2 text-purple-400 font-medium min-w-[100px]">
-                                 {item.craftingCost && item.notes ? 
-                                   formatGW2Price(Math.round(parseFloat(item.craftingCost.replace(/[^0-9.]/g, '')) / item.notes)) : 
-                                   '-'}
-                               </td>
-                            <td className="py-2 px-3 text-orange-400 font-medium">
-                               {item.craftingCost ? `${item.craftingCost}` : '-'}
-                             </td>
-                            <td className="py-2 px-3 text-blue-400 font-medium">
-                              {item.buyPrice ? `${item.buyPrice}` : '-'}
-                            </td>
-                            <td className="py-2 px-3 text-green-400 font-medium">
-                              {item.sellPrice ? `${item.sellPrice}` : '-'}
-                            </td>
-                            <td className="py-2 px-3 text-gray-300">{item.level}</td>
-                           </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
-         </motion.div>
-
-          <motion.div
-            initial={{ opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3 }}
-            className="mt-6 rounded-xl border border-slate-600/50 bg-slate-800/50 p-5 backdrop-blur-sm"
-          >
-            <h3 className="text-xs font-bold uppercase tracking-[0.15em] text-sky-400">
-              {t('researchNotesPage.tips')}
-            </h3>
-            <p className="mt-3 text-sm leading-relaxed text-zinc-400">
-              {t('researchNotesPage.tip7')}
-            </p>
-          </motion.div>
-        </div>
-      </SalvagePageShell>
+      <ResearchNotesPageLayout
+        items={tableItems}
+        itemMeta={itemMeta}
+        loading={loading}
+        error={error}
+        sortField={sortField}
+        sortOrder={sortOrder}
+        onSortChange={handleSortChange}
+        craftingPriceSide={craftingPriceSide}
+        onCraftingPriceSideChange={setCraftingPriceSide}
+      />
     </>
   );
 }

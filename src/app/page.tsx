@@ -28,16 +28,19 @@ import {
   RefreshCw,
   Map,
   Sparkles,
-  Crown
+  Crown,
+  User,
+  Home,
+  Calendar,
+  Zap
 } from 'lucide-react'
 import { usePageTitle } from '@/hooks/usePageTitle'
 import { useI18n } from '@/contexts/I18nContext'
 import { useAuth } from '@/contexts/AuthContext'
 import { useDashboardPreferences } from '@/hooks/useDashboardPreferences'
-import Slogan from '@/components/ui/Slogan'
 import { getActiveFestivalEvents } from '@/lib/festival-dates'
-import { getUtilityOrder } from '@/lib/page-usage-tracker'
-import { useState, useEffect, useRef, lazy, Suspense } from 'react'
+import { getPageUsageStats, getUtilityOrder } from '@/lib/page-usage-tracker'
+import { useState, useEffect, useRef, useMemo, lazy, Suspense } from 'react'
 import Modal from '@/components/ui/Modal'
 
 // Lazy loading para componentes pesados
@@ -256,8 +259,82 @@ const initialCards: DashboardCard[] = [
     visible: true,
     order: 17
   },
+  {
+    id: "homestead",
+    title: "pageTitles.homestead",
+    description: "homestead.description",
+    href: "/homestead",
+    icon: <Home className="w-8 h-8" />,
+    color: "from-stone-500 to-amber-600",
+    delay: 2.1,
+    visible: true,
+    order: 18
+  },
+  {
+    id: "conversionGuideCore",
+    title: "conversionGuideCorePage.title",
+    description: "conversionGuideCorePage.subtitle",
+    href: "/conversion-guide-core",
+    icon: <RefreshCw className="w-8 h-8" />,
+    color: "from-cyan-500 to-sky-600",
+    delay: 2.2,
+    visible: true,
+    order: 19
+  },
+  {
+    id: "holidayCalendar",
+    title: "nav.holidayCalendar",
+    description: "holidayCalendar.subtitle",
+    href: "/holiday-calendar",
+    icon: <Calendar className="w-8 h-8" />,
+    color: "from-red-500 to-rose-600",
+    delay: 2.3,
+    visible: true,
+    order: 20
+  },
+  {
+    id: "expBuffs",
+    title: "expBuffs.title",
+    description: "expBuffs.subtitle",
+    href: "/exp-buffs",
+    icon: <Zap className="w-8 h-8" />,
+    color: "from-yellow-500 to-amber-600",
+    delay: 2.4,
+    visible: true,
+    order: 21
+  },
 
 ];
+
+const POPULAR_TOOLS_COUNT = 4;
+
+/** Mismo estilo que los timers del navbar (bg-*-900/20, border-*-700/30) */
+const ACCENT_CHIP_CLASSES: Record<string, string> = {
+  blue: 'text-blue-300 bg-blue-900/20 border-blue-700/30 hover:bg-blue-800/30 hover:text-blue-200',
+  green: 'text-green-300 bg-green-900/20 border-green-700/30 hover:bg-green-800/30 hover:text-green-200',
+  purple: 'text-purple-300 bg-purple-900/20 border-purple-700/30 hover:bg-purple-800/30 hover:text-purple-200',
+  amber: 'text-amber-300 bg-amber-900/20 border-amber-700/30 hover:bg-amber-800/30 hover:text-amber-200',
+  orange: 'text-orange-300 bg-orange-900/20 border-orange-700/30 hover:bg-orange-800/30 hover:text-orange-200',
+  pink: 'text-pink-300 bg-pink-900/20 border-pink-700/30 hover:bg-pink-800/30 hover:text-pink-200',
+  indigo: 'text-indigo-300 bg-indigo-900/20 border-indigo-700/30 hover:bg-indigo-800/30 hover:text-indigo-200',
+  cyan: 'text-cyan-300 bg-cyan-900/20 border-cyan-700/30 hover:bg-cyan-800/30 hover:text-cyan-200',
+  emerald: 'text-emerald-300 bg-emerald-900/20 border-emerald-700/30 hover:bg-emerald-800/30 hover:text-emerald-200',
+  yellow: 'text-amber-300 bg-amber-900/20 border-amber-700/30 hover:bg-amber-800/30 hover:text-amber-200',
+  violet: 'text-violet-300 bg-violet-900/20 border-violet-700/30 hover:bg-violet-800/30 hover:text-violet-200',
+  red: 'text-red-300 bg-red-900/20 border-red-700/30 hover:bg-red-800/30 hover:text-red-200',
+  sky: 'text-sky-300 bg-sky-900/20 border-sky-700/30 hover:bg-sky-800/30 hover:text-sky-200',
+  lime: 'text-lime-300 bg-lime-900/20 border-lime-700/30 hover:bg-lime-800/30 hover:text-lime-200',
+  rose: 'text-rose-300 bg-rose-900/20 border-rose-700/30 hover:bg-rose-800/30 hover:text-rose-200',
+  teal: 'text-teal-300 bg-teal-900/20 border-teal-700/30 hover:bg-teal-800/30 hover:text-teal-200',
+  stone: 'text-stone-300 bg-stone-900/20 border-stone-700/30 hover:bg-stone-800/30 hover:text-stone-200',
+  gray: 'text-gray-300 bg-gray-800/50 border-gray-600/30 hover:bg-gray-700/50 hover:text-white',
+};
+
+function getToolChipClasses(color: string): string {
+  const match = color.match(/from-([\w]+)-/);
+  const accent = match?.[1] ?? 'gray';
+  return ACCENT_CHIP_CLASSES[accent] ?? ACCENT_CHIP_CLASSES.gray;
+}
 
 export default function HomePage() {
   usePageTitle('pageTitles.home', 'Home');
@@ -272,9 +349,6 @@ export default function HomePage() {
   const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
   const [showSettings, setShowSettings] = useState(false);
   const [showLoginModal, setShowLoginModal] = useState(false);
-  const [mostUsedDashboard, setMostUsedDashboard] = useState<DashboardCard | null>(null);
-  const [showNewToolMessage, setShowNewToolMessage] = useState(false);
-  const hideTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   // Función para obtener el icono según el ID y tamaño
   const getIcon = (cardId: string, size: 'small' | 'medium' | 'large' = 'medium') => {
@@ -306,6 +380,10 @@ export default function HomePage() {
       "orphanRoute": <Map className={iconClass} />,
       "laurels": <Crown className={iconClass} />,
       "ectoplasm": <BarChart3 className={iconClass} />,
+      "homestead": <Home className={iconClass} />,
+      "conversionGuideCore": <RefreshCw className={iconClass} />,
+      "holidayCalendar": <Calendar className={iconClass} />,
+      "expBuffs": <Zap className={iconClass} />,
 
     };
 
@@ -335,6 +413,10 @@ export default function HomePage() {
       "magicMirrors": <Sparkles className="w-8 h-8" />,
       "orphanRoute": <Map className="w-8 h-8" />,
       "ectoplasm": <BarChart3 className="w-8 h-8" />,
+      "homestead": <Home className="w-8 h-8" />,
+      "conversionGuideCore": <RefreshCw className="w-8 h-8" />,
+      "holidayCalendar": <Calendar className="w-8 h-8" />,
+      "expBuffs": <Zap className="w-8 h-8" />,
 
     };
 
@@ -359,6 +441,10 @@ export default function HomePage() {
       "orphanRoute": "from-cyan-500 to-blue-600",
       "laurels": "from-amber-500 to-yellow-600",
       "ectoplasm": "from-purple-500 to-blue-600",
+      "homestead": "from-stone-500 to-amber-600",
+      "conversionGuideCore": "from-cyan-500 to-sky-600",
+      "holidayCalendar": "from-red-500 to-rose-600",
+      "expBuffs": "from-yellow-500 to-amber-600",
 
     };
 
@@ -509,58 +595,45 @@ export default function HomePage() {
     };
   }, [isLoading]);
 
-  // Obtener el último dashboard agregado (ectoplasm)
-  useEffect(() => {
-    // Crear tarjeta para laurels (última agregada)
-    const ectoCard: DashboardCard = {
-      id: "ectoplasm",
-      title: t('ectoplasm.title', 'Ectoplasm'),
-      description: t('ectoplasm.subtitle', 'Estadísticas y herramientas relacionadas con ectoplasma'),
-      href: "/ectoplasm",
-      icon: <BarChart3 className="w-8 h-8" />,
-      color: "from-purple-500 to-blue-600",
-      delay: 0,
-      visible: true,
-      order: 17
+  const visibleCards = useMemo(
+    () => dashboardCards.filter((card) => isEditMode || card.visible),
+    [dashboardCards, isEditMode]
+  );
+
+  const { popularCards, otherCards } = useMemo(() => {
+    if (visibleCards.length === 0) {
+      return { popularCards: [], otherCards: [] };
+    }
+
+    const cardHrefs: Record<string, string> = {};
+    visibleCards.forEach((card) => {
+      cardHrefs[card.id] = card.href;
+    });
+
+    const utilityOrder = getUtilityOrder(
+      visibleCards.map((card) => card.id),
+      cardHrefs
+    );
+    const stats = getPageUsageStats();
+
+    const sortedCards = utilityOrder
+      .map((cardId) => visibleCards.find((card) => card.id === cardId))
+      .filter(Boolean) as DashboardCard[];
+
+    const remainingCards = visibleCards.filter((card) => !utilityOrder.includes(card.id));
+    const orderedCards = [...sortedCards, ...remainingCards];
+
+    const cardsWithUsage = orderedCards.filter((card) => (stats[card.href]?.visits ?? 0) > 0);
+    const popularSource =
+      cardsWithUsage.length >= POPULAR_TOOLS_COUNT ? cardsWithUsage : orderedCards;
+    const popular = popularSource.slice(0, POPULAR_TOOLS_COUNT);
+    const popularIds = new Set(popular.map((card) => card.id));
+
+    return {
+      popularCards: popular,
+      otherCards: orderedCards.filter((card) => !popularIds.has(card.id)),
     };
-
-    setMostUsedDashboard(reconstructCardWithIcon(ectoCard));
-  }, []);
-
-  // Mostrar mensaje "Check our new tool" cada 6 segundos
-  useEffect(() => {
-    // Función para mostrar y ocultar el mensaje
-    const showMessage = () => {
-      // Limpiar timeout anterior si existe
-      if (hideTimeoutRef.current) {
-        clearTimeout(hideTimeoutRef.current);
-      }
-
-      // Mostrar el mensaje
-      setShowNewToolMessage(true);
-
-      // Ocultar después de 4 segundos
-      hideTimeoutRef.current = setTimeout(() => {
-        setShowNewToolMessage(false);
-        hideTimeoutRef.current = null;
-      }, 4000);
-    };
-
-    // Mostrar inmediatamente al inicio
-    showMessage();
-
-    // Configurar intervalo para repetir cada 6 segundos
-    const interval = setInterval(() => {
-      showMessage();
-    }, 6000);
-
-    return () => {
-      clearInterval(interval);
-      if (hideTimeoutRef.current) {
-        clearTimeout(hideTimeoutRef.current);
-      }
-    };
-  }, []);
+  }, [visibleCards]);
 
   // Funciones de personalización
   const toggleEditMode = () => {
@@ -663,337 +736,259 @@ export default function HomePage() {
       {/* Container principal */}
       <div className="container mx-auto px-4 pb-8 pt-16">
 
-        {/* Hero Section - Banner Promocional */}
-        <section className="relative overflow-hidden rounded-xl mb-2 h-72 md:h-96">
-          {/* Imagen de fondo de Visions of Eternity */}
-          <div className="absolute inset-0 rounded-xl">
-            <Image
-              src="/images/backgrounds/voe-background.webp"
-              alt="Guild Wars 2: Visions of Eternity Background"
-              fill
-              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 100vw, 100vw"
-              className="object-cover rounded-xl"
-              priority
-              fetchPriority="high"
-              quality={95}
-              placeholder="empty"
-            />
-            {/* Overlay mejorado */}
-            <div className="absolute inset-0 bg-gradient-to-br from-black/40 via-black/50 to-black/70 rounded-xl"></div>
-            <div className="absolute inset-0 bg-gradient-to-t from-slate-900/90 via-transparent to-transparent rounded-xl"></div>
-          </div>
-
-          {/* Logo a la derecha */}
-          <div className="absolute top-1/2 right-0 md:right-4 lg:right-8 transform -translate-y-1/2 -mt-8 md:-mt-10">
+        {/* Hero — Visions of Eternity */}
+        <section className="relative mb-6 overflow-hidden rounded-3xl border border-slate-600/30 min-h-[240px] sm:min-h-[300px] md:min-h-[340px] lg:min-h-[380px]">
+          <Image
+            src="/images/backgrounds/voe-background.webp"
+            alt="Guild Wars 2: Visions of Eternity"
+            fill
+            sizes="100vw"
+            className="object-cover"
+            priority
+            fetchPriority="high"
+            quality={90}
+          />
+          <div className="absolute inset-0 bg-gradient-to-r from-slate-950/95 via-slate-900/70 to-slate-900/25" />
+          <div className="relative flex h-full min-h-[inherit] items-center justify-between gap-6 px-6 py-8 sm:px-10 sm:py-10 md:px-12 md:py-12">
+            <motion.div
+              initial={{ opacity: 0, x: -12 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.5 }}
+              className="min-w-0 max-w-2xl"
+            >
+              <span className="inline-block rounded-full border border-amber-400/40 bg-amber-500/10 px-3 py-1 text-xs font-bold uppercase tracking-[0.15em] text-amber-300 sm:text-sm">
+                {t('home.hero.voeBadge', 'New expansion')}
+              </span>
+              <h1 className="mt-3 text-3xl font-bold text-white sm:text-4xl md:text-5xl lg:text-[3.25rem] lg:leading-tight">
+                {t('home.hero.voeTitle', 'Visions of Eternity')}
+              </h1>
+              <p className="mt-3 max-w-xl text-sm leading-relaxed text-gray-300 sm:mt-4 sm:text-base md:text-lg">
+                {t('home.hero.voeSubtitle', "Guild Wars 2's new expansion is here.")}
+              </p>
+              <a
+                href="http://guildwars2.go2cloud.org/aff_c?offer_id=28&aff_id=757"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="mt-5 inline-flex items-center rounded-lg bg-gradient-to-r from-blue-600 to-violet-600 px-6 py-2.5 text-sm font-semibold text-white shadow-lg transition hover:from-blue-500 hover:to-violet-500 sm:mt-6 sm:px-8 sm:py-3 sm:text-base"
+              >
+                {t('cta.purchaseNow', 'Purchase Now')}
+              </a>
+            </motion.div>
             <Image
               src="/images/backgrounds/GuildWars2.webp"
-              alt="Guild Wars 2: Visions of Eternity"
-              width={295}
-              height={295}
-              sizes="(max-width: 640px) 180px, (max-width: 1024px) 250px, 295px"
-              className="max-w-[180px] md:max-w-[250px] lg:max-w-[295px] h-auto drop-shadow-2xl"
+              alt="Guild Wars 2"
+              width={200}
+              height={200}
+              className="hidden h-auto w-32 shrink-0 drop-shadow-2xl sm:block md:w-44 lg:w-52 xl:w-56"
             />
-          </div>
-
-          {/* Dashboard más utilizado - Centro */}
-          {mostUsedDashboard && (() => {
-            const cardSize = preferences.cardSizes[mostUsedDashboard.id] || 'medium';
-            const sizeClasses = {
-              small: 'p-4',
-              medium: 'p-6',
-              large: 'p-8'
-            };
-            const titleSizeClasses = {
-              small: 'text-lg',
-              medium: 'text-xl',
-              large: 'text-2xl'
-            };
-            const descriptionSizeClasses = {
-              small: 'text-xs',
-              medium: 'text-sm',
-              large: 'text-base'
-            };
-
-            return (
-              <div className="absolute top-[0%] left-1/2 transform -translate-x-1/2 hidden md:block">
-                <motion.div
-                  initial={{ opacity: 0, scale: 0.9 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ duration: 0.6, delay: 0.4 }}
-                  className="flex flex-col items-center gap-1"
-                >
-                  {/* Icono con contenedor para el mensaje */}
-                  <div className="flex-shrink-0 relative">
-                    <div className="transform translate-y-12">
-                      <Image
-                        src="/images/icons/icoon.webp"
-                        alt="Icon"
-                        width={128}
-                        height={128}
-                        className="w-32 h-32 drop-shadow-2xl"
-                        unoptimized
-                      />
-                    </div>
-
-                    {/* Nube de mensaje debajo del icono - posicionamiento absoluto para no afectar el layout */}
-                    {showNewToolMessage && (
-                      <div className="absolute top-full left-1/2 transform -translate-x-1/2 mt-1 z-10">
-                        <motion.div
-                          initial={{ opacity: 0, scale: 0.8, y: 10 }}
-                          animate={{ opacity: 1, scale: 1, y: 0 }}
-                          exit={{ opacity: 0, scale: 0.8, y: 10 }}
-                          transition={{ duration: 0.3, delay: 0.1 }}
-                          className="relative"
-                        >
-                          {/* Nube */}
-                          <div className="bg-gradient-to-r from-blue-500/95 to-purple-600/95 backdrop-blur-sm border-2 border-blue-400 rounded-lg px-4 py-2 shadow-2xl">
-                            <p className="text-white font-bold text-sm md:text-base text-center whitespace-nowrap">
-                              {t('cta.checkNewTool', 'Check our new tool')}
-                            </p>
-                          </div>
-
-                          {/* Cola de la nube que apunta al icono - más grande */}
-                          <div className="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-full">
-                            <div className="w-0 h-0 border-l-12 border-r-12 border-b-12 border-l-transparent border-r-transparent border-b-blue-500/95"></div>
-                          </div>
-                        </motion.div>
-                      </div>
-                    )}
-                  </div>
-
-                  {/* Espacio fijo reservado para el mensaje (mantiene el dashboard fijo) */}
-                  <div className="h-[40px]"></div>
-
-                  {/* Tarjeta del dashboard */}
-                  <div className="w-64 mt-4">
-                    <Link href={mostUsedDashboard.href}>
-                      <div className={`bg-gradient-to-br ${mostUsedDashboard.color} ${sizeClasses[cardSize]} rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 cursor-pointer h-full border border-white/10`}>
-                        <div className="text-white">
-                          {getIcon(mostUsedDashboard.id, cardSize)}
-                        </div>
-                        <div>
-                          <h3 className={`${titleSizeClasses[cardSize]} font-bold text-white mb-2`}>
-                            {t(mostUsedDashboard.title, mostUsedDashboard.title)}
-                          </h3>
-                          <p className={`${descriptionSizeClasses[cardSize]} text-gray-100 leading-relaxed`}>
-                            {t(mostUsedDashboard.description, mostUsedDashboard.description)}
-                          </p>
-                        </div>
-                      </div>
-                    </Link>
-                  </div>
-                </motion.div>
-              </div>
-            );
-          })()}
-
-          {/* Slogan aleatorio - Móvil */}
-          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 block md:hidden">
-            <Slogan
-              variant="random"
-              className="text-yellow-400 drop-shadow-2xl font-bold text-base"
-            />
-          </div>
-
-          {/* Slogan aleatorio - Desktop */}
-          <div className="absolute top-1/2 left-6 ml-12 transform -translate-y-1/2 hidden md:block" style={{ transform: 'translateY(-50%) rotate(-20deg)' }}>
-            <Slogan
-              variant="random"
-              className="text-yellow-400 drop-shadow-2xl font-bold text-base md:text-lg lg:text-xl"
-            />
-          </div>
-
-          {/* Contenido principal */}
-          <div className="absolute bottom-8 right-0 md:right-4 lg:right-8 translate-y-[0.5cm] translate-x-[-1.5cm]">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6 }}
-              className="space-y-4">
-
-              {/* Botón Purchase Now */}
-              <div className="pt-2">
-                <motion.a
-                  href="http://guildwars2.go2cloud.org/aff_c?offer_id=28&aff_id=757"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-block bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white font-bold py-2 px-6 rounded-md text-base shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-0.5"
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                >
-                  {t('cta.purchaseNow', 'Purchase Now')}
-                </motion.a>
-
-                <div className="mt-3 flex justify-center">
-                  <div className="w-20 h-1 bg-gradient-to-r from-transparent via-blue-400 to-transparent rounded-full opacity-60"></div>
-                </div>
-              </div>
-            </motion.div>
           </div>
         </section>
 
-        {/* Sección de herramientas principales */}
+        {/* Perfil compacto */}
+        <section className="mb-6 rounded-xl border border-slate-500/50 bg-slate-900/75 px-5 py-4 shadow-sm backdrop-blur-sm">
+          {user ? (
+            <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+              <Link href="/profile" className="flex min-w-0 items-center gap-4 transition hover:opacity-90">
+                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full border border-blue-400/50 bg-blue-500/20">
+                  <User className="h-6 w-6 text-blue-200" />
+                </div>
+                <div className="min-w-0">
+                  <p className="text-sm text-gray-300">{t('home.profile.welcome', 'Hello,')}</p>
+                  <p className="truncate text-lg font-bold text-white">{user.username}</p>
+                </div>
+              </Link>
+              <div className="flex flex-wrap items-center gap-2 sm:shrink-0">
+                <Link
+                  href="/account"
+                  className="rounded-lg border border-slate-500/60 bg-slate-800/80 px-4 py-2 text-sm font-semibold text-gray-100 transition hover:border-slate-400/60 hover:bg-slate-700/80"
+                >
+                  {t('home.profile.account', 'My account')}
+                </Link>
+                <button
+                  type="button"
+                  onClick={() => setShowSettings(true)}
+                  className="inline-flex items-center gap-2 rounded-lg border border-slate-500/60 bg-slate-800/80 px-4 py-2 text-sm font-semibold text-gray-100 transition hover:border-slate-400/60 hover:bg-slate-700/80"
+                >
+                  <Settings className="h-4 w-4" />
+                  {t('dashboard.advancedSettingsShort', 'Config')}
+                </button>
+              </div>
+            </div>
+          ) : (
+            <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+              <p className="text-sm text-gray-300 sm:max-w-xl">{t('home.hero.subtitle')}</p>
+              <div className="flex flex-wrap gap-2 sm:shrink-0">
+                <Link
+                  href="/login"
+                  className="rounded-lg bg-blue-600 px-5 py-2 text-sm font-semibold text-white transition hover:bg-blue-500"
+                >
+                  {t('home.profile.login', 'Sign in')}
+                </Link>
+                <Link
+                  href="/register"
+                  className="rounded-lg border border-slate-500/60 bg-slate-800/80 px-5 py-2 text-sm font-semibold text-gray-100 transition hover:bg-slate-700/80"
+                >
+                  {t('home.profile.register', 'Register')}
+                </Link>
+              </div>
+            </div>
+          )}
+        </section>
+
+        {/* Sección de herramientas */}
         <section className="mb-12 pb-8">
           {/* Evento Activo arriba del título (solo cuando hay evento activo) */}
           {activeEvent && (
-            <div className="mb-6 flex flex-col items-center">
+            <div className="mb-6 flex justify-center">
               <Link href={activeEvent.path}>
-                <span className={`inline-block bg-gradient-to-r ${activeEvent.color} hover:opacity-95 text-white font-bold py-3 px-8 rounded-lg text-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 border border-white/10`}>
+                <span className={`inline-flex items-center rounded-lg border px-8 py-3 text-base font-bold transition-all duration-200 sm:px-10 sm:py-3.5 sm:text-lg ${getToolChipClasses(activeEvent.color)}`}>
                   {t('cta.activeEvent', `Active event: {name}`).replace('{name}', t(activeEvent.nameKey))}
                 </span>
               </Link>
             </div>
           )}
 
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.2 }}
-            className="mb-8"
-          >
-            <div className="text-center mb-8">
-              <h2 className="text-3xl font-bold text-white mb-3">
-                {t('section.availableTools')}
+          <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
+            <div>
+              <h2 className="text-xl font-bold text-white sm:text-2xl">
+                {isEditMode ? t('section.availableTools') : t('home.popularTools', 'Most used')}
               </h2>
-              <p className="text-gray-400 max-w-2xl mx-auto mb-6">
-                {t('home.hero.subtitle')}
-              </p>
-
-              {/* Controles de personalización */}
-              <div className="flex items-center justify-end gap-2">
-                {isEditMode ? (
-                  <>
-                    <button
-                      onClick={saveChanges}
-                      className="flex items-center gap-2 px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors duration-200"
-                    >
-                      <Save className="w-4 h-4" />
-                      {t('dashboard.saveChanges', 'Guardar Cambios')}
-                    </button>
-                    <button
-                      onClick={resetDashboard}
-                      className="flex items-center gap-2 px-4 py-2 bg-orange-600 hover:bg-orange-700 text-white rounded-lg transition-colors duration-200"
-                    >
-                      <RotateCcw className="w-4 h-4" />
-                      {t('dashboard.reset', 'Restablecer')}
-                    </button>
-                    <button
-                      onClick={toggleEditMode}
-                      className="flex items-center gap-2 px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-lg transition-colors duration-200"
-                    >
-                      <X className="w-4 h-4" />
-                      {t('dashboard.cancel', 'Cancelar')}
-                    </button>
-                  </>
-                ) : (
-                  <div className="flex gap-2">
-                    <button
-                      onClick={() => {
-                        if (!user) {
-                          setShowLoginModal(true);
-                        } else {
-                          setShowSettings(true);
-                        }
-                      }}
-                      className="flex items-center gap-1 md:gap-2 px-3 md:px-4 py-1.5 md:py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors duration-200 text-sm"
-                    >
-                      <Settings className="w-3 h-3" />
-                      <span className="hidden sm:inline">{t('dashboard.advancedSettings', 'Configuración Avanzada')}</span>
-                      <span className="sm:hidden">{t('dashboard.advancedSettingsShort', 'Config')}</span>
-                    </button>
-                  </div>
-                )}
-              </div>
-            </div>
-
-            {isEditMode && (
-              <div className="bg-blue-900/20 border border-blue-700/30 rounded-lg p-4 mb-6">
-                <p className="text-blue-300 text-sm text-center">
-                  {t('dashboard.dragToReorder', 'Arrastra para reordenar')} • {t('dashboard.toggleVisibility', 'Mostrar/Ocultar')}
+              {!isEditMode && (
+                <p className="mt-1 text-sm text-gray-500">
+                  {t('home.hero.subtitle')}
                 </p>
-              </div>
-            )}
-          </motion.div>
+              )}
+            </div>
+            <div className="flex flex-wrap gap-2">
+              {isEditMode ? (
+                <>
+                  <button
+                    type="button"
+                    onClick={saveChanges}
+                    className="flex items-center gap-2 rounded-lg bg-green-600 px-3 py-1.5 text-sm text-white transition hover:bg-green-700"
+                  >
+                    <Save className="h-4 w-4" />
+                    {t('dashboard.saveChanges', 'Save')}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={resetDashboard}
+                    className="flex items-center gap-2 rounded-lg bg-orange-600 px-3 py-1.5 text-sm text-white transition hover:bg-orange-700"
+                  >
+                    <RotateCcw className="h-4 w-4" />
+                    {t('dashboard.reset', 'Reset')}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={toggleEditMode}
+                    className="flex items-center gap-2 rounded-lg bg-gray-600 px-3 py-1.5 text-sm text-white transition hover:bg-gray-700"
+                  >
+                    <X className="h-4 w-4" />
+                    {t('dashboard.cancel', 'Cancel')}
+                  </button>
+                </>
+              ) : (
+                user && (
+                  <button
+                    type="button"
+                    onClick={toggleEditMode}
+                    className="rounded-lg border border-slate-600/60 px-3 py-1.5 text-xs font-medium text-gray-300 transition hover:bg-slate-700/50"
+                  >
+                    {t('dashboard.editMode', 'Edit mode')}
+                  </button>
+                )
+              )}
+            </div>
+          </div>
 
-          {/* Grid de herramientas */}
-          <div className={preferences.layout === 'list'
-            ? 'space-y-4'
-            : 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6'
-          }>
-            {dashboardCards
-              .filter(card => isEditMode || card.visible)
-              .map((card, index) => {
-                const cardSize = preferences.cardSizes[card.id] || 'medium';
-                const sizeClasses = {
-                  small: 'p-4',
-                  medium: 'p-6',
-                  large: 'p-8'
-                };
-                const titleSizeClasses = {
-                  small: 'text-lg',
-                  medium: 'text-xl',
-                  large: 'text-2xl'
-                };
-                const descriptionSizeClasses = {
-                  small: 'text-xs',
-                  medium: 'text-sm',
-                  large: 'text-base'
-                };
+          {isEditMode && (
+            <div className="mb-6 rounded-lg border border-blue-700/30 bg-blue-900/20 p-3">
+              <p className="text-center text-sm text-blue-300">
+                {t('dashboard.dragToReorder', 'Drag to reorder')} • {t('dashboard.toggleVisibility', 'Show/Hide')}
+              </p>
+            </div>
+          )}
 
-                return (
+          {isEditMode ? (
+            <div className={preferences.layout === 'list' ? 'space-y-4' : 'grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3'}>
+              {visibleCards.map((card, index) => (
+                <motion.div
+                  key={card.id}
+                  draggable
+                  onDragStart={(e) => handleDragStart(e, index)}
+                  onDragOver={handleDragOver}
+                  onDrop={(e) => handleDrop(e, index)}
+                  onDragEnd={handleDragEnd}
+                  className="relative cursor-move"
+                >
+                  <div className="absolute right-2 top-2 z-10 flex gap-1">
+                    <button
+                      type="button"
+                      onClick={() => toggleCardVisibility(card.id)}
+                      className="rounded bg-black/50 p-1 text-white hover:bg-black/70"
+                    >
+                      {card.visible ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                    </button>
+                    <div className="rounded bg-black/50 p-1 text-white">
+                      <GripVertical className="h-4 w-4" />
+                    </div>
+                  </div>
+                  <div className={`rounded-lg border p-4 transition-all duration-200 ${getToolChipClasses(card.color)} ${card.visible ? '' : 'border-dashed opacity-50'}`}>
+                    <div>{getIcon(card.id, 'medium')}</div>
+                    <h3 className="mt-3 text-sm font-bold">{t(card.title, card.title)}</h3>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+          ) : (
+            <>
+              <div className="mb-8 grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-4">
+                {popularCards.map((card, index) => (
                   <motion.div
                     key={card.id}
-                    initial={{ opacity: 0, y: 20 }}
+                    initial={{ opacity: 0, y: 12 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.6, delay: card.delay }}
-                    draggable={isEditMode}
-                    onDragStart={(e) => handleDragStart(e, index)}
-                    onDragOver={handleDragOver}
-                    onDrop={(e) => handleDrop(e, index)}
-                    onDragEnd={handleDragEnd}
-                    className={`relative ${isEditMode ? 'cursor-move' : ''} ${preferences.layout === 'list' ? 'w-full' : ''
-                      }`}
+                    transition={{ duration: 0.4, delay: index * 0.05 }}
                   >
-                    {isEditMode && (
-                      <div className="absolute top-2 right-2 z-10 flex gap-1">
-                        <button
-                          onClick={() => toggleCardVisibility(card.id)}
-                          className="p-1 bg-black/50 hover:bg-black/70 text-white rounded transition-colors duration-200"
-                          title={card.visible ? t('dashboard.toggleVisibility', 'Ocultar') : t('dashboard.toggleVisibility', 'Mostrar')}
-                        >
-                          {card.visible ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                        </button>
-                        <div className="p-1 bg-black/50 text-white rounded cursor-move">
-                          <GripVertical className="w-4 h-4" />
-                        </div>
-                      </div>
-                    )}
-
-                    <Link href={card.href} className={isEditMode ? 'pointer-events-none' : ''}>
-                      <div className={`bg-gradient-to-br ${card.color} ${sizeClasses[cardSize]} rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 cursor-pointer h-full border border-white/10 ${preferences.layout === 'list' ? 'flex items-center space-x-4' : ''
-                        } ${isEditMode
-                          ? card.visible
-                            ? 'opacity-90'
-                            : 'opacity-50 border-dashed border-2 border-gray-500'
-                          : ''
-                        }`}>
-                        <div className={`text-white ${preferences.layout === 'list' ? 'flex-shrink-0' : ''}`}>
-                          {getIcon(card.id, cardSize)}
-                        </div>
-                        <div className={preferences.layout === 'list' ? 'flex-1' : ''}>
-                          <h3 className={`${titleSizeClasses[cardSize]} font-bold text-white mb-2`}>
-                            {t(card.title, card.title)}
-                          </h3>
-                          <p className={`${descriptionSizeClasses[cardSize]} text-gray-100 leading-relaxed`}>
-                            {t(card.description, card.description)}
-                          </p>
-                        </div>
+                    <Link
+                      href={card.href}
+                      className={`flex h-full items-start gap-3 rounded-lg border px-4 py-3 transition-all duration-200 ${getToolChipClasses(card.color)}`}
+                    >
+                      <span className="shrink-0">{getIcon(card.id, 'medium')}</span>
+                      <div className="min-w-0">
+                        <h3 className="text-sm font-bold">{t(card.title, card.title)}</h3>
+                        <p className="mt-1 line-clamp-2 text-xs opacity-80">
+                          {t(card.description, card.description)}
+                        </p>
                       </div>
                     </Link>
                   </motion.div>
-                );
-              })}
-          </div>
+                ))}
+              </div>
+
+              <div className="mb-3 flex items-center justify-between gap-2">
+                <h3 className="text-sm font-bold uppercase tracking-[0.12em] text-gray-400">
+                  {t('home.allTools', 'All tools')}
+                </h3>
+                <span className="text-xs text-gray-600">{otherCards.length}</span>
+              </div>
+
+              <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
+                {otherCards.map((card) => (
+                  <Link
+                    key={card.id}
+                    href={card.href}
+                    className={`flex items-center gap-2 rounded-lg border px-3 py-2 transition-all duration-200 ${getToolChipClasses(card.color)}`}
+                  >
+                    <span className="shrink-0">{getIcon(card.id, 'small')}</span>
+                    <span className="truncate text-xs font-bold sm:text-sm">
+                      {t(card.title, card.title)}
+                    </span>
+                  </Link>
+                ))}
+              </div>
+            </>
+          )}
         </section>
 
       </div>
