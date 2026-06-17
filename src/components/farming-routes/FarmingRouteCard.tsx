@@ -98,31 +98,24 @@ export default function FarmingRouteCard({
       initial={{ opacity: 0, y: 14 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.28, delay: Math.min(index * 0.04, 0.2) }}
-      className="group relative w-full min-h-[300px] overflow-hidden rounded-2xl border border-purple-500/55 shadow-[0_0_28px_rgba(147,51,234,0.14)] transition duration-300 hover:border-purple-400/75 hover:shadow-[0_0_36px_rgba(147,51,234,0.24)]"
+      className="group relative min-h-[300px] w-full overflow-hidden rounded-2xl border border-purple-500/55 shadow-[0_0_28px_rgba(147,51,234,0.14)] transition duration-300 hover:border-purple-400/75 hover:shadow-[0_0_36px_rgba(147,51,234,0.24)]"
     >
-      {/* Fondo oscuro + imagen anclada a la derecha (40%) */}
-      <div className="pointer-events-none absolute inset-0 bg-[#080b16]" aria-hidden />
       {locationImage ? (
-        <div className="pointer-events-none absolute top-0 right-0 bottom-0 z-[1] w-[40%] min-h-[300px] overflow-hidden">
+        <>
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src={locationImage}
             alt=""
             referrerPolicy="no-referrer"
-            className="absolute inset-0 h-full w-full object-cover"
-            style={{ objectPosition: 'center 72%' }}
+            className="absolute inset-0 h-full w-full object-cover object-center"
           />
-          <div className="absolute inset-y-0 left-0 w-12 bg-gradient-to-r from-[#080b16] to-transparent sm:w-16" />
-        </div>
+          <div className="pointer-events-none absolute inset-0 bg-gradient-to-r from-[#080b16] from-[38%] via-[#080b16]/90 via-[55%] to-[#080b16]/25" />
+        </>
       ) : (
-        <div
-          className="pointer-events-none absolute inset-y-0 right-0 z-[1] w-[40%] bg-gradient-to-r from-[#12081f] to-[#1a1030]"
-          aria-hidden
-        />
+        <div className="absolute inset-0 bg-gradient-to-r from-[#080b16] via-[#12081f] to-[#1a1030]" />
       )}
 
-      {/* Contenido en el 60% izquierdo */}
-      <div className="relative z-10 flex w-[60%] min-w-0 flex-col p-5 sm:p-6">
+      <div className="relative z-10 flex min-h-[300px] flex-col p-5 pr-[18%] sm:p-6 sm:pr-[20%]">
         {route.requiresSquad && (
           <span className="mb-2.5 inline-flex w-fit items-center gap-1.5 rounded-full bg-purple-600 px-3 py-1 text-xs font-semibold text-white">
             <Users className="h-3.5 w-3.5" />
@@ -136,9 +129,9 @@ export default function FarmingRouteCard({
           </span>
         )}
 
-        <h2 className="mb-2.5 text-xl font-bold leading-snug text-white sm:text-2xl">{route.name}</h2>
+        <h2 className="mb-2.5 max-w-[85%] text-xl font-bold leading-snug text-white sm:text-2xl">{route.name}</h2>
 
-        <button type="button" onClick={() => onOpenDescription(route)} className="mb-3 text-left">
+        <button type="button" onClick={() => onOpenDescription(route)} className="mb-3 max-w-[85%] text-left">
           <div className="[&_a]:font-medium [&_a]:text-violet-400 [&_a]:underline [&_a:hover]:text-violet-300">
             <MarkdownText
               text={truncateDescription(route.description, 260)}
@@ -203,8 +196,7 @@ export default function FarmingRouteCard({
         )}
       </div>
 
-      {/* Iconos de expansión sobre la franja derecha */}
-      <div className="absolute right-3 top-1/2 z-20 flex -translate-y-1/2 flex-col gap-2.5 rounded-2xl border border-cyan-300/20 bg-cyan-400/10 px-2 py-2.5 shadow-[0_0_20px_rgba(34,211,238,0.15)] backdrop-blur-md sm:right-5">
+      <div className="absolute right-3 top-1/2 z-20 flex -translate-y-1/2 flex-col gap-2.5 rounded-2xl border border-white/25 bg-black/70 px-2.5 py-3 shadow-[0_4px_24px_rgba(0,0,0,0.65)] sm:right-5">
         {routeExpansions.map((exp) => (
           <ExpansionIcon key={exp} expansion={exp} size="md" variant="compact" />
         ))}

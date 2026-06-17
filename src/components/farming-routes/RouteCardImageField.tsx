@@ -63,7 +63,7 @@ export default function RouteCardImageField({
 
   return (
     <div>
-      <label className={labelClassName}>Imagen de fondo (lado derecho de la card)</label>
+      <label className={labelClassName}>Imagen de fondo de la card</label>
 
       <div className="flex flex-wrap items-center gap-2">
         <input
@@ -107,8 +107,7 @@ export default function RouteCardImageField({
 
       <p className="mt-1 text-xs text-gray-400">
         JPG, PNG, WebP o GIF (máx. 3 MB). Se guarda en{' '}
-        <code className="text-gray-300">public/images/routes/</code> y se ve como fondo en la
-        parte derecha de la card (donde están los iconos de expansión).
+        <code className="text-gray-300">public/images/routes/</code> y se ve como fondo completo de la card.
       </p>
 
       {error && <p className="mt-1 text-xs text-red-400">{error}</p>}
@@ -116,20 +115,17 @@ export default function RouteCardImageField({
       {value && (
         <div className="mt-3 overflow-hidden rounded-xl border border-purple-500/30">
           <div className="relative h-28 w-full overflow-hidden rounded-lg bg-[#080b16]">
-            <div className="absolute inset-y-0 right-0 w-[40%] overflow-hidden">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={value}
-                alt=""
-                referrerPolicy="no-referrer"
-                className="absolute inset-0 h-full w-full object-cover"
-                style={{ objectPosition: 'center 72%' }}
-              />
-              <div className="absolute inset-y-0 left-0 w-12 bg-gradient-to-r from-[#080b16] to-transparent" />
-            </div>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={value}
+              alt=""
+              referrerPolicy="no-referrer"
+              className="absolute inset-0 h-full w-full object-cover object-center"
+            />
+            <div className="pointer-events-none absolute inset-0 bg-gradient-to-r from-[#080b16] from-[38%] via-[#080b16]/90 via-[55%] to-[#080b16]/25" />
             <div className="absolute left-3 top-3 flex items-center gap-1.5 text-xs text-gray-400">
               <ImagePlus className="h-3.5 w-3.5" />
-              Vista previa del fondo derecho
+              Vista previa del fondo de la card
             </div>
           </div>
         </div>

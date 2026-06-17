@@ -240,7 +240,7 @@ export default function FarmingRoutes() {
     return (
       <div className="min-h-screen">
         <Navigation />
-        <div className="mx-auto max-w-5xl px-4 py-8 main-content sm:px-6 lg:px-8">
+        <div className="mx-auto max-w-[1600px] px-4 py-8 main-content sm:px-6 lg:px-8">
           <div className="flex items-center justify-center h-64">
             <div className="text-center">
               <RefreshCw className="w-8 h-8 text-blue-400 animate-spin mx-auto mb-4" />
@@ -256,7 +256,7 @@ export default function FarmingRoutes() {
     <div className="min-h-screen">
         <Navigation />
       
-      <main className="main-content mx-auto w-full max-w-8xl px-3 py-8 sm:px-5 lg:px-8">
+      <main className="main-content mx-auto w-full max-w-[1600px] px-3 py-8 sm:px-5 lg:px-8">
         {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -347,8 +347,8 @@ export default function FarmingRoutes() {
           </div>
         </motion.div>
 
-        {/* Routes Grid — ancho acotado aparte para que las cards no se estiren con el header */}
-        <div className="mx-auto grid w-full max-w-[960px] grid-cols-1 gap-5 md:grid-cols-2 md:gap-5">
+        {/* Routes Grid — 2×2 */}
+        <div className="grid w-full grid-cols-1 gap-5 md:grid-cols-2 md:gap-6">
           {filteredRoutes.map((route, index) => (
             <FarmingRouteCard
               key={route.id}
